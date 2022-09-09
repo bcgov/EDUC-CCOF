@@ -16,6 +16,11 @@ import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import {PAGE_TITLES} from '@/utils/constants';
+
+
+import FRICalculator from '@/components/FRICalculator';
+import LandingPage from '@/components/LandingPage';
+
 import MessageDisplay from './components/SecureExchange/MessageDisplay';
 import ExchangePage from './components/SecureExchange/ExchangeInbox';
 import NewMessagePage from './components/SecureExchange/NewMessagePage';
@@ -24,7 +29,6 @@ import ActivateEdxAccount from '@/components/common/ActivateEdxAccount';
 import AccessUsersPage from '@/components/SecureExchange/AccessUsersPage';
 import InstituteSelection from '@/components/InstituteSelection.vue';
 import NewUserInvitePage from '@/components/SecureExchange/NewUserPage';
-import FRICalculator from '@/components/FRICalculator';
 
 Vue.prototype.moment = moment;
 
@@ -91,7 +95,15 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator
       }
-    },    
+    },
+    {
+      path: '/landing-page',
+      name: 'landing-page',
+      component: LandingPage,
+      meta: {
+        pageTitle: PAGE_TITLES.LandingPage
+      }
+    },
     {
       path: '/activation-error',
       name: 'activation-error',

@@ -51,18 +51,10 @@ export const ApiRoutes = Object.freeze({
 });
 
 export const PAGE_TITLES = Object.freeze({
-  ADMINISTRATION: 'Administration',
-  DASHBOARD: 'Dashboard',
-  EXCHANGE: 'Secure Messaging Inbox',
-  VIEW_EXCHANGE: 'Secure Message',
-  NEW_EXCHANGE: 'New Message',
-  ACTIVATE_USER:'Activate User',
-  EXCHANGE_USERS: 'User Management',
-  SELECTION:'Institute Selection',
+  SELECTION:'Facility Selection',
   LOGIN:'Login',
-  NEW_USER_INVITE:'New User',
-  FRI_CALCULATOR: 'Fee Reduction Calculator'
-
+  FRI_CALCULATOR: 'Fee Reduction Calculator',
+  LANDING_PAGE: 'What would you like to do'
 });
 
 
