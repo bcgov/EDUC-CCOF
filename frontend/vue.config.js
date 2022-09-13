@@ -35,7 +35,8 @@ module.exports = {
     }
   },
   devServer: {
-    proxy:
+/*  Proxy was not passing CORS policies and failing to allow frontend to reach backend.
+      proxy:
       {
         ...['/api'].reduce(
           (acc, ctx) => ({
@@ -49,6 +50,8 @@ module.exports = {
           {}
         ),
       }
+*/
+      proxy: 'http://localhost:8080'
   },
   transpileDependencies: ['vuetify'],
   publicPath: '/'
