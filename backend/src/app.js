@@ -6,18 +6,18 @@ const log = require('./components/logger');
 const morgan = require('morgan');
 const session = require('express-session');
 const express = require('express');
-const atob = require('atob');
+// const atob = require('atob');
 const passport = require('passport');
 const helmet = require('helmet');
 const cors = require('cors');
-const utils = require('./components/utils');
-const auth = require('./components/auth');
+// const utils = require('./components/utils');
+// const auth = require('./components/auth');
 const bodyParser = require('body-parser');
 dotenv.config();
 
-const JWTStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-const OidcStrategy = require('passport-openidconnect-keycloak-idp').Strategy;
+// const JWTStrategy = require('passport-jwt').Strategy;
+// const ExtractJwt = require('passport-jwt').ExtractJwt;
+// const OidcStrategy = require('passport-openidconnect-keycloak-idp').Strategy;
 const noCache = require('nocache');
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
@@ -73,6 +73,7 @@ app.use(require('./routes/health-check').router);
 app.use(passport.initialize());
 app.use(passport.session());
 
+/* RLO - removing authenticadtion until keycloak is setup
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) {
   passport.use(strategyName, new OidcStrategy({
     issuer: discovery.issuer,
@@ -106,6 +107,7 @@ const parseJwt = (token) => {
     return null;
   }
 };
+*/
 /* RLO - removing authenticadtion until keycloak is setup
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {

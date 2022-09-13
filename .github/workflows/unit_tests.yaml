@@ -6,12 +6,12 @@ on:
   - pull_request
 
 jobs:
-  test-app:
-    name: Unit Tests (App)
+  test-backend:
+    name: Unit Tests (Backend)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app
+        working-directory: backend
     outputs:
       HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app/frontend
+        working-directory: frontend
     timeout-minutes: 10
     strategy:
       fail-fast: true
@@ -108,7 +108,7 @@ jobs:
         if: steps.cache-frontend.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test
-        run: npm run test
+        run: npm run test:unit
         env:
           CI: true
       - name: Save Coverage Results
@@ -122,7 +122,7 @@ jobs:
         if: "matrix.node-version == '16.x' && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
-          comment_mode: update
+          comment_mode: update 
           comment_footer: false
           comment_context: Coverage Report (Frontend)
           coverage_path: app/frontend/coverage/clover.xml
