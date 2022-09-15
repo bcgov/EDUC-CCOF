@@ -10,13 +10,13 @@
       <v-divider class="mx-16"/>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="6" >
+      <v-col cols="12" md="6" >
         <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="450"
           min-height="270"
           rounded
           tiled
-          :to="'/fri-calculator'" exact tile
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
           :ripple="false"
           >
             <v-card-actions>
@@ -30,12 +30,14 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" sm="6">
+      <v-col cols="12" md="6">
         <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="450"
           min-height="270"
           rounded
           tiled
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          :ripple="false"
           >
           <v-card-text>
             <p class="text-h5 text--primary">
@@ -53,6 +55,8 @@
           min-height="270"
           rounded
           tiled
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          :ripple="false"
           >
           <v-card-text>
             <p class="text-h5 text--primary">
@@ -68,6 +72,8 @@
           min-height="270"
           rounded
           tiled
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          :ripple="false"
           >
           <v-card-text>
             <p class="text-h5 text--primary">
@@ -83,13 +89,11 @@
 </template>
 <script>
 
+import { mapGetters} from 'vuex';
+
 export default {
   name: 'LandingPage',
   props: {
-    user: {
-      type: Object,
-      required: false,
-    },
     currentYear: {
       type: Number,
       default: 2023,
@@ -97,6 +101,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters('auth', ['userInfo']),
     currentYearTwoDigit() {
       return this.currentYear - 2000;
     },

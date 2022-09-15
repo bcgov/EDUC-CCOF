@@ -54,7 +54,9 @@ export const PAGE_TITLES = Object.freeze({
   SELECTION:'Facility Selection',
   LOGIN:'Login',
   FRI_CALCULATOR: 'Fee Reduction Calculator',
-  LANDING_PAGE: 'What would you like to do'
+  LANDING_PAGE: 'What would you like to do',
+  ORGANIZATION_SELECT: 'Organizations',
+  CCRFI_APPLICATION: 'CCRFI Application Form'
 });
 
 

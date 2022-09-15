@@ -3,19 +3,24 @@
 
   <v-navigation-drawer
           v-model="drawer"
-          clipped
           app
-          color="#E9EBEF"
-          :style="`margin-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
-          :width="navWidth"
-          temporary>
+          absolute
+          :style="`margin-top: ${$vuetify.application.top}px` "
+          width=200
+          :height="$vuetify.application.height"
+          :permanent="$vuetify.breakpoint.mdAndUp"
+          :temporary="!$vuetify.breakpoint.mdAndUp"
+>
     <v-list>
       <div v-for="(item) in items.filter(obj => obj.authorized)" v-bind:key="item.title">
       <v-list-item v-if="!item.items"
             :key="item.title+`1`"
             class="menuRow"
             :id="stripWhitespace(item.title + `MenuBtn`)">
-          <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
+            <v-list-item-icon class="mr-2" v-if="item.icon">
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+            <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
             <v-list-item-content>
               <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
               <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
@@ -36,8 +41,6 @@
           <v-list-item-content>
             <v-list-item-title v-text="item.title" class="menuItem"></v-list-item-title>
           </v-list-item-content>
-          <v-icon color="#003366" v-if="!item.active">$plus</v-icon>
-          <v-icon color="#003366" v-else>$minus</v-icon>
         </template>
 
         <v-list-item
@@ -57,11 +60,11 @@
       </div>
     </v-list>
   </v-navigation-drawer>
-  <v-app-bar v-if="hasAnyItems" app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-4 pr-8" :class="{'pl-16': $vuetify.breakpoint.mdAndUp}">
+  <v-app-bar v-if="hasAnyItems" app absolute elevation="0" 
+    color="#38598A" :dark="true" id="navBar" 
+    class="pl-4 pr-8" :class="{'pl-16': $vuetify.breakpoint.mdAndUp}" clipped-left>
     <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
       <v-icon v-if="!drawer">$menu</v-icon>
-      <v-icon v-else>$close</v-icon>
-      <p class="ma-0 pl-4 pr-2 hidden-sm-and-down">Menu</p>
     </v-app-bar-nav-icon>
     <v-toolbar-title id="navTitle" class="nav-title" :class="{'ml-4': $vuetify.breakpoint.mdAndUp, 'pl-1': $vuetify.breakpoint.smAndDown}">{{ title }}</v-toolbar-title>
     <v-spacer></v-spacer>
@@ -115,23 +118,59 @@ export default {
     refreshUserPermissions(){
       this.items = [
         {
-          title: PAGE_TITLES.DASHBOARD,
-          link: 'home',
-          authorized: this.hasRequiredPermission(PERMISSION.SECURE_EXCHANGE),
+          title: 'Dashboard',
+          link: 'landing-page',
+          authorized: true,
+          icon: '',
         },
+        {
+          title: 'New Organization',
+          link: 'organization',
+          authorized: true,
+          icon: '',
+        },
+        {
+          title: 'CCOF',
+          authorized: true,
+          items: [
+            {
+              title: 'Form',
+              link: 'organization',
+              authorized: true,
+              icon: 'mdi-checkbox-blank-circle-outline',
+            }
+          ],
+        },
+        {
+          title: 'CCFRI',
+          link: 'ccfri-application',
+          authorized: true,
+          icon: 'mdi-checkbox-blank-circle-outline',
+        },
+        {
+          title: 'ECE-WE',
+          link: 'ccfri-application',
+          authorized: true,
+          icon: 'mdi-check-circle',
+        },
+
+
         {
           title: PAGE_TITLES.EXCHANGE,
           link: 'inbox',
           authorized: this.hasRequiredPermission(PERMISSION.SECURE_EXCHANGE),
+          icon: 'mdi-checkbox-blank-circle-outline',
         },
         {
           title: PAGE_TITLES.ADMINISTRATION,
           authorized: this.hasRequiredPermission(PERMISSION.EDX_USER_SCHOOL_ADMIN),
+          icon: 'mdi-checkbox-blank-circle-outline',
           items: [
             {
               title: 'User Management',
               link: 'exchangeAccess',
-              authorized: this.hasRequiredPermission(PERMISSION.EDX_USER_SCHOOL_ADMIN)
+              authorized: this.hasRequiredPermission(PERMISSION.EDX_USER_SCHOOL_ADMIN),
+              icon: 'mdi-checkbox-blank-circle-outline',
             }
           ],
         }
@@ -166,17 +205,17 @@ export default {
   .menuItem {
     color: #003366;
   }
-  .menuRow, .groupMenu {
+  /* .menuRow, .groupMenu {
     border-bottom: 2px solid #d2d2d2;
-  }
+  } */
   .router:hover .v-list-item__content, /deep/.v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
     text-decoration: underline #003366;
   }
-  .subMenuRow {
+  /* .subMenuRow {
     border-top: 2px solid #d2d2d2;
     border-left: 4px solid #FCBA19;
     background-color: white;
-  }
+  } */
   .menuRow /deep/ i {
     color: #003366;
   }
