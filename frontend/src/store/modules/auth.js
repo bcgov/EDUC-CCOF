@@ -117,11 +117,19 @@ export default {
         organizationList: [
           {
             name: 'ABC organization',
-            id: 'aaaaaaaaaaaaaaaaaaaa'
+            id: 'aaaaaaaaaaaaaaaaaaaa',
+            facilityList: [
+              {
+                name: '123 daycare',
+                id: 'bbbbbbbbbbbbbbbbbbb'
+              },
+            ],
           },
           {
             name: '123 organization',
-            id: 'bbbbbbbbbbbbbbbbbbb'
+            id: 'bbbbbbbbbbbbbbbbbbb',
+            facilityList: [ {name: 'ABC daycare', id: 'aaaaaaaaaaaaaaaaaaaa'},
+            ],
           },
           {
             name: '987 organization',
@@ -129,28 +137,27 @@ export default {
           },
           {
             name: 'XYZ organization',
-            id: 'eeeeeeeeeeeeeeeeee'
+            id: 'eeeeeeeeeeeeeeeeee',
+            facilityList: [
+              {
+                name: 'ABC daycare',
+                id: 'aaaaaaaaaaaaaaaaaaaa'
+              },
+              {
+                name: '123 daycare',
+                id: 'bbbbbbbbbbbbbbbbbbb'
+              },
+              {
+                name: 'Sunshine daycare',
+                id: 'cccccccccccccccccccc'
+              },
+              {
+                name: 'XYZ daycare',
+                id: 'eeeeeeeeeeeeeeeeee'
+              }
+            ],
           }
         ],
-        facilityList: [
-          {
-            name: 'ABC daycare',
-            id: 'aaaaaaaaaaaaaaaaaaaa'
-          },
-          {
-            name: '123 daycare',
-            id: 'bbbbbbbbbbbbbbbbbbb'
-          },
-          {
-            name: 'Sunshine daycare',
-            id: 'cccccccccccccccccccc'
-          },
-          {
-            name: 'XYZ daycare',
-            id: 'eeeeeeeeeeeeeeeeee'
-          }
-        ],
-
         selectedOrganizationId: 'cccccccccccccccccc',
         selectedFacilityId: 'ssssssssssssssssss'
       };

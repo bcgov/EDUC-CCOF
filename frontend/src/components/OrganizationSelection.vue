@@ -13,10 +13,9 @@
           rounded
           tiled
           color="#336799"
-          :to="userInfo.facilityList.length > 1 ?'/fri-calculator' : 'error-page'" exact tile
+          :to="organization.facilityList  ?'/fri-calculator' : 'error-page'" exact tile
           :ripple="false"
          >
-
           <v-card-text class="text-h4 white--text text-center" >
               {{ organization.name }}
           </v-card-text>
@@ -29,7 +28,7 @@
           max-width="450"
           rounded
           tiled
-          :to="userInfo.facilityList.length > 1 ?'/fri-calculator' : 'error-page'" exact tile
+          
           :ripple="false"
          >
 

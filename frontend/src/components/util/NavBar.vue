@@ -17,7 +17,7 @@
             :key="item.title+`1`"
             class="menuRow"
             :id="stripWhitespace(item.title + `MenuBtn`)">
-            <v-list-item-icon class="mr-2" v-if="item.icon">
+            <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
             <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
@@ -31,15 +31,18 @@
               v-else
               :key="item.title"
               no-action
-              active-class="active"
               class="groupMenu"
               :id="stripWhitespace(item.title) + `MenuBtn`"
               append-icon=""
-              @click="setActive(item)"
+              :value="item.expanded"
+              v-bind:disabled=true
       >
         <template v-slot:activator>
+          <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title v-text="item.title" class="menuItem"></v-list-item-title>
+            <v-list-item-title v-text="item.title" class="menuItem text-wrap"></v-list-item-title>
           </v-list-item-content>
         </template>
 
@@ -49,10 +52,14 @@
                 class="subMenuRow pl-9"
                 :id="stripWhitespace(subItem.title) + `MenuBtn`"
         >
+          <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>              
+
           <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
             <v-list-item-content>
-              <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
-              <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
+              <v-list-item-title v-if="subItem.link === $route.name" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
+              <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
             </v-list-item-content>
           </router-link>
         </v-list-item>
@@ -62,7 +69,7 @@
   </v-navigation-drawer>
   <v-app-bar v-if="hasAnyItems" app absolute elevation="0" 
     color="#38598A" :dark="true" id="navBar" 
-    class="pl-4 pr-8" :class="{'pl-16': $vuetify.breakpoint.mdAndUp}" clipped-left>
+    class="pl-4 pr-8 justify-start" :class="{'pl-16': $vuetify.breakpoint.mdAndUp}" clipped-left>
     <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
       <v-icon v-if="!drawer">$menu</v-icon>
     </v-app-bar-nav-icon>
@@ -132,13 +139,33 @@ export default {
         {
           title: 'CCOF',
           authorized: true,
+          icon: 'mdi-checkbox-blank-circle-outline',
+          expanded: true,
           items: [
             {
-              title: 'Form',
-              link: 'organization',
+              title: 'Organization Information',
+              link: '',
               authorized: true,
               icon: 'mdi-checkbox-blank-circle-outline',
-            }
+            },
+            {
+              title: 'Facility Information',
+              link: '',
+              authorized: true,
+              icon: 'mdi-checkbox-blank-circle-outline',
+            },
+            {
+              title: 'Information to Determine Funding Amounts',
+              link: '',
+              authorized: true,
+              icon: 'mdi-checkbox-blank-circle-outline',
+            },
+            {
+              title: 'Direct Deposit',
+              link: '',
+              authorized: true,
+              icon: 'mdi-checkbox-blank-circle-outline',
+            },
           ],
         },
         {
@@ -205,12 +232,17 @@ export default {
   .menuItem {
     color: #003366;
   }
+  /* .v-list-item {
+    height: 35px;
+    min-height: 35px;
+  } */
+
   /* .menuRow, .groupMenu {
     border-bottom: 2px solid #d2d2d2;
   } */
-  .router:hover .v-list-item__content, /deep/.v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
+  /* .router:hover .v-list-item__content, /deep/.v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
     text-decoration: underline #003366;
-  }
+  } */
   /* .subMenuRow {
     border-top: 2px solid #d2d2d2;
     border-left: 4px solid #FCBA19;
@@ -228,6 +260,8 @@ export default {
   }
   /deep/ .v-list-group__header:before {
     background-color: #E9EBEF;
+    height: 10px;
+
   }
 
   .nav-title {
