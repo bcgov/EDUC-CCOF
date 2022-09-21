@@ -18,8 +18,13 @@ import BackendSessionExpired from '@/components/BackendSessionExpired';
 import {PAGE_TITLES} from '@/utils/constants';
 
 
+import OrganizationSelection from '@/components/OrganizationSelection';
+import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
+
 import FRICalculator from '@/components/FRICalculator';
 import LandingPage from '@/components/LandingPage';
+
+
 
 import MessageDisplay from './components/SecureExchange/MessageDisplay';
 import ExchangePage from './components/SecureExchange/ExchangeInbox';
@@ -101,9 +106,26 @@ const router = new VueRouter({
       name: 'landing-page',
       component: LandingPage,
       meta: {
-        pageTitle: PAGE_TITLES.LandingPage
+        pageTitle: PAGE_TITLES.LANDING_PAGE
       }
     },
+    {
+      path: '/organization',
+      name: 'organization',
+      component: OrganizationSelection,
+      meta: {
+        pageTitle: PAGE_TITLES.ORGANIZATION_SELECT
+      }
+    },
+    {
+      path: '/ccfri-application',
+      name: 'ccfri-application',
+      component: CCFRIApplicationForm,
+      meta: {
+        pageTitle: PAGE_TITLES.CCRFI_APPLICATION
+      }
+    },
+
     {
       path: '/activation-error',
       name: 'activation-error',
