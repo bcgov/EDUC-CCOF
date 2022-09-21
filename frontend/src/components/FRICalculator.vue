@@ -45,7 +45,8 @@
                 persistent-hint="true"
                 v-model="form.careProviderSearch"
                 v-on="on"
-                outlined>
+                outlined
+              >
               </v-text-field>
             </v-col>
             <v-col>
@@ -106,15 +107,19 @@
                               <td style="padding-bottom:10px;padding-top:10px;">
                                 <span style="font-weight:600;color:#336799;font-size:16px;font-family:Inter;">{{ item.name }}</span>
                                 <br>
-                                <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}</td>
+                                <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}
+                              </td>
+                              <td align="right">
+                                <v-btn style="font-style:normal;font-weight:500;font-family:Inter;font-size:14px;padding-left:24px;padding-right:24px;"
+                                  color="#39598A"
+                                  dark
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  @click="rowClicked(item);dialog=false">
+                                  Select
+                                </v-btn>
+                              </td>
                             </tr>
-                          
-                          
-                            <!--span style="font-weight:bold;color:#336799">{{ item.name }}</span> <br> <span style="font-weight:bold">City: </span>{{ item.city }}-->
-                          
-                          
-                          
-                          
                           </template>
                         </v-data-table>
                       </v-col>
@@ -151,7 +156,7 @@
           <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
             <v-combobox
                 v-model="form.typeOfCare"
-                :items="typeOfCareList"
+                :items="this.typeOfCareList"
                 outlined
                 required
                 :rules="rulesTypeOfCare"
@@ -173,7 +178,19 @@
             </v-text-label>
           </v-col>
           <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
-            <v-menu v-model="menu2"
+            <v-select
+                v-model="form.month"
+                :items="this.numberOfBusinessDaysByMonth"
+                item-text="month"
+                item-value="month"
+                outlined
+                required
+                :rules="rulesMonth"
+                dense>
+            </v-select>
+
+            
+            <!--v-menu v-model="menu2"
                     :close-on-content-click="false"
                     :nudge-right="40"
                     transition="scale-transition"
@@ -181,7 +198,7 @@
                     min-width="auto">
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="date"
+                  v-model="form.month"
                   readonly
                   v-bind="attrs"
                   v-on="on"
@@ -195,7 +212,7 @@
                 v-model="form.month"
                 @input="menu2 = false">
               </v-date-picker>
-            </v-menu>
+            </v-menu-->
           </v-col>
         </v-row>
         <v-row>
@@ -220,13 +237,9 @@
             </v-text-field>
           </v-col>
         </v-row>
-
-
-
-
-
-
-
+<!-- ******************************************************************************************************************************************************** -->
+<!-- **** CHILD X SUB SECTION  ****************************************************************************************************************************** -->
+<!-- ******************************************************************************************************************************************************** -->
         <div v-for="child in children">
           <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Child {{child.number}}</v-card-title>
             <v-row>
@@ -259,12 +272,10 @@
                   Parent Fee
                 </v-text-label>
               </v-col>
-              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;">
-                <div style="align-content: center;">
+              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                 <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;">
                   <v-icon color="white">mdi-help</v-icon>
                 </v-card>
-                </div>
               </v-col>
               <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
                 <v-text-field
@@ -276,29 +287,13 @@
                 </v-text-field>
               </v-col>
             </v-row>
-
-
-
-            <v-row>
+            <v-row v-show="showParentFeeApprovedFor">
               <v-col cols="12" style="padding-top:0px;">
                 <v-text-label style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:Inter;font-size:16px"> 
-                  Parent Fee Approved for {{form.careProviderSearch}}: $200
+                  Parent Fee Approved for {{form.careProviderSearch}}: ${{(results === undefined || results.length == 0) ? '' : results[child.number-1].actualParentFeePerChild}}
                 </v-text-label>
               </v-col>
             </v-row>
-
-
-
-
-
-
-
-
-
-
-
-
-
             <v-row>
               <v-col style="padding-top:0px;padding-bottom:0px;">
                 <v-divider></v-divider>
@@ -311,12 +306,10 @@
                   Parent Fee Frequency
                 </v-text-label>
               </v-col>
-              <v-col cols="1" style="padding-top:16px;">
-                <div style="align-content: center;">
+              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                 <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;">
                   <v-icon color="white">mdi-help</v-icon>
                 </v-card>
-                </div>
               </v-col>
               <v-col cols="4" style="padding-top:16px;">
                 <v-combobox
@@ -349,10 +342,11 @@
               </v-col>
               <v-col cols="2" style="padding-top:16px;">
                 <v-text-field
+                    @change="enableDisableTotalNumOfDays"
                     v-model="form.totalNumDays4hrsOrLess"
-                    :rules="rulesFullPartTime"
-                    outlined
+                    :rules="rulesPartTime"
                     required
+                    outlined
                     dense></v-text-field>
               </v-col>
 
@@ -363,15 +357,19 @@
               </v-col>
               <v-col cols="2" style="padding-left:0px;padding-top:16px;">
                 <v-text-field style="width:124px"
+                    @change="enableDisableTotalNumOfDays"
                     v-model="form.totalNumBaysOver4hrs"
-                    :rules="rulesFullPartTime"
-                    outlined
+                    :rules="rulesFullTime"
                     required
+                    outlined
                     dense></v-text-field>
               </v-col>
             </v-row>
         </div>
 
+<!-- ******************************************************************************************************************************************************** -->
+<!-- **** RESULTS SUB SECTION  ****************************************************************************************************************************** -->
+<!-- ******************************************************************************************************************************************************** -->
         <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Results</v-card-title>
         <v-row>
           <v-col cols="12" class="text-center">
@@ -379,18 +377,108 @@
               class="ma-2"
               outlined
               color="#003466"
-              @click="$refs.form.validate()">
+              @click="estimateTheBenefit">
               Estimate the Benefit
             </v-btn>
           </v-col>
         </v-row>
-        <!--v-row>
-          <v-col>
-            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
+        <div v-show="showEstimatorResults">
+        <v-row>
+          <v-col cols="12">
+            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:500;font-size:16px">
               Based on the information you have provided, you may be eligible for the following Child Care Fee Reduction Initiative:
             </v-text-label>
           </v-col>
-        </v-row-->
+        </v-row>
+        <v-row>
+          <v-col cols="2" style="padding-bottom:0px">
+            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+              Child
+            </v-text-label>
+          </v-col>
+          <v-col cols="4" style="padding-bottom:0px">
+            <div class="d-flex flex-nowrap">
+              <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;">
+                <v-icon color="white">mdi-help</v-icon>
+              </v-card>
+              <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                Reduction Amount Per Child
+              </v-text-label>
+            </div>
+          </v-col>
+          <v-col cols="4" style="padding-bottom:0px">
+            <div class="d-flex flex-nowrap">
+              <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;">
+                <v-icon color="white">mdi-help</v-icon>
+              </v-card>
+              <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                Actual Parent Fee Per Child
+              </v-text-label>
+            </div>
+          </v-col>
+        </v-row>
+
+
+
+
+        <div v-for="result in results">
+          
+          <v-row>
+          <v-col cols="12" >
+            <v-divider></v-divider>
+          </v-col>
+          </v-row>
+
+
+          <v-row>
+          <v-col cols="2" style="padding-bottom:0px;padding-top:0px">
+            <v-text-label style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px;">
+            {{result.number}}
+            </v-text-label>
+          </v-col>
+
+
+
+              <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
+                <div class="d-flex flex-nowrap">
+            <v-text-label style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px;">
+              ${{result.reductionAmountPerChild}}
+            </v-text-label>
+          </div>
+          </v-col>
+              <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
+            <v-text-label style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px">
+              ${{result.actualParentFeePerChild}}
+            </v-text-label>
+          </v-col>
+        </v-row>
+      
+        
+        
+        
+        
+        
+        
+        </div>
+
+
+        <v-row>
+          <v-col>
+            
+          </v-col>
+        </v-row>        
+      </div>
+
+
+
+
+
+
+
+
+
+
+
 
       </v-card>
       </v-col>
@@ -404,10 +492,13 @@ import ApiService from '../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import { ApiRoutes } from '@/utils/constants';
 import { mapGetters, mapState } from 'vuex';
+import { constants } from '@/utils/constants';
+import { date } from 'faker/lib/locales/az';
 
 export default {
   name: 'FRICalculator',
-  // components: {PrimaryButton},
+  components: //{PrimaryButton},
+    constants,
   mixins: [alertMixin],
   props: {
     user: {
@@ -433,6 +524,18 @@ export default {
       type: Array,
       required: false
     },
+    results: {
+      type: Array,
+      required: false,
+    },
+    GROUP_REDUCTION_RATES: {
+      type: Map,
+      required: false,
+    },
+    FAMILY_REDUCTION_RATES: {
+      type: Map,
+      required: false,
+    }
   },
   data() {
     return {
@@ -454,41 +557,61 @@ export default {
         {
           name: 'ABC Vancouver',
           city: 'Vancouver',
-          typeOfCare: 'GROUP CHILD CARE (UNDER 36 MONTHS)'
+          typeOfCare: '18 - 36 months',
+          approvedParentFee: 200
         },
         {
           name: 'ABC Family Daycare',
           city: 'Vancouver',
-          typeOfCare: 'GROUP CHILD CARE (30 MONTHS TO SCHOOL AGE)'
+          typeOfCare: '0 - 18 months',
+          approvedParentFee: 275
         },
         {
           name: 'ABC Daycare',
           city: 'North Vancouver',
-          typeOfCare: 'GROUP CHILD CARE (SCHOOL AGE)'
+          typeOfCare: '18 - 36 months',
+          approvedParentFee: 250
         },
         {
           name: 'XYZ Daycare',
           city: 'North Vancouver',
-          typeOfCare: 'MULTI-AGE CHILD CARE'
+          typeOfCare: '3 years to Kindergarten',
+          approvedParentFee: 175
         },
         {
           name: 'XYZ Tottler Care',
           city: 'Maple Ridge',
-          typeOfCare: 'MULTI-AGE CHILD CARE - FAMILY'
+          typeOfCare: '3 years to Kindergarten',
+          approvedParentFee: 300
         },
         {
           name: 'XYZ Child Daycare',
           city: 'Maple Ridge',
-          typeOfCare: 'MULTI-AGE CHILD CARE - FAMILY'
+          typeOfCare: 'Before & After School (Kindergarten only)',
+          approvedParentFee: 250
         },
         {
           name: 'XYZ Family Daycare',
           city: 'Delta',
-          typeOfCare: 'MULTI-AGE CHILD CARE - FAMILY'
-        }
+          typeOfCare: 'Before & After School (Kindergarten only)',
+          approvedParentFee: 200
+        },
+      ],
+      numberOfBusinessDaysByMonth: [
+        {month: 'January', days: 20},
+        {month: 'February', days: 19},
+        {month: 'March', days: 20},
+        {month: 'April', days: 20},
+        {month: 'May', days: 20},
+        {month: 'June', days: 20},
+        {month: 'July', days: 20},
+        {month: 'August', days: 20},
+        {month: 'September', days: 20},
+        {month: 'October', days: 20},
+        {month: 'November', days: 20},
+        {month: 'December', days: 20},
       ],
       selectedRow: [],
-
       edxSchoolAdminRole: 'EDX_SCHOOL_ADMIN',
       form: {
         firstName: '',
@@ -511,23 +634,14 @@ export default {
         'Monthly'
       ],
       typeOfCareList: [
-        'GROUP CHILD CARE (UNDER 36 MONTHS)',
-        'GROUP CHILD CARE (30 MONTHS TO SCHOOL AGE)',
-        'GROUP CHILD CARE (SCHOOL AGE)',
-        'MULTI-AGE CHILD CARE',
-        'MULTI-AGE CHILD CARE - FAMILY',
-        'IN-HOME MULTI-AGE CHILD CARE',
-        'FAMILY CHILD CARE',
-        'PRESCHOOL',
-        'GROUP CHILD CARE (SCHOOL AGE)'
+        'Group',
+        'Family'
       ],
       childAgeCategoryList: [
-        '0-18 Months',
+        '0 - 18 Months',
         '18 - 36 Months',
         '3 Years to Kindergarten',
-        'Out of School Care - Kindergarten',
-        'Preschool',
-        'Out of School Care - Grade 1 +'
+        'Before & After School (Kindergarten only)',
       ],
       rulesTypeOfCare: [
         (v) => !!v || 'Type of Care is required'
@@ -551,13 +665,20 @@ export default {
       rulesFullPartTime: [
         (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
       ],
+      rulesPartTime: [
+        (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
+      ],
+      rulesFullTime: [
+        (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
+      ],
       email: '',
       emailRules: [
         (v) => !!v || 'E-mail is required',
         (v) => /.+@.+/.test(v) || 'E-mail must be valid',
       ],
       selectedRoles: [],
-      isTotalNumberOfDaysInputted: ''
+      showEstimatorResults: false,
+      showParentFeeApprovedFor: false,
     };
   },
   methods: {
@@ -728,10 +849,99 @@ export default {
       }
       this.children = children;
     },
-    totalNumberOfDaysInputted () {
-      
-    }
+    estimateTheBenefit() {
+      if (this.$refs.form.validate() == true) {
+        this.showEstimatorResults = true;
+        this.results = [];
+          let rateTableInfo = [];
 
+          // Get the rate table info based on the provided type of child care and childs age category...
+          if (this.form.typeOfCare === 'Group') {
+            rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.form.childAgeCategory);
+          } else if (this.form.typeOfCare === 'Family') {
+            rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.form.childAgeCategory);
+          }
+
+          // Get the number of business days for the provide month...
+          const result = this.numberOfBusinessDaysByMonth.find(c => c.month === this.form.month);
+          var numberOfDaysForMonth = result.days;
+
+          // Determine daily rate before fee reduction based on frequency of fee...
+          var dailyRate;
+          switch (this.form.parentFeeFrequency) {
+            case 'Daily':
+              dailyRate = this.form.parentFee;
+              break;
+            case 'Weekly':
+              dailyRate = this.form.parentFee / 7;
+              break;
+            case 'Monthly':
+              dailyRate = this.form.parentFee / numberOfDaysForMonth;
+              break;
+          }
+
+          // Determine the daily rates for partTime and fulltime based on the number of days in month...
+          let partTimeRateFromTable;
+          let fullTimeRateFromTable;
+          if (numberOfDaysForMonth == 19) {
+            partTimeRateFromTable =  rateTableInfo[0].partTime19;
+            fullTimeRateFromTable = rateTableInfo[0].fullTime19;
+          } else if (numberOfDaysForMonth == 20) {
+            partTimeRateFromTable =  rateTableInfo[0].partTime20;
+            fullTimeRateFromTable = rateTableInfo[0].fullTime20;
+          }
+
+          // Determine the parttime daily rate and parttime total...
+          let partTimeTotal;
+          let partTimeDailyRate;
+          if (this.form.totalNumDays4hrsOrLess) {
+            partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
+            partTimeTotal = partTimeDailyRate * this.form.totalNumDays4hrsOrLess;
+          } else {
+            partTimeTotal = 0;
+          }
+
+          // Determine the fulltime daily rate and fulltime total...
+          let fullTimeTotal;
+          let fullTimeDailyRate;
+          if (this.form.totalNumBaysOver4hrs) {
+            fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
+            fullTimeTotal = fullTimeDailyRate * this.form.totalNumBaysOver4hrs;
+          } else {
+            fullTimeTotal = 0;
+          }
+
+          // Determine full and part time total...
+          var totalPartAndFullTime = partTimeTotal+fullTimeTotal;
+
+          // Determine the reduction amount per child...
+          let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo[0].monthlyRate ? rateTableInfo[0].monthlyRate : totalPartAndFullTime);
+
+          let actualParentFeePerChild;
+          if (this.form.parentFeeFrequency == 'Daily') {
+            actualParentFeePerChild = (this.form.parentFee * (this.form.totalNumDays4hrsOrLess+this.form.totalNumBaysOver4hrs)) - reductionAmountPerChild;
+          } else if (this.form.parentFeeFrequency == 'Weekly') {              
+            actualParentFeePerChild = (this.form.parentFee * 4) - reductionAmountPerChild;
+          } else if (this.form.parentFeeFrequency == 'Monthly') {
+            actualParentFeePerChild = this.form.parentFee - reductionAmountPerChild;
+          }
+
+          // Update the results
+          this.results.push({number: 1, reductionAmountPerChild: reductionAmountPerChild, actualParentFeePerChild: actualParentFeePerChild})
+      }
+    },
+    // TODO... AWFUL there must be a better way to handle "a or b is mandatory" and turning related validation messaging on and off.
+    enableDisableTotalNumOfDays() {
+      if ((this.form.totalNumDays4hrsOrLess && this.form.totalNumDays4hrsOrLess != 0) || (this.form.totalNumBaysOver4hrs && this.form.totalNumBaysOver4hrs != 0)) {
+        this.rulesFullTime = [];
+        this.rulesPartTime = [];
+        return true;
+      } else if ((this.form.totalNumDays4hrsOrLess == 0) && (this.form.totalNumBaysOver4hrs == 0)) {
+        this.rulesPartTime = this.rulesFullPartTime;
+        this.rulesFullTime = this.rulesFullPartTime;
+        return false;
+      }
+    }
   },
   computed: {
     ...mapState('edx', ['schoolRoles']),
@@ -749,6 +959,23 @@ export default {
        children.push({number: 1, parentFee: '', parentFeeApproved: ''});
       this.children = children;
     }
+    
+    // inital results
+    this.results = [];
+
+    // TODO: move to constants and import as properties... once i figure it out.
+    this.GROUP_REDUCTION_RATES = new Map();
+    this.GROUP_REDUCTION_RATES.set('0 - 18 Months', [{monthlyRate: 900, fullTime19: 47.3684, fullTime20: 45.0000, partTime19: 23.6842, partTime20: 22.5000}]);
+    this.GROUP_REDUCTION_RATES.set('18 - 36 Months', [{monthlyRate: 900, fullTime19: 47.3684, fullTime20: 45.0000, partTime19: 23.6842, partTime20: 22.5000}]);
+    this.GROUP_REDUCTION_RATES.set('3 Years to Kindergarten', [{monthlyRate: 545, fullTime19: 28.6842, fullTime20: 27.2500, partTime19: 14.3421, partTime20: 13.6250}]);
+    this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', [{monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16.0000, partTime19: 8.4211, partTime20: 8.0000}]);
+
+    this.FAMILY_REDUCTION_RATES = new Map();
+    this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', [{monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.5000}]);
+    this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', [{monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.5000}]);
+    this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', [{monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25.0000, partTime19: 13.1579, partTime20: 12.5000}]);
+    this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', [{monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16.0000, partTime19: 8.4211, partTime20: 8.0000}]);
+
   }
 };
 </script>
