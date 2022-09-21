@@ -134,30 +134,30 @@ jobs:
         username: ${{ env.IMAGE_REGISTRY_USER }}
         password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
 
-    - name: Build frontend from Dockerfile
-      id: build-image-frontend
-      uses: redhat-actions/buildah-build@v2
-      with:
-        image: ${{ env.APP_NAME_FRONTEND }}
-        tags: "latest"
+#     - name: Build frontend from Dockerfile
+#       id: build-image-frontend
+#       uses: redhat-actions/buildah-build@v2
+#       with:
+#         image: ${{ env.APP_NAME_FRONTEND }}
+#         tags: "latest"
 
         # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
         # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
         # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
-        dockerfiles: |
-          ./frontend/Dockerfile
-        context: ./frontend
+#         dockerfiles: |
+#           ./frontend/Dockerfile
+#         context: ./frontend
 
       # https://github.com/redhat-actions/push-to-registry#readme
-    - name: Push frontend to registry
-      id: push-image-frontend
-      uses: redhat-actions/push-to-registry@v2
-      with:
-        image: ${{ steps.build-image-frontend.outputs.image }}
-        tags: ${{ steps.build-image-frontend.outputs.tags }}
-        registry: ${{ env.IMAGE_REGISTRY }}
-        username: ${{ env.IMAGE_REGISTRY_USER }}
-        password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+#     - name: Push frontend to registry
+#       id: push-image-frontend
+#       uses: redhat-actions/push-to-registry@v2
+#       with:
+#         image: ${{ steps.build-image-frontend.outputs.image }}
+#         tags: ${{ steps.build-image-frontend.outputs.tags }}
+#         registry: ${{ env.IMAGE_REGISTRY }}
+#         username: ${{ env.IMAGE_REGISTRY_USER }}
+#         password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
 
     - name: Install oc
       uses: redhat-actions/openshift-tools-installer@v1
