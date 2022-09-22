@@ -19,6 +19,7 @@ import {PAGE_TITLES} from '@/utils/constants';
 
 
 import OrganizationSelection from '@/components/OrganizationSelection';
+import OrganizationInformation from '@/components/OrganizationInformation';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
 import FRICalculator from '@/components/FRICalculator';
@@ -115,6 +116,14 @@ const router = new VueRouter({
       component: OrganizationSelection,
       meta: {
         pageTitle: PAGE_TITLES.ORGANIZATION_SELECT
+      }
+    },
+    {
+      path: '/organization-information',
+      name: 'Organization Information',
+      component: OrganizationInformation,
+      meta: {
+        pageTitle: 'Organization Information'
       }
     },
     {
