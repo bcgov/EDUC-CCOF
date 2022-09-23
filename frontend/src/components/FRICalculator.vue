@@ -433,7 +433,7 @@
           </v-col>
         </v-row>
 
-        <div v-for="result in results">
+        <div v-for="result in results" :key="result.number">
           
           <v-row>
           <v-col cols="12" >
@@ -481,8 +481,6 @@ import alertMixin from '@/mixins/alertMixin';
 import { ApiRoutes } from '@/utils/constants';
 import { mapGetters, mapState } from 'vuex';
 import { constants } from '@/utils/constants';
-import { date } from 'faker/lib/locales/az';
-import { VMain } from 'vuetify/lib';
 
 export default {
   name: 'FRICalculator',
@@ -823,7 +821,7 @@ export default {
       console.log(row);
       this.form.careProviderSearch = row.name;
       this.form.typeOfCare = row.typeOfCare;
-/*
+      /*
       for (var i = 0; i < this.form.children.length; i++) {
         this.form.children[i].parentFeeApproved = row.parentFeeApproved;
       }
@@ -838,9 +836,6 @@ export default {
       } else {
         this.selectedRow.push(keyID);
       }
-    },
-    forceUpdate(name) {
-      this.componentKey++;
     },
     deepCopy: function(original) {
       if (Array.isArray(original)) {
@@ -859,17 +854,17 @@ export default {
       //this.form.children = [];
       if (this.form.children != undefined && this.form.children.length != 0) {
         if (this.form.totalNumberOfChildren > this.form.children.length) {
-            var numberOfChildrenToAdd = this.form.totalNumberOfChildren - this.form.children.length;
-            for (let i = 1; i <= numberOfChildrenToAdd; i++) {
-              this.form.children.push({number: this.form.children.length+1, 
-                           childAgeCategory: '',
-                           parentFee: '',
-                           parentFeeApproved: '',
-                           parentFeeFrequency: '',
-                           totalNumDays4hrsOrLess: '',
-                           totalNumBaysOver4hrs: ''});
+          var numberOfChildrenToAdd = this.form.totalNumberOfChildren - this.form.children.length;
+          for (let i = 1; i <= numberOfChildrenToAdd; i++) {
+            this.form.children.push({number: this.form.children.length+1, 
+              childAgeCategory: '',
+              parentFee: '',
+              parentFeeApproved: '',
+              parentFeeFrequency: '',
+              totalNumDays4hrsOrLess: '',
+              totalNumBaysOver4hrs: ''});
 
-/*                 this.form.children.splice(this.form.children.length, 0, {number: this.form.children.length+1, 
+            /*                 this.form.children.splice(this.form.children.length, 0, {number: this.form.children.length+1, 
                            childAgeCategory: '',
                            parentFee: '',
                            parentFeeApproved: '',
@@ -877,14 +872,14 @@ export default {
                            totalNumDays4hrsOrLess: '',
                            totalNumBaysOver4hrs: ''});*/
 
-/*               this.form.children = [...this.form.children, {number: this.form.children.length+1, 
+            /*               this.form.children = [...this.form.children, {number: this.form.children.length+1, 
                            childAgeCategory: '',
                            parentFee: '',
                            parentFeeApproved: '',
                            parentFeeFrequency: '',
                            totalNumDays4hrsOrLess: '',
                            totalNumBaysOver4hrs: ''}]*/
-/*
+            /*
                 this.$set(this.form.children, this.form.children.length, {number: this.form.children.length+1, 
                            childAgeCategory: '',
                            parentFee: '',
@@ -893,7 +888,7 @@ export default {
                            totalNumDays4hrsOrLess: '',
                            totalNumBaysOver4hrs: ''});
 */
-/*
+            /*
                 this.$set(this.form.children, this.form.children.length, {number: this.form.children.length+1, 
                            childAgeCategory: '',
                            parentFee: '',
@@ -902,14 +897,14 @@ export default {
                            totalNumDays4hrsOrLess: '',
                            totalNumBaysOver4hrs: ''});
 */
-            }
-            //this.componentKey = this.componentKey + 1;
+          }
+          //this.componentKey = this.componentKey + 1;
         } else if (this.form.totalNumberOfChildren < this.form.children.length) {
-            var numberOfChildrenToRemove = this.form.children.length - this.form.totalNumberOfChildren;
-            for (let i = 1; i <= numberOfChildrenToRemove; i++) {
-              this.form.children.pop();
-            }
-            //this.componentKey = this.componentKey + 1;
+          var numberOfChildrenToRemove = this.form.children.length - this.form.totalNumberOfChildren;
+          for (let i = 1; i <= numberOfChildrenToRemove; i++) {
+            this.form.children.pop();
+          }
+          //this.componentKey = this.componentKey + 1;
         }
       }
       //this.form.children = _.cloneDeep(this.arrayCopy);
@@ -928,15 +923,15 @@ export default {
         //for (child in this.form.children) {
         for (var i = 0; i < this.form.children.length; i++) { 
         // Get the rate table info based on the provided type of child care and childs age category...
-        if (this.form.typeOfCare === 'Group') {
-          rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.form.children[i].childAgeCategory);
-        } else if (this.form.typeOfCare === 'Family') {
-          rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.form.children[i].childAgeCategory);
-        }
+          if (this.form.typeOfCare === 'Group') {
+            rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.form.children[i].childAgeCategory);
+          } else if (this.form.typeOfCare === 'Family') {
+            rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.form.children[i].childAgeCategory);
+          }
         
-        // Determine daily rate before fee reduction based on frequency of fee...
-        var dailyRate;
-        switch (this.form.children[i].parentFeeFrequency) {
+          // Determine daily rate before fee reduction based on frequency of fee...
+          var dailyRate;
+          switch (this.form.children[i].parentFeeFrequency) {
           case 'Daily':
             dailyRate = this.form.children[i].parentFee;
             break;
@@ -946,55 +941,55 @@ export default {
           case 'Monthly':
             dailyRate = this.form.children[i].parentFee / numberOfDaysForMonth;
             break;
-        }
+          }
         
-        // Determine the daily rates for partTime and fulltime based on the number of days in month...
-        let partTimeRateFromTable;
-        let fullTimeRateFromTable;
-        if (numberOfDaysForMonth == 19) {
-          partTimeRateFromTable =  rateTableInfo[0].partTime19;
-          fullTimeRateFromTable = rateTableInfo[0].fullTime19;
-        } else if (numberOfDaysForMonth == 20) {
-          partTimeRateFromTable =  rateTableInfo[0].partTime20;
-          fullTimeRateFromTable = rateTableInfo[0].fullTime20;
-        }
+          // Determine the daily rates for partTime and fulltime based on the number of days in month...
+          let partTimeRateFromTable;
+          let fullTimeRateFromTable;
+          if (numberOfDaysForMonth == 19) {
+            partTimeRateFromTable =  rateTableInfo[0].partTime19;
+            fullTimeRateFromTable = rateTableInfo[0].fullTime19;
+          } else if (numberOfDaysForMonth == 20) {
+            partTimeRateFromTable =  rateTableInfo[0].partTime20;
+            fullTimeRateFromTable = rateTableInfo[0].fullTime20;
+          }
         
-        // Determine the parttime daily rate and parttime total...
-        let partTimeTotal;
-        let partTimeDailyRate;
-        if (this.form.children[i].totalNumDays4hrsOrLess) {
-          partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
-          partTimeTotal = partTimeDailyRate * this.form.children[i].totalNumDays4hrsOrLess;
-        } else {
-          partTimeTotal = 0;
-        }
+          // Determine the parttime daily rate and parttime total...
+          let partTimeTotal;
+          let partTimeDailyRate;
+          if (this.form.children[i].totalNumDays4hrsOrLess) {
+            partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
+            partTimeTotal = partTimeDailyRate * this.form.children[i].totalNumDays4hrsOrLess;
+          } else {
+            partTimeTotal = 0;
+          }
         
-        // Determine the fulltime daily rate and fulltime total...
-        let fullTimeTotal;
-        let fullTimeDailyRate;
-        if (this.form.children[i].totalNumBaysOver4hrs) {
-          fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
-          fullTimeTotal = fullTimeDailyRate * this.form.children[i].totalNumBaysOver4hrs;
-        } else {
-          fullTimeTotal = 0;
-        }
+          // Determine the fulltime daily rate and fulltime total...
+          let fullTimeTotal;
+          let fullTimeDailyRate;
+          if (this.form.children[i].totalNumBaysOver4hrs) {
+            fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
+            fullTimeTotal = fullTimeDailyRate * this.form.children[i].totalNumBaysOver4hrs;
+          } else {
+            fullTimeTotal = 0;
+          }
         
-        // Determine full and part time total...
-        var totalPartAndFullTime = partTimeTotal+fullTimeTotal;
+          // Determine full and part time total...
+          var totalPartAndFullTime = partTimeTotal+fullTimeTotal;
         
-        // Determine the reduction amount per this.form.children[i]...
-        let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo[0].monthlyRate ? rateTableInfo[0].monthlyRate : totalPartAndFullTime);
-        let actualParentFeePerChild;
-        if (this.form.children[i].parentFeeFrequency == 'Daily') {
-          actualParentFeePerChild = (this.form.children[i].parentFee * (this.form.children[i].totalNumDays4hrsOrLess+this.form.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
-        } else if (this.form.children[i].parentFeeFrequency == 'Weekly') {              
-          actualParentFeePerChild = (this.form.children[i].parentFee * 4) - reductionAmountPerChild;
-        } else if (this.form.children[i].parentFeeFrequency == 'Monthly') {
-          actualParentFeePerChild = this.form.children[i].parentFee - reductionAmountPerChild;
-        }
+          // Determine the reduction amount per this.form.children[i]...
+          let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo[0].monthlyRate ? rateTableInfo[0].monthlyRate : totalPartAndFullTime);
+          let actualParentFeePerChild;
+          if (this.form.children[i].parentFeeFrequency == 'Daily') {
+            actualParentFeePerChild = (this.form.children[i].parentFee * (this.form.children[i].totalNumDays4hrsOrLess+this.form.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
+          } else if (this.form.children[i].parentFeeFrequency == 'Weekly') {              
+            actualParentFeePerChild = (this.form.children[i].parentFee * 4) - reductionAmountPerChild;
+          } else if (this.form.children[i].parentFeeFrequency == 'Monthly') {
+            actualParentFeePerChild = this.form.children[i].parentFee - reductionAmountPerChild;
+          }
  
-        // Update the results
-        this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
+          // Update the results
+          this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
         }
       }
     },
@@ -1023,15 +1018,15 @@ export default {
   },
   mounted() {
     //if (this.form.children === undefined || this.form.children.lenth == 0) {
-      let children = [];
-       children.push({number: 1, 
-                      childAgeCategory: '',
-                      parentFee: '',
-                      parentFeeApproved: '',
-                      parentFeeFrequency: '',
-                      totalNumDays4hrsOrLess: '',
-                      totalNumBaysOver4hrs: ''});
-      this.form.children = children;
+    let children = [];
+    children.push({number: 1, 
+      childAgeCategory: '',
+      parentFee: '',
+      parentFeeApproved: '',
+      parentFeeFrequency: '',
+      totalNumDays4hrsOrLess: '',
+      totalNumBaysOver4hrs: ''});
+    this.form.children = children;
     //}
     
     // inital results
