@@ -22,9 +22,9 @@
           </v-row>
           <v-row>
             <v-col cols="12" style="padding-top:0%;padding-bottom:0px;">
-              <v-text-label style="padding-left:24px;color:#39598A;font-style:normal;font-weight:500;font-family:Inter;font-size:16px">
+              <div style="padding-left:24px;color:#39598A;font-style:normal;font-weight:500;font-family:Inter;font-size:16px">
                 Search by city or name of a licensed child care provider
-              </v-text-label>
+              </div>
             </v-col>
           </v-row>
           <v-row>
@@ -66,9 +66,9 @@
                     </v-row>
                     <v-row>
                       <v-col cols="12" style="padding-left:24px;">
-                        <v-text-label style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px">
+                        <div style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px">
                           Search Facilities
-                        </v-text-label>
+                        </div>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -139,10 +139,10 @@
         </v-row>
         <v-row>
           <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <v-text-label style="padding-left:24px;padding-top:16px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+            <div style="padding-left:24px;padding-top:16px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
               <template><span class="red--text"><strong>&nbsp;*</strong></span></template>
               Type of Care
-            </v-text-label>
+            </div>
           </v-col>
           <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
             <v-combobox
@@ -163,10 +163,10 @@
         
         <v-row>
           <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
               <template><span class="red--text"><strong> *</strong></span></template>
               Month
-            </v-text-label>
+            </div>
           </v-col>
           <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
             <v-select
@@ -213,14 +213,14 @@
         </v-row>
         <v-row>
           <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
               <template><span class="red--text"><strong> *</strong></span></template>
               Total Number of Children
-            </v-text-label>
+            </div>
           </v-col>
           <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
             <v-text-field @change="updateNumberOfChildSubForms"
-              v-model="form.totalNumberOfChildren"
+              v-model="totalNumberOfChildren"
               outlined
               required
               :rules="rulesTotalNumChildren"
@@ -231,14 +231,14 @@
 <!-- ******************************************************************************************************************************************************** -->
 <!-- **** CHILD X SUB SECTION  ****************************************************************************************************************************** -->
 <!-- ******************************************************************************************************************************************************** -->
-        <div v-for="(child, index) in this.form.children" :key="index">
+        <div v-for="child in this.children" :key="child.number">
           <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Child {{child.number}}</v-card-title>
             <v-row>
               <v-col cols="6" style="padding-top:16px;">
-                <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                   <template><span class="red--text"><strong> *</strong></span></template>
                   Child's age category
-                </v-text-label>
+                </div>
               </v-col>
               <v-col cols="4" style="padding-top:16px;">
                 <v-combobox
@@ -258,10 +258,10 @@
             </v-row>
             <v-row>
               <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
-                <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                   <template><span class="red--text"><strong> *</strong></span></template>
                   Parent Fee
-                </v-text-label>
+                </div>
               </v-col>
               <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                 <v-tooltip top color="#003466">
@@ -285,11 +285,11 @@
               </v-col>
             </v-row>
             <v-row v-show="showParentFeeApprovedFor">
-              <v-col cols="12" style="padding-top:0px;">
-                <v-text-label style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:Inter;font-size:16px"> 
+              <!-- <v-col cols="12" style="padding-top:0px;">
+                <div style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:Inter;font-size:16px"> 
                   Parent Fee Approved for {{form.careProviderSearch}}: ${{(results === undefined || results.length == 0) ? '' : results[child.number-1].actualParentFeePerChild}}
-                </v-text-label>
-              </v-col>
+                </div>
+              </v-col> -->
             </v-row>
             <v-row>
               <v-col style="padding-top:0px;padding-bottom:0px;">
@@ -298,10 +298,10 @@
             </v-row>
             <v-row>
               <v-col cols="5" style="padding-top:16px;">
-                <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                   <template><span class="red--text"><strong> *</strong></span></template>
                   Parent Fee Frequency
-                </v-text-label>
+                </div>
               </v-col>
               <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                 <v-tooltip top color="#003466">
@@ -332,16 +332,16 @@
             </v-row>
             <v-row>
               <v-col cols="4" style="padding-top:16px;">
-                <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                   <template><span class="red--text"><strong> *</strong></span></template>
                   Total number of days
-                </v-text-label>
+                </div>
               </v-col>
 
               <v-col cols="2" style="text-align:right;padding-top:16px">
-                <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
                   4 hours or less
-                </v-text-label>
+                </div>
               </v-col>
               <v-col cols="2" style="padding-top:16px;">
                 <!--@change="enableDisableTotalNumOfDays(child.number)"
@@ -354,9 +354,9 @@
               </v-col>
 
               <v-col cols="2" style="padding-left:0px;text-align:right;padding-top:16px">
-                <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
                   Over 4 hours
-                </v-text-label>
+                </div>
               </v-col>
               <v-col cols="2" style="padding-left:0px;padding-top:16px;">
                 <!--@change="enableDisableTotalNumOfDays(child.number)"
@@ -388,16 +388,16 @@
         <div v-show="showEstimatorResults">
         <v-row>
           <v-col cols="12">
-            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:500;font-size:16px">
+            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:500;font-size:16px">
               Based on the information you have provided, you may be eligible for the following Child Care Fee Reduction Initiative:
-            </v-text-label>
+            </div>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="2" style="padding-bottom:0px">
-            <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
               Child
-            </v-text-label>
+            </div>
           </v-col>
           <v-col cols="4" style="padding-bottom:0px">
             <div class="d-flex flex-nowrap">
@@ -410,9 +410,9 @@
                 </template>
                   <span>The amount subtracted per child from the monthly parent fee.</span>
                 </v-tooltip>
-              <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+              <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                 Reduction Amount Per Child
-              </v-text-label>
+              </div>
             </div>
           </v-col>
           <v-col cols="4" style="padding-bottom:0px">
@@ -426,9 +426,9 @@
                 </template>
                   <span>The monthly parent fee per child after reductions.</span>
                 </v-tooltip>
-              <v-text-label style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+              <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                 Actual Parent Fee Per Child
-              </v-text-label>
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -444,21 +444,21 @@
 
           <v-row>
           <v-col cols="2" style="padding-bottom:0px;padding-top:0px">
-            <v-text-label style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px;">
+            <div style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px;">
             {{result.number}}
-            </v-text-label>
+            </div>
           </v-col>
               <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
                 <div class="d-flex flex-nowrap">
-            <v-text-label style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px;">
+            <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px;">
               ${{result.reductionAmountPerChild}}
-            </v-text-label>
+            </div>
           </div>
           </v-col>
               <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
-            <v-text-label style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px">
+            <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px">
               ${{result.actualParentFeePerChild}}
-            </v-text-label>
+            </div>
           </v-col>
         </v-row>
         </div>
@@ -507,18 +507,7 @@ export default {
       type: String,
       required: false,
     },
-    results: {
-      type: Array,
-      required: false,
-    },
-    GROUP_REDUCTION_RATES: {
-      type: Map,
-      required: false,
-    },
-    FAMILY_REDUCTION_RATES: {
-      type: Map,
-      required: false,
-    }
+
   },
   data() {
     return {
@@ -527,6 +516,9 @@ export default {
       deleteState: false,
       relinkState: false,
       
+      GROUP_REDUCTION_RATES: null,
+      FAMILY_REDUCTION_RATES: null,
+      results: null,
       dialogSearch: '',
       headers: [
         {
@@ -595,7 +587,8 @@ export default {
         {month: 'December', days: 20},
       ],
       selectedRow: [],
-      edxSchoolAdminRole: 'EDX_SCHOOL_ADMIN',
+      totalNumberOfChildren: '1',
+      children: null,
       form: {
         firstName: '',
         lastName: '',
@@ -603,15 +596,6 @@ export default {
         careProviderSearch: '',
         typeOfCare: '',
         month: '',
-        totalNumberOfChildren: '1',
-        children: [],
-        childAgeCategory: '',
-        parentFee: '',
-        parentFeeApproved: '',
-        parentFeeFrequency: '',
-        totalNumDays4hrsOrLess: '',
-        totalNumBaysOver4hrs: ''
-
       },
       parentFeeFrequencyList: [
         'Daily',
@@ -664,12 +648,17 @@ export default {
       selectedRoles: [],
       showEstimatorResults: false,
       showParentFeeApprovedFor: false,
-      componentKey: 0,
     };
   },
   mutations: {
   
   },
+  // watch: {
+  //   totalNumberOfChildren: function(val) {
+  //     this.results = [];
+  //     this.updateNumberOfChildSubForms(val);
+  //   }
+  // },
   methods: {
     roleDisabled(role) {
       if (role.edxRoleCode === this.edxSchoolAdminRole) {
@@ -848,67 +837,28 @@ export default {
       }
     },
     updateNumberOfChildSubForms() {
-      //let arrayCopy = JSON.parse(JSON.stringify(this.form.children));
-      //let arrayCopy = this.deepCopy(this.form.children);
-      //let arrayCopy = _.cloneDeep(this.form.children);
-      //this.form.children = [];
-      if (this.form.children != undefined && this.form.children.length != 0) {
-        if (this.form.totalNumberOfChildren > this.form.children.length) {
-          var numberOfChildrenToAdd = this.form.totalNumberOfChildren - this.form.children.length;
-          for (let i = 1; i <= numberOfChildrenToAdd; i++) {
-            this.form.children.push({number: this.form.children.length+1, 
+      //TODO: validate totalNumberOfChildren is not greater than max limit.
+      this.results = [];
+      let numberOfChildren = this.totalNumberOfChildren;
+      if (this.children != undefined) {
+        let currentLengh = this.children.length;
+        if (numberOfChildren > currentLengh) {
+          for (let i = currentLengh + 1; i <= numberOfChildren; i++) {
+            this.children.push({number: i,
               childAgeCategory: '',
               parentFee: '',
               parentFeeApproved: '',
               parentFeeFrequency: '',
               totalNumDays4hrsOrLess: '',
               totalNumBaysOver4hrs: ''});
-
-            /*                 this.form.children.splice(this.form.children.length, 0, {number: this.form.children.length+1, 
-                           childAgeCategory: '',
-                           parentFee: '',
-                           parentFeeApproved: '',
-                           parentFeeFrequency: '',
-                           totalNumDays4hrsOrLess: '',
-                           totalNumBaysOver4hrs: ''});*/
-
-            /*               this.form.children = [...this.form.children, {number: this.form.children.length+1, 
-                           childAgeCategory: '',
-                           parentFee: '',
-                           parentFeeApproved: '',
-                           parentFeeFrequency: '',
-                           totalNumDays4hrsOrLess: '',
-                           totalNumBaysOver4hrs: ''}]*/
-            /*
-                this.$set(this.form.children, this.form.children.length, {number: this.form.children.length+1, 
-                           childAgeCategory: '',
-                           parentFee: '',
-                           parentFeeApproved: '',
-                           parentFeeFrequency: '',
-                           totalNumDays4hrsOrLess: '',
-                           totalNumBaysOver4hrs: ''});
-*/
-            /*
-                this.$set(this.form.children, this.form.children.length, {number: this.form.children.length+1, 
-                           childAgeCategory: '',
-                           parentFee: '',
-                           parentFeeApproved: '',
-                           parentFeeFrequency: '',
-                           totalNumDays4hrsOrLess: '',
-                           totalNumBaysOver4hrs: ''});
-*/
           }
-          //this.componentKey = this.componentKey + 1;
-        } else if (this.form.totalNumberOfChildren < this.form.children.length) {
-          var numberOfChildrenToRemove = this.form.children.length - this.form.totalNumberOfChildren;
+        } else if (numberOfChildren < this.children.length) {
+          var numberOfChildrenToRemove = this.children.length - numberOfChildren;
           for (let i = 1; i <= numberOfChildrenToRemove; i++) {
-            this.form.children.pop();
+            this.children.pop();
           }
-          //this.componentKey = this.componentKey + 1;
         }
       }
-      //this.form.children = _.cloneDeep(this.arrayCopy);
-      //this.form.children = this.arrayCopy;
     },
     estimateTheBenefit() {
       if (this.$refs.form.validate() == true) {
@@ -921,25 +871,25 @@ export default {
         var numberOfDaysForMonth = result.days;
         
         //for (child in this.form.children) {
-        for (var i = 0; i < this.form.children.length; i++) { 
+        for (var i = 0; i < this.children.length; i++) { 
         // Get the rate table info based on the provided type of child care and childs age category...
           if (this.form.typeOfCare === 'Group') {
-            rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.form.children[i].childAgeCategory);
+            rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           } else if (this.form.typeOfCare === 'Family') {
-            rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.form.children[i].childAgeCategory);
+            rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
         
           // Determine daily rate before fee reduction based on frequency of fee...
           var dailyRate;
-          switch (this.form.children[i].parentFeeFrequency) {
+          switch (this.children[i].parentFeeFrequency) {
           case 'Daily':
-            dailyRate = this.form.children[i].parentFee;
+            dailyRate = this.children[i].parentFee;
             break;
           case 'Weekly':
-            dailyRate = this.form.children[i].parentFee / 7;
+            dailyRate = this.children[i].parentFee / 7;
             break;
           case 'Monthly':
-            dailyRate = this.form.children[i].parentFee / numberOfDaysForMonth;
+            dailyRate = this.children[i].parentFee / numberOfDaysForMonth;
             break;
           }
         
@@ -957,9 +907,9 @@ export default {
           // Determine the parttime daily rate and parttime total...
           let partTimeTotal;
           let partTimeDailyRate;
-          if (this.form.children[i].totalNumDays4hrsOrLess) {
+          if (this.children[i].totalNumDays4hrsOrLess) {
             partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
-            partTimeTotal = partTimeDailyRate * this.form.children[i].totalNumDays4hrsOrLess;
+            partTimeTotal = partTimeDailyRate * this.children[i].totalNumDays4hrsOrLess;
           } else {
             partTimeTotal = 0;
           }
@@ -967,9 +917,9 @@ export default {
           // Determine the fulltime daily rate and fulltime total...
           let fullTimeTotal;
           let fullTimeDailyRate;
-          if (this.form.children[i].totalNumBaysOver4hrs) {
+          if (this.children[i].totalNumBaysOver4hrs) {
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
-            fullTimeTotal = fullTimeDailyRate * this.form.children[i].totalNumBaysOver4hrs;
+            fullTimeTotal = fullTimeDailyRate * this.children[i].totalNumBaysOver4hrs;
           } else {
             fullTimeTotal = 0;
           }
@@ -980,12 +930,12 @@ export default {
           // Determine the reduction amount per this.form.children[i]...
           let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo[0].monthlyRate ? rateTableInfo[0].monthlyRate : totalPartAndFullTime);
           let actualParentFeePerChild;
-          if (this.form.children[i].parentFeeFrequency == 'Daily') {
-            actualParentFeePerChild = (this.form.children[i].parentFee * (this.form.children[i].totalNumDays4hrsOrLess+this.form.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
-          } else if (this.form.children[i].parentFeeFrequency == 'Weekly') {              
-            actualParentFeePerChild = (this.form.children[i].parentFee * 4) - reductionAmountPerChild;
-          } else if (this.form.children[i].parentFeeFrequency == 'Monthly') {
-            actualParentFeePerChild = this.form.children[i].parentFee - reductionAmountPerChild;
+          if (this.children[i].parentFeeFrequency == 'Daily') {
+            actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
+          } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
+            actualParentFeePerChild = (this.children[i].parentFee * 4) - reductionAmountPerChild;
+          } else if (this.children[i].parentFeeFrequency == 'Monthly') {
+            actualParentFeePerChild = this.children[i].parentFee - reductionAmountPerChild;
           }
  
           // Update the results
@@ -999,7 +949,7 @@ export default {
         this.rulesFullTime = [];
         this.rulesPartTime = [];
         return true;
-      } else if ((this.form.children[index].totalNumDays4hrsOrLess == 0) && (this.form.children[index].totalNumBaysOver4hrs == 0)) {
+      } else if ((this.children[index].totalNumDays4hrsOrLess == 0) && (this.children[index].totalNumBaysOver4hrs == 0)) {
         this.rulesPartTime = this.rulesFullPartTime;
         this.rulesFullTime = this.rulesFullPartTime;
         return false;
@@ -1018,18 +968,15 @@ export default {
   },
   mounted() {
     //if (this.form.children === undefined || this.form.children.lenth == 0) {
-    let children = [];
-    children.push({number: 1, 
+    this.children = [ {
+      number: 1, 
       childAgeCategory: '',
       parentFee: '',
       parentFeeApproved: '',
       parentFeeFrequency: '',
       totalNumDays4hrsOrLess: '',
-      totalNumBaysOver4hrs: ''});
-    this.form.children = children;
-    //}
-    
-    // inital results
+      totalNumBaysOver4hrs: '', }
+    ];
     this.results = [];
 
     // TODO: move to constants and import as properties... once i figure it out.
