@@ -81,7 +81,7 @@
 
 <script>
 import {PAGE_TITLES} from '@/utils/constants';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import {PERMISSION} from '@/utils/constants/Permission';
 export default {
   name: 'navBar',
@@ -101,6 +101,7 @@ export default {
   computed: {
     ...mapState('auth', ['isAuthenticated']),
     ...mapState('auth', ['userInfo']),
+    ...mapGetters('auth', ['selectedOrganization']),
     navWidth () {
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -119,9 +120,25 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    selectedOrganization: {
+      handler() {
+        this.refreshUserPermissions();
+      },
+      immediate: true,
+      deep: true
     }
   },
   methods: {
+    getOrganizationName() {
+      console.log('this: ' + this.selectedOrganization.id);
+      if (this.selectedOrganization && this.selectedOrganization.name) {
+        return this.selectedOrganization.name;
+      } else {
+        return 'Select Organization';
+      }
+      
+    },
     refreshUserPermissions(){
       this.items = [
         {
@@ -131,7 +148,7 @@ export default {
           icon: '',
         },
         {
-          title: 'New Organization',
+          title: this.getOrganizationName(),
           link: 'organization',
           authorized: true,
           icon: '',

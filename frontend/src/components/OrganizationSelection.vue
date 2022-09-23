@@ -13,8 +13,9 @@
           rounded
           tiled
           color="#336799"
-          :to="organization.facilityList  ?'/fri-calculator' : 'error-page'" exact tile
+          
           :ripple="false"
+          @click = "selectOrg(organization.id, organization.name)"
          >
           <v-card-text class="text-h4 white--text text-center" >
               {{ organization.name }}
@@ -22,28 +23,11 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row justify="center">
-      <v-col cols="8" >
-        <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="450"
-          rounded
-          tiled
-          
-          :ripple="false"
-         >
-
-          <v-card-text class="text-h4 text-center" >
-              Add new organization
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
   </v-container>
 </template>
 <script>
 
-import { mapGetters} from 'vuex';
+import { mapGetters, mapMutations} from 'vuex';
 
 export default {
   name: 'LandingPage',
@@ -63,8 +47,17 @@ export default {
       return this.currentYear - 1999;
     }
   },
+  methods: {
+    ...mapMutations('auth', ['setSelectedOrganization']),
+
+    selectOrg(orgId, orgName) {
+      this.setSelectedOrganization({id: orgId, name: orgName});
+    }
+  }
 };
 </script>
 
 <style scoped>
 </style>
+<!--
+ :to="organization.facilityList  ?'/fri-calculator' : 'error-page'" exact tile -->

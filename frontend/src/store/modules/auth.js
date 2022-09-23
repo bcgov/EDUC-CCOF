@@ -45,6 +45,14 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: false,
+    selectedOrganization: {
+      id: null,
+      name: null,
+    },
+    selectedFacility: {
+      name: null,
+      id: null,
+    },
     userInfo: null,
     error: false,
     isLoading: true,
@@ -56,6 +64,8 @@ export default {
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: state => state.jwtToken,
     userInfo: state => state.userInfo,
+    selectedFacility: state => state.selectedFacility,
+    selectedOrganization: state => state.selectedOrganization,
     loginError: state => state.loginError,
     error: state => state.error,
     isLoading: state => state.isLoading,
@@ -80,6 +90,10 @@ export default {
       } else {
         state.userInfo = null;
       }
+    },
+
+    setSelectedOrganization: (state, organization ) => {
+      state.selectedOrganization = organization;
     },
 
     setLoginError: (state) => {
@@ -158,8 +172,6 @@ export default {
             ],
           }
         ],
-        selectedOrganizationId: 'cccccccccccccccccc',
-        selectedFacilityId: 'ssssssssssssssssss'
       };
       commit('setUserInfo', userInfoRes);
     },
