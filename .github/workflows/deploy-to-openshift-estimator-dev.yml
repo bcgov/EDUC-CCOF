@@ -153,11 +153,11 @@ jobs:
         | oc apply -f -
         
         # Start rollout (if necessary) and follow it
-        oc rollout latest dc/${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+        oc rollout latest dc/${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null \
         || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
-        oc rollout status dc/${{ env.APP_NAME_FRONTEND }}
+        oc rollout status dc/${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}
 
     # - name: ZAP Scan
     #   uses: zaproxy/action-full-scan@v0.3.0
