@@ -20,6 +20,7 @@ import {PAGE_TITLES} from '@/utils/constants';
 
 import OrganizationSelection from '@/components/OrganizationSelection';
 import OrganizationInformation from '@/components/OrganizationInformation';
+import FacilityInformation from '@/components/FacilityInformation';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
 import FRICalculator from '@/components/FRICalculator';
@@ -124,6 +125,14 @@ const router = new VueRouter({
       component: OrganizationInformation,
       meta: {
         pageTitle: 'Organization Information'
+      }
+    },
+    {
+      path: '/facility-information',
+      name: 'Facility Information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information'
       }
     },
     {
