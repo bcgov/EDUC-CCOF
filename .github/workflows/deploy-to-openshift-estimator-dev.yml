@@ -28,9 +28,6 @@ env:
   NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
   COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
   TAG: "latest"
-  IMAGE_NAME: ccof-backend-master
-${REPO_NAME}-frontend-${BRANCH}
-
 
   MIN_REPLICAS: "1"
   MAX_REPLICAS: "1"
