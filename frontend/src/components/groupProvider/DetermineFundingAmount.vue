@@ -36,7 +36,8 @@
             </v-card>
 
             <v-card width="1200" style="margin-top:20px">
-                <v-card-subtitle>Complete the licence information using your Community Care and Assisted Living Act Licence.</v-card-subtitle>
+                <v-card-subtitle>Complete the licence information using your Community Care and Assisted Living Act
+                    Licence.</v-card-subtitle>
 
                 <v-container>
                     <v-row>
@@ -65,7 +66,8 @@
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Maximum Number for Group Child Care (School Age/ School age care on School Grounds)" />
+                            <v-text-field
+                                label="Maximum Number for Group Child Care (School Age/ School age care on School Grounds)" />
                         </v-col>
                     </v-row>
                 </v-container>
@@ -73,8 +75,9 @@
 
             <v-card width="1200" style="margin-top:20px">
                 <v-card-title>Preschool</v-card-title>
-                <v-card-subtitle>Please indicate how many preschool sessions your facility offers per day</v-card-subtitle>
-                
+                <v-card-subtitle>Please indicate how many preschool sessions your facility offers per day
+                </v-card-subtitle>
+
                 <v-container>
                     <v-row>
                         <v-col>
@@ -107,7 +110,8 @@
             </v-card>
 
             <v-card width="1200" style="margin-top:20px">
-                <v-card-subtitle>Do you <b>regularly offer</b> extended daily hours of child care <b>(before 6 am, after 7pm or overnight)</b>?</v-card-subtitle>
+                <v-card-subtitle>Do you <b>regularly offer</b> extended daily hours of child care <b>(before 6 am, after
+                        7pm or overnight)</b>?</v-card-subtitle>
                 <v-container>
                     <v-row>
                         <v-col>
@@ -121,7 +125,8 @@
             </v-card>
 
             <v-card width="1200" style="margin-top:20px">
-                <v-card-subtitle>Write the maximum <b>number of spaces</b> you offer extended hours of child care for each type of service</v-card-subtitle>
+                <v-card-subtitle>Write the maximum <b>number of spaces</b> you offer extended hours of child care for
+                    each type of service</v-card-subtitle>
                 <v-container>
                     <v-row>
                         <v-col>
@@ -171,9 +176,9 @@
 
             <v-container>
                 <v-row justify="space-around">
-                    <v-btn>Back</v-btn>
-                    <v-btn>Next</v-btn>
-                    <v-btn>Save</v-btn>
+                    <v-btn color="info" outlined x-large>Back</v-btn>
+                    <v-btn color="secondary" outlined x-large>Next</v-btn>
+                    <v-btn color="primary" outlined x-large>Save</v-btn>
                 </v-row>
             </v-container>
         </v-row>
@@ -183,15 +188,15 @@
 <script>
 
 export default {
-  name: 'Determine Funding Amount',
-  props: {
-  },
-  computed: {
-  },
-  data() {
-    return {
-      hasReceivedFunding: 'no',
-    };
-  },
+    name: 'Determine Funding Amount',
+    props: {
+    },
+    computed: {
+    },
+    data() {
+        return {
+            hasReceivedFunding: 'no',
+        };
+    },
 };
 </script>

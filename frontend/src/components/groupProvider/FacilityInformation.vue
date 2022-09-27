@@ -7,53 +7,53 @@
                 <v-container>
                     <v-row>
                         <v-col>
-                            <v-text-field label="Facility Name (as it appears on the Community Care Assisted Living Act licence)">
-                            </v-text-field>
+                            <v-text-field outlined
+                                label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Year Facility Began operation (YYYY)"></v-text-field>
+                            <v-text-field outlined label="Year Facility Began operation (YYYY)" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Facility Street Address"></v-text-field>
-                        </v-col>
-                    </v-row>
-
-                    <v-row>
-                        <v-col>
-                            <v-text-field label="City/Town"></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-text-field label="Postal Code"></v-text-field>
+                            <v-text-field outlined label="Facility Street Address" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Facility Contact Name"></v-text-field>
+                            <v-text-field outlined label="City/Town" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Position"></v-text-field>
-                        </v-col>
-                    </v-row>
-
-                    <v-row>
-                        <v-col>
-                            <v-text-field label="Business Phone"></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-text-field label="Organization Facility email"></v-text-field>
+                            <v-text-field outlined label="Postal Code" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Facility Licence Number"></v-text-field>
+                            <v-text-field outlined label="Facility Contact Name" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Effective Date of Current Licence (YYYY-MM-DD)"></v-text-field>
+                            <v-text-field outlined label="Position" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field outlined label="Business Phone" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field outlined label="Organization Facility email" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field outlined label="Facility Licence Number" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field outlined label="Effective Date of Current Licence (YYYY-MM-DD)" />
                         </v-col>
                     </v-row>
 
@@ -69,7 +69,7 @@
 
                     <v-row v-show="hasReceivedFunding === 'yes'">
                         <v-col>
-                            <v-text-field label="Facility Name"></v-text-field>
+                            <v-text-field outlined label="Facility Name" />
                         </v-col>
                     </v-row>
 
@@ -78,9 +78,9 @@
 
             <v-container>
                 <v-row justify="space-around">
-                    <v-btn>Back</v-btn>
-                    <v-btn>Next</v-btn>
-                    <v-btn>Save</v-btn>
+                    <v-btn color="info" outlined x-large>Back</v-btn>
+                    <v-btn color="secondary" outlined x-large>Next</v-btn>
+                    <v-btn color="primary" outlined x-large>Save</v-btn>
                 </v-row>
             </v-container>
         </v-row>
@@ -90,15 +90,15 @@
 <script>
 
 export default {
-  name: 'Facility Information',
-  props: {
-  },
-  computed: {
-  },
-  data() {
-    return {
-      hasReceivedFunding: 'no',
-    };
-  },
+    name: 'Facility Information',
+    props: {
+    },
+    computed: {
+    },
+    data() {
+        return {
+            hasReceivedFunding: 'no',
+        };
+    },
 };
 </script>
