@@ -7,10 +7,10 @@
                 <v-container>
                     <v-row>
                         <v-col>
-                            <v-text-field label="Maximum number of days per week you provide child care" />
+                            <v-text-field outlined label="Maximum number of days per week you provide child care" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Maximum of weeks per year you provide child care" />
+                            <v-text-field outlined label="Maximum of weeks per year you provide child care" />
                         </v-col>
                     </v-row>
 
@@ -26,10 +26,10 @@
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Facility hours of operation from" />
+                            <v-text-field outlined label="Facility hours of operation from" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Facility hours of operation to" />
+                            <v-text-field outlined label="Facility hours of operation to" />
                         </v-col>
                     </v-row>
                 </v-container>
@@ -42,31 +42,32 @@
                 <v-container>
                     <v-row>
                         <v-col>
-                            <v-text-field label="Maximum Licensed Capacity" />
+                            <v-text-field outlined label="Maximum Licensed Capacity" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Maximum Number for Group Child Care (under 36 months)" />
+                            <v-text-field outlined label="Maximum Number for Group Child Care (under 36 months)" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Maximum Number for Group Child Care (36 months to School Age)" />
+                            <v-text-field outlined
+                                label="Maximum Number for Group Child Care (36 months to School Age)" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Maximum Number for Preschool" />
+                            <v-text-field outlined label="Maximum Number for Preschool" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field
+                            <v-text-field outlined
                                 label="Maximum Number for Group Child Care (School Age/ School age care on School Grounds)" />
                         </v-col>
                     </v-row>
@@ -81,19 +82,19 @@
                 <v-container>
                     <v-row>
                         <v-col>
-                            <v-text-field label="Monday" />
+                            <v-text-field outlined label="Monday" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Tuesday" />
+                            <v-text-field outlined label="Tuesday" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Wednesday" />
+                            <v-text-field outlined label="Wednesday" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Thursday" />
+                            <v-text-field outlined label="Thursday" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Friday" />
+                            <v-text-field outlined label="Friday" />
                         </v-col>
                     </v-row>
 
@@ -138,37 +139,39 @@
                     </v-row>
                     <v-row>
                         <v-col>
-                            <v-text-field label="Group Child Care (under 36 months)" />
+                            <v-text-field outlined label="Group Child Care (under 36 months)" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Group Child Care (under 36 months)" />
-                        </v-col>
-                    </v-row>
-
-                    <v-row>
-                        <v-col>
-                            <v-text-field label="Group Child Care (36 months to School Age)" />
-                        </v-col>
-                        <v-col>
-                            <v-text-field label="Group Child Care (36 months to School Age)" />
+                            <v-text-field outlined label="Group Child Care (under 36 months)" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Group Child Care (School Age/ School age care on School Grounds)" />
+                            <v-text-field outlined label="Group Child Care (36 months to School Age)" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Group Child Care (School Age/ School age care on School Grounds)" />
+                            <v-text-field outlined label="Group Child Care (36 months to School Age)" />
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Multi-Age Care" />
+                            <v-text-field outlined
+                                label="Group Child Care (School Age/ School age care on School Grounds)" />
                         </v-col>
                         <v-col>
-                            <v-text-field label="Multi-Age Care" />
+                            <v-text-field outlined
+                                label="Group Child Care (School Age/ School age care on School Grounds)" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field outlined label="Multi-Age Care" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field outlined label="Multi-Age Care" />
                         </v-col>
                     </v-row>
                 </v-container>
@@ -187,16 +190,28 @@
 
 <script>
 
+import PATHS from './paths';
+
 export default {
-    name: 'Determine Funding Amount',
     props: {
     },
     computed: {
     },
     data() {
         return {
-            hasReceivedFunding: 'no',
+            hasReceivedFunding: undefined,
+            isExtendedHours: undefined,
+            hasClosedMonth: undefined,
+            isSchoolProperty: undefined
         };
     },
+    methods: {
+        previous() {
+            this.$router.push(PATHS.facInfo);
+        },
+        next() { 
+            this.$router.push(PATHS.fundAmount);
+        }
+    }
 };
 </script>

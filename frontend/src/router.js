@@ -22,9 +22,10 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
+import PATHS from '@/components/groupProvider/paths';
 import OrganizationInformation from '@/components/groupProvider/OrganizationInformation';
 import FacilityInformation from '@/components/groupProvider/FacilityInformation';
-import DetermineFundingAmount from '@/components/groupProvider/DetermineFundingAmount';
+import FundAmount from '@/components/groupProvider/FundAmount';
 
 import FRICalculator from '@/components/FRICalculator';
 import LandingPage from '@/components/LandingPage';
@@ -123,7 +124,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/organization-information',
+      path: PATHS.orgInfo,
       name: 'Organization Information',
       component: OrganizationInformation,
       meta: {
@@ -131,7 +132,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/facility-information',
+      path: PATHS.facInfo,
       name: 'Facility Information',
       component: FacilityInformation,
       meta: {
@@ -139,11 +140,11 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/determine-funding-amount',
-      name: 'Determine Funding Amount',
-      component: DetermineFundingAmount,
+      path: PATHS.fundAmount,
+      name: 'Funding Amount',
+      component: FundAmount,
       meta: {
-        pageTitle: 'Determine Funding Amount'
+        pageTitle: 'Funding Amount'
       }
     },
     {

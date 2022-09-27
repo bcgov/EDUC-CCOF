@@ -1,7 +1,5 @@
 <template>
     <v-container>
-        <h1>Facility Information</h1>
-
         <v-row justify="space-around">
             <v-card width="1200">
                 <v-container>
@@ -78,8 +76,8 @@
 
             <v-container>
                 <v-row justify="space-around">
-                    <v-btn color="info" outlined x-large>Back</v-btn>
-                    <v-btn color="secondary" outlined x-large>Next</v-btn>
+                    <v-btn color="info" outlined x-large @click="previous()">Back</v-btn>
+                    <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
                     <v-btn color="primary" outlined x-large>Save</v-btn>
                 </v-row>
             </v-container>
@@ -88,6 +86,8 @@
 </template>
 
 <script>
+
+import PATHS from './paths';
 
 export default {
     name: 'Facility Information',
@@ -100,5 +100,13 @@ export default {
             hasReceivedFunding: 'no',
         };
     },
+    methods: {
+        previous() {
+            this.$router.push(PATHS.orgInfo);
+        },
+        next() { 
+            this.$router.push(PATHS.fundAmount);
+        }
+    }
 };
 </script>
