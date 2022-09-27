@@ -87,7 +87,7 @@
     
                     <v-row>
                         <v-col>
-                            <v-radio-group v-model="organizationType" label="Type of Orgnization">
+                            <v-radio-group row v-model="organizationType" label="Type of Orgnization">
                                 <v-radio label="Non-Profit Society" value="1"></v-radio>
                                 <v-radio label="Public institution (college/university)" value="2"></v-radio>
                                 <v-radio label="Registered Company" value="3"></v-radio>

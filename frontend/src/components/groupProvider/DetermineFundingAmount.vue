@@ -16,7 +16,7 @@
 
                     <v-row>
                         <v-col>
-                            <v-radio-group v-model="hasClosedMonth"
+                            <v-radio-group row v-model="hasClosedMonth"
                                 label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                                 <v-radio label="Yes" value="yes" />
                                 <v-radio label="No" value="no" />
@@ -36,8 +36,8 @@
             </v-card>
 
             <v-card width="1200" style="margin-top:20px">
-                <v-card-title>Type of Service Maximum Numbers</v-card-title>
                 <v-card-subtitle>Complete the licence information using your Community Care and Assisted Living Act Licence.</v-card-subtitle>
+
                 <v-container>
                     <v-row>
                         <v-col>
@@ -47,7 +47,102 @@
 
                     <v-row>
                         <v-col>
+                            <v-text-field label="Maximum Number for Group Child Care (under 36 months)" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field label="Maximum Number for Group Child Care (36 months to School Age)" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field label="Maximum Number for Preschool" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field label="Maximum Number for Group Child Care (School Age/ School age care on School Grounds)" />
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card>
+
+            <v-card width="1200" style="margin-top:20px">
+                <v-card-title>Preschool</v-card-title>
+                <v-card-subtitle>Please indicate how many preschool sessions your facility offers per day</v-card-subtitle>
+                
+                <v-container>
+                    <v-row>
+                        <v-col>
+                            <v-text-field label="Monday" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field label="Tuesday" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field label="Wednesday" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field label="Thursday" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field label="Friday" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-radio-group row v-model="isSchoolProperty"
+                                label="Is the facility located on school property?">
+                                <v-radio label="Yes" value="yes" />
+                                <v-radio label="No" value="no" />
+                            </v-radio-group>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card>
+
+            <v-card width="1200" style="margin-top:20px">
+                <v-card-subtitle>Do you <b>regularly offer</b> extended daily hours of child care <b>(before 6 am, after 7pm or overnight)</b>?</v-card-subtitle>
+                <v-container>
+                    <v-row>
+                        <v-col>
+                            <v-radio-group row v-model="isExtendedHours">
+                                <v-radio label="Yes" value="yes" />
+                                <v-radio label="No" value="no" />
+                            </v-radio-group>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card>
+
+            <v-card width="1200" style="margin-top:20px">
+                <v-card-subtitle>Write the maximum <b>number of spaces</b> you offer extended hours of child care for each type of service</v-card-subtitle>
+                <v-container>
+                    <v-row>
+                        <v-col>
+                            <v-card-subtitle><b>4 hours or less</b> extended child care</v-card-subtitle>
+                        </v-col>
+                        <v-col>
+                            <v-card-subtitle><b>More than 4</b> extended child care</v-card-subtitle>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
                             <v-text-field label="Group Child Care (under 36 months)" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field label="Group Child Care (under 36 months)" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field label="Group Child Care (36 months to School Age)" />
                         </v-col>
                         <v-col>
                             <v-text-field label="Group Child Care (36 months to School Age)" />
@@ -56,10 +151,19 @@
 
                     <v-row>
                         <v-col>
-                            <v-text-field label="Preschool" />
+                            <v-text-field label="Group Child Care (School Age/ School age care on School Grounds)" />
                         </v-col>
                         <v-col>
                             <v-text-field label="Group Child Care (School Age/ School age care on School Grounds)" />
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <v-text-field label="Multi-Age Care" />
+                        </v-col>
+                        <v-col>
+                            <v-text-field label="Multi-Age Care" />
                         </v-col>
                     </v-row>
                 </v-container>
