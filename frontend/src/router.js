@@ -19,9 +19,12 @@ import {PAGE_TITLES} from '@/utils/constants';
 
 
 import OrganizationSelection from '@/components/OrganizationSelection';
-import OrganizationInformation from '@/components/OrganizationInformation';
-import FacilityInformation from '@/components/FacilityInformation';
+
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
+
+import OrganizationInformation from '@/components/groupProvider/OrganizationInformation';
+import FacilityInformation from '@/components/groupProvider/FacilityInformation';
+import DetermineFundingAmount from '@/components/groupProvider/DetermineFundingAmount';
 
 import FRICalculator from '@/components/FRICalculator';
 import LandingPage from '@/components/LandingPage';
@@ -133,6 +136,14 @@ const router = new VueRouter({
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information'
+      }
+    },
+    {
+      path: '/determine-funding-amount',
+      name: 'Determine Funding Amount',
+      component: DetermineFundingAmount,
+      meta: {
+        pageTitle: 'Determine Funding Amount'
       }
     },
     {

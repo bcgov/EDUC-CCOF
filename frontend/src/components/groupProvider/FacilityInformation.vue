@@ -3,7 +3,7 @@
         <h1>Facility Information</h1>
 
         <v-row justify="space-around">
-            <v-card max-width="1200" width="1000">
+            <v-card width="1200">
                 <v-container>
                     <v-row>
                         <v-col>

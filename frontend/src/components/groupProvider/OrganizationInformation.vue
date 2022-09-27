@@ -3,13 +3,11 @@
         <h1>Organization Information</h1>
 
         <v-row justify="space-around">
-            <v-card max-width="1200" width="1000">
+            <v-card width="1200">
                 <v-container>
                     <v-row>
                         <v-col>
-                            <v-text-field
-                                label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)">
-                            </v-text-field>
+                            <v-text-field label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)"/>
                         </v-col>
                     </v-row>
     
