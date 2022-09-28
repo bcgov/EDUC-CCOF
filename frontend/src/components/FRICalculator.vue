@@ -115,7 +115,7 @@
               <v-row>
                 <v-col cols="6" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
-                  Child’s care category
+                  Child's care category
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
@@ -143,7 +143,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Full time care is care provided for 4 hours or more per day, 5 days per week.</span>
@@ -156,6 +156,7 @@
                       outlined
                       dense
                       required
+                      :rules="rulesCaresSchedule"
                       >
                   </v-select>
                 </v-col>
@@ -451,7 +452,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Select whether parent fees are charged daily, weekly, or monthly.</span>
@@ -485,7 +486,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Enter the full-time Parent Fee approved by the Ministry for this provider to charge, for the applicable care category. Child Care Providers must provide this information to parents upon request.</span>
@@ -520,7 +521,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Indicate your parent fee, before any reductions or benefits are applied</span>
@@ -704,7 +705,7 @@ export default {
         'Before & After School (Kindergarten only)',
       ],
       rulesTypeOfCare: [
-        (v) => !!v || 'Type of Care is required'
+        (v) => !!v || 'Type of care is required'
       ],
       rulesTotalNumChildren: [
         (v) => !!v || 'Total Number of Children is required',
@@ -713,6 +714,9 @@ export default {
       rulesMonth: [
         (v) => !!v || 'Month is required'
       ],
+      rulesCaresSchedule: [
+        (v) => !!v || 'Care schedule is required'
+      ],      
       rulesChildsAgeCategory: [
         (v) => !!v || 'Child\'s age category is required'
       ],
@@ -725,7 +729,7 @@ export default {
         (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
       ],      
       rulesParentFeeFrequency: [
-        (v) => !!v || 'Parent Fee Frequence is required'
+        (v) => !!v || 'Parent fee frequency is required'
       ],
       rulesFullPartTime: [
         (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
