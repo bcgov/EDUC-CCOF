@@ -1,737 +1,647 @@
 <template>
-  <v-container>
+  <v-container class="py-0">
     <v-form ref="form">
-    <v-row justify="center">
-      <v-col cols="10" style="padding-bottom:0px">
-        <v-card elevation="0">
-          <template>
-            <v-alert type="info">
-              The estimation provided in this service is not guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
-            </v-alert>
-          </template>
-        </v-card>
-      </v-col>
-    </v-row>
-    <!--v-row justify="center">
-      <v-col cols="10">
-        <v-card elevation="4" class="pa-0" color="#D4EAFF" style="">
+      <v-row justify="center">
+        <v-col cols="12" class="pt-0" align="center">
+          <v-img
+            src="crayons-backdrop.png"
+            max-height="336"
+            max-width="1448" >
+            <span class="banner-title">
+              <p class="banner-title-heading my-2">Child Care Fee Reduction Initiative Estimator</p>
+              Estimate your elegibility
+            </span>
+          </v-img>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="12">
+          <v-card elevation="0">
+            <template>
+              <v-alert
+                outlined
+                prominent
+                color="#ABADAE">
+                <span style="float:left">
+                  <v-icon
+                    x-large
+                    color="rgb(0 51 102)"
+                    class="py-1 px-3">
+                    mdi-information
+                  </v-icon>
+                </span>
+                <span class="pa-1">
+                    The estimation provided in this service is not guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
+                </span>
+              </v-alert>
+            </template>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="10">
+        <v-card elevation="4">
           <v-row>
-            <v-col style="padding-top:0%;padding-bottom:0px;">
-              <v-card-title style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px">Optional Facility Search:</v-card-title>
+            <v-col class="py-0">
+              <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Facility Details</v-card-title>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" style="padding-top:0%;padding-bottom:0px;">
-              <div style="padding-left:24px;color:#39598A;font-style:normal;font-weight:500;font-family:Inter;font-size:16px">
-                Search by city or name of a licensed child care provider
-              </div>
+            <v-col cols="6" class="estimator-label">
+                <span class="red--text"><strong>&nbsp;*</strong></span>
+                Type of Care
+            </v-col>
+            <v-col cols="4" class="pb-0">
+              <v-select
+                  v-model="form.typeOfCare"
+                  :items="this.typeOfCareList"
+                  outlined
+                  required
+                  :rules="rulesTypeOfCare"
+                  dense>
+              </v-select>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="8" style="padding-left:34px;">
-              <v-text-field
-                background-color="white"
-                dense
-                hint="Type your keyword here"
-                persistent-hint="true"
-                v-model="form.careProviderSearch"
-                v-on="on"
-                outlined
-              >
-              </v-text-field>
-            </v-col>
-            <v-col>
-              <v-dialog
-                v-model="dialog"
-                persistent
-                max-width="800px"
-                @click:outside="dialog = false">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;padding-left:24px;padding-right:24px;"
-                    color="#39598A"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="selectedRow = []">
-                    Search
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-container style="padding-top:0px;">
-                    <v-row>
-                      <v-col cols="12" style="padding-bottom:42px;background-color:#234075;"></v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="background-color:#FFC72C;padding:3px;"></v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="padding-left:24px;">
-                        <div style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px">
-                          Search Facilities
-                        </div>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="padding-left:24px;padding-bottom:0px;">
-                        <v-text-field
-                          v-model="number"
-                          v-on="on"
-                          outlined
-                          required
-                          dense
-                          append-outer-icon="mdi-magnify">
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="padding-top:0px;">
-                        <v-data-table
-                          :headers="headers"
-                          :items="facilities"
-                          item-key="name"
-                          :items-per-page="5"
-                          hide-default-header
-                          v-model="selectedRow"
-                        >
-                          <template v-slot:item="{ item }">
-                            <tr :class="selectedRow.indexOf(item.name)>-1?'grey':''" @click="rowClicked(item);dialog=false">
-                              <td style="padding-bottom:10px;padding-top:10px;">
-                                <span style="font-weight:600;color:#336799;font-size:16px;font-family:Inter;">{{ item.name }}</span>
-                                <br>
-                                <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}
-                              </td>
-                              <td align="right">
-                                <v-btn style="font-style:normal;font-weight:500;font-family:Inter;font-size:14px;padding-left:24px;padding-right:24px;"
-                                  color="#39598A"
-                                  dark
-                                  v-bind="attrs"
-                                  v-on="on"
-                                  @click="rowClicked(item);dialog=false">
-                                  Select
-                                </v-btn>
-                              </td>
-                            </tr>
-                          </template>
-                        </v-data-table>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-
-                </v-card>
-              </v-dialog>
-    
+            <v-col class="py-0">
+              <v-divider></v-divider>
             </v-col>
           </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col></v-col>
-    </v-row-->
-
-    <v-row justify="center">
-      <v-col cols="10">
-      <v-card elevation="4" class="">
-        <v-row>
-          <v-col style="padding-top:0px;padding-bottom:0px;">
-            <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Facility Details</v-card-title>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <div style="padding-left:24px;padding-top:16px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              <template><span class="red--text"><strong>&nbsp;*</strong></span></template>
-              Type of Care
-            </div>
-          </v-col>
-          <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
-            <v-combobox
-                v-model="form.typeOfCare"
-                :items="this.typeOfCareList"
-                outlined
-                required
-                :rules="rulesTypeOfCare"
-                dense>
-            </v-combobox>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col style="padding-top:0px;padding-bottom:0px;">
-            <v-divider></v-divider>
-          </v-col>
-        </v-row>
-        
-        <v-row>
-          <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              <template><span class="red--text"><strong> *</strong></span></template>
-              Month
-            </div>
-          </v-col>
-          <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
-            <v-select
-                v-model="form.month"
-                :items="this.numberOfBusinessDaysByMonth"
-                item-text="month"
-                item-value="month"
-                outlined
-                required
-                :rules="rulesMonth"
-                dense>
-            </v-select>
-
-            
-            <!--v-menu v-model="menu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
+          
+          <v-row>
+            <v-col cols="6" class="estimator-label">
+              <span class="red--text"><strong> *</strong></span>
+                Month
+            </v-col>
+            <v-col cols="4" class="pb-0">
+              <v-select
                   v-model="form.month"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
+                  :items="this.numberOfBusinessDaysByMonth"
+                  item-text="month"
+                  item-value="month"
                   outlined
                   required
                   :rules="rulesMonth"
                   dense>
-                </v-text-field>
-              </template>
-              <v-date-picker
-                v-model="form.month"
-                @input="menu2 = false">
-              </v-date-picker>
-            </v-menu-->
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col style="padding-top:0px;padding-bottom:0px;">
-            <v-divider></v-divider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              <template><span class="red--text"><strong> *</strong></span></template>
-              Total Number of Children
-            </div>
-          </v-col>
-          <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
-            <v-text-field @change="updateNumberOfChildSubForms"
-              v-model="totalNumberOfChildren"
-              outlined
-              required
-              :rules="rulesTotalNumChildren"
-              dense>
-            </v-text-field>
-          </v-col>
-        </v-row>
-<!-- ******************************************************************************************************************************************************** -->
-<!-- **** CHILD X SUB SECTION  ****************************************************************************************************************************** -->
-<!-- ******************************************************************************************************************************************************** -->
-        <div v-for="child in this.children" :key="child.number">
-          <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Child {{child.number}}</v-card-title>
-            <v-row>
-              <v-col cols="6" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Child's age category
-                </div>
-              </v-col>
-              <v-col cols="4" style="padding-top:16px;">
-                <v-combobox
-                    v-model="child.childAgeCategory"
-                    :items="childAgeCategoryList"
-                    outlined
-                    dense
-                    required
-                    :rules="rulesChildsAgeCategory">
-                </v-combobox>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
-                <v-divider></v-divider>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="6" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Care Schedule
-                </div>
-              </v-col>
-              <v-col cols="4" style="padding-top:16px;">
-                <v-combobox
-                    v-model="child.careSchedule"
-                    :items="['Full Time', 'Part Time']"
-                    outlined
-                    dense
-                    required
-                    >
-                </v-combobox>
-              </v-col>
-            </v-row>
-<!-- ******************************************************************************************************************************************************** -->
-<!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
-<!-- ******************************************************************************************************************************************************** -->          
-            <v-row v-if="child.careSchedule == 'Part Time'">
-              <v-col class="d-flex" style="margin-left:6px;">
-                <v-card class="" max-width="">
-                  <v-toolbar
-                      color="#003466"
-                      dark>
-                      <v-toolbar-title>Monday</v-toolbar-title>
-                    </v-toolbar>
-                    <v-list >
-                      <v-list-item-group
-                        v-model="selectedCareType[0]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-
-                  <v-spacer></v-spacer>
-                  
-                  <v-card max-width="">
-                    <v-toolbar
-                      color="#003466"
-                      dark
-                    >
-                      <v-toolbar-title>Tuesday</v-toolbar-title>
-                    </v-toolbar>
-                
-                    <v-list>
-                      <v-list-item-group
-                        v-model="selectedCareType[1]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-                  <v-spacer></v-spacer>
-                  
-                  <v-card max-width="">
-                    <v-toolbar
-                      color="#003466"
-                      dark
-                    >
-                    <v-toolbar-title>Wednesday</v-toolbar-title></v-toolbar>
-                    <v-list>
-                      <v-list-item-group
-                        v-model="selectedCareType[2]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-                  <v-spacer></v-spacer>
-
-
-                  <v-card max-width="">
-                    <v-toolbar
-                      color="#003466"
-                      dark
-                    >
-                    <v-toolbar-title>Thursday</v-toolbar-title></v-toolbar>
-                    <v-list>
-                      <v-list-item-group
-                        v-model="selectedCareType[3]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-                  <v-spacer></v-spacer>
-
-                  <v-card max-width="">
-                    <v-toolbar
-                      color="#003466"
-                      dark
-                    >
-                    <v-toolbar-title>Friday</v-toolbar-title></v-toolbar>
-                    <v-list>
-                      <v-list-item-group
-                        v-model="selectedCareType[4]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-                  <v-spacer></v-spacer>
-
-                  <v-card max-width="">
-                    <v-toolbar
-                      color="#003466"
-                      dark
-                    >
-                    <v-toolbar-title>Saturday</v-toolbar-title></v-toolbar>
-                    <v-list>
-                      <v-list-item-group
-                        v-model="selectedCareType[5]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-                  <v-spacer></v-spacer>
-
-                  <v-card max-width="">
-                    <v-toolbar
-                      color="#003466"
-                      dark
-                    >
-                    <v-toolbar-title>Sunday</v-toolbar-title></v-toolbar>
-                    <v-list>
-                      <v-list-item-group
-                        v-model="selectedCareType[6]"
-                        active-class="blue--text"
-                      >
-                        <template v-for="(item, index) in careTypes">
-                          <v-list-item :key="item.type">
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title v-text="item.type"></v-list-item-title>
-                              </v-list-item-content>
-                
-                              <v-list-item-action>
-                
-                                <v-icon dense v-if="!active" color=""></v-icon>
-                                <v-icon dense v-else color="yellow darken-3">
-                                  mdi-check
-                                </v-icon>
-                              </v-list-item-action>
-                            </template>
-                          </v-list-item>
-                
-                          <v-divider
-                            v-if="index < careTypes.length - 1"
-                            :key="index"
-                          ></v-divider>
-                        </template>
-                      </v-list-item-group>
-                    </v-list>
-                  </v-card>
-                  <v-spacer></v-spacer>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
-                <v-divider></v-divider>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="5" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Parent Fee Frequency
-                </div>
-              </v-col>
-              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
-                <v-tooltip top color="#003466">
-                  <template v-slot:activator="{ on, attrs }">
-                  <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                           v-on="on">
-                    <v-icon color="white">mdi-help</v-icon>
-                  </v-card>
-                </template>
-                  <span>Select the frequency (Daily, Weekly, Monthly) to which the 'Parent Fee' is paid to the daycare.</span>
-                </v-tooltip>
-              </v-col>
-              <v-col cols="4" style="padding-top:16px;">
-                <v-combobox
-                  v-model="child.parentFeeFrequency"
-                  :items="parentFeeFrequencyList"
-                  required
-                  :rules="rulesParentFeeFrequency"
-                  outlined
-                  dense>
-                </v-combobox>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
-                <v-divider></v-divider>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Your parent fee
-                </div>
-              </v-col>
-              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
-                <v-tooltip top color="#003466">
-                  <template v-slot:activator="{ on, attrs }">
-                  <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                           v-on="on">
-                    <v-icon color="white">mdi-help</v-icon>
-                  </v-card>
-                </template>
-                  <span>Input the child's daycare fee amount as a daily, weekly or monthly amount.</span>
-                </v-tooltip>
-              </v-col>
-              <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
-                <v-text-field
-                    v-model="child.parentFee"
-                    :rules="rulesParentFee"
-                    outlined
-                    required
-                    dense>
-                </v-text-field>
-              </v-col>
-            </v-row>
-            <v-row v-show="showParentFeeApprovedFor">
-              <!-- <v-col cols="12" style="padding-top:0px;">
-                <div style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:Inter;font-size:16px"> 
-                  Parent Fee Approved for {{form.careProviderSearch}}: ${{(results === undefined || results.length == 0) ? '' : results[child.number-1].actualParentFeePerChild}}
-                </div>
-              </v-col> -->
-            </v-row>
-            <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
-                <v-divider></v-divider>
-              </v-col>
-            </v-row>
-        </div>
-
-<!-- ******************************************************************************************************************************************************** -->
-<!-- **** RESULTS SUB SECTION  ****************************************************************************************************************************** -->
-<!-- ******************************************************************************************************************************************************** -->
-        <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Results</v-card-title>
-        <v-row>
-          <v-col cols="12" class="text-center">
-            <v-btn style="color:#39598A;font-style:normal;font-weight:500;font-family:Inter;font-size:16px;padding-left:60px;padding-right:60px;"
-              class="ma-2"
-              outlined
-              color="#003466"
-              @click="estimateTheBenefit">
-              Estimate the Benefit
-            </v-btn>
-          </v-col>
-        </v-row>
-        <div v-show="showEstimatorResults">
-        <v-row>
-          <v-col cols="12">
-            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:500;font-size:16px">
-              Based on the information you have provided, you may be eligible for the following Child Care Fee Reduction Initiative:
-            </div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="2" style="padding-bottom:0px">
-            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              Child
-            </div>
-          </v-col>
-          <v-col cols="4" style="padding-bottom:0px">
-            <div class="d-flex flex-nowrap">
-              <v-tooltip top color="#003466">
-                  <template v-slot:activator="{ on, attrs }">
-                  <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                           v-on="on">
-                    <v-icon color="white">mdi-help</v-icon>
-                  </v-card>
-                </template>
-                  <span>The amount subtracted per child from the monthly parent fee.</span>
-                </v-tooltip>
-              <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                Reduction Amount Per Child
-              </div>
-            </div>
-          </v-col>
-          <v-col cols="4" style="padding-bottom:0px">
-            <div class="d-flex flex-nowrap">
-              <v-tooltip top color="#003466">
-                  <template v-slot:activator="{ on, attrs }">
-                  <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                           v-on="on">
-                    <v-icon color="white">mdi-help</v-icon>
-                  </v-card>
-                </template>
-                  <span>The monthly parent fee per child after reductions.</span>
-                </v-tooltip>
-              <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                Actual Parent Fee Per Child
-              </div>
-            </div>
-          </v-col>
-        </v-row>
-
-        <div v-for="result in results" :key="result.number">
-          
+              </v-select>
+            </v-col>
+          </v-row>
           <v-row>
-          <v-col cols="12" >
-            <v-divider></v-divider>
-          </v-col>
+            <v-col class="py-0" style="y-off">
+              <v-divider></v-divider>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="6" class="estimator-label">
+              <span class="red--text"><strong> *</strong></span>
+                Total Number of Children
+            </v-col>
+            <v-col cols="4" class="pb-0">
+              <v-text-field 
+                @change="updateNumberOfChildSubForms"
+                @keypress="numberFilter(event)"
+                v-model="totalNumberOfChildren"
+                outlined
+                required
+                :rules="rulesTotalNumChildren"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+  <!-- ******************************************************************************************************************************************************** -->
+  <!-- **** CHILD X SUB SECTION  ****************************************************************************************************************************** -->
+  <!-- ******************************************************************************************************************************************************** -->
+          <div v-for="child in this.children" :key="child.number">
+            <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Child {{child.number}}</v-card-title>
+              <v-row>
+                <v-col cols="6" class="estimator-label">
+                  <span class="red--text"><strong> *</strong></span>
+                  Child's Age Category
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-select
+                      v-model="child.childAgeCategory"
+                      :items="childAgeCategoryList"
+                      outlined
+                      dense
+                      required
+                      :rules="rulesChildsAgeCategory">
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="6" class="estimator-label">
+                  <span class="red--text"><strong> *</strong></span>
+                  Care Schedule
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-select
+                      v-model="child.careSchedule"
+                      :items="['Full Time', 'Part Time']"
+                      outlined
+                      dense
+                      required
+                      >
+                  </v-select>
+                </v-col>
+              </v-row>
+  <!-- ******************************************************************************************************************************************************** -->
+  <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
+  <!-- ******************************************************************************************************************************************************** -->          
+              <v-row v-if="child.careSchedule == 'Part Time'">
+                <v-col class="d-flex" >
+                  <v-card class="pl-4">
+                    <v-toolbar class="pl-4"
+                        color="#003466"
+                        dark>
+                        <v-toolbar-title>Monday</v-toolbar-title>
+                      </v-toolbar>
+                      <v-list >
+                        <v-list-item-group
+                          v-model="selectedCareType[0]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+
+                    <v-spacer></v-spacer>
+                    
+                    <v-card max-width="">
+                      <v-toolbar
+                        color="#003466"
+                        dark
+                      >
+                        <v-toolbar-title>Tuesday</v-toolbar-title>
+                      </v-toolbar>
+                  
+                      <v-list>
+                        <v-list-item-group
+                          v-model="selectedCareType[1]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+                    <v-spacer></v-spacer>
+                    
+                    <v-card max-width="">
+                      <v-toolbar
+                        color="#003466"
+                        dark
+                      >
+                      <v-toolbar-title>Wednesday</v-toolbar-title></v-toolbar>
+                      <v-list>
+                        <v-list-item-group
+                          v-model="selectedCareType[2]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+                    <v-spacer></v-spacer>
+
+
+                    <v-card max-width="">
+                      <v-toolbar
+                        color="#003466"
+                        dark
+                      >
+                      <v-toolbar-title>Thursday</v-toolbar-title></v-toolbar>
+                      <v-list>
+                        <v-list-item-group
+                          v-model="selectedCareType[3]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+                    <v-spacer></v-spacer>
+
+                    <v-card max-width="">
+                      <v-toolbar
+                        color="#003466"
+                        dark
+                      >
+                      <v-toolbar-title>Friday</v-toolbar-title></v-toolbar>
+                      <v-list>
+                        <v-list-item-group
+                          v-model="selectedCareType[4]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+                    <v-spacer></v-spacer>
+
+                    <v-card max-width="">
+                      <v-toolbar
+                        color="#003466"
+                        dark
+                      >
+                      <v-toolbar-title>Saturday</v-toolbar-title></v-toolbar>
+                      <v-list>
+                        <v-list-item-group
+                          v-model="selectedCareType[5]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+                    <v-spacer></v-spacer>
+
+                    <v-card max-width="">
+                      <v-toolbar
+                        color="#003466"
+                        dark
+                      >
+                      <v-toolbar-title>Sunday</v-toolbar-title></v-toolbar>
+                      <v-list>
+                        <v-list-item-group
+                          v-model="selectedCareType[6]"
+                          active-class="blue--text"
+                        >
+                          <template v-for="(item, index) in careTypes">
+                            <v-list-item :key="item.type">
+                              <template v-slot:default="{ active }">
+                                <v-list-item-content>
+                                  <v-list-item-title v-text="item.type"></v-list-item-title>
+                                </v-list-item-content>
+                  
+                                <v-list-item-action class="ml-1">
+                  
+                                  <v-icon dense v-if="!active" color=""></v-icon>
+                                  <v-icon dense v-else color="yellow darken-3">
+                                    mdi-check
+                                  </v-icon>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
+                  
+                            <v-divider
+                              v-if="index < careTypes.length - 1"
+                              :key="index"
+                            ></v-divider>
+                          </template>
+                        </v-list-item-group>
+                      </v-list>
+                    </v-card>
+                    <v-spacer></v-spacer>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="5" class="estimator-label">
+                  <span class="red--text"><strong> *</strong></span>
+                  Parent Fee Frequency
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Select the frequency (Daily, Weekly, Monthly) to which the 'Parent Fee' is paid to the daycare.</span>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-select
+                    v-model="child.parentFeeFrequency"
+                    :items="parentFeeFrequencyList"
+                    required
+                    :rules="rulesParentFeeFrequency"
+                    outlined
+                    dense>
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
+                  <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                    <template><span class="red--text"><strong> *</strong></span></template>
+                    CCFRI Approved Full-Time Parent Fee 
+                  </div>
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Input the child's daycare approved full-time fee amount as a daily, weekly or monthly amount.</span>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-text-field
+                      @keypress="currencyFilter(event)"
+                      v-model="child.approvedFee"
+                      :rules="rulesApprovedFee"
+                      outlined
+                      prefix="$"
+                      dense>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>              
+              <v-row>
+                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
+                  <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                    <template><span class="red--text"><strong> *</strong></span></template>
+                    Your Part-Time Parent Fee
+                  </div>
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Input the child's daycare part-time fee amount as a daily, weekly or monthly amount.</span>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-text-field
+                      @keypress="currencyFilter(event)"
+                      v-model="child.partTimeFee"
+                      :rules="rulesApprovedFee"
+                      outlined
+                      prefix="$"
+                      required
+                      dense>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row v-show="showParentFeeApprovedFor">
+                <!-- <v-col cols="12" style="padding-top:0px;">
+                  <div style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:Inter;font-size:16px"> 
+                    Parent Fee Approved for {{form.careProviderSearch}}: ${{(results === undefined || results.length == 0) ? '' : results[child.number-1].actualParentFeePerChild}}
+                  </div>
+                </v-col> -->
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
+          </div>
+
+  <!-- ******************************************************************************************************************************************************** -->
+  <!-- **** RESULTS SUB SECTION  ****************************************************************************************************************************** -->
+  <!-- ******************************************************************************************************************************************************** -->
+          <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Results</v-card-title>
+          <v-row>
+            <v-col cols="12" class="text-center">
+              <v-btn style="color:#39598A;font-style:normal;font-weight:500;font-family:Inter;font-size:16px;padding-left:60px;padding-right:60px;"
+                class="ma-2"
+                outlined
+                color="#003466"
+                @click="estimateTheBenefit">
+                Estimate the Benefit
+              </v-btn>
+            </v-col>
+          </v-row>
+          <div v-show="showEstimatorResults">
+          <v-row>
+            <v-col cols="12">
+              <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:500;font-size:16px">
+                Based on the information you have provided, you may be eligible for the following Child Care Fee Reduction Initiative:
+              </div>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="2" style="padding-bottom:0px">
+              <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                Child
+              </div>
+            </v-col>
+            <v-col cols="4" style="padding-bottom:0px">
+              <div class="d-flex flex-nowrap">
+                <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>The amount subtracted per child from the monthly parent fee.</span>
+                  </v-tooltip>
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                  Reduction Amount Per Child
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="4" style="padding-bottom:0px">
+              <div class="d-flex flex-nowrap">
+                <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>The monthly parent fee per child after reductions.</span>
+                  </v-tooltip>
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                  Actual Parent Fee Per Child
+                </div>
+              </div>
+            </v-col>
           </v-row>
 
-
-          <v-row>
-          <v-col cols="2" style="padding-bottom:0px;padding-top:0px">
-            <div style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px;">
-            {{result.number}}
-            </div>
-          </v-col>
-              <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
-                <div class="d-flex flex-nowrap">
-            <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px;">
-              ${{result.reductionAmountPerChild}}
-            </div>
-          </div>
-          </v-col>
-              <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
-            <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px">
-              ${{result.actualParentFeePerChild}}
-            </div>
-          </v-col>
-        </v-row>
-        </div>
-        <v-row>
-          <v-col>
+          <div v-for="result in results" :key="result.number">
             
-          </v-col>
-        </v-row>        
-      </div>
-      </v-card>
-      </v-col>
-    </v-row>
+            <v-row>
+            <v-col cols="12" >
+              <v-divider></v-divider>
+            </v-col>
+            </v-row>
+
+
+            <v-row>
+            <v-col cols="2" style="padding-bottom:0px;padding-top:0px">
+              <div style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px;">
+              {{result.number}}
+              </div>
+            </v-col>
+                <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
+                  <div class="d-flex flex-nowrap">
+              <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px;">
+                ${{result.reductionAmountPerChild}}
+              </div>
+            </div>
+            </v-col>
+                <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
+              <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px">
+                ${{result.actualParentFeePerChild}}
+              </div>
+            </v-col>
+          </v-row>
+          </div>
+          <v-row>
+            <v-col>
+              
+            </v-col>
+          </v-row>        
+        </div>
+        </v-card>
+        </v-col>
+      </v-row>
     </v-form>
   </v-container>
 </template>
@@ -811,10 +721,11 @@ export default {
         (v) => !!v || 'Month is required'
       ],
       rulesChildsAgeCategory: [
-        (v) => !!v || 'Childs age category is required'
+        (v) => !!v || 'Child\'s age category is required'
       ],
-      rulesParentFee: [
-        (v) => !!v || 'Parent Fee is required'
+      rulesApprovedFee: [
+        (v) => !!v || 'CCFRI approved full-time parent fee is required',
+        (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
       ],
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent Fee Frequence is required'
@@ -887,6 +798,9 @@ export default {
   },
   methods: {
     updateNumberOfChildSubForms() {
+      if (this.totalNumberOfChildren > 12) {
+        return;
+      }
       this.results = [];
       let numberOfChildren = this.totalNumberOfChildren;
       if (this.children != undefined) {
@@ -895,8 +809,7 @@ export default {
           for (let i = currentLengh + 1; i <= numberOfChildren; i++) {
             this.children.push({number: i,
               childAgeCategory: '',
-              parentFee: '',
-              parentFeeApproved: '',
+              approvedFee: '',
               parentFeeFrequency: '',
               totalNumDays4hrsOrLess: '',
               totalNumBaysOver4hrs: '',
@@ -933,13 +846,13 @@ export default {
           var dailyRate;
           switch (this.children[i].parentFeeFrequency) {
           case 'Daily':
-            dailyRate = this.children[i].parentFee;
+            dailyRate = this.children[i].approvedFee;
             break;
           case 'Weekly':
-            dailyRate = this.children[i].parentFee / 7;
+            dailyRate = this.children[i].approvedFee / 7;
             break;
           case 'Monthly':
-            dailyRate = this.children[i].parentFee / numberOfDaysForMonth;
+            dailyRate = this.children[i].approvedFee / numberOfDaysForMonth;
             break;
           }
         
@@ -971,8 +884,10 @@ export default {
                 fullTimeNumberOfDays = fullTimeNumberOfDays + 1;
               }
             }
+            partTimeNumberOfDays = partTimeNumberOfDays * 4;
+            fullTimeNumberOfDays = fullTimeNumberOfDays * 4;
             partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
-            partTimeTotal = (partTimeDailyRate * partTimeNumberOfDays) * 4;
+            partTimeTotal = (partTimeDailyRate * partTimeNumberOfDays);
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
           
@@ -991,11 +906,11 @@ export default {
           let actualParentFeePerChild;
           if (this.children[i].parentFeeFrequency == 'Daily') {
             // PT... actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
-            actualParentFeePerChild = (this.children[i].parentFee * 20) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].approvedFee * 20) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
-            actualParentFeePerChild = (this.children[i].parentFee * 4) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].approvedFee * 4) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Monthly') {
-            actualParentFeePerChild = this.children[i].parentFee - reductionAmountPerChild;
+            actualParentFeePerChild = this.children[i].approvedFee - reductionAmountPerChild;
           }
  
           // Update the results
@@ -1020,6 +935,28 @@ export default {
       }
     },
     */
+    numberFilter: function(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+      
+      if (!/^[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+    currencyFilter: function(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+      
+      if (!/^[0-9]*\.?[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    }
+
+
   },
   computed: {
   },
@@ -1027,8 +964,8 @@ export default {
     this.children = [ {
       number: 1, 
       childAgeCategory: '',
-      parentFee: '',
-      parentFeeApproved: '',
+      approvedFee: '',
+      partTimeFee: '',
       parentFeeFrequency: '',
       totalNumDays4hrsOrLess: '',
       totalNumBaysOver4hrs: '',
@@ -1056,6 +993,39 @@ export default {
 .bounce-enter-active {
   animation: bounce-in 0.2s;
 }
+span.banner-title {
+  position: absolute;
+  bottom: 30px;
+  left: 45px;
+  color: white;
+  font-size: 24px;
+  font-family: "Inter";
+}
+
+.v-input, .v-select-list {
+  font-size: 16px !important;
+  font-family: "Inter" !important;
+}
+.banner-title-heading {
+  font-size: 32px !important;
+}
+
+.estimator-label {
+  padding-left: 34px;
+  padding-top: 20px;
+  color: #7B7C7E;
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 16px
+}
+
+.v-toolbar__title {
+  font-size: 14px !important;
+}
+.v-list-item__title {
+  font-size: 14px !important;
+}
+
 .bounce-leave-active {
   animation: bounce-in 0.1s reverse;
 }
