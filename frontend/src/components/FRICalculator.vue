@@ -49,7 +49,7 @@
           <v-row>
             <v-col cols="6" class="estimator-label">
                 <span class="red--text"><strong>&nbsp;*</strong></span>
-                Type of Care
+                Type of care
             </v-col>
             <v-col cols="4" class="pb-0">
               <v-select
@@ -94,7 +94,7 @@
           <v-row>
             <v-col cols="6" class="estimator-label">
               <span class="red--text"><strong> *</strong></span>
-                Total Number of Children
+                Total number of children
             </v-col>
             <v-col cols="4" class="pb-0">
               <v-text-field 
@@ -116,7 +116,7 @@
               <v-row>
                 <v-col cols="6" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
-                  Child's Age Category
+                  Child’s care category
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
@@ -135,14 +135,25 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="6" class="estimator-label">
+                <v-col cols="5" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
                   Care Schedule
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Full time care is care provided for 4 hours or more per day, 5 days per week.</span>
+                  </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
                       v-model="child.careSchedule"
-                      :items="['Full Time', 'Part Time']"
+                      :items="['Half Day', 'Full Day']"
                       outlined
                       dense
                       required
@@ -153,7 +164,7 @@
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
   <!-- ******************************************************************************************************************************************************** -->          
-              <v-row v-if="child.careSchedule == 'Part Time'">
+              <v-row v-if="child.careSchedule == 'Half Day'">
                 <v-col class="d-flex" >
                   <v-card class="pl-4">
                     <v-toolbar class="pl-4"
@@ -444,7 +455,7 @@
                       <v-icon color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Select the frequency (Daily, Weekly, Monthly) to which the 'Parent Fee' is paid to the daycare.</span>
+                    <span>Select whether parent fees are charged daily, weekly, or monthly.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -478,7 +489,7 @@
                       <v-icon color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Input the child's daycare approved full-time fee amount as a daily, weekly or monthly amount.</span>
+                    <span>Enter the full-time Parent Fee approved by the Ministry for this provider to charge, for the applicable care category. Child Care Providers must provide this information to parents upon request.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -497,7 +508,7 @@
                   <v-divider></v-divider>
                 </v-col>
               </v-row>              
-              <v-row>
+              <v-row v-if="child.careSchedule == 'Half Day'">
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                     <template><span class="red--text"><strong> *</strong></span></template>
@@ -512,7 +523,7 @@
                       <v-icon color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Input the child's daycare part-time fee amount as a daily, weekly or monthly amount.</span>
+                    <span>Indicate your parent fee, before any reductions or benefits are applied</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -560,7 +571,7 @@
           <v-row>
             <v-col cols="12">
               <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:500;font-size:16px">
-                Based on the information you have provided, you may be eligible for the following Child Care Fee Reduction Initiative:
+                Based on the information you have provided, you may be eligible for the following fee reduction:
               </div>
             </v-col>
           </v-row>
@@ -572,33 +583,15 @@
             </v-col>
             <v-col cols="4" style="padding-bottom:0px">
               <div class="d-flex flex-nowrap">
-                <v-tooltip top color="#003466">
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                            v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
-                    </v-card>
-                  </template>
-                    <span>The amount subtracted per child from the monthly parent fee.</span>
-                  </v-tooltip>
                 <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  Reduction Amount Per Child
+                  Estimated Child Care Fee Reduction amount <!--Reduction Amount Per Child-->
                 </div>
               </div>
             </v-col>
             <v-col cols="4" style="padding-bottom:0px">
               <div class="d-flex flex-nowrap">
-                <v-tooltip top color="#003466">
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                            v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
-                    </v-card>
-                  </template>
-                    <span>The monthly parent fee per child after reductions.</span>
-                  </v-tooltip>
                 <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  Actual Parent Fee Per Child
+                  Estimated Parent Fee after reduction <!--Actual Parent Fee Per Child-->
                 </div>
               </div>
             </v-col>
@@ -619,15 +612,15 @@
               {{result.number}}
               </div>
             </v-col>
-                <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
-                  <div class="d-flex flex-nowrap">
-              <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px;">
-                ${{result.reductionAmountPerChild}}
-              </div>
+              <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
+                <div class="d-flex flex-nowrap">
+                <div style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px;">
+                  ${{result.reductionAmountPerChild}}
+               </div>
             </div>
             </v-col>
-                <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
-              <div style="padding-left:54px;font-family:Inter;font-weight:500;font-size:16px">
+              <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
+              <div style="padding-left:24px;font-family:Inter;font-weight:500;font-size:16px">
                 ${{result.actualParentFeePerChild}}
               </div>
             </v-col>
@@ -668,8 +661,8 @@ export default {
       selectedCareType: [6], // This captures the index of the careTypes selected mon through sunday.
       careTypes: [
         {type: 'No Care'},
-        {type: 'Part Time'},
-        {type: 'Full Time'}
+        {type: 'Half Day'},
+        {type: 'Full Day'}
       ],
       numberOfBusinessDaysByMonth: [
         {month: 'January', days: 20},
@@ -873,7 +866,7 @@ export default {
           let fullTimeDailyRate;
           // If care schedule is part time then determine the part/full time daily rate and part/full time totals.
           // i.e. A partime care schedule could include both parttime and fulltime days... 3 days of parttime and 2 days at fulltime.
-          if (this.children[i].careSchedule == 'Part Time') {
+          if (this.children[i].careSchedule == 'Half Day') {
             let partTimeNumberOfDays = 0;
             let fullTimeNumberOfDays = 0;
             // Determine number of part time and full time days entered in the parttime care schedule component...
@@ -891,7 +884,7 @@ export default {
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
           
-          } else if (this.children[i].careSchedule == 'Full Time') {
+          } else if (this.children[i].careSchedule == 'Full Day') {
             // Determine the fulltime daily rate and fulltime total...
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * 20;
