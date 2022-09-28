@@ -1,150 +1,56 @@
 <template>
-  <v-container>
-    <v-form ref="form">
+  <v-container class="py-0">
     <v-row justify="center">
-      <v-col cols="10" style="padding-bottom:0px">
+      <v-col cols="12" class="pt-0" align="center">
+        <v-img
+          src="crayons-backdrop.png"
+          max-height="336"
+          max-width="1448" >
+          <span class="banner-title">
+            <p class="banner-title-heading my-2">Child Care Fee Reduction Initiative Estimator</p>
+            Estimate your elegibility
+          </span>
+        </v-img>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="12">
         <v-card elevation="0">
           <template>
-            <v-alert type="info">
-              The estimation provided in this service is not guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
+            <v-alert
+              outlined
+              prominent
+              color="#ABADAE">
+              <span style="float:left">
+                <v-icon
+                  x-large
+                  color="rgb(0 51 102)"
+                  class="py-1 px-3">
+                  mdi-information
+                </v-icon>
+              </span>
+              <span class="pa-1">
+                  The estimation provided in this service is not guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
+              </span>
             </v-alert>
           </template>
         </v-card>
       </v-col>
     </v-row>
-    <!--v-row justify="center">
-      <v-col cols="10">
-        <v-card elevation="4" class="pa-0" color="#D4EAFF" style="">
-          <v-row>
-            <v-col style="padding-top:0%;padding-bottom:0px;">
-              <v-card-title style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px">Optional Facility Search:</v-card-title>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="padding-top:0%;padding-bottom:0px;">
-              <div style="padding-left:24px;color:#39598A;font-style:normal;font-weight:500;font-family:Inter;font-size:16px">
-                Search by city or name of a licensed child care provider
-              </div>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="8" style="padding-left:34px;">
-              <v-text-field
-                background-color="white"
-                dense
-                hint="Type your keyword here"
-                persistent-hint="true"
-                v-model="form.careProviderSearch"
-                v-on="on"
-                outlined
-              >
-              </v-text-field>
-            </v-col>
-            <v-col>
-              <v-dialog
-                v-model="dialog"
-                persistent
-                max-width="800px"
-                @click:outside="dialog = false">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;padding-left:24px;padding-right:24px;"
-                    color="#39598A"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="selectedRow = []">
-                    Search
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-container style="padding-top:0px;">
-                    <v-row>
-                      <v-col cols="12" style="padding-bottom:42px;background-color:#234075;"></v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="background-color:#FFC72C;padding:3px;"></v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="padding-left:24px;">
-                        <div style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px">
-                          Search Facilities
-                        </div>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="padding-left:24px;padding-bottom:0px;">
-                        <v-text-field
-                          v-model="number"
-                          v-on="on"
-                          outlined
-                          required
-                          dense
-                          append-outer-icon="mdi-magnify">
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" style="padding-top:0px;">
-                        <v-data-table
-                          :headers="headers"
-                          :items="facilities"
-                          item-key="name"
-                          :items-per-page="5"
-                          hide-default-header
-                          v-model="selectedRow"
-                        >
-                          <template v-slot:item="{ item }">
-                            <tr :class="selectedRow.indexOf(item.name)>-1?'grey':''" @click="rowClicked(item);dialog=false">
-                              <td style="padding-bottom:10px;padding-top:10px;">
-                                <span style="font-weight:600;color:#336799;font-size:16px;font-family:Inter;">{{ item.name }}</span>
-                                <br>
-                                <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}
-                              </td>
-                              <td align="right">
-                                <v-btn style="font-style:normal;font-weight:500;font-family:Inter;font-size:14px;padding-left:24px;padding-right:24px;"
-                                  color="#39598A"
-                                  dark
-                                  v-bind="attrs"
-                                  v-on="on"
-                                  @click="rowClicked(item);dialog=false">
-                                  Select
-                                </v-btn>
-                              </td>
-                            </tr>
-                          </template>
-                        </v-data-table>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-
-                </v-card>
-              </v-dialog>
-    
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col></v-col>
-    </v-row-->
-
     <v-row justify="center">
       <v-col cols="10">
       <v-card elevation="4" class="">
         <v-row>
-          <v-col style="padding-top:0px;padding-bottom:0px;">
+          <v-col class="py-0">
             <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Facility Details</v-card-title>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <div style="padding-left:24px;padding-top:16px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              <template><span class="red--text"><strong>&nbsp;*</strong></span></template>
+          <v-col cols="6" class="estimator-label">
+              <span class="red--text"><strong>&nbsp;*</strong></span>
               Type of Care
-            </div>
           </v-col>
-          <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
+          <v-col cols="4" class="pb-0">
             <v-combobox
                 v-model="form.typeOfCare"
                 :items="this.typeOfCareList"
@@ -156,19 +62,17 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col style="padding-top:0px;padding-bottom:0px;">
+          <v-col class="py-0">
             <v-divider></v-divider>
           </v-col>
         </v-row>
         
         <v-row>
-          <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              <template><span class="red--text"><strong> *</strong></span></template>
+          <v-col cols="6" class="estimator-label">
+            <span class="red--text"><strong> *</strong></span>
               Month
-            </div>
           </v-col>
-          <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
+          <v-col cols="4" class="pb-0">
             <v-select
                 v-model="form.month"
                 :items="this.numberOfBusinessDaysByMonth"
@@ -179,46 +83,19 @@
                 :rules="rulesMonth"
                 dense>
             </v-select>
-
-            
-            <!--v-menu v-model="menu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="form.month"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
-                  outlined
-                  required
-                  :rules="rulesMonth"
-                  dense>
-                </v-text-field>
-              </template>
-              <v-date-picker
-                v-model="form.month"
-                @input="menu2 = false">
-              </v-date-picker>
-            </v-menu-->
           </v-col>
         </v-row>
         <v-row>
-          <v-col style="padding-top:0px;padding-bottom:0px;">
+          <v-col class="py-0" style="y-off">
             <v-divider></v-divider>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="6" style="padding-bottom:0px;padding-top:16px;">
-            <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-              <template><span class="red--text"><strong> *</strong></span></template>
+          <v-col cols="6" class="estimator-label">
+            <span class="red--text"><strong> *</strong></span>
               Total Number of Children
-            </div>
           </v-col>
-          <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
+          <v-col cols="4" class="pb-0">
             <v-text-field @change="updateNumberOfChildSubForms"
               v-model="totalNumberOfChildren"
               outlined
@@ -234,13 +111,11 @@
         <div v-for="child in this.children" :key="child.number">
           <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Child {{child.number}}</v-card-title>
             <v-row>
-              <v-col cols="6" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Child's age category
-                </div>
+              <v-col cols="6" class="estimator-label">
+                <span class="red--text"><strong> *</strong></span>
+                Child's age category
               </v-col>
-              <v-col cols="4" style="padding-top:16px;">
+              <v-col cols="4" class="pb-0">
                 <v-combobox
                     v-model="child.childAgeCategory"
                     :items="childAgeCategoryList"
@@ -252,18 +127,16 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
+              <v-col class="py-0">
                 <v-divider></v-divider>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="6" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Care Schedule
-                </div>
+              <v-col cols="6" class="estimator-label">
+                <span class="red--text"><strong> *</strong></span>
+                Care Schedule
               </v-col>
-              <v-col cols="4" style="padding-top:16px;">
+              <v-col cols="4" class="pb-0">
                 <v-combobox
                     v-model="child.careSchedule"
                     :items="['Full Time', 'Part Time']"
@@ -551,7 +424,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
+              <v-col class="py-0">
                 <v-divider></v-divider>
               </v-col>
             </v-row>
@@ -585,7 +458,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
+              <v-col class="py-0">
                 <v-divider></v-divider>
               </v-col>
             </v-row>
@@ -625,7 +498,7 @@
               </v-col> -->
             </v-row>
             <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
+              <v-col class="py-0">
                 <v-divider></v-divider>
               </v-col>
             </v-row>
@@ -732,7 +605,6 @@
       </v-card>
       </v-col>
     </v-row>
-    </v-form>
   </v-container>
 </template>
 <script>
@@ -1055,6 +927,27 @@ export default {
 <style scoped>
 .bounce-enter-active {
   animation: bounce-in 0.2s;
+}
+span.banner-title {
+  position: absolute;
+  bottom: 30px;
+  left: 45px;
+  color: white;
+  font-size: 24px;
+  font-family: Inter;
+}
+
+.banner-title-heading {
+  font-size: 32px !important;
+}
+
+.estimator-label {
+  padding-left: 34px;
+  padding-top: 20px;
+  color: #7B7C7E;
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 16px
 }
 .bounce-leave-active {
   animation: bounce-in 0.1s reverse;
