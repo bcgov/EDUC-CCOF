@@ -40,7 +40,7 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="10">
-        <v-card elevation="4" class="">
+        <v-card elevation="4">
           <v-row>
             <v-col class="py-0">
               <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;padding-top:8px;padding-bottom:8px">Facility Details</v-card-title>
@@ -52,14 +52,14 @@
                 Type of Care
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-combobox
+              <v-select
                   v-model="form.typeOfCare"
                   :items="this.typeOfCareList"
                   outlined
                   required
                   :rules="rulesTypeOfCare"
                   dense>
-              </v-combobox>
+              </v-select>
             </v-col>
           </v-row>
           <v-row>
@@ -116,17 +116,17 @@
               <v-row>
                 <v-col cols="6" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
-                  Child's age category
+                  Child's Age Category
                 </v-col>
                 <v-col cols="4" class="pb-0">
-                  <v-combobox
+                  <v-select
                       v-model="child.childAgeCategory"
                       :items="childAgeCategoryList"
                       outlined
                       dense
                       required
                       :rules="rulesChildsAgeCategory">
-                  </v-combobox>
+                  </v-select>
                 </v-col>
               </v-row>
               <v-row>
@@ -140,14 +140,14 @@
                   Care Schedule
                 </v-col>
                 <v-col cols="4" class="pb-0">
-                  <v-combobox
+                  <v-select
                       v-model="child.careSchedule"
                       :items="['Full Time', 'Part Time']"
                       outlined
                       dense
                       required
                       >
-                  </v-combobox>
+                  </v-select>
                 </v-col>
               </v-row>
   <!-- ******************************************************************************************************************************************************** -->
@@ -448,14 +448,14 @@
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
-                  <v-combobox
+                  <v-select
                     v-model="child.parentFeeFrequency"
                     :items="parentFeeFrequencyList"
                     required
                     :rules="rulesParentFeeFrequency"
                     outlined
                     dense>
-                  </v-combobox>
+                  </v-select>
                 </v-col>
               </v-row>
               <v-row>
@@ -467,7 +467,7 @@
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                     <template><span class="red--text"><strong> *</strong></span></template>
-                    Your parent fee
+                    CCFRI Approved Full-Time Parent Fee 
                   </div>
                 </v-col>
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
@@ -478,14 +478,49 @@
                       <v-icon color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Input the child's daycare fee amount as a daily, weekly or monthly amount.</span>
+                    <span>Input the child's daycare approved full-time fee amount as a daily, weekly or monthly amount.</span>
                   </v-tooltip>
                 </v-col>
-                <v-col cols="4" style="padding-bottom:0px;padding-top:16px;">
+                <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter(event)"
-                      v-model="child.parentFee"
-                      :rules="rulesParentFee"
+                      v-model="child.approvedFee"
+                      :rules="rulesApprovedFee"
+                      outlined
+                      prefix="$"
+                      required
+                      dense>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row v-if="child.careSchedule == 'Part Time'">
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>              
+              <v-row v-if="child.careSchedule == 'Part Time'">
+                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
+                  <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                    <template><span class="red--text"><strong> *</strong></span></template>
+                    Your Part-Time Parent Fee
+                  </div>
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                            v-on="on">
+                      <v-icon color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Input the child's daycare part-time fee amount as a daily, weekly or monthly amount.</span>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-text-field
+                      @keypress="currencyFilter(event)"
+                      v-model="child.partTimeFee"
+                      :rules="rulesPartTimeFee"
                       outlined
                       prefix="$"
                       required
@@ -689,10 +724,14 @@ export default {
       rulesChildsAgeCategory: [
         (v) => !!v || 'Child\'s age category is required'
       ],
-      rulesParentFee: [
-        (v) => !!v || 'Parent fee is required',
+      rulesApprovedFee: [
+        (v) => !!v || 'CCFRI approved full-time parent fee is required',
         (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
       ],
+      rulesPartTimeFee: [
+        (v) => !!v || 'Your part-time parent fee is required',
+        (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
+      ],      
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent Fee Frequence is required'
       ],
@@ -775,8 +814,7 @@ export default {
           for (let i = currentLengh + 1; i <= numberOfChildren; i++) {
             this.children.push({number: i,
               childAgeCategory: '',
-              parentFee: '',
-              parentFeeApproved: '',
+              approvedFee: '',
               parentFeeFrequency: '',
               totalNumDays4hrsOrLess: '',
               totalNumBaysOver4hrs: '',
@@ -791,8 +829,6 @@ export default {
       }
     },
     estimateTheBenefit() {
-      console.log('hi');
-      console.log(this.$refs);
       if (this.$refs.form.validate() == true) {
         this.showEstimatorResults = true;
         this.results = [];
@@ -815,13 +851,13 @@ export default {
           var dailyRate;
           switch (this.children[i].parentFeeFrequency) {
           case 'Daily':
-            dailyRate = this.children[i].parentFee;
+            dailyRate = this.children[i].approvedFee;
             break;
           case 'Weekly':
-            dailyRate = this.children[i].parentFee / 7;
+            dailyRate = this.children[i].approvedFee / 7;
             break;
           case 'Monthly':
-            dailyRate = this.children[i].parentFee / numberOfDaysForMonth;
+            dailyRate = this.children[i].approvedFee / numberOfDaysForMonth;
             break;
           }
         
@@ -853,8 +889,10 @@ export default {
                 fullTimeNumberOfDays = fullTimeNumberOfDays + 1;
               }
             }
+            partTimeNumberOfDays = partTimeNumberOfDays * 4;
+            fullTimeNumberOfDays = fullTimeNumberOfDays * 4;
             partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
-            partTimeTotal = (partTimeDailyRate * partTimeNumberOfDays) * 4;
+            partTimeTotal = (partTimeDailyRate * partTimeNumberOfDays);
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
           
@@ -873,12 +911,14 @@ export default {
           let actualParentFeePerChild;
           if (this.children[i].parentFeeFrequency == 'Daily') {
             // PT... actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
-            actualParentFeePerChild = (this.children[i].parentFee * 20) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].careSchedule == 'Part Time' ?  this.children[i].partTimeFee * 20 : this.children[i].approvedFee * 20) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
-            actualParentFeePerChild = (this.children[i].parentFee * 4) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].careSchedule == 'Part Time' ? this.children[i].partTimeFee * 4 : this.children[i].approvedFee * 4) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Monthly') {
-            actualParentFeePerChild = this.children[i].parentFee - reductionAmountPerChild;
+            actualParentFeePerChild = this.children[i].careSchedule == 'Part Time' ? this.children[i].partTimeFee - reductionAmountPerChild : this.children[i].approvedFee - reductionAmountPerChild;
           }
+          actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
+
  
           // Update the results
           this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
@@ -931,8 +971,8 @@ export default {
     this.children = [ {
       number: 1, 
       childAgeCategory: '',
-      parentFee: '',
-      parentFeeApproved: '',
+      approvedFee: '',
+      partTimeFee: '',
       parentFeeFrequency: '',
       totalNumDays4hrsOrLess: '',
       totalNumBaysOver4hrs: '',
