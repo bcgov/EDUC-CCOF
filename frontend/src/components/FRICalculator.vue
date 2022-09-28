@@ -548,18 +548,13 @@
                     </v-list>
                   </v-card>
                   <v-spacer></v-spacer>
-
-
               </v-col>
             </v-row>
-
             <v-row>
               <v-col style="padding-top:0px;padding-bottom:0px;">
                 <v-divider></v-divider>
               </v-col>
             </v-row>
-
-
             <v-row>
               <v-col cols="5" style="padding-top:16px;">
                 <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
@@ -594,10 +589,6 @@
                 <v-divider></v-divider>
               </v-col>
             </v-row>
-
-
-
-
             <v-row>
               <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                 <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
@@ -638,47 +629,6 @@
                 <v-divider></v-divider>
               </v-col>
             </v-row>
-            <!--v-row>
-              <v-col cols="4" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Total number of days
-                </div>
-              </v-col>
-
-              <v-col cols="2" style="text-align:right;padding-top:16px">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
-                  4 hours or less
-                </div>
-              </v-col>
-              <v-col cols="2" style="padding-top:16px;">
-                <v-text-field
-                    v-model="child.totalNumDays4hrsOrLess"
-                    outlined
-                    dense></v-text-field>
-              </v-col>
-
-              <v-col cols="2" style="padding-left:0px;text-align:right;padding-top:16px">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:400;font-size:16px">
-                  Over 4 hours
-                </div>
-              </v-col>
-              <v-col cols="2" style="padding-left:0px;padding-top:16px;">
-                <v-text-field style="width:124px"
-                   v-model="child.totalNumBaysOver4hrs"
-                    outlined
-                    dense></v-text-field>
-              </v-col>
-            </v-row-->
-
-
-
-
-
-
-
-
- 
         </div>
 
 <!-- ******************************************************************************************************************************************************** -->
@@ -805,7 +755,6 @@ export default {
       showEstimatorResults: false,
       showParentFeeApprovedFor: false,
       showPartTimeCareSchedule: false,
-      careSchedule: 'FullTime',
       selectedCareType: [6], // This captures the index of the careTypes selected mon through sunday.
       careTypes: [
         {type: 'No Care'},
@@ -1005,24 +954,33 @@ export default {
             fullTimeRateFromTable = rateTableInfo[0].fullTime20;
           }
         
-          // Determine the parttime daily rate and parttime total...
           let partTimeTotal;
           let partTimeDailyRate;
-          if (this.children[i].totalNumDays4hrsOrLess) {
-            partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
-            partTimeTotal = partTimeDailyRate * this.children[i].totalNumDays4hrsOrLess;
-          } else {
-            partTimeTotal = 0;
-          }
-        
-          // Determine the fulltime daily rate and fulltime total...
           let fullTimeTotal;
           let fullTimeDailyRate;
-          if (this.careSchedule == 'FT') {
+          // If care schedule is part time then determine the part/full time daily rate and part/full time totals.
+          // i.e. A partime care schedule could include both parttime and fulltime days... 3 days of parttime and 2 days at fulltime.
+          if (this.children[i].careSchedule == 'Part Time') {
+            let partTimeNumberOfDays = 0;
+            let fullTimeNumberOfDays = 0;
+            // Determine number of part time and full time days entered in the parttime care schedule component...
+            for (let i in this.selectedCareType) {
+              if (this.selectedCareType[i] == 1) {
+                partTimeNumberOfDays = partTimeNumberOfDays + 1;
+              } else if (this.selectedCareType[i] == 2) {
+                fullTimeNumberOfDays = fullTimeNumberOfDays + 1;
+              }
+            }
+            partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
+            partTimeTotal = (partTimeDailyRate * partTimeNumberOfDays) * 4;
+            fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
+            fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
+          
+          } else if (this.children[i].careSchedule == 'Full Time') {
+            // Determine the fulltime daily rate and fulltime total...
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * 20;
-          } else {
-            fullTimeTotal = 0;
+            partTimeTotal = 0;
           }
         
           // Determine full and part time total...
@@ -1090,9 +1048,6 @@ export default {
     this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', [{monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.5000}]);
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', [{monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25.0000, partTime19: 13.1579, partTime20: 12.5000}]);
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', [{monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16.0000, partTime19: 8.4211, partTime20: 8.0000}]);
-
-
-
   }
 };
 </script>
