@@ -499,11 +499,12 @@
                       :rules="rulesApprovedFee"
                       outlined
                       prefix="$"
+                      required
                       dense>
                   </v-text-field>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row v-if="child.careSchedule == 'Part Time'">
                 <v-col class="py-0">
                   <v-divider></v-divider>
                 </v-col>
@@ -530,7 +531,7 @@
                   <v-text-field
                       @keypress="currencyFilter(event)"
                       v-model="child.partTimeFee"
-                      :rules="rulesApprovedFee"
+                      :rules="rulesPartTimeFee"
                       outlined
                       prefix="$"
                       required
@@ -720,6 +721,10 @@ export default {
         (v) => !!v || 'CCFRI approved full-time parent fee is required',
         (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
       ],
+      rulesPartTimeFee: [
+        (v) => !!v || 'Your part-time parent fee is required',
+        (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
+      ],      
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent Fee Frequence is required'
       ],
@@ -899,12 +904,14 @@ export default {
           let actualParentFeePerChild;
           if (this.children[i].parentFeeFrequency == 'Daily') {
             // PT... actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
-            actualParentFeePerChild = (this.children[i].approvedFee * 20) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].careSchedule == 'Part Time' ?  this.children[i].partTimeFee * 20 : this.children[i].approvedFee * 20) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
-            actualParentFeePerChild = (this.children[i].approvedFee * 4) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].careSchedule == 'Part Time' ? this.children[i].partTimeFee * 4 : this.children[i].approvedFee * 4) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Monthly') {
-            actualParentFeePerChild = this.children[i].approvedFee - reductionAmountPerChild;
+            actualParentFeePerChild = this.children[i].careSchedule == 'Part Time' ? this.children[i].partTimeFee - reductionAmountPerChild : this.children[i].approvedFee - reductionAmountPerChild;
           }
+          actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
+
  
           // Update the results
           this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
