@@ -9,7 +9,6 @@
             max-width="1448" >
             <span class="banner-title">
               <p class="banner-title-heading my-2">Child Care Fee Reduction Initiative Estimator</p>
-              Estimate your elegibility
             </span>
           </v-img>
         </v-col>
@@ -504,7 +503,7 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-              <v-row v-if="child.careSchedule == 'Part Time'">
+              <v-row v-if="child.careSchedule == 'Half Day'">
                 <v-col class="py-0">
                   <v-divider></v-divider>
                 </v-col>
@@ -695,8 +694,8 @@ export default {
         'Monthly'
       ],
       typeOfCareList: [
-        'Group',
-        'Family'
+        'Licensed Group',
+        'Licensed Family'
       ],
       childAgeCategoryList: [
         '0 - 18 Months',
@@ -834,9 +833,9 @@ export default {
         //for (child in this.form.children) {
         for (var i = 0; i < this.children.length; i++) { 
         // Get the rate table info based on the provided type of child care and childs age category...
-          if (this.form.typeOfCare === 'Group') {
+          if (this.form.typeOfCare === 'Licensed Group') {
             rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
-          } else if (this.form.typeOfCare === 'Family') {
+          } else if (this.form.typeOfCare === 'Licensed Family') {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
         
@@ -904,11 +903,11 @@ export default {
           let actualParentFeePerChild;
           if (this.children[i].parentFeeFrequency == 'Daily') {
             // PT... actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
-            actualParentFeePerChild = (this.children[i].careSchedule == 'Part Time' ?  this.children[i].partTimeFee * 20 : this.children[i].approvedFee * 20) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].careSchedule == 'Half Day' ?  this.children[i].partTimeFee * 20 : this.children[i].approvedFee * 20) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
-            actualParentFeePerChild = (this.children[i].careSchedule == 'Part Time' ? this.children[i].partTimeFee * 4 : this.children[i].approvedFee * 4) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].careSchedule == 'Half Day' ? this.children[i].partTimeFee * 4 : this.children[i].approvedFee * 4) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Monthly') {
-            actualParentFeePerChild = this.children[i].careSchedule == 'Part Time' ? this.children[i].partTimeFee - reductionAmountPerChild : this.children[i].approvedFee - reductionAmountPerChild;
+            actualParentFeePerChild = this.children[i].careSchedule == 'Half Day' ? this.children[i].partTimeFee - reductionAmountPerChild : this.children[i].approvedFee - reductionAmountPerChild;
           }
           actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
 
