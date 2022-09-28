@@ -251,16 +251,358 @@
                 </v-combobox>
               </v-col>
             </v-row>
-            <v-row >
+            <v-row>
               <v-col style="padding-top:0px;padding-bottom:0px;">
                 <v-divider></v-divider>
               </v-col>
             </v-row>
             <v-row>
+              <v-col cols="6" style="padding-top:16px;">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                  <template><span class="red--text"><strong> *</strong></span></template>
+                  Care Schedule
+                </div>
+              </v-col>
+              <v-col cols="4" style="padding-top:16px;">
+                <v-combobox
+                    v-model="child.careSchedule"
+                    :items="['Full Time', 'Part Time']"
+                    outlined
+                    dense
+                    required
+                    >
+                </v-combobox>
+              </v-col>
+            </v-row>
+<!-- ******************************************************************************************************************************************************** -->
+<!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
+<!-- ******************************************************************************************************************************************************** -->          
+            <v-row v-if="child.careSchedule == 'Part Time'">
+              <v-col class="d-flex" style="margin-left:6px;">
+                <v-card class="" max-width="">
+                  <v-toolbar
+                      color="#003466"
+                      dark>
+                      <v-toolbar-title>Monday</v-toolbar-title>
+                    </v-toolbar>
+                    <v-list >
+                      <v-list-item-group
+                        v-model="selectedCareType[0]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+
+                  <v-spacer></v-spacer>
+                  
+                  <v-card max-width="">
+                    <v-toolbar
+                      color="#003466"
+                      dark
+                    >
+                      <v-toolbar-title>Tuesday</v-toolbar-title>
+                    </v-toolbar>
+                
+                    <v-list>
+                      <v-list-item-group
+                        v-model="selectedCareType[1]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                  <v-spacer></v-spacer>
+                  
+                  <v-card max-width="">
+                    <v-toolbar
+                      color="#003466"
+                      dark
+                    >
+                    <v-toolbar-title>Wednesday</v-toolbar-title></v-toolbar>
+                    <v-list>
+                      <v-list-item-group
+                        v-model="selectedCareType[2]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                  <v-spacer></v-spacer>
+
+
+                  <v-card max-width="">
+                    <v-toolbar
+                      color="#003466"
+                      dark
+                    >
+                    <v-toolbar-title>Thursday</v-toolbar-title></v-toolbar>
+                    <v-list>
+                      <v-list-item-group
+                        v-model="selectedCareType[3]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                  <v-spacer></v-spacer>
+
+                  <v-card max-width="">
+                    <v-toolbar
+                      color="#003466"
+                      dark
+                    >
+                    <v-toolbar-title>Friday</v-toolbar-title></v-toolbar>
+                    <v-list>
+                      <v-list-item-group
+                        v-model="selectedCareType[4]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                  <v-spacer></v-spacer>
+
+                  <v-card max-width="">
+                    <v-toolbar
+                      color="#003466"
+                      dark
+                    >
+                    <v-toolbar-title>Saturday</v-toolbar-title></v-toolbar>
+                    <v-list>
+                      <v-list-item-group
+                        v-model="selectedCareType[5]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                  <v-spacer></v-spacer>
+
+                  <v-card max-width="">
+                    <v-toolbar
+                      color="#003466"
+                      dark
+                    >
+                    <v-toolbar-title>Sunday</v-toolbar-title></v-toolbar>
+                    <v-list>
+                      <v-list-item-group
+                        v-model="selectedCareType[6]"
+                        active-class="blue--text"
+                      >
+                        <template v-for="(item, index) in careTypes">
+                          <v-list-item :key="item.type">
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title v-text="item.type"></v-list-item-title>
+                              </v-list-item-content>
+                
+                              <v-list-item-action>
+                
+                                <v-icon dense v-if="!active" color=""></v-icon>
+                                <v-icon dense v-else color="yellow darken-3">
+                                  mdi-check
+                                </v-icon>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          ></v-divider>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                  <v-spacer></v-spacer>
+
+
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col style="padding-top:0px;padding-bottom:0px;">
+                <v-divider></v-divider>
+              </v-col>
+            </v-row>
+
+
+            <v-row>
+              <v-col cols="5" style="padding-top:16px;">
+                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
+                  <template><span class="red--text"><strong> *</strong></span></template>
+                  Parent Fee Frequency
+                </div>
+              </v-col>
+              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                <v-tooltip top color="#003466">
+                  <template v-slot:activator="{ on, attrs }">
+                  <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                           v-on="on">
+                    <v-icon color="white">mdi-help</v-icon>
+                  </v-card>
+                </template>
+                  <span>Select the frequency (Daily, Weekly, Monthly) to which the 'Parent Fee' is paid to the daycare.</span>
+                </v-tooltip>
+              </v-col>
+              <v-col cols="4" style="padding-top:16px;">
+                <v-combobox
+                  v-model="child.parentFeeFrequency"
+                  :items="parentFeeFrequencyList"
+                  required
+                  :rules="rulesParentFeeFrequency"
+                  outlined
+                  dense>
+                </v-combobox>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col style="padding-top:0px;padding-bottom:0px;">
+                <v-divider></v-divider>
+              </v-col>
+            </v-row>
+
+
+
+
+            <v-row>
               <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                 <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                   <template><span class="red--text"><strong> *</strong></span></template>
-                  Parent Fee
+                  Your parent fee
                 </div>
               </v-col>
               <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
@@ -296,41 +638,7 @@
                 <v-divider></v-divider>
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="5" style="padding-top:16px;">
-                <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
-                  <template><span class="red--text"><strong> *</strong></span></template>
-                  Parent Fee Frequency
-                </div>
-              </v-col>
-              <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
-                <v-tooltip top color="#003466">
-                  <template v-slot:activator="{ on, attrs }">
-                  <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
-                           v-on="on">
-                    <v-icon color="white">mdi-help</v-icon>
-                  </v-card>
-                </template>
-                  <span>Select the frequency (Daily, Weekly, Monthly) to which the 'Parent Fee' is paid to the daycare.</span>
-                </v-tooltip>
-              </v-col>
-              <v-col cols="4" style="padding-top:16px;">
-                <v-combobox
-                  v-model="child.parentFeeFrequency"
-                  :items="parentFeeFrequencyList"
-                  required
-                  :rules="rulesParentFeeFrequency"
-                  outlined
-                  dense>
-                </v-combobox>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col style="padding-top:0px;padding-bottom:0px;">
-                <v-divider></v-divider>
-              </v-col>
-            </v-row>
-            <v-row>
+            <!--v-row>
               <v-col cols="4" style="padding-top:16px;">
                 <div style="padding-left:24px;color:#7B7C7E;font-family:Inter;font-weight:600;font-size:16px">
                   <template><span class="red--text"><strong> *</strong></span></template>
@@ -344,9 +652,6 @@
                 </div>
               </v-col>
               <v-col cols="2" style="padding-top:16px;">
-                <!--@change="enableDisableTotalNumOfDays(child.number)"
-                   :rules="rulesFullTime"
-                -->
                 <v-text-field
                     v-model="child.totalNumDays4hrsOrLess"
                     outlined
@@ -359,15 +664,21 @@
                 </div>
               </v-col>
               <v-col cols="2" style="padding-left:0px;padding-top:16px;">
-                <!--@change="enableDisableTotalNumOfDays(child.number)"
-                   :rules="rulesFullTime"
-                -->
                 <v-text-field style="width:124px"
                    v-model="child.totalNumBaysOver4hrs"
                     outlined
                     dense></v-text-field>
               </v-col>
-            </v-row>
+            </v-row-->
+
+
+
+
+
+
+
+
+ 
         </div>
 
 <!-- ******************************************************************************************************************************************************** -->
@@ -476,10 +787,7 @@
 </template>
 <script>
 // import PrimaryButton from '@/components/util/PrimaryButton';
-import ApiService from '../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import { ApiRoutes } from '@/utils/constants';
-import { mapGetters, mapState } from 'vuex';
 import { constants } from '@/utils/constants';
 
 export default {
@@ -488,89 +796,21 @@ export default {
     constants,
   mixins: [alertMixin],
   props: {
-    user: {
-      type: Object,
-      required: false,
-    },
-    userRoles: {
-      type: Array,
-      required: false,
-    },
-    mincode: {
-      type: String,
-      required: false,
-    },
-    type: {
-      validator(value) {
-        return ['district', 'school'].includes(value);
-      },
-      type: String,
-      required: false,
-    },
-
   },
   data() {
     return {
-      dialog: false,
-      editState: false,
-      deleteState: false,
-      relinkState: false,
-      
       GROUP_REDUCTION_RATES: null,
       FAMILY_REDUCTION_RATES: null,
       results: null,
-      dialogSearch: '',
-      headers: [
-        {
-          text: '',
-          align: 'start',
-          sortable: false,
-          value: 'name',
-        }
-      ],
-      facilities: [
-        {
-          name: 'ABC Vancouver',
-          city: 'Vancouver',
-          typeOfCare: 'Group',
-          approvedParentFee: 200
-        },
-        {
-          name: 'ABC Family Daycare',
-          city: 'Vancouver',
-          typeOfCare: 'Family',
-          approvedParentFee: 275
-        },
-        {
-          name: 'ABC Daycare',
-          city: 'North Vancouver',
-          typeOfCare: 'Group',
-          approvedParentFee: 250
-        },
-        {
-          name: 'XYZ Daycare',
-          city: 'North Vancouver',
-          typeOfCare: 'Group',
-          approvedParentFee: 175
-        },
-        {
-          name: 'XYZ Tottler Care',
-          city: 'Maple Ridge',
-          typeOfCare: 'Family',
-          approvedParentFee: 300
-        },
-        {
-          name: 'XYZ Child Daycare',
-          city: 'Maple Ridge',
-          typeOfCare: 'Group)',
-          approvedParentFee: 250
-        },
-        {
-          name: 'XYZ Family Daycare',
-          city: 'Delta',
-          typeOfCare: 'Family',
-          approvedParentFee: 200
-        },
+      showEstimatorResults: false,
+      showParentFeeApprovedFor: false,
+      showPartTimeCareSchedule: false,
+      careSchedule: 'FullTime',
+      selectedCareType: [6], // This captures the index of the careTypes selected mon through sunday.
+      careTypes: [
+        {type: 'No Care'},
+        {type: 'Part Time'},
+        {type: 'Full Time'}
       ],
       numberOfBusinessDaysByMonth: [
         {month: 'January', days: 20},
@@ -586,7 +826,6 @@ export default {
         {month: 'November', days: 20},
         {month: 'December', days: 20},
       ],
-      selectedRow: [],
       totalNumberOfChildren: '1',
       children: null,
       form: {
@@ -640,204 +879,65 @@ export default {
       rulesFullTime: [
         (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
       ],
-      email: '',
-      emailRules: [
-        (v) => !!v || 'E-mail is required',
-        (v) => /.+@.+/.test(v) || 'E-mail must be valid',
+      /* Data related to facility search. Comment out until we are ready to integration with backend. Similiarly there is commented out methods related.
+      dialogSearch: '',
+      headers: [
+        {
+          text: '',
+          align: 'start',
+          sortable: false,
+          value: 'name',
+        }
       ],
-      selectedRoles: [],
-      showEstimatorResults: false,
-      showParentFeeApprovedFor: false,
+      selectedRow: [],
+      facilities: [
+        {
+          name: 'ABC Vancouver',
+          city: 'Vancouver',
+          typeOfCare: 'Group',
+          approvedParentFee: 200
+        },
+        {
+          name: 'ABC Family Daycare',
+          city: 'Vancouver',
+          typeOfCare: 'Family',
+          approvedParentFee: 275
+        },
+        {
+          name: 'ABC Daycare',
+          city: 'North Vancouver',
+          typeOfCare: 'Group',
+          approvedParentFee: 250
+        },
+        {
+          name: 'XYZ Daycare',
+          city: 'North Vancouver',
+          typeOfCare: 'Group',
+          approvedParentFee: 175
+        },
+        {
+          name: 'XYZ Tottler Care',
+          city: 'Maple Ridge',
+          typeOfCare: 'Family',
+          approvedParentFee: 300
+        },
+        {
+          name: 'XYZ Child Daycare',
+          city: 'Maple Ridge',
+          typeOfCare: 'Group)',
+          approvedParentFee: 250
+        },
+        {
+          name: 'XYZ Family Daycare',
+          city: 'Delta',
+          typeOfCare: 'Family',
+          approvedParentFee: 200
+        },
+      ],*/
     };
   },
-  mutations: {
-  
-  },
-  // watch: {
-  //   totalNumberOfChildren: function(val) {
-  //     this.results = [];
-  //     this.updateNumberOfChildSubForms(val);
-  //   }
-  // },
   methods: {
-    roleDisabled(role) {
-      if (role.edxRoleCode === this.edxSchoolAdminRole) {
-        return false;
-      }
-      return this.isEDXSchoolAdminSelected;
-    },
-    selectedRolesChanged() {
-      if (!this.isEDXSchoolAdminSelected) {
-        return;
-      }
-      this.selectedRoles = [this.edxSchoolAdminRole];
-    },
-    getButtonWidth() {
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-      case 'sm':
-      case 'md':
-        return '2em';
-      case 'lg':
-      case 'xl':
-      default:
-        return '7em';
-      }
-    },
-    getRoleLabel(curRole) {
-      if (this.schoolRoles.length > 0) {
-        return this.schoolRoles.find(
-          (role) => role.edxRoleCode === curRole.edxRoleCode
-        ).label;
-      }
-      return '';
-    },
-    clickEditButton() {
-      this.relinkState = false;
-      this.deleteState = false;
-      this.editState = !this.editState;
-      this.setUserRolesAsSelected();
-    },
-    clickDeleteButton() {
-      this.editState = false;
-      this.relinkState = false;
-      this.deleteState = !this.deleteState;
-    },
-    clickRelinkButton() {
-      this.editState = false;
-      this.deleteState = false;
-      this.relinkState = !this.relinkState;
-    },
-    clickSaveButton() {
-      const payload = {
-        params: {
-          edxUserID: this.user.edxUserID,
-          mincode: this.mincode,
-          selectedRoles: this.selectedRoles,
-        },
-      };
-      ApiService.apiAxios
-        .post(ApiRoutes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
-        .then(() => {
-          this.setSuccessAlert('User roles have been updated.');
-        })
-        .catch((error) => {
-          this.setFailureAlert(
-            'An error occurred while updating user roles. Please try again later.'
-          );
-          console.log(error);
-        })
-        .finally(() => {
-          this.$emit('refresh');
-        });
-    },
-    clickRemoveButton(userToRemove) {
-      let userSchool = userToRemove.edxUserSchools.find(
-        (school) => school.mincode === this.mincode
-      );
-      const payload = {
-        params: {
-          userToRemove: userToRemove.edxUserID,
-          mincode: this.mincode,
-          userSchoolID: userSchool.edxUserSchoolID,
-        },
-      };
-      ApiService.apiAxios
-        .post(ApiRoutes.edx.EXCHANGE_REMOVE_USER, payload)
-        .then(() => {
-          this.setSuccessAlert('User has been removed.');
-        })
-        .catch((error) => {
-          this.setFailureAlert(
-            'An error occurred while removing a user. Please try again later.'
-          );
-          console.log(error);
-        })
-        .finally(() => {
-          this.$emit('refresh');
-        });
-    },
-    clickActionRelinkButton(userToRelink) {
-      let userSchool = userToRelink.edxUserSchools.find(
-        (school) => school.mincode === this.mincode
-      );
-      const payload = {
-        params: {
-          userToRelink: userToRelink.edxUserID,
-          mincode: this.mincode,
-          userSchoolID: userSchool.edxUserSchoolID,
-        },
-      };
-      ApiService.apiAxios
-        .post(ApiRoutes.edx.EXCHANGE_RELINK_USER, payload)
-        .then(() => {
-          this.setSuccessAlert(
-            'User has been removed, email sent with instructions to re-link.'
-          );
-        })
-        .catch((error) => {
-          this.setFailureAlert(
-            'An error occurred while re-linking a user. Please try again later.'
-          );
-          console.log(error);
-        })
-        .finally(() => {
-          this.$emit('refresh');
-        });
-    },
-    setUserRolesAsSelected() {
-      let mySelection = [];
-
-      //look through all our roles. If user has this role, then mark the index
-      this.schoolRoles.forEach((role) => {
-        let result = this.userRoles.find(
-          (userRole) => userRole.edxRoleCode === role.edxRoleCode
-        );
-
-        if (result) {
-          mySelection.push(role.edxRoleCode);
-        }
-      });
-
-      this.selectedRoles = [...mySelection];
-    },
-    isNotSameEdxUser() {
-      return false;
-    },
-
-    rowClicked(row) {
-      this.toggleSelection(row.name);
-      console.log(row);
-      this.form.careProviderSearch = row.name;
-      this.form.typeOfCare = row.typeOfCare;
-      /*
-      for (var i = 0; i < this.form.children.length; i++) {
-        this.form.children[i].parentFeeApproved = row.parentFeeApproved;
-      }
-      showParentFeeApprovedFor == true;
-*/
-    },
-    toggleSelection(keyID) {
-      if (this.selectedRow.includes(keyID)) {
-        this.selectedRow = this.selectedRow.filter(
-          selectedKeyID => selectedKeyID !== keyID
-        );
-      } else {
-        this.selectedRow.push(keyID);
-      }
-    },
-    deepCopy: function(original) {
-      if (Array.isArray(original)) {
-        return original.map(elem => this.deepCopy(elem));
-      } else if (typeof original === 'object' && original !== null) {
-        return Object.fromEntries(Object.entries(original).map(([k, v]) => [k, this.deepCopy(v)]));
-      } else {
-        // Primitive value: atomic, no need to copy
-        return original;
-      }
-    },
     updateNumberOfChildSubForms() {
-      //TODO: validate totalNumberOfChildren is not greater than max limit.
       this.results = [];
       let numberOfChildren = this.totalNumberOfChildren;
       if (this.children != undefined) {
@@ -850,7 +950,8 @@ export default {
               parentFeeApproved: '',
               parentFeeFrequency: '',
               totalNumDays4hrsOrLess: '',
-              totalNumBaysOver4hrs: ''});
+              totalNumBaysOver4hrs: '',
+              careSchedule: ''});
           }
         } else if (numberOfChildren < this.children.length) {
           var numberOfChildrenToRemove = this.children.length - numberOfChildren;
@@ -866,7 +967,7 @@ export default {
         this.results = [];
         let rateTableInfo = [];
 
-        // Get the number of business days for the provide month...
+        // Get the number of business days for the provided month...
         const result = this.numberOfBusinessDaysByMonth.find(c => c.month === this.form.month);
         var numberOfDaysForMonth = result.days;
         
@@ -917,9 +1018,9 @@ export default {
           // Determine the fulltime daily rate and fulltime total...
           let fullTimeTotal;
           let fullTimeDailyRate;
-          if (this.children[i].totalNumBaysOver4hrs) {
+          if (this.careSchedule == 'FT') {
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
-            fullTimeTotal = fullTimeDailyRate * this.children[i].totalNumBaysOver4hrs;
+            fullTimeTotal = fullTimeDailyRate * 20;
           } else {
             fullTimeTotal = 0;
           }
@@ -931,7 +1032,8 @@ export default {
           let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo[0].monthlyRate ? rateTableInfo[0].monthlyRate : totalPartAndFullTime);
           let actualParentFeePerChild;
           if (this.children[i].parentFeeFrequency == 'Daily') {
-            actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
+            // PT... actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
+            actualParentFeePerChild = (this.children[i].parentFee * 20) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
             actualParentFeePerChild = (this.children[i].parentFee * 4) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Monthly') {
@@ -943,31 +1045,27 @@ export default {
         }
       }
     },
-    // TODO... AWFUL there must be a better way to handle "a or b is mandatory" and turning related validation messaging on and off.
-    enableDisableTotalNumOfDays(index) {
-      if ((this.form.totalNumDays4hrsOrLess && this.form.totalNumDays4hrsOrLess != 0) || (this.form.totalNumBaysOver4hrs && this.form.totalNumBaysOver4hrs != 0)) {
-        this.rulesFullTime = [];
-        this.rulesPartTime = [];
-        return true;
-      } else if ((this.children[index].totalNumDays4hrsOrLess == 0) && (this.children[index].totalNumBaysOver4hrs == 0)) {
-        this.rulesPartTime = this.rulesFullPartTime;
-        this.rulesFullTime = this.rulesFullPartTime;
-        return false;
+    /* Methods related to facility search. Comment out until we are ready to integration with backend.
+    rowClicked(row) {
+      this.toggleSelection(row.name);
+      console.log(row);
+      this.form.careProviderSearch = row.name;
+      this.form.typeOfCare = row.typeOfCare;
+    },
+    toggleSelection(keyID) {
+      if (this.selectedRow.includes(keyID)) {
+        this.selectedRow = this.selectedRow.filter(
+          selectedKeyID => selectedKeyID !== keyID
+        );
+      } else {
+        this.selectedRow.push(keyID);
       }
-    }
+    },
+    */
   },
   computed: {
-    ...mapState('edx', ['schoolRoles']),
-    ...mapGetters('auth', ['userInfo']),
-    isEDXSchoolAdminSelected() {
-      return this.selectedRoles.includes(this.edxSchoolAdminRole);
-    },
-    minimumRolesSelected() {
-      return this.selectedRoles.length > 0;
-    },
   },
   mounted() {
-    //if (this.form.children === undefined || this.form.children.lenth == 0) {
     this.children = [ {
       number: 1, 
       childAgeCategory: '',
@@ -975,7 +1073,8 @@ export default {
       parentFeeApproved: '',
       parentFeeFrequency: '',
       totalNumDays4hrsOrLess: '',
-      totalNumBaysOver4hrs: '', }
+      totalNumBaysOver4hrs: '',
+      careSchedule: '' }
     ];
     this.results = [];
 
@@ -991,6 +1090,8 @@ export default {
     this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', [{monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.5000}]);
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', [{monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25.0000, partTime19: 13.1579, partTime20: 12.5000}]);
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', [{monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16.0000, partTime19: 8.4211, partTime20: 8.0000}]);
+
+
 
   }
 };
