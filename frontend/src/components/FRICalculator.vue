@@ -730,7 +730,7 @@ export default {
         (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
       ],      
       rulesParentFeeFrequency: [
-        (v) => !!v || 'Parent fee frequencygit st is required'
+        (v) => !!v || 'Parent fee frequency is required'
       ],
       rulesFullPartTime: [
         (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
