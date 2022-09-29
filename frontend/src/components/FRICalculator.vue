@@ -166,11 +166,12 @@
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
   <!-- ******************************************************************************************************************************************************** -->          
               <v-row v-if="child.careSchedule == 'Part Time'">
-                <v-col class="d-flex wrap" style="flex-wrap:wrap;">
-                  <v-card style="margin-left:12px">
+                <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
+                  <v-div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
+                  <v-card style="">
                     <v-toolbar 
-                        color="#003466"
-                        dark>
+                        color="grey lighten-3"
+                        >
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Monday</v-toolbar-title>
                         <v-spacer></v-spacer>
@@ -187,13 +188,6 @@
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
                   
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -210,8 +204,7 @@
                     
                     <v-card>
                       <v-toolbar 
-                        color="#003466"
-                        dark
+                        color="grey lighten-3"
                       >
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Tuesday</v-toolbar-title>
@@ -229,14 +222,6 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -252,8 +237,7 @@
                     
                     <v-card max-width="">
                       <v-toolbar
-                        color="#003466"
-                        dark
+                        color="grey lighten-3"
                       >
                       <v-spacer></v-spacer>
                       <v-toolbar-title>Wednesday</v-toolbar-title>
@@ -271,14 +255,6 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -295,8 +271,7 @@
 
                     <v-card max-width="">
                       <v-toolbar
-                        color="#003466"
-                        dark
+                        color="grey lighten-3"
                       >
                       <v-spacer></v-spacer>
                       <v-toolbar-title>Thursday</v-toolbar-title>
@@ -313,14 +288,6 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -336,8 +303,7 @@
 
                     <v-card max-width="">
                       <v-toolbar
-                        color="#003466"
-                        dark
+                        color="grey lighten-3"
                       >
                       <v-spacer></v-spacer>
                       <v-toolbar-title>Friday</v-toolbar-title>
@@ -354,14 +320,6 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -377,8 +335,7 @@
 
                     <v-card max-width="">
                       <v-toolbar
-                        color="#003466"
-                        dark
+                        color="grey lighten-3"
                       >
                       <v-spacer></v-spacer>
                       <v-toolbar-title>Saturday</v-toolbar-title>
@@ -395,14 +352,6 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -418,8 +367,7 @@
 
                     <v-card max-width="">
                       <v-toolbar
-                        color="#003466"
-                        dark
+                        color="grey lighten-3"
                       >
                       <v-spacer></v-spacer>
                       <v-toolbar-title>Sunday</v-toolbar-title>
@@ -436,14 +384,6 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
-                                <v-list-item-action class="ml-1">
-                  
-                                  <v-icon dense v-if="!active" color=""></v-icon>
-                                  <v-icon dense v-else color="yellow darken-3">
-                                    mdi-check
-                                  </v-icon>
-                                </v-list-item-action>
                               </template>
                             </v-list-item>
                   
@@ -456,6 +396,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
+                    </v-div>
                 </v-col>
               </v-row>
               <v-row>
@@ -580,12 +521,12 @@
           <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:BCSans;font-size:20px;padding-top:8px;padding-bottom:8px">Results</v-card-title>
           <v-row>
             <v-col cols="12" class="text-center">
-              <v-btn style="color:#39598A;font-style:normal;font-weight:500;font-family:BCSans;font-size:16px;padding-left:60px;padding-right:60px;"
+              <v-btn style="color:#39598A;font-family:BCSans;font-weight:600;font-family:BCSans;font-size:16px;padding-left:60px;padding-right:60px;"
                 class="ma-2"
                 outlined
                 color="#003466"
                 @click="estimateTheBenefit">
-                Estimate the Benefit
+                Estimate the benefit
               </v-btn>
             </v-col>
           </v-row>
@@ -723,7 +664,7 @@ export default {
         '0 - 18 Months',
         '18 - 36 Months',
         '3 Years to Kindergarten',
-        'Before & After School (Kindergarten only)',
+        'Before & After School (Kindergarten Only)',
       ],
       rulesTypeOfCare: [
         (v) => !!v || 'Type of care is required'
@@ -990,7 +931,11 @@ span.banner-title {
 
 .v-toolbar__title {
   font-size: 14px !important;
+  color: #39598A;
+  font-weight: 600;
+  font-family: "BCSans" !important;
 }
+
 .v-list-item__title {
   font-size: 14px !important;
 }
