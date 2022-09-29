@@ -683,8 +683,8 @@ export default {
       selectedCareType: [6], // This captures the index of the careTypes selected mon through sunday.
       careTypes: [
         {type: 'No Care'},
-        {type: 'Part Time'},
-        {type: 'Full Time'}
+        {type: 'Part Day'},
+        {type: 'Full Day'}
       ],
       numberOfBusinessDaysByMonth: [
         {month: 'January', days: 20},
@@ -730,7 +730,7 @@ export default {
       ],
       rulesTotalNumChildren: [
         (v) => !!v || 'Total Number of Children is required',
-        (v) => v <= 12 || 'Total Number of Children must be less than 12'
+        (v) => v <= 25 || 'Total Number of Children must be less than 25.'
       ],
       // rulesMonth: [
       //   (v) => !!v || 'Month is required'
