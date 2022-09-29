@@ -27,7 +27,7 @@
                                     label="City/Town" />
                             </v-col>
                             <v-col>
-                                <v-text-field outlined required v-model="postalCode1" :rules="rules.required"
+                                <v-text-field outlined required v-model="postalCode1" :rules="[...rules.required, ...rules.postalCode]"
                                     class="required" label="Postal Code" />
                             </v-col>
                         </v-row>
@@ -43,18 +43,18 @@
 
                         <v-row v-show="isAddressDifferent">
                             <v-col>
-                                <v-text-field outlined required v-model="address2" :rules="rules.required"
+                                <v-text-field outlined required v-model="address2" :rules="isAddressDifferent? rules.required : []"
                                     class="required" label="Organization Mailing Address" />
                             </v-col>
                         </v-row>
 
                         <v-row v-show="isAddressDifferent">
                             <v-col>
-                                <v-text-field outlined required v-model="city2" :rules="rules.required" class="required"
+                                <v-text-field outlined required v-model="city2" :rules="isAddressDifferent? rules.required : []" class="required"
                                     label="City/Town" />
                             </v-col>
                             <v-col>
-                                <v-text-field outlined required v-model="postalCode2" :rules="rules.required"
+                                <v-text-field outlined required v-model="postalCode2" :rules="isAddressDifferent? [...rules.required, ...rules.postalCode] : []"
                                     class="required" label="Postal Code" />
                             </v-col>
                         </v-row>
@@ -87,7 +87,7 @@
 
                         <v-row>
                             <v-col>
-                                <v-text-field outlined required v-model="email" type="email" :rules="rules.email"
+                                <v-text-field outlined required v-model="email" type="email" :rules="[...rules.required, ...rules.email]"
                                     class="required" label="E-mail Address of Signing Authority" />
                             </v-col>
                             <v-col>
@@ -131,6 +131,7 @@
 <script>
 
 import PATHS from './paths';
+import rules from './rules';
 
 export default {
     props: {
@@ -155,10 +156,7 @@ export default {
             email: undefined,
             incNumber: undefined,
             organizationType: undefined,
-            rules: {
-                email: [v => /.+@.+/.test(v) || 'A valid email is required'],
-                required: [v => !!v || 'This field is requiered']
-            },
+            rules
         };
     },
     methods: {

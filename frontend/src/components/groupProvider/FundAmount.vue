@@ -191,6 +191,7 @@
 <script>
 
 import PATHS from './paths';
+import rules from './rules';
 
 export default {
     props: {
@@ -202,14 +203,15 @@ export default {
             hasReceivedFunding: undefined,
             isExtendedHours: undefined,
             hasClosedMonth: undefined,
-            isSchoolProperty: undefined
+            isSchoolProperty: undefined,
+            rules
         };
     },
     methods: {
         previous() {
             this.$router.push(PATHS.facInfo);
         },
-        next() { 
+        next() {
             this.$router.push(PATHS.fundAmount);
         }
     }

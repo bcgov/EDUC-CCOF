@@ -102,6 +102,7 @@
 <script>
 
 import PATHS from './paths';
+import rules from './rules';
 
 export default {
     props: {
@@ -124,10 +125,7 @@ export default {
             licenseEffectiveDate: undefined,
             hasReceivedFunding: 'no',
             facilityNameCommunityCare: undefined,
-            rules: {
-                email: [v => /.+@.+/.test(v) || 'A valid email is required'],
-                required: [v => !!v || 'This field is requiered']
-            },
+            rules
         };
     },
     methods: {
