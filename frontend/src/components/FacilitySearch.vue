@@ -141,3 +141,61 @@
     </v-menu-->    
   </v-container>
 </template>
+
+<script>
+/* Data related to facility search. Comment out until we are ready to integration with backend. Similiarly there is commented out methods related.
+dialogSearch: '',
+headers: [
+{
+    text: '',
+    align: 'start',
+    sortable: false,
+    value: 'name',
+}
+],
+selectedRow: [],
+facilities: [
+{
+    name: 'ABC Vancouver',
+    city: 'Vancouver',
+    typeOfCare: 'Group',
+    approvedParentFee: 200
+},
+{
+    name: 'ABC Family Daycare',
+    city: 'Vancouver',
+    typeOfCare: 'Family',
+    approvedParentFee: 275
+},
+{
+    name: 'ABC Daycare',
+    city: 'North Vancouver',
+    typeOfCare: 'Group',
+    approvedParentFee: 250
+},
+{
+    name: 'XYZ Daycare',
+    city: 'North Vancouver',
+    typeOfCare: 'Group',
+    approvedParentFee: 175
+},
+{
+    name: 'XYZ Tottler Care',
+    city: 'Maple Ridge',
+    typeOfCare: 'Family',
+    approvedParentFee: 300
+},
+{
+    name: 'XYZ Child Daycare',
+    city: 'Maple Ridge',
+    typeOfCare: 'Group)',
+    approvedParentFee: 250
+},
+{
+    name: 'XYZ Family Daycare',
+    city: 'Delta',
+    typeOfCare: 'Family',
+    approvedParentFee: 200
+},
+],*/
+</script>

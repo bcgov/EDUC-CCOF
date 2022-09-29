@@ -66,7 +66,7 @@
               <v-divider></v-divider>
             </v-col>
           </v-row>
-          
+          <!-- removing months for now.
           <v-row>
             <v-col cols="6" class="estimator-label">
               <span class="red--text"><strong> *</strong></span>
@@ -90,6 +90,7 @@
               <v-divider></v-divider>
             </v-col>
           </v-row>
+          -->
           <v-row>
             <v-col cols="6" class="estimator-label">
               <span class="red--text"><strong> *</strong></span>
@@ -115,7 +116,7 @@
               <v-row>
                 <v-col cols="6" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
-                  Child’s care category
+                  Child's care category
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
@@ -143,7 +144,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Full time care is care provided for 4 hours or more per day, 5 days per week.</span>
@@ -156,6 +157,7 @@
                       outlined
                       dense
                       required
+                      :rules="rulesCaresSchedule"
                       >
                   </v-select>
                 </v-col>
@@ -451,7 +453,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Select whether parent fees are charged daily, weekly, or monthly.</span>
@@ -485,7 +487,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Enter the full-time Parent Fee approved by the Ministry for this provider to charge, for the applicable care category. Child Care Providers must provide this information to parents upon request.</span>
@@ -520,7 +522,7 @@
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
                             v-on="on">
-                      <v-icon color="white">mdi-help</v-icon>
+                      <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
                     <span>Indicate your parent fee, before any reductions or benefits are applied</span>
@@ -704,15 +706,18 @@ export default {
         'Before & After School (Kindergarten only)',
       ],
       rulesTypeOfCare: [
-        (v) => !!v || 'Type of Care is required'
+        (v) => !!v || 'Type of care is required'
       ],
       rulesTotalNumChildren: [
         (v) => !!v || 'Total Number of Children is required',
         (v) => v <= 12 || 'Total Number of Children must be less than 12'
       ],
-      rulesMonth: [
-        (v) => !!v || 'Month is required'
-      ],
+      // rulesMonth: [
+      //   (v) => !!v || 'Month is required'
+      // ],
+      rulesCaresSchedule: [
+        (v) => !!v || 'Care schedule is required'
+      ],      
       rulesChildsAgeCategory: [
         (v) => !!v || 'Child\'s age category is required'
       ],
@@ -725,7 +730,7 @@ export default {
         (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
       ],      
       rulesParentFeeFrequency: [
-        (v) => !!v || 'Parent Fee Frequence is required'
+        (v) => !!v || 'Parent fee frequency is required'
       ],
       rulesFullPartTime: [
         (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
@@ -736,61 +741,6 @@ export default {
       rulesFullTime: [
         (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
       ],
-      /* Data related to facility search. Comment out until we are ready to integration with backend. Similiarly there is commented out methods related.
-      dialogSearch: '',
-      headers: [
-        {
-          text: '',
-          align: 'start',
-          sortable: false,
-          value: 'name',
-        }
-      ],
-      selectedRow: [],
-      facilities: [
-        {
-          name: 'ABC Vancouver',
-          city: 'Vancouver',
-          typeOfCare: 'Group',
-          approvedParentFee: 200
-        },
-        {
-          name: 'ABC Family Daycare',
-          city: 'Vancouver',
-          typeOfCare: 'Family',
-          approvedParentFee: 275
-        },
-        {
-          name: 'ABC Daycare',
-          city: 'North Vancouver',
-          typeOfCare: 'Group',
-          approvedParentFee: 250
-        },
-        {
-          name: 'XYZ Daycare',
-          city: 'North Vancouver',
-          typeOfCare: 'Group',
-          approvedParentFee: 175
-        },
-        {
-          name: 'XYZ Tottler Care',
-          city: 'Maple Ridge',
-          typeOfCare: 'Family',
-          approvedParentFee: 300
-        },
-        {
-          name: 'XYZ Child Daycare',
-          city: 'Maple Ridge',
-          typeOfCare: 'Group)',
-          approvedParentFee: 250
-        },
-        {
-          name: 'XYZ Family Daycare',
-          city: 'Delta',
-          typeOfCare: 'Family',
-          approvedParentFee: 200
-        },
-      ],*/
     };
   },
   methods: {
@@ -827,8 +777,9 @@ export default {
         let rateTableInfo = [];
 
         // Get the number of business days for the provided month...
-        const result = this.numberOfBusinessDaysByMonth.find(c => c.month === this.form.month);
-        var numberOfDaysForMonth = result.days;
+        // const result = this.numberOfBusinessDaysByMonth.find(c => c.month === this.form.month);
+        // var numberOfDaysForMonth = result.days;
+        var numberOfDaysForMonth = 20; // hardcode to 20 as per new requirements
         
         //for (child in this.form.children) {
         for (var i = 0; i < this.children.length; i++) { 
@@ -902,7 +853,6 @@ export default {
           let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo[0].monthlyRate ? rateTableInfo[0].monthlyRate : totalPartAndFullTime);
           let actualParentFeePerChild;
           if (this.children[i].parentFeeFrequency == 'Daily') {
-            // PT... actualParentFeePerChild = (this.children[i].parentFee * (this.children[i].totalNumDays4hrsOrLess+this.children[i].totalNumBaysOver4hrs)) - reductionAmountPerChild;
             actualParentFeePerChild = (this.children[i].careSchedule == 'Half Day' ?  this.children[i].partTimeFee * 20 : this.children[i].approvedFee * 20) - reductionAmountPerChild;
           } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
             actualParentFeePerChild = (this.children[i].careSchedule == 'Half Day' ? this.children[i].partTimeFee * 4 : this.children[i].approvedFee * 4) - reductionAmountPerChild;
