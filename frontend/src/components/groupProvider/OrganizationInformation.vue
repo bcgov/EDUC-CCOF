@@ -3,11 +3,11 @@
         <v-row justify="space-around">
             <v-card width="1200">
                 <v-form ref="form" v-model="isValidForm">
-                    //{{isValidForm}}//
                     <v-container>
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="legalName" :rules="rules.required"
+                                    class="required"
                                     label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
                             </v-col>
                         </v-row>
@@ -17,18 +17,18 @@
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="address1" :rules="rules.required"
-                                    label="Organization Mailing Address" />
+                                    class="required" label="Organization Mailing Address" />
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col>
-                                <v-text-field outlined required v-model="city1" :rules="rules.required"
+                                <v-text-field outlined required v-model="city1" :rules="rules.required" class="required"
                                     label="City/Town" />
                             </v-col>
                             <v-col>
                                 <v-text-field outlined required v-model="postalCode1" :rules="rules.required"
-                                    label="Postal Code" />
+                                    class="required" label="Postal Code" />
                             </v-col>
                         </v-row>
 
@@ -44,18 +44,18 @@
                         <v-row v-show="isAddressDifferent">
                             <v-col>
                                 <v-text-field outlined required v-model="address2" :rules="rules.required"
-                                    label="Organization Mailing Address" />
+                                    class="required" label="Organization Mailing Address" />
                             </v-col>
                         </v-row>
 
                         <v-row v-show="isAddressDifferent">
                             <v-col>
-                                <v-text-field outlined required v-model="city2" :rules="rules.required"
+                                <v-text-field outlined required v-model="city2" :rules="rules.required" class="required"
                                     label="City/Town" />
                             </v-col>
                             <v-col>
                                 <v-text-field outlined required v-model="postalCode2" :rules="rules.required"
-                                    label="Postal Code" />
+                                    class="required" label="Postal Code" />
                             </v-col>
                         </v-row>
 
@@ -64,22 +64,22 @@
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="contactName" :rules="rules.required"
-                                    label="Organization Contact Name" />
+                                    class="required" label="Organization Contact Name" />
                             </v-col>
                             <v-col>
                                 <v-text-field outlined required v-model="position" :rules="rules.required"
-                                    label="Position" />
+                                    class="required" label="Position" />
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col>
-                                <v-text-field outlined required v-model="phone" :rules="rules.required"
+                                <v-text-field outlined required v-model="phone" :rules="rules.required" class="required"
                                     label="Business Phone" />
                             </v-col>
                             <v-col>
                                 <v-text-field outlined required v-model="businessId" :rules="rules.required"
-                                    label="Business BCeID" />
+                                    class="required" label="Business BCeID" />
                             </v-col>
                         </v-row>
 
@@ -88,11 +88,11 @@
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="email" type="email" :rules="rules.email"
-                                    label="E-mail Address of Signing Authority" />
+                                    class="required" label="E-mail Address of Signing Authority" />
                             </v-col>
                             <v-col>
                                 <v-text-field outlined required :rules="rules.required" v-model="incNumber"
-                                    type="number"
+                                    class="required" type="number"
                                     label="Incorporation Number (as it appears in BC Corporate Registry)" />
                             </v-col>
                         </v-row>

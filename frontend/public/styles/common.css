@@ -1,3 +1,8 @@
 h1 {
     text-align: center;
 }
+
+.v-input.required label.v-label::after {
+    content: " *";
+    color: red;
+}
