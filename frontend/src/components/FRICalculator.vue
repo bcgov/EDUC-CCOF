@@ -16,7 +16,6 @@
       <v-row justify="center">
         <v-col cols="12">
           <v-card elevation="0">
-            <template>
               <v-alert
                 outlined
                 prominent
@@ -33,7 +32,6 @@
                     The estimation provided in this service is not guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
                 </span>
               </v-alert>
-            </template>
           </v-card>
         </v-col>
       </v-row>
@@ -439,7 +437,7 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
-                    <template><span class="red--text"><strong> *</strong></span></template>
+                    <span class="red--text"><strong> *</strong></span>
                     CCFRI approved full-time parent fee 
                   </div>
                 </v-col>
@@ -474,8 +472,8 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
-                    <template><span class="red--text"><strong> *</strong></span></template>
-                    Your Parent Fee
+                    <span class="red--text"><strong> *</strong></span>
+                    Your parent fee
                   </div>
                 </v-col>
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
@@ -670,7 +668,7 @@ export default {
       ],
       rulesTotalNumChildren: [
         (v) => !!v || 'Total Number of Children is required',
-        (v) => v <= 25 || 'Total Number of Children must be less than 25.'
+        (v) => v <= 26 || 'Total Number of Children must be less than 26.'
       ],
       // rulesMonth: [
       //   (v) => !!v || 'Month is required'
@@ -723,7 +721,7 @@ export default {
     },
 
     updateNumberOfChildSubForms() {
-      if (this.totalNumberOfChildren > 12) {
+      if (this.totalNumberOfChildren > 26) {
         return;
       }
       this.results = [];
