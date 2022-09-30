@@ -669,8 +669,8 @@ export default {
         (v) => !!v || 'Type of care is required'
       ],
       rulesTotalNumChildren: [
-        (v) => !!v || 'Total Number of Children is required',
-        (v) => v <= 25 || 'Total Number of Children must be less than 26'
+        (v) => !!v || 'Total number of children is required',
+        (v) => v <= 25 || 'Total number of children must be less than 26'
       ],
       // rulesMonth: [
       //   (v) => !!v || 'Month is required'
