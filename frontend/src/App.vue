@@ -83,6 +83,13 @@ export default {
 </script>
 
 <style>
+
+/*Some BCSans fonts (i.e. g, y) get clipped in v-selects. This heightens the display to fix clipping. */
+.v-select__selection.v-select__selection--comma {
+  line-height:20px !important
+}
+
+
 .envBanner {
   font-size: 0.8rem;
 }
