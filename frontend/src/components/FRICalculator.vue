@@ -627,7 +627,7 @@ export default {
       careTypes: [
         {type: 'No Care'},
         {type: 'Part Day'},
-        {type: 'Full Full'}
+        {type: 'Full Day'}
       ],
       numberOfBusinessDaysByMonth: [
         {month: 'January', days: 20},
