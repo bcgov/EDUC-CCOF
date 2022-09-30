@@ -4,7 +4,7 @@
       <v-row justify="center">
         <v-col cols="12" class="pt-0" align="center">
           <v-img
-            src="crayons-backdrop.png"
+            :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
             max-height="236"
             max-width="1448" >
             <span class="banner-title">
@@ -120,6 +120,7 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
+                      style="font-size:16px !important"
                       v-model="child.childAgeCategory"
                       :items="childAgeCategoryList"
                       outlined
@@ -457,6 +458,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter"
+                      @change="child.approvedFee = child.approvedFee.replace(/^0+/, '')"
                       v-model="child.approvedFee"
                       :rules="rulesApprovedFee"
                       outlined
@@ -474,7 +476,7 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
-                    <template><span class="red--text"><strong> *</strong></span></template>
+                    <span v-if="child.careSchedule == 'Part Time'" class="red--text"><strong> *</strong></span>
                     Your parent fee
                   </div>
                 </v-col>
@@ -492,6 +494,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter"
+                      @change="child.partTimeFee = child.partTimeFee.replace(/^0+/, '')"
                       v-model="child.partTimeFee"
                       :rules="validateParentFee(child, child.partTimeFee)"
                       outlined
@@ -623,8 +626,8 @@ export default {
       showPartTimeCareSchedule: false,      
       careTypes: [
         {type: 'No Care'},
-        {type: 'Part Time'},
-        {type: 'Full Time'}
+        {type: 'Part Day'},
+        {type: 'Full Full'}
       ],
       numberOfBusinessDaysByMonth: [
         {month: 'January', days: 20},
@@ -670,7 +673,8 @@ export default {
       ],
       rulesTotalNumChildren: [
         (v) => !!v || 'Total number of children is required',
-        (v) => v <= 25 || 'Total number of children must be less than 26'
+        (v) => v <= 25 || 'Total number of children must be less than 26',
+        (v) => v >= 1 || 'Total number of children must be 1 or more'
       ],
       // rulesMonth: [
       //   (v) => !!v || 'Month is required'
@@ -704,7 +708,7 @@ export default {
       if (v && v > 9999) {
         return ['Maximum parent fee is $9999.00'];
       }
-      if (child.careSchedule && !this.isFullTime(child) && !v) {
+      if (child.careSchedule == 'Part Time' && !this.isFullTime(child) && !v) {
         return ['Your parent fee is required '];
       }
       return [];
@@ -1032,6 +1036,11 @@ span.banner-title {
   font-size: 16px !important;
   font-family: "BCSans" !important;
 }
+
+div.v-select__selection.v-select__selection--comma {
+  line-height:20px !important
+}
+
 .banner-title-heading {
   font-size: 32px !important;
 }
