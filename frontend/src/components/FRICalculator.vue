@@ -142,7 +142,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
                             v-on="on">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
@@ -167,7 +167,7 @@
   <!-- ******************************************************************************************************************************************************** -->          
               <v-row v-if="child.careSchedule == 'Part Time'">
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
-                  <v-div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
+                  <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
                   <v-card style="">
                     <v-toolbar 
                         color="grey lighten-3"
@@ -396,7 +396,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-                    </v-div>
+                  </div>
                 </v-col>
               </v-row>
               <v-row>
@@ -412,7 +412,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
                             v-on="on">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
@@ -446,7 +446,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
                             v-on="on">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
@@ -481,7 +481,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px;text-align: center;"
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
                             v-on="on">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
@@ -623,8 +623,8 @@ export default {
       showPartTimeCareSchedule: false,      
       careTypes: [
         {type: 'No Care'},
-        {type: 'Part Day'},
-        {type: 'Full Day'}
+        {type: 'Part Time'},
+        {type: 'Full Time'}
       ],
       numberOfBusinessDaysByMonth: [
         {month: 'January', days: 20},
@@ -710,7 +710,7 @@ export default {
       return [];
     },
     isFullTime(child) {
-      if (child.careSchedule == 'Full Day') {
+      if (child.careSchedule == 'Full Time') {
         return true;
       }
       var daysPerWeek = 0;
@@ -748,8 +748,8 @@ export default {
         childAgeCategory: '',
         approvedFee: '',
         partTimeFee: '',
-        parentFeeFrequency: '',
-        careSchedule: '',
+        parentFeeFrequency: 'Monthly',
+        careSchedule: 'Full Time',
         selectedCareType: [], // This captures the index of the careTypes selected mon through sunday.
       };
     },
