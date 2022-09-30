@@ -891,10 +891,10 @@ export default {
             partTimeNumberOfDays = partTimeNumberOfDays * 4;
             fullTimeNumberOfDays = fullTimeNumberOfDays * 4;
             partTimeDailyRate = ((dailyRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyRate - 5);
-            console.log('partTimeDailyRate' + partTimeDailyRate);
+            // console.log('partTimeDailyRate' + partTimeDailyRate);
             partTimeTotal = (partTimeDailyRate * partTimeNumberOfDays);
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
-            console.log('fullTimeDailyRate' + fullTimeDailyRate);
+            // console.log('fullTimeDailyRate' + fullTimeDailyRate);
             fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
           
             totalRateReduction = partTimeTotal+fullTimeTotal;
@@ -913,31 +913,31 @@ export default {
             
 
             let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 5);
-            console.log('part time fee floor: ' + partTimeFeeFloor);
+            // console.log('part time fee floor: ' + partTimeFeeFloor);
 
             //Make sure to apply minimum reduction Rate fee
             //Then apply minumum parent rate fee if possible
             if (totalRateReduction <= rateReductionFloor) {
               // if rate reduction is already at floor, cannot reduce rate reduction
-              console.log('totalRateReduction <= rateReductionFloor');
-              console.log('Rate floor: ' + rateReductionFloor);
+              // console.log('totalRateReduction <= rateReductionFloor');
+              // console.log('Rate floor: ' + rateReductionFloor);
               reductionAmountPerChild = totalRateReduction;
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             } else if ((monthlyParentFee - totalRateReduction) < partTimeFeeFloor ) {
               //Parent fees are below fee floor, decrease rate reduction fee
-              console.log('monthlyParentFee < partTimeFeeFloor');
-              console.log('partTimeFeeFloor ' + partTimeFeeFloor);
-              console.log('(monthlyParentFee - totalRateReduction) ' + (monthlyParentFee - totalRateReduction));
+              // console.log('monthlyParentFee < partTimeFeeFloor');
+              // console.log('partTimeFeeFloor ' + partTimeFeeFloor);
+              // console.log('(monthlyParentFee - totalRateReduction) ' + (monthlyParentFee - totalRateReduction));
               let changeRateBy = Math.min(totalRateReduction - rateReductionFloor, partTimeFeeFloor - (monthlyParentFee - totalRateReduction));
-              console.log('change rate by: ' + changeRateBy);
+              // console.log('change rate by: ' + changeRateBy);
               reductionAmountPerChild = totalRateReduction - changeRateBy;
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             } else {
               //parent fee above fee floor, rate reduction above rate floor
-              console.log('else');
-              console.log('Rate floor: ' + rateReductionFloor);
-              console.log('Fee floor: ' + partTimeFeeFloor);
-              console.log('totalRateReduction: ' + totalRateReduction);
+              // console.log('else');
+              // console.log('Rate floor: ' + rateReductionFloor);
+              // console.log('Fee floor: ' + partTimeFeeFloor);
+              // console.log('totalRateReduction: ' + totalRateReduction);
               reductionAmountPerChild = totalRateReduction;
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             }
