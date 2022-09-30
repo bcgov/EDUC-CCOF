@@ -825,7 +825,17 @@ export default {
           let totalPartAndFullTime;
           // If care schedule is part time then determine the part/full time daily rate and part/full time totals.
           // i.e. A partime care schedule could include both parttime and fulltime days... 3 days of parttime and 2 days at fulltime.
-          if (!isChildFullTime) {
+          if (isChildFullTime) {
+            /**
+             * FULL TIME RATE Reduction Calculations
+             */
+            // Determine the fulltime daily rate and fulltime total...
+            fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
+            fullTimeTotal = fullTimeDailyRate * 20;
+            partTimeTotal = 0;
+            totalPartAndFullTime = partTimeTotal+fullTimeTotal;
+            totalPartAndFullTime = Math.max(totalPartAndFullTime, rateTableInfo.rateFloor);
+          } else {
             /**
              * PART TIME RATE Reduction Calculation
              */
@@ -850,21 +860,7 @@ export default {
           
             totalPartAndFullTime = partTimeTotal+fullTimeTotal;
             totalPartAndFullTime = Math.max(totalPartAndFullTime, this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays));
-
-          } else {
-            /**
-             * FULL TIME RATE Reduction Calculations
-             */
-            // Determine the fulltime daily rate and fulltime total...
-            fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
-            fullTimeTotal = fullTimeDailyRate * 20;
-            partTimeTotal = 0;
-            totalPartAndFullTime = partTimeTotal+fullTimeTotal;
-            totalPartAndFullTime = Math.max(totalPartAndFullTime, rateTableInfo.rateFloor);
           }
-        
-          // Determine full and part time total...
-          
         
           // Determine the reduction amount per this.form.children[i]...
           let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo.monthlyRate ? rateTableInfo.monthlyRate : totalPartAndFullTime);
@@ -877,7 +873,6 @@ export default {
             actualParentFeePerChild = !isChildFullTime ? this.children[i].partTimeFee - reductionAmountPerChild : parentRate - reductionAmountPerChild;
           }
           actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
-
  
           // Update the results
           this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
