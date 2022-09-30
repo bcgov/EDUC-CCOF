@@ -758,9 +758,30 @@ export default {
       return (dailyRate * daysFullTime) + (dailyRate * daysPartTime /2);
     },
 
-    getParentFeeFloor(parentFee, daysFullTime, daysPartTime) {
-      var dailyFee = parentFee / 20;
-      return Math.max(200, (dailyFee * daysFullTime * 10) + (dailyFee * daysPartTime * 5));
+    getDailyRate(rate, feeFrequency) {
+      switch (feeFrequency) {
+      case 'Daily':
+        return rate;
+      case 'Weekly':
+        return rate / 7;
+      case 'Monthly':
+        return rate / 20;
+      }
+      console.log('getDailyRate-Unable to determine feeFrequency:' + feeFrequency);
+      return null;
+    },
+
+    getMonthlyParentFee(fee, feeFrequency) {
+      switch (feeFrequency) {
+      case 'Daily':
+        return fee * 20;
+      case 'Weekly':
+        return fee * 4;
+      case 'Monthly':
+        return fee;
+      }
+      console.log('getMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      return null;
     },
 
     estimateTheBenefit() {
@@ -822,7 +843,11 @@ export default {
           let partTimeDailyRate;
           let fullTimeTotal;
           let fullTimeDailyRate;
-          let totalPartAndFullTime;
+          let totalRateReduction;
+
+          let reductionAmountPerChild;
+          let actualParentFeePerChild;
+
           // If care schedule is part time then determine the part/full time daily rate and part/full time totals.
           // i.e. A partime care schedule could include both parttime and fulltime days... 3 days of parttime and 2 days at fulltime.
           if (isChildFullTime) {
@@ -833,8 +858,20 @@ export default {
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * 20;
             partTimeTotal = 0;
-            totalPartAndFullTime = partTimeTotal+fullTimeTotal;
-            totalPartAndFullTime = Math.max(totalPartAndFullTime, rateTableInfo.rateFloor);
+
+            let monthlyParentFee = this.getMonthlyParentFee(parentRate, this.children[i].parentFeeFrequency);
+
+            totalRateReduction = partTimeTotal+fullTimeTotal;
+            totalRateReduction = Math.max(totalRateReduction, rateTableInfo.rateFloor);
+            totalRateReduction = Math.min(totalRateReduction, monthlyParentFee);
+
+            reductionAmountPerChild = totalRateReduction;
+            
+            if (this.children[i].partTimeFee) {
+              monthlyParentFee = this.getMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
+            }
+            actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
+
           } else {
             /**
              * PART TIME RATE Reduction Calculation
@@ -858,27 +895,59 @@ export default {
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
           
-            totalPartAndFullTime = partTimeTotal+fullTimeTotal;
-            totalPartAndFullTime = Math.max(totalPartAndFullTime, this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays));
+            totalRateReduction = partTimeTotal+fullTimeTotal;
+            let rateReductionFloor = this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays);
+            let monthlyParentFee = this.getMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
+
+            //Make sure it's at least the Rate Floor amount
+            totalRateReduction = Math.max(totalRateReduction, rateReductionFloor);
+
+            //Make sure it's not over the max rate allowed ammount
+            totalRateReduction = Math.min(totalRateReduction, rateTableInfo.monthlyRate);
+
+            //Make sure it's not more than the parent fee
+            totalRateReduction = Math.min(totalRateReduction, monthlyParentFee);
+
+            
+
+            let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 5);
+            console.log('part time fee floor: ' + partTimeFeeFloor);
+
+            //Make sure to apply minimum reduction Rate fee
+            //Then apply minumum parent rate fee if possible
+            if (totalRateReduction <= rateReductionFloor) {
+              // if rate reduction is already at floor, cannot reduce rate reduction
+              // console.log('totalRateReduction <= rateReductionFloor');
+              // console.log('Rate floor: ' + rateReductionFloor);
+              reductionAmountPerChild = totalRateReduction;
+              actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
+            } else if ((monthlyParentFee - totalRateReduction) < partTimeFeeFloor ) {
+              //Parent fees are below fee floor, decrease rate reduction fee
+              // console.log('monthlyParentFee < partTimeFeeFloor');
+              let changeRateBy = Math.min(totalRateReduction - rateReductionFloor, partTimeFeeFloor - (monthlyParentFee - totalRateReduction));
+              // console.log('change rate by: ' + changeRateBy);
+              reductionAmountPerChild = totalRateReduction - changeRateBy;
+              actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
+            } else {
+              //parent fee above fee floor, rate reduction above rate floor
+              // console.log('else');
+              // console.log('Rate floor: ' + rateReductionFloor);
+              // console.log('Fee floor: ' + partTimeFeeFloor);
+              // console.log('totalRateReduction: ' + totalRateReduction);
+              reductionAmountPerChild = totalRateReduction;
+              actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
+            }
           }
         
           // Determine the reduction amount per this.form.children[i]...
-          let reductionAmountPerChild = ( totalPartAndFullTime > rateTableInfo.monthlyRate ? rateTableInfo.monthlyRate : totalPartAndFullTime);
-          let actualParentFeePerChild;
-          if (this.children[i].parentFeeFrequency == 'Daily') {
-            actualParentFeePerChild = (!isChildFullTime ?  this.children[i].partTimeFee * 20 : parentRate * 20) - reductionAmountPerChild;
-          } else if (this.children[i].parentFeeFrequency == 'Weekly') {              
-            actualParentFeePerChild = (!isChildFullTime ? this.children[i].partTimeFee * 4 : parentRate * 4) - reductionAmountPerChild;
-          } else if (this.children[i].parentFeeFrequency == 'Monthly') {
-            actualParentFeePerChild = !isChildFullTime ? this.children[i].partTimeFee - reductionAmountPerChild : parentRate - reductionAmountPerChild;
-          }
-          actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
+          // actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
  
           // Update the results
           this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
         }
       }
     },
+
     /* Methods related to facility search. Comment out until we are ready to integration with backend.
     rowClicked(row) {
       this.toggleSelection(row.name);
