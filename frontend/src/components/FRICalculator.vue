@@ -380,7 +380,7 @@
                           active-class="blue--text"
                         >
                           <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type" @click="checkGreaterThan4FullDaysSelected(child.selectedCareType)">
+                            <v-list-item :key="item.type">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
