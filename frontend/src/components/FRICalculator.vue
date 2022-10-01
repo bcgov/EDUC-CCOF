@@ -380,7 +380,7 @@
                           active-class="blue--text"
                         >
                           <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                            <v-list-item :key="item.type" @click="checkGreaterThan4FullDaysSelected(child.selectedCareType)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -476,7 +476,7 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
-                    <span v-if="child.careSchedule == 'Part Time'" class="red--text"><strong> *</strong></span>
+                    <span v-if="child.careSchedule == 'Part Time' && (getOccurrence(child.selectedCareType, 2) < 5)" class="red--text"><strong> *</strong></span>
                     Your parent fee
                   </div>
                 </v-col>
@@ -626,7 +626,7 @@ export default {
       showPartTimeCareSchedule: false,      
       careTypes: [
         {type: 'No Care'},
-        {type: 'Part Day'},
+        {type: 'Half Day'},
         {type: 'Full Day'}
       ],
       numberOfBusinessDaysByMonth: [
@@ -692,15 +692,6 @@ export default {
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent fee frequency is required'
       ],
-      rulesFullPartTime: [
-        (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
-      ],
-      rulesPartTime: [
-        (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
-      ],
-      rulesFullTime: [
-        (v) => !!v || '4 hours or less (Partime) or Over 4 hours (Fulltime) is required'
-      ],
     };
   },
   methods: {
@@ -708,8 +699,8 @@ export default {
       if (v && v > 9999) {
         return ['Maximum parent fee is $9999.00'];
       }
-      if (child.careSchedule == 'Part Time' && !this.isFullTime(child) && !v) {
-        return ['Your parent fee is required '];
+      if (child.careSchedule == 'Part Time' && !this.isFullTime(child) && (this.getOccurrence(child.selectedCareType, 2) < 5) && !v) {
+        return ['Your parent fee is required'];
       }
       return [];
     },
@@ -757,6 +748,17 @@ export default {
         selectedCareType: [], // This captures the index of the careTypes selected mon through sunday.
       };
     },
+
+    getOccurrence(array, value) {
+      var count = 0;
+      for (var i = 0; i <= array.length; i++) {
+        if (array[i] == value) {
+          count ++;
+        }
+      }
+      return count;
+    },
+
     getReductionFloor(reductionRate, daysFullTime, daysPartTime) {
       var dailyRate = reductionRate / 20;
       return (dailyRate * daysFullTime) + (dailyRate * daysPartTime /2);
