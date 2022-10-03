@@ -458,7 +458,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter"
-                      @change="trucateLeadingZeros(child.number)"
+                      @change="truncateLeadingZeros(child.number)"
                       v-model="child.approvedFee"
                       :rules="rulesApprovedFee"
                       outlined
@@ -494,7 +494,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter"
-                      @change="trucateLeadingZeros(child.number)"
+                      @change="truncateLeadingZeros(child.number)"
                       v-model="child.partTimeFee"
                       :rules="validateParentFee(child, child.partTimeFee)"
                       outlined
@@ -687,7 +687,7 @@ export default {
       ],
       rulesApprovedFee: [
         (v) => !!v || 'CCFRI approved full-time parent fee is required',
-        (v) => v <= 9999 || 'Maximum parent fee is $9999.00',
+        (v) => v <= 9999 || 'Maximum CCFRI approved full-time parent fee is $9999.00',
         (v) => v > 0 || 'CCFRI approved full-time parent fee must be greater than $0'
       ],
       rulesParentFeeFrequency: [
@@ -995,7 +995,7 @@ export default {
         return true;
       }
     },
-    trucateLeadingZeros(index) {
+    truncateLeadingZeros(index) {
       index = index - 1;
       if (this.children[index].approvedFee.length != 0 && this.children[index].approvedFee.length > 1) {
         this.children[index].approvedFee = this.children[index].approvedFee.replace(/^0+/, '');
