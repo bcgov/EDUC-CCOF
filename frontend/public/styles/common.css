@@ -2,7 +2,12 @@ h1 {
     text-align: center;
 }
 
-.v-input.required label.v-label::after {
+.v-input.required label.v-label::after,
+label.required::after {
     content: " *";
     color: red;
+}
+
+.cc-top-level-card {
+    padding: 1em;
 }
