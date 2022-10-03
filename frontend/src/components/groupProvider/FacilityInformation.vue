@@ -1,76 +1,89 @@
 <template>
     <v-container>
         <v-row justify="space-around">
-            <v-card width="1200">
+            <v-card class="cc-top-level-card" width="1200">
                 <v-form ref="form" v-model="isValidForm">
                     <v-container>
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="facilityNameCommunityCare"
-                                    :rules="rules.required"
+                                    :rules="rules.required" class="required"
                                     label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
                             </v-col>
                         </v-row>
 
                         <v-row>
-                            <v-col>
-                                <v-text-field outlined required v-model="yearBeginOperation" type="number" min="1900"
-                                    max="2050" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
+                            <v-col cols="12" md="6">
+                                <v-text-field outlined required v-model="yearBeginOperation" type="number"
+                                    :rules="rules.required" class="required"
+                                    label="Year Facility Began operation (YYYY)" />
                             </v-col>
-                            <v-col>
+                            <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="facilityAddress" :rules="rules.required"
-                                    label="Facility Street Address" />
+                                    class="required" label="Facility Street Address" />
                             </v-col>
                         </v-row>
 
                         <v-row>
-                            <v-col>
-                                <v-text-field outlined required v-model="city" :rules="rules.required"
+                            <v-col cols="12" md="6">
+                                <v-text-field outlined required v-model="city" :rules="rules.required" class="required"
                                     label="City/Town" />
                             </v-col>
-                            <v-col>
-                                <v-text-field outlined required v-model="postalCode" :rules="rules.required"
+                            <v-col cols="12" md="6">
+                                <v-text-field outlined required v-model="postalCode"
+                                    :rules="[...rules.required, ...rules.postalCode]" class="required"
                                     label="Postal Code" />
                             </v-col>
                         </v-row>
 
                         <v-row>
-                            <v-col>
+                            <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="contactName" :rules="rules.required"
-                                    label="Facility Contact Name" />
+                                    class="required" label="Facility Contact Name" />
                             </v-col>
-                            <v-col>
+                            <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="position" :rules="rules.required"
-                                    label="Position" />
+                                    class="required" label="Position" />
                             </v-col>
                         </v-row>
 
                         <v-row>
-                            <v-col>
-                                <v-text-field outlined required v-model="phone" :rules="rules.required"
+                            <v-col cols="12" md="6">
+                                <v-text-field outlined required v-model="phone" :rules="rules.required" class="required"
                                     label="Business Phone" />
                             </v-col>
-                            <v-col>
-                                <v-text-field outlined required v-model="email" :rules="rules.required"
+                            <v-col cols="12" md="6">
+                                <v-text-field outlined required v-model="email"
+                                    :rules="[...rules.required, ...rules.email]" class="required"
                                     label="Organization Facility email" />
                             </v-col>
                         </v-row>
 
                         <v-row>
-                            <v-col>
-                                <v-text-field outlined required v-model="licenseNumber" :rules="rules.required"
-                                    label="Facility Licence Number" />
+                            <v-col cols="12" md="6">
+                                <v-text-field outlined required type="number" v-model="licenseNumber"
+                                    :rules="rules.required" class="required" label="Facility Licence Number" />
                             </v-col>
-                            <v-col>
-                                <v-text-field outlined required v-model="licenseEffectiveDate" :rules="rules.required"
-                                    label="Effective Date of Current Licence (YYYY-MM-DD)" />
+                            <v-col cols="12" md="6">
+                                <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40"
+                                    transition="scale-transition" offset-y min-width="auto">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field outlined required class="required" v-model="licenseEffectiveDate"
+                                            label="Effective Date of Current Licence (YYYY-MM-DD)" readonly
+                                            v-bind="attrs" v-on="on">
+                                        </v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="licenseEffectiveDate" @input="calendarMenu = false">
+                                    </v-date-picker>
+                                </v-menu>
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col>
-                                <v-radio-group row v-model="hasReceivedFunding"
-                                    label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program? ">
+                                <label class="required">Has this facility or you as the applicant ever received funding
+                                    under the Child Care Operating Funding Program?</label>
+                                <v-radio-group row v-model="hasReceivedFunding">
                                     <v-radio label="No" value="no"></v-radio>
                                     <v-radio label="Yes" value="yes"></v-radio>
                                 </v-radio-group>
@@ -79,7 +92,8 @@
 
                         <v-row v-show="hasReceivedFunding === 'yes'">
                             <v-col>
-                                <v-text-field outlined required v-model="facilityName" :rules="rules.required"
+                                <v-text-field outlined required v-model="facilityName"
+                                    :rules="hasReceivedFunding === 'yes' ? rules.required : []" class="required"
                                     label="Facility Name" />
                             </v-col>
                         </v-row>
@@ -125,7 +139,8 @@ export default {
             licenseEffectiveDate: undefined,
             hasReceivedFunding: 'no',
             facilityNameCommunityCare: undefined,
-            rules
+            rules,
+            calendarMenu: false,
         };
     },
     methods: {
