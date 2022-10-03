@@ -5,7 +5,7 @@
         <v-col cols="12" class="pt-0" align="center">
           <v-img
             :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
-            max-height="236"
+            max-height="300"
             max-width="1448" >
             <span class="banner-title">
               <p class="banner-title-heading my-2" style="font-family:BCSans;">Child Care Fee Reduction Initiative Estimator</p>
@@ -458,7 +458,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter"
-                      @change="child.approvedFee = child.approvedFee.replace(/^0+/, '')"
+                      @change="truncateLeadingZeros(child.number)"
                       v-model="child.approvedFee"
                       :rules="rulesApprovedFee"
                       outlined
@@ -494,7 +494,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-text-field
                       @keypress="currencyFilter"
-                      @change="child.partTimeFee = child.partTimeFee.replace(/^0+/, '')"
+                      @change="truncateLeadingZeros(child.number)"
                       v-model="child.partTimeFee"
                       :rules="validateParentFee(child, child.partTimeFee)"
                       outlined
@@ -687,7 +687,8 @@ export default {
       ],
       rulesApprovedFee: [
         (v) => !!v || 'CCFRI approved full-time parent fee is required',
-        (v) => v <= 9999 || 'Maximum parent fee is $9999.00'
+        (v) => v <= 9999 || 'Maximum CCFRI approved full-time parent fee is $9999.00',
+        (v) => v > 0 || 'CCFRI approved full-time parent fee must be greater than $0'
       ],
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent fee frequency is required'
@@ -969,7 +970,7 @@ export default {
         this.selectedRow = this.selectedRow.filter(
           selectedKeyID => selectedKeyID !== keyID
         );
-      } else {
+      } else {10
         this.selectedRow.push(keyID);
       }
     },
@@ -993,8 +994,16 @@ export default {
       } else {
         return true;
       }
+    },
+    truncateLeadingZeros(index) {
+      index = index - 1;
+      if (this.children[index].approvedFee.length != 0 && this.children[index].approvedFee.length > 1) {
+        this.children[index].approvedFee = this.children[index].approvedFee.replace(/^0+/, '');
+      }
+      if (this.children[index].partTimeFee.length != 0 && this.children[index].partTimeFee.length > 1) {
+        this.children[index].partTimeFee = this.children[index].partTimeFee.replace(/^0+/, '');
+      }
     }
-
 
   },
   computed: {
@@ -1013,8 +1022,8 @@ export default {
     this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', {monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16.0000, partTime19: 8.4211, partTime20: 8.0000, rateFloor: 100});
 
     this.FAMILY_REDUCTION_RATES = new Map();
-    this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', {monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.5000, rateFloor: 200});
-    this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', {monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.5000, rateFloor: 200});
+    this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', {monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.0000, rateFloor: 200});
+    this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', {monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30.0000, partTime19: 15.7895, partTime20: 15.0000, rateFloor: 200});
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', {monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25.0000, partTime19: 13.1579, partTime20: 12.5000, rateFloor: 60});
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', {monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16.0000, partTime19: 8.4211, partTime20: 8.0000, rateFloor: 60});
   }
