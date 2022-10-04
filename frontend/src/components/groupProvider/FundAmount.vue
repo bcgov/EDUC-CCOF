@@ -29,19 +29,31 @@
 
                         <v-row>
                             <v-col cols="12" md="6">
+                                <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40"
+                                    :return-value.sync="hoursFrom" transition="scale-transition" offset-y
+                                    max-width="290px" min-width="290px">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field outlined required class="required" :rules="rules.required"
+                                            v-model="hoursFrom" label="Facility hours of operation From" readonly
+                                            v-bind="attrs" v-on="on">
+                                        </v-text-field>
+                                    </template>
+                                    <v-time-picker v-if="menu1" v-model="hoursFrom" full-width
+                                        @click:minute="$refs.menu1.save(hoursFrom)"></v-time-picker>
+                                </v-menu>
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-menu ref="menu" v-model="menu2" :close-on-content-click="false" :nudge-right="40"
-                                    :return-value.sync="time" transition="scale-transition" offset-y max-width="290px"
-                                    min-width="290px">
+                                <v-menu ref="menu2" v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                                    :return-value.sync="hoursTo" transition="scale-transition" offset-y
+                                    max-width="290px" min-width="290px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field outlined v-model="hoursFrom"
-                                            label="Facility hours of operation from"
-                                            prepend-icon="mdi-clock-time-four-outline" readonly v-bind="attrs"
-                                            v-on="on"></v-text-field>
+                                        <v-text-field outlined required class="required" :rules="rules.required"
+                                            v-model="hoursTo" label="Facility hours of operation To" readonly
+                                            v-bind="attrs" v-on="on">
+                                        </v-text-field>
                                     </template>
-                                    <v-time-picker v-if="menu2" v-model="time2" full-width
-                                        @click:minute="$refs.menu.save(time)"></v-time-picker>
+                                    <v-time-picker v-if="menu2" v-model="hoursTo" full-width
+                                        @click:minute="$refs.menu2.save(hoursTo)"></v-time-picker>
                                 </v-menu>
                             </v-col>
                         </v-row>
@@ -164,23 +176,23 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
                                     v-model="groupChildCare4less" label="Group Child Care (under 36 months)" />
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
                                     v-model="groupChildCare4more" label="Group Child Care (under 36 months)" />
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
                                     v-model="groupChildCare36School4less"
                                     label="Group Child Care (36 months to School Age)" />
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
                                     v-model="groupChildCare36School4more"
                                     label="Group Child Care (36 months to School Age)" />
                             </v-col>
@@ -188,24 +200,24 @@
 
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
-                                    v-model="groupChildCare4less"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
+                                    v-model="groupChildCareSchoolAge4less"
                                     label="Group Child Care (School Age/ School age care on School Grounds)" />
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
-                                    v-model="groupChildCare4more"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
+                                    v-model="groupChildCareSchoolAge4more"
                                     label="Group Child Care (School Age/ School age care on School Grounds)" />
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
                                     v-model="multiAgeCare4less" label="Multi-Age Care" />
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required :rules="rules.required" class="required"
+                                <v-text-field outlined required :rules="rules.required" class="required" type="number"
                                     v-model="multiAgeCare4more" label="Multi-Age Care" />
                             </v-col>
                         </v-row>
@@ -214,10 +226,10 @@
             </v-row>
 
             <v-row justify="space-around">
-                <v-btn color="info" outlined required :rules="rules.required" class="required" x-large>
+                <v-btn color="info" outlined x-large>
                     Back</v-btn>
-                <v-btn color="secondary" outlined required :rules="rules.required" class="required" x-large>Next</v-btn>
-                <v-btn color="primary" outlined required :rules="rules.required" class="required" x-large>
+                <v-btn color="secondary" outlined x-large :disabled="!isValidForm">Next</v-btn>
+                <v-btn color="primary" outlined x-large>
                     Save</v-btn>
             </v-row>
 
@@ -238,13 +250,34 @@ export default {
     data() {
         return {
             isValidForm: undefined,
-            hasReceivedFunding: undefined,
-            isExtendedHours: undefined,
+            maxDaysPerWeek: undefined,
+            maxDaysPerYear: undefined,
             hasClosedMonth: undefined,
+            menu1: undefined,
+            hoursFrom: undefined,
+            menu2: undefined,
+            hoursTo: undefined,
+            maxLicensesCapacity: undefined,
+            maxGroupChildCare: undefined,
+            maxGroupChildCare36: undefined,
+            maxPreschool: undefined,
+            maxGroupChildCareSchool: undefined,
+            monday: undefined,
+            tusday: undefined,
+            wednesday: undefined,
+            thursday: undefined,
+            friday: undefined,
             isSchoolProperty: undefined,
-            rules,
-            menu1: false,
-            menu2: false
+            isExtendedHours: undefined,
+            groupChildCare4less: undefined,
+            groupChildCare4more: undefined,
+            groupChildCare36School4less: undefined,
+            groupChildCare36School4more: undefined,
+            groupChildCareSchoolAge4less: undefined,
+            groupChildCareSchoolAge4more: undefined,
+            multiAgeCare4less: undefined,
+            multiAgeCare4more: undefined,
+            rules
         };
     },
     methods: {
