@@ -7,7 +7,7 @@ const auth = require('../components/auth');
 const log = require('../components/logger');
 const {v4: uuidv4} = require('uuid');
 const {getSessionUser} = require('../components/utils');
-const {getAndSetupEDXUserAndRedirect} = require('../components/secureExchange');
+const {setupUserAndRedirect} = require('../components/user');
 
 const {
   body,
@@ -49,9 +49,7 @@ router.get('/callback_bceid',
   (req, res) => {
     const userInfo = getSessionUser(req);
     const accessToken = userInfo.jwt;
-    const digitalID = userInfo._json.digitalIdentityID;
-    const correlationID = req.session?.correlationID;
-    getAndSetupEDXUserAndRedirect(req, res, accessToken, digitalID, correlationID, null);
+    setupUserAndRedirect(req, res, accessToken, userInfo);
   }
 );
 //a prettier way to handle errors
