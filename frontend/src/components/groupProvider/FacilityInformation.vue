@@ -1,8 +1,8 @@
 <template>
-    <v-container>
-        <v-row justify="space-around">
-            <v-card class="cc-top-level-card" width="1200">
-                <v-form ref="form" v-model="isValidForm">
+    <v-form ref="form" v-model="isValidForm">
+        <v-container>
+            <v-row justify="space-around">
+                <v-card class="cc-top-level-card" width="1200">
                     <v-container>
                         <v-row>
                             <v-col>
@@ -99,18 +99,16 @@
                         </v-row>
 
                     </v-container>
-                </v-form>
-            </v-card>
+                </v-card>
+            </v-row>
 
-            <v-container>
-                <v-row justify="space-around">
-                    <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-                    <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-                    <v-btn color="primary" outlined x-large>Save</v-btn>
-                </v-row>
-            </v-container>
-        </v-row>
-    </v-container>
+            <v-row justify="space-around">
+                <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+                <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
+                <v-btn color="primary" outlined x-large>Save</v-btn>
+            </v-row>
+        </v-container>
+    </v-form>
 </template>
 
 <script>
