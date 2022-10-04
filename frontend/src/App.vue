@@ -25,7 +25,7 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters,mapState } from 'vuex';
-// import HttpStatus from 'http-status-codes';
+import HttpStatus from 'http-status-codes';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ModalIdle from './components/ModalIdle';
@@ -66,17 +66,17 @@ export default {
   },
   async created() {
     this.setLoading(true);
-    // this.getJwtToken().then(() =>
-    //   Promise.all([this.getUserInfo()])
-    // ).catch(e => {
-    //   if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
-    //     this.logout();
-    //     this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
-    //   }
-    // }).finally(() => {
-    //   this.setLoading(false);
-    // });
-    this.getUserInfo();
+    this.getJwtToken().then(() =>
+      Promise.all([this.getUserInfo()])
+    ).catch(e => {
+      if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
+        this.logout();
+        this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
+      }
+    }).finally(() => {
+      this.setLoading(false);
+    });
+    // this.getUserInfo();
     this.setLoading(false);
   }
 };

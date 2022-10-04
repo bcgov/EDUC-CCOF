@@ -28,19 +28,19 @@ router.get('/', (_req, res) => {
   });
 });
 
-function addOIDCRouterGet(strategyName, callbackURI, redirectURL) {
-  router.get(callbackURI,
-    passport.authenticate(strategyName, {
-      failureRedirect: 'error'
-    }),
-    (_req, res) => {
-      res.redirect(redirectURL);
-    }
-  );
-}
+// function addOIDCRouterGet(strategyName, callbackURI, redirectURL) {
+//   router.get(callbackURI,
+//     passport.authenticate(strategyName, {
+//       failureRedirect: 'error'
+//     }),
+//     (_req, res) => {
+//       res.redirect(redirectURL);
+//     }
+//   );
+// }
 
-addOIDCRouterGet('oidcBceidActivateUser', '/callback_activate_user', `${config.get('server:frontend')}/user-activation`);
-addOIDCRouterGet('oidcBceidActivateDistrictUser', '/callback_activate_district_user', `${config.get('server:frontend')}/district-user-activation`);
+// addOIDCRouterGet('oidcBceidActivateUser', '/callback_activate_user', `${config.get('server:frontend')}/user-activation`);
+// addOIDCRouterGet('oidcBceidActivateDistrictUser', '/callback_activate_district_user', `${config.get('server:frontend')}/district-user-activation`);
 
 router.get('/callback_bceid',
   passport.authenticate('oidcBceid', {
@@ -66,8 +66,8 @@ function addBaseRouterGet(strategyName, callbackURI) {
 }
 
 addBaseRouterGet('oidcBceid', '/login_bceid');
-addBaseRouterGet('oidcBceidActivateUser', '/login_bceid_activate_user');
-addBaseRouterGet('oidcBceidActivateDistrictUser', '/login_bceid_activate_district_user');
+// addBaseRouterGet('oidcBceidActivateUser', '/login_bceid_activate_user');
+// addBaseRouterGet('oidcBceidActivateDistrictUser', '/login_bceid_activate_district_user');
 
 
 //removes tokens and destroys session
@@ -88,6 +88,7 @@ router.get('/logout', async (req, res) => {
   } else {
     retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
   }
+  log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
   res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
 });
 
