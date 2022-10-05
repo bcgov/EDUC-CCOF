@@ -350,7 +350,7 @@
             </v-row>
 
             <v-row justify="space-around">
-                <v-btn color="info" outlined x-large>
+                <v-btn color="info" outlined x-large @click="previous()">
                     Back</v-btn>
                 <v-btn color="secondary" outlined x-large :disabled="!isValidForm">Next</v-btn>
                 <v-btn color="primary" outlined x-large>
