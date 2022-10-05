@@ -83,6 +83,13 @@ export default {
 </script>
 
 <style>
+
+/*Some BCSans fonts (i.e. g, y) get clipped in v-selects. This heightens the display to fix clipping. */
+.v-select__selection.v-select__selection--comma {
+  line-height:20px !important
+}
+
+
 .envBanner {
   font-size: 0.8rem;
 }
@@ -198,4 +205,30 @@ h1 {
   background-color: rgba(0,0,0,.12)!important;
 }
 
+
+@font-face {
+  font-family: 'BCSans';
+  font-style: normal;
+  src: url('assets/font/BC-Sans/BCSans-Regular.woff2') format('woff2'), /* Optimized for very modern browsers */
+       url('assets/font/BC-Sans/BCSans-Regular.woff') format('woff'); /* Modern Browsers */
+}
+@font-face {
+  font-family: 'BCSans';
+  font-style: italic;
+  src: url('assets/font/BC-Sans/BCSans-Italic.woff2') format('woff2'), /* Optimized for very modern browsers */
+       url('assets/font/BC-Sans/BCSans-Italic.woff') format('woff'); /* Modern Browsers */
+}
+@font-face {
+  font-family: 'BCSans';
+  font-weight: 700;
+  src: url('assets/font/BC-Sans/BCSans-Bold.woff2') format('woff2') /* Optimized for very modern browsers */
+       url('assets/font/BC-Sans/BCSans-Bold.woff') format('woff'); /* Modern Browsers */
+}
+@font-face {
+  font-family: 'BCSans';
+  font-style: italic;
+  font-weight: 700;
+  src: url('assets/font/BC-Sans/BCSans-BoldItalic.woff2') format('woff2'), /* Optimized for very modern browsers */
+       url('assets/font/BC-Sans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
+}
 </style>
