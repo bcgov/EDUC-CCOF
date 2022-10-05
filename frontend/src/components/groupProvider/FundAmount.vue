@@ -27,6 +27,78 @@
                             </v-col>
                         </v-row>
 
+                        <v-row v-show="hasClosedMonth === 'yes'">
+                            <v-col>
+                                <label class="required">If YES, check all the applicable months:</label>
+                            </v-col>
+                        </v-row>
+
+                        <v-row v-show="hasClosedMonth === 'yes'">
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month01" label="Jan" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month02" label="Feb" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month03" label="Mar" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month04" label="Apr" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month05" label="May" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month06" label="June" />
+                            </v-col>
+                        </v-row>
+
+                        <v-row v-show="hasClosedMonth === 'yes'">
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month07" label="Jul" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month08" label="Aug" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month09" label="Sep" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month10" label="Oct" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month11" label="Nov" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="hasClosedMonth === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="month12" label="Dec" />
+                            </v-col>
+                        </v-row>
+
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40"
@@ -107,30 +179,38 @@
 
                 <v-card class="cc-top-level-card" width="1200">
                     <v-card-title>Preschool</v-card-title>
-                    <v-card-subtitle>Please indicate how many preschool sessions your facility offers per day
-                    </v-card-subtitle>
 
                     <v-container>
                         <v-row>
                             <v-col>
+                                <label>Please indicate how many preschool sessions your facility offers per day</label>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col>
                                 <v-text-field type="number" outlined required :rules="rules.required" class="required"
-                                    v-model="monday" label="Monday" />
+                                    v-model.number="monday" label="Monday" />
                             </v-col>
                             <v-col>
                                 <v-text-field type="number" outlined required :rules="rules.required" class="required"
-                                    v-model="tusday" label="Tuesday" />
+                                    v-model.number="tusday" label="Tuesday" />
                             </v-col>
                             <v-col>
                                 <v-text-field type="number" outlined required :rules="rules.required" class="required"
-                                    v-model="wednesday" label="Wednesday" />
+                                    v-model.number="wednesday" label="Wednesday" />
                             </v-col>
                             <v-col>
                                 <v-text-field type="number" outlined required :rules="rules.required" class="required"
-                                    v-model="thursday" label="Thursday" />
+                                    v-model.number="thursday" label="Thursday" />
                             </v-col>
                             <v-col>
                                 <v-text-field type="number" outlined required :rules="rules.required" class="required"
-                                    v-model="friday" label="Friday" />
+                                    v-model.number="friday" label="Friday" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field type="number" outlined readonly
+                                    v-bind:value="(monday || 0) + (tusday || 0) + (wednesday || 0) + (thursday || 0) + (friday || 0)"
+                                    label="Total" />
                             </v-col>
                         </v-row>
 
@@ -141,6 +221,31 @@
                                     <v-radio label="Yes" value="yes" />
                                     <v-radio label="No" value="no" />
                                 </v-radio-group>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+
+                    <v-card-title v-show="isSchoolProperty === 'yes'">Group Child Care (School Age Care on School
+                        Grounds)</v-card-title>
+
+                    <v-container v-show="isSchoolProperty === 'yes'">
+                        <v-row>
+                            <v-col>
+                                <label>Please indicate each service that your facility offers</label>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col>
+                                <v-checkbox v-model="beforeSchool" label="Before School" />
+                            </v-col>
+                            <v-col>
+                                <v-checkbox v-model="afterSchool" label="After School" />
+                            </v-col>
+                            <v-col>
+                                <v-checkbox v-model="beforeKindergarten" label="Before Kindergarten" />
+                            </v-col>
+                            <v-col>
+                                <v-checkbox v-model="afterKindergarten" label="After Kindergarten" />
                             </v-col>
                         </v-row>
                     </v-container>
@@ -158,6 +263,25 @@
                                 </v-radio-group>
                             </v-col>
                         </v-row>
+
+                        <v-row v-show="isExtendedHours === 'yes'">
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="isExtendedHours === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="maxDaysPerWeekExtended"
+                                    label="Maximum number of days per week you offer extended hours of child care?" />
+                            </v-col>
+                        </v-row>
+
+                        <v-row v-show="isExtendedHours === 'yes'">
+                            <v-col>
+                                <v-text-field type="number" outlined required
+                                    :rules="isExtendedHours === 'yes' ? rules.required : []" class="required"
+                                    v-model.number="maxDaysPerYearExtended"
+                                    label="Maximum number of weeks per year you offer extended hours of child care?" />
+                            </v-col>
+                        </v-row>
+
                     </v-container>
                 </v-card>
 
@@ -252,6 +376,8 @@ export default {
             isValidForm: undefined,
             maxDaysPerWeek: undefined,
             maxDaysPerYear: undefined,
+            maxDaysPerWeekExtended: undefined,
+            maxDaysPerYearExtended: undefined,
             hasClosedMonth: undefined,
             menu1: undefined,
             hoursFrom: undefined,
@@ -277,6 +403,22 @@ export default {
             groupChildCareSchoolAge4more: undefined,
             multiAgeCare4less: undefined,
             multiAgeCare4more: undefined,
+            month01: undefined,
+            month02: undefined,
+            month03: undefined,
+            month04: undefined,
+            month05: undefined,
+            month06: undefined,
+            month07: undefined,
+            month08: undefined,
+            month09: undefined,
+            month10: undefined,
+            month11: undefined,
+            month12: undefined,
+            beforeSchool: undefined,
+            afterSchool: undefined,
+            beforeKindergarten: undefined,
+            afterKindergarten: undefined,
             rules
         };
     },
