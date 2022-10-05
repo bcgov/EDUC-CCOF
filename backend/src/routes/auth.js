@@ -6,8 +6,8 @@ const express = require('express');
 const auth = require('../components/auth');
 const log = require('../components/logger');
 const {v4: uuidv4} = require('uuid');
-const {getSessionUser} = require('../components/utils');
-const {setupUserAndRedirect} = require('../components/user');
+// const {getSessionUser} = require('../components/utils');
+// const {setupUserAndRedirect} = require('../components/user');
 
 const {
   body,
@@ -46,10 +46,13 @@ router.get('/callback_bceid',
   passport.authenticate('oidcBceid', {
     failureRedirect: 'error'
   }),
-  (req, res) => {
-    const userInfo = getSessionUser(req);
-    const accessToken = userInfo.jwt;
-    setupUserAndRedirect(req, res, accessToken, userInfo);
+  (_req, res) => {
+
+    // const userInfo = getSessionUser(req);
+    // const accessToken = userInfo.jwt;
+    // setupUserAndRedirect(req, res, accessToken, userInfo);
+
+    res.redirect(config.get('server:frontend'));
   }
 );
 //a prettier way to handle errors

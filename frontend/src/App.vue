@@ -76,7 +76,6 @@ export default {
     }).finally(() => {
       this.setLoading(false);
     });
-    // this.getUserInfo();
     this.setLoading(false);
   }
 };

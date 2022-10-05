@@ -1,30 +1,22 @@
 'use strict';
-const config = require('../config/index');
+const {getSessionUser} = require('./utils');
+const HttpStatus = require('http-status-codes');
 
-
-function setupUserAndRedirect(req, res, accessToken, userInfo) {
-  let resData = getUserInfo(userInfo);
-  if (resData) {
-    // res.session.CCOFUserInfo=resData;
-    res.redirect(config.get('server:frontend') + '/landing-page');
-  } else {
-    res.redirect(config.get('server:frontend') + '/unauthorized');
+async function getUserInfo(req, res) {
+  const userInfo = getSessionUser(req);
+  if (!userInfo || !userInfo.jwt || !userInfo._json || !userInfo._json.digitalIdentityID) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No session data'
+    });
   }
-}
-
-function getUserInfo(userInfo) {
-  if (!userInfo || !userInfo.jwt || !userInfo._json) {
-    return '';
-  }
-
   let resData = {
-    displayName: `${userInfo.displayName}`,
+    displayName: `${req.session.edxUserData?.firstName} ${req.session.edxUserData?.lastName}`,
     facilityList: ['ABC daycare', '123 Daycare']
   };
-  return resData;
+  return res.status(HttpStatus.OK).json(resData);
+
 }
 
 module.exports = {
-  getUserInfo,
-  setupUserAndRedirect
+  getUserInfo
 };

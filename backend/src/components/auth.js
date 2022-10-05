@@ -155,11 +155,11 @@ const auth = {
           log.debug('error is from verify', e);
           return res.status(HttpStatus.UNAUTHORIZED).json();
         }
-        log.silly('Backend token is valid moving to next');
+        log.info('Backend token is valid moving to next');
         return next();
       } else {
-        log.silly(req.session);
-        log.silly('no jwt responding back 401');
+        log.info(req.session);
+        log.info('no jwt responding back 401');
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
     };
