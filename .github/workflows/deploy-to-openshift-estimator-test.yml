@@ -36,7 +36,7 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL }}
+  HOST_ROUTE: ${{ secrets.SITE_UI_PREFIX }}-${{ secrets.CCOF_NAMESPACE_NO_ENV }}-test.${{ secrets.SITE_SUFFIX }}
 
 on:
   workflow_dispatch:
