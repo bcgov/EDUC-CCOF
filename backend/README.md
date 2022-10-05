@@ -14,6 +14,7 @@ You may see references to the EDX project until we  get this properly cleaned up
  
  **`Step 5`**. run `npm run serve` in command line from backend folder, to run the app.
 
+ **`NOTE`**. SSO not built out yet - try localhost:8082/fri-calculator to see if local build works without authentication.
 `Unit Tests`
     run `npm run test` in command line from backend folder, to execute unit tests.
 
