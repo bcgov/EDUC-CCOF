@@ -919,8 +919,8 @@ export default {
 
             
 
-            let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 5);
-            // console.log('part time fee floor: ' + partTimeFeeFloor);
+            let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 7);
+            console.log('part time fee floor: ' + partTimeFeeFloor);
 
             //Make sure to apply minimum reduction Rate fee
             //Then apply minumum parent rate fee if possible
