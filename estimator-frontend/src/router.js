@@ -18,13 +18,20 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/fri-calculator',
-      name: 'fri-calculator',
+      path: '/ccfri-estimator',
+      name: 'ccfri-estimator',
       component: FRICalculator,
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator
       }
     },
+    {
+      path: '*',
+      name: 'notfound',
+      redirect: 'ccfri-estimator',
+      meta: {
+      }
+    },    
   ]
 });
 
