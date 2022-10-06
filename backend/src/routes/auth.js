@@ -6,8 +6,8 @@ const express = require('express');
 const auth = require('../components/auth');
 const log = require('../components/logger');
 const {v4: uuidv4} = require('uuid');
-const {getSessionUser} = require('../components/utils');
-const {getAndSetupEDXUserAndRedirect} = require('../components/secureExchange');
+// const {getSessionUser} = require('../components/utils');
+// const {setupUserAndRedirect} = require('../components/user');
 
 const {
   body,
@@ -28,30 +28,31 @@ router.get('/', (_req, res) => {
   });
 });
 
-function addOIDCRouterGet(strategyName, callbackURI, redirectURL) {
-  router.get(callbackURI,
-    passport.authenticate(strategyName, {
-      failureRedirect: 'error'
-    }),
-    (_req, res) => {
-      res.redirect(redirectURL);
-    }
-  );
-}
+// function addOIDCRouterGet(strategyName, callbackURI, redirectURL) {
+//   router.get(callbackURI,
+//     passport.authenticate(strategyName, {
+//       failureRedirect: 'error'
+//     }),
+//     (_req, res) => {
+//       res.redirect(redirectURL);
+//     }
+//   );
+// }
 
-addOIDCRouterGet('oidcBceidActivateUser', '/callback_activate_user', `${config.get('server:frontend')}/user-activation`);
-addOIDCRouterGet('oidcBceidActivateDistrictUser', '/callback_activate_district_user', `${config.get('server:frontend')}/district-user-activation`);
+// addOIDCRouterGet('oidcBceidActivateUser', '/callback_activate_user', `${config.get('server:frontend')}/user-activation`);
+// addOIDCRouterGet('oidcBceidActivateDistrictUser', '/callback_activate_district_user', `${config.get('server:frontend')}/district-user-activation`);
 
 router.get('/callback_bceid',
   passport.authenticate('oidcBceid', {
     failureRedirect: 'error'
   }),
-  (req, res) => {
-    const userInfo = getSessionUser(req);
-    const accessToken = userInfo.jwt;
-    const digitalID = userInfo._json.digitalIdentityID;
-    const correlationID = req.session?.correlationID;
-    getAndSetupEDXUserAndRedirect(req, res, accessToken, digitalID, correlationID, null);
+  (_req, res) => {
+
+    // const userInfo = getSessionUser(req);
+    // const accessToken = userInfo.jwt;
+    // setupUserAndRedirect(req, res, accessToken, userInfo);
+
+    res.redirect(config.get('server:frontend'));
   }
 );
 //a prettier way to handle errors
@@ -66,8 +67,8 @@ function addBaseRouterGet(strategyName, callbackURI) {
 }
 
 addBaseRouterGet('oidcBceid', '/login_bceid');
-addBaseRouterGet('oidcBceidActivateUser', '/login_bceid_activate_user');
-addBaseRouterGet('oidcBceidActivateDistrictUser', '/login_bceid_activate_district_user');
+// addBaseRouterGet('oidcBceidActivateUser', '/login_bceid_activate_user');
+// addBaseRouterGet('oidcBceidActivateDistrictUser', '/login_bceid_activate_district_user');
 
 
 //removes tokens and destroys session
@@ -88,7 +89,9 @@ router.get('/logout', async (req, res) => {
   } else {
     retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
   }
-  res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
+  log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
+  res.redirect(config.get('siteMinder_logout_endpoint') + retUrl );
+
 });
 
 const UnauthorizedRsp = {

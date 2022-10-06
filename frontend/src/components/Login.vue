@@ -7,11 +7,11 @@
             <h4 id="login_text">Log In</h4>
           </v-card-title>
           <v-card-text id="login_descriptor">
-            Welcome to the Education Data Exchange!
+            Welcome to the Child Care Operating Funding Initiative
           </v-card-text>
           <v-card-actions>
             <v-row align="center" justify="center">
-              <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_BCEID" class="ma-2" dark color='#003366'>Log In with Basic BCeID<v-icon>mdi-login</v-icon></v-btn>
+              <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-2" dark color='#003366'>Log In with your IDIR<v-icon>mdi-login</v-icon></v-btn>
             </v-row>
           </v-card-actions>
         </v-card>

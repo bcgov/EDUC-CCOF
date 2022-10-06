@@ -31,7 +31,7 @@ async function refreshToken({getters, commit, dispatch}) {
 
 async function getInitialToken({commit}) {
   const response = await AuthService.getAuthToken();
-
+  console.log('TOKEN Received: ' + response);
   if (response.jwtFrontend) {
     commit('setJwtToken', response.jwtFrontend);
     ApiService.setAuthHeader(response.jwtFrontend);
@@ -117,63 +117,9 @@ export default {
       context.commit('setUserInfo');
       // router.push(AuthRoutes.LOGOUT);
     },
-    // async getUserInfo({commit}){
-    //   const userInfoRes = await ApiService.getUserInfo();
-    //   commit('setUserInfo', userInfoRes.data);
-    // },
-
     async getUserInfo({commit}){
-      const userInfoRes = {
-        displayName: 'John Smithy',
-        BCEIDUsername: 'dsfsdf',
-        BCEIDGuid: 'sdlfksjdf',
-        currentyear: 2022,
-        organizationList: [
-          {
-            name: 'ABC organization',
-            id: 'aaaaaaaaaaaaaaaaaaaa',
-            facilityList: [
-              {
-                name: '123 daycare',
-                id: 'bbbbbbbbbbbbbbbbbbb'
-              },
-            ],
-          },
-          {
-            name: '123 organization',
-            id: 'bbbbbbbbbbbbbbbbbbb',
-            facilityList: [ {name: 'ABC daycare', id: 'aaaaaaaaaaaaaaaaaaaa'},
-            ],
-          },
-          {
-            name: '987 organization',
-            id: 'cccccccccccccccccccc'
-          },
-          {
-            name: 'XYZ organization',
-            id: 'eeeeeeeeeeeeeeeeee',
-            facilityList: [
-              {
-                name: 'ABC daycare',
-                id: 'aaaaaaaaaaaaaaaaaaaa'
-              },
-              {
-                name: '123 daycare',
-                id: 'bbbbbbbbbbbbbbbbbbb'
-              },
-              {
-                name: 'Sunshine daycare',
-                id: 'cccccccccccccccccccc'
-              },
-              {
-                name: 'XYZ daycare',
-                id: 'eeeeeeeeeeeeeeeeee'
-              }
-            ],
-          }
-        ],
-      };
-      commit('setUserInfo', userInfoRes);
+      const userInfoRes = await ApiService.getUserInfo();
+      commit('setUserInfo', userInfoRes.data);
     },
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
