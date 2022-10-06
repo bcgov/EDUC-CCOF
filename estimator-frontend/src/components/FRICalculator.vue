@@ -916,7 +916,7 @@ export default {
 
             
 
-            let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 5);
+            let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 7);
             // console.log('part time fee floor: ' + partTimeFeeFloor);
 
             //Make sure to apply minimum reduction Rate fee
@@ -931,6 +931,7 @@ export default {
               //Parent fees are below fee floor, decrease rate reduction fee
               // console.log('monthlyParentFee < partTimeFeeFloor');
               // console.log('partTimeFeeFloor ' + partTimeFeeFloor);
+              // console.log('Rate floor ' + rateReductionFloor);
               // console.log('(monthlyParentFee - totalRateReduction) ' + (monthlyParentFee - totalRateReduction));
               let changeRateBy = Math.min(totalRateReduction - rateReductionFloor, partTimeFeeFloor - (monthlyParentFee - totalRateReduction));
               // console.log('change rate by: ' + changeRateBy);
