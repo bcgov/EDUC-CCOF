@@ -34,7 +34,7 @@
             deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
         spec:
           containers:
-          - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
+          - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-${APP_NAME}-frontend-${BRANCH}:${TAG}
             imagePullPolicy: Always
             volumeMounts:
             - name: tls-certs
