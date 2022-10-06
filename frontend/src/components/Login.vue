@@ -7,7 +7,7 @@
             <h4 id="login_text">Log In</h4>
           </v-card-title>
           <v-card-text id="login_descriptor">
-            Welcome to the Education Data Exchange!
+            Welcome to the Child Care Operating Funding Initiative
           </v-card-text>
           <v-card-actions>
             <v-row align="center" justify="center">

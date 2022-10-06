@@ -90,7 +90,8 @@ router.get('/logout', async (req, res) => {
     retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
   }
   log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
-  res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
+  res.redirect(config.get('siteMinder_logout_endpoint') + retUrl );
+
 });
 
 const UnauthorizedRsp = {
