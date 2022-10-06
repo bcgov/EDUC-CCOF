@@ -7,7 +7,6 @@
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="legalName" :rules="rules.required"
-                                    class="required"
                                     label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
                             </v-col>
                         </v-row>
@@ -17,19 +16,18 @@
                         <v-row>
                             <v-col>
                                 <v-text-field outlined required v-model="address1" :rules="rules.required"
-                                    class="required" label="Organization Mailing Address" />
+                                    label="Organization Mailing Address" />
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required v-model="city1" :rules="rules.required" class="required"
+                                <v-text-field outlined required v-model="city1" :rules="rules.required"
                                     label="City/Town" />
                             </v-col>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="postalCode1"
-                                    :rules="[...rules.required, ...rules.postalCode]" class="required"
-                                    label="Postal Code" />
+                                    :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
                             </v-col>
                         </v-row>
 
@@ -45,7 +43,7 @@
                         <v-row v-show="isAddressDifferent">
                             <v-col>
                                 <v-text-field outlined required v-model="address2"
-                                    :rules="isAddressDifferent? rules.required : []" class="required"
+                                    :rules="isAddressDifferent? rules.required : []"
                                     label="Organization Mailing Address" />
                             </v-col>
                         </v-row>
@@ -53,13 +51,12 @@
                         <v-row v-show="isAddressDifferent">
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="city2"
-                                    :rules="isAddressDifferent? rules.required : []" class="required"
-                                    label="City/Town" />
+                                    :rules="isAddressDifferent? rules.required : []" label="City/Town" />
                             </v-col>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="postalCode2"
                                     :rules="isAddressDifferent? [...rules.required, ...rules.postalCode] : []"
-                                    class="required" label="Postal Code" />
+                                    label="Postal Code" />
                             </v-col>
                         </v-row>
 
@@ -68,22 +65,22 @@
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="contactName" :rules="rules.required"
-                                    class="required" label="Organization Contact Name" />
+                                    label="Organization Contact Name" />
                             </v-col>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="position" :rules="rules.required"
-                                    class="required" label="Position" />
+                                    label="Position" />
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-text-field outlined required v-model="phone" :rules="rules.required" class="required"
+                                <v-text-field outlined required v-model="phone" :rules="rules.required"
                                     label="Business Phone" />
                             </v-col>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="businessId" :rules="rules.required"
-                                    class="required" label="Business BCeID" />
+                                    label="Business BCeID" />
                             </v-col>
                         </v-row>
 
@@ -92,12 +89,12 @@
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required v-model="email" type="email"
-                                    :rules="[...rules.required, ...rules.email]" class="required"
+                                    :rules="[...rules.required, ...rules.email]"
                                     label="E-mail Address of Signing Authority" />
                             </v-col>
                             <v-col cols="12" md="6">
                                 <v-text-field outlined required :rules="rules.required" v-model="incNumber"
-                                    class="required" type="number"
+                                    type="number"
                                     label="Incorporation Number (as it appears in BC Corporate Registry)" />
                             </v-col>
                         </v-row>
@@ -106,7 +103,7 @@
 
                         <v-row>
                             <v-col>
-                                <label class="required">Type of Orgnization</label>
+                                <label>Type of Orgnization</label>
                                 <v-radio-group v-model="organizationType" :rules="rules.required">
                                     <v-radio label="Non-Profit Society" value="1"></v-radio>
                                     <v-radio label="Public institution (college/university)" value="2"></v-radio>
