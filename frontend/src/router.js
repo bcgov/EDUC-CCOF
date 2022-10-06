@@ -4,7 +4,6 @@ import VueMeta from 'vue-meta';
 
 import moment from 'moment';
 
-import Home from '@/components/Home.vue';
 import Logout from './components/Logout';
 import UserActivationLinkError from './components/UserActivationLinkError';
 import SessionExpired from './components/SessionExpired';
@@ -48,12 +47,11 @@ const router = new VueRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home,
+      name: 'landing-page',
+      component: LandingPage,
       meta: {
-        pageTitle: PAGE_TITLES.DASHBOARD,
+        pageTitle: PAGE_TITLES.LANDING_PAGE,
         requiresAuth: true,
-        permission: 'SECURE_EXCHANGE'
       },
 
     },
@@ -100,14 +98,6 @@ const router = new VueRouter({
       component: FRICalculator,
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator
-      }
-    },
-    {
-      path: '/landing-page',
-      name: 'landing-page',
-      component: LandingPage,
-      meta: {
-        pageTitle: PAGE_TITLES.LANDING_PAGE
       }
     },
     {
@@ -251,8 +241,8 @@ router.beforeEach((to, _from, next) => {
         store.dispatch('auth/getUserInfo').then(() => {
           if (to.meta.permission && authStore.state.userInfo?.userMinCodes?.length > 0 && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
             next('/institute-selection');
-          }else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
-            next('/unauthorized');
+          // }else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
+          //   next('/unauthorized');
           }else if (to && to.meta) {
             if(authStore.state.userInfo.activeInstituteTitle && !excludeInstituteNameFromPageTitleList.includes(to.meta.pageTitle)){
               store.commit('app/setPageTitle',to.meta.pageTitle + ' | ' + authStore.state.userInfo.activeInstituteTitle);
