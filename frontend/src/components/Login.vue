@@ -1,8 +1,10 @@
 <template>
-  <v-container fluid class="full-height px-0">
+  <v-container class="full-height m-16 ">
     <article id="login-banner" class="top-banner">
 
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
+
+      
       <v-row justify="center">
         <v-col cols="12" class="pt-0" align="center">
           <v-img
@@ -21,9 +23,15 @@
         </v-col>
       </v-row>
 
+      <!-- end header-->
 
-      <v-row align="left" justify="center">
-        <v-card class="login-card rounded-0">
+
+      <!-- <v-container> -->
+      <v-row>
+        <!-- <v-col cols="1" class="lg-1"></v-col> -->
+
+        <v-col class="xs-12 lg-4 xl-2 ">
+        <v-card flat class="topborder">
           <v-card-title class="gov-header">
             <h4 id="login_text">Use your Business BCeID</h4>
           </v-card-title>
@@ -31,13 +39,15 @@
             Enter your user ID and password to continue.
           </v-card-text>
           <v-card-actions>
-            <v-row align="center" justify="center">
-              <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-2" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
+            <v-row justify="left">
+              <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
             </v-row>
           </v-card-actions>
         </v-card>
+      </v-col>
 
-        <v-card class="rounded-0">
+      <v-col class="xs-12 lg-6 xl-2">
+        <v-card flat>
           <v-card-title class="gov-header">
             <h4 id="login_text">Don't have a BCeID?</h4>
           </v-card-title>
@@ -47,32 +57,38 @@
             You must register for a Business BCeID before you can log in - it only takes a few minutes.<br><br>
           </v-card-text>
           <v-card-actions>
-            <v-row align="center" justify="center">
+            <v-row justify="left">
               <!--this button should be changed to route to the bc gov eID webshite-->
-              <v-btn href="https://www.bceid.ca/register/business/getting_started/getting_started.aspx" class="ma-2" dark color='#003366'>Register for a BCeID<v-icon>mdi-login</v-icon></v-btn>
+              <v-btn href="https://www.bceid.ca/register/business/getting_started/getting_started.aspx" class="ma-5" dark color='#003366'>Register for a BCeID<v-icon>mdi-login</v-icon></v-btn>
             </v-row>
           </v-card-actions>
         </v-card>
+      </v-col>
+        <!-- <v-col cols="1" class="lg-1"></v-col> -->
       </v-row>
 
-      <v-row align="left" justify="center">
-        <v-card>
-          <v-card-title class="gov-header">
-            <h4 id="login_text">CCFRI Estimator</h4>
-          </v-card-title>
-          <v-card-text id="login_descriptor">
-            Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. <br>
-            Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. <br>
-            Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  <br>
-            Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    <!-- </v-container> -->
 
-          </v-card-text>
-          <v-card-actions>
-            <v-row align="center" justify="center">
-              <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-2" dark color='#003366'>Go to Estimator</v-btn>
-            </v-row>
-          </v-card-actions>
-        </v-card>
+      <v-row justify="center">
+        <v-col class="xs-12 ">
+          <v-card flat>
+            <v-card-title class="gov-header">
+              <h4 id="login_text">CCFRI Estimator</h4>
+            </v-card-title>
+            <v-card-text id="login_descriptor">
+              Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. <br>
+              Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. <br>
+              Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  <br>
+              Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+            </v-card-text>
+            <v-card-actions>
+              <v-row justify="left">
+                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Go to Estimator</v-btn>
+              </v-row>
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </v-row>
 
 
@@ -109,5 +125,9 @@ export default {
 <style scoped>
   .full-height{
     height: 100%;
+  }
+
+  .topborder{
+    border-top: 2px black;
   }
 </style>
