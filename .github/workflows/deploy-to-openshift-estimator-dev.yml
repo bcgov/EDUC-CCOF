@@ -1,4 +1,4 @@
-name: DEV, Build & Deploy Estimator 
+name: 1 DEV - Build & Deploy estimator
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -143,7 +143,7 @@ jobs:
         oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
         # Cancel any rollouts in progress
-        oc rollout cancel dc/${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+        oc rollout cancel dc/${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null \
         || true && echo "No rollout in progress"
         
         # Create the image stream if it doesn't exist
