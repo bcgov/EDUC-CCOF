@@ -73,6 +73,7 @@ addBaseRouterGet('oidcBceid', '/login_bceid');
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
+  // const token = req.user.jwt;
   req.logout();
   req.session.destroy();
   let retUrl;
@@ -88,10 +89,11 @@ router.get('/logout', async (req, res) => {
     retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_district_user');
   } else {
     retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+    
   }
   log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
   res.redirect(config.get('siteMinder_logout_endpoint') + retUrl );
-
+  // res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend'));
 });
 
 const UnauthorizedRsp = {
