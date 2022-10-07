@@ -30,14 +30,16 @@
       <v-row>
         <v-col class="xs-12 lg-4 xl-2 ">
           <v-divider></v-divider>
-          <v-card flat class="topborder">
+          <!-- Add height="100%" to div directly below to have the buttons line up with each other on desktop.-->
+          <v-card flat class="d-flex flex-column" >
             <v-card-title class="gov-header">
               <h4 id="login_text">Use your Business BCeID</h4>
             </v-card-title>
             <v-card-text id="login_descriptor">
               Enter your user ID and password to continue.
             </v-card-text>
-            <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-card-actions class="mt-auto">
               <v-row justify="left">
                 <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
               </v-row>
@@ -47,7 +49,7 @@
 
       <v-col class="xs-12 lg-6 xl-2">
         <v-divider></v-divider>
-        <v-card flat>
+        <v-card flat class="d-flex flex-column">
           <v-card-title class="gov-header">
             <h4 id="login_text">Don't have a BCeID?</h4>
           </v-card-title>
@@ -72,7 +74,7 @@
       <v-row justify="center">
         <v-col class="xs-12 border-top">
           <v-divider></v-divider>
-          <v-card flat >
+          <v-card flat class="d-flex flex-column">
             <v-card-title class="gov-header">
               <h4 id="login_text">CCFRI Estimator</h4>
             </v-card-title>
@@ -82,6 +84,7 @@
               Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  <br>
               Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
             </v-card-text>
+            <v-spacer></v-spacer>
             <v-card-actions>
               <v-row justify="left">
                 <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Go to Estimator</v-btn>
