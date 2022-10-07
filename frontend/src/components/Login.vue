@@ -3,10 +3,8 @@
     <article id="login-banner" class="top-banner">
 
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
-
-      
       <v-row >
-        <v-col cols="12" class="center" align="center">
+        <v-col cols="12" align="center">
           <v-img
             :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
             max-height="300"
@@ -26,6 +24,9 @@
       <!-- end header-->
 
       <!--top row of cards-->
+
+      <!-- containerWidth1450 is a custom css class I wrote to make the container behave in the margins... It "should" just listen to the Vuetify margins, but it wasn't and I couldn't figure out why.-->
+      <v-container class="containerWidth1450 pa-0" >
       <v-row>
         <v-col class="xs-12 lg-4 xl-2 ">
           <v-divider></v-divider>
@@ -90,11 +91,13 @@
         </v-col>
       </v-row>
 
+      <v-divider></v-divider>
+    </v-container>
       <!--END CCFRI Est Card-->
 
       <!-- This is where the form will go-->
       <v-row>
-        <v-divider></v-divider>
+        
       </v-row>
 
     </article>
@@ -130,6 +133,10 @@ export default {
 <style scoped>
   .full-height{
     height: 100%;
+  }
+
+  .containerWidth1450{
+    max-width: 1450px
   }
 
 
