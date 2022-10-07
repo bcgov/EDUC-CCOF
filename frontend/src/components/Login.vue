@@ -5,17 +5,17 @@
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
 
       
-      <v-row justify="center">
-        <v-col cols="12" class="pt-0" align="center">
+      <v-row >
+        <v-col cols="12" class="center" align="center">
           <v-img
             :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
             max-height="300"
             max-width="1448" >
-            <v-row justify="left" class="py-10">
-              <v-col sm="10">
-              <span class="white--text">
-                <h1 class="text-h3 pt-10" style="font-family:BCSans;">My ChildCare Services</h1>
-                <p class="text-h5 pt-4">Welcome</p>
+            <v-row class=" ml-4 my-16">
+              <v-col sm="10" align="left" >
+              <span class="white--text" >
+                <v-text class="text-h3"   style="font-family:BCSans;">My ChildCare Services</v-text> <br><br>
+                <v-text class="text-h5 ">Welcome</v-text>
               </span>
             </v-col>
           </v-row>
@@ -25,11 +25,8 @@
 
       <!-- end header-->
 
-
-      <!-- <v-container> -->
+      <!--top row of cards-->
       <v-row>
-        <!-- <v-col cols="1" class="lg-1"></v-col> -->
-
         <v-col class="xs-12 lg-4 xl-2 ">
           <v-divider></v-divider>
           <v-card flat class="topborder">
@@ -56,21 +53,21 @@
           <v-card-text id="login_descriptor">
             BCeID is a user ID and password. You can use it to log into many participating government services. <br><br>
             If you have logged into other B.C. government services before, you may already have an account. <br><br>
-            You must register for a Business BCeID before you can log in - it only takes a few minutes.<br><br>
+            You must register for a Business BCeID before you can log in - it only takes a few minutes.
           </v-card-text>
           <v-card-actions>
             <v-row justify="left">
-              <!--this button should be changed to route to the bc gov eID webshite-->
               <v-btn href="https://www.bceid.ca/register/business/getting_started/getting_started.aspx" class="ma-5" dark color='#003366'>Register for a BCeID<v-icon>mdi-login</v-icon></v-btn>
             </v-row>
           </v-card-actions>
         </v-card>
       </v-col>
-        <!-- <v-col cols="1" class="lg-1"></v-col> -->
       </v-row>
 
-    <!-- </v-container> -->
+      <!--END top row of cards-->
 
+
+      <!-- CCFRI Est Card-->
       <v-row justify="center">
         <v-col class="xs-12 border-top">
           <v-divider></v-divider>
@@ -83,7 +80,6 @@
               Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. <br>
               Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  <br>
               Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
             </v-card-text>
             <v-card-actions>
               <v-row justify="left">
@@ -94,6 +90,9 @@
         </v-col>
       </v-row>
 
+      <!--END CCFRI Est Card-->
+
+      <!-- This is where the form will go-->
       <v-row>
         <v-divider></v-divider>
       </v-row>
@@ -133,7 +132,5 @@ export default {
     height: 100%;
   }
 
-  .topborder{
-    border-top: 2px black;
-  }
+
 </style>
