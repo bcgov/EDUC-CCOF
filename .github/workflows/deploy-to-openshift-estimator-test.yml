@@ -24,12 +24,10 @@ env:
   REPO_NAME: "educ-ccof"
   BRANCH: "main"
   APP_NAME_FRONTEND: "estimator-frontend"
-  APP_FOLDER: "estimator-frontend"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
-  NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
-  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
-  TAG: "latest"
+  
+  
 
   MIN_REPLICAS: "1"
   MAX_REPLICAS: "1"
