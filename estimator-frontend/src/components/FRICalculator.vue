@@ -429,7 +429,7 @@
                   <v-divider></v-divider>
                 </v-col>
               </v-row>
-              <!--v-row>
+              <v-row>
                 <v-col cols="5" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
                   Parent fee frequency
@@ -460,7 +460,7 @@
                 <v-col class="py-0">
                   <v-divider></v-divider>
                 </v-col>
-              </v-row-->
+              </v-row>
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
