@@ -31,22 +31,24 @@
         <!-- <v-col cols="1" class="lg-1"></v-col> -->
 
         <v-col class="xs-12 lg-4 xl-2 ">
-        <v-card flat class="topborder">
-          <v-card-title class="gov-header">
-            <h4 id="login_text">Use your Business BCeID</h4>
-          </v-card-title>
-          <v-card-text id="login_descriptor">
-            Enter your user ID and password to continue.
-          </v-card-text>
-          <v-card-actions>
-            <v-row justify="left">
-              <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
-            </v-row>
-          </v-card-actions>
-        </v-card>
+          <v-divider></v-divider>
+          <v-card flat class="topborder">
+            <v-card-title class="gov-header">
+              <h4 id="login_text">Use your Business BCeID</h4>
+            </v-card-title>
+            <v-card-text id="login_descriptor">
+              Enter your user ID and password to continue.
+            </v-card-text>
+            <v-card-actions>
+              <v-row justify="left">
+                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
+              </v-row>
+            </v-card-actions>
+          </v-card>
       </v-col>
 
       <v-col class="xs-12 lg-6 xl-2">
+        <v-divider></v-divider>
         <v-card flat>
           <v-card-title class="gov-header">
             <h4 id="login_text">Don't have a BCeID?</h4>
@@ -70,8 +72,9 @@
     <!-- </v-container> -->
 
       <v-row justify="center">
-        <v-col class="xs-12 ">
-          <v-card flat>
+        <v-col class="xs-12 border-top">
+          <v-divider></v-divider>
+          <v-card flat >
             <v-card-title class="gov-header">
               <h4 id="login_text">CCFRI Estimator</h4>
             </v-card-title>
@@ -91,6 +94,9 @@
         </v-col>
       </v-row>
 
+      <v-row>
+        <v-divider></v-divider>
+      </v-row>
 
     </article>
   </v-container>
