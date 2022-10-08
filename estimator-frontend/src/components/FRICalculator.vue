@@ -504,10 +504,10 @@
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
                     <span v-if="child.careSchedule == 'Full Time'">
-                      (Optional) Actual parent fee before reduction applied
+                      Actual parent fee before reduction applied (Optional)
                     </span>
                     <span v-else-if="child.careSchedule == 'Part Time' && (getOccurrence(child.selectedCareType, 2) >= 5)">
-                      (Optional) Actual parent fee before reduction applied
+                      Actual parent fee before reduction applied (Optional)
                     </span>
                     <span v-else>
                       <span class="red--text"><strong> *</strong></span>
