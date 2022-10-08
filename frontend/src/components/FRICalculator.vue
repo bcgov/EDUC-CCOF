@@ -805,7 +805,7 @@ export default {
       case 'Monthly':
         return fee;
       }
-      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      // console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
 
@@ -818,7 +818,7 @@ export default {
       case 'Monthly':
         return fee;
       }
-      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      // console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },    
 
@@ -864,7 +864,7 @@ export default {
             dailyRate = parentRate / numberOfDaysForMonth;
             break;
           }
-          console.log('daily parent rates i: ' + dailyRate);
+          // console.log('daily parent rates i: ' + dailyRate);
         
           // Determine the daily rates for partTime and fulltime based on the number of days in month...
           let partTimeRateFromTable;
