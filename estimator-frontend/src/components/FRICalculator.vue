@@ -477,7 +477,7 @@
                     </v-card>
                   </template>
                     <span>Enter the highest full-time parent fee approved by the Ministry for this child care provider to charge,<br>
-                          for the applicable care category, before the fee reduction is applied Child care providers can reference<br>
+                          for the applicable care category, before the fee reduction is applied. Child care providers can reference<br>
                           this information on their approved Program Confirmation Form. Parents, ask your child care provider if<br>
                           you are unsure which fee to enter.</span>
                   </v-tooltip>
