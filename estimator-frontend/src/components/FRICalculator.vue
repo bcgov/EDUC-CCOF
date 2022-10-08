@@ -477,7 +477,7 @@
                     </v-card>
                   </template>
                     <span>Enter the highest full-time parent fee approved by the Ministry for this child care provider to charge,<br>
-                          for the applicable care category, before the fee reduction is applied Child care providers can reference<br>
+                          for the applicable care category, before the fee reduction is applied. Child care providers can reference<br>
                           this information on their approved Program Confirmation Form. Parents, ask your child care provider if<br>
                           you are unsure which fee to enter.</span>
                   </v-tooltip>
@@ -504,10 +504,10 @@
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
                     <span v-if="child.careSchedule == 'Full Time'">
-                      (Optional) Actual parent fee before reduction applied
+                      Actual parent fee before reduction applied (Optional)
                     </span>
                     <span v-else-if="child.careSchedule == 'Part Time' && (getOccurrence(child.selectedCareType, 2) >= 5)">
-                      (Optional) Actual parent fee before reduction applied
+                      Actual parent fee before reduction applied (Optional)
                     </span>
                     <span v-else>
                       <span class="red--text"><strong> *</strong></span>
@@ -808,7 +808,7 @@ export default {
       return null;
     },
 
-    getMonthlyParentFee(fee, feeFrequency) {
+    getFullTimeMonthlyParentFee(fee, feeFrequency) {
       switch (feeFrequency) {
       case 'Daily':
         return fee * 20;
@@ -817,9 +817,22 @@ export default {
       case 'Monthly':
         return fee;
       }
-      console.log('getMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
+
+    getPartTimeMonthlyParentFee(fee, careDaysPerWeek, feeFrequency) {
+      switch (feeFrequency) {
+      case 'Daily':
+        return fee * careDaysPerWeek;
+      case 'Weekly':
+        return fee * 4;
+      case 'Monthly':
+        return fee;
+      }
+      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      return null;
+    },    
 
     estimateTheBenefit() {
       if (this.$refs.form.validate() == true) {
@@ -896,7 +909,7 @@ export default {
             fullTimeTotal = fullTimeDailyRate * 20;
             partTimeTotal = 0;
 
-            let monthlyParentFee = this.getMonthlyParentFee(parentRate, this.children[i].parentFeeFrequency);
+            let monthlyParentFee = this.getFullTimeMonthlyParentFee(parentRate, this.children[i].parentFeeFrequency);
 
             totalRateReduction = partTimeTotal+fullTimeTotal;
             totalRateReduction = Math.max(totalRateReduction, rateTableInfo.rateFloor);
@@ -905,7 +918,7 @@ export default {
             reductionAmountPerChild = totalRateReduction;
             
             if (this.children[i].partTimeFee) {
-              monthlyParentFee = this.getMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
+              monthlyParentFee = this.getFullTimeMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
             }
             actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
 
@@ -936,7 +949,7 @@ export default {
           
             totalRateReduction = partTimeTotal+fullTimeTotal;
             let rateReductionFloor = this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays);
-            let monthlyParentFee = this.getMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
+            let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee, partTimeNumberOfDays + fullTimeNumberOfDays, this.children[i].parentFeeFrequency);
 
             //Make sure it's at least the Rate Floor amount
             totalRateReduction = Math.max(totalRateReduction, rateReductionFloor);
