@@ -30,7 +30,7 @@
                   </v-icon>
                 </span>
                 <span class="pa-1" style="font-family:BCSans;">
-                    The estimation provided in this service is not guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
+                    The estimation provided in this service is not a guarantee of payments. The estimation does not take into account all of your circumstances and should be used as a guide only.
                 </span>
               </v-alert>
             </template>
@@ -47,18 +47,19 @@
           </v-row>
           <v-row>
             <v-col cols="6" class="estimator-label">
-                <span class="red--text"><strong>&nbsp;*</strong></span>
-                Type of care
+              <span class="red--text"><strong> *</strong></span>
+                Total number of children
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-select
-                  v-model="form.typeOfCare"
-                  :items="this.typeOfCareList"
-                  outlined
-                  required
-                  :rules="rulesTypeOfCare"
-                  dense>
-              </v-select>
+              <v-text-field 
+                @change="updateNumberOfChildSubForms"
+                @keypress="numberFilter"
+                v-model="totalNumberOfChildren"
+                outlined
+                required
+                :rules="rulesTotalNumChildren"
+                dense>
+              </v-text-field>
             </v-col>
           </v-row>
           <v-row>
@@ -92,20 +93,30 @@
           </v-row>
           -->
           <v-row>
-            <v-col cols="6" class="estimator-label">
-              <span class="red--text"><strong> *</strong></span>
-                Total number of children
+            <v-col cols="5" class="estimator-label">
+                <span class="red--text"><strong>&nbsp;*</strong></span>
+                Type of care
+            </v-col>
+            <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
+                            v-on="on">
+                      <v-icon small color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Licensed group child care takes place in a community-based facility or centre.<br> Licensed family child care takes place in the child care provider’s personal residence.</span>
+                  </v-tooltip>
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-text-field 
-                @change="updateNumberOfChildSubForms"
-                @keypress="numberFilter"
-                v-model="totalNumberOfChildren"
-                outlined
-                required
-                :rules="rulesTotalNumChildren"
-                dense>
-              </v-text-field>
+              <v-select
+                  v-model="form.typeOfCare"
+                  :items="this.typeOfCareList"
+                  outlined
+                  required
+                  :rules="rulesTypeOfCare"
+                  dense>
+              </v-select>
             </v-col>
           </v-row>
   <!-- ******************************************************************************************************************************************************** -->
@@ -114,9 +125,20 @@
           <div v-for="child in this.children" :key="child.number">
             <v-card-title class="grey lighten-3" style="color:#39598A;font-style:normal;font-weight:700;font-family:BCSans;font-size:20px;padding-top:8px;padding-bottom:8px">Child {{child.number}}</v-card-title>
               <v-row>
-                <v-col cols="6" class="estimator-label">
+                <v-col cols="5" class="estimator-label">
                   <span class="red--text"><strong> *</strong></span>
-                  Child's care category
+                  Child's age category
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
+                            v-on="on">
+                      <v-icon small color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Ask your care provider if you are unsure which age category to select.</span>
+                  </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
@@ -148,7 +170,9 @@
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>If you don’t require full time care, please select the typical schedule of half days (4 hours or less) and full days (more than 4 hours) you require per week. The maximum benefit rates for CCFRI are based on 5 full days per week (full time care).</span>
+                    <span>If you don’t require full time care, please select the typical schedule of half days (4 hours or less) and<br>
+                          full days (more than 4 hours) you require per week. The maximum benefit rates for CCFRI are based<br>
+                          on 5 full days per week (full time care).</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -441,7 +465,7 @@
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
                     <template><span class="red--text"><strong> *</strong></span></template>
-                    CCFRI approved full-time parent fee 
+                    Approved full-time parent fee before fee reduction applied
                   </div>
                 </v-col>
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
@@ -452,7 +476,10 @@
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Enter the full-time Parent Fee approved by the Ministry for this provider to charge, for the applicable care category. Child Care Providers must provide this information to parents upon request.</span>
+                    <span>Enter the highest full-time parent fee approved by the Ministry for this child care provider to charge,<br>
+                          for the applicable care category, before the fee reduction is applied. Child care providers can reference<br>
+                          this information on their approved Program Confirmation Form. Parents, ask your child care provider if<br>
+                          you are unsure which fee to enter.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -476,8 +503,16 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
-                    <span v-if="child.careSchedule == 'Part Time' && (getOccurrence(child.selectedCareType, 2) < 5)" class="red--text"><strong> *</strong></span>
-                    Your parent fee
+                    <span v-if="child.careSchedule == 'Full Time'">
+                      Actual parent fee before reduction applied (Optional)
+                    </span>
+                    <span v-else-if="child.careSchedule == 'Part Time' && (getOccurrence(child.selectedCareType, 2) >= 5)">
+                      Actual parent fee before reduction applied (Optional)
+                    </span>
+                    <span v-else>
+                      <span class="red--text"><strong> *</strong></span>
+                      Actual parent fee before reduction applied
+                    </span>
                   </div>
                 </v-col>
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
@@ -488,7 +523,9 @@
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Indicate your parent fee, before any reductions or benefits are applied</span>
+                    <span>Indicate the parent fee for this care arrangement before any reductions or benefits are applied.<br>
+                          This fee may be different from the CCFRI approved full time parent fee if it is a part-time fee,<br>
+                          discounted fee, or inclusive of optional fees.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -537,7 +574,7 @@
           <v-row>
             <v-col cols="12">
               <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:500;font-size:16px">
-                Based on the information you have provided, you may be eligible for the following fee reduction:
+                Based on the information you have provided, you may be eligible for the following monthly ChildCareBC fee reduction:
               </div>
             </v-col>
           </v-row>
@@ -562,16 +599,12 @@
               </div>
             </v-col>
           </v-row>
-
           <div v-for="result in results" :key="result.number">
-            
             <v-row>
             <v-col cols="12" >
               <v-divider></v-divider>
             </v-col>
             </v-row>
-
-
             <v-row>
             <v-col cols="2" style="padding-bottom:0px;padding-top:0px">
               <div style="padding-left:24px;font-family:BCSans;font-weight:500;font-size:16px;">
@@ -605,15 +638,12 @@
   </v-container>
 </template>
 <script>
-// import PrimaryButton from '@/components/util/PrimaryButton';
-import alertMixin from '@/mixins/alertMixin';
 import { constants } from '@/utils/constants';
 
 export default {
   name: 'FRICalculator',
   components: //{PrimaryButton},
     constants,
-  mixins: [alertMixin],
   props: {
   },
   data() {
@@ -686,9 +716,9 @@ export default {
         (v) => !!v || 'Child\'s age category is required'
       ],
       rulesApprovedFee: [
-        (v) => !!v || 'CCFRI approved full-time parent fee is required',
-        (v) => v <= 9999 || 'Maximum CCFRI approved full-time parent fee is $9999.00',
-        (v) => v > 0 || 'CCFRI approved full-time parent fee must be greater than $0'
+        (v) => !!v || 'Approved full-time parent fee before fee reduction applied is required',
+        (v) => v <= 9999 || 'Maximum Approved full-time parent fee before fee reduction applied is $9999.00',
+        (v) => v > 0 || 'Approved full-time parent fee before fee reduction applied must be greater than $0'
       ],
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent fee frequency is required'
@@ -698,10 +728,10 @@ export default {
   methods: {
     validateParentFee(child, v) {
       if (v && v > 9999) {
-        return ['Maximum parent fee is $9999.00'];
+        return ['Maximum Actual parent fee before reduction applied is $9999.00'];
       }
       if (child.careSchedule == 'Part Time' && !this.isFullTime(child) && (this.getOccurrence(child.selectedCareType, 2) < 5) && !v) {
-        return ['Your parent fee is required'];
+        return ['Actual parent fee before reduction applied is required'];
       }
       return [];
     },
@@ -778,7 +808,7 @@ export default {
       return null;
     },
 
-    getMonthlyParentFee(fee, feeFrequency) {
+    getFullTimeMonthlyParentFee(fee, feeFrequency) {
       switch (feeFrequency) {
       case 'Daily':
         return fee * 20;
@@ -787,9 +817,22 @@ export default {
       case 'Monthly':
         return fee;
       }
-      console.log('getMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
+
+    getPartTimeMonthlyParentFee(fee, careDaysPerWeek, feeFrequency) {
+      switch (feeFrequency) {
+      case 'Daily':
+        return fee * careDaysPerWeek;
+      case 'Weekly':
+        return fee * 4;
+      case 'Monthly':
+        return fee;
+      }
+      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      return null;
+    },    
 
     estimateTheBenefit() {
       if (this.$refs.form.validate() == true) {
@@ -866,7 +909,7 @@ export default {
             fullTimeTotal = fullTimeDailyRate * 20;
             partTimeTotal = 0;
 
-            let monthlyParentFee = this.getMonthlyParentFee(parentRate, this.children[i].parentFeeFrequency);
+            let monthlyParentFee = this.getFullTimeMonthlyParentFee(parentRate, this.children[i].parentFeeFrequency);
 
             totalRateReduction = partTimeTotal+fullTimeTotal;
             totalRateReduction = Math.max(totalRateReduction, rateTableInfo.rateFloor);
@@ -875,7 +918,7 @@ export default {
             reductionAmountPerChild = totalRateReduction;
             
             if (this.children[i].partTimeFee) {
-              monthlyParentFee = this.getMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
+              monthlyParentFee = this.getFullTimeMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
             }
             actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
 
@@ -906,7 +949,7 @@ export default {
           
             totalRateReduction = partTimeTotal+fullTimeTotal;
             let rateReductionFloor = this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays);
-            let monthlyParentFee = this.getMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
+            let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee, partTimeNumberOfDays + fullTimeNumberOfDays, this.children[i].parentFeeFrequency);
 
             //Make sure it's at least the Rate Floor amount
             totalRateReduction = Math.max(totalRateReduction, rateReductionFloor);
@@ -920,7 +963,7 @@ export default {
             
 
             let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 7);
-            console.log('part time fee floor: ' + partTimeFeeFloor);
+            // console.log('part time fee floor: ' + partTimeFeeFloor);
 
             //Make sure to apply minimum reduction Rate fee
             //Then apply minumum parent rate fee if possible
@@ -934,6 +977,7 @@ export default {
               //Parent fees are below fee floor, decrease rate reduction fee
               // console.log('monthlyParentFee < partTimeFeeFloor');
               // console.log('partTimeFeeFloor ' + partTimeFeeFloor);
+              // console.log('Rate floor ' + rateReductionFloor);
               // console.log('(monthlyParentFee - totalRateReduction) ' + (monthlyParentFee - totalRateReduction));
               let changeRateBy = Math.min(totalRateReduction - rateReductionFloor, partTimeFeeFloor - (monthlyParentFee - totalRateReduction));
               // console.log('change rate by: ' + changeRateBy);
