@@ -1,5 +1,5 @@
 FROM artifacts.developer.gov.bc.ca/docker-remote/node:14.19.1 as build-stage
-WORKDIR /frontend
+WORKDIR /estimator-frontend
 COPY package*.json ./
 RUN npm install
 COPY ./ .
@@ -9,4 +9,4 @@ FROM artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine as caddy-sta
 
 EXPOSE 2015
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY --from=build-stage /frontend/dist /srv
+COPY --from=build-stage /estimator-frontend/dist /srv

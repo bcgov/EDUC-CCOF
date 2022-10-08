@@ -12,7 +12,14 @@ module.exports = {
                 name: '/js/config/config.js'
               },
             }
-
+            // RLO - removed snowplow for now
+            // ,
+            // {
+            //   loader: 'file-loader',
+            //   options: {
+            //     name: '/js/snowplow.js'
+            //   }
+            // }
           ]
         }
       ]
@@ -28,19 +35,23 @@ module.exports = {
     }
   },
   devServer: {
-    proxy: {
-      ...['/api'].reduce(
-        (acc, ctx) => ({
-          ...acc,
-          [ctx]: {
-            target: 'http://localhost:8080',
-            changeOrigin: true,
-            ws: false
-          }
-        }),
-        {}
-      ),
-    }
+/*  Proxy was not passing CORS policies and failing to allow frontend to reach backend.
+      proxy:
+      {
+        ...['/api'].reduce(
+          (acc, ctx) => ({
+            ...acc,
+            [ctx]: {
+              target: process.env.VUE_APP_API_ROOT,
+              changeOrigin: true,
+              ws: false
+            }
+          }),
+          {}
+        ),
+      }
+*/
+      proxy: 'http://localhost:8080'
   },
   transpileDependencies: ['vuetify'],
   publicPath: '/'
