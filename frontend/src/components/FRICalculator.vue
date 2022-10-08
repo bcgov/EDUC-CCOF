@@ -795,18 +795,6 @@ export default {
       return (dailyRate * daysFullTime) + (dailyRate * daysPartTime /2);
     },
 
-    getDailyRate(rate, feeFrequency) {
-      switch (feeFrequency) {
-      case 'Daily':
-        return rate;
-      case 'Weekly':
-        return rate / 7;
-      case 'Monthly':
-        return rate / 20;
-      }
-      console.log('getDailyRate-Unable to determine feeFrequency:' + feeFrequency);
-      return null;
-    },
 
     getFullTimeMonthlyParentFee(fee, feeFrequency) {
       switch (feeFrequency) {
@@ -870,12 +858,13 @@ export default {
             dailyRate = parentRate;
             break;
           case 'Weekly':
-            dailyRate = parentRate / 7;
+            dailyRate = parentRate / 5;
             break;
           case 'Monthly':
             dailyRate = parentRate / numberOfDaysForMonth;
             break;
           }
+          console.log('daily parent rates i: ' + dailyRate);
         
           // Determine the daily rates for partTime and fulltime based on the number of days in month...
           let partTimeRateFromTable;
