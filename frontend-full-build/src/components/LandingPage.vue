@@ -10,9 +10,9 @@
       <v-divider class="mx-16"/>
     </v-row>
     <v-row>
-      <v-col cols="12" md="6" >
+      <v-col cols="12" >
         <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="450"
+          max-width="950"
           min-height="270"
           rounded
           tiled
@@ -31,7 +31,8 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="6">
-        <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+
+        <!-- <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="450"
           min-height="270"
           rounded
@@ -81,7 +82,7 @@
             </p>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </v-card-text>
-        </v-card>
+        </v-card> -->
       </v-col>
     </v-row>
 
