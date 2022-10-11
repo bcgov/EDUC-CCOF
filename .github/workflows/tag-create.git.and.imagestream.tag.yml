@@ -7,6 +7,7 @@ env:
 
   REPO_NAME: "educ-ccof"
   BRANCH: "main"
+  APP_NAME_FRONTEND: "frontend"
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
 on:
