@@ -805,7 +805,7 @@ export default {
       case 'Monthly':
         return fee;
       }
-      // console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
 
@@ -818,7 +818,7 @@ export default {
       case 'Monthly':
         return fee;
       }
-      // console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },    
 
