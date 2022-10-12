@@ -15,7 +15,8 @@ async function getUserInfo(req, res) {
       organizationName: 'ABC organization',
       organizationId: 'org123',
       isDraft: false,
-      applicationSubmitted: false,
+      applicationSubmitted: true,
+      applicationApproved: true,
       facilityList: [{
         facilityName: 'ABC daycare',
         facilityId: 'fac123'},

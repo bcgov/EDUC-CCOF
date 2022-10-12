@@ -11,14 +11,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" >
-        
-        <!-- Currently just the text is re-rendered based on bool values of the user's application. These values are found in 
-        backend / components /user.js.
-        This is only for the first 3 scenarios where the application is not approved yet. Options are : Start application, continue draft, pending
-
-        I did it this way to reduce lines of code. Now it's just one card with text that changes. Perhaps with routing, we will need to change this?
-        -->
-        <v-card  elevation="4" class="pa-4 mx-auto rounded-lg"
+        <v-card  v-if="userInfo.organizationList[0].isDraft" elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="950"
           min-height="270"
           rounded
@@ -30,7 +23,7 @@
             </v-card-actions>     
 
           <!-- Draft saved, application not yet submitted-->
-          <v-card-text v-if="userInfo.organizationList[0].isDraft">
+          <v-card-text >
             <p class="text-h5 text--primary">
               CCOF, CCFRI, ECE-WE
             </p>
@@ -46,9 +39,20 @@
               class="ml-7"
             >Delete Application</v-btn>
           </v-card-text>
+          </v-card>
 
-          <!-- Application saved, but decision not yet made.-->
-          <v-card-text v-else-if="userInfo.organizationList[0].applicationSubmitted">
+          <v-card  v-else-if="userInfo.organizationList[0].applicationSubmitted && !userInfo.organizationList[0].applicationApproved" elevation="4" class="pa-4 mx-auto rounded-lg"
+          max-width="950"
+          min-height="270"
+          rounded
+          tiled
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          :ripple="false"
+          >
+            <v-card-actions>
+            </v-card-actions>
+
+            <v-card-text>
             <p class="text-h5 text--primary">
               CCOF, CCFRI, ECE-WE SUBMITTED
             </p>
@@ -59,9 +63,21 @@
             <a href="#">CCFRI Status: In Progress</a><br>
             <a href="#">ECE-WE Status: In Progress</a><br>
           </v-card-text>
+          </v-card>
 
-          <!-- User visting for the first time, start new application-->
-          <v-card-text v-else>
+
+          <v-card  v-else-if="!userInfo.organizationList[0].applicationSubmitted && !userInfo.organizationList[0].isDraft" elevation="4" class="pa-4 mx-auto rounded-lg"
+          max-width="950"
+          min-height="270"
+          rounded
+          tiled
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          :ripple="false"
+          >
+            <v-card-actions>
+            </v-card-actions>     
+
+            <v-card-text >
             <p class="text-h5 text--primary">
               Apply for CCOF, CCFRI or ECE-WE
             </p>
@@ -73,10 +89,131 @@
               elevation="2"
             >START APPLICATION</v-btn>
           </v-card-text>
+
+          <!-- Application saved, but decision not yet made.-->
+          
+
+          <!-- User visting for the first time, start new application-->
+          
         </v-card>
+      </v-col>
+    </v-row>
+ 
+    <v-container v-if="userInfo.organizationList[0].applicationSubmitted && userInfo.organizationList[0].applicationApproved">
+
+      <v-row > 
+        <v-col class="col-lg-4 col-12"> 
+
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+            min-height="230"
+            rounded
+            tiled
+            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+            :ripple="false"
+            >
+            <v-card-text>
+              <p class="text-h5 text--primary">
+                CCOF
+              </p>
+              <br>
+              <a href="#">CCOF Status: Approved</a><br>
+            </v-card-text>
+          </v-card>
 
 
-        <!-- Application Approved screen starts here -->
+        </v-col>
+        <v-col class="col-lg-4 col-12"> 
+
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+            min-height="230"
+            rounded
+            tiled
+            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+            :ripple="false"
+            >
+            <v-card-text>
+              <p class="text-h5 text--primary">
+                Make a change to my information, parent fees, or funding agreement
+              </p><br>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+            </v-card-text>
+          </v-card>
+
+        </v-col>
+        <v-col class="col-lg-4 col-12"> 
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+            min-height="230"
+            rounded
+            tiled
+            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+            :ripple="false"
+            >
+            <v-card-text>
+              <p class="text-h5 text--primary">
+                Submit my Enrolment Reports or monthly ECE-WE reports to receive payment
+              </p>
+              <br>
+              <a href="#">LINK</a><br>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <br><br>
+      <v-divider>
+      </v-divider>
+      <br><br>
+
+      <v-row>
+        <v-col cols="6">
+          <!--TODO: make this search box actually do something-->
+          <v-text-field 
+            clearable="true" 
+            filled="true" 
+            prefix="Filter by facility, status, or licence: ">
+
+          </v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+            min-height="230"
+            rounded
+            tiled
+            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+            :ripple="false"
+            v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" v-bind:key="facilityId"
+            >
+            
+            <v-card-text>
+              <p class="text-h5 text--primary">
+                Facility {{index +1}}
+              </p>
+              <p class="text-h6 text--primary">
+                Facility Name:  {{facilityName}}
+              </p>
+              <p class="text-h6 text--primary">
+                Facility ID:  {{facilityId}}
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <br>
+              <a href="#">CCFRI Status: Approved</a><br>
+              <a href="#">ECE-WE Status: In Progress</a><br><br>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-container>
+    
+
+
+        <!-- Application Approved screens starts here -->
 
 
 
@@ -131,10 +268,8 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </v-card-text>
         </v-card> -->
-      </v-col>
-    </v-row>
-
-  </v-container>
+      
+  
 </template>
 <script>
 
