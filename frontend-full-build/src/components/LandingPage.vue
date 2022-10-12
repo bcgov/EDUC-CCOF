@@ -1,5 +1,11 @@
 <template>
   <v-container>
+    <v-toolbar 
+      v-if="userInfo.organizationList[0].unreadMessages"
+      color="green"
+    >
+      <h2 class="text-center">Action Required: New Messages</h2>
+    </v-toolbar>
     <v-row justify="center">
       <div
         class="pa-10"
@@ -102,17 +108,17 @@
     <v-container v-if="userInfo.organizationList[0].applicationSubmitted && userInfo.organizationList[0].applicationApproved">
 
       <v-row > 
-        <v-col class="col-lg-4 col-12"> 
+        <v-col class="col-lg-3 col-12"> 
 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="230"
+            min-height="250"
             rounded
             tiled
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
             <v-card-text>
-              <p class="text-h5 text--primary">
+              <p class="text-h6 text--primary">
                 CCOF
               </p>
               <br>
@@ -122,17 +128,17 @@
 
 
         </v-col>
-        <v-col class="col-lg-4 col-12"> 
+        <v-col class="col-lg-3 col-12"> 
 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="230"
+            min-height="250"
             rounded
             tiled
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
             <v-card-text>
-              <p class="text-h5 text--primary">
+              <p class="text-h6 text--primary">
                 Make a change to my information, parent fees, or funding agreement
               </p><br>
               <p>
@@ -142,17 +148,35 @@
           </v-card>
 
         </v-col>
-        <v-col class="col-lg-4 col-12"> 
+        <v-col class="col-lg-3 col-12"> 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="230"
+            min-height="250"
             rounded
             tiled
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
             <v-card-text>
-              <p class="text-h5 text--primary">
+              <p class="text-h6 text--primary">
                 Submit my Enrolment Reports or monthly ECE-WE reports to receive payment
+              </p>
+              <br>
+              <a href="#">LINK</a><br>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+          <v-col class="col-lg-3 col-12"> 
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+            min-height="250"
+            rounded
+            tiled
+            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+            :ripple="false"
+            >
+            <v-card-text>
+              <p class="text-h6 text--primary">
+                Review my funding agreement for 2022/23
               </p>
               <br>
               <a href="#">LINK</a><br>
@@ -167,7 +191,7 @@
       <br><br>
 
       <v-row>
-        <v-col cols="6">
+        <v-col class="col-12 col-md-6">
           <!--TODO: make this search box actually do something-->
           <v-text-field 
             clearable="true" 
@@ -179,7 +203,7 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
+          <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg"
             min-height="230"
             rounded
             tiled
