@@ -805,7 +805,7 @@ export default {
       case 'Monthly':
         return fee;
       }
-      console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      // console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
 
@@ -818,7 +818,7 @@ export default {
       case 'Monthly':
         return fee;
       }
-      console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
+      // console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },    
 
@@ -946,6 +946,7 @@ export default {
             
 
             let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 7);
+            partTimeFeeFloor = Math.min(partTimeFeeFloor, 200); //Fee floor should not be more than $200 / month
             // console.log('part time fee floor: ' + partTimeFeeFloor);
 
             //Make sure to apply minimum reduction Rate fee
