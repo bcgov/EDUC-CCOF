@@ -23,7 +23,7 @@ env:
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
   BRANCH: "main"
-  APP_NAME_BACKEND: "api"
+  APP_NAME_BACKEND: "backend"
   APP_FOLDER: "backend"
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
   NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
@@ -37,7 +37,7 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL_PREFIX }}-api-${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev.${{ secrets.SITE_URL_POSTFIX }}
+  HOST_ROUTE: ${{ secrets.SITE_URL_PREFIX }}-backend-${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev.${{ secrets.SITE_URL_POSTFIX }}
 
 on:
   workflow_dispatch:
