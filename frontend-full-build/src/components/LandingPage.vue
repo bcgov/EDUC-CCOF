@@ -3,8 +3,11 @@
     <v-toolbar 
       v-if="userInfo.organizationList[0].unreadMessages"
       color="green"
+      justify="center"
     >
-      <h2 class="text-center">Action Required: New Messages</h2>
+      <v-toolbar-title class="flex text-center" >
+        <h2>Action Required: New Messages</h2>
+      </v-toolbar-title >
     </v-toolbar>
     <v-row justify="center">
       <div
@@ -105,11 +108,13 @@
       </v-col>
     </v-row>
  
-    <v-container v-if="userInfo.organizationList[0].applicationSubmitted && userInfo.organizationList[0].applicationApproved">
-
+     <!-- Application Approved screens starts here -->
+    <v-container 
+    v-if="userInfo.organizationList[0].applicationSubmitted && userInfo.organizationList[0].applicationApproved"
+    class="px-10"
+    >
       <v-row > 
-        <v-col class="col-lg-3 col-12"> 
-
+        <v-col class="col-xl-3 col-12"> 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
             min-height="250"
             rounded
@@ -125,11 +130,9 @@
               <a href="#">CCOF Status: Approved</a><br>
             </v-card-text>
           </v-card>
-
-
         </v-col>
-        <v-col class="col-lg-3 col-12"> 
 
+        <v-col class="col-xl-3 col-12"> 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
             min-height="250"
             rounded
@@ -146,9 +149,9 @@
               </p>
             </v-card-text>
           </v-card>
-
         </v-col>
-        <v-col class="col-lg-3 col-12"> 
+
+        <v-col class="col-xl-3 col-12"> 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
             min-height="250"
             rounded
@@ -166,7 +169,7 @@
           </v-card>
         </v-col>
 
-          <v-col class="col-lg-3 col-12"> 
+        <v-col class="col-xl-3 col-12"> 
           <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
             min-height="250"
             rounded
@@ -176,7 +179,7 @@
             >
             <v-card-text>
               <p class="text-h6 text--primary">
-                Review my funding agreement for 2022/23
+                Renew my funding agreement for 2022/23
               </p>
               <br>
               <a href="#">LINK</a><br>
@@ -197,13 +200,13 @@
             clearable="true" 
             filled="true" 
             prefix="Filter by facility, status, or licence: ">
-
           </v-text-field>
         </v-col>
       </v-row>
+      
       <v-row>
-        <v-col cols="12">
-          <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg"
+        <!-- <v-col cols="12"> -->
+          <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg col-12 "
             min-height="230"
             rounded
             tiled
@@ -211,33 +214,33 @@
             :ripple="false"
             v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" v-bind:key="facilityId"
             >
-            
-            <v-card-text>
-              <p class="text-h5 text--primary">
-                Facility {{index +1}}
-              </p>
-              <p class="text-h6 text--primary">
-                Facility Name:  {{facilityName}}
-              </p>
-              <p class="text-h6 text--primary">
-                Facility ID:  {{facilityId}}
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-              <br>
-              <a href="#">CCFRI Status: Approved</a><br>
-              <a href="#">ECE-WE Status: In Progress</a><br><br>
-            </v-card-text>
+              <v-card-text>
+                <p class="text-h5 text--primary">
+                  Facility {{index +1}}
+                </p>
+                <p class="text-h6 text--primary">
+                  Facility Name:  {{facilityName}}
+                </p>
+                <!-- <p class="text-h6 text--primary">
+                  Facility ID:  {{facilityId}}
+                </p> -->
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+                <br>
+                <p class="text-h5 text--primary">CCFRI, ECE-WE</p>
+                <a href="#">CCFRI Status: Approved</a><br>
+                <a href="#">ECE-WE Status: In Progress</a><br><br>
+              </v-card-text>
           </v-card>
-        </v-col>
+        <!-- </v-col> -->
       </v-row>
     </v-container>
   </v-container>
     
 
 
-        <!-- Application Approved screens starts here -->
+       
 
 
 
@@ -298,9 +301,6 @@
 <script>
 
 import { mapGetters} from 'vuex';
-
-
-console.log("hey");
 export default {
   name: 'LandingPage',
   props: {
