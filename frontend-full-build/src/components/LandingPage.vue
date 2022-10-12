@@ -12,7 +12,13 @@
     <v-row>
       <v-col cols="12" >
         
-        <v-card v-if="userInfo.organizationList[0].isDraft" elevation="4" class="pa-4 mx-auto rounded-lg"
+        <!-- Currently just the text is re-rendered based on bool values of the user's application. These values are found in 
+        backend / components /user.js.
+        This is only for the first 3 scenarios where the application is not approved yet. Options are : Start application, continue draft, pending
+
+        I did it this way to reduce lines of code. Now it's just one card with text that changes. Perhaps with routing, we will need to change this?
+        -->
+        <v-card  elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="950"
           min-height="270"
           rounded
@@ -21,9 +27,10 @@
           :ripple="false"
           >
             <v-card-actions>
+            </v-card-actions>     
 
-            </v-card-actions>          
-          <v-card-text>
+          <!-- Draft saved, application not yet submitted-->
+          <v-card-text v-if="userInfo.organizationList[0].isDraft">
             <p class="text-h5 text--primary">
               CCOF, CCFRI, ECE-WE
             </p>
@@ -39,21 +46,9 @@
               class="ml-7"
             >Delete Application</v-btn>
           </v-card-text>
-        </v-card>
 
-
-        <v-card v-if="userInfo.organizationList[0].applicationSubmitted" elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="950"
-          min-height="270"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
-            <v-card-actions>
-
-            </v-card-actions>          
-          <v-card-text>
+          <!-- Application saved, but decision not yet made.-->
+          <v-card-text v-else-if="userInfo.organizationList[0].applicationSubmitted">
             <p class="text-h5 text--primary">
               CCOF, CCFRI, ECE-WE SUBMITTED
             </p>
@@ -63,31 +58,27 @@
             <a href="#">CCOF Status: In Progress</a><br>
             <a href="#">CCFRI Status: In Progress</a><br>
             <a href="#">ECE-WE Status: In Progress</a><br>
-            
           </v-card-text>
-        </v-card>
 
-        <v-card v-else elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="950"
-          min-height="270"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
-            <v-card-actions>
-
-            </v-card-actions>          
-          <v-card-text>
+          <!-- User visting for the first time, start new application-->
+          <v-card-text v-else>
             <p class="text-h5 text--primary">
               Apply for CCOF, CCFRI or ECE-WE
             </p>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            <p> {{userInfo.organizationList[0].isDraft}}</p>
+            
+            <br><br>
+            <v-btn
+              color="yellow"
+              elevation="2"
+            >START APPLICATION</v-btn>
           </v-card-text>
         </v-card>
-      </v-col>
-      <v-col cols="12" md="6">
+
+
+        <!-- Application Approved screen starts here -->
+
+
 
         <!-- <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="450"
