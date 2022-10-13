@@ -348,7 +348,7 @@ export default {
       this.$router.push(PATHS.facInfo);
     },
     next() {
-      this.$router.push(PATHS.fundAmount);
+      this.$router.push(PATHS.confirmation);
     },
     allowedStep: m => m % 5 === 0,
     formatTime: v => {
