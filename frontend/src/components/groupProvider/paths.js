@@ -1,8 +1,8 @@
 const PATHS = {
-  orgInfo: '/ccof-application/organization-information',
-  facInfo: '/ccof-application/facility-information',
-  fundAmount: '/ccof-application/funding-amount',
-  confirmation: '/ccof-application/confirmation'
+  orgInfo: '/ccof-application/group/organization-information',
+  facInfo: '/ccof-application/group/facility-information',
+  fundAmount: '/ccof-application/group/funding-amount',
+  confirmation: '/ccof-application/group/confirmation'
 };
 
 export default PATHS;
