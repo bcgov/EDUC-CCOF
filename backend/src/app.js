@@ -110,7 +110,7 @@ const parseJwt = (token) => {
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'idir');
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'keycloak_bcdevexchange_idir');
   // addLoginPassportUse(discovery, 'oidcBceidActivateUser', config.get('server:frontend') + '/api/auth/callback_activate_user', 'keycloak_bcdevexchange_bceid');
   // addLoginPassportUse(discovery, 'oidcBceidActivateDistrictUser', config.get('server:frontend') + '/api/auth/callback_activate_district_user', 'keycloak_bcdevexchange_bceid');
   //JWT strategy is used for authorization

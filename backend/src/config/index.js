@@ -25,18 +25,20 @@ nconf.overrides({
 
 nconf.defaults({
   environment: env,
-  logoutEndpoint: process.env.SOAM_URL + '/auth/realms/master/protocol/openid-connect/logout',
+  logoutEndpoint: process.env.SOAM_URL,
   siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
   server: {
     frontend: process.env.SERVER_FRONTEND,
     logLevel: process.env.LOG_LEVEL,
     morganFormat: 'dev',
-    port: 8080
+    port: process.env.SERVER_PORT
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.SOAM_CLIENT_ID,
     clientSecret: process.env.SOAM_CLIENT_SECRET,
+    clientIdIDIR: process.env.SOAM_CLIENT_ID_IDIR,
+    clientSecretIDIR: process.env.SOAM_CLIENT_SECRET_IDIR,
     discovery: process.env.SOAM_DISCOVERY
   },
   secureExchange: {
