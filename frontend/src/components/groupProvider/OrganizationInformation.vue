@@ -77,7 +77,7 @@
                 <v-text-field outlined required v-model="email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" v-model="incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                <v-text-field outlined required :rules="rules.required" v-model.number="incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
               </v-col>
             </v-row>
 
