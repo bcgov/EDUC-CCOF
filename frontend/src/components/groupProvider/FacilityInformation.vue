@@ -83,14 +83,16 @@
                                 <v-radio-group row v-model="hasReceivedFunding">
                                     <v-radio label="No" value="no"></v-radio>
                                     <v-radio label="Yes" value="yes"></v-radio>
+                                    <v-radio label="Yes, as facility" value="yesFacility"></v-radio>
                                 </v-radio-group>
                             </v-col>
                         </v-row>
 
-                        <v-row v-show="hasReceivedFunding === 'yes'">
+                        <v-row v-show="hasReceivedFunding === 'yesFacility'">
                             <v-col>
                                 <v-text-field outlined required v-model="facilityName"
-                                    :rules="hasReceivedFunding === 'yes' ? rules.required : []" label="Facility Name" />
+                                    :rules="hasReceivedFunding === 'yesFacility' ? rules.required : []"
+                                    label="Facility Name" />
                             </v-col>
                         </v-row>
 
