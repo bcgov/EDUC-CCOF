@@ -81,12 +81,13 @@
                                     :return-value.sync="hoursFrom" transition="scale-transition" offset-y
                                     max-width="290px" min-width="290px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field outlined required :rules="rules.required" v-model="hoursFrom"
+                                        <v-text-field outlined required :rules="rules.required" v-model="hoursFrom12hr"
                                             label="Facility hours of operation From" readonly v-bind="attrs" v-on="on">
                                         </v-text-field>
                                     </template>
                                     <v-time-picker v-if="menu1" v-model="hoursFrom" full-width
-                                        @click:minute="$refs.menu1.save(hoursFrom)" :allowed-minutes="allowedStep" />
+                                        @click:minute="$refs.menu1.save(hoursFrom); hoursFrom12hr = formatTime(hoursFrom)"
+                                        :allowed-minutes="allowedStep" />
                                 </v-menu>
                             </v-col>
                             <v-col cols="12" md="6">
@@ -94,12 +95,13 @@
                                     :return-value.sync="hoursTo" transition="scale-transition" offset-y
                                     max-width="290px" min-width="290px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field outlined required :rules="rules.required" v-model="hoursTo"
+                                        <v-text-field outlined required :rules="rules.required" v-model="hoursTo12hr"
                                             label="Facility hours of operation To" readonly v-bind="attrs" v-on="on">
                                         </v-text-field>
                                     </template>
                                     <v-time-picker v-if="menu2" v-model="hoursTo" full-width
-                                        @click:minute="$refs.menu2.save(hoursTo)" :allowed-minutes="allowedStep" />
+                                        @click:minute="$refs.menu2.save(hoursTo); hoursTo12hr = formatTime(hoursTo)"
+                                        :allowed-minutes="allowedStep" />
                                 </v-menu>
                             </v-col>
                         </v-row>
@@ -355,8 +357,10 @@ export default {
             hasClosedMonth: undefined,
             menu1: undefined,
             hoursFrom: undefined,
+            hoursFrom12hr: undefined,
             menu2: undefined,
             hoursTo: undefined,
+            hoursTo12hr: undefined,
             maxLicensesCapacity: undefined,
             maxGroupChildCare: undefined,
             maxGroupChildCare36: undefined,
@@ -392,7 +396,8 @@ export default {
         next() {
             this.$router.push(PATHS.fundAmount);
         },
-        allowedStep: m => m % 5 === 0
+        allowedStep: m => m % 5 === 0,
+        formatTime: v => `${v} ${v > '12' ? 'PM' : 'AM'}`
     }
 };
 </script>
