@@ -20,7 +20,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" >
-        <v-card  v-if="userInfo.organizationList[0].isDraft" elevation="4" class="pa-4 mx-auto rounded-lg"
+        <v-card  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="950"
           min-height="270"
           rounded
@@ -50,7 +50,7 @@
           </v-card-text>
           </v-card>
 
-          <v-card  v-else-if="userInfo.organizationList[0].applicationSubmitted && !userInfo.organizationList[0].applicationApproved" elevation="4" class="pa-4 mx-auto rounded-lg"
+          <v-card  v-else-if="userInfo.organizationList[0].applicationStatus=== 'SUBMITTED'" elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="950"
           min-height="270"
           rounded
@@ -75,7 +75,7 @@
           </v-card>
 
 
-          <v-card  v-else-if="!userInfo.organizationList[0].applicationSubmitted && !userInfo.organizationList[0].isDraft" elevation="4" class="pa-4 mx-auto rounded-lg"
+          <v-card  v-else-if="userInfo.organizationList[0].applicationStatus=== 'NOT STARTED'" elevation="4" class="pa-4 mx-auto rounded-lg"
           max-width="950"
           min-height="270"
           rounded
@@ -86,7 +86,7 @@
             <v-card-actions>
             </v-card-actions>     
 
-            <v-card-text >
+            <v-card-text class="flex">
             <p class="text-h5 text--primary">
               Apply for CCOF, CCFRI or ECE-WE
             </p>
@@ -110,21 +110,21 @@
  
      <!-- Application Approved screens starts here -->
     <v-container 
-    v-if="userInfo.organizationList[0].applicationSubmitted && userInfo.organizationList[0].applicationApproved"
+    v-if="userInfo.organizationList[0].applicationStatus=== 'APPROVED'"
     class="px-10"
     >
-      <v-row > 
-        <v-col class="col-xl-3 col-12"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="250"
+      <v-row class="" align="stretch"> 
+        <v-col class="col-md-3 col-12 d-flex flex-column flex "> 
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex-grow-1 "
             rounded
             tiled
+            width = "100%"
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
-            <v-card-text>
+            <v-card-text class="flex">
               <p class="text-h6 text--primary">
-                CCOF
+                CCOF 
               </p>
               <br>
               <a href="#">CCOF Status: Approved</a><br>
@@ -132,36 +132,35 @@
           </v-card>
         </v-col>
 
-        <v-col class="col-xl-3 col-12"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="250"
+        <v-col class="col-md-3 col-12 d-flex flex-column"> 
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
             rounded
             tiled
+            width = "100%"
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
-            <v-card-text>
+            <v-card-text class="flex">
               <p class="text-h6 text--primary">
                 Make a change to my information, parent fees, or funding agreement
               </p><br>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
+              <a href="#">LINK</a><br>
             </v-card-text>
           </v-card>
         </v-col>
 
-        <v-col class="col-xl-3 col-12"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="250"
+        <v-col class="col-md-3 col-12 d-flex flex-column"> 
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
+          
             rounded
             tiled
+            width = "100%"
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
             <v-card-text>
               <p class="text-h6 text--primary">
-                Submit my Enrolment Reports or monthly ECE-WE reports to receive payment
+                Submit Enrolment Reports or monthly ECE-WE reports to receive payment
               </p>
               <br>
               <a href="#">LINK</a><br>
@@ -169,11 +168,11 @@
           </v-card>
         </v-col>
 
-        <v-col class="col-xl-3 col-12"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-            min-height="250"
+        <v-col class="col-md-3 col-12 d-flex flex-column"> 
+          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
             rounded
             tiled
+            width = "100%"
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
             >
@@ -237,65 +236,6 @@
       </v-row>
     </v-container>
   </v-container>
-    
-
-
-       
-
-
-
-        <!-- <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="450"
-          min-height="270"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
-          <v-card-text>
-            <p class="text-h5 text--primary">
-              Renew my funding Agreement for 20{{currentYearTwoDigit}}/{{nextYearTwoDigit}}
-            </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" sm="6">
-        <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="450"
-          min-height="270"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
-          <v-card-text>
-            <p class="text-h5 text--primary">
-              Make a change to my information, parent fees, or funding agreement
-            </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6">
-        <v-card elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="450"
-          min-height="270"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
-          <v-card-text>
-            <p class="text-h5 text--primary">
-              Submit my Enrollment Reports or monthly ECE-WE reports to receive payment
-            </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-          </v-card-text>
-        </v-card> -->
-      
   
 </template>
 <script>
@@ -323,4 +263,9 @@ export default {
 </script>
 
 <style scoped>
+
+.smCardHeight{
+    min-height: 250px;
+  }
+  
 </style>

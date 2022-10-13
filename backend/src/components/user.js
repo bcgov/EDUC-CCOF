@@ -13,20 +13,14 @@ async function getUserInfo(req, res) {
   /* 
   data used for dev build of LandingPage.vue 
   will be replaced with API data at a later time
-      isDraft: false,
-      applicationSubmitted: true,
-      applicationApproved:
-  */
-
+     
+  /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
   let resData = {
     displayName: `${req.session.passport.user.displayName}`,
     organizationList: [{
       organizationName: 'ABC organization',
       organizationId: 'org123',
-      isDraft: false,
-      applicationSubmitted: true,
-      applicationApproved: true,
-      unreadMessages: true,
+      applicationStatus: 'APPROVED',
       facilityList: [{
         facilityName: 'ABC daycare',
         facilityId: 'fac123'},
