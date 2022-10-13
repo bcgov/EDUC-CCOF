@@ -15,7 +15,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import {PAGE_TITLES} from '@/utils/constants';
+import { PAGE_TITLES } from '@/utils/constants';
 
 
 import OrganizationSelection from '@/components/OrganizationSelection';
@@ -26,6 +26,7 @@ import PATHS from '@/components/groupProvider/paths';
 import OrganizationInformation from '@/components/groupProvider/OrganizationInformation';
 import FacilityInformation from '@/components/groupProvider/FacilityInformation';
 import FundAmount from '@/components/groupProvider/FundAmount';
+import ApplicationConfirmation from '@/components/groupProvider/ApplicationConfirmation';
 
 import FRICalculator from '@/components/FRICalculator';
 import LandingPage from '@/components/LandingPage';
@@ -46,7 +47,7 @@ Vue.prototype.moment = moment;
 Vue.use(VueRouter);
 Vue.use(VueMeta);
 // a comment for commit.
-const excludeInstituteNameFromPageTitleList=[PAGE_TITLES.SELECTION, PAGE_TITLES.ACTIVATE_USER];
+const excludeInstituteNameFromPageTitleList = [PAGE_TITLES.SELECTION, PAGE_TITLES.ACTIVATE_USER];
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -143,6 +144,14 @@ const router = new VueRouter({
       path: PATHS.fundAmount,
       name: 'Funding Amount',
       component: FundAmount,
+      meta: {
+        pageTitle: 'Application Confirmation'
+      }
+    },
+    {
+      path: PATHS.confirmation,
+      name: 'Funding Amount',
+      component: ApplicationConfirmation,
       meta: {
         pageTitle: 'Funding Amount'
       }
@@ -272,13 +281,13 @@ router.beforeEach((to, _from, next) => {
         store.dispatch('auth/getUserInfo').then(() => {
           if (to.meta.permission && authStore.state.userInfo?.userMinCodes?.length > 0 && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
             next('/institute-selection');
-          }else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
+          } else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
             next('/unauthorized');
-          }else if (to && to.meta) {
-            if(authStore.state.userInfo.activeInstituteTitle && !excludeInstituteNameFromPageTitleList.includes(to.meta.pageTitle)){
-              store.commit('app/setPageTitle',to.meta.pageTitle + ' | ' + authStore.state.userInfo.activeInstituteTitle);
-            }else{
-              store.commit('app/setPageTitle',to.meta.pageTitle);
+          } else if (to && to.meta) {
+            if (authStore.state.userInfo.activeInstituteTitle && !excludeInstituteNameFromPageTitleList.includes(to.meta.pageTitle)) {
+              store.commit('app/setPageTitle', to.meta.pageTitle + ' | ' + authStore.state.userInfo.activeInstituteTitle);
+            } else {
+              store.commit('app/setPageTitle', to.meta.pageTitle);
             }
           }
           next();
@@ -289,19 +298,19 @@ router.beforeEach((to, _from, next) => {
     }).catch(() => {
       if (!authStore.state.userInfo) {
         next('/login');
-      }else{
+      } else {
         next('/token-expired');
       }
     });
   }
-  else{
+  else {
     if (!authStore.state.userInfo) {
       next();
     }
     if (to && to.meta) {
-      store.commit('app/setPageTitle',to.meta.pageTitle);
+      store.commit('app/setPageTitle', to.meta.pageTitle);
     } else {
-      store.commit('app/setPageTitle','');
+      store.commit('app/setPageTitle', '');
     }
     next();
   }
