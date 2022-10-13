@@ -56,7 +56,10 @@ objects:
           - containerPort: 8080
             protocol: TCP
           - containerPort: 443
-            protocol: TCP 
+            protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: educ-ccof-backend-config-map
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 5
@@ -80,9 +83,6 @@ objects:
         - name: tls-certs
           secret:
             secretName: ccof-backend-cert
-        - name: flb-sc-config-volume
-          configMap:
-            name: "${APP_NAME}-flb-sc-config-map"
     test: false
     triggers:
     - type: ConfigChange

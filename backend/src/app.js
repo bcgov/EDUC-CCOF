@@ -76,6 +76,7 @@ app.use(passport.session());
 
 
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) {
+  log.info('addLoginPassportUse called');
   passport.use(strategyName, new OidcStrategy({
     issuer: discovery.issuer,
     authorizationURL: discovery.authorization_endpoint,
@@ -87,17 +88,23 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) 
     scope: 'openid',
     kc_idp_hint: kc_idp_hint
   }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
-    if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
+    try {
+      if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
-      return done('No access token', null);
+        return done('No access token', null);
+      }
+      log.info('OidcStrategy callback called');
+      //set access and refresh tokens
+      profile.jwtFrontend = auth.generateUiToken();
+      profile.jwt = accessToken;
+      profile._json = parseJwt(accessToken);
+      profile.refreshToken = refreshToken;
+      return done(null, profile);
+    } catch (e) {
+      log.error('ERROR Caught');
+      log.error(e);
+      throw e;
     }
-
-    //set access and refresh tokens
-    profile.jwtFrontend = auth.generateUiToken();
-    profile.jwt = accessToken;
-    profile._json = parseJwt(accessToken);
-    profile.refreshToken = refreshToken;
-    return done(null, profile);
   }));
 }
 
@@ -111,7 +118,7 @@ const parseJwt = (token) => {
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'idir');
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'keycloak_bcdevexchange_idir');
   // addLoginPassportUse(discovery, 'oidcBceidActivateUser', config.get('server:frontend') + '/api/auth/callback_activate_user', 'keycloak_bcdevexchange_bceid');
   // addLoginPassportUse(discovery, 'oidcBceidActivateDistrictUser', config.get('server:frontend') + '/api/auth/callback_activate_district_user', 'keycloak_bcdevexchange_bceid');
   //JWT strategy is used for authorization
