@@ -111,7 +111,7 @@
                                         </v-text-field>
                                     </template>
                                     <v-time-picker v-if="menu1" v-model="hoursFrom" full-width
-                                        @click:minute="$refs.menu1.save(hoursFrom)"></v-time-picker>
+                                        @click:minute="$refs.menu1.save(hoursFrom)" :allowed-minutes="allowedStep"/>
                                 </v-menu>
                             </v-col>
                             <v-col cols="12" md="6">
@@ -125,7 +125,7 @@
                                         </v-text-field>
                                     </template>
                                     <v-time-picker v-if="menu2" v-model="hoursTo" full-width
-                                        @click:minute="$refs.menu2.save(hoursTo)"></v-time-picker>
+                                        @click:minute="$refs.menu2.save(hoursTo)" :allowed-minutes="allowedStep"/>
                                 </v-menu>
                             </v-col>
                         </v-row>
@@ -428,7 +428,8 @@ export default {
         },
         next() {
             this.$router.push(PATHS.fundAmount);
-        }
+        },
+        allowedStep: m => m % 5 === 0
     }
 };
 </script>
