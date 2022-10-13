@@ -21,7 +21,8 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 import OrganizationInformation from '@/components/OrganizationInformation';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
-import FRICalculator from '@/components/FRICalculator';
+import SearchFacility from '@/components/FacilitySearch';
+//import FRICalculator from '@/components/FRICalculator';
 import LandingPage from '@/components/LandingPage';
 
 
@@ -93,13 +94,22 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/facility-search',
+      name: 'facility-search',
+      component: SearchFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.SearchFacility
+      }
+    },
+    /*
+    {
       path: '/fri-calculator',
       name: 'fri-calculator',
       component: FRICalculator,
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator
       }
-    },
+    },*/
     {
       path: '/organization',
       name: 'organization',
