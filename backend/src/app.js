@@ -75,6 +75,7 @@ app.use(passport.session());
 
 
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) {
+  log.info('addLoginPassportUse called');
   passport.use(strategyName, new OidcStrategy({
     issuer: discovery.issuer,
     authorizationURL: discovery.authorization_endpoint,
@@ -86,17 +87,23 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) 
     scope: 'openid',
     kc_idp_hint: kc_idp_hint
   }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
-    if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
+    try {
+      if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
-      return done('No access token', null);
+        return done('No access token', null);
+      }
+      log.info('OidcStrategy callback called');
+      //set access and refresh tokens
+      profile.jwtFrontend = auth.generateUiToken();
+      profile.jwt = accessToken;
+      profile._json = parseJwt(accessToken);
+      profile.refreshToken = refreshToken;
+      return done(null, profile);
+    } catch (e) {
+      log.error('ERROR Caught');
+      log.error(e);
+      throw e;
     }
-
-    //set access and refresh tokens
-    profile.jwtFrontend = auth.generateUiToken();
-    profile.jwt = accessToken;
-    profile._json = parseJwt(accessToken);
-    profile.refreshToken = refreshToken;
-    return done(null, profile);
   }));
 }
 
