@@ -6,7 +6,7 @@
       justify="center"
     >
       <v-toolbar-title class="flex text-center" >
-        <h2>Action Required: New Messages</h2>
+        <h3>Action Required: New Messages</h3>
       </v-toolbar-title >
     </v-toolbar>
     <v-row justify="center">
@@ -20,9 +20,8 @@
     </v-row>
     <v-row>
       <v-col cols="12" >
-        <v-card  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="950"
-          min-height="270"
+        <v-card  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" elevation="4" class="cols-12 lgCardSize pa-4 mx-auto rounded-lg"
+          
           rounded
           tiled
           :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
@@ -40,19 +39,19 @@
             <v-btn
               color="yellow"
               elevation="2"
+              justify="left"
             >CONTINUE APPLICATION</v-btn>
             <v-btn
               color="secondary"
               elevation="2"
               text
-              class="ml-7"
+              class="ml-lg-7"
+              align="left"
             >Delete Application</v-btn>
           </v-card-text>
           </v-card>
 
-          <v-card  v-else-if="userInfo.organizationList[0].applicationStatus=== 'SUBMITTED'" elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="950"
-          min-height="270"
+          <v-card  v-else-if="userInfo.organizationList[0].applicationStatus=== 'SUBMITTED'" elevation="4" class="lgCardSize pa-4 col-12 mx-auto rounded-lg lgCardSize"
           rounded
           tiled
           :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
@@ -267,5 +266,10 @@ export default {
 .smCardHeight{
     min-height: 250px;
   }
+
+.lgCardSize {
+  max-width: 950px;
+  min-height : 270px;
+}
   
 </style>
