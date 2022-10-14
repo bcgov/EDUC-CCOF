@@ -1,13 +1,14 @@
 <template>
+  
 <div class="mb-1">
 
   <v-navigation-drawer
           v-model="drawer"
           app
           absolute
-          :style="`margin-top: ${$vuetify.application.top}px` "
+          :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px` "
           width=200
-          :height="$vuetify.application.height"
+          :height=" `${$vuetify.application.height}px`"
           :permanent="$vuetify.breakpoint.mdAndUp"
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
@@ -73,7 +74,7 @@
     <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
       <v-icon v-if="!drawer">$menu</v-icon>
     </v-app-bar-nav-icon>
-    <v-toolbar-title id="navTitle" class="nav-title" :class="{'ml-4': $vuetify.breakpoint.mdAndUp, 'pl-1': $vuetify.breakpoint.smAndDown}">{{ title }}</v-toolbar-title>
+    <v-toolbar-title id="navTitle" class="nav-title " :class="{'ml-4': $vuetify.breakpoint.mdAndUp, 'pl-1': $vuetify.breakpoint.smAndDown}">{{ title }}</v-toolbar-title>
     <v-spacer></v-spacer>
   </v-app-bar>
 </div>
@@ -83,6 +84,7 @@
 import {PAGE_TITLES} from '@/utils/constants';
 import { mapState, mapGetters } from 'vuex';
 import {PERMISSION} from '@/utils/constants/Permission';
+
 export default {
   name: 'navBar',
   props: {
