@@ -197,7 +197,7 @@
           <v-text-field 
             clearable="true" 
             filled="true" 
-            prefix="Filter by facility, status, or licence: ">
+            label="Filter by facility, status, or licence: ">
           </v-text-field>
         </v-col>
       </v-row>
@@ -263,6 +263,9 @@ export default {
 
 <style scoped>
 
+body {
+  white-space: pre-wrap;
+}
 .smCardHeight{
     min-height: 250px;
   }
