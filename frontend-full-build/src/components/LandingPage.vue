@@ -18,8 +18,28 @@
     <v-row>
       <v-divider class="mx-16"/>
     </v-row>
+
     <v-row>
       <v-col>
+        <!-- User visting for the first time, start new application-->
+        <LargeCard v-if="userInfo.organizationList[0].applicationStatus=== 'NOT STARTED'">
+            <v-card-actions>
+            </v-card-actions>     
+
+            <v-card-text class="flex">
+            <p class="text-h5 text--primary">
+              Apply for CCOF, CCFRI or ECE-WE
+            </p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            
+            <br><br>
+            <v-btn
+              color="yellow"
+              elevation="2"
+            >START APPLICATION</v-btn>
+          </v-card-text>
+        </LargeCard> 
+
         <!-- Draft saved, application not yet submitted-->
         <LargeCard  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" >
           <v-card-actions>
@@ -63,24 +83,7 @@
           </v-card-text>
           </LargeCard>
 
-          <!-- User visting for the first time, start new application-->
-          <LargeCard v-else-if="userInfo.organizationList[0].applicationStatus=== 'NOT STARTED'">        >
-            <v-card-actions>
-            </v-card-actions>     
-
-            <v-card-text class="flex">
-            <p class="text-h5 text--primary">
-              Apply for CCOF, CCFRI or ECE-WE
-            </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            
-            <br><br>
-            <v-btn
-              color="yellow"
-              elevation="2"
-            >START APPLICATION</v-btn>
-          </v-card-text>
-        </LargeCard>  
+           
       </v-col>
     </v-row>
  
@@ -188,7 +191,7 @@
 <script>
 
 import { mapGetters} from 'vuex';
-import { ref } from 'vue';
+//import { ref } from 'vue';
 import SmallCard from './guiComponents/SmallCard.vue';
 import LargeCard from './guiComponents/LargeCard.vue';
 //let input = ref('');
