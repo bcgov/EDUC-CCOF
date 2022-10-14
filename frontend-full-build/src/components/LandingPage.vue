@@ -156,35 +156,30 @@
       </v-row>
       
       <v-row>
-        <!-- <v-col cols="12"> -->
-          <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg col-12 "
-            min-height="230"
-            rounded
-            tiled
-            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-            :ripple="false"
-            v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" :key="facilityId"
-            >
-              <v-card-text>
-                <p class="text-h5 text--primary">
-                  Facility {{index +1}}
-                </p>
-                <p class="text-h6 text--primary">
-                  Facility Name:  {{facilityName}}
-                </p>
-                <!-- <p class="text-h6 text--primary">
-                  Facility ID:  {{facilityId}}
-                </p> -->
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-                <br>
-                <p class="text-h5 text--primary">CCFRI, ECE-WE</p>
-                <a href="#">CCFRI Status: Approved</a><br>
-                <a href="#">ECE-WE Status: In Progress</a><br><br>
-              </v-card-text>
-          </v-card>
-        <!-- </v-col> -->
+        <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+          min-height="230"
+          rounded
+          tiled
+          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          :ripple="false"
+          v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" :key="facilityId"
+          >
+            <v-card-text>
+              <p class="text-h5 text--primary">
+                Facility {{index +1}}
+              </p>
+              <p class="text-h6 text--primary">
+                Facility Name:  {{facilityName}}
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <br>
+              <p class="text-h5 text--primary">CCFRI, ECE-WE</p>
+              <a href="#">CCFRI Status: Approved</a><br>
+              <a href="#">ECE-WE Status: In Progress</a><br><br>
+            </v-card-text>
+        </v-card>
       </v-row>
     </v-container>
   </v-container>
