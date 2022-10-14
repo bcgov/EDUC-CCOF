@@ -7,7 +7,7 @@
           absolute
           :style="`margin-top: ${$vuetify.application.top}px` "
           width=200
-          :height="($vuetify.application.height - $vuetify.footer.height)"
+          :height="$vuetify.application.height"
           :permanent="$vuetify.breakpoint.mdAndUp"
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
