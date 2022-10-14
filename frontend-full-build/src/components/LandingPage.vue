@@ -19,18 +19,12 @@
       <v-divider class="mx-16"/>
     </v-row>
     <v-row>
-      <v-col cols="12" >
-        <v-card  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" elevation="4" class="cols-12 lgCardSize pa-4 mx-auto rounded-lg"
-          
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
-            <v-card-actions>
-            </v-card-actions>     
+      <v-col>
+        <!-- Draft saved, application not yet submitted-->
+        <LargeCard  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" >
+          <v-card-actions>
+          </v-card-actions>     
 
-          <!-- Draft saved, application not yet submitted-->
           <v-card-text >
             <p class="text-h5 text--primary">
               CCOF, CCFRI, ECE-WE
@@ -49,14 +43,10 @@
               align="left"
             >Delete Application</v-btn>
           </v-card-text>
-          </v-card>
+        </LargeCard>
 
-          <v-card  v-else-if="userInfo.organizationList[0].applicationStatus=== 'SUBMITTED'" elevation="4" class="lgCardSize pa-4 col-12 mx-auto rounded-lg lgCardSize"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
+         <!-- Application saved, but decision not yet made.-->
+          <LargeCard v-else-if="userInfo.organizationList[0].applicationStatus=== 'SUBMITTED'">
             <v-card-actions>
             </v-card-actions>
 
@@ -71,17 +61,10 @@
             <a href="#">CCFRI Status: In Progress</a><br>
             <a href="#">ECE-WE Status: In Progress</a><br>
           </v-card-text>
-          </v-card>
+          </LargeCard>
 
-
-          <v-card  v-else-if="userInfo.organizationList[0].applicationStatus=== 'NOT STARTED'" elevation="4" class="pa-4 mx-auto rounded-lg"
-          max-width="950"
-          min-height="270"
-          rounded
-          tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-          :ripple="false"
-          >
+          <!-- User visting for the first time, start new application-->
+          <LargeCard v-else-if="userInfo.organizationList[0].applicationStatus=== 'NOT STARTED'">        >
             <v-card-actions>
             </v-card-actions>     
 
@@ -97,13 +80,7 @@
               elevation="2"
             >START APPLICATION</v-btn>
           </v-card-text>
-
-          <!-- Application saved, but decision not yet made.-->
-          
-
-          <!-- User visting for the first time, start new application-->
-          
-        </v-card>
+        </LargeCard>  
       </v-col>
     </v-row>
  
@@ -114,13 +91,7 @@
     >
       <v-row class="" align="stretch"> 
         <v-col class="col-md-3 col-12 d-flex flex-column flex "> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex-grow-1 "
-            rounded
-            tiled
-            width = "100%"
-            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-            :ripple="false"
-            >
+          <SmallCard>
             <v-card-text class="flex">
               <p class="text-h6 text--primary">
                 CCOF 
@@ -128,35 +99,22 @@
               <br>
               <a href="#">CCOF Status: Approved</a><br>
             </v-card-text>
-          </v-card>
+          </SmallCard>
         </v-col>
 
         <v-col class="col-md-3 col-12 d-flex flex-column"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
-            rounded
-            tiled
-            width = "100%"
-            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-            :ripple="false"
-            >
+          <SmallCard>
             <v-card-text class="flex">
               <p class="text-h6 text--primary">
                 Make a change to my information, parent fees, or funding agreement
               </p><br>
               <a href="#">LINK</a><br>
             </v-card-text>
-          </v-card>
+          </SmallCard>
         </v-col>
 
         <v-col class="col-md-3 col-12 d-flex flex-column"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
-          
-            rounded
-            tiled
-            width = "100%"
-            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-            :ripple="false"
-            >
+          <SmallCard>
             <v-card-text>
               <p class="text-h6 text--primary">
                 Submit Enrolment Reports or monthly ECE-WE reports to receive payment
@@ -164,17 +122,11 @@
               <br>
               <a href="#">LINK</a><br>
             </v-card-text>
-          </v-card>
+          </SmallCard>
         </v-col>
 
         <v-col class="col-md-3 col-12 d-flex flex-column"> 
-          <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
-            rounded
-            tiled
-            width = "100%"
-            :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
-            :ripple="false"
-            >
+          <SmallCard>
             <v-card-text>
               <p class="text-h6 text--primary">
                 Renew my funding agreement for 2022/23
@@ -182,7 +134,7 @@
               <br>
               <a href="#">LINK</a><br>
             </v-card-text>
-          </v-card>
+          </SmallCard>
         </v-col>
       </v-row>
 
@@ -197,7 +149,8 @@
           <v-text-field 
             clearable="true" 
             filled="true" 
-            label="Filter by facility, status, or licence: ">
+            label="Filter by facility, status, or licence: "
+            v-model="input">
           </v-text-field>
         </v-col>
       </v-row>
@@ -210,7 +163,7 @@
             tiled
             :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
             :ripple="false"
-            v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" v-bind:key="facilityId"
+            v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" :key="facilityId"
             >
               <v-card-text>
                 <p class="text-h5 text--primary">
@@ -240,6 +193,15 @@
 <script>
 
 import { mapGetters} from 'vuex';
+import { ref } from 'vue';
+import SmallCard from './guiComponents/SmallCard.vue';
+import LargeCard from './guiComponents/LargeCard.vue';
+//let input = ref('');
+
+//const orgList = userInfo.organizationList[0];
+
+//console.log(getUserInfo())
+
 export default {
   name: 'LandingPage',
   props: {
@@ -256,8 +218,15 @@ export default {
     },
     nextYearTwoDigit() {
       return this.currentYear - 1999;
-    }
+    },
+    // filteredList() {
+    //   console.log(input);
+    //   return orgList.filter((facility) => {
+    //     return facility.toLowerCase().includes(input.value.toLowerCase());
+    //   });
+    // },
   },
+  components: { SmallCard, LargeCard }
 };
 </script>
 
@@ -266,13 +235,6 @@ export default {
 body {
   white-space: pre-wrap;
 }
-.smCardHeight{
-    min-height: 250px;
-  }
 
-.lgCardSize {
-  max-width: 950px;
-  min-height : 270px;
-}
   
 </style>
