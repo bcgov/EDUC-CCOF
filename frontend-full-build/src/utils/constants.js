@@ -23,7 +23,7 @@ export const ApiRoutes = Object.freeze({
 });
 
 export const PAGE_TITLES = Object.freeze({
-  SELECTION:'Facility Selection',
+  FACILITY_SELECTION:'Facility Selection',
   LOGIN:'Login',
   FRI_CALCULATOR: 'Fee Reduction Calculator',
   LANDING_PAGE: 'What would you like to do',

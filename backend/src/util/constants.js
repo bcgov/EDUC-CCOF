@@ -122,6 +122,14 @@ const EVENT_OUTCOME = Object.freeze({
   STUDENT_CREATED: 'STUDENT_CREATED'
 });
 const EVENT_WS_TOPIC = 'EVENT_WS_TOPIC';
+
+const CHILD_AGE_CATEGORY_TYPES = new Map();
+CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 - 18 Months');
+CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 - 36 Months');
+CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only)');
+
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -129,5 +137,7 @@ module.exports = {
   PEN_REQ_BATCH_STATUS_CODES,
   EVENT_TYPE,
   EVENT_OUTCOME,
-  EVENT_WS_TOPIC
+  EVENT_WS_TOPIC,
+  CHILD_AGE_CATEGORY_TYPES
 };
+

@@ -21,6 +21,7 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 import OrganizationInformation from '@/components/OrganizationInformation';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
+import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 
@@ -90,6 +91,14 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SELECTION,
         requiresAuth: true
+      }
+    },
+    {
+      path: '/facility-search',
+      name: 'facility-search',
+      component: SearchFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.SearchFacility
       }
     },
     {
