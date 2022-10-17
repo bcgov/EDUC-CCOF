@@ -22,7 +22,7 @@ import OrganizationInformation from '@/components/OrganizationInformation';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
 import SearchFacility from '@/components/FacilitySearch';
-//import CcfriEstimator from '@/components/CcfriEstimator';
+import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 
 
@@ -101,7 +101,6 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SearchFacility
       }
     },
-    /*
     {
       path: '/ccfri-estimator',
       name: 'ccfri-estimator',
@@ -109,7 +108,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator
       }
-    },*/
+    },
     {
       path: '/organization',
       name: 'organization',

@@ -20,9 +20,11 @@ async function getFacilities(req, res) {
     // Iterate through the payload to colect what we need, lighten, and return a condensed payload...
     for (let x in payLoad) {
       results.push({facilityId: payLoad[x]['@search.objectid'],
+                    accountNumber: payLoad[x].accountNumber,
                     facilityName: payLoad[x].name,
-                    city: payLoad[x].address1_city,
-                    childCareType: payLoad[x]['ccof_businesstype@OData.Community.Display.V1.FormattedValue']});
+                    city: payLoad[x].address1_city});
+
+      
     }
     return res.status(200).json(results);
   } catch (e) {
@@ -102,6 +104,7 @@ const simulatedPayloadFacilities =
         "{crmhit}MAVEN{/crmhit} {crmhit}LANE{/crmhit} - ARMSTRONG"
       ]
     },
+    "accountNumber": "F-1234-5678",
     "@search.entityname": "account",
     "@search.objectid": "730e2f0b-6c35-ed11-9db2-000d3af4f2d7",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -133,6 +136,7 @@ const simulatedPayloadFacilities =
         "{crmhit}MAVEN{/crmhit} {crmhit}LANE{/crmhit} LAVINGTON"
       ]
     },
+    "accountNumber": "G-1334-5676",
     "@search.entityname": "account",
     "@search.objectid": "870e2f0b-6c35-ed11-9db2-000d3af4f2d7",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -164,6 +168,7 @@ const simulatedPayloadFacilities =
         "{crmhit}MAVEN{/crmhit} {crmhit}LANE{/crmhit} COLDSTREAM"
       ]
     },
+    "accountNumber": "G-6232-5676",
     "@search.entityname": "account",
     "@search.objectid": "6f5ade09-6c35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -192,6 +197,7 @@ const simulatedPayloadFacilities =
         "{crmhit}Vernon{/crmhit}"
       ]
     },
+    "accountNumber": "F-6276-1845",
     "@search.entityname": "account",
     "@search.objectid": "52b31c35-6c35-ed11-9db2-000d3af4f2d7",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -220,6 +226,7 @@ const simulatedPayloadFacilities =
         "BLACKBERRY {crmhit}LANE{/crmhit} CHILDREN'S CENTRE"
       ]
     },
+    "accountNumber": "G-3233-1445",
     "@search.entityname": "account",
     "@search.objectid": "02ace303-6c35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -248,6 +255,7 @@ const simulatedPayloadFacilities =
         "PEBBLE {crmhit}LANE{/crmhit} EARLY LEARNING"
       ]
     },
+    "accountNumber": "G-9953-3662",
     "@search.entityname": "account",
     "@search.objectid": "047c1c70-6c35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -276,6 +284,7 @@ const simulatedPayloadFacilities =
         "COUNTRY {crmhit}LANE{/crmhit} LEARNING CENTRE"
       ]
     },
+    "accountNumber": "F-1845-7211",
     "@search.entityname": "account",
     "@search.objectid": "7e71fcdf-6b35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -304,6 +313,7 @@ const simulatedPayloadFacilities =
         "HAPPY {crmhit}LANE{/crmhit} CHILDCARE"
       ]
     },
+    "accountNumber": "G-2475-3374",
     "@search.entityname": "account",
     "@search.objectid": "a161a0bb-6b35-ed11-9db2-000d3af4f2d7",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -332,6 +342,7 @@ const simulatedPayloadFacilities =
         "DRAGONFLY {crmhit}LANE{/crmhit} FAMILY DAYCARE"
       ]
     },
+    "accountNumber": "G-2731-6822",
     "@search.entityname": "account",
     "@search.objectid": "c141e4af-6b35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -360,6 +371,7 @@ const simulatedPayloadFacilities =
         "{crmhit}VERNON{/crmhit} CHRISTIAN PRESCHOOL"
       ]
     },
+    "accountNumber": "G-4117-85254",
     "@search.entityname": "account",
     "@search.objectid": "eeee3858-6c35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -388,6 +400,7 @@ const simulatedPayloadFacilities =
         "PARK {crmhit}LANE{/crmhit} LICENSED CHILD CARE"
       ]
     },
+    "accountNumber": "F-6845-7221",
     "@search.entityname": "account",
     "@search.objectid": "4572fcdf-6b35-ed11-9db1-002248d53d53",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",
@@ -416,6 +429,7 @@ const simulatedPayloadFacilities =
         "APPLE BERRY {crmhit}LANE{/crmhit} FAMILY CHILD CARE"
       ]
     },
+    "accountNumber": "G-1845-7211",
     "@search.entityname": "account",
     "@search.objectid": "97bb30e0-6b35-ed11-9db2-000d3af4f2d7",
     "ownerid": "085d3c22-8928-ed11-9db1-000d3af4f2d7",

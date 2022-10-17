@@ -4,6 +4,8 @@ import App from './App';
 import router from './router';
 import store from './store';
 
+export const eventBus = new Vue();
+
 Vue.config.productionTip = false;
 new Vue({
   vuetify,

@@ -1,8 +1,7 @@
 <template>
-  <v-container>
-    <v-form ref="form">
+    <v-form ref="searchForm">
       <v-row justify="center">
-        <v-col cols="10">
+        <v-col cols="10" style="padding-top:0px;">
           <v-card elevation="4" class="pa-0" color="#D4EAFF" style="">
             <v-row>
               <v-col style="padding-top:0%;padding-bottom:0px;">
@@ -28,7 +27,6 @@
                   :rules="rulesSearchCriteria"
                   >
                 </v-text-field>
-                {{this.typeOfCare}}, {{this.CCFRIAppprovedParentFee}}
               </v-col>
               <v-col class="d-flex">
                 <v-dialog
@@ -44,15 +42,7 @@
                       @click="searchFacilities(searchCriteria)">
                       Search
                     </v-btn>
-                    <v-select
-                      style="font-size:16px !important;margin-left:6px;"
-                      v-model="childAgeCategory"
-                      :items="childAgeCategoryList"
-                      @change="getApprovedParentFee(childAgeCategory)"
-                      outlined
-                      dense>
-                  </v-select>
-                  </template>
+                   </template>
                   <v-card>
                     <v-container style="padding-top:0px;">
                       <v-row>
@@ -115,7 +105,7 @@
                                 <br>
                                 <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}
                               </td>
-                              <td>
+                              <td align="right">
                                 <v-btn style="font-style:normal;font-weight:500;font-family:Inter;font-size:14px;padding-left:24px;padding-right:24px;"
                                   color="#39598A"
                                   dark
@@ -137,17 +127,19 @@
         </v-col>
       </v-row>
     </v-form>
-  </v-container>
 </template>
 
 <script>
 import axios from 'axios';
+import { eventBus } from '../main.js';
+
 export default {
+  name: 'FacilitySearch',
   props: {
+    childAgeCategory: String
   },
   data() {
     return {
-      name: 'FacilitySearch',
       searchCriteria: '',
       typeOfCare: '',
       CCFRIAppprovedParentFee: '',
@@ -155,13 +147,6 @@ export default {
       selectedFacility: [],
       searchResults: [],
       approvedFeeResults: [],
-      childAgeCategory: '',
-      childAgeCategoryList: [
-        '0 - 18 Months',
-        '18 - 36 Months',
-        '3 Years to Kindergarten',
-        'Before & After School (Kindergarten Only)',
-      ],
       headers: [
         {
           text: '',
@@ -179,8 +164,10 @@ export default {
     rowSelected(facility) {
       this.toggleSelection(facility.facilityName);
       this.searchCriteria = facility.facilityName;
-      this.typeOfCare = facility.childCareType;
+      this.typeOfCare = (facility.accountNumber.charAt(0) == 'F') ? 'Licensed Family' : 'Licensed Group';
       this.approvedFeeResults = this.getFacility(facility.facilityId);
+      // Pass (as an event) the selected facilities tyoeOfCare value to the parent component.
+      this.$emit('changeTypeOfCare', this.typeOfCare);
       this.dialog = false;
     },
     toggleSelection(keyID) {
@@ -238,10 +225,12 @@ export default {
           }
         }
       }
+      // Pass (as an event) the selected facilities approvedFee to the parent component.
+      this.$emit('changeApprovedFee', this.CCFRIAppprovedParentFee);
     },
     async searchFacilities (criteria) {
       try {
-        if (this.$refs.form.validate()) {
+        if (this.$refs.searchForm.validate()) {
           this.searchResults = (await axios.get('/api/public/facilities?criteria={'+criteria+'}&pageindex={}')).data;
           this.dialog = true;
         } 
@@ -257,6 +246,17 @@ export default {
         console.info(error);
       }
     }
+  },
+  created() {
+    // Sets up the Event Bus listener using 
+    // the custom event name and assosciates
+    // it with a component method.
+    eventBus.$on('getApprovedParentFee', this.getApprovedParentFee);
+  },
+  destroyed() {
+    // Removes Event Bus listener upon removal
+    // of template from DOM.
+    eventBus.$off('getApprovedParentFee', this.getApprovedParentFee);
   }
 };
 </script>
