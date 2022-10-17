@@ -3,14 +3,14 @@
     <MsieBanner v-if="isIE"/>
     <Header/>
     <v-main fluid class="align-start">
-    <v-app-bar v-if="bannerColor !== ''"
+    <v-app-bar v-if="bannerColor"
                style="color:white;"
                :color="bannerColor"
                sticky
                dense
                height="20rem"
                clipped-left
-    ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
+    ><div v-if="bannerColor"><h3 class="envBanner">{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
     <router-view/>
     </v-main>
     <Footer/>
