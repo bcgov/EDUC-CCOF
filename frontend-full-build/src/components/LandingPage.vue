@@ -223,11 +223,7 @@ export default {
       return this.userInfo.organizationList[0];
     },
     filteredList() {
-      console.log(this.input);
-      let arr = this.chosenOrg.facilityList;
-
-      return ("hi");
-      
+      return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
   },
   components: { SmallCard, LargeCard }
