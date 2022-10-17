@@ -60,42 +60,6 @@ export default {
     }
   },
 
-  async getDocumentTypeCodes() {
-    try{
-      return await apiAxios.get(ApiRoutes.edx.DOCUMENT_TYPES_URL);
-    } catch(e) {
-      console.log(`Failed to get from Nodejs getDocumentTypeCodes API - ${e}`);
-      throw e;
-    }
-  },
-
-  async getFileRequirements() {
-    try{
-      return await apiAxios.get(ApiRoutes.edx.FILE_REQUIREMENTS_URL);
-    } catch(e) {
-      console.log(`Failed to get from Nodejs getFileRequirements API - ${e}`);
-      throw e;
-    }
-  },
-
-  async uploadFile(secureExchangeID, fileData){
-    try{
-      return await apiAxios.post(`${ApiRoutes.edx.EXCHANGE}/${secureExchangeID}/documents`, fileData);
-    } catch(e) {
-      console.log(`Failed to post to Nodejs uploadFile API - ${e}`);
-      throw e;
-    }
-  },
-
-  async deleteDocument(secureExchangeID, documentID) {
-    try{
-      return await apiAxios.delete(ApiRoutes.edx.EXCHANGE + `/${secureExchangeID}` + '/documents' + `/${documentID}`);
-    } catch(e) {
-      console.log(`Failed to deleteDocument from Nodejs API - ${e}`);
-      throw e;
-    }
-  },
-
   async getUserInfo() {
     try{
       return await apiAxios.get(ApiRoutes.USER);
@@ -119,12 +83,7 @@ export default {
       throw e;
     }
   },
-  getExchangeStatuses: getCodes(`${ApiRoutes.edx.STATUSES_URL}`),
-  getMinistryTeamCodes: getCodes(`${ApiRoutes.edx.MINISTRY_TEAM_URL}`),
-  getMincodeSchoolNames: getCodes(`${ApiRoutes.school.BASE_URL}`),
-  getEdxMincodes: getCodes(`${ApiRoutes.edx.USERS_URL}/user-schools/mincodes`),
-  getEdxRoles: getCodes(`${ApiRoutes.edx.USERS_URL}/roles`),
-  getSecureExchangeDocumentTypes: getCodes(`${ApiRoutes.edx.DOCUMENT_TYPES_URL}`),
+  getExchangeStatuses: getCodes(`${ApiRoutes.LOOKUPS}`),
 };
 function getCodes(url) {
   return async function getCodesHandler(query) {

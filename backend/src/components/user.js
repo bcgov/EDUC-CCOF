@@ -1,110 +1,37 @@
 'use strict';
-const {getData, getSessionUser} = require('./utils');
-const config = require('../config');
-const {ServiceError} = require('./error');
+const {getSessionUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const lodash = require('lodash');
-const log = require('./logger');
-const cacheService = require('./cache-service');
-let codes = null;
-
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
-  const correlationID = req.session?.correlationID;
-  if (!userInfo || !userInfo.jwt || !userInfo._json || !userInfo._json.digitalIdentityID) {
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No session data'
     });
   }
-  let school;
-  if(req.session.activeInstituteIdentifier){
-    school = cacheService.getSchoolNameJSONByMincode(req.session.activeInstituteIdentifier);
-  }
 
-  if (req.session.digitalIdentityData && req.session.userMinCodes && req.session.userMinCodes.length > 0 && req.session.edxUserData) {
-    let resData = {
-      displayName: `${req.session.edxUserData?.firstName} ${req.session.edxUserData?.lastName}`,
-      facilityList: ['ABC daycare', '123 Daycare']
-    };
-    return res.status(HttpStatus.OK).json(resData);
-  }
-
-  const accessToken = userInfo.jwt;
-  const digitalID = userInfo._json.digitalIdentityID;
-
-  return Promise.all([
-    getDigitalIdData(accessToken, digitalID, correlationID),
-    getServerSideCodes(accessToken, correlationID),
-  ]).then(async ([digitalIdData, codesData, edxUserMinCodeData]) => {
-    const identityType = lodash.find(codesData.identityTypes, ['identityTypeCode', digitalIdData.identityTypeCode]);
-    if (!identityType) {
-      log.error('getIdentityType Error identityTypeCode', digitalIdData.identityTypeCode);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Wrong identityTypeCode'
-      });
-    }
-
-    if (req && req.session) {
-      req.session.digitalIdentityData = digitalIdData;
-      req.session.digitalIdentityData.identityTypeLabel = identityType.label;
-      if(Array.isArray(edxUserMinCodeData)){
-        req.session.edxUserData = edxUserMinCodeData[0];
-      }else{
-        req.session.edxUserData = edxUserMinCodeData;
-      }
-    } else {
-      throw new ServiceError('userInfo error: session does not exist');
-    }
-
-    school = cacheService.getSchoolNameJSONByMincode(req.session.activeInstituteIdentifier);
-
-    let resData = {
-      //edx user name may not exist yet in case of relink or activation. If so, fallback to BCeid displayName
-      displayName: req.session.edxUserData?.firstName && req.session.edxUserData?.lastName ? `${req.session.edxUserData.firstName} ${req.session.edxUserData.lastName}` : userInfo._json.displayName,
-      accountType: userInfo._json.accountType,
-      userMinCodes: req.session.userMinCodes,
-      activeInstituteIdentifier: req.session.activeInstituteIdentifier,
-      activeInstituteType: req.session.activeInstituteType,
-      activeInstituteTitle: school?.schoolName,
-      identityTypeLabel: identityType.label,
-      activeInstitutePermissions: req.session.activeInstitutePermissions,
-      edxUserID: req.session.edxUserData?.edxUserID,
-    };
-
-    return res.status(HttpStatus.OK).json(resData);
-  }).catch(e => {
-    log.error('getUserInfo Error', e.stack);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Get userInfo error',
-      errorSource: e.errorSource
-    });
-  });
-}
-
-async function getDigitalIdData(token, digitalID, correlationID) {
-  try {
-    return await getData(token, config.get('digitalID:apiEndpoint') + `/${digitalID}`, correlationID);
-  } catch (e) {
-    throw new ServiceError('getDigitalIdData error', e);
-  }
-}
-
-
-async function getServerSideCodes(accessToken, correlationID) {
-  if (!codes) {
-    try {
-      const codeUrls = [
-        `${config.get('digitalID:apiEndpoint')}/identityTypeCodes`
-      ];
-
-      const [identityTypes] = await Promise.all(codeUrls.map(url => getData(accessToken, url), correlationID));
-      codes = {identityTypes};
-    } catch (e) {
-      throw new ServiceError('getServerSideCodes error', e);
-    }
-  }
-  return codes;
+  /* 
+  data used for dev build of LandingPage.vue 
+  will be replaced with API data at a later time
+     
+  /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
+  let resData = {
+    displayName: `${req.session.passport.user.displayName}`,
+    organizationList: [{
+      organizationName: 'ABC organization',
+      organizationId: 'org123',
+      applicationStatus: 'APPROVED',
+      unreadMessages: false,
+      facilityList: [{
+        facilityName: 'ABC daycare',
+        facilityId: 'fac123'},
+      {
+        facilityName: 'Happy Bugz daycare',
+        facilityId: 'fac222',
+      },],
+    }],
+  };
+  return res.status(HttpStatus.OK).json(resData);
 }
 
 module.exports = {

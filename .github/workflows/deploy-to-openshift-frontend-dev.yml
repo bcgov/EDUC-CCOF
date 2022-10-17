@@ -1,4 +1,4 @@
-name: Deploy Estimator to TEST
+name: 1 DEV - Deploy Frontend
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-test
+  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
   # SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
@@ -23,7 +23,8 @@ env:
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
   BRANCH: "main"
-  APP_NAME_FRONTEND: "ccof-frontend"
+  APP_NAME_FRONTEND: "frontend"
+  APP_FOLDER: "frontend"
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
   NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
   COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
@@ -36,17 +37,20 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL_TEST }}
+  HOST_ROUTE: ${{ secrets.SITE_URL }}
+  CA_CERT: ${{ secrets.CA_CERT }}
+  CERTIFICATE: ${{ secrets.CERTIFICATE }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
 on:
   workflow_dispatch:
 
 jobs:
   openshift-ci-cd:
-    name: Deploy Estimator Frontend to Test
+    name: Build and deploy Frontend to DEV
     # ubuntu-20.04 can also be used.
     runs-on: ubuntu-18.04
-    environment: test
+    environment: dev
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -114,8 +118,8 @@ jobs:
         # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
         # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
         dockerfiles: |
-          ./frontend/Dockerfile
-        context: ./frontend
+          ./${{ env.APP_FOLDER }}/Dockerfile
+        context: ./${{ env.APP_FOLDER }}
 
       # https://github.com/redhat-actions/push-to-registry#readme
     - name: Push frontend to registry
@@ -142,24 +146,26 @@ jobs:
         oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
         # Cancel any rollouts in progress
-        oc rollout cancel dc/${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+        oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null \
         || true && echo "No rollout in progress"
-        
+
         # Create the image stream if it doesn't exist
-        oc create imagestream ${{ env.REPO_NAME }}-frontend-${{ env.BRANCH }} 2> /dev/null || true && echo "Frontend image stream in place"
-        
-        oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-frontend-${{ env.BRANCH }}:${{ env.TAG }}
-        
+        oc create imagestream ${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null || true && echo "Frontend image stream in place"
+
+        oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:${{ env.TAG }}
+
         # Process and apply deployment template
-        oc process -f tools/openshift/frontend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
-        | oc apply -f -
-        
+        oc process -f tools/openshift/frontend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} \
+        -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+        -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+        -p CA_CERT=${{ env.CA_CERT }} -p CERTIFICATE=${{ env.CERTIFICATE }} -p PRIVATE_KEY=${{ env.PRIVATE_KEY }} | oc apply -f -
+
         # Start rollout (if necessary) and follow it
-        oc rollout latest dc/${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null \
+        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null \
         || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
-        oc rollout status dc/${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}
+        oc rollout status dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}
 
     # - name: ZAP Scan
     #   uses: zaproxy/action-full-scan@v0.3.0

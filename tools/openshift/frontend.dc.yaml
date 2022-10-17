@@ -5,7 +5,6 @@
     template: "${REPO_NAME}-template"
   metadata:
     name: "${REPO_NAME}-frontend-dc"
-    creationTimestamp:
   objects:
   - apiVersion: v1
     kind: DeploymentConfig
@@ -107,33 +106,16 @@
         openshift.io/host.generated: 'true'
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-frontend-${BRANCH}"
+      name: "${APP_NAME}-frontend-https"
     spec:
       host: "${HOST_ROUTE}"
       port:
         targetPort: 2015-tcp
       tls:
+        caCertificate: "${CA_CERT}"
+        certificate: "${CERTIFICATE}"
         insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      to:
-        kind: Service
-        name: "${APP_NAME}-frontend-${BRANCH}"
-        weight: 100
-      wildcardPolicy: None
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      annotations:
-        openshift.io/host.generated: 'true'
-      labels:
-        app: "${APP_NAME}-${BRANCH}"
-      name: "www.${APP_NAME}-frontend-${BRANCH}"
-    spec:
-      host: "www.${HOST_ROUTE}"
-      port:
-        targetPort: 2015-tcp
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
+        key: "${PRIVATE_KEY}"
         termination: edge
       to:
         kind: Service
@@ -193,4 +175,13 @@
     required: true
   - name: MAX_MEM
     description: The maximum amount of memory
+    required: true
+  - name: CA_CERT
+    description: The CA Certificate
+    required: true
+  - name: CERTIFICATE
+    description: The Certificate
+    required: true
+  - name: PRIVATE_KEY
+    description: The private key
     required: true

@@ -6,24 +6,25 @@ const log = require('./components/logger');
 const morgan = require('morgan');
 const session = require('express-session');
 const express = require('express');
-// const atob = require('atob');
+const atob = require('atob');
 const passport = require('passport');
 const helmet = require('helmet');
 const cors = require('cors');
-// const utils = require('./components/utils');
-// const auth = require('./components/auth');
+const utils = require('./components/utils');
+const auth = require('./components/auth');
 const bodyParser = require('body-parser');
 dotenv.config();
 
-// const JWTStrategy = require('passport-jwt').Strategy;
-// const ExtractJwt = require('passport-jwt').ExtractJwt;
-// const OidcStrategy = require('passport-openidconnect-keycloak-idp').Strategy;
+const JWTStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const OidcStrategy = require('passport-openidconnect-keycloak-idp').Strategy;
 const noCache = require('nocache');
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const ccofRouter = require('./routes/ccof');
 const facilityRouter = require('./routes/facility');
+const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const promMid = require('express-prometheus-middleware');
 
@@ -73,7 +74,7 @@ app.use(require('./routes/health-check').router);
 app.use(passport.initialize());
 app.use(passport.session());
 
-/* RLO - removing authenticadtion until keycloak is setup
+
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) {
   passport.use(strategyName, new OidcStrategy({
     issuer: discovery.issuer,
@@ -83,7 +84,7 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) 
     clientID: config.get('oidc:clientId'),
     clientSecret: config.get('oidc:clientSecret'),
     callbackURL: callbackURI,
-    scope: discovery.scopes_supported,
+    scope: 'openid',
     kc_idp_hint: kc_idp_hint
   }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
@@ -107,14 +108,12 @@ const parseJwt = (token) => {
     return null;
   }
 };
-*/
-/* RLO - removing authenticadtion until keycloak is setup
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'keycloak_bcdevexchange_bceid');
-  addLoginPassportUse(discovery, 'oidcBceidActivateUser', config.get('server:frontend') + '/api/auth/callback_activate_user', 'keycloak_bcdevexchange_bceid');
-  addLoginPassportUse(discovery, 'oidcBceidActivateDistrictUser', config.get('server:frontend') + '/api/auth/callback_activate_district_user', 'keycloak_bcdevexchange_bceid');
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'keycloak_bcdevexchange_idir');
+  // addLoginPassportUse(discovery, 'oidcBceidActivateUser', config.get('server:frontend') + '/api/auth/callback_activate_user', 'keycloak_bcdevexchange_bceid');
+  // addLoginPassportUse(discovery, 'oidcBceidActivateDistrictUser', config.get('server:frontend') + '/api/auth/callback_activate_district_user', 'keycloak_bcdevexchange_bceid');
   //JWT strategy is used for authorization
   passport.use('jwt', new JWTStrategy({
     algorithms: ['RS256'],
@@ -145,7 +144,7 @@ utils.getOidcDiscovery().then(discovery => {
 //functions for serializing/deserializing users
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
-RLO - end */
+
 
 app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
 //set up routing to auth and main API
@@ -155,6 +154,7 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/ccof', ccofRouter);
 apiRouter.use('/facility', facilityRouter);
+apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 
 
