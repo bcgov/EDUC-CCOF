@@ -20,7 +20,7 @@ async function getUserInfo(req, res) {
     organizationList: [{
       organizationName: 'ABC organization',
       organizationId: 'org123',
-      applicationStatus: 'DRAFT',
+      applicationStatus: 'APPROVED',
       unreadMessages: false,
       facilityList: [{
         facilityName: 'ABC daycare',

@@ -153,7 +153,8 @@
             clearable="true" 
             filled="true" 
             label="Filter by facility, status, or licence: "
-            v-model="input">
+            v-model="input"
+            :bind="input">
           </v-text-field>
         </v-col>
       </v-row>
@@ -165,7 +166,7 @@
           tiled
           :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId} , index) in userInfo.organizationList[0].facilityList" :key="facilityId"
+          v-for="({facilityName, facilityId} , index) in filteredList" :key="facilityId"
           >
             <v-card-text>
               <p class="text-h5 text--primary">
@@ -191,15 +192,8 @@
 <script>
 
 import { mapGetters} from 'vuex';
-//import { ref } from 'vue';
 import SmallCard from './guiComponents/SmallCard.vue';
 import LargeCard from './guiComponents/LargeCard.vue';
-//import { userInfo } from 'os';
-//let input = ref('');
-
-//const orgList = userInfo.organizationList[0];
-
-//console.log(getUserInfo())
 
 export default {
   name: 'LandingPage',
@@ -209,6 +203,11 @@ export default {
       default: 2023,
       required: false,
     },
+  },
+  data() {
+    return {
+      input : ''
+    };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -223,12 +222,13 @@ export default {
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
       return this.userInfo.organizationList[0];
     },
-    // filteredList() {
-    //   console.log(input);
-    //   return orgList.filter((facility) => {
-    //     return facility.toLowerCase().includes(input.value.toLowerCase());
-    //   });
-    // },
+    filteredList() {
+      console.log(this.input);
+      let arr = this.chosenOrg.facilityList;
+
+      return ("hi");
+      
+    },
   },
   components: { SmallCard, LargeCard }
 };
