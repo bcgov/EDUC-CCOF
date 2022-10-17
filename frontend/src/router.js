@@ -149,7 +149,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.confirmation,
-      name: 'Funding Amount',
+      name: 'Applicaqtion Confirmation',
       component: ApplicationConfirmation,
       meta: {
         pageTitle: 'Funding Amount'
@@ -280,13 +280,13 @@ router.beforeEach((to, _from, next) => {
         store.dispatch('auth/getUserInfo').then(() => {
           if (to.meta.permission && authStore.state.userInfo?.userMinCodes?.length > 0 && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
             next('/institute-selection');
-          // }else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
-          //   next('/unauthorized');
-          }else if (to && to.meta) {
-            if(authStore.state.userInfo.activeInstituteTitle && !excludeInstituteNameFromPageTitleList.includes(to.meta.pageTitle)){
-              store.commit('app/setPageTitle',to.meta.pageTitle + ' | ' + authStore.state.userInfo.activeInstituteTitle);
-            }else{
-              store.commit('app/setPageTitle',to.meta.pageTitle);
+            // }else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
+            //   next('/unauthorized');
+          } else if (to && to.meta) {
+            if (authStore.state.userInfo.activeInstituteTitle && !excludeInstituteNameFromPageTitleList.includes(to.meta.pageTitle)) {
+              store.commit('app/setPageTitle', to.meta.pageTitle + ' | ' + authStore.state.userInfo.activeInstituteTitle);
+            } else {
+              store.commit('app/setPageTitle', to.meta.pageTitle);
             }
           }
           next();
