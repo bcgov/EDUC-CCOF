@@ -148,7 +148,7 @@
 
       <v-row>
         <v-col class="col-12 col-md-6">
-          <!--TODO: make this search box actually do something-->
+          <!--TODO: search box only looks at facility name. Update it later to search for status and licence.-->
           <v-text-field 
             clearable="true" 
             filled="true" 
@@ -156,6 +156,7 @@
             v-model="input"
             :bind="input">
           </v-text-field>
+          <!-- <LargeBlueButton>facility name 1</LargeBlueButton> -->
         </v-col>
       </v-row>
       
@@ -194,6 +195,7 @@
 import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import LargeCard from './guiComponents/LargeCard.vue';
+import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
 
 export default {
   name: 'LandingPage',
@@ -226,7 +228,7 @@ export default {
       return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
   },
-  components: { SmallCard, LargeCard }
+  components: { SmallCard, LargeCard, LargeBlueButton }
 };
 </script>
 
