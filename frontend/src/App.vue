@@ -2,6 +2,8 @@
   <v-app id="app">
     <MsieBanner v-if="isIE"/>
     <Header/>
+    <SnackBar></SnackBar>
+    <NavBar v-if="pageTitle && isAuthenticated" :title="pageTitle"/>    
     <v-main fluid class="align-start">
     <v-app-bar v-if="bannerColor !== ''"
                style="color:white;"
@@ -11,6 +13,7 @@
                height="20rem"
                clipped-left
     ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
+    <ModalIdle v-if="isAuthenticated"/>
     <router-view/>
     </v-main>
     <Footer/>
@@ -20,23 +23,31 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapMutations, mapGetters,mapState } from 'vuex';
+import HttpStatus from 'http-status-codes';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ModalIdle from './components/ModalIdle';
 import MsieBanner from './components/MsieBanner';
 import StaticConfig from './common/staticConfig';
+import SnackBar from '@/components/util/SnackBar';
+import NavBar from '@/components/util/NavBar';
 
 export default {
   name: 'app',
   components: {
     Header,
     Footer,
+    ModalIdle,
     MsieBanner,
+    SnackBar,
+    NavBar,
   },
   metaInfo: {
     meta: StaticConfig.VUE_APP_META_DATA
   },
   computed: {
+    ...mapGetters('auth', ['isAuthenticated', 'loginError', 'isLoading']),
     ...mapState('app', ['pageTitle']),
     isIE() {
       return /Trident\/|MSIE/.test(window.navigator.userAgent);
@@ -49,7 +60,23 @@ export default {
     };
   },
   methods: {
+    ...mapMutations('auth', ['setLoading']),
+    ...mapActions('auth', ['getJwtToken', 'getUserInfo', 'logout']),
   },
+  async created() {
+    this.setLoading(true);
+    this.getJwtToken().then(() =>
+      Promise.all([this.getUserInfo()])
+    ).catch(e => {
+      if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
+        this.logout();
+        this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
+      }
+    }).finally(() => {
+      this.setLoading(false);
+    });
+    this.setLoading(false);
+  }
 };
 </script>
 
