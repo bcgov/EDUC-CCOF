@@ -293,8 +293,8 @@
 
 <script>
 
-import PATHS from './paths';
-import rules from './rules';
+import PATHS from '../paths';
+import rules from '../rules';
 
 export default {
   props: {

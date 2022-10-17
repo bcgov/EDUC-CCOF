@@ -22,11 +22,11 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
-import PATHS from '@/components/groupProvider/paths';
-import OrganizationInformation from '@/components/groupProvider/OrganizationInformation';
-import FacilityInformation from '@/components/groupProvider/FacilityInformation';
-import FundAmount from '@/components/groupProvider/FundAmount';
-import ApplicationConfirmation from '@/components/groupProvider/ApplicationConfirmation';
+import PATHS from '@/components/ccofApplication/paths';
+import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
+import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
+import FundAmount from '@/components/ccofApplication/group/FundAmount';
+import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
 import FRICalculator from '@/components/FRICalculator';
 import LandingPage from '@/components/LandingPage';
