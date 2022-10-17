@@ -9,11 +9,19 @@ async function getUserInfo(req, res) {
       message: 'No session data'
     });
   }
+
+  /* 
+  data used for dev build of LandingPage.vue 
+  will be replaced with API data at a later time
+     
+  /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
   let resData = {
     displayName: `${req.session.passport.user.displayName}`,
     organizationList: [{
       organizationName: 'ABC organization',
       organizationId: 'org123',
+      applicationStatus: 'APPROVED',
+      unreadMessages: false,
       facilityList: [{
         facilityName: 'ABC daycare',
         facilityId: 'fac123'},
