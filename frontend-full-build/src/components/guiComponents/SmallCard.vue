@@ -15,6 +15,7 @@
 .smCardHeight{
     min-height: 250px;
     background-color: pink;
+    border-top: 5px solid #003366 !important;
   }
 
 </style>

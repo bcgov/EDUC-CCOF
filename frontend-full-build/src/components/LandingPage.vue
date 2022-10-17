@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-toolbar 
-      v-if="userInfo.organizationList[0].unreadMessages"
+      v-if="chosenOrg.unreadMessages"
       color="green"
       justify="center"
     >
@@ -22,7 +22,7 @@
     <v-row>
       <v-col>
         <!-- User visting for the first time, start new application-->
-        <LargeCard v-if="userInfo.organizationList[0].applicationStatus=== 'NOT STARTED'">
+        <LargeCard v-if="chosenOrg.applicationStatus=== 'NOT STARTED'">
             <v-card-actions>
             </v-card-actions>     
 
@@ -41,7 +41,7 @@
         </LargeCard> 
 
         <!-- Draft saved, application not yet submitted-->
-        <LargeCard  v-if="userInfo.organizationList[0].applicationStatus=== 'DRAFT'" >
+        <LargeCard  v-if="chosenOrg.applicationStatus=== 'DRAFT'" >
           <v-card-actions>
           </v-card-actions>     
 
@@ -66,7 +66,7 @@
         </LargeCard>
 
          <!-- Application saved, but decision not yet made.-->
-          <LargeCard v-else-if="userInfo.organizationList[0].applicationStatus=== 'SUBMITTED'">
+          <LargeCard v-else-if="chosenOrg.applicationStatus=== 'SUBMITTED'">
             <v-card-actions>
             </v-card-actions>
 
@@ -89,7 +89,7 @@
  
      <!-- Application Approved screens starts here -->
     <v-container 
-    v-if="userInfo.organizationList[0].applicationStatus=== 'APPROVED'"
+    v-if="chosenOrg.applicationStatus=== 'APPROVED'"
     class="px-10"
     >
       <v-row class="" align="stretch"> 
@@ -97,7 +97,7 @@
           <SmallCard>
             <v-card-text class="flex">
               <p class="text-h6 text--primary">
-                CCOF 
+                CCOF
               </p>
               <br>
               <a href="#">CCOF Status: Approved</a><br>
@@ -194,6 +194,7 @@ import { mapGetters} from 'vuex';
 //import { ref } from 'vue';
 import SmallCard from './guiComponents/SmallCard.vue';
 import LargeCard from './guiComponents/LargeCard.vue';
+//import { userInfo } from 'os';
 //let input = ref('');
 
 //const orgList = userInfo.organizationList[0];
@@ -216,6 +217,11 @@ export default {
     },
     nextYearTwoDigit() {
       return this.currentYear - 1999;
+    },
+
+    chosenOrg(){
+      //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
+      return this.userInfo.organizationList[0];
     },
     // filteredList() {
     //   console.log(input);

@@ -14,6 +14,7 @@
 .lgCardSize {
   max-width: 950px;
   min-height : 270px;
+  border-top: 5px solid #003366 !important;
 }
 
 </style>
