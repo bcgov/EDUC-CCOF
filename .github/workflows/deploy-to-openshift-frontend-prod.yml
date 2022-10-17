@@ -1,4 +1,4 @@
-name: 1 DEV - Deploy Frontend
+name: 9 PROD - Deploy Frontend
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
+  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-prod
 
   # SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
@@ -24,14 +24,13 @@ env:
   REPO_NAME: "educ-ccof"
   BRANCH: "main"
   APP_NAME_FRONTEND: "frontend"
-  APP_FOLDER: "frontend"
-  NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
-  NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
-  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
-  TAG: "latest"
 
-  MIN_REPLICAS: "1"
-  MAX_REPLICAS: "1"
+  NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
+
+
+
+  MIN_REPLICAS: "3"
+  MAX_REPLICAS: "5"
   MIN_CPU: "50m"
   MAX_CPU: "100m"
   MIN_MEM: "200Mi"
@@ -47,10 +46,10 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Build and deploy Frontend to DEV
+    name: Deploy  Frontend to PROD
     # ubuntu-20.04 can also be used.
     runs-on: ubuntu-18.04
-    environment: dev
+    environment: prod
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -100,45 +99,15 @@ jobs:
       with:
         ref: ${{ env.BRANCH }}
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-    - name: Build frontend from Dockerfile
-      id: build-image-frontend
-      uses: redhat-actions/buildah-build@v2
-      with:
-        image: ${{ env.APP_NAME_FRONTEND }}
-        tags: "latest"
-
-        # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
-        # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
-        # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
-        dockerfiles: |
-          ./${{ env.APP_FOLDER }}/Dockerfile
-        context: ./${{ env.APP_FOLDER }}
-
-      # https://github.com/redhat-actions/push-to-registry#readme
-    - name: Push frontend to registry
-      id: push-image-frontend
-      uses: redhat-actions/push-to-registry@v2
-      with:
-        image: ${{ steps.build-image-frontend.outputs.image }}
-        tags: ${{ steps.build-image-frontend.outputs.tags }}
-        registry: ${{ env.IMAGE_REGISTRY }}
-        username: ${{ env.IMAGE_REGISTRY_USER }}
-        password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+    - name: Get latest tag
+      uses: actions-ecosystem/action-get-latest-tag@v1
+      id: get-latest-tag
 
     - name: Install oc
       uses: redhat-actions/openshift-tools-installer@v1
       with:
         oc: 4
 
-      # https://github.com/redhat-actions/oc-login#readme
-#    - uses: actions/checkout@v2
     - name: Deploy
       run: |
         set -eux
@@ -149,15 +118,13 @@ jobs:
         oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null \
         || true && echo "No rollout in progress"
 
-        # Create the image stream if it doesn't exist
-        oc create imagestream ${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null || true && echo "Frontend image stream in place"
-
-        oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:${{ env.TAG }}
+        # Create tag for PROD env from DEV env image
+        oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
         # TODO: Add the following parameters to oc process when routes are live
         # -p CA_CERT=${{ env.CA_CERT }} -p CERTIFICATE=${{ env.CERTIFICATE }} -p PRIVATE_KEY=${{ env.PRIVATE_KEY }}\
-        oc process -f tools/openshift/frontend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
+        oc process -f tools/openshift/frontend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
         | oc apply -f -
 
         # Start rollout (if necessary) and follow it

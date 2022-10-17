@@ -24,6 +24,7 @@ const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const ccofRouter = require('./routes/ccof');
 const facilityRouter = require('./routes/facility');
+const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const promMid = require('express-prometheus-middleware');
 
@@ -110,7 +111,7 @@ const parseJwt = (token) => {
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'idir');
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'keycloak_bcdevexchange_idir');
   // addLoginPassportUse(discovery, 'oidcBceidActivateUser', config.get('server:frontend') + '/api/auth/callback_activate_user', 'keycloak_bcdevexchange_bceid');
   // addLoginPassportUse(discovery, 'oidcBceidActivateDistrictUser', config.get('server:frontend') + '/api/auth/callback_activate_district_user', 'keycloak_bcdevexchange_bceid');
   //JWT strategy is used for authorization
@@ -153,6 +154,7 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/ccof', ccofRouter);
 apiRouter.use('/facility', facilityRouter);
+apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 
 
