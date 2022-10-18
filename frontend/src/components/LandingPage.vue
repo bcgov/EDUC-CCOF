@@ -216,7 +216,7 @@ export default {
       return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
   },
-  components: { SmallCard, LargeCard, LargeBlueButton, MessagesToolbar }
+  components: { SmallCard, LargeCard, MessagesToolbar }
 };
 </script>
 

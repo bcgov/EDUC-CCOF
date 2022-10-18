@@ -3,24 +3,23 @@
         <div>
             <MessagesToolbar></MessagesToolbar>
         </div>
+        <br><br>
         <v-row justify="space-around">
         
           <SmallCard>
             <v-card-text>
               <p class="text-h6 text--primary">
-                Submit Enrolment Reports or monthly ECE-WE reports to receive payment
+                Add a New Facility to my Organization
               </p>
               <br>
               <a href="#">LINK</a><br>
             </v-card-text>
           </SmallCard>
        
-
-        
           <SmallCard>
             <v-card-text>
               <p class="text-h6 text--primary">
-                Renew my funding agreement for 2022/23
+                Apply for CCFRI and ECE-WE
               </p>
               <br>
               <a href="#">LINK</a><br>
@@ -28,6 +27,12 @@
           </SmallCard>
         
       </v-row>
+
+        <LargeButtonContainer>
+            <v-list-item v-for="({facilityName, facilityId} , index) in chosenOrg" :key="facilityId">
+                <LargeBlueButton >{{facilityName}}</LargeBlueButton>
+            </v-list-item>
+        </LargeButtonContainer>      
     </v-container>
 </template>
 
@@ -37,16 +42,11 @@
 import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
+import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
+import LargeButtonContainer from './guiComponents/LargeButtonContainer.vue';
 
 export default {
   name: 'CcfriLandingPage',
-  props: {
-    currentYear: {
-      type: Number,
-      default: 2023,
-      required: false,
-    },
-  },
   data() {
     return {
       input : ''
@@ -54,22 +54,14 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    currentYearTwoDigit() {
-      return this.currentYear - 2000;
-    },
-    nextYearTwoDigit() {
-      return this.currentYear - 1999;
-    },
-
     chosenOrg(){
+      console.log(this.userInfo.organizationList[0].facilityList);
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
-      return this.userInfo.organizationList[0];
-    },
-    filteredList() {
-      return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
-    },
+      //return 'hi';
+      return this.userInfo.organizationList[0].facilityList;
+    }
   },
-  components: { SmallCard, MessagesToolbar }
+  components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer }
 };
 </script>
 

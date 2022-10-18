@@ -138,6 +138,9 @@ const router = new VueRouter({
       path: '/ccfri-home',
       name: 'ccfri-home',
       component: CcfriEceLandingPage,
+      meta: {
+        pageTitle: 'CCFRI Home'
+      }
     },
 
     {
