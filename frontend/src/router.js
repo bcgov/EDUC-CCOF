@@ -14,12 +14,18 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import {PAGE_TITLES} from '@/utils/constants';
+import { PAGE_TITLES } from '@/utils/constants';
+import { PATHS } from '@/utils/constants';
 
 
 import OrganizationSelection from '@/components/OrganizationSelection';
-import OrganizationInformation from '@/components/OrganizationInformation';
+
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
+
+import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
+import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
+import FundAmount from '@/components/ccofApplication/group/FundAmount';
+import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -41,7 +47,7 @@ Vue.prototype.moment = moment;
 Vue.use(VueRouter);
 Vue.use(VueMeta);
 // a comment for commit.
-const excludeInstituteNameFromPageTitleList=[PAGE_TITLES.SELECTION, PAGE_TITLES.ACTIVATE_USER];
+const excludeInstituteNameFromPageTitleList = [PAGE_TITLES.SELECTION, PAGE_TITLES.ACTIVATE_USER];
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -118,11 +124,35 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/organization-information',
+      path: PATHS.orgInfo,
       name: 'Organization Information',
       component: OrganizationInformation,
       meta: {
         pageTitle: 'Organization Information'
+      }
+    },
+    {
+      path: PATHS.facInfo,
+      name: 'Facility Information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information'
+      }
+    },
+    {
+      path: PATHS.fundAmount,
+      name: 'Funding Amount',
+      component: FundAmount,
+      meta: {
+        pageTitle: 'Application Confirmation'
+      }
+    },
+    {
+      path: PATHS.confirmation,
+      name: 'Applicaqtion Confirmation',
+      component: ApplicationConfirmation,
+      meta: {
+        pageTitle: 'Funding Amount'
       }
     },
     {
@@ -267,19 +297,19 @@ router.beforeEach((to, _from, next) => {
     }).catch(() => {
       if (!authStore.state.userInfo) {
         next('/login');
-      }else{
+      } else {
         next('/token-expired');
       }
     });
   }
-  else{
+  else {
     if (!authStore.state.userInfo) {
       next();
     }
     if (to && to.meta) {
-      store.commit('app/setPageTitle',to.meta.pageTitle);
+      store.commit('app/setPageTitle', to.meta.pageTitle);
     } else {
-      store.commit('app/setPageTitle','');
+      store.commit('app/setPageTitle', '');
     }
     next();
   }
