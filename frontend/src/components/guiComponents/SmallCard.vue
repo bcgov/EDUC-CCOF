@@ -1,4 +1,5 @@
 <template>
+    <v-col class="col-md-3 col-12 d-flex flex-column ">
     <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
         rounded
         tiled
@@ -8,6 +9,7 @@
         >
     <slot></slot>
     </v-card>
+    </v-col>
 </template>
 
 <style>

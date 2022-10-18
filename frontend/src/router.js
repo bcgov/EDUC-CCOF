@@ -20,6 +20,7 @@ import {PAGE_TITLES} from '@/utils/constants';
 import OrganizationSelection from '@/components/OrganizationSelection';
 import OrganizationInformation from '@/components/OrganizationInformation';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
+import CcfriEceLandingPage from '@/components/CcfriEceLanding';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -132,6 +133,11 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.CCRFI_APPLICATION
       }
+    },
+    {
+      path: '/ccfri-home',
+      name: 'ccfri-home',
+      component: CcfriEceLandingPage,
     },
 
     {

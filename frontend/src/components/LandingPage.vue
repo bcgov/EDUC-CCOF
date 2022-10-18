@@ -1,14 +1,8 @@
 <template>
   <v-container>
-    <v-toolbar 
-      v-if="chosenOrg.unreadMessages"
-      color="green"
-      justify="center"
-    >
-      <v-toolbar-title class="flex text-center" >
-        <h3>Action Required: New Messages</h3>
-      </v-toolbar-title >
-    </v-toolbar>
+    <div v-if ="chosenOrg.unreadMessages">
+      <MessagesToolbar></MessagesToolbar>
+    </div>
     <v-row justify="center">
       <div
         class="pa-10"
@@ -92,8 +86,8 @@
     v-if="chosenOrg.applicationStatus=== 'APPROVED'"
     class="px-10"
     >
-      <v-row class="" align="stretch"> 
-        <v-col class="col-md-3 col-12 d-flex flex-column flex "> 
+      <v-row class="" align="stretch" justify="space-around" > 
+        
           <SmallCard>
             <v-card-text class="flex">
               <p class="text-h6 text--primary">
@@ -103,9 +97,7 @@
               <a href="#">CCOF Status: Approved</a><br>
             </v-card-text>
           </SmallCard>
-        </v-col>
-
-        <v-col class="col-md-3 col-12 d-flex flex-column"> 
+       
           <SmallCard>
             <v-card-text class="flex">
               <p class="text-h6 text--primary">
@@ -114,9 +106,7 @@
               <a href="#">LINK</a><br>
             </v-card-text>
           </SmallCard>
-        </v-col>
-
-        <v-col class="col-md-3 col-12 d-flex flex-column"> 
+        
           <SmallCard>
             <v-card-text>
               <p class="text-h6 text--primary">
@@ -126,9 +116,7 @@
               <a href="#">LINK</a><br>
             </v-card-text>
           </SmallCard>
-        </v-col>
-
-        <v-col class="col-md-3 col-12 d-flex flex-column"> 
+       
           <SmallCard>
             <v-card-text>
               <p class="text-h6 text--primary">
@@ -138,7 +126,6 @@
               <a href="#">LINK</a><br>
             </v-card-text>
           </SmallCard>
-        </v-col>
       </v-row>
 
       <br><br>
@@ -196,6 +183,7 @@ import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import LargeCard from './guiComponents/LargeCard.vue';
 import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
+import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 
 export default {
   name: 'LandingPage',
@@ -228,7 +216,7 @@ export default {
       return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
   },
-  components: { SmallCard, LargeCard, LargeBlueButton }
+  components: { SmallCard, LargeCard, LargeBlueButton, MessagesToolbar }
 };
 </script>
 
