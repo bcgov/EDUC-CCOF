@@ -39,7 +39,7 @@
 
 <script>
 
-import PATHS from '../paths';
+import { PATHS } from '@/utils/constants';
 
 export default {
   props: {

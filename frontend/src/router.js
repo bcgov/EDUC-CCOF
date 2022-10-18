@@ -15,13 +15,13 @@ import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import { PAGE_TITLES } from '@/utils/constants';
+import { PATHS } from '@/utils/constants';
 
 
 import OrganizationSelection from '@/components/OrganizationSelection';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 
-import PATHS from '@/components/ccofApplication/paths';
 import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import FundAmount from '@/components/ccofApplication/group/FundAmount';
