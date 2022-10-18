@@ -1,6 +1,8 @@
 'use strict';
 const {getSessionUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
+const log = require('../components/logger');
+
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -15,8 +17,15 @@ async function getUserInfo(req, res) {
   will be replaced with API data at a later time
      
   /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
+  let name = req.session.passport.user.displayName;
+  if (!name) {
+    name = req.session.passport.user._json.display_name;
+  }
+
   let resData = {
-    displayName: `${req.session.passport.user.displayName}`,
+    displayName: name,
+    businessGuid: `${req.session?.passport?.user?._json?.bceid_business_guid}`,
+    userName: `${req.session?.passport?.user?._json?.bceid_username}`,
     organizationList: [{
       organizationName: 'ABC organization',
       organizationId: 'org123',
