@@ -29,10 +29,32 @@
       </v-row>
 
         <LargeButtonContainer>
-            <v-list-item v-for="({facilityName, facilityId} , index) in chosenOrg" :key="facilityId">
+            <v-list-item v-for="({facilityName, facilityId}) in chosenOrg" :key="facilityId">
                 <LargeBlueButton >{{facilityName}}</LargeBlueButton>
             </v-list-item>
-        </LargeButtonContainer>      
+        </LargeButtonContainer>   
+        
+        
+        <!-- <v-btn>
+          Back
+        </v-btn> -->
+
+        <!-- <v-row> -->
+          <LargeCard
+          title="Facility A" 
+          subtitle="Would you like to opt-in for CCFRI?">
+            <v-btn
+              color="blue"
+              elevation="2"
+              justify="left"
+            >YES</v-btn>
+            <v-btn
+              color="white"
+              elevation="2"
+              class="ml-lg-7"
+            >No</v-btn>
+          </LargeCard>
+        <!-- </v-row> -->
     </v-container>
 </template>
 
@@ -44,6 +66,7 @@ import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
 import LargeButtonContainer from './guiComponents/LargeButtonContainer.vue';
+import LargeCard from './guiComponents/LargeCard.vue';
 
 export default {
   name: 'CcfriLandingPage',
@@ -61,7 +84,7 @@ export default {
       return this.userInfo.organizationList[0].facilityList;
     }
   },
-  components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer }
+  components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer, LargeCard }
 };
 </script>
 

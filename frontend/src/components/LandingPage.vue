@@ -35,15 +35,12 @@
         </LargeCard> 
 
         <!-- Draft saved, application not yet submitted-->
-        <LargeCard  v-if="chosenOrg.applicationStatus=== 'DRAFT'" >
+        <LargeCard  
+        v-if="chosenOrg.applicationStatus === 'DRAFT'" 
+        title=" CCOF, CCFRI, ECE-WE" 
+        subtitle="Status: Draft">
           <v-card-actions>
           </v-card-actions>     
-
-          <v-card-text >
-            <p class="text-h5 text--primary">
-              CCOF, CCFRI, ECE-WE
-            </p>
-            <h2> Status: Draft</h2> <br><br>
             <v-btn
               color="yellow"
               elevation="2"
@@ -56,7 +53,7 @@
               class="ml-lg-7"
               align="left"
             >Delete Application</v-btn>
-          </v-card-text>
+          
         </LargeCard>
 
          <!-- Application saved, but decision not yet made.-->
