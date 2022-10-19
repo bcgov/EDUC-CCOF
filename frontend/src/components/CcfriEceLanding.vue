@@ -39,7 +39,7 @@
           Back
         </v-btn> -->
 
-        <!-- <v-row> -->
+        <!-- TODO: Facility A to be replaced with a ref to current facility title -->
           <LargeCard
           title="Facility A" 
           subtitle="Would you like to opt-in for CCFRI?">
@@ -47,11 +47,13 @@
               color="blue"
               elevation="2"
               justify="left"
+              min-width="100px"
             >YES</v-btn>
             <v-btn
               color="white"
               elevation="2"
               class="ml-lg-7"
+              min-width="100px"
             >No</v-btn>
           </LargeCard>
         <!-- </v-row> -->

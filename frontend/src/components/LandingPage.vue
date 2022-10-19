@@ -16,22 +16,19 @@
     <v-row>
       <v-col>
         <!-- User visting for the first time, start new application-->
-        <LargeCard v-if="chosenOrg.applicationStatus=== 'NOT STARTED'">
+        <LargeCard v-if="chosenOrg.applicationStatus=== 'NOT STARTED'"
+        title="Apply for CCOF, CCFRI or ECE-WE" 
+        pText="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
             <v-card-actions>
             </v-card-actions>     
 
-            <v-card-text class="flex">
-            <p class="text-h5 text--primary">
-              Apply for CCOF, CCFRI or ECE-WE
-            </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
             
-            <br><br>
+            
             <v-btn
               color="yellow"
               elevation="2"
             >START APPLICATION</v-btn>
-          </v-card-text>
+          
         </LargeCard> 
 
         <!-- Draft saved, application not yet submitted-->

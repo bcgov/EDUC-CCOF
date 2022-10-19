@@ -8,6 +8,7 @@
         <v-card-text >
         <p class="text-h5 text--primary"> {{title}}</p>
         <h2> {{subtitle}}</h2> <br><br>
+        <p>{{pText}}</p>
         
         
         <!-- this is another styling choice.... leaving this here in case we want to switch it back. 
@@ -26,7 +27,8 @@
 export default {
   props: {
     title: String,
-    subtitle: String
+    subtitle: String,
+    pText: String
   }
 };
 </script>
