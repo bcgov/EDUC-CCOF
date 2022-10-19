@@ -1,5 +1,7 @@
+<!--Using this code as reference ---- will delete later ! -->
+
 <template>
-  <v-containter>
+  <v-container>
     <div v-if ="chosenOrg.unreadMessages">
       <MessagesToolbar></MessagesToolbar>
     </div>
@@ -13,30 +15,112 @@
       <v-divider class="mx-16"/>
     </v-row>
 
+    <v-row>
+      <v-col>
+        <!-- User visting for the first time, start new application-->
+        <LargeCard v-if="chosenOrg.applicationStatus=== 'NOT STARTED'"
+        title="Apply for CCOF, CCFRI or ECE-WE" 
+        pText="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+            <v-card-actions>
+            </v-card-actions>     
+
+            
+            
+            <v-btn
+              color="yellow"
+              elevation="2"
+            >START APPLICATION</v-btn>
+          
+        </LargeCard> 
+
+        <!-- Draft saved, application not yet submitted-->
+        <LargeCard  
+        v-if="chosenOrg.applicationStatus === 'DRAFT'" 
+        title=" CCOF, CCFRI, ECE-WE" 
+        subtitle="Status: Draft">
+          <v-card-actions>
+          </v-card-actions>     
+            <v-btn
+              color="yellow"
+              elevation="2"
+              justify="left"
+            >CONTINUE APPLICATION</v-btn>
+            <v-btn
+              color="secondary"
+              elevation="2"
+              text
+              class="ml-lg-7"
+              align="left"
+            >Delete Application</v-btn>
+          
+        </LargeCard>
+
+         <!-- Application saved, but decision not yet made.-->
+          <LargeCard v-else-if="chosenOrg.applicationStatus=== 'SUBMITTED'">
+            <v-card-actions>
+            </v-card-actions>
+
+            <v-card-text>
+            <p class="text-h5 text--primary">
+              CCOF, CCFRI, ECE-WE SUBMITTED
+            </p>
+            <h2> Status: IN PROGRESS</h2> <br><br>
+
+            <!-- TODO: This should link to the existing application once this is built out. These are just placeholders.-->
+            <a href="#">CCOF Status: In Progress</a><br>
+            <a href="#">CCFRI Status: In Progress</a><br>
+            <a href="#">ECE-WE Status: In Progress</a><br>
+          </v-card-text>
+          </LargeCard>
+
+           
+      </v-col>
+    </v-row>
+ 
      <!-- Application Approved screens starts here -->
     <v-container 
+    v-if="chosenOrg.applicationStatus=== 'APPROVED'"
     class="px-10"
     >
       <v-row class="" align="stretch" justify="space-around" > 
         
-          <SmallCard title="CCOF">
+          <SmallCard>
+            <v-card-text class="flex">
+              <p class="text-h6 text--primary">
+                CCOF
+              </p>
               <br>
               <a href="#">CCOF Status: Approved</a><br>
+            </v-card-text>
           </SmallCard>
        
-          <SmallCard  title="Make a change to my information, parent fees, or funding agreement">
-            <br>
+          <SmallCard>
+            <v-card-text class="flex">
+              <p class="text-h6 text--primary">
+                Make a change to my information, parent fees, or funding agreement
+              </p><br>
               <a href="#">LINK</a><br>
+            </v-card-text>
           </SmallCard>
         
-          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment">
+          <SmallCard>
+            <v-card-text>
+              <p class="text-h6 text--primary">
+                Submit Enrolment Reports or monthly ECE-WE reports to receive payment
+              </p>
               <br>
               <a href="#">LINK</a><br>
+            </v-card-text>
           </SmallCard>
        
-          <SmallCard title="Renew my funding agreement for 2022/23">
+          <SmallCard>
+            <v-card-text>
+              <p class="text-h6 text--primary">
+                Renew my funding agreement for 2022/23
+              </p>
               <br>
               <a href="#">LINK</a><br>
+            </v-card-text>
           </SmallCard>
       </v-row>
 
@@ -55,11 +139,12 @@
             v-model="input"
             :bind="input">
           </v-text-field>
+          <!-- <LargeBlueButton>facility name 1</LargeBlueButton> -->
         </v-col>
       </v-row>
       
       <v-row>
-        <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+        <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
@@ -84,8 +169,8 @@
             </v-card-text>
         </v-card>
       </v-row>
+    </v-container>
   </v-container>
-</v-containter>
   
 </template>
 <script>

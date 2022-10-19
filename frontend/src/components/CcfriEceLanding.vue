@@ -6,24 +6,14 @@
         <br><br>
         <v-row justify="space-around">
         
-          <SmallCard>
-            <v-card-text>
-              <p class="text-h6 text--primary">
-                Add a New Facility to my Organization
-              </p>
+          <SmallCard title="Add a New Facility to my Organization">
               <br>
               <a href="#">LINK</a><br>
-            </v-card-text>
           </SmallCard>
        
-          <SmallCard>
-            <v-card-text>
-              <p class="text-h6 text--primary">
-                Apply for CCFRI and ECE-WE
-              </p>
+          <SmallCard title="Apply for CCFRI and ECE-WE">
               <br>
               <a href="#">LINK</a><br>
-            </v-card-text>
           </SmallCard>
         
       </v-row>
@@ -33,11 +23,6 @@
                 <LargeBlueButton >{{facilityName}}</LargeBlueButton>
             </v-list-item>
         </LargeButtonContainer>   
-        
-        
-        <!-- <v-btn>
-          Back
-        </v-btn> -->
 
         <!-- TODO: Facility A to be replaced with a ref to current facility title -->
           <LargeCard
@@ -57,6 +42,10 @@
             >No</v-btn>
           </LargeCard>
         <!-- </v-row> -->
+
+        <v-btn>
+          Back
+        </v-btn>
     </v-container>
 </template>
 

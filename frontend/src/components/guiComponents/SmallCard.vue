@@ -5,12 +5,23 @@
         tiled
         width = "100%"
         exact tile
-        :ripple="false"
-        >
-    <slot></slot>
+        :ripple="false">
+        <v-card-text>
+            <p class="text-h6 text--primary"> {{title}}</p>
+            <br>
+            <slot></slot>
+        </v-card-text>
     </v-card>
     </v-col>
 </template>
+<script>
+export default {
+  props: {
+    title: String,
+    subtitle: String
+  }
+};
+</script>
 
 <style>
 

@@ -189,7 +189,7 @@ export default {
         },
         {
           title: 'CCFRI',
-          link: 'ccfri-application',
+          link: 'ccfri-home',
           authorized: true,
           icon: 'mdi-checkbox-blank-circle-outline',
         },
