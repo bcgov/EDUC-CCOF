@@ -117,6 +117,29 @@ async function getData(token, url, correlationID) {
   }
 }
 
+async function getOperationWithParams(operation, objectId) {
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations';
+    const params = {
+      params: {
+        statement: `${operation}(${objectId})`,
+      }
+    };
+
+    log.info('get Data Url', url);
+    const response = await axios.get(url, params);
+    log.info(`get Data Status for url ${url} :: is :: `, response.status);
+    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
+
+    return response.data;
+  } catch (e) {
+    log.error('getDataWithParams Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API Get error'}, e);
+  }
+}
+
 async function getDataWithParams(token, url, params, correlationID) {
   try {
     params.headers = {
@@ -333,6 +356,7 @@ const utils = {
   deleteData,
   forwardGetReq,
   getDataWithParams,
+  getOperationWithParams,
   getData,
   forwardPostReq,
   postData,
@@ -343,7 +367,8 @@ const utils = {
   errorResponse,
   getCodes,
   cacheMiddleware,
-  getCodeTable
+  getCodeTable,
+  minify
 };
 
 module.exports = utils;

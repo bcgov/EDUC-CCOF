@@ -1,7 +1,7 @@
 'use strict';
 const {getSessionUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const log = require('../components/logger');
+// const log = require('../components/logger');
 
 
 async function getUserInfo(req, res) {

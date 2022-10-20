@@ -111,8 +111,14 @@ const parseJwt = (token) => {
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');
   addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
+  //If local enviornment, use IDIR for both authentication strategies. (don't need to use business bceid)
+  if ('local' === config.get('environment')) {
+    addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
+  } else {
+    addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');  
+  }
+
 
   //JWT strategy is used for authorization  keycloak_bcdevexchange_idir
   passport.use('jwt', new JWTStrategy({
@@ -161,6 +167,12 @@ apiRouter.use('/config',configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
+  //This is from the ResultValidation
+  if (err.errors && err.mapped) {
+    return res.status(400).json({
+      errors: err.mapped()
+    });
+  }
   log.error(err?.stack);
   res?.redirect(config?.get('server:frontend') + '/error?message=500_internal_error');
   next();
