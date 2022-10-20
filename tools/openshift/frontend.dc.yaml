@@ -89,8 +89,8 @@
       creationTimestamp:
       labels:
         app: "${APP_NAME}-${BRANCH}"
-        name: "${APP_NAME}-frontend-${BRANCH}"
         network: allowed-access
+      name: "${APP_NAME}-frontend-${BRANCH}"
     spec:
       ports:
       - name: 2015-tcp
