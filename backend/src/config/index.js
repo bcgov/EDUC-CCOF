@@ -53,12 +53,8 @@ nconf.defaults({
   organization: {
     apiEndpoint: process.env.ORGANIZATION_API_ENDPOINT,
   },
-  ccofForm: {
-    apiEndpoint: process.env.CCOF_FORM_API_ENDPOINT,
-  },
-  email: {
-    secretKey: process.env.EMAIL_SECRET_KEY,
-    tokenTTL: process.env.TOKEN_TTL_MINUTES
+  dynamicsApi: {
+    apiEndpoint: process.env.D365_API_ENDPOINT
   },
   messaging:{
     natsUrl:process.env.NATS_URL,

@@ -75,14 +75,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint) {
+function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, clientId, clientSecret) {
   passport.use(strategyName, new OidcStrategy({
     issuer: discovery.issuer,
     authorizationURL: discovery.authorization_endpoint,
     tokenURL: discovery.token_endpoint,
     userInfoURL: discovery.userinfo_endpoint,
-    clientID: config.get('oidc:clientId'),
-    clientSecret: config.get('oidc:clientSecret'),
+    clientID: config.get(clientId),
+    clientSecret: config.get(clientSecret),
     callbackURL: callbackURI,
     scope: 'openid',
     kc_idp_hint: kc_idp_hint
@@ -111,10 +111,16 @@ const parseJwt = (token) => {
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_bceid', 'keycloak_bcdevexchange_idir');
-  // addLoginPassportUse(discovery, 'oidcBceidActivateUser', config.get('server:frontend') + '/api/auth/callback_activate_user', 'keycloak_bcdevexchange_bceid');
-  // addLoginPassportUse(discovery, 'oidcBceidActivateDistrictUser', config.get('server:frontend') + '/api/auth/callback_activate_district_user', 'keycloak_bcdevexchange_bceid');
-  //JWT strategy is used for authorization
+  addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
+  //If local enviornment, use IDIR for both authentication strategies. (don't need to use business bceid)
+  if ('local' === config.get('environment')) {
+    addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
+  } else {
+    addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');  
+  }
+
+
+  //JWT strategy is used for authorization  keycloak_bcdevexchange_idir
   passport.use('jwt', new JWTStrategy({
     algorithms: ['RS256'],
     // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
@@ -161,6 +167,12 @@ apiRouter.use('/config',configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
+  //This is from the ResultValidation
+  if (err.errors && err.mapped) {
+    return res.status(400).json({
+      errors: err.mapped()
+    });
+  }
   log.error(err?.stack);
   res?.redirect(config?.get('server:frontend') + '/error?message=500_internal_error');
   next();

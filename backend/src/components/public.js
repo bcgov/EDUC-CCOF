@@ -1,34 +1,28 @@
 'use strict';
 
 const axios = require('axios');
-const { info } = require('./logger');
 const log = require('./logger');
-const { logApiError, errorResponse} = require('./utils');
-const { CHILD_AGE_CATEGORY_TYPES } = require('../util/constants')
+const config = require('../config/index');
+const { errorResponse, minify, HttpStatus} = require('./utils');
+const {ApiError} = require('./error');
+const { CHILD_AGE_CATEGORY_TYPES } = require('../util/constants');
 
 // Get facilities which match user search critiera via query param (i.e. facility/city).
 async function getFacilities(req, res) {
   try {
     let results = [];
-    // TODO: temp hardcoded payload. Remove once endpoint is complete.
-    let payLoad = simulatedPayloadFacilities;
-
-    /* TODO: acutal endpoint call. Uncomment and test once endpoint is implemented.
-    let payLoad = (await axios.get('???')).data;
-    */
-
+    let payLoad = await searchFacility(req.query.criteria);
     // Iterate through the payload to colect what we need, lighten, and return a condensed payload...
     for (let x in payLoad) {
+      log.info(x + ' : ' + payLoad[x]);
       results.push({facilityId: payLoad[x]['@search.objectid'],
-                    accountNumber: payLoad[x].accountNumber,
-                    facilityName: payLoad[x].name,
-                    city: payLoad[x].address1_city});
-
-      
+        accountNumber: payLoad[x].accountNumber,
+        facilityName: payLoad[x].name,
+        city: payLoad[x].address1_city});
     }
     return res.status(200).json(results);
   } catch (e) {
-    logApiError(e, 'getFacilities', 'Error occurred while attempting to GET Facilities.');
+    log.error(e, 'getFacilities', 'Error occurred while attempting to GET Facilities.');
     return errorResponse(res);
   }
 }
@@ -86,10 +80,39 @@ async function getFacility(req, res) {
     }
     return res.status(200).json(results);
   } catch (e) {
-    logApiError(e, 'getFacility', 'Error occurred while attempting to GET Facility.');
+    log.error(e, 'getFacility', 'Error occurred while attempting to GET Facility.');
     return errorResponse(res);
   }
 }
+
+
+async function searchFacility(searchQuery) {
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Search';
+    const params = {
+      'search': searchQuery,
+    };
+
+    log.info('search query: ' + JSON.stringify(params));
+    log.info('post Data Url', url);
+    const response = await axios.post(url, params, {
+      headers: {
+        'Accept': 'text/plain',
+        'Content-Type': 'application/json',
+      }
+    });
+    log.info(`get Data Status for url ${url} :: is :: `, response.status);
+    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
+
+    return response.data?.value;
+  } catch (e) {
+    log.error('searchFacility Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API Get error'}, e);
+  }
+}
+
 
 // TODO: remove once endpoint is ready.
 const simulatedPayloadFacilities = 

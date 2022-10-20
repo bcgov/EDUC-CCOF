@@ -19,7 +19,8 @@ const router = express.Router();
 router.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
-      '/callback_bceid',
+      '/callback',
+      '/callback_idir',
       '/login',
       '/logout',
       '/refresh',
@@ -42,19 +43,25 @@ router.get('/', (_req, res) => {
 // addOIDCRouterGet('oidcBceidActivateUser', '/callback_activate_user', `${config.get('server:frontend')}/user-activation`);
 // addOIDCRouterGet('oidcBceidActivateDistrictUser', '/callback_activate_district_user', `${config.get('server:frontend')}/district-user-activation`);
 
-router.get('/callback_bceid',
+router.get('/callback',
   passport.authenticate('oidcBceid', {
     failureRedirect: 'error'
   }),
   (_req, res) => {
-
-    // const userInfo = getSessionUser(req);
-    // const accessToken = userInfo.jwt;
-    // setupUserAndRedirect(req, res, accessToken, userInfo);
-
     res.redirect(config.get('server:frontend'));
   }
 );
+
+router.get('/callback_idir',
+  passport.authenticate('oidcIdir', {
+    failureRedirect: 'error'
+  }),
+  (_req, res) => {
+    res.redirect(config.get('server:frontend'));
+  }
+);
+
+
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
   res.redirect(config.get('server:frontend') + '/login-error');
@@ -66,9 +73,8 @@ function addBaseRouterGet(strategyName, callbackURI) {
   }));
 }
 
-addBaseRouterGet('oidcBceid', '/login_bceid');
-// addBaseRouterGet('oidcBceidActivateUser', '/login_bceid_activate_user');
-// addBaseRouterGet('oidcBceidActivateDistrictUser', '/login_bceid_activate_district_user');
+addBaseRouterGet('oidcBceid', '/login');
+addBaseRouterGet('oidcIdir', '/login_idir');
 
 
 //removes tokens and destroys session
@@ -78,17 +84,17 @@ router.get('/logout', async (req, res) => {
   req.session.destroy();
   let retUrl;
   if (req.query && req.query.sessionExpired) {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/session-expired');
   } else if (req.query && req.query.loginError) {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/login-error');
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/login-error');
   } else if (req.query && req.query.loginBceid) {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid');
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid');
   } else if (req.query && req.query.loginBceidActivateUser) {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_user');
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_user');
   } else if (req.query && req.query.loginBceidActivateDistrictUser) {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_district_user');
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_district_user');
   } else {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/logout');
     
   }
   log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
