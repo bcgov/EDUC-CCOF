@@ -6,7 +6,7 @@
         <br><br>
         <v-row justify="space-around">
         
-          <SmallCard title="Add a New Facility to my Organization">
+          <SmallCard title="Add a New Facility to my Organization" disabled="true">
               <br>
               <a href="#">LINK</a><br>
           </SmallCard>

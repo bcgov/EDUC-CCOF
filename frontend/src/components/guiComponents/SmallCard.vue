@@ -1,6 +1,6 @@
 <template>
     <v-col class="col-md-3 col-12 d-flex flex-column ">
-    <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column"
+    <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column" :disabled= disable 
         rounded
         tiled
         width = "100%"
@@ -18,7 +18,11 @@
 export default {
   props: {
     title: String,
-    subtitle: String
+    subtitle: String,
+    disable: {
+      default: false,
+      type: Boolean
+    }
   }
 };
 </script>

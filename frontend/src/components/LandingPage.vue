@@ -19,24 +19,26 @@
     >
       <v-row class="" align="stretch" justify="space-around" > 
         
-          <SmallCard title="CCOF">
-              <br>
-              <a href="#">CCOF Status: Approved</a><br>
+          <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
+              <br><br>
+              <v-btn class="" dark color='#003366' v-if="chosenOrg.applicationStatus === 'NOT STARTED'">Start Application</v-btn>
+              <v-btn class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
-          <SmallCard  title="Make a change to my information, parent fees, or funding agreement">
+          <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
             <br>
-              <a href="#">LINK</a><br>
+            <v-btn class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard>
         
-          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment">
+          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
               <br>
-              <a href="#">LINK</a><br>
+              <v-btn class="" dark color='#003366'>Submit reports</v-btn>
           </SmallCard>
        
-          <SmallCard title="Renew my funding agreement for 2022/23">
+          <SmallCard title="Renew my funding agreement for 2022/23" :disable=getApplicationStatus>
               <br>
-              <a href="#">LINK</a><br>
+              <v-btn class="" dark color='#003366'>Renew my funding</v-btn>
           </SmallCard>
       </v-row>
 
@@ -45,7 +47,9 @@
       </v-divider>
       <br><br>
 
-      <v-row>
+     
+      <v-row v-if=" !getApplicationStatus">
+        <v-row>
         <v-col class="col-12 col-md-6">
           <!--TODO: search box only looks at facility name. Update it later to search for status and licence.-->
           <v-text-field 
@@ -57,8 +61,7 @@
           </v-text-field>
         </v-col>
       </v-row>
-      
-      <v-row>
+
         <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
@@ -66,6 +69,7 @@
           :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
           :ripple="false"
           v-for="({facilityName, facilityId} , index) in filteredList" :key="facilityId"
+          
           >
             <v-card-text>
               <p class="text-h5 text--primary">
@@ -125,6 +129,13 @@ export default {
     filteredList() {
       return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
+    getApplicationStatus(){
+      if (this.chosenOrg.applicationStatus === 'APPROVED'){
+        //false because if the application is approved, we will want to set all the disabled status to false)
+        return false;
+      }
+      return true;
+    }
   },
   components: { SmallCard, LargeCard, MessagesToolbar }
 };
