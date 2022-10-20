@@ -95,7 +95,8 @@ objects:
     creationTimestamp:
     labels:
       app: "${APP_NAME}-${BRANCH}"
-    name: "${APP_NAME}-backend-${BRANCH}"
+      name: "${APP_NAME}-backend-${BRANCH}"
+      network: allowed-access
   spec:
     ports:
     - name: 8080-tcp
