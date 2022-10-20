@@ -31,6 +31,7 @@
           labels:
             app: "${APP_NAME}-${BRANCH}"
             deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
+            network-policy: "allowed-acces"
         spec:
           containers:
           - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
