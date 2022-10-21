@@ -117,27 +117,44 @@ async function getData(token, url, correlationID) {
   }
 }
 
-async function getOperationWithParams(operation, objectId) {
+async function getOperation(operation) {
   try {
-    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations';
-    const params = {
-      params: {
-        statement: `${operation}(${objectId})`,
-      }
-    };
-
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
+    let headers = null;
+    if ('local' === config.get('environment')) {
+      headers = {
+        'Accept': 'text/plain',
+        'Content-Type': 'application/json',
+        'auth': {
+          'username': config.get('dynamicsApi:devBasicAuthUser'),
+          'password': config.get('dynamicsApi:devBasicAuthPass')
+        }
+      };
+    } else {
+      headers = {
+        'Accept': 'text/plain',
+        'Content-Type': 'application/json',
+      };
+  
+    }
     log.info('get Data Url', url);
-    const response = await axios.get(url, params);
-    log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
-
+    const response = await axios.get(url, headers);
+    if (log.isInfoEnabled) {
+      log.info(`get Data Status for url ${url} :: is :: `, response.status);
+      log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+      log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
+    }
     return response.data;
   } catch (e) {
-    log.error('getDataWithParams Error', e.response ? e.response.status : e.message);
+    log.error('getOperation Error', e.response ? e.response.status : e.message);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API Get error'}, e);
   }
+}
+
+async function getOperationWithObjectId(operation, objectId) {
+  const operationWithObject = `${operation}(${objectId})`;
+  return await getOperation(operationWithObject);
 }
 
 async function getDataWithParams(token, url, params, correlationID) {
@@ -356,7 +373,8 @@ const utils = {
   deleteData,
   forwardGetReq,
   getDataWithParams,
-  getOperationWithParams,
+  getOperationWithObjectId,
+  getOperation,
   getData,
   forwardPostReq,
   postData,
