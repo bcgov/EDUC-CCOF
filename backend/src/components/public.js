@@ -3,7 +3,7 @@
 const axios = require('axios');
 const log = require('./logger');
 const config = require('../config/index');
-const { errorResponse, minify, HttpStatus} = require('./utils');
+const { errorResponse, minify, HttpStatus, getHttpHeader} = require('./utils');
 const {ApiError} = require('./error');
 const { CHILD_AGE_CATEGORY_TYPES } = require('../util/constants');
 
@@ -92,15 +92,9 @@ async function searchFacility(searchQuery) {
     const params = {
       'search': searchQuery,
     };
-
     log.info('search query: ' + JSON.stringify(params));
     log.info('post Data Url', url);
-    const response = await axios.post(url, params, {
-      headers: {
-        'Accept': 'text/plain',
-        'Content-Type': 'application/json',
-      }
-    });
+    const response = await axios.post(url, params, getHttpHeader());
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
     log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
     log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
