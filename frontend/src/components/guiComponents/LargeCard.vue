@@ -1,5 +1,5 @@
 <template>
-    <v-card elevation="4" class="cols-12 lgCardSize pa-4 mx-auto rounded-lg"
+    <v-card elevation="4" class="cols-12 lgCardSize pa-4 mx-auto rounded-lg" 
         rounded
         tiled
         exact tile
@@ -36,8 +36,11 @@ export default {
 <style>
 
 .lgCardSize {
-  max-width: 950px;
+  /* max-width: 950px; */
   min-height : 270px;
+}
+
+.blueBorder{
   border-top: 5px solid #003366 !important;
 }
 

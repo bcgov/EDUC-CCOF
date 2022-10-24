@@ -31,6 +31,7 @@ export default {
 
 .smCardHeight{
     min-height: 250px;
+    /* height: 100%; */
     background-color: pink;
     border-top: 5px solid #003366 !important;
   }

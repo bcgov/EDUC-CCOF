@@ -21,24 +21,24 @@
         
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn class="" dark color='#003366' v-if="chosenOrg.applicationStatus === 'NOT STARTED'">Start Application</v-btn>
-              <v-btn class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === 'NOT STARTED'">Start Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
               <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
           <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
             <br>
-            <v-btn class="" dark color='#003366'>Make a change</v-btn>
+            <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard>
         
           <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
               <br>
-              <v-btn class="" dark color='#003366'>Submit reports</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
           </SmallCard>
        
           <SmallCard title="Renew my funding agreement for 2022/23" :disable=getApplicationStatus>
               <br>
-              <v-btn class="" dark color='#003366'>Renew my funding</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366'>Renew my funding</v-btn>
           </SmallCard>
       </v-row>
 
