@@ -7,8 +7,15 @@ const router = express.Router();
 const {getAccessToken} = require('../components/utils');
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
+const { getLookupInfo } = require('../components/lookup');
+
 
 router.get('/', passport.authenticate('jwt', {session: false}),isValidBackendToken, getConfig);
+
+router.get('/lookup', (req, res) => {
+  getLookupInfo(req, res);
+});
+
 
 
 async function getConfig(req, res) {

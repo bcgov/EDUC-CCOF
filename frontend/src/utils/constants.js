@@ -31,6 +31,13 @@ export const PAGE_TITLES = Object.freeze({
   CCRFI_APPLICATION: 'CCRFI Application Form'
 });
 
+export const PATHS = {
+  orgInfo: '/ccof-application/group/organization-information',
+  facInfo: '/ccof-application/group/facility-information',
+  fundAmount: '/ccof-application/group/funding-amount',
+  confirmation: '/ccof-application/group/confirmation'
+};
+
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 

@@ -117,6 +117,50 @@ async function getData(token, url, correlationID) {
   }
 }
 
+async function getOperation(operation) {
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    if (log.isInfoEnabled) {
+      log.info(`get Data Status for url ${url} :: is :: `, response.status);
+      log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+      log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data?.value));
+    }
+    
+    return response.data?.value;
+  } catch (e) {
+    log.error('getOperation Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API Get error'}, e);
+  }
+}
+
+function getHttpHeader() {
+  let headers = null;
+  if ('local' === config.get('environment')) {
+    headers = {
+      'Accept': 'text/plain',
+      'Content-Type': 'application/json',
+      'auth': {
+        'username': config.get('dynamicsApi:devBasicAuthUser'),
+        'password': config.get('dynamicsApi:devBasicAuthPass')
+      }
+    };
+  } else {
+    headers = {
+      'Accept': 'text/plain',
+      'Content-Type': 'application/json',
+    };
+  }
+  return headers;
+}
+
+async function getOperationWithObjectId(operation, objectId) {
+  const operationWithObject = `${operation}(${objectId})`;
+  return await getOperation(operationWithObject);
+}
+
 async function getDataWithParams(token, url, params, correlationID) {
   try {
     params.headers = {
@@ -333,6 +377,8 @@ const utils = {
   deleteData,
   forwardGetReq,
   getDataWithParams,
+  getOperationWithObjectId,
+  getOperation,
   getData,
   forwardPostReq,
   postData,
@@ -343,7 +389,9 @@ const utils = {
   errorResponse,
   getCodes,
   cacheMiddleware,
-  getCodeTable
+  getCodeTable,
+  minify,
+  getHttpHeader
 };
 
 module.exports = utils;
