@@ -146,13 +146,14 @@
                   value="Daily"
                 ></v-radio>
                 <v-radio
-                  label="Monthly"
-                  value="Monthly"
-                ></v-radio>
-                <v-radio
                   label="Weekly"
                   value="Weekly"
                 ></v-radio>
+                <v-radio
+                  label="Monthly"
+                  value="Monthly"
+                ></v-radio>
+                
                 
               </v-radio-group>
             </v-card-text>
@@ -184,13 +185,14 @@
                   value="Daily"
                 ></v-radio>
                 <v-radio
-                  label="Monthly"
-                  value="Monthly"
-                ></v-radio>
-                <v-radio
                   label="Weekly"
                   value="Weekly"
                 ></v-radio>
+                <v-radio
+                  label="Monthly"
+                  value="Monthly"
+                ></v-radio>
+                
                 
               </v-radio-group>
             </v-card-text>
@@ -246,9 +248,9 @@
             </v-card-text>
           </v-card>
 
-        <v-btn>
+        <!-- <v-btn>
           Back
-        </v-btn>
+        </v-btn> -->
 
 
     </v-container>
@@ -258,11 +260,11 @@
 
 
 import { mapGetters} from 'vuex';
-import SmallCard from './guiComponents/SmallCard.vue';
-import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
-import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
-import LargeButtonContainer from './guiComponents/LargeButtonContainer.vue';
-import LargeCard from './guiComponents/LargeCard.vue';
+import SmallCard from '../../guiComponents/SmallCard.vue';
+import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
+import LargeBlueButton from '../../guiComponents/LargeBlueButton.vue';
+import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
+import LargeCard from '../../guiComponents/LargeCard.vue';
 
 export default {
   name: 'CcfriLandingPage',
