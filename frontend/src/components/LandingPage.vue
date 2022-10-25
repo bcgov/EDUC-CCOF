@@ -1,5 +1,5 @@
 <template>
-  <v-containter>
+  <v-container>
     <div v-if ="chosenOrg.unreadMessages">
       <MessagesToolbar></MessagesToolbar>
     </div>
@@ -22,7 +22,7 @@
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
               <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === 'NOT STARTED'">Start Application</v-btn>
-              <v-btn absolute bottom  class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
               <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
@@ -51,10 +51,10 @@
       <v-row v-if=" !getApplicationStatus">
         <v-row>
         <v-col class="col-12 col-md-6">
-          <!--TODO: search box only looks at facility name. Update it later to search for status and licence.-->
+          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence.-->
           <v-text-field 
-            clearable="true" 
-            filled="true" 
+            clearable
+            filled 
             label="Filter by facility, status, or licence: "
             v-model="input"
             :bind="input">
@@ -89,7 +89,7 @@
         </v-card>
       </v-row>
   </v-container>
-</v-containter>
+</v-container>
   
 </template>
 <script>
@@ -127,6 +127,9 @@ export default {
       return this.userInfo.organizationList[0];
     },
     filteredList() {
+      if (this.input === '' || this.input === ' '){
+        return this.chosenOrg.facilityList;
+      }
       return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
@@ -137,7 +140,7 @@ export default {
       return true;
     }
   },
-  components: { SmallCard, LargeCard, MessagesToolbar }
+  components: { SmallCard, MessagesToolbar }
 };
 </script>
 

@@ -167,6 +167,7 @@
           </v-card-text>
         </v-card>
 
+    <v-container>
         <v-row>
               <v-col>
                 <label>Enter your monthly fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
@@ -177,23 +178,23 @@
           class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="monday" label="Jan" prefix="$"/>
               </v-col>
-              <v-col cols="2"
+              <v-col
           class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="tusday" label="Feb" prefix="$" />
               </v-col>
-              <v-col cols="2"
+              <v-col
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="wednesday" label="March" prefix="$" />
               </v-col>
-              <v-col cols="2"
+              <v-col
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="thursday" label="April" prefix="$"/>
               </v-col>
-              <v-col cols="2"
+              <v-col 
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="friday" label="May" prefix="$"/>
               </v-col >
-              <v-col cols="2"
+              <v-col 
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="friday" label="June" prefix="$"/>
               </v-col >
@@ -204,34 +205,51 @@
           class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="monday" label="July" prefix="$"/>
               </v-col>
-              <v-col cols="2"
+              <v-col 
           class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="tusday" label="August" prefix="$" />
               </v-col>
-              <v-col cols="2"
+              <v-col
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="wednesday" label="September" prefix="$" />
               </v-col>
-              <v-col cols="2"
+              <v-col 
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="thursday" label="October" prefix="$"/>
               </v-col>
-              <v-col cols="2"
+              <v-col 
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="friday" label="November" prefix="$"/>
               </v-col >
-              <v-col cols="2"
+              <v-col 
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined required  v-model.number="friday" label="December" prefix="$"/>
               </v-col >
               </v-row>
 
               <v-row>
-              <v-col cols="2"
+              <v-col 
               class="col-6 col-md-2">
                 <v-text-field type="number" outlined readonly v-bind:value="(monday || 0) + (tusday || 0) + (wednesday || 0) + (thursday || 0) + (friday || 0)" label="Total" />
               </v-col>
             </v-row>
+        </v-container>
+
+        <v-container>
+          <v-row>
+              <v-col>
+                <label>What is the Daily fixed fee?</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                class="col-6 col-md-2">
+                  <v-text-field type="number" outlined required  v-model.number="monday" prefix="$"/>
+              </v-col>
+          </v-row>
+        </v-container>
+
+
     </v-container>
   </v-form>
 </template>

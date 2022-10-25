@@ -12,8 +12,8 @@
             <v-row class=" ml-4 my-16">
               <v-col sm="10" align="left" >
               <span class="white--text" >
-                <v-text class="text-h3"   style="font-family:BCSans;">My ChildCare Services</v-text> <br><br>
-                <v-text class="text-h5 ">Welcome</v-text>
+                <p class="text-h3"   style="font-family:BCSans;">My ChildCare Services</p> <br><br>
+                <p class="text-h5 ">Welcome</p>
               </span>
             </v-col>
           </v-row>
@@ -40,7 +40,7 @@
             </v-card-text>
             <v-spacer></v-spacer>
             <v-card-actions class="mt-auto">
-              <v-row justify="left">
+              <v-row >
                 <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
               </v-row>
             </v-card-actions>
@@ -59,7 +59,7 @@
             You must register for a Business BCeID before you can log in - it only takes a few minutes.
           </v-card-text>
           <v-card-actions>
-            <v-row justify="left">
+            <v-row >
               <v-btn href="https://www.bceid.ca/register/business/getting_started/getting_started.aspx" class="ma-5" dark color='#003366'>Register for a BCeID<v-icon>mdi-login</v-icon></v-btn>
             </v-row>
           </v-card-actions>
@@ -71,7 +71,7 @@
 
 
       <!-- CCFRI Est Card-->
-      <v-row justify="center">
+      <v-row >
         <v-col class="xs-12 border-top">
           <v-divider></v-divider>
           <v-card flat class="d-flex flex-column">
@@ -86,7 +86,7 @@
             </v-card-text>
             <v-spacer></v-spacer>
             <v-card-actions>
-              <v-row justify="left">
+              <v-row >
                 <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Go to Estimator</v-btn>
               </v-row>
             </v-card-actions>
