@@ -50,7 +50,10 @@ router.get('/:organizationId', passport.authenticate('jwt', {session: false}),is
  * Create a new Organization
  */
 router.post('/', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  checkSchema(organizationSchema)], (req, res) => { return createOrganization(req, res);});
+  checkSchema(organizationSchema)], (req, res) => { 
+  validationResult(req).throw();
+  return createOrganization(req, res);
+});
 
 /**
  * Update an existing Organization
