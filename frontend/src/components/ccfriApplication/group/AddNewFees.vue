@@ -25,15 +25,15 @@
             >
             <v-radio
                 label="Daily"
-                value="Daily"
+                value="daily"
               ></v-radio>
               <v-radio
                 label="Weekly"
-                value="Weekly"
+                value="weekly"
               ></v-radio>
               <v-radio
                 label="Monthly"
-                value="Monthly"
+                value="monthly"
               ></v-radio>
             </v-radio-group>
 
@@ -43,7 +43,7 @@
             </p>
             <v-radio-group
               required
-              v-model="olderChildFixedFee"
+              v-model="youngerChildFixedFee"
               row
             >
               <v-radio
@@ -55,6 +55,141 @@
                 value="No"
               ></v-radio>
             </v-radio-group>
+
+            <v-container v-if="youngerChildFixedFee==='No' && youngerChildFeeSchedule !='daily'">
+            <v-row>
+              <v-col>
+                <label>Enter your {{youngerChildFeeSchedule}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildApr" label="April" prefix="$"/>
+              </v-col>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildMay" label="May" prefix="$"/>
+              </v-col >
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildJune" label="June" prefix="$"/>
+              </v-col >
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeJul" label="July" prefix="$"/>
+              </v-col>
+              <v-col 
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeAug" label="August" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeSep" label="September" prefix="$" />
+              </v-col>
+              </v-row>
+
+              <v-row>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeOct" label="October" prefix="$"/>
+              </v-col>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeNov" label="November" prefix="$"/>
+              </v-col >
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeDec" label="December" prefix="$"/>
+              </v-col >
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeJan" label="Jan" prefix="$"/>
+              </v-col>
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeFeb" label="Feb" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildMar" label="March" prefix="$" />
+              </v-col>
+              </v-row>
+
+              <!--in case we need to have code to calculate totals-->
+              <!-- <v-row>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined readonly v-bind:value="(monday || 0) + (tusday || 0) + (wednesday || 0) + (thursday || 0) + (friday || 0)" label="Total" />
+              </v-col>
+            </v-row> -->
+        </v-container>
+
+        <v-container v-else-if="youngerChildFeeSchedule ==='daily' && youngerChildFixedFee==='No'">
+            <v-row>
+              <v-col>
+                <label>Enter your {{youngerChildFeeSchedule}} fee in every day below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeMon" label="Monday" prefix="$"/>
+              </v-col>
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeTue" label="Tuesday" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildWed" label="Wednesday" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildThu" label="Thursday" prefix="$"/>
+              </v-col>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFri" label="Friday" prefix="$"/>
+              </v-col >
+              <!-- </v-row>
+              
+              <v-row> -->
+                <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildSat" label="Saturday" prefix="$"/>
+              </v-col >
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="youngerChildFeeSun" label="Sunday" prefix="$"/>
+              </v-col>
+          
+            </v-row>
+
+              <!--in case we need to have code to calculate totals-->
+              <!-- <v-row>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined readonly v-bind:value="(monday || 0) + (tusday || 0) + (wednesday || 0) + (thursday || 0) + (friday || 0)" label="Total" />
+              </v-col>
+            </v-row> -->
+        </v-container>
+
+        <v-container v-else>
+          <v-row>
+              <v-col>
+                <label>What is the {{youngerChildFeeSchedule}} fixed fee?</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                class="col-6 col-md-2">
+                  <v-text-field type="number" outlined required  v-model.number="monday" prefix="$"/>
+              </v-col>
+          </v-row>
+        </v-container>
+
+
           </v-card-text>
         </v-card>
 
@@ -82,15 +217,15 @@
             >
             <v-radio 
                 label="Daily"
-                value="Daily"
+                value="daily"
               ></v-radio>
               <v-radio
                 label="Weekly"
-                value="Weekly"
+                value="weekly"
               ></v-radio>
               <v-radio
                 label="Monthly"
-                value="Monthly"
+                value="monthly"
               ></v-radio>
             </v-radio-group>
 
@@ -113,6 +248,127 @@
                 value="No"
               ></v-radio>
             </v-radio-group>
+
+
+            <v-container v-if="olderChildFixedFee==='No' && olderChildFeeSchedule !='daily'">
+            <v-row>
+              <v-col>
+                <label>Enter your {{olderChildFeeSchedule}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildApr" label="April" prefix="$"/>
+              </v-col>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildMay" label="May" prefix="$"/>
+              </v-col >
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildJune" label="June" prefix="$"/>
+              </v-col >
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeJul" label="July" prefix="$"/>
+              </v-col>
+              <v-col 
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeAug" label="August" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeSep" label="September" prefix="$" />
+              </v-col>
+              </v-row>
+
+              <v-row>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeOct" label="October" prefix="$"/>
+              </v-col>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeNov" label="November" prefix="$"/>
+              </v-col >
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeDec" label="December" prefix="$"/>
+              </v-col >
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeJan" label="Jan" prefix="$"/>
+              </v-col>
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeFeb" label="Feb" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildMar" label="March" prefix="$" />
+              </v-col>
+              </v-row>
+        </v-container>
+
+        <v-container v-else-if="olderChildFeeSchedule ==='daily' && olderChildFixedFee==='No'">
+            <v-row>
+              <v-col>
+                <label>Enter your {{olderChildFeeSchedule}} fee in every day below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeMon" label="Monday" prefix="$"/>
+              </v-col>
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeTue" label="Tuesday" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildWed" label="Wednesday" prefix="$" />
+              </v-col>
+              <v-col
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildThu" label="Thursday" prefix="$"/>
+              </v-col>
+              <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFri" label="Friday" prefix="$"/>
+              </v-col >
+              <!-- </v-row>
+              
+              <v-row> -->
+                <v-col 
+              class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildSat" label="Saturday" prefix="$"/>
+              </v-col >
+              <v-col
+          class="col-6 col-md-2">
+                <v-text-field type="number" outlined required  v-model.number="olderChildFeeSun" label="Sunday" prefix="$"/>
+              </v-col>
+            </v-row>
+          </v-container>
+
+        <v-container v-else>
+          <v-row>
+              <v-col>
+                <label>What is the {{olderChildFeeSchedule}} fixed fee?</label>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                class="col-6 col-md-2">
+                  <v-text-field type="number" outlined required  v-model.number="monday" prefix="$"/>
+              </v-col>
+          </v-row>
+        </v-container>
+
+
+
+
           </v-card-text>
         </v-card>
 
@@ -131,7 +387,6 @@
             <br>
             <v-radio-group
               required
-              v-model="row"
               row
             >
               <v-radio
@@ -167,89 +422,6 @@
           </v-card-text>
         </v-card>
 
-    <v-container>
-        <v-row>
-              <v-col>
-                <label>Enter your monthly fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-          class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="monday" label="Jan" prefix="$"/>
-              </v-col>
-              <v-col
-          class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="tusday" label="Feb" prefix="$" />
-              </v-col>
-              <v-col
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="wednesday" label="March" prefix="$" />
-              </v-col>
-              <v-col
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="thursday" label="April" prefix="$"/>
-              </v-col>
-              <v-col 
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="friday" label="May" prefix="$"/>
-              </v-col >
-              <v-col 
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="friday" label="June" prefix="$"/>
-              </v-col >
-              </v-row>
-
-              <v-row>
-              <v-col
-          class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="monday" label="July" prefix="$"/>
-              </v-col>
-              <v-col 
-          class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="tusday" label="August" prefix="$" />
-              </v-col>
-              <v-col
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="wednesday" label="September" prefix="$" />
-              </v-col>
-              <v-col 
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="thursday" label="October" prefix="$"/>
-              </v-col>
-              <v-col 
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="friday" label="November" prefix="$"/>
-              </v-col >
-              <v-col 
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined required  v-model.number="friday" label="December" prefix="$"/>
-              </v-col >
-              </v-row>
-
-              <v-row>
-              <v-col 
-              class="col-6 col-md-2">
-                <v-text-field type="number" outlined readonly v-bind:value="(monday || 0) + (tusday || 0) + (wednesday || 0) + (thursday || 0) + (friday || 0)" label="Total" />
-              </v-col>
-            </v-row>
-        </v-container>
-
-        <v-container>
-          <v-row>
-              <v-col>
-                <label>What is the Daily fixed fee?</label>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                class="col-6 col-md-2">
-                  <v-text-field type="number" outlined required  v-model.number="monday" prefix="$"/>
-              </v-col>
-          </v-row>
-        </v-container>
-
-
     </v-container>
   </v-form>
 </template>
@@ -263,6 +435,32 @@ export default {
     return {
       olderChildFeeSchedule: undefined,
       youngerChildFeeSchedule: undefined,
+      olderChildFixedFee: undefined,
+      youngerChildFixedFee: undefined,
+      olderChildFeeJan: undefined,
+      olderChildFeeFeb: undefined,
+      olderChildFeeMar: undefined,
+      olderChildFeeApr: undefined,
+      olderChildFeeMay: undefined,
+      olderChildFeeJun: undefined,
+      olderChildFeeJul: undefined,
+      olderChildFeeAug: undefined,
+      olderChildFeeSep: undefined,
+      olderChildFeeOct: undefined,
+      olderChildFeeNov: undefined,
+      olderChildFeeDec: undefined,
+      youngerChildFeeJan: undefined,
+      youngerChildFeeFeb: undefined,
+      youngerChildFeeMar: undefined,
+      youngerChildFeeApr: undefined,
+      youngerChildFeeMay: undefined,
+      youngerChildFeeJun: undefined,
+      youngerChildFeeJul: undefined,
+      youngerChildFeeAug: undefined,
+      youngerChildFeeSep: undefined,
+      youngerChildFeeOct: undefined,
+      youngerChildFeeNov: undefined,
+      youngerChildFeeDec: undefined,
 
     };
   },

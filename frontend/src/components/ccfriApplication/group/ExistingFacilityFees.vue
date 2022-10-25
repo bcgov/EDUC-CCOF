@@ -4,7 +4,7 @@
           min-height="230"
           rounded
           tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          exact tile
           :ripple="false"
           >
             <v-card-text>
@@ -61,7 +61,6 @@
               </p>
               <br>
               <v-radio-group
-                v-model="row"
                 row
               >
                 <v-radio
@@ -79,3 +78,32 @@
   </container>
 </template>
 
+<script>
+
+export default {
+  data() {
+    return {
+      input : '',
+      feeList : [
+        {
+          date: 'Jan 2022',
+          pre3year: 1234,
+          post3year: 2222
+        },
+        {
+          date: 'Feb 2022',
+          pre3year: 5555,
+          post3year: 8811
+        },
+        {
+          date: 'Mar 2022',
+          pre3year: 6754,
+          post3year: 8223
+        }
+      ]
+    };
+  }
+};
+
+
+</script>
