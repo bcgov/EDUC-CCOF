@@ -17,12 +17,12 @@ async function getLookupInfo(req, res) {
    */
   let resData = lookupCache.get('lookups');
   if (resData == undefined) {
-    let programYear = await getOperation('ccof_program_years');
+    let programYear = await getOperation('ccof_program_years')?.value;
     // function without filter 
     // programYear = programYear.map(item => { return _(item).pick(['ccof_name', 'ccof_program_yearid', 'statuscode']); });
     programYear = programYear.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_name', 'ccof_program_yearid']); });
 
-    let childCareCategory = await getOperation('ccof_childcare_categories'); 
+    let childCareCategory = await getOperation('ccof_childcare_categories')?.value; 
     childCareCategory = childCareCategory.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid','statuscode']); });
   
     resData = {

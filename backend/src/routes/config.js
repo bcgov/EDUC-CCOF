@@ -12,10 +12,9 @@ const { getLookupInfo } = require('../components/lookup');
 
 router.get('/', passport.authenticate('jwt', {session: false}),isValidBackendToken, getConfig);
 
-router.get('/lookup', (req, res) => {
+router.get('/lookup', passport.authenticate('jwt', {session: false}),isValidBackendToken, (req, res) => {
   getLookupInfo(req, res);
 });
-
 
 
 async function getConfig(req, res) {
