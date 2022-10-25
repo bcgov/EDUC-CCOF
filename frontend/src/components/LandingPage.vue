@@ -18,7 +18,7 @@
     class="px-10"
     >
       <v-row class="" align="stretch" justify="space-around" > 
-        
+        <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
               <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === 'NOT STARTED'">Start Application</v-btn>
@@ -96,7 +96,7 @@
 
 import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
-import LargeCard from './guiComponents/LargeCard.vue';
+// import LargeCard from './guiComponents/LargeCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 
 export default {
