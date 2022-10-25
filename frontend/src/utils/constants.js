@@ -20,6 +20,7 @@ export const AuthRoutes = Object.freeze(object);
 
 export const ApiRoutes = Object.freeze({
   USER: baseRoot + '/user',
+  LOOKUP: baseRoot + '/config/lookup'
 });
 
 export const PAGE_TITLES = Object.freeze({

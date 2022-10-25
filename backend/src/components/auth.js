@@ -35,11 +35,23 @@ const auth = {
     let result = {};
 
     try {
+      //If local enviornment, use IDIR for both authentication strategies. (don't need to use business bceid)
+      let oidcClientId = null;
+      let oidcSecret = null;
+
+      if ('local' === config.get('environment')) {
+        oidcClientId = config.get('oidc:clientIdIDIR');
+        oidcSecret = config.get('oidc:clientSecretIDIR');
+      } else {
+        oidcClientId = config.get('oidc:clientId');
+        oidcSecret = config.get('oidc:clientSecret');
+      }
+
       const discovery = await utils.getOidcDiscovery();
       const response = await axios.post(discovery.token_endpoint,
         qs.stringify({
-          client_id: config.get('oidc:clientId'),
-          client_secret: config.get('oidc:clientSecret'),
+          client_id: oidcClientId,
+          client_secret: oidcSecret,
           grant_type: 'refresh_token',
           refresh_token: refreshToken,
           scope: discovery.scopes_supported
