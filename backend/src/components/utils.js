@@ -47,6 +47,14 @@ function getAccessToken(req) {
   return user && user.jwt;
 }
 
+function logResponse(methodName, response) {
+  if (log.isSillyEnabled) {
+    log.info(`Status for ${methodName} :: is :: `, response.status);
+    log.info(`StatusText for ${methodName}  :: is :: `, response.statusText);
+    log.verbose(`Response for ${methodName}  :: is :: `, minify(response.data));
+  }
+}
+
 async function deleteData(token, url, correlationID) {
   try {
     const delConfig = {
@@ -122,17 +130,54 @@ async function getOperation(operation) {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
     log.info('get Data Url', url);
     const response = await axios.get(url, getHttpHeader());
-    if (log.isInfoEnabled) {
-      log.info(`get Data Status for url ${url} :: is :: `, response.status);
-      log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-      log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data?.value));
-    }
-    
-    return response.data?.value;
+    logResponse('getOperation', response);
+    return response.data;
   } catch (e) {
     log.error('getOperation Error', e.response ? e.response.status : e.message);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API Get error'}, e);
+  }
+}
+
+async function getOperationWithObjectId(operation, objectId) {
+  const operationWithObject = `${operation}(${objectId})`;
+  return await getOperation(operationWithObject);
+}
+
+async function postOperation(operation, payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
+  log.info('postOperation Url', url);
+
+  if (log.isInfoEnabled) {
+    log.verbose(`postOperation post data for ${url}  :: is :: `, minify(payload));
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postOperation', response);
+    return response.data;
+  } catch (e) {
+    log.error('postOperation Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API Post error'}, e);
+  }
+}
+
+async function patchOperationWithObjectId(operation, objectId, payload) {
+  const operationWithObject = `${operation}(${objectId})`;
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operationWithObject;
+  log.info('patchOperationWithObjectId Url', url);
+
+  if (log.isInfoEnabled) {
+    log.verbose(`patchOperationWithObjectId post data for ${url}  :: is :: `, minify(payload));
+  }  
+  try {
+    const response = await axios.patch(url, payload, getHttpHeader());
+    logResponse('patchOperationWithObjectId', response);
+    return response.data;
+  } catch (e) {
+    log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API Patch error'}, e);
   }
 }
 
@@ -154,11 +199,6 @@ function getHttpHeader() {
     };
   }
   return headers;
-}
-
-async function getOperationWithObjectId(operation, objectId) {
-  const operationWithObject = `${operation}(${objectId})`;
-  return await getOperation(operationWithObject);
 }
 
 async function getDataWithParams(token, url, params, correlationID) {
@@ -379,6 +419,8 @@ const utils = {
   getDataWithParams,
   getOperationWithObjectId,
   getOperation,
+  postOperation,
+  patchOperationWithObjectId,
   getData,
   forwardPostReq,
   postData,
