@@ -48,7 +48,7 @@ function getAccessToken(req) {
 }
 
 function logResponse(methodName, response) {
-  if (log.isInfoEnabled) {
+  if (log.isSillyEnabled) {
     log.info(`Status for ${methodName} :: is :: `, response.status);
     log.info(`StatusText for ${methodName}  :: is :: `, response.statusText);
     log.verbose(`Response for ${methodName}  :: is :: `, minify(response.data));
