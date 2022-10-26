@@ -412,6 +412,9 @@
              </v-menu>
             </v-col>
             <v-col class="col-md-4 col-12 ">
+              <!-- I added in Alexy's "required" ruleset that makes the textbox go red. Maybe not needed here since the button
+              will not work unless all fields are filled in?
+            -->
             <v-text-field
             class = ""
               v-model="closureReason"
@@ -445,7 +448,8 @@
           <v-col>
             <v-btn class="col-3 col-md-1"
             v-if =" closureReason ==='' || closureReason ===' ' || closureReason ===null|| closureReason ===undefined 
-            || datePicker===null || datePicker===' ' || datePicker=== undefined"
+            || datePicker===null || datePicker===' ' || datePicker=== undefined
+            || closedFeesPaid === '' || closedFeesPaid === null || closedFeesPaid === undefined "
               disabled
             >ADD</v-btn>
             <v-btn v-else v-on:click="addDate">ADD</v-btn>
@@ -455,7 +459,7 @@
             <v-row>
               <v-btn v-for="date in dates" :key="date.message"
               v-on:click="removeDate(date.id)">
-                {{date.message}} FOR DATES : {{date.selectedDates}} ID: {{date.id}}
+                {{date.message}} FOR DATES : {{date.selectedDates}} FEES PAID?: {{date.feesPaidWhileClosed}} ID: {{date.id}}
               </v-btn>
             </v-row>
           </v-card-text>
@@ -499,6 +503,7 @@ export default {
       dates: [],
       closureFees: undefined,
       closureReason: undefined,
+      closedFeesPaid: undefined,
       olderChildFeeSchedule: undefined,
       youngerChildFeeSchedule: undefined,
       olderChildFixedFee: undefined,
@@ -542,10 +547,12 @@ export default {
       this.dates.push({
         message: this.closureReason,
         selectedDates: this.datePicker,
+        feesPaidWhileClosed: this.closedFeesPaid,
         id: this.dates.length
       });
       this.closureReason = '';
       this.datePicker = '';
+      this.closedFeesPaid= '';
     },
     removeDate(removedId){
       const indexOfItemToRemove = this.dates.findIndex((obj) => obj.id === removedId);
