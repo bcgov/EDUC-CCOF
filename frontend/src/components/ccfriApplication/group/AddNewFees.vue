@@ -399,63 +399,65 @@
               ></v-radio>
             </v-radio-group>
 
-            <v-row v-if = "closureFees === 'Yes'">
-            <!-- <v-date-picker 
-              v-model="datePicker"
-              :show-current="false"
-              range
-              elevation="15"
-              
-            ></v-date-picker> -->
-
-
-            <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+            <v-row v-if = "closureFees === 'Yes'" justify="">
+          
+            <v-col class="col-md-4 col-12">
+            <v-menu  v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
               <template v-slot:activator="{ on, attrs }">
               <v-text-field outlined required v-model="datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
               </v-text-field>
               </template>
               <v-date-picker range  v-model="datePicker" @input="calendarMenu = false">
               </v-date-picker>
-              </v-menu>
-
-              <!-- <v-date-picker 
-              v-model="z"
-              :show-current="false"
-              range
-              elevation="15"
-
-              ></v-date-picker> -->
-             
+             </v-menu>
+            </v-col>
+            <v-col class="col-md-4 col-12 ">
             <v-text-field
-            class = "col-6"
+            class = ""
               v-model="closureReason"
               label="Purpose of Closure"
               outlined
               clearable
               required
-              width="200px"
+              :rules="rules.required" 
             ></v-text-field>
-            <v-btn 
+          </v-col>
+
+          <v-col class="col-md-3 col-12">
+            <v-radio-group
+              required
+              row
+              v-model="closedFeesPaid"
+              label="Did parents pay for this closure?"
+            >
+              <v-radio
+                label="Yes"
+                value="Yes"
+              ></v-radio>
+              <v-radio
+                label="No"
+                value="No"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+
+
+          <v-col>
+            <v-btn class="col-3 col-md-1"
             v-if =" closureReason ==='' || closureReason ===' ' || closureReason ===null|| closureReason ===undefined 
             || datePicker===null || datePicker===' ' || datePicker=== undefined"
               disabled
             >ADD</v-btn>
             <v-btn v-else v-on:click="addDate">ADD</v-btn>
-            <h2>{{datePicker}} and {{closureReason}}</h2>
+          </v-col>
+
+        </v-row>
             <v-row>
-              
-              <v-btn>remove</v-btn>
+              <v-btn v-for="date in dates" :key="date.message"
+              v-on:click="removeDate(date.id)">
+                {{date.message}} FOR DATES : {{date.selectedDates}} ID: {{date.id}}
+              </v-btn>
             </v-row>
-            <v-row>
-              <h3 v-for="date in dates" :key="date.message">
-                {{date.message}} FOR DATES : {{date.selectedDates}}
-              </h3>
-            </v-row>
-
-
-
-            
-          </v-row>
           </v-card-text>
         </v-card>
 
@@ -484,11 +486,15 @@
   </v-form>
 </template>
 <script>
+import rules from '@/utils/rules';
+
+
 export default {
   props: {
   },
   data() {
     return {
+      rules,
       datePicker: null,
       dates: [],
       closureFees: undefined,
@@ -535,10 +541,16 @@ export default {
       console.log('hiiii');
       this.dates.push({
         message: this.closureReason,
-        selectedDates: this.datePicker
+        selectedDates: this.datePicker,
+        id: this.dates.length
       });
       this.closureReason = '';
       this.datePicker = '';
+    },
+    removeDate(removedId){
+      const indexOfItemToRemove = this.dates.findIndex((obj) => obj.id === removedId);
+      this.dates.splice(indexOfItemToRemove,1);
+      console.log(this.dates);
     }
   }
 };
