@@ -24,8 +24,11 @@ const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const ccofRouter = require('./routes/ccof');
 const facilityRouter = require('./routes/facility');
+const organizationRouter = require('./routes/organization');
 const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
+
+
 const promMid = require('express-prometheus-middleware');
 
 //initialize app
@@ -160,6 +163,7 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/ccof', ccofRouter);
 apiRouter.use('/facility', facilityRouter);
+apiRouter.use('/organization', organizationRouter);
 apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 
