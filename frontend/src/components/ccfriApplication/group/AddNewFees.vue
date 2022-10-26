@@ -387,6 +387,7 @@
             <v-radio-group
               required
               row
+              v-model="closureFees"
             >
               <v-radio
                 label="Yes"
@@ -397,6 +398,41 @@
                 value="No"
               ></v-radio>
             </v-radio-group>
+
+            <v-row v-if = "closureFees === 'Yes'">
+            <v-date-picker 
+              v-model="datePicker"
+              :show-current="false"
+              range
+              elevation="15"
+              
+            ></v-date-picker>
+            <v-text-field
+            class = "col-6"
+              v-model="closureReason"
+              label="Purpose of Closure"
+              outlined
+              clearable
+              required
+              width="200px"
+            ></v-text-field>
+            <v-btn 
+            v-if =" closureReason ==='' || closureReason ===' ' || closureReason ===null|| closureReason ===undefined 
+            || datePicker===null || datePicker===' '"
+              disabled
+            >ADD</v-btn>
+            <v-btn v-else v-on:click="addDate">ADD</v-btn>
+            <h2>{{datePicker}} and {{closureReason}}</h2>
+            <v-row>
+              
+              <v-btn>remove</v-btn>
+            </v-row>
+            <v-row>
+              <h3 v-for="date in dates" :key="date.message">
+                {{date.message}} FOR DATES : {{date.selectedDates}}
+              </h3>
+            </v-row>
+          </v-row>
           </v-card-text>
         </v-card>
 
@@ -428,10 +464,12 @@
 export default {
   props: {
   },
-  computed: {
-  },
   data() {
     return {
+      datePicker: null,
+      dates: [],
+      closureFees: undefined,
+      closureReason: undefined,
       olderChildFeeSchedule: undefined,
       youngerChildFeeSchedule: undefined,
       olderChildFixedFee: undefined,
@@ -463,7 +501,22 @@ export default {
 
     };
   },
+  computed: {
+    addNewDate(){
+      console.log('clicked!');
+      return '';
+    }
+  },
   methods: {
+    addDate(){
+      console.log('hiiii');
+      this.dates.push({
+        message: this.closureReason,
+        selectedDates: this.datePicker
+      });
+      this.closureReason = '';
+      this.datePicker = '';
+    }
   }
 };
 </script>
