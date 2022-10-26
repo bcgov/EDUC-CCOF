@@ -400,13 +400,32 @@
             </v-radio-group>
 
             <v-row v-if = "closureFees === 'Yes'">
-            <v-date-picker 
+            <!-- <v-date-picker 
               v-model="datePicker"
               :show-current="false"
               range
               elevation="15"
               
-            ></v-date-picker>
+            ></v-date-picker> -->
+
+
+            <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+              <v-text-field outlined required v-model="datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+              </v-text-field>
+              </template>
+              <v-date-picker range  v-model="datePicker" @input="calendarMenu = false">
+              </v-date-picker>
+              </v-menu>
+
+              <!-- <v-date-picker 
+              v-model="z"
+              :show-current="false"
+              range
+              elevation="15"
+
+              ></v-date-picker> -->
+             
             <v-text-field
             class = "col-6"
               v-model="closureReason"
@@ -418,7 +437,7 @@
             ></v-text-field>
             <v-btn 
             v-if =" closureReason ==='' || closureReason ===' ' || closureReason ===null|| closureReason ===undefined 
-            || datePicker===null || datePicker===' '"
+            || datePicker===null || datePicker===' ' || datePicker=== undefined"
               disabled
             >ADD</v-btn>
             <v-btn v-else v-on:click="addDate">ADD</v-btn>
@@ -432,6 +451,10 @@
                 {{date.message}} FOR DATES : {{date.selectedDates}}
               </h3>
             </v-row>
+
+
+
+            
           </v-row>
           </v-card-text>
         </v-card>
