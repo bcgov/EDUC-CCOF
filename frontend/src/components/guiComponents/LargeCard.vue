@@ -1,5 +1,5 @@
 <template>
-    <v-card elevation="4" class="cols-12 lgCardSize pa-4 mx-auto rounded-lg" 
+    <v-card elevation="4" class="cols-12 lgCardSize pa-4 mx-auto my-6 rounded-lg" 
         rounded
         tiled
         exact tile
@@ -8,7 +8,7 @@
         <v-card-text >
         <p class="text-h5 text--primary"> {{title}}</p>
         <h2> {{subtitle}}</h2> <br><br>
-        <p>{{pText}}</p>
+       
         
         
         <!-- this is another styling choice.... leaving this here in case we want to switch it back. 

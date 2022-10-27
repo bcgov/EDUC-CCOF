@@ -42,7 +42,7 @@
             >No</v-btn>
           </LargeCard> -->
 
-
+       <!-- <RequestForInfo></RequestForInfo> -->
 
         
           <AddNewFees></AddNewFees>
@@ -53,7 +53,7 @@
             hi
           </LargeCard> -->
 
-          <ExistingFacilityFees></ExistingFacilityFees>
+          
 
         <v-btn>
           Back
@@ -74,6 +74,7 @@ import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import LargeCard from '../../guiComponents/LargeCard.vue';
 import ExistingFacilityFees from './ExistingFacilityFees.vue';
 import AddNewFees from './AddNewFees.vue';
+import RequestForInfo from './RequestForInfo.vue';
 
 export default {
   name: 'CcfriLandingPage',
@@ -108,7 +109,7 @@ export default {
       return this.userInfo.organizationList[0].facilityList;
     }
   },
-  components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer, LargeCard, ExistingFacilityFees, AddNewFees }
+  components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer, LargeCard, ExistingFacilityFees, AddNewFees, RequestForInfo }
 };
 </script>
 

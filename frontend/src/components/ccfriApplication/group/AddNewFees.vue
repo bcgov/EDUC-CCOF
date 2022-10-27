@@ -66,17 +66,17 @@
             <v-col
               class="col-6 col-md-2"
             >
-              <v-text-field type="number" outlined required  v-model.number="youngerChildApr" label="April" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="youngerChildFeeApr" label="April" prefix="$"/>
             </v-col>
             <v-col 
               class="col-6 col-md-2"
             >
-              <v-text-field type="number" outlined required  v-model.number="youngerChildMay" label="May" prefix="$"/>
+              <v-text-field type="number" outlined required  v-model.number="youngerChildFeeMay" label="May" prefix="$"/>
             </v-col >
             <v-col 
               class="col-6 col-md-2"
             >
-              <v-text-field type="number" outlined required  v-model.number="youngerChildJune" label="June" prefix="$"/>
+              <v-text-field type="number" outlined required  v-model.number="youngerChildFeeJun" label="June" prefix="$"/>
             </v-col>
             <v-col
             class="col-6 col-md-2"
@@ -492,7 +492,7 @@
 <script>
 import rules from '@/utils/rules';
 
-
+//TODO: why does my number validation not work :( 
 export default {
   props: {
   },
@@ -506,6 +506,12 @@ export default {
       closedFeesPaid: undefined,
       olderChildFeeSchedule: undefined,
       youngerChildFeeSchedule: undefined,
+      feeRules: [
+        value => !!value || 'Required.',
+        value => (value && parseFloat(value) < 0 )|| 'Input a positve number',
+        value => (value > 9999.99 )|| 'Value too great',
+        
+      ],
       olderChildFixedFee: undefined,
       youngerChildFixedFee: undefined,
       olderChildFeeJan: undefined,
