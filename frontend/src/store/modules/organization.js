@@ -1,5 +1,5 @@
 import ApiService from '@/common/apiService';
-import {ApiRoutes} from '@/utils/constants';
+import { ApiRoutes } from '@/utils/constants';
 
 
 export default {
@@ -63,20 +63,20 @@ export default {
           reject('unable to save because you are not logged in');
         }
         const payload = {
-          legalName : state.legalName,
-          address1 : state.address1,
-          city1 : state.city1,
-          postalCode1 : state.postalCode1,
-          address2 : state.address2,
-          city2 : state.city2,
-          postalCode2 : state.postalCode2,
-          contactName : state.contactName,
-          position : state.position,
-          phone : state.phone,
-          businessId : state.businessId,
-          email : state.email,
-          incNumber : '' + state.incNumber, //Make sure it's a string
-          organizationType : state.organizationType,
+          legalName: state.legalName,
+          address1: state.address1,
+          city1: state.city1,
+          postalCode1: state.postalCode1,
+          address2: state.address2,
+          city2: state.city2,
+          postalCode2: state.postalCode2,
+          contactName: state.contactName,
+          position: state.position,
+          phone: state.phone,
+          businessId: state.businessId,
+          email: state.email,
+          incNumber: '' + state.incNumber, //Make sure it's a string
+          organizationType: state.organizationType,
         };
         if (state.organizationId) { // has an orgaization ID, so update the data
           ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload)
@@ -97,13 +97,13 @@ export default {
               commit('setEmail', response.data?.email);
               commit('setIncNumber', response.data?.incNumber);
               commit('setOrganizationType', response.data?.organizationType);
-              resolve(response); 
+              resolve(response);
             })
             .catch((e) => {
               console.log(`Failed to update existing Organization - ${e}`);
               reject(e);
             });
-          
+
         } else {
           ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload)
             .then((response) => {

@@ -90,8 +90,8 @@
                   <v-radio 
                     v-for="item in this.organizationTypeList"
                     :key="item.id"
-                    :label=item.name
-                    :value=item.id
+                    :label="item.name"
+                    :value="item.id"
                     ></v-radio>
                 </v-radio-group>
               </v-col>
