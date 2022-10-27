@@ -116,7 +116,8 @@ const router = new VueRouter({
       name: 'Organization Information',
       component: OrganizationInformation,
       meta: {
-        pageTitle: 'Organization Information'
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
       }
     },
     {

@@ -192,11 +192,10 @@ export default {
       this.processing = true;
       this.saveOrganization()
         .then(() => {
-          this.setSuccessAlert('Success! The message has been sent.');
+          this.setSuccessAlert('Success! Organization information has been saved.');
         })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
-          console.log(error);
+        .catch(() => {
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
         })
         .finally(() => {
           this.processing = false;

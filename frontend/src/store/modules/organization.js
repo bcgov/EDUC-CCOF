@@ -79,8 +79,8 @@ export default {
           organizationType : state.organizationType,
         };
         if (state.organizationId) { // has an orgaization ID, so update the data
-          try {
-            ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload).then((response) => {
+          ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload)
+            .then((response) => {
               commit('setOrganizationId', response.data?.organizationId);
               commit('setLegalName', response.data?.legalName);
               commit('setAddress1', response.data?.address1);
@@ -98,21 +98,22 @@ export default {
               commit('setIncNumber', response.data?.incNumber);
               commit('setOrganizationType', response.data?.organizationType);
               resolve(response); 
+            })
+            .catch((e) => {
+              console.log(`Failed to update existing Organization - ${e}`);
+              reject(e);
             });
-          } catch(e) {
-            console.log(`Failed to update existing Organization - ${e}`);
-            reject(e);
-          }
+          
         } else {
-          try {
-            ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload).then((response) => {
+          ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload)
+            .then((response) => {
               commit('setOrganizationId', response.data?.organizationId);
               resolve(response);
+            })
+            .catch((e) => {
+              console.log(`Failed to save new Organization - ${e}`);
+              reject(e);
             });
-          } catch(e) {
-            console.log(`Failed to save new Organization - ${e}`);
-            reject(e);
-          }
         }
       });
     }
