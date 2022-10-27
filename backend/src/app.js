@@ -189,7 +189,7 @@ app.use((_req, res) => {
 });
 
 // Prevent unhandled errors from crashing application
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   log.error('Unhandled Rejection at:', err?.stack || err);
 });
 module.exports = app;

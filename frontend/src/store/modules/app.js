@@ -4,25 +4,22 @@ export default {
   namespaced: true,
   state: {
     pageTitle: null,
-    mincodeSchoolNames: new Map(),
-    districtCodes: new Set(),
     alertNotificationText: '',
     alertNotificationQueue: [],
-    alertNotification: false
+    alertNotification: false,
+    programYearList: [],
+    childCareCategoryList: [],
+    organizationTypeList: []
   },
   getters: {
-    mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
+    programYearList: state => state.programYearList,
+    childCareCategoryList: state => state.childCareCategoryList,
+    organizationTypeList: state => state.organizationTypeList,
+
   },
   mutations: {
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
-    },
-    setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
-      state.mincodeSchoolNames = new Map();
-      mincodeSchoolNameList.forEach(element => {
-        state.mincodeSchoolNames.set(element.mincode, element.schoolName);
-        state.districtCodes.add(element.mincode?.substring(0, 3));
-      });
     },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
@@ -35,16 +32,27 @@ export default {
       if (!state.alertNotification) {
         state.alertNotification = true;
       }
+    },
+    setProgramYearList: (state, programYearList) => {
+      state.programYearList = programYearList;
+    },
+    setChildCareCategoryList: (state, childCareCategoryList) => {
+      state.childCareCategoryList = childCareCategoryList;
+    },
+    setOrganizationTypeList: (state, organizationTypeList) => {
+      state.organizationTypeList = organizationTypeList;
     }
+
   },
   actions: {
-    async getMincodeSchoolNames({ commit, state}) {
+    async getLookupInfo({commit}){
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-        if(state.mincodeSchoolNames.size === 0) {
-          const response = await ApiService.getMincodeSchoolNames();
-          commit('setMincodeSchoolNameAndDistrictCodes', response.data);
-        }
+        const lookupInfo = await ApiService.getLookupInfo();
+        commit('setProgramYearList', lookupInfo.data?.programYear);
+        commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
+        commit('setOrganizationTypeList', lookupInfo.data?.organizationType);
       }
     },
+
   },
 };

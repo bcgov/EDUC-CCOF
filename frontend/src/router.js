@@ -39,15 +39,12 @@ import NewMessagePage from './components/SecureExchange/NewMessagePage';
 import RouterView from './components/RouterView';
 import ActivateEdxAccount from '@/components/common/ActivateEdxAccount';
 import AccessUsersPage from '@/components/SecureExchange/AccessUsersPage';
-import InstituteSelection from '@/components/InstituteSelection.vue';
 import NewUserInvitePage from '@/components/SecureExchange/NewUserPage';
 
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
 Vue.use(VueMeta);
-// a comment for commit.
-const excludeInstituteNameFromPageTitleList = [PAGE_TITLES.SELECTION, PAGE_TITLES.ACTIVATE_USER];
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -91,15 +88,6 @@ const router = new VueRouter({
       component: LoginError
     },
     {
-      path: '/institute-selection',
-      name: 'institute-selection',
-      component: InstituteSelection,
-      meta: {
-        pageTitle: PAGE_TITLES.SELECTION,
-        requiresAuth: true
-      }
-    },
-    {
       path: '/facility-search',
       name: 'facility-search',
       component: SearchFacility,
@@ -128,7 +116,8 @@ const router = new VueRouter({
       name: 'Organization Information',
       component: OrganizationInformation,
       meta: {
-        pageTitle: 'Organization Information'
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
       }
     },
     {
@@ -278,17 +267,7 @@ router.beforeEach((to, _from, next) => {
         next('/token-expired');
       } else {
         store.dispatch('auth/getUserInfo').then(() => {
-          if (to.meta.permission && authStore.state.userInfo?.userMinCodes?.length > 0 && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
-            next('/institute-selection');
-          // }else if (to.meta.permission && (!authStore.state.userInfo.hasOwnProperty('activeInstitutePermissions') || authStore.state.userInfo.activeInstitutePermissions.filter(perm => perm === to.meta.permission).length < 1)) {
-          //   next('/unauthorized');
-          }else if (to && to.meta) {
-            if(authStore.state.userInfo.activeInstituteTitle && !excludeInstituteNameFromPageTitleList.includes(to.meta.pageTitle)){
-              store.commit('app/setPageTitle',to.meta.pageTitle + ' | ' + authStore.state.userInfo.activeInstituteTitle);
-            }else{
-              store.commit('app/setPageTitle',to.meta.pageTitle);
-            }
-          }
+          store.commit('app/setPageTitle',to.meta.pageTitle);
           next();
         }).catch(() => {
           next('error');
@@ -303,9 +282,6 @@ router.beforeEach((to, _from, next) => {
     });
   }
   else {
-    if (!authStore.state.userInfo) {
-      next();
-    }
     if (to && to.meta) {
       store.commit('app/setPageTitle', to.meta.pageTitle);
     } else {
@@ -314,4 +290,5 @@ router.beforeEach((to, _from, next) => {
     next();
   }
 });
+
 export default router;

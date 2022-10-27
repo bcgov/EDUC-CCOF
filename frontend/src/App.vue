@@ -62,11 +62,12 @@ export default {
   methods: {
     ...mapMutations('auth', ['setLoading']),
     ...mapActions('auth', ['getJwtToken', 'getUserInfo', 'logout']),
+    ...mapActions('app', ['getLookupInfo']),
   },
   async created() {
     this.setLoading(true);
     this.getJwtToken().then(() =>
-      Promise.all([this.getUserInfo()])
+      Promise.all([this.getUserInfo(), this.getLookupInfo()])
     ).catch(e => {
       if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
         this.logout();

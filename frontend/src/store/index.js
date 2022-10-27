@@ -3,12 +3,15 @@ import Vuex from 'vuex';
 import auth from '@/store/modules/auth.js';
 import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
+import organization from '@/store/modules/organization.js';
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     auth, 
     edx,
-    app
+    app,
+    organization
   }
 });

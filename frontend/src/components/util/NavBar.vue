@@ -163,7 +163,7 @@ export default {
           items: [
             {
               title: 'Organization Information',
-              link: '',
+              link: 'Organization Information',
               authorized: true,
               icon: 'mdi-checkbox-blank-circle-outline',
             },
