@@ -13,6 +13,7 @@ object = {
   REFRESH: authRoot + '/refresh',
   TOKEN: authRoot + '/token',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
+  ORGANIZATION: baseRoot + 'organization'
   
 };
 //Authentication endpoints
@@ -20,7 +21,8 @@ export const AuthRoutes = Object.freeze(object);
 
 export const ApiRoutes = Object.freeze({
   USER: baseRoot + '/user',
-  LOOKUP: baseRoot + '/config/lookup'
+  LOOKUP: baseRoot + '/config/lookup',
+  ORGANIZATION: baseRoot + '/organization'
 });
 
 export const PAGE_TITLES = Object.freeze({

@@ -13,13 +13,13 @@ const GetOrganizationKeyMap = {
   address2_name : 'address2', //Mailing Address
   address2_city : 'city2',
   address2_postalcode : 'postalCode2',
-  // _primarycontactid_value : 'contactId',
-  // x9 : 'position',
+  address1_primarycontactname: 'contactName',
+  ccof_position: 'position',
   telephone1 : 'phone',
-  // y2 : 'businessId', 
+  // businessBCeID : 'businessId', 
   emailaddress1 : 'email',
   ccof_instructionnumber : 'incNumber', //incorporation number
-  ccof_typeoforganization : 'organizationTypeId',
+  ccof_typeoforganization : 'organizationType',
   'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue' : 'organizationTypeDesc'
 };
 
@@ -32,22 +32,27 @@ const PostOrganizationKeyMap = {
   address2 : 'address2_name',
   city2 : 'address2_city',
   postalCode2 : 'address2_postalcode',
-  // _primarycontactid_value : 'contactId',
-  // x9 : 'position',
+  contactName: 'address1_primarycontactname',
+  position: 'ccof_position',
+  // businessBCeID : 'businessId', 
   phone : 'telephone1',
   email : 'emailaddress1',
   incNumber : 'ccof_instructionnumber',
-  organizationTypeId : 'ccof_typeoforganization',
+  organizationType : 'ccof_typeoforganization',
 };
 
 
 async function getOrganization(req, res) {
-  let organization = await getOperationWithObjectId('accounts', req.params.organizationId);
-  if (100000000 != organization?.ccof_accounttype) {
-    return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not organization.'});
+  try {
+    let organization = await getOperationWithObjectId('accounts', req.params.organizationId);
+    if (100000000 != organization?.ccof_accounttype) {
+      return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not organization.'});
+    }
+    organization = _(organization).pick(Object.keys(GetOrganizationKeyMap)).mapKeys((value,key) => {return GetOrganizationKeyMap[key];});
+    return res.status(HttpStatus.OK).json(organization);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
-  organization = _(organization).pick(Object.keys(GetOrganizationKeyMap)).mapKeys((value,key) => {return GetOrganizationKeyMap[key];});
-  return res.status(HttpStatus.OK).json(organization);
 }
 /* some JSON for creating organization
   -d '{
@@ -72,8 +77,12 @@ async function createOrganization(req, res) {
   organization = organization.value();
   organization.ccof_accounttype = 100000000;
 
-  let organizationGuid = await postOperation('accounts', organization);
-  return res.status(HttpStatus.CREATED).json({organizationGuid: organizationGuid});
+  try {
+    let organizationGuid = await postOperation('accounts', organization);
+    return res.status(HttpStatus.CREATED).json({organizationId: organizationGuid});
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
 }
 
 async function updateOrganization(req, res) {
@@ -82,10 +91,13 @@ async function updateOrganization(req, res) {
   organization = organization.value();
   organization.ccof_accounttype = 100000000;
 
-  let orgResponse = await patchOperationWithObjectId('accounts', req.params.organizationId, organization);
-
-  orgResponse = _(orgResponse).pick(Object.keys(GetOrganizationKeyMap)).mapKeys((value,key) => {return GetOrganizationKeyMap[key];});
-  return res.status(HttpStatus.OK).json(orgResponse);
+  try {
+    let orgResponse = await patchOperationWithObjectId('accounts', req.params.organizationId, organization);
+    orgResponse = _(orgResponse).pick(Object.keys(GetOrganizationKeyMap)).mapKeys((value,key) => {return GetOrganizationKeyMap[key];});
+    return res.status(HttpStatus.OK).json(orgResponse);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
 }
 
 module.exports = {

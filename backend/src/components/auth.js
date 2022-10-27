@@ -32,6 +32,7 @@ const auth = {
 
   // Get new JWT and Refresh tokens
   async renew(refreshToken) {
+    log.info('renew called');
     let result = {};
 
     try {
@@ -48,6 +49,14 @@ const auth = {
       }
 
       const discovery = await utils.getOidcDiscovery();
+      log.info('discovery token endpoint: ', discovery.token_endpoint);
+      log.info('url: ', qs.stringify({
+        client_id: oidcClientId,
+        client_secret: oidcSecret,
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        scope: discovery.scopes_supported
+      }));
       const response = await axios.post(discovery.token_endpoint,
         qs.stringify({
           client_id: oidcClientId,
@@ -64,7 +73,7 @@ const auth = {
         }
       );
 
-      log.verbose('renew', utils.prettyStringify(response.data));
+      log.info('renew', utils.prettyStringify(response.data));
       if (response && response.data && response.data.access_token && response.data.refresh_token) {
         result.jwt = response.data.access_token;
         result.refreshToken = response.data.refresh_token;

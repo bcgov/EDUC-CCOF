@@ -4,7 +4,7 @@ const rules = {
     if (v === 0) {
       return true;
     } else if (!v) {
-      return 'This field is requiered';
+      return 'This field is required';
     }
 
     return true;

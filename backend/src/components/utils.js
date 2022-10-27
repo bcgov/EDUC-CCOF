@@ -134,8 +134,7 @@ async function getOperation(operation) {
     return response.data;
   } catch (e) {
     log.error('getOperation Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
@@ -157,8 +156,7 @@ async function postOperation(operation, payload) {
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Post error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
   }
 }
 
@@ -176,8 +174,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
     return response.data;
   } catch (e) {
     log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Patch error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
   }
 }
 

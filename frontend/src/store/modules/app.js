@@ -7,14 +7,14 @@ export default {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
-    programYears: [],
-    childCareCategories: [],
-    organizationType: []
+    programYearList: [],
+    childCareCategoryList: [],
+    organizationTypeList: []
   },
   getters: {
-    programYears: state => state.programYears,
-    childCareCategories: state => state.childCareCategories,
-    organizationType: state => state.organizationType,
+    programYearList: state => state.programYearList,
+    childCareCategoryList: state => state.childCareCategoryList,
+    organizationTypeList: state => state.organizationTypeList,
 
   },
   mutations: {
@@ -33,14 +33,14 @@ export default {
         state.alertNotification = true;
       }
     },
-    setProgramYears: (state, programYears) => {
-      state.programYears = programYears;
+    setProgramYearList: (state, programYearList) => {
+      state.programYearList = programYearList;
     },
-    setChildCareCategories: (state, childCareCategories) => {
-      state.childCareCategories = childCareCategories;
+    setChildCareCategoryList: (state, childCareCategoryList) => {
+      state.childCareCategoryList = childCareCategoryList;
     },
-    setOrganizationType: (state, organizationType) => {
-      state.organizationType = organizationType;
+    setOrganizationTypeList: (state, organizationTypeList) => {
+      state.organizationTypeList = organizationTypeList;
     }
 
   },
@@ -48,9 +48,9 @@ export default {
     async getLookupInfo({commit}){
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const lookupInfo = await ApiService.getLookupInfo();
-        commit('setProgramYears', lookupInfo.data?.programYear);
-        commit('setChildCareCategories', lookupInfo.data?.childCareCategory);
-        commit('setOrganizationType', lookupInfo.data?.organizationType);
+        commit('setProgramYearList', lookupInfo.data?.programYear);
+        commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
+        commit('setOrganizationTypeList', lookupInfo.data?.organizationType);
       }
     },
 
