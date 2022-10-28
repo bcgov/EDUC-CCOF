@@ -69,6 +69,17 @@ export default {
     }
   },
 
+  async getLookupInfo() {
+    try{
+      console.log('URL is: ' + ApiRoutes.LOOKUP);
+      return await apiAxios.get(ApiRoutes.LOOKUP);
+    } catch(e) {
+      console.log(e);
+      console.log(`Failed to get from Nodejs getLookups API - ${e}`);
+      throw e;
+    }
+  },  
+
   async getConfig(configName) {
     try {
       const queryParams = {

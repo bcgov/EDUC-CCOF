@@ -129,6 +129,10 @@ CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 - 36 Months');
 CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
 CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only)');
 
+const ACCOUNT_TYPE = Object.freeze({
+  FACILITY: 100000001,
+  ORGANIZATION: 100000000
+});
 
 module.exports = {
   FILTER_OPERATION,
@@ -138,6 +142,7 @@ module.exports = {
   EVENT_TYPE,
   EVENT_OUTCOME,
   EVENT_WS_TOPIC,
-  CHILD_AGE_CATEGORY_TYPES
+  CHILD_AGE_CATEGORY_TYPES,
+  ACCOUNT_TYPE
 };
 

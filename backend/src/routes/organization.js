@@ -29,10 +29,22 @@ const organizationSchema = {
   postalCode2: { in: ['body'],
     exists: { errorMessage: '[postalCode2] is required', },
     isLength: { options: { max: 20 }, errorMessage: '[postalCode2] has a max length of 20'}},
-  organizationTypeId: { in: ['body'],
-    exists: { errorMessage: '[organizationTypeId] is required', },
-    isInt: { errorMessage: '[organizationTypeId] must be numeric'}}
-
+  organizationType: { in: ['body'],
+    exists: { errorMessage: '[organizationType] is required', },
+    isInt: { errorMessage: '[organizationType] must be numeric'},
+    optional: { options: { nullable: true } }},
+  incNumber: { in: ['body'],
+    exists: { errorMessage: '[incNumber] is required', },
+    isLength: { options: { max: 20 }, errorMessage: '[incNumber] has a max length of 4000'}},
+  email: { in: ['body'],
+    exists: { errorMessage: '[email] is required', },
+    isLength: { options: { max: 100 }, errorMessage: '[email] has a max length of 100'}},
+  contactName: { in: ['body'],
+    exists: { errorMessage: '[contactName] is required', },
+    isLength: { options: { max: 100 }, errorMessage: '[contactName] has a max length of 100'}},
+  position: { in: ['body'],
+    exists: { errorMessage: '[position] is required', },
+    isLength: { options: { max: 4000 }, errorMessage: '[position] has a max length of 4000'}},
 };
 
 module.exports = router;
@@ -63,6 +75,15 @@ router.put('/:organizationId', passport.authenticate('jwt', {session: false}),is
   checkSchema(organizationSchema)], (req, res) => {
   validationResult(req).throw();
   return updateOrganization(req, res);
+});
+
+/**
+ * Submit a complete application
+ */
+router.post('/:organizationId/submit', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  checkSchema(organizationSchema)], (req, res) => { 
+  validationResult(req).throw();
+  return createOrganization(req, res);
 });
 
 module.exports = router;

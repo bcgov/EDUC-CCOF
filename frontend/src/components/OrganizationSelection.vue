@@ -59,5 +59,3 @@ export default {
 
 <style scoped>
 </style>
-<!--
- :to="organization.facilityList  ?'/fri-calculator' : 'error-page'" exact tile -->

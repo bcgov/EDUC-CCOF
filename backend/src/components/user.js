@@ -17,15 +17,22 @@ async function getUserInfo(req, res) {
   will be replaced with API data at a later time
      
   /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
-  let name = req.session.passport.user.displayName;
-  if (!name) {
-    name = req.session.passport.user._json.display_name;
+  let displayName = req.session.passport.user.displayName;
+  if (!displayName) {
+    displayName = req.session.passport.user._json.display_name;
   }
-
+  let userName = req.session?.passport?.user?._json?.bceid_username;
+  if (!userName) {
+    userName = req.session?.passport?.user?._json?.idir_username;
+  }
+  let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
+  if (!businessGuid) {
+    businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid;
+  }
   let resData = {
-    displayName: name,
-    businessGuid: `${req.session?.passport?.user?._json?.bceid_business_guid}`,
-    userName: `${req.session?.passport?.user?._json?.bceid_username}`,
+    displayName: displayName,
+    businessGuid: businessGuid,
+    userName: userName,
     organizationList: [{
       organizationName: 'ABC organization',
       organizationId: 'org123',
