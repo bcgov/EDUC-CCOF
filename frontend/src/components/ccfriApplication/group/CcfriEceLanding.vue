@@ -18,11 +18,23 @@
         
       </v-row>
 
-        <LargeButtonContainer>
+        <!-- <LargeButtonContainer>
             <v-list-item v-for="({facilityName, facilityId}) in chosenOrg" :key="facilityId">
                 <LargeBlueButton >{{facilityName}}</LargeBlueButton>
             </v-list-item>
-        </LargeButtonContainer>   
+        </LargeButtonContainer>    -->
+
+
+
+        <LargeButtonContainer>
+          <v-btn
+            class="px-16 py-10 my-3 white--text bigButton"
+            x-large
+            >
+
+            boop 
+          </v-btn>
+        </LargeButtonContainer>
 
         <!-- TODO: Facility A to be replaced with a ref to current facility title -->
           <!-- <LargeCard
