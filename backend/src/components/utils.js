@@ -129,11 +129,28 @@ async function getData(token, url, correlationID) {
   }
 }
 
-async function getUserProfile() {
+//this should get the business guid from the sesion, and then call Get User Profile to supply the needed data to the dashboard. 
+async function getUserProfile(req, res) {
   
+  //this chunk of code was taken from user.js 
+  // my idea is that we don't need to supply an ID from the front end, it should just be able to grab the org bcGuid from the session
+  const userInfo = getSessionUser(req);
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No session data'
+    });
+  }
+  let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
+  if (!businessGuid) {
+    //businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid; commenting out for now because my idir doesnt have bceid
+    businessGuid = 'a1e5c3f9-299d-4979-92c9-fea3520f428c'; //TODO: remove this and use the session GUID
+  }
+
+
+  log.info();
 
   try {
-    const url = config.get('dynamicsApi:apiEndpoint') + '/api/UserProfile?userId=IDIR_A8CFAC0ADAD546DEA6518A17A7F1AE3E';
+    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
     log.info('get PROFILE DATE Url IS', url);
     const response = await axios.get(url, getHttpHeader());
     logResponse('getUserProfile', response);
