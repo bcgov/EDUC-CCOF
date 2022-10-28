@@ -12,7 +12,11 @@ const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
 const cache = require('memory-cache');
+
+
+//const {getUserInfo} = require('./user.js');
 let memCache = new cache.Cache();
+
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-EDX';
@@ -122,6 +126,21 @@ async function getData(token, url, correlationID) {
     log.error('getData Error', e.response ? e.response.status : e.message);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API Get error'}, e);
+  }
+}
+
+async function getUserProfile() {
+  
+
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/UserProfile?userId=IDIR_A8CFAC0ADAD546DEA6518A17A7F1AE3E';
+    log.info('get PROFILE DATE Url IS', url);
+    const response = await axios.get(url, getHttpHeader());
+    logResponse('getUserProfile', response);
+    return response.data;
+  } catch (e) {
+    log.error('getUserProfile Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
@@ -416,6 +435,7 @@ const utils = {
   getDataWithParams,
   getOperationWithObjectId,
   getOperation,
+  getUserProfile,
   postOperation,
   patchOperationWithObjectId,
   getData,

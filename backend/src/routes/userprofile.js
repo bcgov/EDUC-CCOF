@@ -1,0 +1,23 @@
+const express = require('express');
+const router = express.Router();
+const { query, validationResult } = require('express-validator');
+const { getProfile } = require('../components/userprofile');
+const log = require('../components/logger.js');
+
+//this is where query validation would be completed?
+
+router.get('/userProfile', [
+  // query('criteria', 'query param: [criteria] is required').not().isEmpty(),
+  // query('criteria', 'must have minimum length 3').isLength({min: 3})
+],
+
+(req, res) => {
+  //validationResult(req).throw();
+
+  log.info('howdy from userprofile');
+  return getProfile(req, res);
+});
+
+
+
+module.exports = router;

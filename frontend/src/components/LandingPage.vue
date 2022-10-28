@@ -88,6 +88,14 @@
             </v-card-text>
         </v-card>
       </v-row>
+
+
+      <LargeCard>
+        Hello there, {{getDisplayName}} <br><br>
+        guid is: {{getBusinessGuid}}<br><br>
+        {{results}}
+       <v-btn v-on:click="getUserProfile"> ....</v-btn>
+      </LargeCard>
   </v-container>
 </v-container>
   
@@ -99,6 +107,9 @@ import SmallCard from './guiComponents/SmallCard.vue';
 // import LargeCard from './guiComponents/LargeCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 
+
+import axios from 'axios';
+import LargeCard from './guiComponents/LargeCard.vue';
 export default {
   name: 'LandingPage',
   props: {
@@ -110,7 +121,8 @@ export default {
   },
   data() {
     return {
-      input : ''
+      input : '',
+      results : {},
     };
   },
   computed: {
@@ -120,6 +132,12 @@ export default {
     },
     nextYearTwoDigit() {
       return this.currentYear - 1999;
+    },
+    getDisplayName(){
+      return this.userInfo.displayName;
+    },
+    getBusinessGuid(){
+      return this.userInfo.businessGuid;
     },
 
     chosenOrg(){
@@ -138,9 +156,26 @@ export default {
         return false;
       }
       return true;
+    },
+    
+  },
+  methods: {
+    async getUserProfile () {
+      console.log('clicked');
+      try {
+        this.results = (await axios.get ('/api/profile/userProfile'));
+        console.log('results are:  = '+ this.results);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    clicked (){
+      console.log('clicked');
+      return '';
     }
   },
-  components: { SmallCard, MessagesToolbar }
+  
+  components: { SmallCard, MessagesToolbar, LargeCard }
 };
 </script>
 
