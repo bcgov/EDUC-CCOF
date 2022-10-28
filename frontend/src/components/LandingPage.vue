@@ -164,7 +164,7 @@ export default {
       console.log('clicked');
       try {
         this.results = (await axios.get ('/api/profile/userProfile'));
-        console.log('results are:  = '+ this.results);
+        console.log('RREEESULTS are:  = '+ this.results);
       } catch (error) {
         console.log(error);
       }

@@ -10,6 +10,8 @@ const log = require('../components/logger.js');
 
 //this is where query validation would be completed?
 
+//passport.authenticate('jwt', {session: false}),isValidBackendToken,
+// always seems to break when I try to authenticate 
 router.get('/userProfile',  [
   // query('criteria', 'query param: [criteria] is required').not().isEmpty(),
   // query('criteria', 'must have minimum length 3').isLength({min: 3})

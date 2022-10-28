@@ -15,8 +15,9 @@ async function getUserInfo(req, res) {
   /* 
   data used for dev build of LandingPage.vue 
   will be replaced with API data at a later time
-     
   /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
+
+  
   let displayName = req.session.passport.user.displayName;
   if (!displayName) {
     displayName = req.session.passport.user._json.display_name;
