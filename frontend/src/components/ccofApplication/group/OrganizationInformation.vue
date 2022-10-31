@@ -115,15 +115,15 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 
 export default {
   props: {
   },
   computed: {
-    ...mapGetters('app', ['organizationTypeList']),
-    ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['organizationTypeList']),
+    ...mapState('auth', ['userInfo']),
     organizationId: { 
       get () { return this.$store.state.organization.organizationId; }, 
       set (value) { this.$store.commit('organization/setOrganizationId', value); }},
@@ -169,11 +169,13 @@ export default {
     organizationType: { 
       get () { return this.$store.state.organization.organizationType; }, 
       set (value) { this.$store.commit('organization/setOrganizationType', value); }},
+    isValidForm: { 
+      get () { return this.$store.state.organization.isValidForm; }, 
+      set (value) { this.$store.commit('organization/setIsValidForm', value); }},
   },
   mixins: [alertMixin],
   data() {
     return {
-      isValidForm: true,
       isAddressDifferent: undefined,      
       rules,
       processing: false,
@@ -181,6 +183,8 @@ export default {
   },
   mounted() {
     this.businessId = this.userInfo.userName;
+    this.$store.commit('organization/setIsStarted', true);
+
   },
   methods: {
     ...mapActions('organization', ['saveOrganization']),

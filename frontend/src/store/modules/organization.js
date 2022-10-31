@@ -19,25 +19,13 @@ export default {
     businessId: null,
     email: null,
     incNumber: null,
-    organizationType: null
+    organizationType: null,
+    isValidForm: false,
+    isStarted: false
   },
   getters: {
-    organizationId: state => state.organizationId,
-    legalName: state => state.legalName,
-    address1: state => state.address1,
-    city1: state => state.city1,
-    postalCode1: state => state.postalCode1,
-    address2: state => state.address2,
-    city2: state => state.city2,
-    postalCode2: state => state.postalCode2,
-    contactName: state => state.contactName,
-    position: state => state.position,
-    phone: state => state.phone,
-    businessId: state => state.businessId,
-    email: state => state.email,
-    incNumber: state => state.incNumber,
-    organizationType: state => state.organizationType
-  },
+    isOrganizationComplete: state => state.isValidForm,
+  },  
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
     setLegalName: (state, legalName) => { state.legalName = legalName; },
@@ -54,6 +42,8 @@ export default {
     setEmail: (state, email) => { state.email = email; },
     setIncNumber: (state, incNumber) => { state.incNumber = incNumber; },
     setOrganizationType: (state, organizationType) => { state.organizationType = organizationType; },
+    setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
+    setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
   },
   actions: {
     async saveOrganization({ state, commit }) {

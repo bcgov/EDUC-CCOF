@@ -41,6 +41,12 @@ export const PATHS = {
   confirmation: '/ccof-application/group/confirmation'
 };
 
+export const NAV_BAR_GROUPS = {
+  CCOF: 'CCOF',
+  CCFRI: 'CCFRI',
+  ECEWE: 'ECE-WE'
+};
+
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 

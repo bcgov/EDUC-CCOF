@@ -14,8 +14,8 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES } from '@/utils/constants';
-import { PATHS } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
+
 
 
 import OrganizationSelection from '@/components/OrganizationSelection';
@@ -56,6 +56,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.LANDING_PAGE,
         requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
       },
 
     },
@@ -118,6 +120,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
     {
@@ -125,7 +129,10 @@ const router = new VueRouter({
       name: 'Facility Information',
       component: FacilityInformation,
       meta: {
-        pageTitle: 'Facility Information'
+        pageTitle: 'Facility Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI   
       }
     },
     {
@@ -133,7 +140,10 @@ const router = new VueRouter({
       name: 'Funding Amount',
       component: FundAmount,
       meta: {
-        pageTitle: 'Application Confirmation'
+        pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
     {
@@ -260,14 +270,25 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _from, next) => {
+  // determine if we should show navBar
+  store.commit('app/setShowNavBar',to.meta?.showNavBar == true);
+  if (to && to.meta) {
+    store.commit('app/setNavBarGroup', to.meta.navBarGroup);
+  } else {
+    store.commit('app/setNavBarGroup', '');
+  }
   // this section is to set page title in vue store
+  if (to && to.meta) {
+    store.commit('app/setPageTitle', to.meta.pageTitle);
+  } else {
+    store.commit('app/setPageTitle', '');
+  }
   if (to.meta.requiresAuth) {
     store.dispatch('auth/getJwtToken').then(() => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
       } else {
         store.dispatch('auth/getUserInfo').then(() => {
-          store.commit('app/setPageTitle',to.meta.pageTitle);
           next();
         }).catch(() => {
           next('error');
@@ -282,11 +303,6 @@ router.beforeEach((to, _from, next) => {
     });
   }
   else {
-    if (to && to.meta) {
-      store.commit('app/setPageTitle', to.meta.pageTitle);
-    } else {
-      store.commit('app/setPageTitle', '');
-    }
     next();
   }
 });

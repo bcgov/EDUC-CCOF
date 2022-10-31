@@ -13,58 +13,59 @@
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
     <v-list>
-      <div v-for="(item) in items.filter(obj => obj.authorized)" v-bind:key="item.title">
-      <v-list-item v-if="!item.items"
-            :key="item.title+`1`"
-            class="menuRow"
-            :id="stripWhitespace(item.title + `MenuBtn`)">
+      <div v-for="item in items" v-bind:key="item.title">
+        <v-list-item v-if="!item.items"
+              :key="item.title+`1`"
+              class="menuRow"
+              :id="stripWhitespace(item.title + `MenuBtn`)">
+              <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+              <router-link :to="{ name: item.link }"  :target="_self" class="router">
+              <v-list-item-content class="py-0">
+                <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
+                <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
+              </v-list-item-content>
+            </router-link>
+        </v-list-item>
+        <v-list-group
+                v-else
+                :key="item.title"
+                no-action
+                class="groupMenu"
+                :id="stripWhitespace(item.title + `MenuBtn`)"
+                append-icon=""
+                :value = "item.expanded"
+                @click="setActive(item)"
+
+        >
+          <template v-slot:activator>
             <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
-            <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
-            <v-list-item-content>
-              <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
-              <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
+            <v-list-item-content class="py-0">
+              <v-list-item-title v-text="item.title" class="menuItem text-wrap"></v-list-item-title>
             </v-list-item-content>
-          </router-link>
-      </v-list-item>
-      <v-list-group
-              v-else
-              :key="item.title"
-              no-action
-              class="groupMenu"
-              :id="stripWhitespace(item.title) + `MenuBtn`"
-              append-icon=""
-              :value="item.expanded"
-              v-bind:disabled=true
-      >
-        <template v-slot:activator>
-          <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" class="menuItem text-wrap"></v-list-item-title>
-          </v-list-item-content>
-        </template>
+          </template>
 
-        <v-list-item
-                v-for="subItem in item.items.filter(obj => obj.authorized)"
-                :key="subItem.title"
-                class="subMenuRow pl-9"
-                :id="stripWhitespace(subItem.title) + `MenuBtn`"
-        >
-          <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>              
+          <v-list-item
+                  v-for="subItem in item.items"
+                  :key="subItem.title"
+                  class="subMenuRow pl-9"
+                  :id="stripWhitespace(subItem.title) + `MenuBtn`"
+          >
+            <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
+              <v-icon>{{ subItem.icon }}</v-icon>
+            </v-list-item-icon>              
 
-          <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
-            <v-list-item-content>
-              <v-list-item-title v-if="subItem.link === $route.name" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
-              <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
-            </v-list-item-content>
-          </router-link>
-        </v-list-item>
-      </v-list-group>
+            <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
+              <v-list-item-content class="py-0">
+                <v-list-item-title v-if="subItem.link === $route.name" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
+                <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
+              </v-list-item-content>
+            </router-link>
+          </v-list-item>
+        </v-list-group>
       </div>
     </v-list>
   </v-navigation-drawer>
@@ -81,10 +82,9 @@
 </template>
 
 <script>
-import {PAGE_TITLES} from '@/utils/constants';
-import { mapState, mapGetters } from 'vuex';
-import {PERMISSION} from '@/utils/constants/Permission';
 
+import { mapState, mapGetters } from 'vuex';
+import { NAV_BAR_GROUPS } from '@/utils/constants';
 export default {
   name: 'navBar',
   props: {
@@ -101,9 +101,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('auth', ['isAuthenticated']),
-    ...mapState('auth', ['userInfo']),
-    ...mapGetters('auth', ['selectedOrganization']),
+    ...mapState('app', ['pageTitle', 'navBarGroup']),
+    ...mapGetters('organization', ['isOrganizationComplete']),
+
     navWidth () {
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -116,123 +116,132 @@ export default {
     }
   },
   watch:{
-    userInfo: {
+    pageTitle: {
       handler() {
-        this.refreshUserPermissions();
+        this.refreshNavBar();
       },
       immediate: true,
       deep: true
     },
-    selectedOrganization: {
-      handler() {
-        this.refreshUserPermissions();
-      },
-      immediate: true,
-      deep: true
-    }
+    // isOrganizationComplete: {
+    //   handler() {
+    //     console.log('watching isOrganization complete: ', this.isOrganizationComplete);
+    //     this.refreshUserPermissions();
+    //   },
+    //   immediate: true,
+    //   deep: false
+    // }
   },
   methods: {
-    getOrganizationName() {
-      console.log('this: ' + this.selectedOrganization.id);
-      if (this.selectedOrganization && this.selectedOrganization.name) {
-        return this.selectedOrganization.name;
-      } else {
-        return 'Select Organization';
-      }
-      
-    },
-    refreshUserPermissions(){
-      this.items = [
-        {
-          title: 'Dashboard',
-          link: 'landing-page',
-          authorized: true,
-          icon: '',
-        },
-        {
-          title: this.getOrganizationName(),
-          link: 'organization',
-          authorized: true,
-          icon: '',
-        },
-        {
-          title: 'CCOF',
-          authorized: true,
-          icon: 'mdi-checkbox-blank-circle-outline',
-          expanded: true,
-          items: [
-            {
-              title: 'Organization Information',
-              link: 'Organization Information',
-              authorized: true,
-              icon: 'mdi-checkbox-blank-circle-outline',
-            },
-            {
-              title: 'Facility Information',
-              link: '',
-              authorized: true,
-              icon: 'mdi-checkbox-blank-circle-outline',
-            },
-            {
-              title: 'Information to Determine Funding Amounts',
-              link: '',
-              authorized: true,
-              icon: 'mdi-checkbox-blank-circle-outline',
-            },
-            {
-              title: 'Direct Deposit',
-              link: '',
-              authorized: true,
-              icon: 'mdi-checkbox-blank-circle-outline',
-            },
-          ],
-        },
-        {
-          title: 'CCFRI',
-          link: 'ccfri-application',
-          authorized: true,
-          icon: 'mdi-checkbox-blank-circle-outline',
-        },
-        {
-          title: 'ECE-WE',
-          link: 'ccfri-application',
-          authorized: true,
-          icon: 'mdi-check-circle',
-        },
-
-
-        {
-          title: PAGE_TITLES.EXCHANGE,
-          link: 'inbox',
-          authorized: this.hasRequiredPermission(PERMISSION.SECURE_EXCHANGE),
-          icon: 'mdi-checkbox-blank-circle-outline',
-        },
-        {
-          title: PAGE_TITLES.ADMINISTRATION,
-          authorized: this.hasRequiredPermission(PERMISSION.EDX_USER_SCHOOL_ADMIN),
-          icon: 'mdi-checkbox-blank-circle-outline',
-          items: [
-            {
-              title: 'User Management',
-              link: 'exchangeAccess',
-              authorized: this.hasRequiredPermission(PERMISSION.EDX_USER_SCHOOL_ADMIN),
-              icon: 'mdi-checkbox-blank-circle-outline',
-            }
-          ],
-        }
-      ];
-      this.hasAnyItems = this.items.filter(obj => obj.authorized).length > 0;
-    },
-    hasRequiredPermission(permission){
-      return this.userInfo?.activeInstitutePermissions?.filter(perm => perm === permission).length > 0;
-    },
     setActive(item) {
+      this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
       if(item.active) {
         this.items[index].active = false;
       } else {
         this.items.filter(obj => obj.items && obj.active).forEach(obj => obj.active = !obj.active);
         this.items[index].active = true;
+      }
+    },    
+    refreshNavBar(){
+      this.items = [
+        {
+          title: NAV_BAR_GROUPS.CCOF,
+          isAccessible: true,
+          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
+          items: [
+            {
+              title: 'Organization',
+              link: 'Organization Information',
+              isAccessible: true,
+              icon: this.getCheckbox(this.isOrganizationComplete),
+            },
+            {
+              title: 'Facility 1',
+              link: 'Facility Information',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },
+            {
+              title: 'Funding 1',
+              link: '',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },
+            {
+              title: 'Direct Deposit',
+              link: '',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },
+          ],
+        },
+        {
+          title: NAV_BAR_GROUPS.CCFRI,
+          link: 'ccfri-application',
+          isAccessible: true,
+          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
+          items: [
+            {
+              title: 'Parent fees 1',
+              link: '',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },
+            {
+              title: 'Request for Information 1',
+              link: 'Funding Amount',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },
+            {
+              title: 'Parent fees 2',
+              link: '',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },
+            {
+              title: 'Request for Information 2',
+              link: '',
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+            },          ],
+
+        },
+        {
+          title: NAV_BAR_GROUPS.ECEWE,
+          link: 'ccfri-application',
+          isAccessible: true,
+          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          expanded: this.isExpanded(NAV_BAR_GROUPS.ECEWE),
+        },
+      ];
+      this.hasAnyItems = this.items.filter(obj => obj.isAccessible).length > 0;
+    },
+    canBeAccessed(permission){
+      return this.userInfo?.activeInstitutePermissions?.filter(perm => perm === permission).length > 0;
+    },
+    getCheckbox(isCompleted) {
+      console.log('isCompleted: ', isCompleted);
+      if (isCompleted) {
+        return 'mdi-check-circle';
+      }
+      return 'mdi-checkbox-blank-circle-outline';
+    },
+    isExpanded(groupName) {
+      return (groupName === this.navBarGroup);
+    },
+    closeGroupIfActiveAfterClickingOnItem(pItem) {
+      for (let item of this.items) {
+        //This is a group
+        if (item.items) {
+          //Check if group is active AND we are not closing self
+          if (item.active && item.title != pItem.title) {
+            item.active = false;
+          }
+        } else { continue; }
       }
     },
     stripWhitespace(title) {
@@ -282,6 +291,9 @@ export default {
     height: 10px;
 
   }
+  /* .v-list-item {
+    min-height: 24px!important;
+  } */
 
   .nav-title {
     font-size: 1.4rem;
