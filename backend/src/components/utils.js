@@ -19,7 +19,7 @@ let memCache = new cache.Cache();
 
 
 axios.interceptors.request.use((axiosRequestConfig) => {
-  axiosRequestConfig.headers['X-Client-Name'] = 'PEN-EDX';
+  axiosRequestConfig.headers['X-Client-Name'] = 'EDUC-CCOF';
   return axiosRequestConfig;
 });
 // Returns OIDC Discovery values
