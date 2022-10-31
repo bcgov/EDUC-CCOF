@@ -96,6 +96,32 @@
         {{results}}
        <v-btn v-on:click="getUserProfile"> ....</v-btn>
       </LargeCard>
+
+
+      <LargeBlueButton></LargeBlueButton>
+      <LargeButtonContainer>
+        <v-card elevation="4" class="pa-2 mx-auto rounded-lg col-12"
+        rounded
+        tiled
+        
+        exact tile
+        :ripple="false">
+        <v-card-text>
+          <v-row>
+            <v-col cols="" class="col-12 col-md-8">
+            <p class="text--primary"> Facility ID: 0000-0000-0000-0000</p>
+            <p class="text--primary "><strong> Facility Name : ABC daycare Time </strong></p>
+            <p class="text--primary"> Licence : 123456789</p>
+            </v-col>
+            <v-col cols="" class="d-flex align-center col-12 col-md-4">
+              <p class="text--primary">Status: Opt-IN CCFRI</p>
+              <v-btn> UPDATE</v-btn>
+            </v-col>
+          </v-row>
+            
+        </v-card-text>
+      </v-card>
+      </LargeButtonContainer>
   </v-container>
 </v-container>
   
@@ -110,6 +136,11 @@ import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 
 import axios from 'axios';
 import LargeCard from './guiComponents/LargeCard.vue';
+import LargeButtonContainer from './guiComponents/LargeButtonContainer.vue';
+import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
+
+import ApiService from '@/common/apiService';
+
 export default {
   name: 'LandingPage',
   props: {
@@ -163,8 +194,8 @@ export default {
     async getUserProfile () {
       console.log('clicked');
       try {
-        this.results = (await axios.get ('/api/profile/userProfile'));
-        console.log('RREEESULTS are:  = '+ this.results);
+        this.results = ( await ApiService.apiAxios.get('/api/profile/userProfile'));
+        console.log('RESULTS are:  = '+ this.results);
       } catch (error) {
         console.log(error);
       }
@@ -175,7 +206,7 @@ export default {
     }
   },
   
-  components: { SmallCard, MessagesToolbar, LargeCard }
+  components: { SmallCard, MessagesToolbar, LargeCard, LargeButtonContainer, LargeBlueButton }
 };
 </script>
 

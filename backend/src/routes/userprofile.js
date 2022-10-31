@@ -12,7 +12,8 @@ const log = require('../components/logger.js');
 
 //passport.authenticate('jwt', {session: false}),isValidBackendToken,
 // always seems to break when I try to authenticate 
-router.get('/userProfile',  [
+
+router.get('/userProfile', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
   // query('criteria', 'query param: [criteria] is required').not().isEmpty(),
   // query('criteria', 'must have minimum length 3').isLength({min: 3})
 ],
