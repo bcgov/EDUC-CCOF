@@ -194,7 +194,7 @@ export default {
     async getUserProfile () {
       console.log('clicked');
       try {
-        this.results = ( await ApiService.apiAxios.get('/api/profile/userProfile'));
+        this.results = ( await ApiService.apiAxios.get('/api/user/userProfile'));
         console.log('RESULTS are:  = '+ this.results);
       } catch (error) {
         console.log(error);

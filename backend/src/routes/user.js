@@ -2,11 +2,31 @@
 
 const passport = require('passport');
 const express = require('express');
-const {getUserInfo} = require('../components/user');
-
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
+
+const { query, validationResult } = require('express-validator');
+
+const { getProfile, getUserInfo} = require('../components/user');
+const log = require('../components/logger.js');
+
+
+router.get('/userProfile', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  // query('criteria', 'query param: [criteria] is required').not().isEmpty(),
+  // query('criteria', 'must have minimum length 3').isLength({min: 3})
+],
+
+(req, res) => {
+  //validationResult(req).throw();
+
+  log.info('howdy from user route');
+  return getProfile(req, res);
+});
+
 router.get('/', passport.authenticate('jwt', {session: false}), isValidBackendToken, getUserInfo);
+
+
+
 
 module.exports = router;
