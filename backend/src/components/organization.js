@@ -23,7 +23,7 @@ async function getOrganization(req, res) {
 async function createOrganization(req, res) {
   let organization = req.body;
 
-  organization = new MappableObjectForBack(organization);
+  organization = new MappableObjectForBack(organization, OrganizationMappings);
   organization = organization.toJSON();
   organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
 
@@ -38,7 +38,7 @@ async function createOrganization(req, res) {
 async function updateOrganization(req, res) {
   let organization = req.body;
 
-  organization = new MappableObjectForBack(organization);
+  organization = new MappableObjectForBack(organization, OrganizationMappings);
   organization = organization.toJSON();
   organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
 
