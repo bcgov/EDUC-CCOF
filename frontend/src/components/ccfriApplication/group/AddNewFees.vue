@@ -979,7 +979,6 @@ export default {
   },
   methods: {
     addDate(){
-      console.log('hiiii');
       this.dates.push({
         message: this.closureReason,
         selectedDates: this.datePicker,

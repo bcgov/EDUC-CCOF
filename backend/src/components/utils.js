@@ -138,7 +138,7 @@ async function getUserProfile(businessGuid) {
     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
     log.info('get PROFILE DATE Url IS', url);
     const response = await axios.get(url, getHttpHeader());
-    logResponse('getUserProfile resp in UTILS is:', response);
+    //logResponse('getUserProfile resp in UTILS is:', response);
     return response.data;
   } catch (e) {
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
@@ -151,7 +151,7 @@ async function getOperation(operation) {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
     log.info('get Data Url', url);
     const response = await axios.get(url, getHttpHeader());
-    logResponse('getOperation', response);
+    //logResponse('getOperation', response);
     return response.data;
   } catch (e) {
     log.error('getOperation Error', e.response ? e.response.status : e.message);

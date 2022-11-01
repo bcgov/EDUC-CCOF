@@ -173,7 +173,7 @@ export default {
 
     chosenOrg(){
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
-      return this.userInfo.organizationList[0];
+      return this.userInfo.organizationList;
     },
     filteredList() {
       if (this.input === '' || this.input === ' '){
