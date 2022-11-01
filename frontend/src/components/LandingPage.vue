@@ -66,9 +66,9 @@
           min-height="230"
           rounded
           tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId} , index) in filteredList" :key="facilityId"
+          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in filteredList" :key="facilityId"
           
           >
             <v-card-text>
@@ -83,8 +83,8 @@
               </p>
               <br>
               <p class="text-h5 text--primary">CCFRI, ECE-WE</p>
-              <a href="#">CCFRI Status: Approved</a><br>
-              <a href="#">ECE-WE Status: In Progress</a><br><br>
+              <a href="#">CCFRI Status: {{ccfriStatus}}</a><br>
+              <a href="#">ECE-WE Status: {{eceweStatus}}</a><br><br>
             </v-card-text>
         </v-card>
       </v-row>
@@ -173,7 +173,7 @@ export default {
 
     chosenOrg(){
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
-      return this.userInfo.organizationList;
+      return this.userInfo;
     },
     filteredList() {
       if (this.input === '' || this.input === ' '){
@@ -194,7 +194,7 @@ export default {
     async getUserProfile () {
       console.log('clicked');
       try {
-        this.results = ( await ApiService.apiAxios.get('/api/user/userProfile'));
+        this.results = ( await ApiService.apiAxios.get('/api/user/'));
         console.log('RESULTS are:  = '+ this.results);
       } catch (error) {
         console.log(error);

@@ -33,19 +33,34 @@ async function getUserInfo(req, res) {
     businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid;
   }
 
-  const facilityArr = await getFacilityArray(businessGuid);
+  //TODO: ApplicatioStatus and unreadMessages are hardcoded. Remove this with API values when built out!
+  const  facilityArr = await getFacilityArray(businessGuid);
+
   log.info(facilityArr);
+  //log.info(facilityArr[0].organizationName);
+  //log.info(facilityArr[0].organizationId);
+
+  let orgName = facilityArr[0].organizationName;
+  if (!orgName){
+    orgName = 'NO ORG FOUND';
+  }
+
+  let orgID = facilityArr[0].organizationId;
+  if (!orgID){
+    orgID = 'NO ORG FOUND';
+  }
+
+
   let resData = {
     displayName: displayName,
     businessGuid: businessGuid,
     userName: userName,
-    organizationList: {
-      organizationName: 'ABC organization',
-      organizationId: 'org123',
-      applicationStatus: 'APPROVED',
-      unreadMessages: true,
-      facilityList: facilityArr,
-    },
+    organizationName: orgName,
+    organizationId:  orgID,
+    applicationStatus: 'APPROVED',
+    unreadMessages: true,
+    facilityList: facilityArr,
+    
   };
   return res.status(HttpStatus.OK).json(resData);
 }
@@ -56,15 +71,22 @@ async function getUserInfo(req, res) {
 //i think BCeID.ccof_userid is the right GUID to use? But i'm not 100 percent sure -- follow up on this 
 
 //application status is not yet implemented in the Dynamics -- so that will change 
+//
+// const GetUserProfileKeyMap = {
+//   'Organization.name':   'organizationName',
+//   'Organization.accountid': 'organizationId',
+//   'Facility.name' : 'facilityName',
+//   'Facility.accountid'  : 'facilityId',
+//'CCOF.Facility.name' : 'facilityName'
+// };
 
-let facilityMap = new Map();
 const GetUserProfileKeyMap = {
-  //organizationList: [
   'Organization.name':   'organizationName',
-  'Organization.accountid': 'organizationId',
-  'Facility.name' : 'facilityName',
-  'Facility.accountid'  : 'facilityId',
-//]
+  'BCeID.ccof_userid': 'organizationId',
+  'Application.statuscode' : 'statusCode',
+  'CCOF.ccof_facility' : 'facilityId',
+  'CCFRI.statuscode' : 'ccfriStatus',
+  'ECEWE.statuscode' : 'eceweStatus',
 };
 
 async function getProfile(req, res) {
@@ -74,22 +96,22 @@ async function getProfile(req, res) {
     // let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
     // if (!businessGuid) {
     //businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid; commenting out for now because my idir doesnt have bceid
-    let bGuid = 'a1e5c3f9-299d-4979-92c9-fea3520f428c'; //TODO: remove this and use the session GUID
-    //}
+    // let bGuid = 'a1e5c3f9-299d-4979-92c9-fea3520f428c'; //TODO: remove this and use the session GUID
+    // //}
 
-    let currentUserProfile = await getUserProfile(bGuid);
+    // let currentUserProfile = await getUserProfile(bGuid);
 
-    //log.info (currentUserProfile);
+    // //log.info (currentUserProfile);
 
-    currentUserProfile = currentUserProfile.value;
+    // currentUserProfile = currentUserProfile.value;
 
-    let x = currentUserProfile.map(item => {
-      return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]);
-    });
+    // let x = currentUserProfile.map(item => {
+    //   return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]);
+    // });
     
 
-    //return res.status(HttpStatus.OK).json(x);
-    return res.status(HttpStatus.OK).json(getFacilityArray(bGuid));
+    // //return res.status(HttpStatus.OK).json(x);
+    // return res.status(HttpStatus.OK).json(getFacilityArray(bGuid));
     
   }
     
@@ -105,18 +127,26 @@ async function getFacilityArray(businessGuid) {
   try {
     
 
-    //businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid; commenting out for now because my idir doesnt have bceid
-    let bGuid = 'a1e5c3f9-299d-4979-92c9-fea3520f428c'; //TODO: remove this and use the session GUID
+    let bGuid = 'bb1defdf-7f9a-429f-be84-7668bd9e00ad'; //TODO: remove this and use the session GUID
     //}
 
     let currentUserProfile = await getUserProfile(bGuid);
 
     log.info (currentUserProfile);
 
-    currentUserProfile = currentUserProfile.value;
-    
+    //currentUserProfile = currentUserProfile.value;
+    // const organizationData = {
+    //   'name' : currentUserProfile.Organization.name , 
+    //   'orgId':  currentUserProfile.Organization.accountid,
+    //   'applicationStatus' : 'APPROVED'
+    // };
+
+    //log.info(organizationData);
+
+    //let x= currentUserProfile;
+
     let x = currentUserProfile.map(item => {
-      return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]);
+      return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
     });
     
     

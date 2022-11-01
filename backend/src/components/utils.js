@@ -139,6 +139,7 @@ async function getUserProfile(businessGuid) {
     log.info('get PROFILE DATE Url IS', url);
     const response = await axios.get(url, getHttpHeader());
     //logResponse('getUserProfile resp in UTILS is:', response);
+    //log.info(response.data);
     return response.data;
   } catch (e) {
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
