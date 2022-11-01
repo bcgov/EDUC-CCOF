@@ -12,9 +12,11 @@
 
             <v-divider></v-divider>
 
+            <v-card-subtitle> Organization Mailing Address </v-card-subtitle>
+
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="address1" :rules="rules.required" label="Organization Mailing Address" />
+                <v-text-field outlined required v-model="address1" :rules="rules.required" label="Mailing Address" />
               </v-col>
             </v-row>
 
@@ -29,24 +31,20 @@
 
             <v-divider></v-divider>
 
+            <v-card-subtitle> Organization Street Address, if different from the Mailing Address (Optional) </v-card-subtitle>
+
             <v-row>
               <v-col>
-                <v-checkbox v-model="isAddressDifferent" label="Organization Street Address is different from mailing address" />
+                <v-text-field outlined required v-model="address2" label="Street Address" />
               </v-col>
             </v-row>
 
-            <v-row v-show="isAddressDifferent">
-              <v-col>
-                <v-text-field outlined required v-model="address2" :rules="isAddressDifferent? rules.required : []" label="Organization Mailing Address" />
-              </v-col>
-            </v-row>
-
-            <v-row v-show="isAddressDifferent">
+            <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="city2" :rules="isAddressDifferent? rules.required : []" label="City/Town" />
+                <v-text-field outlined required v-model="city2" label="City/Town" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="postalCode2" :rules="isAddressDifferent? [...rules.required, ...rules.postalCode] : []" label="Postal Code" />
+                <v-text-field outlined required v-model="postalCode2" :rules="rules.postalCode" label="Postal Code" />
               </v-col>
             </v-row>
 
@@ -87,12 +85,7 @@
               <v-col>
                 <label>Type of Orgnization</label>
                 <v-radio-group v-model="organizationType" :rules="rules.required">
-                  <v-radio 
-                    v-for="item in this.organizationTypeList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                    ></v-radio>
+                  <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -124,57 +117,71 @@ export default {
   computed: {
     ...mapGetters('app', ['organizationTypeList']),
     ...mapGetters('auth', ['userInfo']),
-    organizationId: { 
-      get () { return this.$store.state.organization.organizationId; }, 
-      set (value) { this.$store.commit('organization/setOrganizationId', value); }},
-    legalName: { 
-      get () { return this.$store.state.organization.legalName; }, 
-      set (value) { this.$store.commit('organization/setLegalName', value); }},
-    address1: { 
-      get () { return this.$store.state.organization.address1; }, 
-      set (value) { this.$store.commit('organization/setAddress1', value); }},
-    city1: { 
-      get () { return this.$store.state.organization.city1; }, 
-      set (value) { this.$store.commit('organization/setCity1', value); }},
-    postalCode1: { 
-      get () { return this.$store.state.organization.postalCode1; }, 
-      set (value) { this.$store.commit('organization/setPostalCode1', value); }},
-    address2: { 
-      get () { return this.$store.state.organization.address2; }, 
-      set (value) { this.$store.commit('organization/setAddress2', value); }},
-    city2: { 
-      get () { return this.$store.state.organization.city2; }, 
-      set (value) { this.$store.commit('organization/setCity2', value); }},
-    postalCode2: { 
-      get () { return this.$store.state.organization.postalCode2; }, 
-      set (value) { this.$store.commit('organization/setPostalCode2', value); }},
-    contactName: { 
-      get () { return this.$store.state.organization.contactName; }, 
-      set (value) { this.$store.commit('organization/setContactName', value); }},
-    position: { 
-      get () { return this.$store.state.organization.position; }, 
-      set (value) { this.$store.commit('organization/setPosition', value); }},
-    phone: { 
-      get () { return this.$store.state.organization.phone; }, 
-      set (value) { this.$store.commit('organization/setPhone', value); }},
-    businessId: { 
-      get () { return this.$store.state.organization.businessId; }, 
-      set (value) { this.$store.commit('organization/setBusinessId', value); }},
-    email: { 
-      get () { return this.$store.state.organization.email; }, 
-      set (value) { this.$store.commit('organization/setEmail', value); }},
-    incNumber: { 
-      get () { return this.$store.state.organization.incNumber; }, 
-      set (value) { this.$store.commit('organization/setIncNumber', value); }},
-    organizationType: { 
-      get () { return this.$store.state.organization.organizationType; }, 
-      set (value) { this.$store.commit('organization/setOrganizationType', value); }},
+    organizationId: {
+      get() { return this.$store.state.organization.organizationId; },
+      set(value) { this.$store.commit('organization/setOrganizationId', value); }
+    },
+    legalName: {
+      get() { return this.$store.state.organization.legalName; },
+      set(value) { this.$store.commit('organization/setLegalName', value); }
+    },
+    address1: {
+      get() { return this.$store.state.organization.address1; },
+      set(value) { this.$store.commit('organization/setAddress1', value); }
+    },
+    city1: {
+      get() { return this.$store.state.organization.city1; },
+      set(value) { this.$store.commit('organization/setCity1', value); }
+    },
+    postalCode1: {
+      get() { return this.$store.state.organization.postalCode1; },
+      set(value) { this.$store.commit('organization/setPostalCode1', value); }
+    },
+    address2: {
+      get() { return this.$store.state.organization.address2; },
+      set(value) { this.$store.commit('organization/setAddress2', value); }
+    },
+    city2: {
+      get() { return this.$store.state.organization.city2; },
+      set(value) { this.$store.commit('organization/setCity2', value); }
+    },
+    postalCode2: {
+      get() { return this.$store.state.organization.postalCode2; },
+      set(value) { this.$store.commit('organization/setPostalCode2', value); }
+    },
+    contactName: {
+      get() { return this.$store.state.organization.contactName; },
+      set(value) { this.$store.commit('organization/setContactName', value); }
+    },
+    position: {
+      get() { return this.$store.state.organization.position; },
+      set(value) { this.$store.commit('organization/setPosition', value); }
+    },
+    phone: {
+      get() { return this.$store.state.organization.phone; },
+      set(value) { this.$store.commit('organization/setPhone', value); }
+    },
+    businessId: {
+      get() { return this.$store.state.organization.businessId; },
+      set(value) { this.$store.commit('organization/setBusinessId', value); }
+    },
+    email: {
+      get() { return this.$store.state.organization.email; },
+      set(value) { this.$store.commit('organization/setEmail', value); }
+    },
+    incNumber: {
+      get() { return this.$store.state.organization.incNumber; },
+      set(value) { this.$store.commit('organization/setIncNumber', value); }
+    },
+    organizationType: {
+      get() { return this.$store.state.organization.organizationType; },
+      set(value) { this.$store.commit('organization/setOrganizationType', value); }
+    },
   },
   mixins: [alertMixin],
   data() {
     return {
       isValidForm: true,
-      isAddressDifferent: undefined,      
       rules,
       processing: false,
     };
@@ -188,19 +195,17 @@ export default {
     next() {
       this.$router.push(PATHS.facInfo);
     },
-    save() {
+    async save() {
       this.processing = true;
-      this.saveOrganization()
-        .then(() => {
-          this.setSuccessAlert('Success! Organization information has been saved.');
-        })
-        .catch(() => {
-          this.setFailureAlert('An error occurred while saving. Please try again later.');
-        })
-        .finally(() => {
-          this.processing = false;
-        });
-    },
+      try {
+        await this.saveOrganization();
+        this.setSuccessAlert('Success! Organization information has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      }
+
+      this.processing = false;
+    }
   }
 };
 </script>
