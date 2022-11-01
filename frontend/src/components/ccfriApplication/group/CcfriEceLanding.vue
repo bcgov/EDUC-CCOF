@@ -27,13 +27,44 @@
 
 
         <LargeButtonContainer>
-          <v-btn
-            class="px-16 py-10 my-3 white--text bigButton"
-            x-large
-            >
-
-            boop 
-          </v-btn>
+        <v-card elevation="4" class="pa-2 mx-auto my-10 rounded-lg col-12"
+        rounded
+        tiled
+        
+        exact tile
+        :ripple="false"
+        v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in allFacilities" :key="facilityId">
+        <v-card-text>
+          <v-row>
+            <v-col cols="" class="col-12 col-md-8">
+            <p class="text--primary"> Facility ID: {{facilityId}}</p>
+            <p class="text--primary "><strong> Facility Name : ABC daycare Time {{facilityName}}</strong></p>
+            <p class="text--primary"> Licence : 123456789</p>
+            </v-col>
+            <v-col v-if="showOptStatus[index]" cols="" class="d-flex align-center col-12 col-md-4">
+              <p class="text--primary" >Status: Opt-IN CCFRI</p>
+              <v-btn @click="toggle(index)"> UPDATE</v-btn>
+            </v-col>
+            <v-col  v-else cols="" class="d-flex align-center col-12 col-md-4">
+              <v-radio-group
+                required
+                row
+                v-model="ccfriOptInOrOut[index]"
+              >
+                <v-radio
+                  label="Opt-In"
+                  value="Out"
+                ></v-radio>
+                <v-radio
+                  label="Opt-Out"
+                  value="In"
+                ></v-radio>
+              </v-radio-group>
+            </v-col>
+          </v-row>
+            
+        </v-card-text>
+      </v-card>
         </LargeButtonContainer>
 
         <!-- TODO: Facility A to be replaced with a ref to current facility title -->
@@ -93,6 +124,8 @@ export default {
   data() {
     return {
       input : '',
+      showOptStatus : [true,true],
+      ccfriOptInOrOut : [],
       feeList : [
         {
           date: 'Jan 2022',
@@ -109,7 +142,7 @@ export default {
           pre3year: 6754,
           post3year: 8223
         }
-      ]
+      ],
     };
   },
   computed: {
@@ -117,6 +150,14 @@ export default {
     chosenOrg(){
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
       return this.userInfo;
+    },
+    allFacilities(){
+      return this.chosenOrg.facilityList;
+    }
+  },
+  methods: {
+    toggle(index) {
+      this.showOptStatus[index] = this.showOptStatus[index] ? false : true;
     },
   },
   components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer, LargeCard, ExistingFacilityFees, AddNewFees, RequestForInfo }

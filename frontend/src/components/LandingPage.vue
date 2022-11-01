@@ -100,47 +100,6 @@
        <v-btn v-on:click="getUserProfile"> ....</v-btn>
       </LargeCard>
 
-
-      <LargeBlueButton></LargeBlueButton>
-      <LargeButtonContainer>
-        <v-card elevation="4" class="pa-2 mx-auto rounded-lg col-12"
-        rounded
-        tiled
-        
-        exact tile
-        :ripple="false">
-        <v-card-text>
-          <v-row>
-            <v-col cols="" class="col-12 col-md-8">
-            <p class="text--primary"> Facility ID: {{chosenOrg.facilityList[0].facilityId}}</p>
-            <p class="text--primary "><strong> Facility Name : ABC daycare Time </strong></p>
-            <p class="text--primary"> Licence : 123456789</p>
-            </v-col>
-            <v-col v-if="showOptStatus" cols="" class="d-flex align-center col-12 col-md-4">
-              <p class="text--primary" >Status: Opt-IN CCFRI</p>
-              <v-btn @click="toggle"> UPDATE</v-btn>
-            </v-col>
-            <v-col  v-else cols="" class="d-flex align-center col-12 col-md-4">
-              <v-radio-group
-                required
-                row
-                v-model="ccfriOptInOrOut"
-              >
-                <v-radio
-                  label="Opt-In"
-                  value="Out"
-                ></v-radio>
-                <v-radio
-                  label="Opt-Out"
-                  value="In"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-            
-        </v-card-text>
-      </v-card>
-      </LargeButtonContainer>
   </v-container>
 </v-container>
   
@@ -152,12 +111,7 @@ import SmallCard from './guiComponents/SmallCard.vue';
 // import LargeCard from './guiComponents/LargeCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 
-
-import axios from 'axios';
 import LargeCard from './guiComponents/LargeCard.vue';
-import LargeButtonContainer from './guiComponents/LargeButtonContainer.vue';
-import LargeBlueButton from './guiComponents/LargeBlueButton.vue';
-
 import ApiService from '@/common/apiService';
 
 export default {
@@ -173,8 +127,7 @@ export default {
     return {
       input : '',
       results : {},
-      showOptStatus : true,
-      ccfriOptInOrOut : undefined,
+      
     };
   },
   computed: {
@@ -225,12 +178,10 @@ export default {
       console.log('clicked');
       return '';
     },
-    toggle() {
-      this.showOptStatus = this.showOptStatus ? false : true;
-    },
+    
   },
   
-  components: { SmallCard, MessagesToolbar, LargeCard, LargeButtonContainer, LargeBlueButton }
+  components: { SmallCard, MessagesToolbar, LargeCard}
 };
 </script>
 

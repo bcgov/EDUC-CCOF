@@ -1,5 +1,6 @@
 <template>
-  <v-form ref="ccfriform" v-model="isValidForm">
+  <!--TODO: add in isValidForm ruleset-->
+  <v-form ref="ccfriform" v-model="z">
     <v-container>
 
     <!--Start previous year fees-->
@@ -175,7 +176,7 @@
             <v-row>
               <v-col
                 class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="monday" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeSchedule" prefix="$"/>
               </v-col>
           </v-row>
         </v-container>
@@ -547,7 +548,7 @@
             <v-row>
               <v-col
                 class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="monday" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFeeSchedule" prefix="$"/>
               </v-col>
           </v-row>
         </v-container>

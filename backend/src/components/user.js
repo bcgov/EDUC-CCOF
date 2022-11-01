@@ -145,8 +145,8 @@ async function getFacilityArray(businessGuid) {
 
 
     //TODO: remove the line below. API is just returning improper (repeating) data with duplicate keys, giving me a ton of errors
-    //in the front end. 
-    x = x.slice(0,2);
+    //in the front end.
+    // x = x.slice(0,2);
     return(x);
     
   }
