@@ -12,9 +12,11 @@
 
             <v-divider></v-divider>
 
+            <v-card-subtitle> Organization Mailing Address </v-card-subtitle>
+
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="address1" :rules="rules.required" label="Organization Mailing Address" />
+                <v-text-field outlined required v-model="address1" :rules="rules.required" label="Mailing Address" />
               </v-col>
             </v-row>
 
@@ -29,24 +31,20 @@
 
             <v-divider></v-divider>
 
+            <v-card-subtitle> Organization Street Address, if different from the Mailing Address (Optional) </v-card-subtitle>
+
             <v-row>
               <v-col>
-                <v-checkbox v-model="isAddressDifferent" label="Organization Street Address is different from mailing address" />
+                <v-text-field outlined required v-model="address2" label="Street Address" />
               </v-col>
             </v-row>
 
-            <v-row v-show="isAddressDifferent">
-              <v-col>
-                <v-text-field outlined required v-model="address2" :rules="isAddressDifferent ? rules.required : []" label="Organization Mailing Address" />
-              </v-col>
-            </v-row>
-
-            <v-row v-show="isAddressDifferent">
+            <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="city2" :rules="isAddressDifferent ? rules.required : []" label="City/Town" />
+                <v-text-field outlined required v-model="city2" label="City/Town" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="postalCode2" :rules="isAddressDifferent ? [...rules.required, ...rules.postalCode] : []" label="Postal Code" />
+                <v-text-field outlined required v-model="postalCode2" :rules="rules.postalCode" label="Postal Code" />
               </v-col>
             </v-row>
 
@@ -184,7 +182,6 @@ export default {
   data() {
     return {
       isValidForm: true,
-      isAddressDifferent: undefined,
       rules,
       processing: false,
     };
