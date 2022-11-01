@@ -115,11 +115,9 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     chosenOrg(){
-      console.log(this.userInfo.organizationList[0].facilityList);
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
-      //return 'hi';
-      return this.userInfo.organizationList.facilityList;
-    }
+      return this.userInfo;
+    },
   },
   components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer, LargeCard, ExistingFacilityFees, AddNewFees, RequestForInfo }
 };

@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 const _ = require ('lodash');
 const { info } = require('../components/logger');
+const e = require('express');
 
 
 async function getUserInfo(req, res) {
@@ -14,9 +15,7 @@ async function getUserInfo(req, res) {
     });
   }
 
-  /* 
-  data used for dev build of LandingPage.vue 
-  will be replaced with API data at a later time
+  
   /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
 
   
@@ -36,28 +35,55 @@ async function getUserInfo(req, res) {
   //TODO: ApplicatioStatus and unreadMessages are hardcoded. Remove this with API values when built out!
   const  facilityArr = await getFacilityArray(businessGuid);
 
-  log.info(facilityArr);
+  log.info(facilityArr[0].statusCode);
   //log.info(facilityArr[0].organizationName);
   //log.info(facilityArr[0].organizationId);
 
-  let orgName = facilityArr[0].organizationName;
-  if (!orgName){
-    orgName = 'NO ORG FOUND';
-  }
 
-  let orgID = facilityArr[0].organizationId;
-  if (!orgID){
+  let orgName;
+  let orgID;
+  let appStatusCode = 'NOT STARTED';
+
+  if (facilityArr[0] === undefined){
+    orgName = 'NO ORG FOUND';
     orgID = 'NO ORG FOUND';
   }
+  else {
+    orgName = facilityArr[0].organizationName;
+    orgID = facilityArr[0].organizationId;
+  }
+  
+  facilityArr[0].statusCode = 100000001;
 
+  switch(facilityArr[0].statusCode) {
 
+  case 100000001:
+    appStatusCode = 'APPROVED';
+    break;
+
+  case 100000002:
+    //TO DO: complete when status codes are known, here and below are just assumptions to the actual codes
+    appStatusCode = 'DRAFT';
+    break;
+
+  case 100000003:
+    //TO DO: complete when status codes are known, here and below are just assumptions to the actual codes
+    appStatusCode = 'SUBMITTED';
+    break;
+
+  default:
+    appStatusCode = 'NOT STARTED';
+
+  }
+
+  //unread messages should be replaced later at some point
   let resData = {
     displayName: displayName,
     businessGuid: businessGuid,
     userName: userName,
     organizationName: orgName,
     organizationId:  orgID,
-    applicationStatus: 'APPROVED',
+    applicationStatus: appStatusCode,
     unreadMessages: true,
     facilityList: facilityArr,
     
@@ -72,13 +98,7 @@ async function getUserInfo(req, res) {
 
 //application status is not yet implemented in the Dynamics -- so that will change 
 //
-// const GetUserProfileKeyMap = {
-//   'Organization.name':   'organizationName',
-//   'Organization.accountid': 'organizationId',
-//   'Facility.name' : 'facilityName',
-//   'Facility.accountid'  : 'facilityId',
-//'CCOF.Facility.name' : 'facilityName'
-// };
+
 
 const GetUserProfileKeyMap = {
   'Organization.name':   'organizationName',
@@ -89,38 +109,23 @@ const GetUserProfileKeyMap = {
   'ECEWE.statuscode' : 'eceweStatus',
 };
 
-async function getProfile(req, res) {
-  try {
-    //let userInfo = await getUserInfo(req, res);
+
+//JB - this was the old endpoint I created while testing. Just left here for now in case we need to add another one. 
+// async function getProfile(req, res) {
+//   try {
+//     
+
+//     // //return res.status(HttpStatus.OK).json(x);
+//     // return res.status(HttpStatus.OK).json(getFacilityArray(bGuid));
     
-    // let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
-    // if (!businessGuid) {
-    //businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid; commenting out for now because my idir doesnt have bceid
-    // let bGuid = 'a1e5c3f9-299d-4979-92c9-fea3520f428c'; //TODO: remove this and use the session GUID
-    // //}
-
-    // let currentUserProfile = await getUserProfile(bGuid);
-
-    // //log.info (currentUserProfile);
-
-    // currentUserProfile = currentUserProfile.value;
-
-    // let x = currentUserProfile.map(item => {
-    //   return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]);
-    // });
+//   }
     
-
-    // //return res.status(HttpStatus.OK).json(x);
-    // return res.status(HttpStatus.OK).json(getFacilityArray(bGuid));
-    
-  }
-    
-  catch (e) {
-    log.info('broke in user component');
-    log.info(e);
-    return res.status(555).json(e.data? e.data : e?.status );
-  }
-}
+//   catch (e) {
+//     log.info('broke in user component');
+//     log.info(e);
+//     return res.status(555).json(e.data? e.data : e?.status );
+//   }
+// }
 
 
 async function getFacilityArray(businessGuid) {
@@ -134,22 +139,14 @@ async function getFacilityArray(businessGuid) {
 
     log.info (currentUserProfile);
 
-    //currentUserProfile = currentUserProfile.value;
-    // const organizationData = {
-    //   'name' : currentUserProfile.Organization.name , 
-    //   'orgId':  currentUserProfile.Organization.accountid,
-    //   'applicationStatus' : 'APPROVED'
-    // };
-
-    //log.info(organizationData);
-
-    //let x= currentUserProfile;
-
     let x = currentUserProfile.map(item => {
       return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
     });
-    
-    
+
+
+    //TODO: remove the line below. API is just returning improper (repeating) data with duplicate keys, giving me a ton of errors
+    //in the front end. 
+    x = x.slice(0,2);
     return(x);
     
   }
@@ -162,5 +159,5 @@ async function getFacilityArray(businessGuid) {
 
 module.exports = {
   getUserInfo,
-  getProfile
+  // getProfile
 };

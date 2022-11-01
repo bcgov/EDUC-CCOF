@@ -51,11 +51,14 @@
       <v-row v-if=" !getApplicationStatus">
         <v-row>
         <v-col class="col-12 col-md-6">
-          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence.-->
+          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+            Update when data comes in from the API 
+            Filter by Facility Name, status, or licence: "
+            .-->
           <v-text-field 
             clearable
             filled 
-            label="Filter by facility, status, or licence: "
+            label="Filter by Facility Name "
             v-model="input"
             :bind="input">
           </v-text-field>
@@ -109,13 +112,29 @@
         <v-card-text>
           <v-row>
             <v-col cols="" class="col-12 col-md-8">
-            <p class="text--primary"> Facility ID: 0000-0000-0000-0000</p>
+            <p class="text--primary"> Facility ID: {{chosenOrg.facilityList[0].facilityId}}</p>
             <p class="text--primary "><strong> Facility Name : ABC daycare Time </strong></p>
             <p class="text--primary"> Licence : 123456789</p>
             </v-col>
-            <v-col cols="" class="d-flex align-center col-12 col-md-4">
-              <p class="text--primary">Status: Opt-IN CCFRI</p>
-              <v-btn> UPDATE</v-btn>
+            <v-col v-if="showOptStatus" cols="" class="d-flex align-center col-12 col-md-4">
+              <p class="text--primary" >Status: Opt-IN CCFRI</p>
+              <v-btn @click="toggle"> UPDATE</v-btn>
+            </v-col>
+            <v-col  v-else cols="" class="d-flex align-center col-12 col-md-4">
+              <v-radio-group
+                required
+                row
+                v-model="ccfriOptInOrOut"
+              >
+                <v-radio
+                  label="Opt-In"
+                  value="Out"
+                ></v-radio>
+                <v-radio
+                  label="Opt-Out"
+                  value="In"
+                ></v-radio>
+              </v-radio-group>
             </v-col>
           </v-row>
             
@@ -154,6 +173,8 @@ export default {
     return {
       input : '',
       results : {},
+      showOptStatus : true,
+      ccfriOptInOrOut : undefined,
     };
   },
   computed: {
@@ -203,7 +224,10 @@ export default {
     clicked (){
       console.log('clicked');
       return '';
-    }
+    },
+    toggle() {
+      this.showOptStatus = this.showOptStatus ? false : true;
+    },
   },
   
   components: { SmallCard, MessagesToolbar, LargeCard, LargeButtonContainer, LargeBlueButton }
