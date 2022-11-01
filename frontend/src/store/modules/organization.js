@@ -71,7 +71,6 @@ export default {
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
 
-          commit('setOrganizationId', response.data?.organizationId);
           commit('setLegalName', response.data?.legalName);
           commit('setAddress1', response.data?.address1);
           commit('setCity1', response.data?.city1);
