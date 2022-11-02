@@ -108,14 +108,14 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
-import { mapState, mapActions } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 
 
 export default {
   props: {
   },
   computed: {
-    ...mapGetters('app', ['organizationTypeList']),
+    ...mapState('app', ['organizationTypeList']),
     ...mapGetters('auth', ['userInfo']),
     organizationId: {
       get() { return this.$store.state.organization.organizationId; },

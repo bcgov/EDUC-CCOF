@@ -1,5 +1,5 @@
 'use strict';
-const { getOperationWithObjectId, postOperation } = require('./utils');
+const { getOperationWithObjectId, postOperation, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE } = require('../util/constants');
 
@@ -44,8 +44,9 @@ async function updateOrganization(req, res) {
   organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
 
   try {
-    organization = new MappableObjectForFront(organization, OrganizationMappings);
-    return res.status(HttpStatus.OK).json(organization);
+    let orgResponse = await patchOperationWithObjectId('accounts', req.params.organizationId, organization);
+    orgResponse = new MappableObjectForFront(orgResponse, OrganizationMappings);
+    return res.status(HttpStatus.OK).json(orgResponse);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }

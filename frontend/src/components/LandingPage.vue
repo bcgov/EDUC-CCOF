@@ -100,7 +100,8 @@
                 CCOF
               </p>
               <br>
-              <a href="#">CCOF Status: Approved</a><br>
+              <router-link :to="{ name: 'Organization Information' }" target="_self">CCOF Status: Approved</router-link>
+              <br>
             </v-card-text>
           </SmallCard>
         </v-col>
@@ -194,6 +195,7 @@
 import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import LargeCard from './guiComponents/LargeCard.vue';
+import { PATHS } from '@/utils/constants';
 
 export default {
   name: 'LandingPage',
