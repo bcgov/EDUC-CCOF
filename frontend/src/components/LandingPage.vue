@@ -21,7 +21,7 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === 'NOT STARTED'">Start Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
               <v-btn absolute bottom class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
               <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
@@ -91,15 +91,6 @@
             </v-card-text>
         </v-card>
       </v-row>
-
-
-      <LargeCard>
-        Hello there, {{getDisplayName}} <br><br>
-        guid is: {{getBusinessGuid}}<br><br>
-        {{results}}
-       <v-btn v-on:click="getUserProfile"> ....</v-btn>
-      </LargeCard>
-
   </v-container>
 </v-container>
   
@@ -108,9 +99,8 @@
 
 import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
-// import LargeCard from './guiComponents/LargeCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
-
+import { PATHS } from '@/utils/constants';
 import LargeCard from './guiComponents/LargeCard.vue';
 import ApiService from '@/common/apiService';
 
@@ -178,10 +168,13 @@ export default {
       console.log('clicked');
       return '';
     },
+    startApplicationClicked() {
+      this.$router.push(PATHS.facInfo);
+    }
     
   },
   
-  components: { SmallCard, MessagesToolbar, LargeCard}
+  components: { SmallCard, MessagesToolbar}
 };
 </script>
 
