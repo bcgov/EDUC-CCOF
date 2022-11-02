@@ -101,7 +101,6 @@ import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
-import LargeCard from './guiComponents/LargeCard.vue';
 import ApiService from '@/common/apiService';
 
 export default {
@@ -163,10 +162,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    clicked (){
-      console.log('clicked');
-      return '';
     },
     startApplicationClicked() {
       this.$router.push(PATHS.facInfo);
