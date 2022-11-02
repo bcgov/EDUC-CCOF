@@ -169,7 +169,7 @@ export default {
       return '';
     },
     startApplicationClicked() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.orgInfo);
     }
     
   },
