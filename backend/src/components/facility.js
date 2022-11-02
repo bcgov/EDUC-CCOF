@@ -1,7 +1,7 @@
 'use strict';
 const { getOperationWithObjectId, postOperation, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const logger = require('./logger');
+const log = require('./logger');
 const _ = require ('lodash');
 
 // used to map from Dynamics API to Vue.js
@@ -46,6 +46,7 @@ async function getFacility(req, res) {
     //   return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
     // }
     facility = _(facility).pick(Object.keys(GetFacilityKeyMap)).mapKeys((value,key) => {return GetFacilityKeyMap[key];});
+    log.info(facility);
     return res.status(HttpStatus.OK).json(facility);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );

@@ -134,6 +134,24 @@ const ACCOUNT_TYPE = Object.freeze({
   ORGANIZATION: 100000000
 });
 
+const APPLICATION_STATUS_CODES = Object.freeze({
+  '100000001': 'APPROVED',
+  '100000002': 'DRAFT',
+  '100000003': 'SUBMITTED'
+});
+
+const CCFRI_STATUS_CODES = Object.freeze({
+  '1': 'APPROVED',
+  '2': 'DRAFT',
+  '3': 'SUBMITTED'
+});
+
+const ECEWE_STATUS_CODES = Object.freeze({
+  '1': 'APPROVED',
+  '2': 'DRAFT',
+  '3': 'SUBMITTED'
+});
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -143,6 +161,9 @@ module.exports = {
   EVENT_OUTCOME,
   EVENT_WS_TOPIC,
   CHILD_AGE_CATEGORY_TYPES,
-  ACCOUNT_TYPE
+  ACCOUNT_TYPE,
+  APPLICATION_STATUS_CODES,
+  CCFRI_STATUS_CODES,
+  ECEWE_STATUS_CODES
 };
 

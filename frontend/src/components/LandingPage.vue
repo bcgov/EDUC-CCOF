@@ -1,14 +1,8 @@
 <template>
   <v-container>
-    <v-toolbar 
-      v-if="chosenOrg.unreadMessages"
-      color="green"
-      justify="center"
-    >
-      <v-toolbar-title class="flex text-center" >
-        <h3>Action Required: New Messages</h3>
-      </v-toolbar-title >
-    </v-toolbar>
+    <div v-if ="chosenOrg.unreadMessages">
+      <MessagesToolbar></MessagesToolbar>
+    </div>
     <v-row justify="center">
       <div
         class="pa-10"
@@ -19,127 +13,33 @@
       <v-divider class="mx-16"/>
     </v-row>
 
-    <v-row>
-      <v-col>
-        <!-- User visting for the first time, start new application-->
-        <LargeCard v-if="chosenOrg.applicationStatus=== 'NOT STARTED'">
-            <v-card-actions>
-            </v-card-actions>     
-
-            <v-card-text class="flex">
-            <p class="text-h5 text--primary">
-              Apply for CCOF, CCFRI or ECE-WE
-            </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            
-            <br><br>
-            <v-btn
-              color="yellow"
-              elevation="2"
-            >START APPLICATION</v-btn>
-          </v-card-text>
-        </LargeCard> 
-
-        <!-- Draft saved, application not yet submitted-->
-        <LargeCard  v-if="chosenOrg.applicationStatus=== 'DRAFT'" >
-          <v-card-actions>
-          </v-card-actions>     
-
-          <v-card-text >
-            <p class="text-h5 text--primary">
-              CCOF, CCFRI, ECE-WE
-            </p>
-            <h2> Status: Draft</h2> <br><br>
-            <v-btn
-              color="yellow"
-              elevation="2"
-              justify="left"
-            >CONTINUE APPLICATION</v-btn>
-            <v-btn
-              color="secondary"
-              elevation="2"
-              text
-              class="ml-lg-7"
-              align="left"
-            >Delete Application</v-btn>
-          </v-card-text>
-        </LargeCard>
-
-         <!-- Application saved, but decision not yet made.-->
-          <LargeCard v-else-if="chosenOrg.applicationStatus=== 'SUBMITTED'">
-            <v-card-actions>
-            </v-card-actions>
-
-            <v-card-text>
-            <p class="text-h5 text--primary">
-              CCOF, CCFRI, ECE-WE SUBMITTED
-            </p>
-            <h2> Status: IN PROGRESS</h2> <br><br>
-
-            <!-- TODO: This should link to the existing application once this is built out. These are just placeholders.-->
-            <a href="#">CCOF Status: In Progress</a><br>
-            <a href="#">CCFRI Status: In Progress</a><br>
-            <a href="#">ECE-WE Status: In Progress</a><br>
-          </v-card-text>
-          </LargeCard>
-
-           
-      </v-col>
-    </v-row>
- 
      <!-- Application Approved screens starts here -->
     <v-container 
-    v-if="chosenOrg.applicationStatus=== 'APPROVED'"
     class="px-10"
     >
-      <v-row class="" align="stretch"> 
-        <v-col class="col-md-3 col-12 d-flex flex-column flex "> 
-          <SmallCard>
-            <v-card-text class="flex">
-              <p class="text-h6 text--primary">
-                CCOF
-              </p>
-              <br>
-              <router-link :to="{ name: 'Organization Information' }" target="_self">CCOF Status: Approved</router-link>
-              <br>
-            </v-card-text>
+      <v-row class="" align="stretch" justify="space-around" > 
+        <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
+          <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
+              <br><br>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
-        </v-col>
-
-        <v-col class="col-md-3 col-12 d-flex flex-column"> 
-          <SmallCard>
-            <v-card-text class="flex">
-              <p class="text-h6 text--primary">
-                Make a change to my information, parent fees, or funding agreement
-              </p><br>
-              <a href="#">LINK</a><br>
-            </v-card-text>
+       
+          <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
+            <br>
+            <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard>
-        </v-col>
-
-        <v-col class="col-md-3 col-12 d-flex flex-column"> 
-          <SmallCard>
-            <v-card-text>
-              <p class="text-h6 text--primary">
-                Submit Enrolment Reports or monthly ECE-WE reports to receive payment
-              </p>
+        
+          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
               <br>
-              <a href="#">LINK</a><br>
-            </v-card-text>
+              <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
           </SmallCard>
-        </v-col>
-
-        <v-col class="col-md-3 col-12 d-flex flex-column"> 
-          <SmallCard>
-            <v-card-text>
-              <p class="text-h6 text--primary">
-                Renew my funding agreement for 2022/23
-              </p>
+       
+          <SmallCard title="Renew my funding agreement for 2022/23" :disable=getApplicationStatus>
               <br>
-              <a href="#">LINK</a><br>
-            </v-card-text>
+              <v-btn absolute bottom class="" dark color='#003366'>Renew my funding</v-btn>
           </SmallCard>
-        </v-col>
       </v-row>
 
       <br><br>
@@ -147,27 +47,32 @@
       </v-divider>
       <br><br>
 
-      <v-row>
+     
+      <v-row v-if=" !getApplicationStatus">
+        <v-row>
         <v-col class="col-12 col-md-6">
-          <!--TODO: make this search box actually do something-->
+          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+            Update when data comes in from the API 
+            Filter by Facility Name, status, or licence: "
+            .-->
           <v-text-field 
-            clearable="true" 
-            filled="true" 
-            label="Filter by facility, status, or licence: "
+            clearable
+            filled 
+            label="Filter by Facility Name "
             v-model="input"
             :bind="input">
           </v-text-field>
         </v-col>
       </v-row>
-      
-      <v-row>
-        <v-card elevation="4" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+
+        <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
-          :to="userInfo.organizationList.length > 1 ?'/organization' : 'error-page'" exact tile
+          exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId} , index) in filteredList" :key="facilityId"
+          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in filteredList" :key="facilityId"
+          
           >
             <v-card-text>
               <p class="text-h5 text--primary">
@@ -181,21 +86,23 @@
               </p>
               <br>
               <p class="text-h5 text--primary">CCFRI, ECE-WE</p>
-              <a href="#">CCFRI Status: Approved</a><br>
-              <a href="#">ECE-WE Status: In Progress</a><br><br>
+              <a href="#">CCFRI Status: {{ccfriStatus}}</a><br>
+              <a href="#">ECE-WE Status: {{eceweStatus}}</a><br><br>
             </v-card-text>
         </v-card>
       </v-row>
-    </v-container>
   </v-container>
+</v-container>
   
 </template>
 <script>
 
 import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
-import LargeCard from './guiComponents/LargeCard.vue';
+import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
+import LargeCard from './guiComponents/LargeCard.vue';
+import ApiService from '@/common/apiService';
 
 export default {
   name: 'LandingPage',
@@ -208,7 +115,9 @@ export default {
   },
   data() {
     return {
-      input : ''
+      input : '',
+      results : {},
+      
     };
   },
   computed: {
@@ -219,20 +128,53 @@ export default {
     nextYearTwoDigit() {
       return this.currentYear - 1999;
     },
+    getDisplayName(){
+      return this.userInfo.displayName;
+    },
+    getBusinessGuid(){
+      return this.userInfo.businessGuid;
+    },
 
     chosenOrg(){
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
-      return this.userInfo.organizationList[0];
+      return this.userInfo;
     },
     filteredList() {
-      console.log(this.input);
-      let arr = this.chosenOrg.facilityList;
-
-      return ("hi");
-      
+      if (this.input === '' || this.input === ' '){
+        return this.chosenOrg.facilityList;
+      }
+      return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
+    getApplicationStatus(){
+      if (this.chosenOrg.applicationStatus === 'APPROVED'){
+        //false because if the application is approved, we will want to set all the disabled status to false)
+        return false;
+      }
+      return true;
+    },
+    
   },
-  components: { SmallCard, LargeCard }
+  methods: {
+    async getUserProfile () {
+      console.log('clicked');
+      try {
+        this.results = ( await ApiService.apiAxios.get('/api/user/'));
+        console.log('RESULTS are:  = '+ this.results);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    clicked (){
+      console.log('clicked');
+      return '';
+    },
+    startApplicationClicked() {
+      this.$router.push(PATHS.facInfo);
+    }
+    
+  },
+  
+  components: { SmallCard, MessagesToolbar}
 };
 </script>
 

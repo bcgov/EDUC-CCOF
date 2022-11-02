@@ -39,7 +39,8 @@ export const PATHS = {
   orgInfo: '/ccof-application/group/organization-information',
   facInfo: '/ccof-application/group/facility-information',
   fundAmount: '/ccof-application/group/funding-amount',
-  confirmation: '/ccof-application/group/confirmation'
+  confirmation: '/ccof-application/group/confirmation',
+  ccfriHome: '/ccfriApplication/group/CcfriEceLanding' 
 };
 
 export const NAV_BAR_GROUPS = {
@@ -47,6 +48,8 @@ export const NAV_BAR_GROUPS = {
   CCFRI: 'CCFRI',
   ECEWE: 'ECE-WE'
 };
+
+
 
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
