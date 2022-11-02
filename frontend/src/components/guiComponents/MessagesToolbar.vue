@@ -1,6 +1,6 @@
 <template>
     <v-toolbar 
-      color="green"
+      color="yellow lighten-3"
       justify="center"
     >
       <v-toolbar-title class="flex text-center" >
