@@ -97,11 +97,22 @@
 
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
+import { mapActions } from 'vuex';
+
 
 export default {
   props: {
   },
   computed: {
+  },
+  watch: {
+    '$route.params.urlFacilityId': {
+      handler() {
+        this.refreshWithFacility();
+      },
+      immediate: true,
+      deep: true
+    }
   },
   data() {
     return {
@@ -124,11 +135,17 @@ export default {
     };
   },
   methods: {
+    ...mapActions('facility', ['loadFacility']),
+
     previous() {
       this.$router.push(PATHS.orgInfo);
     },
     next() {
       this.$router.push(PATHS.fundAmount);
+    },
+    refreshWithFacility() {
+      let x = this.$route.params.urlFacilityId;
+      this.loadFacility(x);
     }
   }
 };

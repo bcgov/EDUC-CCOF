@@ -8,7 +8,7 @@
           absolute
           :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px` "
           width=200
-          :height=" `${$vuetify.application.height}px`"
+          height="calc(100% -368px)"
           :permanent="$vuetify.breakpoint.mdAndUp"
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
@@ -21,9 +21,9 @@
               <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
-              <router-link :to="{ name: item.link }"  :target="_self" class="router">
+              <router-link :to="item.link"  :target="_self" class="router">
               <v-list-item-content class="py-0">
-                <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
+                <v-list-item-title v-if="item.isActive" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
                 <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
               </v-list-item-content>
             </router-link>
@@ -58,9 +58,9 @@
               <v-icon>{{ subItem.icon }}</v-icon>
             </v-list-item-icon>              
 
-            <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
+            <router-link :to="subItem.link" :target="subItem.newTab ? '_blank' : '_self'" class="router">
               <v-list-item-content class="py-0">
-                <v-list-item-title v-if="subItem.link === $route.name" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
+                <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
                 <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
               </v-list-item-content>
             </router-link>
@@ -102,6 +102,8 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup']),
+    ...mapState('facility', ['facilityList']),
+    ...mapGetters('facility', ['isFacilityComplete']),
     ...mapGetters('organization', ['isOrganizationComplete']),
 
     navWidth () {
@@ -123,14 +125,6 @@ export default {
       immediate: true,
       deep: true
     },
-    // isOrganizationComplete: {
-    //   handler() {
-    //     console.log('watching isOrganization complete: ', this.isOrganizationComplete);
-    //     this.refreshUserPermissions();
-    //   },
-    //   immediate: true,
-    //   deep: false
-    // }
   },
   methods: {
     setActive(item) {
@@ -144,42 +138,12 @@ export default {
       }
     },    
     refreshNavBar(){
-      this.items = [
-        {
-          title: NAV_BAR_GROUPS.CCOF,
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
-          expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
-          items: [
-            {
-              title: 'Organization',
-              link: 'Organization Information',
-              isAccessible: true,
-              icon: this.getCheckbox(this.isOrganizationComplete),
-            },
-            {
-              title: 'Facility 1',
-              link: 'Facility Information',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Funding 1',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Direct Deposit',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-          ],
-        },
+      this.items = [];
+      this.items.push(this.getCCOFNavigation());
+      this.items.push(
         {
           title: NAV_BAR_GROUPS.CCFRI,
-          link: 'ccfri-application',
+          link: { name: 'ccfri-application' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
@@ -192,7 +156,7 @@ export default {
             },
             {
               title: 'Request for Information 1',
-              link: 'Funding Amount',
+              link: { name: 'Funding Amount' },
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
             },
@@ -207,24 +171,25 @@ export default {
               link: '',
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },          ],
-
+            },          
+          ],
         },
+      );
+
+      this.items.push(
         {
           title: NAV_BAR_GROUPS.ECEWE,
-          link: 'ccfri-application',
+          link: { name: 'ccfri-application' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           expanded: this.isExpanded(NAV_BAR_GROUPS.ECEWE),
-        },
-      ];
+        });
       this.hasAnyItems = this.items.filter(obj => obj.isAccessible).length > 0;
     },
     canBeAccessed(permission){
       return this.userInfo?.activeInstitutePermissions?.filter(perm => perm === permission).length > 0;
     },
     getCheckbox(isCompleted) {
-      console.log('isCompleted: ', isCompleted);
       if (isCompleted) {
         return 'mdi-check-circle';
       }
@@ -233,16 +198,54 @@ export default {
     isExpanded(groupName) {
       return (groupName === this.navBarGroup);
     },
-    closeGroupIfActiveAfterClickingOnItem(pItem) {
-      for (let item of this.items) {
-        //This is a group
-        if (item.items) {
-          //Check if group is active AND we are not closing self
-          if (item.active && item.title != pItem.title) {
-            item.active = false;
-          }
-        } else { continue; }
-      }
+    getCCOFNavigation() {
+      let items = [];
+      items.push(
+        {
+          title: 'Organization',
+          link: { name: 'Organization Information' },
+          isAccessible: true,
+          icon: this.getCheckbox(this.isOrganizationComplete),
+          isActive: 'Organization Information' === this.$route.name
+        }
+      );
+      this.facilityList?.forEach( x => {
+        items.push(
+          {
+            title: x.name,
+            id: x.id,
+            link: { name: 'Facility Information', params: {urlFacilityId: x.id}},
+            isAccessible: true,
+            icon: 'mdi-checkbox-blank-circle-outline', //replace
+            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === x.id
+            // function: this.loadFacility(x.id)
+          },
+          {
+            title: 'Funding ' + x.name,
+            link: { name: 'Funding Amount'},
+            isAccessible: true,
+            icon: 'mdi-checkbox-blank-circle-outline', //replace
+            isActive: 'Funding Amount' === this.$route.name
+          },
+        );
+      });
+      items.push(
+        {
+          title: 'Direct Deposit',
+          link: '',
+          isAccessible: true,
+          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          isActive: '' === this.$route.name
+        }
+      );
+      let retval =   {
+        title: NAV_BAR_GROUPS.CCOF,
+        isAccessible: true,
+        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
+        items: items
+      };
+      return retval;
     },
     stripWhitespace(title) {
       return title.replace(/\s+/g, '');

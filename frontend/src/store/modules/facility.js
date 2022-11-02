@@ -1,15 +1,22 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
-
 export default {
   namespaced: true,
   state: {
     //Vuex doesn't handle maps. so keep track of the list of facilities
     //and update the facility details with the current selected facility
-    facilityList: [],
+    facilityList: [
+      {
+        name: 'ABC fuzzy day care',
+        id: '3b9f6cf5-6935-ed11-9db1-002248d53d53'
+      },
+      {
+        name: 'Happy bunny day care',
+        id: '733af835-f8da-4763-b4ab-972ebdc95f65'
+      },
+    ],
     currentFacilityId: null,
-
     facilityName: null,
     facilityId: null,
     yearBeginOperation: null,
@@ -61,12 +68,7 @@ export default {
         if (state.facilityId) { // has an orgaization ID, so update the data
           ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload)
             .then((response) => {
-              commit('setfacilityName', response.data?.facilityName);
-              commit('setyearBeginOperation', response.data?.yearBeginOperation);
-              commit('setfacilityAddress', response.data?.facilityAddress);
-              commit('setcity', response.data?.city);
-              commit('setpostalCode', response.data?.postalCode);
-              commit('setlicenseNumber', response.data?.licenseNumber);
+              commitToState(commit, response.data);
               resolve(response);
             })
             .catch((e) => {
@@ -87,6 +89,34 @@ export default {
             });
         }
       });
-    }
+    },
+    async loadFacility({commit}, facilityId) {
+      return new Promise((resolve, reject) => {
+        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+          console.log('unable to load facility because you are not logged in');
+          reject('unable to  load facility because you are not logged in');
+        }
+        ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId)
+          .then((response) => {
+            commitToState(commit, response.data);
+            resolve(response);
+          })
+          .catch((e) => {
+            console.log(`Failed to get existing Facility - ${e}`);
+            reject(e);
+          });
+      });
+    },
   },
 };
+
+function commitToState(commit, data) {
+  commit('setFacilityId', data?.facilityId);
+  commit('setFacilityName', data?.facilityName);
+  commit('setYearBeginOperation', data?.yearBeginOperation);
+  commit('setFacilityAddress', data?.facilityAddress);
+  commit('setCity', data?.city);
+  commit('setPostalCode', data?.postalCode);
+  commit('setLicenseNumber', data?.licenseNumber);
+}
+

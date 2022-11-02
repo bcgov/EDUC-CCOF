@@ -106,6 +106,38 @@ export default {
             });
         }
       });
-    }
+    },
+    async LoadOrganization({ commit, organizationId }) {
+      return new Promise((resolve, reject) => {
+        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+          console.log('unable to load organization because you are not logged in');
+          reject('unable to load organization because you are not logged in');
+        }
+        ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId)
+          .then((response) => {
+            commit('setOrganizationId', response.data?.organizationId);
+            commit('setLegalName', response.data?.legalName);
+            commit('setAddress1', response.data?.address1);
+            commit('setCity1', response.data?.city1);
+            commit('setPostalCode1', response.data?.postalCode1);
+            commit('setAddress2', response.data?.address2);
+            commit('setCity2', response.data?.city2);
+            commit('setPostalCode2', response.data?.postalCode2);
+            commit('setContactName', response.data?.contactName);
+            commit('setPosition', response.data?.position);
+            commit('setPhone', response.data?.phone);
+            // don't update business Id just yet
+            // commit('setBusinessId', response.data?.businessId); 
+            commit('setEmail', response.data?.email);
+            commit('setIncNumber', response.data?.incNumber);
+            commit('setOrganizationType', response.data?.organizationType);
+            resolve(response);
+          })
+          .catch((e) => {
+            console.log(`Failed to get existing Organization - ${e}`);
+            reject(e);
+          });
+      });
+    }    
   },
 };

@@ -20,6 +20,7 @@ const GetOrganizationKeyMap = {
   emailaddress1 : 'email',
   ccof_instructionnumber : 'incNumber', //incorporation number
   ccof_typeoforganization : 'organizationType',
+  accountid: 'organizationId',  
   'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue' : 'organizationTypeDesc'
 };
 
