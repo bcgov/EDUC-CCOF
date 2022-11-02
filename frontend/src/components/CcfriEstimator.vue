@@ -40,9 +40,7 @@
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** FACILTY SEARCH component  ************************************************************************************************************************* -->
   <!-- ******************************************************************************************************************************************************** -->
-      <FacilitySearch @changeTypeOfCare="typeOfCareChanged($event)"
-                      @changeApprovedFee="approvedFeeChanged($event)"
-      />
+      <FacilitySearch @selectedFacility="setSelectedFacility($event)"/>
       <v-row justify="center">
         <v-col cols="10">
         <v-card elevation="4">
@@ -58,6 +56,7 @@
             </v-col>
             <v-col cols="4" class="pb-0">
               <v-text-field 
+                id="totNumberOfChildren"
                 @change="updateNumberOfChildSubForms"
                 @keypress="numberFilter"
                 v-model="totalNumberOfChildren"
@@ -81,8 +80,7 @@
             <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
-                            v-on="on">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
@@ -91,12 +89,13 @@
             </v-col>
             <v-col cols="4" class="pb-0">
               <v-select
-                  v-model="form.typeOfCare"
-                  :items="this.typeOfCareList"
-                  outlined
-                  required
-                  :rules="rulesTypeOfCare"
-                  dense>
+                id="typeOfCare"
+                v-model="form.typeOfCare"
+                :items="this.typeOfCareList"
+                outlined
+                required
+                :rules="rulesTypeOfCare"
+                dense>
               </v-select>
             </v-col>
           </v-row>
@@ -113,7 +112,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;" v-on="on">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
@@ -122,10 +121,11 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
+                    id="childAgeCategory"
                     style="font-size:16px !important"
                     v-model="child.childAgeCategory"
                     :items="childAgeCategoryList"
-                    @change="setApprovedParentFee(child.childAgeCategory, child.number)"
+                    @change="setApprovedParentFee(child.childAgeCategory, child.number-1)"
                     outlined
                     dense
                     required
@@ -146,8 +146,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
-                            v-on="on">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
@@ -187,8 +186,8 @@
                           v-model="child.selectedCareType[0]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -201,7 +200,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -222,8 +221,8 @@
                           v-model="child.selectedCareType[1]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -235,7 +234,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -255,8 +254,8 @@
                           v-model="child.selectedCareType[2]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -268,7 +267,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -288,8 +287,8 @@
                           v-model="child.selectedCareType[3]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -301,7 +300,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -320,8 +319,8 @@
                           v-model="child.selectedCareType[4]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -333,7 +332,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -352,8 +351,8 @@
                           v-model="child.selectedCareType[5]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -365,7 +364,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -384,8 +383,8 @@
                           v-model="child.selectedCareType[6]"
                           active-class="blue--text"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
+                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                            <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -397,7 +396,7 @@
                               v-if="index < careTypes.length - 1"
                               :key="index"
                             ></v-divider>
-                          </template>
+                          </div>
                         </v-list-item-group>
                       </v-list>
                     </v-card>
@@ -418,8 +417,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
-                            v-on="on">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
@@ -452,8 +450,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
-                            v-on="on">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
@@ -465,10 +462,11 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-text-field
+                      id="approvedFee"
                       @keypress="currencyFilter"
                       @change="truncateLeadingZeros(child.number)"
                       v-model="child.approvedFee"
-                      :rules="rulesApprovedFee"
+                      :rules="rulesApprovedFee(child.approvedFee)"
                       outlined
                       prefix="$"
                       required
@@ -499,8 +497,7 @@
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;"
-                            v-on="on">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
@@ -613,7 +610,6 @@
 <script>
 
 import FacilitySearch from './FacilitySearch.vue';
-import { eventBus } from '../main.js';
 
 export default {
   components: {FacilitySearch},
@@ -622,6 +618,8 @@ export default {
     return {
       childAgeCategory: '',
       childIndex: '',
+      selectedFacility: [],
+      skipApprovedFeeValidation: false,
       GROUP_REDUCTION_RATES: null,
       FAMILY_REDUCTION_RATES: null,
       results: null,
@@ -664,12 +662,7 @@ export default {
         'Licensed Group',
         'Licensed Family'
       ],
-      childAgeCategoryList: [
-        '0 - 18 Months',
-        '18 - 36 Months',
-        '3 Years to Kindergarten',
-        'Before & After School (Kindergarten Only)',
-      ],
+      childAgeCategoryList: [],
       rulesTypeOfCare: [
         (v) => !!v || 'Type of care is required'
       ],
@@ -684,31 +677,64 @@ export default {
       rulesChildsAgeCategory: [
         (v) => !!v || 'Child\'s age category is required'
       ],
+      /*
       rulesApprovedFee: [
         (v) => !!v || 'Approved full-time parent fee before fee reduction applied is required',
         (v) => v <= 9999 || 'Maximum Approved full-time parent fee before fee reduction applied is $9999.00',
         (v) => v > 0 || 'Approved full-time parent fee before fee reduction applied must be greater than $0'
-      ],
+      ],*/
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent fee frequency is required'
       ],
     };
   },
   methods: {
-    // Event handler for capturing the typeOfCare from SearchFacility component.
-    typeOfCareChanged(e) {
-      this.form.typeOfCare = e;
+    setApprovedParentFee(childsAgeCategory, index) {
+      let approvedFee = this.getApprovedParentFee(childsAgeCategory);
+      this.skipApprovedFeeValidation = true;
+      this.children[index].approvedFee = approvedFee;
     },
-    // Event handler for capturing the approvedFee from SearchFacility component.
-    approvedFeeChanged(e) {
-      if (this.childIndex != '') {
-        this.children[this.childIndex-1].approvedFee = e;
+    setSelectedFacility(e) {
+      this.selectedFacility = e;
+      this.form.typeOfCare = (this.selectedFacility.accountNumber.charAt(0) == 'F') ? 'Licensed Family' : 'Licensed Group';
+      this.filterChildsAgeCategory();
+      // TODO: Keep for now as possible reused code, until Todd answers pending question on what should happen when to approved full-time fee
+      //       when serach/selecting new facility.
+      //this.resetForm();
+      /*
+      let index = 0;
+      for (let child of this.children) {
+        let approvedFee = this.getApprovedParentFee(child.childsAgeCategory);
+        console.info('child.approvedFee = '+child.approvedFee);
+        console.info('approvedFee = '+approvedFee);
+        if (approvedFee != undefined && child.approvedFee != '') {
+          this.skipApprovedFeeValidation = true;
+          this.children[index].approvedFee = approvedFee;
+          index++;
+        } else if (approvedFee == undefined && child.approvedFee != '') {
+          this.children[index].approvedFee = approvedFee;
+        }
+      }*/
+    },
+    rulesApprovedFee(v) {
+      if (!this.skipApprovedFeeValidation) {
+        if (v == '' || v == undefined) {
+          return ['Approved full-time parent fee before fee reduction applied is required'];
+        } else if (v >= 9999) {
+          return ['Maximum Approved full-time parent fee before fee reduction applied is $9999.00'];
+        } else if (v <= 0) {
+          return ['Approved full-time parent fee before fee reduction applied must be greater than $0'];
+        }
       }
+      return [];
     },
-    // Event bus handler for invoking method on SearchFacility compont passing childsAgeCategory as parameter.
-    setApprovedParentFee(childsAgeCategory, childIndex) {
-      this.childIndex = childIndex;
-      eventBus.$emit('getApprovedParentFee', childsAgeCategory);
+    resetForm() {
+      this.$refs.form.inputs.forEach(input => {
+        if (input.id == '') {
+          input.reset();
+        }
+      });
+      this.$refs.form.resetErrorBag(); // necessary to remove validation errors after the field values are removed
     },
     validateParentFee(child, v) {
       if (v && v > 9999) {
@@ -723,11 +749,12 @@ export default {
       if (child.careSchedule == 'Full Time') {
         return true;
       }
-      var daysPerWeek = 0;
+      let daysPerWeek = 0;
       if (child.selectedCareType && child.selectedCareType.length > 0) {
-        for (var i = 0; i < child.selectedCareType.length; i++) {
-          if (child.selectedCareType[i] == 2)
+        for (let i = 0; i < child.selectedCareType.length; i++) {
+          if (child.selectedCareType[i] == 2) {
             daysPerWeek++;
+          }
         }
       }
       return daysPerWeek >= 5;
@@ -746,7 +773,7 @@ export default {
           }
         }
         else if (numberOfChildren < this.children.length) {
-          var numberOfChildrenToRemove = this.children.length - numberOfChildren;
+          let numberOfChildrenToRemove = this.children.length - numberOfChildren;
           for (let i = 1; i <= numberOfChildrenToRemove; i++) {
             this.children.pop();
           }
@@ -765,8 +792,8 @@ export default {
       };
     },
     getOccurrence(array, value) {
-      var count = 0;
-      for (var i = 0; i <= array.length; i++) {
+      let count = 0;
+      for (let i = 0; i <= array.length; i++) {
         if (array[i] == value) {
           count++;
         }
@@ -774,7 +801,7 @@ export default {
       return count;
     },
     getReductionFloor(reductionRate, daysFullTime, daysPartTime) {
-      var dailyRate = reductionRate / 20;
+      let dailyRate = reductionRate / 20;
       return (dailyRate * daysFullTime) + (dailyRate * daysPartTime / 2);
     },
     getFullTimeMonthlyParentFee(fee, feeFrequency) {
@@ -801,17 +828,17 @@ export default {
       console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
-    estimateTheBenefit() {
-      if (this.$refs.form.validate() == true) {
+    estimateTheBenefit() { //NOSONAR
+      if (this.$refs.form.validate()) {
         this.showEstimatorResults = true;
         this.results = [];
         let rateTableInfo = null;
         // Get the number of business days for the provided month...
         // const result = this.numberOfBusinessDaysByMonth.find(c => c.month === this.form.month);
-        // var numberOfDaysForMonth = result.days;
-        var numberOfDaysForMonth = 20; // hardcode to 20 as per new requirements
+        // let numberOfDaysForMonth = result.days;
+        let numberOfDaysForMonth = 20; // hardcode to 20 as per new requirements
         //for (child in this.form.children) {
-        for (var i = 0; i < this.children.length; i++) {
+        for (let i = 0; i < this.children.length; i++) {
           // Get the rate table info based on the provided type of child care and childs age category...
           if (this.form.typeOfCare === 'Licensed Group') {
             rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
@@ -820,8 +847,8 @@ export default {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
           // Determine daily rate before fee reduction based on frequency of fee...
-          var parentRate;
-          var isChildFullTime = this.isFullTime(this.children[i]);
+          let parentRate;
+          let isChildFullTime = this.isFullTime(this.children[i]);
           if (isChildFullTime && this.children[i].partTimeFee && (+this.children[i].partTimeFee < +this.children[i].approvedFee)) {
             //If child is full time and parent fee is less than approved fee, use the parent fee
             parentRate = this.children[i].partTimeFee;
@@ -829,7 +856,7 @@ export default {
           else {
             parentRate = this.children[i].approvedFee;
           }
-          var dailyRate;
+          let dailyRate;
           switch (this.children[i].parentFeeFrequency) {
           case 'Daily':
             dailyRate = parentRate;
@@ -875,7 +902,7 @@ export default {
             let partTimeNumberOfDays = 0;
             let fullTimeNumberOfDays = 0;
             // Determine number of part time and full time days entered in the parttime care schedule component...
-            for (var j = 0; j < this.children[i].selectedCareType.length; j++) {
+            for (let j = 0; j < this.children[i].selectedCareType.length; j++) {
               if (this.children[i].selectedCareType[j] == 1) {
                 partTimeNumberOfDays = partTimeNumberOfDays + 1;
               }
@@ -926,7 +953,7 @@ export default {
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             }
             else {
-              //parent fee above fee floor, rate reduction above rate floor
+              // parent fee above fee floor, rate reduction above rate floor
               // console.log('else');
               // console.log('Rate floor: ' + rateReductionFloor);
               // console.log('Fee floor: ' + partTimeFeeFloor);
@@ -970,12 +997,71 @@ export default {
       if (this.children[index].partTimeFee.length != 0 && this.children[index].partTimeFee.length > 1) {
         this.children[index].partTimeFee = this.children[index].partTimeFee.replace(/^0+/, '');
       }
+    },
+    /* When a faclity is selected, the following will remove any child age category types from the
+       drop list which do not have defined rates for the faclity. */
+    filterChildsAgeCategory() {
+      this.childAgeCategoryList = this.getChildAgeCategoryList();
+      if (this.selectedFacility.approvedFeesByChildAgeCategory != undefined) {
+        for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
+          if (this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJan == null) {
+            let removeItem = this.selectedFacility.approvedFeesByChildAgeCategory[i].childCareCategory;
+            this.childAgeCategoryList = this.childAgeCategoryList.filter(function(e) { return e !== removeItem;});
+          }
+        }
+      }
+    },
+    getApprovedParentFee: function(childAgeCategory) {
+      // Iterate thorugh the payload returned from FacilitySearch component, to determine the next
+      // months approved fee baed on the type of child care selected.
+      for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
+        if (this.selectedFacility.approvedFeesByChildAgeCategory[i].childCareCategory == childAgeCategory) {
+          // Set the approved parent fee by determining the next calendar month (as a numeric value)
+          // and match it with the payloads equivalent months approved fee.
+          const nextMonth = new Date().getMonth() + 2;
+          switch (nextMonth) {
+          case 1:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJan;
+          case 2:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeFeb;
+          case 3:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeMar;
+          case 4:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeApr;
+          case 5:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeMay;
+          case 6:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJun;
+          case 7:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJul;
+          case 8:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeAug;
+          case 9:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeSep;
+          case 10:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeOct;
+          case 11:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeNov;
+          case 12:
+            return this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeDec;
+          }
+        }
+      }
+    },
+    getChildAgeCategoryList: function() {
+      return ['0 - 18 Months',
+        '18 - 36 Months',
+        '3 Years to Kindergarten',
+        'Before & After School (Kindergarten Only)'];
     }
   },
   mounted() {
     this.children = [
       this.newChild(1)
     ];
+
+    this.childAgeCategoryList = this.getChildAgeCategoryList();
+
     this.results = [];
     this.GROUP_REDUCTION_RATES = new Map();
     this.GROUP_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 900, fullTime19: 47.3684, fullTime20: 45, partTime19: 23.6842, partTime20: 22.5, rateFloor: 350 });
@@ -987,7 +1073,13 @@ export default {
     this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30, partTime19: 15.7895, partTime20: 15, rateFloor: 200 });
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25, partTime19: 13.1579, partTime20: 12.5, rateFloor: 60 });
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16, partTime19: 8.4211, partTime20: 8, rateFloor: 60 });
+
+    
+
   },
+  updated() {
+    this.skipApprovedFeeValidation = false;
+  }
 };
 </script>
 
