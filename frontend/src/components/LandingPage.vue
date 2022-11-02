@@ -164,7 +164,7 @@ export default {
       }
     },
     startApplicationClicked() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.orgInfo);
     }
     
   },
