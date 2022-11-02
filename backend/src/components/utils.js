@@ -129,24 +129,6 @@ async function getData(token, url, correlationID) {
   }
 }
 
-//this should get the business guid from the sesion, and then call Get User Profile to supply the needed data to the dashboard. 
-async function getUserProfile(businessGuid) {
-  
-  try {
-    log.info(businessGuid);
-    log.info('^^^ from utils get user profile');
-    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
-    log.info('get PROFILE DATE Url IS', url);
-    const response = await axios.get(url, getHttpHeader());
-    //logResponse('getUserProfile resp in UTILS is:', response);
-    //log.info(response.data);
-    return response.data;
-  } catch (e) {
-    log.error('getUserProfile Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
-  }
-}
-
 async function getOperation(operation) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
@@ -438,7 +420,6 @@ const utils = {
   getDataWithParams,
   getOperationWithObjectId,
   getOperation,
-  getUserProfile,
   postOperation,
   patchOperationWithObjectId,
   getData,

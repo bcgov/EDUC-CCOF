@@ -1,13 +1,28 @@
 'use strict';
-const {getSessionUser, getUserProfile} = require('./utils');
+const {getSessionUser, getHttpHeader} = require('./utils');
+const config = require('../config/index');
+const ApiError = require('./error');
+const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
 const _ = require ('lodash');
-const { info } = require('../components/logger');
-const e = require('express');
-
 
 async function getUserInfo(req, res) {
+
+  let resData = {
+    displayName: null,
+    businessGuid: null,
+    userName: null,
+    organizationName: null,
+    organizationId:  null,
+    applicationStatus: null,
+    //TODO: ApplicatioStatus and unreadMessages are hardcoded. Remove this with API values when built out!
+    unreadMessages: true, 
+    facilityList: [],
+  };
+
+
   const userInfo = getSessionUser(req);
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -15,10 +30,7 @@ async function getUserInfo(req, res) {
     });
   }
 
-  
-  /* applicationStatus: NOT STARTED, DRAFT, SUBMITTED, APPROVED */
-
-  
+  //TODO: Rob to clean this up.
   let displayName = req.session.passport.user.displayName;
   if (!displayName) {
     displayName = req.session.passport.user._json.display_name;
@@ -29,135 +41,60 @@ async function getUserInfo(req, res) {
   }
   let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
   if (!businessGuid) {
-    businessGuid = 'IDIR_' + req.session?.passport?.user?._json?.idir_user_guid;
+    businessGuid = req.session?.passport?.user?._json?.idir_user_guid;
   }
 
-  //TODO: ApplicatioStatus and unreadMessages are hardcoded. Remove this with API values when built out!
-  const  facilityArr = await getFacilityArray(businessGuid);
+  resData.displayName = displayName;
+  resData.businessGuid = businessGuid;
+  resData.userName = userName;
 
-  log.info(facilityArr[0].statusCode);
-  //log.info(facilityArr[0].organizationName);
-  //log.info(facilityArr[0].organizationId);
+  //TODO: Use local variable businessGuid when users have been set up.
+  const userResponse = await getUserProfile('bb1defdf-7f9a-429f-be84-7668bd9e00ad');
 
-
-  let orgName;
-  let orgID;
-  let appStatusCode = 'NOT STARTED';
-
-  if (facilityArr[0] === undefined){
-    orgName = 'NO ORG FOUND';
-    orgID = 'NO ORG FOUND';
+  // If no data back, then no associated Organization/Facilities, return empty orgination data
+  if (userResponse[0] === undefined){
+    return res.status(HttpStatus.OK).json(resData);
   }
-  else {
-    orgName = facilityArr[0].organizationName;
-    orgID = facilityArr[0].organizationId;
-  }
+
+  //Organization is not normalized, grab organization info from the first element
+  resData.organizationName  = userResponse[0]['Organization.name'];
+  resData.organizationId  = userResponse[0]['BCeID.ccof_userid'];
+  resData.applicationStatus  = APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+
+  let facilityArr = userResponse.map(item => {
+    return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
+  });
+  facilityArr.map( item => {
+    item.ccfriStatus = CCFRI_STATUS_CODES[item.ccfriStatus];
+    item.eceweStatus = ECEWE_STATUS_CODES[item.eceweStatus];
+    return item;
+  });
+  resData.facilityList = facilityArr;
   
-  facilityArr[0].statusCode = 100000001;
-
-  switch(facilityArr[0].statusCode) {
-
-  case 100000001:
-    appStatusCode = 'APPROVED';
-    break;
-
-  case 100000002:
-    //TO DO: complete when status codes are known, here and below are just assumptions to the actual codes
-    appStatusCode = 'DRAFT';
-    break;
-
-  case 100000003:
-    //TO DO: complete when status codes are known, here and below are just assumptions to the actual codes
-    appStatusCode = 'SUBMITTED';
-    break;
-
-  default:
-    appStatusCode = 'NOT STARTED';
-
-  }
-
-  //unread messages should be replaced later at some point
-  let resData = {
-    displayName: displayName,
-    businessGuid: businessGuid,
-    userName: userName,
-    organizationName: orgName,
-    organizationId:  orgID,
-    applicationStatus: appStatusCode,
-    unreadMessages: true,
-    facilityList: facilityArr,
-    
-  };
   return res.status(HttpStatus.OK).json(resData);
 }
 
-
-//mapping of front end values to ugly backend values goes here 
-
-//i think BCeID.ccof_userid is the right GUID to use? But i'm not 100 percent sure -- follow up on this 
-
-//application status is not yet implemented in the Dynamics -- so that will change 
-//
-
-
 const GetUserProfileKeyMap = {
-  'Organization.name':   'organizationName',
-  'BCeID.ccof_userid': 'organizationId',
-  'Application.statuscode' : 'statusCode',
   'CCOF.ccof_facility' : 'facilityId',
+  'CCOF.Facility.name' : 'facilityName',
   'CCFRI.statuscode' : 'ccfriStatus',
   'ECEWE.statuscode' : 'eceweStatus',
 };
 
 
-//JB - this was the old endpoint I created while testing. Just left here for now in case we need to add another one. 
-// async function getProfile(req, res) {
-//   try {
-//     
-
-//     // //return res.status(HttpStatus.OK).json(x);
-//     // return res.status(HttpStatus.OK).json(getFacilityArray(bGuid));
-    
-//   }
-    
-//   catch (e) {
-//     log.info('broke in user component');
-//     log.info(e);
-//     return res.status(555).json(e.data? e.data : e?.status );
-//   }
-// }
-
-
-async function getFacilityArray(businessGuid) {
+async function getUserProfile(businessGuid) {
+  
   try {
-    
-
-    let bGuid = 'bb1defdf-7f9a-429f-be84-7668bd9e00ad'; //TODO: remove this and use the session GUID
-    //}
-
-    let currentUserProfile = await getUserProfile(bGuid);
-
-    log.info (currentUserProfile);
-
-    let x = currentUserProfile.map(item => {
-      return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
-    });
-
-
-    //TODO: remove the line below. API is just returning improper (repeating) data with duplicate keys, giving me a ton of errors
-    //in the front end.
-    // x = x.slice(0,2);
-    return(x);
-    
-  }
-  catch (e) {
-    log.info('broke in user component arr builder');
-    log.info(e);
+    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
+    log.verbose('UserProfile Url is', url);
+    const response = await axios.get(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error('getUserProfile Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
-
 module.exports = {
   getUserInfo,
-  // getProfile
 };
