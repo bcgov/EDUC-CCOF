@@ -108,7 +108,7 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 
 export default {
@@ -177,17 +177,22 @@ export default {
       get() { return this.$store.state.organization.organizationType; },
       set(value) { this.$store.commit('organization/setOrganizationType', value); }
     },
+    isValidForm: { 
+      get () { return this.$store.state.organization.isValidForm; }, 
+      set (value) { this.$store.commit('organization/setIsValidForm', value); }
+    },    
   },
   mixins: [alertMixin],
   data() {
     return {
-      isValidForm: true,
       rules,
       processing: false,
     };
   },
   mounted() {
     this.businessId = this.userInfo.userName;
+    this.$store.commit('organization/setIsStarted', true);
+
   },
   methods: {
     ...mapActions('organization', ['saveOrganization']),

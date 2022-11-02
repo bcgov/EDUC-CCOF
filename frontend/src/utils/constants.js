@@ -22,7 +22,8 @@ export const AuthRoutes = Object.freeze(object);
 export const ApiRoutes = Object.freeze({
   USER: baseRoot + '/user',
   LOOKUP: baseRoot + '/config/lookup',
-  ORGANIZATION: baseRoot + '/organization'
+  ORGANIZATION: baseRoot + '/organization',
+  FACILITY: baseRoot + '/facility'
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -39,6 +40,12 @@ export const PATHS = {
   facInfo: '/ccof-application/group/facility-information',
   fundAmount: '/ccof-application/group/funding-amount',
   confirmation: '/ccof-application/group/confirmation'
+};
+
+export const NAV_BAR_GROUPS = {
+  CCOF: 'CCOF',
+  CCFRI: 'CCFRI',
+  ECEWE: 'ECE-WE'
 };
 
 

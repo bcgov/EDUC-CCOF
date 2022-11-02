@@ -4,6 +4,8 @@ export default {
   namespaced: true,
   state: {
     pageTitle: null,
+    showNavBar: false,
+    navBarGroup: '',
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -11,15 +13,15 @@ export default {
     childCareCategoryList: [],
     organizationTypeList: []
   },
-  getters: {
-    programYearList: state => state.programYearList,
-    childCareCategoryList: state => state.childCareCategoryList,
-    organizationTypeList: state => state.organizationTypeList,
-
-  },
   mutations: {
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
+    },
+    setShowNavBar: (state, showNavBar) => {
+      state.showNavBar = showNavBar;
+    },
+    setNavBarGroup: (state, navBarGroup) => {
+      state.navBarGroup = navBarGroup;
     },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
@@ -45,8 +47,8 @@ export default {
 
   },
   actions: {
-    async getLookupInfo({commit}){
-      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+    async getLookupInfo({ commit }) {
+      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const lookupInfo = await ApiService.getLookupInfo();
         commit('setProgramYearList', lookupInfo.data?.programYear);
         commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
