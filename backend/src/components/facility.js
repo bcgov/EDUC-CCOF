@@ -41,14 +41,10 @@ const PostFacilityKeyMap = {
 async function getFacility(req, res) {
   try {
     let facility = await getOperationWithObjectId('accounts', req.params.facilityId);
-    if (100000001 != facility?.ccof_accounttype) {
-      return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
-    }
-    log.info('before is:');
-    log.info(facility);
-    log.info('facility is');
-
-    
+    // TODO: confirm with Dynamics team on account type
+    // if (100000001 != facility?.ccof_accounttype) {
+    //   return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
+    // }
     facility = _(facility).pick(Object.keys(GetFacilityKeyMap)).mapKeys((value,key) => {return GetFacilityKeyMap[key];});
     log.info(facility);
     return res.status(HttpStatus.OK).json(facility);
