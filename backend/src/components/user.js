@@ -48,8 +48,7 @@ async function getUserInfo(req, res) {
   resData.businessGuid = businessGuid;
   resData.userName = userName;
 
-  //TODO: Use local variable businessGuid when users have been set up.
-  const userResponse = await getUserProfile('bb1defdf-7f9a-429f-be84-7668bd9e00ad');
+  const userResponse = await getUserProfile(businessGuid);
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
