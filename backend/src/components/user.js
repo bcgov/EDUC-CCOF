@@ -49,8 +49,47 @@ async function getUserInfo(req, res) {
   resData.userName = userName;
 
   //TODO: change this before git commiting!
-  const userResponse = await getUserProfile(businessGuid);
+  //const userResponse = await getUserProfile(businessGuid);
+  const userResponse = [
+    {
+      'Organization.name' : "Test Org 1",
+      'BCeID.ccof_userid' : "123-bbbb-cccc",
+      'Application.statuscode' : 100000001 ,
+      'CCOF.ccof_facility' : '123456',
+      'CCOF.Facility.name' : 'Best Daycare 1',
+      'CCFRI.statuscode' : 1,
+      'ECEWE.statuscode' : 1,
 
+    },
+    {
+      'Organization.name' : "Test Org 1",
+      'BCeID.ccof_userid' : "123-bbbb-cccc",
+      'Application.statuscode' : 100000001 ,
+      'CCOF.ccof_facility' : '987352723',
+      'CCOF.Facility.name' : 'Wee lil happy babiez',
+      'CCFRI.statuscode' : 2,
+      'ECEWE.statuscode' : 1,
+    },
+    {
+      'Organization.name' : "Test Org 1",
+      'BCeID.ccof_userid' : "123-bbbb-cccc",
+      'Application.statuscode' : 100000001 ,
+      'CCOF.ccof_facility' : '1232464456',
+      'CCOF.Facility.name' : 'Best Daycare 2',
+      'CCFRI.statuscode' : 1,
+      'ECEWE.statuscode' : 1,
+
+    },
+    {
+      'Organization.name' : "Test Org 1",
+      'BCeID.ccof_userid' : "123-bbbb-cccc",
+      'Application.statuscode' : 100000001 ,
+      'CCOF.ccof_facility' : '987353422723',
+      'CCOF.Facility.name' : 'Wee lil happy kidoz',
+      'CCFRI.statuscode' : 2,
+      'ECEWE.statuscode' : 1,
+    }
+  ];   
   
 
 

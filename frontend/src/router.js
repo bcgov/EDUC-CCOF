@@ -22,7 +22,7 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
-import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
+import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 
 import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';

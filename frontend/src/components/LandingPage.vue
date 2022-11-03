@@ -11,6 +11,10 @@
     </v-row >
     <v-row>
       <v-divider class="mx-16"/>
+
+
+      <v-btn color="info" outlined x-large @click="goToCCFRI()">
+          CCFRI</v-btn>
     </v-row>
 
      <!-- Application Approved screens starts here -->
@@ -108,8 +112,6 @@ import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 
-import SnackBar from '@/components/util/SnackBar';
-
 export default {
   name: 'LandingPage',
   props: {
@@ -161,22 +163,25 @@ export default {
     
   },
   methods: {
-    async getUserProfile () {
-      console.log('clicked');
-      try {
-        this.results = ( await ApiService.apiAxios.get('/api/user/'));
-        console.log('RESULTS are:  = '+ this.results);
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    // async getUserProfile () {
+    //   console.log('clicked');
+    //   try {
+    //     this.results = ( await ApiService.apiAxios.get('/api/user/'));
+    //     console.log('RESULTS are:  = '+ this.results);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //},
     startApplicationClicked() {
       this.$router.push(PATHS.orgInfo);
-    }
+    },
+    goToCCFRI() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },
     
   },
   
-  components: { SmallCard, MessagesToolbar, SnackBar}
+  components: { SmallCard, MessagesToolbar}
 };
 </script>
 

@@ -18,40 +18,43 @@
         
       </v-row> -->
 
-        <!-- <LargeButtonContainer>
-            <v-list-item v-for="({facilityName, facilityId}) in chosenOrg" :key="facilityId">
-                <LargeBlueButton >{{facilityName}}</LargeBlueButton>
-            </v-list-item>
-        </LargeButtonContainer>    -->
-
-
         <!-- v-if="!showOptStatus[index]" -->
-
+        <p> {{showOptStatus}}</p>
         <LargeButtonContainer>
-        <v-card elevation="4" class="pa-2 mx-auto my-10 rounded-lg col-12"
+          <v-card v-if=" !userInfo.facilityList">
+          </v-card>
+
+        
+        <v-card elevation="4" class="pa-2 mx-2 my-10 rounded-lg col-12"
         rounded
         tiled
         
         exact tile
         :ripple="false"
+        v-else
         v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in userInfo.facilityList" :key="facilityId">
         <v-card-text>
           <v-row>
             <v-col cols="" class="col-12 col-md-8">
-            <p class="text--primary"> Facility ID: {{facilityId}}</p>
-            <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
-            <p class="text--primary"> Licence : 123456789</p>
-            <!-- <p>{{showOptStatus}}</p> -->
+              <p class="text--primary"> Facility ID: {{facilityId}}</p>
+              <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
+              <p class="text--primary"> Licence : 123456789</p>
             </v-col>
-            <v-col cols="" class="d-flex align-center col-12 col-md-4">
-              <p class="text--primary" >Status: Opt-IN CCFRI</p>
-              <!-- <v-btn
-               @click="showOptStatus[index] = true"
-               :showOptStatus = "showOptStatus[index]"
-               > UPDATE</v-btn> -->
+            <v-col cols="" class="d-flex align-center col-12 col-md-4"
+              v-if="!showOptStatus[index]"
+            >
+              <p class="text--primary" >Status: {{ccfriStatus}}</p>
+              <br>
+              <v-btn
+               @click="toggle(index)"
+               :showOptStatus = "showOptStatus[index]" 
+               > 
+                UPDATE
+              </v-btn>
             </v-col>
-            <v-col cols="" class="d-flex align-center col-12 col-md-4">
-              <!-- <p>hi:{{showOptStatus[index]}}</p> -->
+            <v-col v-else cols="" class="d-flex align-center col-12 col-md-4"
+            >
+            <p class="text--primary" >Status: {{ccfriStatus}}</p>
               <v-radio-group
                 required
                 row
@@ -71,6 +74,7 @@
             
         </v-card-text>
       </v-card>
+      {{ccfriOptInOrOut}}
         </LargeButtonContainer>
 
         <!-- TODO: Facility A to be replaced with a ref to current facility title -->
@@ -148,16 +152,21 @@ export default {
       //TODO: This is hardcoom a chosen org from an earlier screen.
       return this.userInfo;
     },
+    
     // allFacilities(){
     //   return this.chosenOrg.facilityList;
     // }
   },
-  mounted: function() {
+  beforeMount: function() {
     this.showOptStatus = new Array(this.userInfo.facilityList.length).fill(false);
   },
   methods: {
     toggle(index) {
-      this.showOptStatus[index] = this.showOptStatus[index] ? false : true;
+      console.log('hi!');
+      console.log(this.showOptStatus);
+      this.$set(this.showOptStatus, index, true);
+      //this.showOptStatus[index] = true;
+    
     },
     previous() {
       this.$router.push(PATHS.orgInfo); //TODO: change this, from CCOF page
