@@ -12,7 +12,11 @@ const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
 const cache = require('memory-cache');
+
+
+//const {getUserInfo} = require('./user.js');
 let memCache = new cache.Cache();
+
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'EDUC-CCOF';
@@ -130,7 +134,7 @@ async function getOperation(operation) {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
     log.info('get Data Url', url);
     const response = await axios.get(url, getHttpHeader());
-    logResponse('getOperation', response);
+    //logResponse('getOperation', response);
     return response.data;
   } catch (e) {
     log.error('getOperation Error', e.response ? e.response.status : e.message);
