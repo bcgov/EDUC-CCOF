@@ -87,11 +87,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/ccrfiEstimatorSliderSelect',
-      name: 'ccrfiEstimatorSliderSelect',
-      component: CcrfiEstimatorSliderSelect
-    },
-    {
       path: PATHS.estimator,
       name: 'ccfri-estimator',
       component: CcfriEstimator,

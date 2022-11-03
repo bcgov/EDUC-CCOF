@@ -190,7 +190,7 @@ export default {
 
   .estimator-label {
     color: #7B7C7E;
-  font-family: BCSans;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   font-weight: 600;
   font-size: 16px
 }
