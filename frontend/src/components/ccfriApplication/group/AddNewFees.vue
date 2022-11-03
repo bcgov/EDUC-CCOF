@@ -1,6 +1,6 @@
 <template>
   <!--TODO: add in isValidForm ruleset-->
-  <v-form ref="ccfriform" v-model="z">
+  <v-form ref="ccfriform" v-model="isValidForm">
     <v-container>
 
     <!--Start previous year fees-->
@@ -121,7 +121,7 @@
             </v-col>
             <v-col
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildMar" label="March" prefix="$" />
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeMar" label="March" prefix="$" />
             </v-col>
           </v-row>
 
@@ -144,19 +144,19 @@
             </v-col>
             <v-col
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildWed" label="Wednesday" prefix="$" />
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeWed" label="Wednesday" prefix="$" />
             </v-col>
             <v-col
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildThu" label="Thursday" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeThu" label="Thursday" prefix="$"/>
             </v-col>
             <v-col 
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFri" label="Friday" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeFri" label="Friday" prefix="$"/>
             </v-col >
             <v-col 
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildSat" label="Saturday" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeSat" label="Saturday" prefix="$"/>
             </v-col >
             <v-col
               class="col-6 col-md-2">
@@ -258,7 +258,7 @@
               </v-col >
               <v-col 
                 class="col-6 col-md-2">
-                <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousOlderChildFeeJune" label="June" prefix="$"/>
+                <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousOlderChildFeeJun" label="June" prefix="$"/>
               </v-col >
               <v-col
                 class="col-6 col-md-2">
@@ -476,7 +476,7 @@
             </v-col>
             <v-col
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildMar" label="March" prefix="$" />
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFeeMar" label="March" prefix="$" />
             </v-col>
           </v-row>
 
@@ -506,22 +506,22 @@
             </v-col>
             <v-col
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildWed" label="Wednesday" prefix="$" />
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFeeWed" label="Wednesday" prefix="$" />
             </v-col>
             <v-col
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildThu" label="Thursday" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFeeThu" label="Thursday" prefix="$"/>
             </v-col>
             <v-col 
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFri" label="Friday" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFeeFri" label="Friday" prefix="$"/>
             </v-col >
             <!-- </v-row>
             
             <v-row> -->
             <v-col 
               class="col-6 col-md-2">
-              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildSat" label="Saturday" prefix="$"/>
+              <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentYoungerChildFeeSat" label="Saturday" prefix="$"/>
             </v-col >
             <v-col
               class="col-6 col-md-2">
@@ -630,7 +630,7 @@
               </v-col >
               <v-col 
                 class="col-6 col-md-2">
-                <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentOlderChildFeeJune" label="June" prefix="$"/>
+                <v-text-field type="number" outlined :rules="feeRules"  v-model.number="currentOlderChildFeeJun" label="June" prefix="$"/>
               </v-col >
               <v-col
                 class="col-6 col-md-2">
@@ -762,7 +762,7 @@
           ></v-radio>
         </v-radio-group>
 
-        <v-row v-if = "closureFees === 'Yes'" justify="">
+        <v-row v-if = "closureFees === 'Yes'">
       
         <v-col class="col-md-4 col-12">
         <v-menu  v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
@@ -849,13 +849,21 @@
       </v-card-text>
     </v-card>
 
+      <v-row justify="space-around">
+        <v-btn color="info" outlined x-large @click="previous()">
+          Back</v-btn>
+          <!--add form logic here to disable/enable button-->
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
+        <v-btn color="primary" outlined x-large>
+          Save</v-btn>
+      </v-row>
     </v-container>
   </v-form>
 </template>
 <script>
 import rules from '@/utils/rules';
-
-//TODO: why does my number validation not work :( 
+import { PATHS } from '@/utils/constants';
+ 
 export default {
   props: {
     currentYear: {
@@ -867,7 +875,9 @@ export default {
   data() {
     return {
       rules,
+      isValidForm : undefined,
       datePicker: null,
+      calendarMenu: undefined,
       dates: [],
       closureFees: undefined,
       closureReason: undefined,
@@ -994,7 +1004,13 @@ export default {
       const indexOfItemToRemove = this.dates.findIndex((obj) => obj.id === removedId);
       this.dates.splice(indexOfItemToRemove,1);
       console.log(this.dates);
-    }
+    },
+    previous() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },
+    next() {
+      this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
+    },
   }
 };
 </script>

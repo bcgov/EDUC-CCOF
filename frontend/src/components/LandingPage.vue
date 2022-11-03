@@ -110,7 +110,6 @@ import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
-import ApiService from '@/common/apiService';
 
 export default {
   name: 'LandingPage',

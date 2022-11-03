@@ -23,6 +23,7 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
+import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
 
 import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
@@ -150,7 +151,9 @@ const router = new VueRouter({
       name: 'ccfri-home',
       component: CcfriEceLandingPage,
       meta: {
-        pageTitle: 'CCFRI Home'
+        pageTitle: 'CCFRI Home',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
       }
     },
     {
@@ -159,6 +162,14 @@ const router = new VueRouter({
       component: AddNewFees,
       meta: {
         pageTitle: 'CCFRI Add New Fees'
+      }
+    },
+    {
+      path: PATHS.ccfriRequestMoreInfo,
+      name: 'ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info'
       }
     },
     {

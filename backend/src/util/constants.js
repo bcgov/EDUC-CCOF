@@ -141,6 +141,7 @@ const APPLICATION_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
+  '0': 'NOT STARTED',
   '1': 'APPROVED',
   '2': 'DRAFT',
   '3': 'SUBMITTED'
