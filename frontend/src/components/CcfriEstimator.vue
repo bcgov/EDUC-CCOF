@@ -1358,11 +1358,11 @@ span.banner-title {
   left: 45px;
   color: white;
   font-size: 24px;
-  font-family: "BCSans";
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
 .v-input, .v-select-list {
   font-size: 16px !important;
-  font-family: "BCSans" !important;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
 div.v-select__selection.v-select__selection--comma {
   line-height:20px !important
@@ -1374,7 +1374,7 @@ div.v-select__selection.v-select__selection--comma {
   padding-left: 34px;
   padding-top: 20px;
   color: #7B7C7E;
-  font-family: BCSans;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   font-weight: 600;
   font-size: 16px
 }
@@ -1382,7 +1382,7 @@ div.v-select__selection.v-select__selection--comma {
   font-size: 14px !important;
   color: #39598A;
   font-weight: 600;
-  font-family: "BCSans" !important;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
 .v-list-item__title {
   font-size: 14px !important;
