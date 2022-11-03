@@ -24,6 +24,7 @@ import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
 
+import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
 import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import FundAmount from '@/components/ccofApplication/group/FundAmount';
@@ -91,6 +92,14 @@ const router = new VueRouter({
       component: CcfriEstimator,
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator
+      }
+    },
+    {
+      path: PATHS.selectApplicationType,
+      name: 'Select CCOF Application Type',
+      component: CcofApplicationTypeSelector,
+      meta: {
+        requiresAuth: true,
       }
     },
     {

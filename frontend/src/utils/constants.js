@@ -14,7 +14,6 @@ object = {
   TOKEN: authRoot + '/token',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
   ORGANIZATION: baseRoot + 'organization'
-  
 };
 //Authentication endpoints
 export const AuthRoutes = Object.freeze(object);
@@ -27,8 +26,8 @@ export const ApiRoutes = Object.freeze({
 });
 
 export const PAGE_TITLES = Object.freeze({
-  FACILITY_SELECTION:'Facility Selection',
-  LOGIN:'Login',
+  FACILITY_SELECTION: 'Facility Selection',
+  LOGIN: 'Login',
   FRI_CALCULATOR: 'Fee Reduction Calculator',
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
@@ -43,7 +42,8 @@ export const PATHS = {
   fundAmount: '/ccof-application/group/funding-amount',
   confirmation: '/ccof-application/group/confirmation',
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
-  addNewFees: '/ccfriApplication/group/add-new-fees', 
+  addNewFees: '/ccfriApplication/group/add-new-fees',
+  selectApplicationType: '/ccof-application/select-application-type'
 };
 
 export const NAV_BAR_GROUPS = {

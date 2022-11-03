@@ -21,7 +21,7 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === null" :to="paphs.startApplication">Start Application</v-btn>
               <v-btn absolute bottom class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
               <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
@@ -108,8 +108,6 @@ import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 
-import SnackBar from '@/components/util/SnackBar';
-
 export default {
   name: 'LandingPage',
   props: {
@@ -121,7 +119,10 @@ export default {
   },
   data() {
     return {
-      input : '',
+      input: '',
+      paphs: {
+        startApplication:PATHS.selectApplicationType
+      },
       results : {},
       
     };
@@ -170,13 +171,9 @@ export default {
         console.log(error);
       }
     },
-    startApplicationClicked() {
-      this.$router.push(PATHS.orgInfo);
-    }
-    
   },
   
-  components: { SmallCard, MessagesToolbar, SnackBar}
+  components: { SmallCard, MessagesToolbar}
 };
 </script>
 
