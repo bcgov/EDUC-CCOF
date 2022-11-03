@@ -111,11 +111,8 @@
 
 
 import { mapGetters} from 'vuex';
-import SmallCard from '../../guiComponents/SmallCard.vue';
 import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import ExistingFacilityFees from './ExistingFacilityFees.vue';
-import RequestForInfo from './RequestForInfo.vue';
 import { PATHS } from '@/utils/constants';
 
 export default {
@@ -173,7 +170,7 @@ export default {
       this.loadFacility(x);
     }
   },
-  components: { SmallCard, MessagesToolbar, LargeButtonContainer,  ExistingFacilityFees,RequestForInfo }
+  components: { MessagesToolbar, LargeButtonContainer,  }
 };
 </script>
 

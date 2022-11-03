@@ -73,7 +73,7 @@
           tiled
           exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in filteredList" :key="facilityId"
+          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus}  ) in filteredList" :key="facilityId"
           
           >
             <v-card-text>
