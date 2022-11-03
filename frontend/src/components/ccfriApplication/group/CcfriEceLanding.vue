@@ -4,7 +4,7 @@
             <MessagesToolbar></MessagesToolbar>
         </div>
         <br><br>
-        <v-row justify="space-around">
+        <!-- <v-row justify="space-around">
         
           <SmallCard title="Add a New Facility to my Organization" disabled="true">
               <br>
@@ -16,7 +16,7 @@
               <a href="#">LINK</a><br>
           </SmallCard>
         
-      </v-row>
+      </v-row> -->
 
         <!-- <LargeButtonContainer>
             <v-list-item v-for="({facilityName, facilityId}) in chosenOrg" :key="facilityId">
@@ -25,6 +25,7 @@
         </LargeButtonContainer>    -->
 
 
+        <!-- v-if="!showOptStatus[index]" -->
 
         <LargeButtonContainer>
         <v-card elevation="4" class="pa-2 mx-auto my-10 rounded-lg col-12"
@@ -33,19 +34,24 @@
         
         exact tile
         :ripple="false"
-        v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in allFacilities" :key="facilityId">
+        v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in userInfo.facilityList" :key="facilityId">
         <v-card-text>
           <v-row>
             <v-col cols="" class="col-12 col-md-8">
             <p class="text--primary"> Facility ID: {{facilityId}}</p>
-            <p class="text--primary "><strong> Facility Name : ABC daycare Time {{facilityName}}</strong></p>
+            <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
             <p class="text--primary"> Licence : 123456789</p>
+            <!-- <p>{{showOptStatus}}</p> -->
             </v-col>
-            <v-col v-if="showOptStatus[index]" cols="" class="d-flex align-center col-12 col-md-4">
+            <v-col cols="" class="d-flex align-center col-12 col-md-4">
               <p class="text--primary" >Status: Opt-IN CCFRI</p>
-              <v-btn @click="toggle(index)"> UPDATE</v-btn>
+              <!-- <v-btn
+               @click="showOptStatus[index] = true"
+               :showOptStatus = "showOptStatus[index]"
+               > UPDATE</v-btn> -->
             </v-col>
-            <v-col  v-else cols="" class="d-flex align-center col-12 col-md-4">
+            <v-col cols="" class="d-flex align-center col-12 col-md-4">
+              <!-- <p>hi:{{showOptStatus[index]}}</p> -->
               <v-radio-group
                 required
                 row
@@ -87,20 +93,15 @@
 
        <!-- <RequestForInfo></RequestForInfo> -->
 
-        
-          <AddNewFees></AddNewFees>
-        
 
-
-          <!-- <LargeCard title="hi" :class="{'blueBorder':true}">
-            hi
-          </LargeCard> -->
-
-          
-
-        <v-btn>
-          Back
-        </v-btn>
+          <v-row justify="space-around">
+        <v-btn color="info" outlined x-large @click="previous()">
+          Back</v-btn>
+          <!--add form logic here to disable/enable button-->
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
+        <v-btn color="primary" outlined x-large>
+          Save</v-btn>
+      </v-row>
 
 
     </v-container>
@@ -110,22 +111,18 @@
 
 
 import { mapGetters} from 'vuex';
-import SmallCard from '../../guiComponents/SmallCard.vue';
 import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
-import LargeBlueButton from '../../guiComponents/LargeBlueButton.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import LargeCard from '../../guiComponents/LargeCard.vue';
-import ExistingFacilityFees from './ExistingFacilityFees.vue';
-import AddNewFees from './AddNewFees.vue';
-import RequestForInfo from './RequestForInfo.vue';
+import { PATHS } from '@/utils/constants';
 
 export default {
   name: 'CcfriLandingPage',
   data() {
     return {
       input : '',
-      showOptStatus : [true,true],
-      ccfriOptInOrOut : [],
+      showOptStatus : '',
+      isValidForm: undefined,
+      ccfriOptInOrOut : {},
       feeList : [
         {
           date: 'Jan 2022',
@@ -148,19 +145,32 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     chosenOrg(){
-      //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
+      //TODO: This is hardcoom a chosen org from an earlier screen.
       return this.userInfo;
     },
-    allFacilities(){
-      return this.chosenOrg.facilityList;
-    }
+    // allFacilities(){
+    //   return this.chosenOrg.facilityList;
+    // }
+  },
+  mounted: function() {
+    this.showOptStatus = new Array(this.userInfo.facilityList.length).fill(false);
   },
   methods: {
     toggle(index) {
       this.showOptStatus[index] = this.showOptStatus[index] ? false : true;
     },
+    previous() {
+      this.$router.push(PATHS.orgInfo); //TODO: change this, from CCOF page
+    },
+    next() {
+      this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+    },
+    refreshWithFacility() {
+      let x = this.$route.params.urlFacilityId;
+      this.loadFacility(x);
+    }
   },
-  components: { SmallCard, MessagesToolbar, LargeBlueButton, LargeButtonContainer, LargeCard, ExistingFacilityFees, AddNewFees, RequestForInfo }
+  components: { MessagesToolbar, LargeButtonContainer,  }
 };
 </script>
 

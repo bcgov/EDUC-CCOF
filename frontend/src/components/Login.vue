@@ -87,7 +87,7 @@
             <v-spacer></v-spacer>
             <v-card-actions>
               <v-row >
-                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Go to Estimator</v-btn>
+                <v-btn id="login-button" @click="toEstimator"  class="ma-5" dark color='#003366'>Go to Estimator</v-btn>
               </v-row>
             </v-card-actions>
           </v-card>
@@ -110,6 +110,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { AuthRoutes } from '@/utils/constants';
+import { PATHS } from '@/utils/constants';
 
 export default {
   name: 'Login',
@@ -128,6 +129,9 @@ export default {
   methods: {
     clearStorage() {
       this.$store.commit('auth/setJwtToken');
+    },
+    toEstimator(){
+      this.$router.push(PATHS.estimator); //TODO: change this, from CCOF page
     }
   }
 };

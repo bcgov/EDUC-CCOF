@@ -17,7 +17,7 @@ async function getUserInfo(req, res) {
     organizationName: null,
     organizationId:  null,
     applicationStatus: null,
-    //TODO: ApplicatioStatus and unreadMessages are hardcoded. Remove this with API values when built out!
+    //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: true, 
     facilityList: [],
   };
@@ -48,7 +48,11 @@ async function getUserInfo(req, res) {
   resData.businessGuid = businessGuid;
   resData.userName = userName;
 
+  //TODO: change this before git commiting!
   const userResponse = await getUserProfile(businessGuid);
+
+  
+
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
