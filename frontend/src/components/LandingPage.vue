@@ -2,7 +2,6 @@
   <v-container>
     <div v-if ="chosenOrg.unreadMessages">
       <MessagesToolbar></MessagesToolbar>
-      <SnackBar></SnackBar>
     </div>
     <v-row justify="center">
       <div
