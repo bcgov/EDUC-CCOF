@@ -62,7 +62,11 @@ async function getUserInfo(req, res) {
   //Organization is not normalized, grab organization info from the first element
   resData.organizationName  = userResponse[0]['Organization.name'];
   resData.organizationId  = userResponse[0]['BCeID.ccof_userid'];
-  resData.applicationStatus  = APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+  let parsedStatusCode = APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+  if (!parsedStatusCode) {
+    parsedStatusCode = 'APPROVED'; //TODO. throw an error on status code
+  }
+  resData.applicationStatus  = parsedStatusCode;
 
   let facilityArr = userResponse.map(item => {
     return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();

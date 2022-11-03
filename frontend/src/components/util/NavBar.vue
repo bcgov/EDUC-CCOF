@@ -209,26 +209,50 @@ export default {
           isActive: 'Organization Information' === this.$route.name
         }
       );
-      this.facilityList?.forEach( x => {
+      if (this.facilityList?.length > 0) {
+        this.facilityList?.forEach( item => {
+          items.push(
+            {
+              title: item.facilityName,
+              id: item.facilityId,
+              link: { name: 'Facility Information', params: {urlFacilityId: item.facilityId}},
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              // function: this.loadFacility(x.id)
+            },
+            {
+              title: 'Funding ' + item.facilityName,
+              link: { name: 'Funding Amount'},
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              isActive: 'Funding Amount' === this.$route.name
+            },
+          );
+        });
+      } else {
+        //No new facilities, setup a blank template
         items.push(
           {
-            title: x.name,
-            id: x.id,
-            link: { name: 'Facility Information', params: {urlFacilityId: x.id}},
+            title: 'Facility',
+            id: null,
+            link: { name: 'Facility Information'},
             isAccessible: true,
             icon: 'mdi-checkbox-blank-circle-outline', //replace
-            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === x.id
+            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId == null
             // function: this.loadFacility(x.id)
           },
           {
-            title: 'Funding ' + x.name,
+            title: 'Funding',
             link: { name: 'Funding Amount'},
             isAccessible: true,
             icon: 'mdi-checkbox-blank-circle-outline', //replace
             isActive: 'Funding Amount' === this.$route.name
           },
         );
-      });
+
+      }
+
       items.push(
         {
           title: 'Direct Deposit',

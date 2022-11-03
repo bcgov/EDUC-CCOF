@@ -48,7 +48,7 @@
       <br><br>
 
      
-      <v-row v-if=" !getApplicationStatus">
+      <v-row v-if="showFacilityFilter">
         <v-row>
         <v-col class="col-12 col-md-6 ml-xl-3">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
@@ -144,6 +144,9 @@ export default {
     chosenOrg(){
       //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
       return this.userInfo;
+    },
+    showFacilityFilter() {
+      return this.userInfo?.facilityList?.length > 0;
     },
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){

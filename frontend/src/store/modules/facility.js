@@ -6,16 +6,7 @@ export default {
   state: {
     //Vuex doesn't handle maps. so keep track of the list of facilities
     //and update the facility details with the current selected facility
-    facilityList: [
-      {
-        name: 'ABC fuzzy day care',
-        id: '3b9f6cf5-6935-ed11-9db1-002248d53d53'
-      },
-      {
-        name: 'Happy bunny day care',
-        id: '733af835-f8da-4763-b4ab-972ebdc95f65'
-      },
-    ],
+    facilityList: [],
     currentFacilityId: null,
     facilityName: null,
     facilityId: null,
