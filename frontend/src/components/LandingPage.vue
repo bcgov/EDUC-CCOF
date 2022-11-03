@@ -48,22 +48,22 @@
       <br><br>
 
      
-      <v-row v-if=" !getApplicationStatus">
+      <v-row>
         <v-row>
-        <v-col class="col-12 col-md-6">
-          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
-            Update when data comes in from the API 
-            Filter by Facility Name, status, or licence: "
-            .-->
-          <v-text-field 
-            clearable
-            filled 
-            label="Filter by Facility Name "
-            v-model="input"
-            :bind="input">
-          </v-text-field>
-        </v-col>
-      </v-row>
+          <v-col class="col-12 col-md-6">
+            <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+              Update when data comes in from the API 
+              Filter by Facility Name, status, or licence: "
+              .-->
+            <v-text-field 
+              clearable
+              filled 
+              label="Filter by Facility Name "
+              v-model="input"
+              :bind="input">
+            </v-text-field>
+          </v-col>
+        </v-row>
 
         <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -101,7 +101,6 @@ import { mapGetters} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
-import LargeCard from './guiComponents/LargeCard.vue';
 import ApiService from '@/common/apiService';
 
 export default {
@@ -140,6 +139,7 @@ export default {
       return this.userInfo;
     },
     filteredList() {
+      console.log('filtered list: ', this.chosenOrg.facilityList);
       if (this.input === '' || this.input === ' '){
         return this.chosenOrg.facilityList;
       }
@@ -169,7 +169,7 @@ export default {
       return '';
     },
     startApplicationClicked() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.orgInfo);
     }
     
   },

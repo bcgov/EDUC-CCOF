@@ -1,5 +1,5 @@
 'use strict';
-const {getSessionUser, getHttpHeader} = require('./utils');
+const {getSessionUser, getHttpHeader, minify} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -48,8 +48,11 @@ async function getUserInfo(req, res) {
   resData.businessGuid = businessGuid;
   resData.userName = userName;
 
-  //TODO: Use local variable businessGuid when users have been set up.
-  const userResponse = await getUserProfile('bb1defdf-7f9a-429f-be84-7668bd9e00ad');
+  const userResponse = await getUserProfile(businessGuid);
+
+  log.info('Status  :: is :: ', userResponse.status);
+  log.info('StatusText   :: is :: ', userResponse.statusText);
+  log.verbose('Response   :: is :: ', minify(userResponse.data));
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
@@ -59,7 +62,11 @@ async function getUserInfo(req, res) {
   //Organization is not normalized, grab organization info from the first element
   resData.organizationName  = userResponse[0]['Organization.name'];
   resData.organizationId  = userResponse[0]['BCeID.ccof_userid'];
-  resData.applicationStatus  = APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+  let parsedStatus =APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+  if (!parsedStatus) {
+    parsedStatus = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
+  }
+  resData.applicationStatus  = parsedStatus;
 
   let facilityArr = userResponse.map(item => {
     return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();

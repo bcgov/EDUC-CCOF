@@ -118,8 +118,10 @@ export default {
       // router.push(AuthRoutes.LOGOUT);
     },
     async getUserInfo({commit}){
-      const userInfoRes = await ApiService.getUserInfo();
+      const userInfoRes = await ApiService.getUserInfo();    
       commit('setUserInfo', userInfoRes.data);
+      commit('facility/setFacilityList', userInfoRes.data.facilityList, { root: true });
+      
     },
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
