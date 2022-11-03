@@ -30,6 +30,7 @@ import FundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
 import SearchFacility from '@/components/FacilitySearch';
+import CcrfiEstimatorSliderSelect from '@/components/CcrfiEstimatorSliderSelect';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 
@@ -84,6 +85,11 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SearchFacility
       }
+    },
+    {
+      path: '/ccrfiEstimatorSliderSelect',
+      name: 'ccrfiEstimatorSliderSelect',
+      component: CcrfiEstimatorSliderSelect
     },
     {
       path: PATHS.estimator,

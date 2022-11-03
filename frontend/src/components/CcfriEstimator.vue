@@ -38,9 +38,9 @@
         </v-col>
       </v-row>
   <!-- ******************************************************************************************************************************************************** -->
-  <!-- **** FACILTY SEARCH component  ************************************************************************************************************************* -->
+  <!-- **** FACILTY SEARCH COMPONENT  ************************************************************************************************************************* -->
+        <FacilitySearch @selectedFacility="setSelectedFacility($event)"/>
   <!-- ******************************************************************************************************************************************************** -->
-      <FacilitySearch @selectedFacility="setSelectedFacility($event)"/>
       <v-row justify="center">
         <v-col cols="10">
         <v-card elevation="4">
@@ -74,22 +74,22 @@
           </v-row>
           <v-row>
             <v-col cols="5" class="estimator-label">
-                <span class="red--text"><strong>&nbsp;*</strong></span>
-                Type of care
+              <span class="red--text"><strong>&nbsp;*</strong></span>
+              Type of care
             </v-col>
-            <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
-                  <v-tooltip top color="#003466">
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
-                      <v-icon small color="white">mdi-help</v-icon>
-                    </v-card>
-                  </template>
-                    <span>Licensed group child care takes place in a community-based facility or centre.<br> Licensed family child care takes place in the child care provider’s personal residence.</span>
-                  </v-tooltip>
+            <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
+              <v-tooltip top color="#003466">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-card v-bind="attrs" v-on="on" class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
+                    <v-icon small color="white">mdi-help</v-icon>
+                  </v-card>
+                </template>
+                <span>Licensed group child care takes place in a community-based facility or centre.<br> Licensed family child care takes place in the child care provider’s personal residence.</span>
+              </v-tooltip>
             </v-col>
             <v-col cols="4" class="pb-0">
               <v-select
-                id="typeOfCare"
+                ref="typeOfCare"
                 v-model="form.typeOfCare"
                 :items="this.typeOfCareList"
                 outlined
@@ -109,7 +109,7 @@
                   <span class="red--text"><strong> *</strong></span>
                   Child's age category
                 </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
@@ -121,7 +121,7 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
-                    id="childAgeCategory"
+                    ref="childAgeCategory"
                     style="font-size:16px !important"
                     v-model="child.childAgeCategory"
                     :items="childAgeCategoryList"
@@ -143,7 +143,7 @@
                   <span class="red--text"><strong> *</strong></span>
                   Care schedule
                 </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
@@ -165,6 +165,151 @@
                       :rules="rulesCaresSchedule"
                       >
                   </v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
+              <v-row v-if="showMonthSelector">
+                <v-col cols="5" class="estimator-label">
+                  <span class="red--text"><strong> *</strong></span>
+                  Select a month
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
+                      <v-icon small color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>If you don’t require full time care, please select the typical schedule of half days (4 hours or less) and<br>
+                          full days (more than 4 hours) you require per week. The maximum benefit rates for CCFRI are based<br>
+                          on 5 full days per week (full time care).</span>
+                  </v-tooltip>                 </v-col>
+                <v-col cols="4" class="flex pt-1 pb-0" style="margin-left:-10px;margin-bottom:-18px;">
+  <!-- ******************************************************************************************************************************************************** -->
+  <!-- **** MONTH SLIDER SELECT COMPONENT ********************************************************************************************************************* -->
+                    <!--CcrfiEstimatorSliderSelect
+                    v-bind:children="children"
+                    v-bind:childIndex="child.number"
+                    v-bind:approvedFeesByCategory="approvedFeesByCategory"
+                    @selectedApprovedFee="setSelectedApprovedFee($event, child.number-1)"
+                  /-->
+                  <template>
+  <v-sheet class="flex px-0 py-0" elevation="0" max-width="337" min-width="150" style="float:left">
+    <!-- ****************************************************************************************************************************************************************-->
+    <!-- *** The following slider is for the ON (selected) state ********************************************************************************************************-->
+    <!-- ****************************************************************************************************************************************************************-->
+    <v-slide-group v-if="child.isActive" v-model="child.selectedMonthIndex" class="pa-0" mandatory center-active show-arrows active-class="" @change="focusAwayFromOnSlider(child.number-1)">
+      <template v-slot:next>
+        <span class="fill-height pt-1 pr-3">
+          <v-icon ref="rchevron" color="#39598A" x-large>mdi-chevron-right</v-icon>
+         </span>
+      </template>
+      <template v-slot:prev>
+        <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:12px;">
+          <v-icon color="#39598A" x-large>mdi-chevron-left</v-icon>
+            {{child.feeFrequency}}&nbsp;
+          </span>
+      </template>
+      <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
+        <v-card :color="active ? '#E5F3FE' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle(clickForOnSlider(n.id, child.number-1))">
+          <v-row style="" justify="center">
+            <v-col align="center" style="padding-top:4px;padding-bottom:5px;margin-top:-2px;">
+              <span :style="'color:'+(active ? '#2196f3' : '#39598A')+';font-family:Lucida Grande,monospace;color:#39598A;background-color:#EEEEEE;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:18px;padding-right:18px;padding-top:4px'">
+               {{n.month}}
+              </span>
+            </v-col>
+          </v-row>
+          <v-row style="font-size:14px;" justify="center">
+            <v-col align="center" style="padding-top:3px;">
+              <span :style="'color:'+(active ? '#2196f3' : 'black')">
+                ${{n.rate}}
+              </span>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-slide-item>
+    </v-slide-group>
+    <!-- ****************************************************************************************************************************************************************-->
+    <!-- *** The following slider is for the OFF (unselected) state *****************************************************************************************************-->
+    <!-- ****************************************************************************************************************************************************************-->
+    <v-slide-group v-if="!child.isActive" v-model="child.selectedMonthIndex" class="pa-0" mandatory center-active show-arrows active-class="" @change="">
+      <template v-slot:next>
+        <span class="fill-height pt-1 pr-3">
+          <v-icon color="#39598A" x-large>mdi-chevron-right</v-icon>
+        </span>
+      </template>
+      <template v-slot:prev>
+            <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:12px;">
+              <v-icon color="#39598A" x-large>mdi-chevron-left</v-icon>
+              {{child.feeFrequency}}&nbsp;
+              </span>
+      </template>
+      <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
+      <v-card :color="active ? '#FFFFFF': '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 0 : 0" height="67" width="70" @click="toggle(clickForOffSlider(n.id, child.number-1))">
+        <v-row style="" justify="center">
+          <v-col align="center" style="padding-top:4px;padding-bottom:5px;margin-top:-2px;">
+            <span style="font-family:Lucida Grande,monospace;color:#39598A;background-color:#EEEEEE;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:18px;padding-right:18px;padding-top:4px">
+              {{n.month}}
+            </span>
+          </v-col>
+        </v-row>
+        <v-row style="font-size:14px;" justify="center">
+          <v-col align="center" style="padding-top:3px;">
+            <span style="">
+              ${{n.rate}}
+            </span>
+          </v-col>
+        </v-row>
+      </v-card>
+      </v-slide-item>
+    </v-slide-group>
+    <v-btn class="hidden-btn hidden-btn2 no-hover pa-0" ref="hiddenButton" elevation="0" color="white" style=""></v-btn>
+  </v-sheet>
+ </template>
+  <!-- ******************************************************************************************************************************************************** -->
+                </v-col>
+              </v-row>
+              <v-row v-if="showMonthSelector">
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
+                  <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
+                    <template><span class="red--text"><strong> *</strong></span></template>
+                    Approved full-time parent fee before fee reduction applied
+                  </div>
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
+                  <v-tooltip top color="#003466">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
+                      <v-icon small color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span>Enter the highest full-time parent fee approved by the Ministry for this child care provider to charge,<br>
+                          for the applicable care category, before the fee reduction is applied. Child care providers can reference<br>
+                          this information on their approved Program Confirmation Form. Parents, ask your child care provider if<br>
+                          you are unsure which fee to enter.</span>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-text-field
+                      id="approvedFee"
+                      @keypress="currencyFilter"
+                      @change="truncateLeadingZeros(child.number)"
+                      v-model="child.approvedFee"
+                      :rules="rulesApprovedFee(child.approvedFee)"
+                      outlined
+                      prefix="$"
+                      required
+                      dense>
+                  </v-text-field>
                 </v-col>
               </v-row>
   <!-- ******************************************************************************************************************************************************** -->
@@ -337,15 +482,14 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-
                     <v-card max-width="">
                       <v-toolbar
                         color="grey lighten-3"
                       >
-                      <v-spacer></v-spacer>
-                      <v-toolbar-title>Saturday</v-toolbar-title>
-                      <v-spacer></v-spacer>
-                    </v-toolbar>
+                        <v-spacer></v-spacer>
+                        <v-toolbar-title>Saturday</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                      </v-toolbar>
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[5]"
@@ -414,7 +558,7 @@
                   <span class="red--text"><strong> *</strong></span>
                   Parent fee frequency
                 </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
@@ -443,45 +587,6 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
-                    <template><span class="red--text"><strong> *</strong></span></template>
-                    Approved full-time parent fee before fee reduction applied
-                  </div>
-                </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
-                  <v-tooltip top color="#003466">
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
-                      <v-icon small color="white">mdi-help</v-icon>
-                    </v-card>
-                  </template>
-                    <span>Enter the highest full-time parent fee approved by the Ministry for this child care provider to charge,<br>
-                          for the applicable care category, before the fee reduction is applied. Child care providers can reference<br>
-                          this information on their approved Program Confirmation Form. Parents, ask your child care provider if<br>
-                          you are unsure which fee to enter.</span>
-                  </v-tooltip>
-                </v-col>
-                <v-col cols="4" class="pb-0">
-                  <v-text-field
-                      id="approvedFee"
-                      @keypress="currencyFilter"
-                      @change="truncateLeadingZeros(child.number)"
-                      v-model="child.approvedFee"
-                      :rules="rulesApprovedFee(child.approvedFee)"
-                      outlined
-                      prefix="$"
-                      required
-                      dense>
-                  </v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col class="py-0">
-                  <v-divider></v-divider>
-                </v-col>
-              </v-row>              
-              <v-row>
-                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
-                  <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
                     <span v-if="child.careSchedule == 'Full Time'">
                       Actual parent fee before reduction applied (Optional)
                     </span>
@@ -494,7 +599,7 @@
                     </span>
                   </div>
                 </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:40px">
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
                   <v-tooltip top color="#003466">
                     <template v-slot:activator="{ on, attrs }">
                     <v-card class="blue darken-3" style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center;">
@@ -584,13 +689,17 @@
               <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
                 <div class="d-flex flex-nowrap">
                 <div style="padding-left:24px;font-family:BCSans;font-weight:500;font-size:16px;">
-                  ${{result.reductionAmountPerChild}}
+                  {{result.feeFrequency=='Daily'? '$'+(result.reductionAmountPerChild/20)+'/day $('+result.reductionAmountPerChild+' month)' : ''}}
+                  {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/20)+'/week $('+result.reductionAmountPerChild+' month)' : ''}}
+                  {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild : ''}}
                </div>
             </div>
             </v-col>
               <v-col cols="4" style="padding-bottom:0px;padding-top:0px">
               <div style="padding-left:24px;font-family:BCSans;font-weight:500;font-size:16px">
-                ${{result.actualParentFeePerChild}}
+                {{result.feeFrequency=='Daily'? '$'+(result.actualParentFeePerChild/20)+'/day $('+result.actualParentFeePerChild+' month)' : ''}}
+                {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/20)+'/week $('+result.actualParentFeePerChild+' month)' : ''}}
+                {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild : ''}}
               </div>
             </v-col>
           </v-row>
@@ -612,7 +721,7 @@
 import FacilitySearch from './FacilitySearch.vue';
 
 export default {
-  components: {FacilitySearch},
+  components: { FacilitySearch },
   props: {},
   data() {
     return {
@@ -625,6 +734,38 @@ export default {
       results: null,
       showEstimatorResults: false,
       showPartTimeCareSchedule: false,
+      showMonthSelector: false,
+      approvedFeesByCategory: [],
+      totalNumberOfChildren: '1',
+      children: null,
+      form: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        careProviderSearch: '',
+        typeOfCare: ''
+      },
+      /* Month Selector 
+      isActive: false,
+      btnDisabled: true,
+      clicked: false,
+      selectedApprovedFee: 0,
+      items: [
+        { id: 0, month: 'Apr', rate: 0 },
+        { id: 1, month: 'May', rate: 0 },
+        { id: 2, month: 'Jun', rate: 0 },
+        { id: 3, month: 'Jul', rate: 0 },
+        { id: 4, month: 'Aug', rate: 0 },
+        { id: 5, month: 'Sep', rate: 0 },
+        { id: 6, month: 'Oct', rate: 0 },
+        { id: 7, month: 'Nov', rate: 0 },
+        { id: 8, month: 'Dec', rate: 0 },
+        { id: 9, month: 'Jan', rate: 0 },
+        { id: 10, month: 'Feb', rate: 0 },
+        { id: 11, month: 'Mar', rate: 0 }
+      ],
+      */
+      // END Month Selector
       careTypes: [
         { type: 'No Care' },
         { type: 'Half Day' },
@@ -644,15 +785,6 @@ export default {
         { month: 'November', days: 20 },
         { month: 'December', days: 20 },
       ],
-      totalNumberOfChildren: '1',
-      children: null,
-      form: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        careProviderSearch: '',
-        typeOfCare: ''
-      },
       parentFeeFrequencyList: [
         'Daily',
         'Weekly',
@@ -689,15 +821,20 @@ export default {
     };
   },
   methods: {
-    setApprovedParentFee(childsAgeCategory, index) {
-      let approvedFee = this.getApprovedParentFee(childsAgeCategory);
-      this.skipApprovedFeeValidation = true;
-      this.children[index].approvedFee = approvedFee;
-    },
     setSelectedFacility(e) {
+
+      /*
+      this.totalNumberOfChildren = 1;
+      this.children[0].childAgeCategory
+      this.children = [
+        this.newChild(1)
+      ];
+      */
+     
       this.selectedFacility = e;
       this.form.typeOfCare = (this.selectedFacility.accountNumber.charAt(0) == 'F') ? 'Licensed Family' : 'Licensed Group';
       this.filterChildsAgeCategory();
+      this.showMonthSelector = true;
       // TODO: Keep for now as possible reused code, until Todd answers pending question on what should happen when to approved full-time fee
       //       when serach/selecting new facility.
       //this.resetForm();
@@ -779,6 +916,7 @@ export default {
           }
         }
       }
+      this.setDefaultForMonthPicker();
     },
     newChild(number) {
       return {
@@ -789,6 +927,25 @@ export default {
         parentFeeFrequency: 'Monthly',
         careSchedule: 'Full Time',
         selectedCareType: [], // This captures the index of the careTypes selected mon through sunday.
+        isActive: false,
+        btnDisabled: true,
+        clicked: false,
+        selectedApprovedFee: 0,
+        feeFrequency: '',
+        items: [
+          { id: 0, month: 'Apr', rate: 0 },
+          { id: 1, month: 'May', rate: 0 },
+          { id: 2, month: 'Jun', rate: 0 },
+          { id: 3, month: 'Jul', rate: 0 },
+          { id: 4, month: 'Aug', rate: 0 },
+          { id: 5, month: 'Sep', rate: 0 },
+          { id: 6, month: 'Oct', rate: 0 },
+          { id: 7, month: 'Nov', rate: 0 },
+          { id: 8, month: 'Dec', rate: 0 },
+          { id: 9, month: 'Jan', rate: 0 },
+          { id: 10, month: 'Feb', rate: 0 },
+          { id: 11, month: 'Mar', rate: 0 }
+        ],
       };
     },
     getOccurrence(array, value) {
@@ -965,7 +1122,10 @@ export default {
           // Determine the reduction amount per this.form.children[i]...
           // actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
           // Update the results
-          this.results.push({ number: i + 1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild) });
+          this.results.push({ number: i + 1,
+                              reductionAmountPerChild: Math.round(reductionAmountPerChild),
+                              actualParentFeePerChild: Math.round(actualParentFeePerChild),
+                              feeFrequency: this.children[i].feeFrequency });
         }
       }
     },
@@ -1011,6 +1171,7 @@ export default {
         }
       }
     },
+    /*
     getApprovedParentFee: function(childAgeCategory) {
       // Iterate thorugh the payload returned from FacilitySearch component, to determine the next
       // months approved fee baed on the type of child care selected.
@@ -1047,21 +1208,85 @@ export default {
           }
         }
       }
-    },
+    },*/
     getChildAgeCategoryList: function() {
       return ['0 - 18 Months',
         '18 - 36 Months',
         '3 Years to Kindergarten',
         'Before & After School (Kindergarten Only)'];
+    },
+    setApprovedParentFee(childsAgeCategory, childIndex) {
+      //let approvedFee = this.getApprovedParentFee(childsAgeCategory);
+      this.approvedFeesByCategory = this.getApprovedFees(childsAgeCategory);
+      this.children[childIndex].items[0].rate = this.approvedFeesByCategory.approvedFeeApr;
+      this.children[childIndex].items[1].rate = this.approvedFeesByCategory.approvedFeeMay;
+      this.children[childIndex].items[2].rate = this.approvedFeesByCategory.approvedFeeJun;
+      this.children[childIndex].items[3].rate = this.approvedFeesByCategory.approvedFeeJul;
+      this.children[childIndex].items[4].rate = this.approvedFeesByCategory.approvedFeeAug;
+      this.children[childIndex].items[5].rate = this.approvedFeesByCategory.approvedFeeSep;
+      this.children[childIndex].items[6].rate = this.approvedFeesByCategory.approvedFeeOct;
+      this.children[childIndex].items[7].rate = this.approvedFeesByCategory.approvedFeeNov;
+      this.children[childIndex].items[8].rate = this.approvedFeesByCategory.approvedFeeDec;
+      this.children[childIndex].items[9].rate = this.approvedFeesByCategory.approvedFeeJan;
+      this.children[childIndex].items[10].rate = this.approvedFeesByCategory.approvedFeeFeb;
+      this.children[childIndex].items[11].rate = this.approvedFeesByCategory.approvedFeeMar;
+      this.children[childIndex].feeFrequency = this.approvedFeesByCategory.feeFrequency;
+      this.children[childIndex].parentFeeFrequency = this.approvedFeesByCategory.feeFrequency;
+      //this.children[childIndex].approvedFeesByCategory = this.approvedFeesByCategory;
+      this.skipApprovedFeeValidation = true;
+      //this.children[index].approvedFee = approvedFee;
+    },
+    setSelectedApprovedFee(e, childIndex) {
+      console.log('!!!!!!!!!! setSelectedApprovedFee.childIndex = '+childIndex);
+      this.selectedApprovedFee = e;
+      this.children[childIndex].approvedFee = e;
+    },
+    getApprovedFees: function(childAgeCategory) {
+      for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
+        if (this.selectedFacility.approvedFeesByChildAgeCategory[i].childCareCategory == childAgeCategory) {
+          return this.selectedFacility.approvedFeesByChildAgeCategory[i];
+        }
+      }
+    },
+    clickForOnSlider(key, childIndex) {
+      console.log('key =' + this.children[childIndex].items[key].id);
+      console.log('childIndex =' + childIndex);
+      console.log('unselectedDefault =' + this.children[childIndex].selectedMonthIndex);
+      if (this.children[childIndex].items[key].id == this.children[childIndex].selectedMonthIndex) {
+        console.log('isActive = FALSE!!');
+        this.children[childIndex].isActive = false;
+        this.children[childIndex].approvedFee = undefined;
+      }
+    },
+    clickForOffSlider(key, childIndex) {
+      console.log('clicked');
+      console.log('key=' + key);
+      this.children[childIndex].isActive = this.children[childIndex].isActive == true ? false : true;
+      this.children[childIndex].clicked = true;
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ this.children[childIndex].selectedMonthIndex='+this.children[childIndex].selectedMonthIndex);
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ this.items[this.children[childIndex].selectedMonthIndex].rate='+this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate);
+      this.children[childIndex].approvedFee = this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate;
+      this.children[childIndex].btnDisabled = false;
+    },
+    focusAwayFromOnSlider(childIndex) {
+      this.children[childIndex].approvedFee = this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate;
+      //this.$refs.hiddenButton.$el.children[childIndex].focus();
+      this.$refs.hiddenButton[childIndex].$el.focus();
+    },
+    /* Set the current month value for the month select slider.. this will show the current month centered in the component. */
+    setDefaultForMonthPicker() {
+      const currentMonth = new Date().getMonth() + 1;
+      for (let i in this.children) {
+        this.children[i].selectedMonthIndex = currentMonth-4;
+      }
     }
   },
   mounted() {
     this.children = [
       this.newChild(1)
     ];
-
+    this.setDefaultForMonthPicker();
     this.childAgeCategoryList = this.getChildAgeCategoryList();
-
     this.results = [];
     this.GROUP_REDUCTION_RATES = new Map();
     this.GROUP_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 900, fullTime19: 47.3684, fullTime20: 45, partTime19: 23.6842, partTime20: 22.5, rateFloor: 350 });
@@ -1073,12 +1298,52 @@ export default {
     this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30, partTime19: 15.7895, partTime20: 15, rateFloor: 200 });
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25, partTime19: 13.1579, partTime20: 12.5, rateFloor: 60 });
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16, partTime19: 8.4211, partTime20: 8, rateFloor: 60 });
-
-    
-
   },
   updated() {
+    console.log('updated!');
     this.skipApprovedFeeValidation = false;
+    if (this.children[0].clicked) {
+      console.log('???? this.$refs.form.hiddenButton.$el.focus(); 1');
+      this.$refs.hiddenButton[0].$el.focus();
+      console.log('???? this.$refs.form.hiddenButton.$el.focus(); 2');
+      this.children[0].clicked = false;
+    }
+  },
+  watch: {
+    selectedMonthIndex: {
+      handler(newVal, oldVal) {
+        console.log('oldVal=' + oldVal);
+        console.log('newVal=' + newVal);
+        console.log('items[model].id=');
+        if (newVal == oldVal) {
+          console.log('newVal == oldVal!!!');
+          this.isActive = false;
+        }
+      },
+      deep: true
+    },
+    approvedFeesByCategory: {
+      handler(newVal, oldVal) {
+        if (newVal != oldVal) {
+          console.log('approvedFeesByCategory newVal != oldVal!!! '+this.approvedFeesByCategory.approvedFeeApr);
+          /*
+          this.children[0].items[0].rate = this.approvedFeesByCategory.approvedFeeApr;
+          this.children[0].items[1].rate = this.approvedFeesByCategory.approvedFeeMay;
+          this.children[0].items[2].rate = this.approvedFeesByCategory.approvedFeeJun;
+          this.children[0].items[3].rate = this.approvedFeesByCategory.approvedFeeJul;
+          this.children[0].items[4].rate = this.approvedFeesByCategory.approvedFeeAug;
+          this.children[0].items[5].rate = this.approvedFeesByCategory.approvedFeeSep;
+          this.children[0].items[6].rate = this.approvedFeesByCategory.approvedFeeOct;
+          this.children[0].items[7].rate = this.approvedFeesByCategory.approvedFeeNov;
+          this.children[0].items[8].rate = this.approvedFeesByCategory.approvedFeeDec;
+          this.children[0].items[9].rate = this.approvedFeesByCategory.approvedFeeJan;
+          this.children[0].items[10].rate = this.approvedFeesByCategory.approvedFeeFeb;
+          this.children[0].items[11].rate = this.approvedFeesByCategory.approvedFeeMar;
+          */
+        }
+      },
+      deep: true
+    }
   }
 };
 </script>
@@ -1093,54 +1358,41 @@ span.banner-title {
   left: 45px;
   color: white;
   font-size: 24px;
-  font-family: "BCSans";
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
-
 .v-input, .v-select-list {
   font-size: 16px !important;
-  font-family: "BCSans" !important;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
-
 div.v-select__selection.v-select__selection--comma {
   line-height:20px !important
 }
-
 .banner-title-heading {
   font-size: 32px !important;
 }
-
 .estimator-label {
   padding-left: 34px;
   padding-top: 20px;
   color: #7B7C7E;
-  font-family: BCSans;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   font-weight: 600;
   font-size: 16px
 }
-
 .v-toolbar__title {
   font-size: 14px !important;
   color: #39598A;
   font-weight: 600;
-  font-family: "BCSans" !important;
+  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
-
 .v-list-item__title {
   font-size: 14px !important;
 }
-
-
 .v-list-item__content {
   text-align: center!important;
 }
-
 .v-list-item__title {
   text-align: center!important;
 }
-
-
-
-
 .bounce-leave-active {
   animation: bounce-in 0.1s reverse;
 }
@@ -1155,6 +1407,17 @@ div.v-select__selection.v-select__selection--comma {
     transform: scale(1);
   }
 }
-
-
+div.ma-1.fill-height.v-card.v-card--link.v-sheet.theme--light {
+    border: 1px solid grey !important;
+}
+.hidden-btn:focus::before {
+  opacity: 0 !important;
+}
+.hidden-btn2 {
+  min-width: 5px !important;
+  height: 5px !important;
+}
+.no-hover:before {
+  display: none;
+}
 </style>
