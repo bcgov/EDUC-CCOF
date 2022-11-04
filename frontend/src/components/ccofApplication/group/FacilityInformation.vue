@@ -144,8 +144,11 @@ export default {
       this.$router.push(PATHS.fundAmount);
     },
     refreshWithFacility() {
-      let x = this.$route.params.urlFacilityId;
-      this.loadFacility(x);
+      let facilityId = this.$route.params.urlFacilityId;
+      if (facilityId) {
+        this.loadFacility(facilityId);
+      }
+      
     }
   }
 };

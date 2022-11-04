@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <div v-if ="chosenOrg.unreadMessages">
+    <div v-if ="userInfo.unreadMessages">
       <MessagesToolbar></MessagesToolbar>
     </div>
     <v-row justify="center">
@@ -21,9 +21,9 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="chosenOrg.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="chosenOrg.applicationStatus === 'DRAFT'">Continue Application</v-btn>
-              <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
           <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
@@ -49,7 +49,7 @@
 
      
       <v-row>
-        <v-row>
+        <v-row v-if= "facilityList.length > 2">
           <v-col class="col-12 col-md-6">
             <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
               Update when data comes in from the API 
@@ -97,11 +97,10 @@
 </template>
 <script>
 
-import { mapGetters} from 'vuex';
+import { mapGetters, mapState} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
-import ApiService from '@/common/apiService';
 
 export default {
   name: 'LandingPage',
@@ -121,32 +120,21 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapState('facility', ['facilityList']),
     currentYearTwoDigit() {
       return this.currentYear - 2000;
     },
     nextYearTwoDigit() {
       return this.currentYear - 1999;
     },
-    getDisplayName(){
-      return this.userInfo.displayName;
-    },
-    getBusinessGuid(){
-      return this.userInfo.businessGuid;
-    },
-
-    chosenOrg(){
-      //TODO: This is hardcoded to the first org in the list. This should be updated with a state var from a chosen org from an earlier screen.
-      return this.userInfo;
-    },
     filteredList() {
-      console.log('filtered list: ', this.chosenOrg.facilityList);
       if (this.input === '' || this.input === ' '){
-        return this.chosenOrg.facilityList;
+        return this.facilityList;
       }
-      return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
+      return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      if (this.chosenOrg.applicationStatus === 'APPROVED'){
+      if (this.userInfo.applicationStatus === 'APPROVED'){
         //false because if the application is approved, we will want to set all the disabled status to false)
         return false;
       }
@@ -155,15 +143,6 @@ export default {
     
   },
   methods: {
-    async getUserProfile () {
-      console.log('clicked');
-      try {
-        this.results = ( await ApiService.apiAxios.get('/api/user/'));
-        console.log('RESULTS are:  = '+ this.results);
-      } catch (error) {
-        console.log(error);
-      }
-    },
     clicked (){
       console.log('clicked');
       return '';

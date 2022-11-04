@@ -78,7 +78,7 @@ export default {
         }
       }
     },
-    async LoadOrganization({ commit, organizationId }) {
+    async loadOrganization({ commit }, organizationId) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to load organization because you are not logged in');
         throw 'unable to load organization because you are not logged in';

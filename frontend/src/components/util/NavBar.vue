@@ -8,7 +8,7 @@
           absolute
           :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px` "
           width=200
-          height="calc(100% -368px)"
+          height="calc(100vh - 136px)"
           :permanent="$vuetify.breakpoint.mdAndUp"
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
@@ -209,8 +209,6 @@ export default {
           isActive: 'Organization Information' === this.$route.name
         }
       );
-      console.log('facility lengh: ', this.facilityList?.length);
-      console.log('facility lengh: ', this.facilityList);
       if (this.facilityList?.length > 0) {
         this.facilityList?.forEach( item => {
           items.push(
