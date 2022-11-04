@@ -46,50 +46,55 @@
       <v-divider>
       </v-divider>
       <br><br>
+    
 
-     
+      <v-row v-if="facilityList.length > 2">
+        <v-row>
+        <v-col class="col-12 col-md-6 ml-xl-3">
+          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+            Update when data comes in from the API 
+            Filter by Facility Name, status, or licence: "
+            .-->
+          <v-text-field 
+            clearable
+            filled 
+            label="Filter by Facility Name "
+            v-model="input"
+            :bind="input">
+          </v-text-field>
+        </v-col>
+      </v-row>
+
       <v-row>
-        <v-row v-if= "facilityList.length > 2">
-          <v-col class="col-12 col-md-6">
-            <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
-              Update when data comes in from the API 
-              Filter by Facility Name, status, or licence: "
-              .-->
-            <v-text-field 
-              clearable
-              filled 
-              label="Filter by Facility Name "
-              v-model="input"
-              :bind="input">
-            </v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+        <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 col-xl-5 blueBorder"
           min-height="230"
           rounded
           tiled
           exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in filteredList" :key="facilityId"
+          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus}  ) in filteredList" :key="facilityId"
           
           >
             <v-card-text>
-              <p class="text-h5 text--primary">
+              <!-- <p class="text-h5 text--primary">
                 Facility {{index +1}}
-              </p>
-              <p class="text-h6 text--primary">
+              </p> -->
+              <p class="text-h5 text--primary">
                 Facility Name:  {{facilityName}}
               </p>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
               </p>
               <br>
-              <p class="text-h5 text--primary">CCFRI, ECE-WE</p>
-              <a href="#">CCFRI Status: {{ccfriStatus}}</a><br>
-              <a href="#">ECE-WE Status: {{eceweStatus}}</a><br><br>
+              <br>
+              <p class="text--primary">Child Care Fee Reduction Initiative (CCFRI) Status: <strong>{{ccfriStatus}} </strong> </p><br>
+              <p class="text--primary">Early Childhood Educator Wage Enhancement (ECE-WE) Status: <strong>{{eceweStatus}} </strong></p>
             </v-card-text>
         </v-card>
+      </v-row>
       </v-row>
   </v-container>
 </v-container>
@@ -101,6 +106,8 @@ import { mapGetters, mapState} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
+
+import SnackBar from '@/components/util/SnackBar';
 
 export default {
   name: 'LandingPage',
@@ -146,6 +153,7 @@ export default {
     clicked (){
       console.log('clicked');
       return '';
+
     },
     startApplicationClicked() {
       this.$router.push(PATHS.orgInfo);
@@ -153,14 +161,14 @@ export default {
     
   },
   
-  components: { SmallCard, MessagesToolbar}
+  components: { SmallCard, MessagesToolbar, SnackBar}
 };
 </script>
 
 <style scoped>
 
-body {
-  white-space: pre-wrap;
+.blueBorder{
+  border-top: 5px solid #003366 !important;
 }
 
   

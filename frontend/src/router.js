@@ -22,6 +22,7 @@ import OrganizationSelection from '@/components/OrganizationSelection';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
+import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
 
 import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
@@ -29,6 +30,7 @@ import FundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
 import SearchFacility from '@/components/FacilitySearch';
+import CcrfiEstimatorSliderSelect from '@/components/CcrfiEstimatorSliderSelect';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 
@@ -85,7 +87,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/ccfri-estimator',
+      path: PATHS.estimator,
       name: 'ccfri-estimator',
       component: CcfriEstimator,
       meta: {
@@ -125,6 +127,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
+
     {
       path: PATHS.fundAmount,
       name: 'Funding Amount',
@@ -161,6 +164,14 @@ const router = new VueRouter({
       component: CcfriEceLandingPage,
       meta: {
         pageTitle: 'CCFRI Home'
+      }
+    },
+    {
+      path: PATHS.addNewFees,
+      name: 'ccfri-add-fees',
+      component: AddNewFees,
+      meta: {
+        pageTitle: 'CCFRI Add New Fees'
       }
     },
     {

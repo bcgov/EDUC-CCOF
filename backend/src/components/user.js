@@ -24,7 +24,7 @@ async function getUserInfo(req, res) {
     organizationName: null,
     organizationId:  null,
     applicationStatus: null,
-    //TODO: ApplicatioStatus and unreadMessages are hardcoded. Remove this with API values when built out!
+    //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: true, 
     facilityList: [],
   };

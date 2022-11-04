@@ -36,11 +36,14 @@ export const PAGE_TITLES = Object.freeze({
 });
 
 export const PATHS = {
+  home: '/',
+  estimator: '/ccfri-estimator',
   orgInfo: '/ccof-application/group/organization-information',
   facInfo: '/ccof-application/group/facility-information',
   fundAmount: '/ccof-application/group/funding-amount',
   confirmation: '/ccof-application/group/confirmation',
-  ccfriHome: '/ccfriApplication/group/CcfriEceLanding' 
+  ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
+  addNewFees: '/ccfriApplication/group/add-new-fees', 
 };
 
 export const NAV_BAR_GROUPS = {

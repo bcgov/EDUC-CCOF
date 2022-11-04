@@ -148,7 +148,6 @@ export default {
       if (facilityId) {
         this.loadFacility(facilityId);
       }
-      
     }
   }
 };

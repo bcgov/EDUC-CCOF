@@ -234,7 +234,7 @@ export default {
         //No new facilities, setup a blank template
         items.push(
           {
-            title: 'New Facility',
+            title: 'Facility',
             id: null,
             link: { name: 'Facility Information'},
             isAccessible: true,
@@ -243,7 +243,7 @@ export default {
             // function: this.loadFacility(x.id)
           },
           {
-            title: 'New Funding',
+            title: 'Funding',
             link: { name: 'Funding Amount'},
             isAccessible: true,
             icon: 'mdi-checkbox-blank-circle-outline', //replace
