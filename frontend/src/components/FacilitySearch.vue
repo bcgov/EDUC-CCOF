@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="searchForm">
+  <v-form ref="searchForm" @submit.prevent>
     <v-row justify="center">
       <v-col cols="10" style="padding-top:0px;">
         <v-card elevation="4">
@@ -25,6 +25,7 @@
                 outlined
                 required
                 :rules="rulesSearchCriteria"
+                v-on:keydown.enter="searchFacilities(searchCriteria);loading=true"
                 >
               </v-text-field>
             </v-col>
@@ -67,6 +68,7 @@
                           outlined
                           required
                           dense
+                          v-on:keydown.enter="searchFacilities(searchCriteria);loading=true"
                           style="padding-right:3px;">
                         </v-text-field>
                         <v-btn icon style="margin-right:18px;" :disabled="loading"
