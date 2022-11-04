@@ -161,7 +161,9 @@ const router = new VueRouter({
       name: 'ccfri-add-fees',
       component: AddNewFees,
       meta: {
-        pageTitle: 'CCFRI Add New Fees'
+        pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
       }
     },
     {
