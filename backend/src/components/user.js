@@ -1,5 +1,5 @@
 'use strict';
-const {getSessionUser, getHttpHeader} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, parseUserGuid, parseUserName} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -10,10 +10,17 @@ const _ = require ('lodash');
 
 async function getUserInfo(req, res) {
 
+  const userInfo = getSessionUser(req);
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No session data'
+    });
+  }
+
   let resData = {
-    displayName: null,
-    businessGuid: null,
-    userName: null,
+    displayName: req.session.passport.user._json.display_name,
+    userName: parseUserName(req),
+    email: req.session.passport.user._json.email,
     organizationName: null,
     organizationId:  null,
     applicationStatus: null,
@@ -22,37 +29,13 @@ async function getUserInfo(req, res) {
     facilityList: [],
   };
 
-
-  const userInfo = getSessionUser(req);
-  if (!userInfo || !userInfo.jwt || !userInfo._json) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No session data'
-    });
-  }
-
-  //TODO: Rob to clean this up.
-  let displayName = req.session.passport.user.displayName;
-  if (!displayName) {
-    displayName = req.session.passport.user._json.display_name;
-  }
-  let userName = req.session?.passport?.user?._json?.bceid_username;
-  if (!userName) {
-    userName = req.session?.passport?.user?._json?.idir_username;
-  }
-  let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
-  if (!businessGuid) {
-    businessGuid = req.session?.passport?.user?._json?.idir_user_guid;
-  }
-
-  resData.displayName = displayName;
-  resData.businessGuid = businessGuid;
-  resData.userName = userName;
-
-  //TODO: change this before git commiting!
+  let businessGuid = parseUserGuid(req);
+  console.info('Business GUID is: ', businessGuid);
   const userResponse = await getUserProfile(businessGuid);
 
-  
-
+  log.verbose('Status  :: is :: ', userResponse.status);
+  log.verbose('StatusText   :: is :: ', userResponse.statusText);
+  log.verbose('Response   :: is :: ', minify(userResponse.data));
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
@@ -61,12 +44,12 @@ async function getUserInfo(req, res) {
 
   //Organization is not normalized, grab organization info from the first element
   resData.organizationName  = userResponse[0]['Organization.name'];
-  resData.organizationId  = userResponse[0]['BCeID.ccof_userid'];
-  let parsedStatusCode = APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
-  if (!parsedStatusCode) {
-    parsedStatusCode = 'APPROVED'; //TODO. throw an error on status code
+  resData.organizationId  = userResponse[0]['_ccof_organization_value'];
+  let parsedStatus =APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+  if (!parsedStatus) {
+    parsedStatus = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
   }
-  resData.applicationStatus  = parsedStatusCode;
+  resData.applicationStatus  = parsedStatus;
 
   let facilityArr = userResponse.map(item => {
     return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();

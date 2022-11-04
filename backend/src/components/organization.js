@@ -1,5 +1,5 @@
 'use strict';
-const { getOperationWithObjectId, postOperation, patchOperationWithObjectId } = require('./utils');
+const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getSessionUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE } = require('../util/constants');
 
@@ -22,11 +22,27 @@ async function getOrganization(req, res) {
 }
 
 async function createOrganization(req, res) {
-  let organization = req.body;
+  const userInfo = getSessionUser(req);
 
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No session data'
+    });
+  }
+  let businessGuid = null;
+  if (req.session?.passport?.user?._json?.bceid_business_guid) {
+    // This is a business BCEID user
+    businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
+  } else {
+    // This is an IDIR user
+    businessGuid = req.session?.passport?.user?._json?.idir_user_guid;
+  }
+
+  let organization = req.body;
   organization = new MappableObjectForBack(organization, OrganizationMappings);
   organization = organization.toJSON();
   organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
+  organization['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${businessGuid}')`;
 
   try {
     let organizationGuid = await postOperation('accounts', organization);

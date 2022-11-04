@@ -108,7 +108,7 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
-import { mapGetters, mapState, mapActions } from 'vuex';
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 
 
 export default {
@@ -116,6 +116,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['organizationTypeList']),
+    ...mapState('organization', ['isStarted']),
     ...mapGetters('auth', ['userInfo']),
     organizationId: {
       get() { return this.$store.state.organization.organizationId; },
@@ -191,11 +192,11 @@ export default {
   },
   mounted() {
     this.businessId = this.userInfo.userName;
-    this.$store.commit('organization/setIsStarted', true);
-
+    this.loadData();
   },
   methods: {
-    ...mapActions('organization', ['saveOrganization']),
+    ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
+    ...mapMutations('organization', ['setIsStarted']),
 
     next() {
       this.$router.push(PATHS.facInfo);
@@ -210,6 +211,22 @@ export default {
       }
 
       this.processing = false;
+    },
+    async loadData() {
+      if (this.isStarted) {
+        return;
+      }
+      if (this.organizationId) {
+        this.processing = true;
+        try {
+          await this.loadOrganization(this.organizationId);
+        } catch (error) {
+          console.log('Error loading organization.', error);
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
+        }
+        this.processing = false;
+        this.setIsStarted(true);
+      }
     }
   }
 };
