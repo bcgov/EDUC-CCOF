@@ -8,7 +8,7 @@
 
       <p class="text-h5 text-center"> CCOF ID: 111, Facility Name: ....  , Licence #: 4444</p> <br><br>
       <p>
-        Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
+        Enter the fees you charged a new parent for full-time care atgit  this facility for the months below. <br><br>
         If you have more than one fee for the same category, enter the highest fee. <br><br>
         <strong>Enter the fee before CCFRI is applied. </strong> <br><br>
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>

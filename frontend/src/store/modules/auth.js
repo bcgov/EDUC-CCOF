@@ -45,14 +45,7 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: false,
-    selectedOrganization: {
-      id: null,
-      name: null,
-    },
-    selectedFacility: {
-      name: null,
-      id: null,
-    },
+    isUserInfoLoaded: false,
     userInfo: null,
     error: false,
     isLoading: true,
@@ -64,8 +57,6 @@ export default {
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: state => state.jwtToken,
     userInfo: state => state.userInfo,
-    selectedFacility: state => state.selectedFacility,
-    selectedOrganization: state => state.selectedOrganization,
     loginError: state => state.loginError,
     error: state => state.error,
     isLoading: state => state.isLoading,
@@ -83,7 +74,9 @@ export default {
         localStorage.removeItem('jwtToken');
       }
     },
-
+    setIsUserInfoLoaded: (state, isUserInfoLoaded) => {
+      state.isUserInfoLoaded = isUserInfoLoaded;
+    },
     setUserInfo: (state, userInfo) => {
       if(userInfo){
         state.userInfo = userInfo;
@@ -91,11 +84,6 @@ export default {
         state.userInfo = null;
       }
     },
-
-    setSelectedOrganization: (state, organization ) => {
-      state.selectedOrganization = organization;
-    },
-
     setLoginError: (state) => {
       state.loginError = true;
     },
@@ -117,9 +105,17 @@ export default {
       context.commit('setUserInfo');
       // router.push(AuthRoutes.LOGOUT);
     },
-    async getUserInfo({commit}){
-      const userInfoRes = await ApiService.getUserInfo();
+    async getUserInfo({state, commit}){
+      //This method is called by the router.
+      //Only hit the API service if the info has not already been loaded.
+      if (state.isUserInfoLoaded) {
+        return;
+      }
+      const userInfoRes = await ApiService.getUserInfo();    
       commit('setUserInfo', userInfoRes.data);
+      commit('facility/setFacilityList', userInfoRes.data.facilityList, { root: true });
+      commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
+      commit('setIsUserInfoLoaded', true);
     },
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API

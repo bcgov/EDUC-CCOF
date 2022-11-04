@@ -46,6 +46,20 @@ function getSessionUser(req) {
   return session && session.passport && session.passport.user;
 }
 
+function parseUserGuid(req) {
+  let guid = req.session?.passport?.user?._json?.bceid_username;
+  if (!guid) {
+    guid = req.session?.passport?.user?._json?.idir_user_guid;
+  }
+  return guid;
+}
+function parseUserName(req) {
+  let userName = req.session?.passport?.user?._json?.bceid_username;
+  if (!userName) {
+    userName = req.session?.passport?.user?._json?.idir_username;
+  }
+  return userName;
+}
 function getAccessToken(req) {
   const user = getSessionUser(req);
   return user && user.jwt;
@@ -415,6 +429,8 @@ const utils = {
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
   getSessionUser,
   getAccessToken,
+  parseUserGuid,
+  parseUserName,
   deleteData,
   forwardGetReq,
   getDataWithParams,
