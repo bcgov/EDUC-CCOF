@@ -208,7 +208,7 @@
                   </template>
                     <span>For part time care estimates, please select the typical schedule of<br/>
                           half days (4 hours or less) and full days (more than 4 hours). The<br/>
-                          maximum benefit rates for CCFRI are based on 5 full days per week</br> (full time care).</span>
+                          maximum benefit rates for CCFRI are based on 5 full days per week<br/> (full time care).</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -481,10 +481,11 @@
                 </v-col>
                 <v-col cols="6" class="flex pt-1 pb-0" style="margin-bottom:-18px;">
                   <template>
-                    <v-sheet class="flex px-0 py-0" elevation="0" max-width="337" min-width="150" style="float:left">
+                    <v-sheet class="flex px-0 py-0 text-center" elevation="0" max-width="337" min-width="150" style="float:left">
 <!-- ****************************************************************************************************************************************************************-->
 <!-- *** The following slider is for the ON (selected) state ********************************************************************************************************-->
 <!-- ****************************************************************************************************************************************************************-->
+                      <span style="color:#313131;font-size:15px;font-weight:bold;font-family:BCSans;">{{(child.programYear != undefined) ? child.programYear.slice(0,7) : ''}}</span>
                       <v-slide-group id="monthSelectorOn" v-if="child.isActive" v-model="child.selectedMonthIndex" class="pa-0" mandatory center-active show-arrows active-class="" @change="focusAwayFromOnSlider(child.number-1)">
                         <template v-slot:next>
                           <span class="fill-height pt-1 pr-3">
@@ -492,13 +493,15 @@
                           </span>
                         </template>
                         <template v-slot:prev>
-                          <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:12px;">
+                          <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:13px;">
                             <v-icon color="#431782" x-large>mdi-chevron-left</v-icon>
-                              {{child.feeFrequency}}&nbsp;
+                            <span style="color:#313131">
+                                  {{child.feeFrequency}}&nbsp;
                             </span>
+                          </span>
                         </template>
                         <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
-                          <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#E5D8F8' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle(clickForOnSlider(n.id, child.number-1))">
+                          <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#F3E6F6' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle(clickForOnSlider(n.id, child.number-1))">
                             <v-row style="" justify="center">
                               <v-col align="center" style="padding-top:4px;padding-bottom:5px;margin-top:-2px;">
                                 <span :style="'color:'+(active ? 'white' : 'white')+';font-family:Lucida Grande,monospace;background-color:#431782;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:px;padding-right:19px;padding-top:4px'">
@@ -508,8 +511,8 @@
                             </v-row>
                             <v-row style="font-size:14px;" justify="center">
                               <v-col align="center" style="padding-top:3px;">
-                                <span :style="'color:'+(active ? '#431782' : 'black')">
-                                  ${{n.rate}}
+                                <span :style="'color:'+(active ? '#9D2AB1' : 'black')">
+                                  {{(n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
                                 </span>
                               </v-col>
                             </v-row>
@@ -526,10 +529,12 @@
                           </span>
                         </template>
                         <template v-slot:prev>
-                              <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:12px;">
+                              <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:13px;">
                                 <v-icon color="#431782" x-large>mdi-chevron-left</v-icon>
-                                <span style="color:#313131">{{child.feeFrequency}}&nbsp;</span>
+                                <span style="color:#313131;font-family:BCSans;">
+                                  {{child.feeFrequency}}&nbsp;
                                 </span>
+                              </span>
                         </template>
                         <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
                         <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#FFFFFF': '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 0 : 0" height="67" width="70" @click="toggle(clickForOffSlider(n.id, child.number-1))">
@@ -543,7 +548,7 @@
                           <v-row style="font-size:14px;" justify="center">
                             <v-col align="center" style="padding-top:3px;">
                               <span style="">
-                                ${{n.rate}}
+                                {{(n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
                               </span>
                             </v-col>
                           </v-row>
@@ -734,18 +739,18 @@
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                           <div class="d-flex">
-                          <div style="padding-left:12px;font-family:BCSans;font-weight:500;font-size:16px;">
+                          <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;">
                             {{result.feeFrequency=='Daily'? '$'+(result.reductionAmountPerChild/20)+'/day $('+result.reductionAmountPerChild+' month)' : ''}}
-                            {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/20)+'/week $('+result.reductionAmountPerChild+' month)' : ''}}
-                            {{'$'+result.reductionAmountPerChild}}
+                            {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/4)+'/week $('+result.reductionAmountPerChild+' month)' : ''}}
+                            {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild : ''}}
                         </div>
                       </div>
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
-                        <div style="padding-left:12px;font-family:BCSans;font-weight:500;font-size:16px">
+                        <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px">
                           {{result.feeFrequency=='Daily'? '$'+(result.actualParentFeePerChild/20)+'/day $('+result.actualParentFeePerChild+' month)' : ''}}
-                          {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/20)+'/week $('+result.actualParentFeePerChild+' month)' : ''}}
-                          {{'$'+result.actualParentFeePerChild}}
+                          {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/4)+'/week $('+result.actualParentFeePerChild+' month)' : ''}}
+                          {{result.feeFrequency=='Monthly'? '$'+result.actualParentFeePerChild : ''}}
                         </div>
                       </v-col>
                     </v-row>
@@ -1234,9 +1239,13 @@ export default {
       } else {
         this.setRatesForMonths(childIndex);
       }
-
       this.children[childIndex].parentFeeFrequency = this.approvedFeesByCategory.feeFrequency;
-      this.skipApprovedFeeValidation = true;
+      this.children[childIndex].feeFrequency = this.approvedFeesByCategory.feeFrequency;
+      this.children[childIndex].programYear = this.approvedFeesByCategory.programYear;
+
+      if (this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate == null || this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate == 0) {
+        this.children[childIndex].selectedMonthIndex = this.children[childIndex].selectedMonthIndex + 1;
+      }
     },
     setRatesForMonths(childIndex) {
       this.children[childIndex].items[0].rate = this.approvedFeesByCategory.approvedFeeApr;
@@ -1279,9 +1288,8 @@ export default {
     /* Set the current month value for the month select slider.. this will show the current month centered in the component. */
     setDefaultForMonthPicker() {
       const currentMonth = new Date().getMonth() + 1;
-
       for (let i in this.children) {
-        this.children[i].selectedMonthIndex = 12-4;
+        this.children[i].selectedMonthIndex = currentMonth-4;
       }
     }
   },
@@ -1309,7 +1317,6 @@ export default {
       this.$refs.hiddenButton[0].$el.focus();
       this.children[0].clicked = false;
     }
-    this.loading = (this.loading) ? false : false;
   },
   watch: {}
 };
