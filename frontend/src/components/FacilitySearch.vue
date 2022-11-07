@@ -18,9 +18,11 @@
           <v-row>
             <v-col cols="10" sm=9 class="py-0">
               <v-text-field
-                style="padding-left:34px;"
+                ref="searchCriteria"
                 background-color="white"
                 dense
+                clearable
+                @click:clear="clearNoValidation()"
                 hint="Type your keyword here"
                 v-model="searchCriteria"
                 outlined
@@ -155,6 +157,9 @@ export default {
     };
   },
   methods: {
+    clearNoValidation() {
+      this.$refs.searchCriteria.resetValidation();
+    },
     rowSelected(facility) {
       this.toggleSelection(facility.facilityName);
       this.searchCriteria = facility.facilityName;
