@@ -150,18 +150,11 @@ export default {
     
   },
   methods: {
-    clicked (){
-      console.log('clicked');
-      return '';
-
-    },
     startApplicationClicked() {
       this.$router.push(PATHS.orgInfo);
     }
-    
-  },
-  
-  components: { SmallCard, MessagesToolbar, SnackBar}
+  },  
+  components: { SmallCard, MessagesToolbar}
 };
 </script>
 

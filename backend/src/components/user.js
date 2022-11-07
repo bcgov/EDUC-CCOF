@@ -1,11 +1,11 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, parseUserGuid, parseUserName} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
+const { STATUS_CODES, CCOF_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
 const _ = require ('lodash');
 
 async function getUserInfo(req, res) {
@@ -19,7 +19,7 @@ async function getUserInfo(req, res) {
 
   let resData = {
     displayName: req.session.passport.user._json.display_name,
-    userName: parseUserName(req),
+    userName: getUserName(req),
     email: req.session.passport.user._json.email,
     organizationName: null,
     organizationId:  null,
@@ -29,9 +29,9 @@ async function getUserInfo(req, res) {
     facilityList: [],
   };
 
-  let businessGuid = parseUserGuid(req);
-  console.info('Business GUID is: ', businessGuid);
-  const userResponse = await getUserProfile(businessGuid);
+  let userGuid = getUserGuid(req);
+  console.info('User Guid is: ', userGuid);
+  const userResponse = await getUserProfile(userGuid);
 
   log.verbose('Status  :: is :: ', userResponse.status);
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
@@ -45,11 +45,19 @@ async function getUserInfo(req, res) {
   //Organization is not normalized, grab organization info from the first element
   resData.organizationName  = userResponse[0]['Organization.name'];
   resData.organizationId  = userResponse[0]['_ccof_organization_value'];
-  let parsedStatus =APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
-  if (!parsedStatus) {
-    parsedStatus = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
+  let statusCode = userResponse[0]['_ccof_organization_value'];
+  if (statusCode) {
+    statusCode = CCOF_STATUS_CODES[userResponse[0]['Application.statuscode']];
+    if (!statusCode) {
+      // TODO: should really throw an error, but for now until the
+      // statuses are stable, just return whatever the value is.
+      statusCode = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
+    }
+  } else {
+    // No status code means new CCOF application
+    statusCode = STATUS_CODES.NEW;
   }
-  resData.applicationStatus  = parsedStatus;
+  resData.applicationStatus  = statusCode;
 
   let facilityArr = userResponse.map(item => {
     return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
