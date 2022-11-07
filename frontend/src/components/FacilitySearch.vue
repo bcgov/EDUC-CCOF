@@ -19,6 +19,7 @@
             <v-col cols="10" sm=9 class="py-0">
               <v-text-field
                 ref="searchCriteria"
+                style="padding-left:34px;"
                 background-color="white"
                 dense
                 clearable
