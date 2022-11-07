@@ -710,23 +710,23 @@
               <v-col cols="1"></v-col>
               <v-col cols="10">
                 <v-card elevation="4" class="">
-                  <v-row>
-                    <v-col cols="2" class="pr-0" style="padding-top:0%;padding-bottom:0px;">
-                        <v-card-title class="pt-2 pb-2 fill-height" style="color:white;font-style:normal;font-weight:700;font-family:Inter;font-size:16px;background-color:#431782;">Child</v-card-title>
+                  <v-row class="mx-0">
+                    <v-col cols="2" class="pr-0 pl-0" style="padding-top:0%;padding-bottom:0px;">
+                        <v-card-title class="results-label pt-2 pb-2 pl-9 fill-height">Child</v-card-title>
                     </v-col>
                     <v-col cols="5" class="pl-0 pr-0" style="padding-top:0%;padding-bottom:0px;">
-                        <v-card-title class="pt-2 pb-2 fill-height" style="color:white;font-style:normal;font-weight:700;font-family:Inter;font-size:16px;background-color:#431782;">
+                        <v-card-title class="results-label text-wrap pt-2 pb-2 fill-height">
                           Estimated child care savings
                         </v-card-title>
                     </v-col>
                     <v-col cols="5" class="pl-0 pr-0" style="padding-top:0%;padding-bottom:0px;background-color:#431782;">
-                        <v-card-title class="pt-2 pb-2 fill-height" style="color:white;font-style:normal;font-weight:700;font-family:Inter;font-size:16px;background-color:#431782;">
+                        <v-card-title class="results-label text-wrap pt-2 pb-2 fill-height" >
                           Estimated parent fee after reduction
                       </v-card-title>
                     </v-col>
                   </v-row>
                   <div v-for="result in results" :key="result.number">
-                    <v-row class="py-3">
+                    <v-row class="py-3 mx-0">
                       <v-col cols="2" class="pr-0" style="padding-bottom:2px;padding-top:2px">
                         <div style="padding-left:24px;font-family:BCSans;font-weight:500;font-size:16px;">
                         {{result.number}}
@@ -1374,6 +1374,16 @@ div.v-select__selection.v-select__selection--comma {
 .bounce-leave-active {
   animation: bounce-in 0.1s reverse;
 }
+.results-label {
+  color: white;
+  font-style: normal;
+  font-weight: 700;
+  font-family: BCSans;
+  font-size: 16px;
+  background-color: #431782;
+  word-break: normal;
+}
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);

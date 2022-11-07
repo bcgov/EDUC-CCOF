@@ -10,14 +10,15 @@
           </v-row>
           <v-row>
             <v-col cols="12" class="pt-5">
-              <v-div color="#313131" style="padding-left:24px;font-style:normal;font-weight:500;font-family:Inter;font-size:16px;">
+              <div color="#313131" style="padding-left:24px;font-style:normal;font-weight:500;font-family:BCSans;font-size:16px;">
                 Enter a facility name or city of a licensed child care provider participating in CCFRI
-              </v-div>
+              </div>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="9" class="pt-0 pb-0" style="padding-left:34px;">
+            <v-col cols="10" sm=9 class="py-0">
               <v-text-field
+                style="padding-left:34px;"
                 background-color="white"
                 dense
                 hint="Type your keyword here"
@@ -29,14 +30,13 @@
                 >
               </v-text-field>
             </v-col>
-            <v-col class="d-flex pt-0 pb-0" cols="1">
+            <v-col class="pt-0" cols="3">
               <v-dialog
                 v-model="dialog"
                 persistent
-                max-width="650px"
                 @click:outside="dialog = false">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;padding-left:24px;padding-right:24px;"
+                  <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;margin-left:10px"
                     color="#0483AF"
                     dark
                     v-bind="attrs"
@@ -176,10 +176,11 @@ export default {
     async searchFacilities (criteria) {
       try {
         if (this.$refs.searchForm.validate()) {
+          let urlEncodedCriteria = encodeURIComponent(criteria);
           this.loading = true;
           this.searchResults = [];
           this.dialog = true;
-          this.searchResults = (await axios.get('/api/public/facilities?criteria={'+criteria+'}&pageindex={}')).data;
+          this.searchResults = (await axios.get('/api/public/facilities?criteria={'+urlEncodedCriteria+'}&pageindex={}')).data;
           this.loading = false;
         } 
       } catch (error) {
