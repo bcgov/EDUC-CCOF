@@ -155,14 +155,7 @@ app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 
-apiRouter.use('/auth', authRouter);
-apiRouter.use('/user', userRouter);
-apiRouter.use('/ccof', ccofRouter);
-apiRouter.use('/facility', facilityRouter);
-apiRouter.use('/organization', organizationRouter);
 apiRouter.use('/public', publicRouter);
-apiRouter.use('/config',configRouter);
-//apiRouter.use('/profile', userprofileRouter);
 
 
 
