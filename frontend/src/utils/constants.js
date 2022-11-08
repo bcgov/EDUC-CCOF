@@ -38,13 +38,14 @@ export const PATHS = {
   home: '/',
   estimator: '/ccfri-estimator',
   orgInfo: '/ccof-application/group/organization-information',
-  familyOrgInfo: '/ccof-application/family/organization-information',
   facInfo: '/ccof-application/group/facility-information',
   fundAmount: '/ccof-application/group/funding-amount',
   confirmation: '/ccof-application/group/confirmation',
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
   addNewFees: '/ccfriApplication/group/add-new-fees',
-  selectApplicationType: '/ccof-application/select-application-type'
+  selectApplicationType: '/ccof-application/select-application-type',
+  familyOrgInfo: '/ccof-application/family/organization-information',
+  eligibility: '/ccof-application/family/eligibility',
 };
 
 export const NAV_BAR_GROUPS = {

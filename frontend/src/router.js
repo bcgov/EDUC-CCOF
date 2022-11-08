@@ -24,9 +24,11 @@ import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
 
+import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
+import Eligibility from '@/components/ccofApplication/family/Eligibility';
+
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
-import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import FundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
@@ -120,6 +122,17 @@ const router = new VueRouter({
       component: FamilyOrganizationInformation,
       meta: {
         pageTitle: 'Organization Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.eligibility,
+      name: 'Eligibility',
+      component: Eligibility,
+      meta: {
+        pageTitle: 'Information to Determine Eligibility',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
