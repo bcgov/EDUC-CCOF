@@ -32,7 +32,7 @@ async function getUserInfo(req, res) {
 
   let businessGuid = parseUserGuid(req);
   console.info('Business GUID is: ', businessGuid);
-  let userResponse = await getUserProfile(businessGuid);
+  const userResponse = await getUserProfile(businessGuid);
 
   log.verbose('Status  :: is :: ', userResponse.status);
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
@@ -49,6 +49,7 @@ async function getUserInfo(req, res) {
   resData.organizationId  = userResponse[0]['_ccof_organization_value'];
   let parsedStatus =APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
   if (!parsedStatus) {
+
     parsedStatus = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
   }
   resData.applicationStatus  = parsedStatus;
@@ -59,8 +60,7 @@ async function getUserInfo(req, res) {
   facilityArr.map( item => {
     item.ccfriStatus = CCFRI_STATUS_CODES[item.ccfriStatus];
     item.eceweStatus = ECEWE_STATUS_CODES[item.eceweStatus];
-    item.facilityAgeGroups = ['1', '2' , '3'];
-    item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
+    
     return item;
   });
 
