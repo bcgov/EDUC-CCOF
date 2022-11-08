@@ -191,6 +191,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
     logResponse('patchOperationWithObjectId', response);
     return response.data;
   } catch (e) {
+    log.error(e);
     log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
   }
@@ -223,7 +224,7 @@ async function getDataWithParams(token, url, params, correlationID) {
       correlationID: correlationID || uuidv4()
     };
 
-    log.info('get Data Url', url);
+    //log.info('get Data Url', url);
     const response = await axios.get(url, params);
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
     log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);

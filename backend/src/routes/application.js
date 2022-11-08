@@ -5,6 +5,7 @@ const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
 const { createCCFRIApplication, updateCCFRIApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
+const { log } = require('../components/logger');
 
 
 // const facilitySchema = {
@@ -28,16 +29,17 @@ const { param, validationResult, checkSchema} = require('express-validator');
 
 /* CREATE a NEW CCFRI application */
 
-router.post('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], (req, res) => { 
-  //validationResult(req).throw();
-  return createCCFRIApplication(req, res);
-});
+// router.post('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], (req, res) => { 
+//   //validationResult(req).throw();
+//   return createCCFRIApplication(req, res);
+// });
 
 //router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], 
 
 /* UPDATE an existing CCFRI application */
 router.patch('/ccfri',  [], (req, res) => { 
   //validationResult(req).throw();
+  console.log(req.bpdy);
   return updateCCFRIApplication(req, res);
 });
 

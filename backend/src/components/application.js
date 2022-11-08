@@ -40,7 +40,9 @@ const _ = require ('lodash');
 //   // hasReceivedFunding: 'XXXXXXXXXXXXX',
 // };
 
-
+let payload = {
+  'ccof_ccfrioptin' : '',
+};
 
 async function createCCFRIApplication(req, res) {
   // let facility = req.body;
@@ -60,16 +62,24 @@ async function createCCFRIApplication(req, res) {
 }
 
 async function updateCCFRIApplication(req, res) {
-  // let facility = req.body;
+  let body = req.body;
+  log.info('app is: ');
+  log.info(body);
+  payload.ccof_ccfrioptin = body.optInResponse;
+
+  payload = JSON.parse(JSON.stringify(payload));
+  log.info(payload);
+  let url = `_ccof_application_value=${body.applicationID},_ccof_facility_value=${body.facilityID}`;
   // facility = _(facility).pick(Object.keys(PostFacilityKeyMap)).mapKeys((value,key) => {return PostFacilityKeyMap[key];});
   // facility = facility.value();
   // facility.ccof_accounttype = 100000001;
 
   try {
-    // let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
+    let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
     // response = _(response).pick(Object.keys(GetFacilityKeyMap)).mapKeys((value,key) => {return GetFacilityKeyMap[key];});
-    return res.status(HttpStatus.OK).json('hey from application Component');
+    return res.status(HttpStatus.OK).json(response);
   } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
