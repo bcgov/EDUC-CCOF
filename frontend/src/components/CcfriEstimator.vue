@@ -692,7 +692,7 @@
                         class="ma-2"
                         color="#0483AF"
                         @click="estimateTheBenefit">
-                        Estimate the benefit
+                        Estimate your savings
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -1379,8 +1379,9 @@ div.v-select__selection.v-select__selection--comma {
   text-align: center!important;
 }
 .v-list-item__title {
-  text-align: center!important;
+  text-align: left!important;
 }
+
 .bounce-leave-active {
   animation: bounce-in 0.1s reverse;
 }
