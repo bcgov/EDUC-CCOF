@@ -28,18 +28,20 @@ const { log } = require('../components/logger');
 
 
 /* CREATE a NEW CCFRI application */
+//post does not work rn, so leaving this commented out - JB 
 
 // router.post('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], (req, res) => { 
 //   //validationResult(req).throw();
 //   return createCCFRIApplication(req, res);
 // });
 
-//router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], 
 
 /* UPDATE an existing CCFRI application */
-router.patch('/ccfri',  [], (req, res) => { 
+
+
+router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
   //validationResult(req).throw();
-  console.log(req.bpdy);
+  //console.log(req.bpdy);
   return updateCCFRIApplication(req, res);
 });
 

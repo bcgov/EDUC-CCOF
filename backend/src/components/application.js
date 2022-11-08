@@ -44,14 +44,9 @@ let payload = {
   'ccof_ccfrioptin' : '',
 };
 
+
+//post doesn't work rn - so just leaving this here for now
 async function createCCFRIApplication(req, res) {
-  // let facility = req.body;
-  // let organizationString = '/accounts(' + req.organizationId + ')';
-  // //"parentaccountid@odata.bind": "/accounts(c4a15c1f-0449-ed11-bba2-000d3af4f031)", // Lookup - Organization Guid
-  // facility = _(facility).pick(Object.keys(PostFacilityKeyMap)).mapKeys((value,key) => {return PostFacilityKeyMap[key];});
-  // facility = facility.value();
-  // facility['ccof_accounttype'] = 100000001;
-  // facility['parentaccountid@odata.bind'] = organizationString;
 
   try {
     //let facilityGuid = await postOperation('accounts', facility);
@@ -83,21 +78,6 @@ async function updateCCFRIApplication(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
-
-
-// async function getUserProfile(businessGuid) {
-  
-//   try {
-//     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
-//     log.verbose('UserProfile Url is', url);
-//     const response = await axios.get(url, getHttpHeader());
-//     return response.data;
-//   } catch (e) {
-//     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
-//     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
-//   }
-// }
-
 
 module.exports = {
   createCCFRIApplication,

@@ -32,12 +32,22 @@ async function getUserInfo(req, res) {
 
   let businessGuid = parseUserGuid(req);
   console.info('Business GUID is: ', businessGuid);
-  const userResponse = await getUserProfile(businessGuid);
+  let userResponse = await getUserProfile(businessGuid);
 
   log.verbose('Status  :: is :: ', userResponse.status);
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
   log.verbose('Response   :: is :: ', minify(userResponse.data));
 
+  userResponse.push( {
+    'Organization.name' : "Test Org 1",
+    'BCeID.ccof_userid' : "123-bbbb-cccc",
+    'Application.statuscode' : 100000001 ,
+    'CCOF.ccof_facility' : '123456',
+    'CCOF.Facility.name' : 'Best Daycare 1',
+    'CCFRI.statuscode' : 0,
+    'ECEWE.statuscode' : 0,
+  
+  });
   // const userResponse = [
   //   {
   //     'Organization.name' : "Test Org 1",
