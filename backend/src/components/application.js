@@ -58,8 +58,6 @@ async function createCCFRIApplication(req, res) {
 
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
-  log.info('app is: ');
-  log.info(body);
   payload.ccof_ccfrioptin = body.optInResponse;
 
   payload = JSON.parse(JSON.stringify(payload));
