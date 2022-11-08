@@ -5,7 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
 const _ = require ('lodash');
 
 async function getUserInfo(req, res) {
@@ -38,6 +38,47 @@ async function getUserInfo(req, res) {
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
   log.verbose('Response   :: is :: ', minify(userResponse.data));
 
+  // const userResponse = [
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '123456',
+  //     'CCOF.Facility.name' : 'Best Daycare 1',
+  //     'CCFRI.statuscode' : 0,
+  //     'ECEWE.statuscode' : 0,
+
+  //   },
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '987352723',
+  //     'CCOF.Facility.name' : 'Wee lil happy babiez',
+  //     'CCFRI.statuscode' : 2,
+  //     'ECEWE.statuscode' : 1,
+  //   },
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '1232464456',
+  //     'CCOF.Facility.name' : 'Best Daycare 2',
+  //     'CCFRI.statuscode' : 1,
+  //     'ECEWE.statuscode' : 1,
+
+  //   },
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '987353422723',
+  //     'CCOF.Facility.name' : 'Wee lil happy kidoz',
+  //     'CCFRI.statuscode' : 2,
+  //     'ECEWE.statuscode' : 1,
+  //   }
+  // ];   
+
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
@@ -59,8 +100,12 @@ async function getUserInfo(req, res) {
   facilityArr.map( item => {
     item.ccfriStatus = CCFRI_STATUS_CODES[item.ccfriStatus];
     item.eceweStatus = ECEWE_STATUS_CODES[item.eceweStatus];
+    item.facilityAgeGroups = ['1', '2' , '3'];
+    item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
     return item;
   });
+
+  
   resData.facilityList = facilityArr;
   
   return res.status(HttpStatus.OK).json(resData);
