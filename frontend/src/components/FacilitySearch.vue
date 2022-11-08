@@ -37,6 +37,7 @@
               <v-dialog
                 v-model="dialog"
                 persistent
+                max-width="650px"
                 @click:outside="dialog = false">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;margin-left:10px"
@@ -203,3 +204,12 @@ export default {
   }
 };
 </script>
+
+<style>
+.fa-chevron-left:before {
+  color: #0FC3ED !important;
+}
+.fa-chevron-right:before {
+  color: #0FC3ED !important;
+}
+</style>
