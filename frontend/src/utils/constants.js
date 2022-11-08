@@ -38,6 +38,7 @@ export const PATHS = {
   home: '/',
   estimator: '/ccfri-estimator',
   orgInfo: '/ccof-application/group/organization-information',
+  familyOrgInfo: '/ccof-application/family/organization-information',
   facInfo: '/ccof-application/group/facility-information',
   fundAmount: '/ccof-application/group/funding-amount',
   confirmation: '/ccof-application/group/confirmation',

@@ -25,7 +25,8 @@ import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLan
 import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
-import OrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
+import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
+import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import FundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
@@ -104,8 +105,19 @@ const router = new VueRouter({
     },
     {
       path: PATHS.orgInfo,
-      name: 'Organization Information',
-      component: OrganizationInformation,
+      name: 'Group Organization Information',
+      component: GroupOrganizationInformation,
+      meta: {
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.familyOrgInfo,
+      name: 'Family Organization Information',
+      component: FamilyOrganizationInformation,
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,
