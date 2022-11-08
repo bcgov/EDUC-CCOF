@@ -5,7 +5,6 @@ import VueMeta from 'vue-meta';
 import moment from 'moment';
 
 import Logout from './components/Logout';
-import UserActivationLinkError from './components/UserActivationLinkError';
 import SessionExpired from './components/SessionExpired';
 import ErrorPage from '@/components/ErrorPage.vue';
 import LoginError from '@/components/LoginError.vue';
@@ -15,10 +14,6 @@ import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
-
-
-
-import OrganizationSelection from '@/components/OrganizationSelection';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
