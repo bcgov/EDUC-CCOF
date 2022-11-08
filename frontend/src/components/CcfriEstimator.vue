@@ -1141,7 +1141,7 @@ export default {
           this.results.push({ number: i + 1,
             reductionAmountPerChild: Math.round(reductionAmountPerChild),
             actualParentFeePerChild: Math.round(actualParentFeePerChild),
-            feeFrequency: this.children[i].feeFrequency });
+            feeFrequency: this.children[i].parentFeeFrequency });
         }
       }
     },
@@ -1322,14 +1322,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.fa-caret-down::before {
+    color: #0FC3ED !important;
+}
 .tooltip {
-  border-radius: 50%;
-  height: 30px;
-  width: 30px;
-  min-width: 30px;
-  text-align: center;
-  background-color:#7B2EE5;
+  border-radius: 50% !important;
+  height: 30px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  text-align: center !important;
+  background-color:#7B2EE5 !important;
 }
 .v-tooltip__content {
   opacity: .95 !important;
