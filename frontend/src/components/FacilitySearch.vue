@@ -5,7 +5,7 @@
         <v-card elevation="4">
           <v-row>
             <v-col style="padding-top:0%;padding-bottom:0px;">
-                <v-card-title class="pt-2 pb-2" style="color:white;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;background-color:#431782;">Optional Facility Search</v-card-title>
+                <v-card-title class="pt-2 pb-2" style="color:white;font-style:normal;font-family:BCSans;font-weight:700;font-size:20px;background-color:#431782;">Optional Facility Search</v-card-title>
             </v-col>
           </v-row>
           <v-row>
@@ -40,7 +40,7 @@
                 max-width="650px"
                 @click:outside="dialog = false">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;margin-left:10px"
+                  <v-btn style="font-style:normal;font-weight:700;font-family:BCSans;;font-size:16px;margin-left:10px"
                     color="#0483AF"
                     dark
                     v-bind="attrs"
@@ -103,12 +103,12 @@
                           <template v-slot:item="{ item }">
                           <tr :class="selectedFacility.indexOf(item.name)>-1?'grey':''" @click="rowSelected(item);dialog=false">
                             <td style="padding-bottom:10px;padding-top:10px;">
-                              <span style="font-weight:600;color:#431782;font-size:16px;font-family:Inter;">{{ item.facilityName }}</span>
+                              <span style="font-weight:600;color:#431782;font-size:16px;font-family:BCSans;">{{ item.facilityName }}</span>
                               <br>
-                              <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}
+                              <span style="font-weight:600;color: #000;font-size:14px;font-family:BCSans;">City: </span>{{ item.city }}
                             </td>
                             <td class="text-right">
-                              <v-btn style="font-style:normal;font-weight:500;font-family:Inter;font-size:14px;padding-left:24px;padding-right:24px;"
+                              <v-btn style="font-style:normal;font-weight:500;font-family:BCSans;font-size:14px;padding-left:24px;padding-right:24px;"
                                 color="#0483AF"
                                 dark>
                                 Select
