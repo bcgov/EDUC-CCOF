@@ -140,41 +140,42 @@ export default {
     refreshNavBar(){
       this.items = [];
       this.items.push(this.getCCOFNavigation());
-      this.items.push(
-        {
-          title: NAV_BAR_GROUPS.CCFRI,
-          link: { name: 'ccfri-application' },
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
-          expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
-          items: [
-            {
-              title: 'Parent fees 1',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Request for Information 1',
-              link: { name: 'Funding Amount' },
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Parent fees 2',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Request for Information 2',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },          
-          ],
-        },
-      );
+      this.items.push(this.getCCFRINavigation());
+      // this.items.push(
+      //   {
+      //     title: NAV_BAR_GROUPS.CCFRI,
+      //     link: { name: 'ccfri-application' },
+      //     isAccessible: true,
+      //     icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //     expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
+      //     items: [
+      //       {
+      //         title: 'Parent fees 1',
+      //         link: '',
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },
+      //       {
+      //         title: 'Request for Information 1',
+      //         link: { name: 'Funding Amount' },
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },
+      //       {
+      //         title: 'Parent fees 2',
+      //         link: '',
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },
+      //       {
+      //         title: 'Request for Information 2',
+      //         link: '',
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },          
+      //     ],
+      //   },
+      // );
 
       this.items.push(
         {
@@ -197,6 +198,47 @@ export default {
     },
     isExpanded(groupName) {
       return (groupName === this.navBarGroup);
+    },
+    getCCFRINavigation(){
+      let items = [];
+      // items.push(
+      //   {
+      //     title: NAV_BAR_GROUPS.CCFRI,
+      //     link: { name: 'ccfri-application' },
+      //     isAccessible: true,
+      //     icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //     expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI)
+      //   }
+      // );
+
+      if (this.facilityList?.length > 0) {
+        this.facilityList?.forEach( item => {
+          items.push(
+            {
+              title: 'Parent Fees for ' + item.facilityName,
+              id: item.facilityId,
+              link: { name: 'Facility Parent Fees'},
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              // function: this.loadFacility(x.id)
+            },
+          );
+        });
+      } 
+
+
+
+      let retval =   {
+        title: NAV_BAR_GROUPS.CCFRI,
+        isAccessible: true,
+        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
+        items: items
+      };
+      return retval;
+      
+
     },
     getCCOFNavigation() {
       let items = [];
