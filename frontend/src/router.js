@@ -21,11 +21,12 @@ import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
 
 import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
+import FamilyFundAmount from '@/components/ccofApplication/family/FamilyFundAmount';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
-import FundAmount from '@/components/ccofApplication/group/FundAmount';
+import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
 import SearchFacility from '@/components/FacilitySearch';
@@ -101,7 +102,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.orgInfo,
+      path: PATHS.group.orgInfo,
       name: 'Group Organization Information',
       component: GroupOrganizationInformation,
       meta: {
@@ -112,7 +113,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.familyOrgInfo,
+      path: PATHS.family.orgInfo,
       name: 'Family Organization Information',
       component: FamilyOrganizationInformation,
       meta: {
@@ -123,7 +124,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.eligibility,
+      path: PATHS.family.eligibility,
       name: 'Eligibility',
       component: Eligibility,
       meta: {
@@ -134,7 +135,18 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.facInfo + '/:urlFacilityId',
+      path: PATHS.family.fundAmount,
+      name: 'FamilyFundAmount',
+      component: FamilyFundAmount,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.group.facInfo + '/:urlFacilityId',
       name: 'Facility Information',
       component: FacilityInformation,
       meta: {
@@ -145,9 +157,9 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.fundAmount,
+      path: PATHS.group.fundAmount,
       name: 'Funding Amount',
-      component: FundAmount,
+      component: GroupFundAmount,
       meta: {
         pageTitle: 'Application Confirmation',
         requiresAuth: true,
@@ -156,11 +168,11 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.confirmation,
-      name: 'Applicaqtion Confirmation',
+      path: PATHS.group.confirmation,
+      name: 'Application Confirmation',
       component: ApplicationConfirmation,
       meta: {
-        pageTitle: 'Funding Amount',
+        pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI

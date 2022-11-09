@@ -160,7 +160,7 @@ export default {
       this.showOptStatus[index] = this.showOptStatus[index] ? false : true;
     },
     previous() {
-      this.$router.push(PATHS.orgInfo); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.group.orgInfo); //TODO: change this, from CCOF page
     },
     next() {
       this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
