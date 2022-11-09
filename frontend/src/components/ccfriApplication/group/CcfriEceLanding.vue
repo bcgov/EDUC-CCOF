@@ -36,7 +36,8 @@
                   <v-btn
                   class = "my-10 mx-14 justify-end"
                   @click="toggle(index)"
-                  :showOptStatus = "showOptStatus[index]" 
+                  :showOptStatus = "showOptStatus[index]"
+                  dark color='#003366' 
                   > 
                     UPDATE
                   </v-btn>
