@@ -4,7 +4,9 @@
             <MessagesToolbar></MessagesToolbar>
         </div>
         <br><br>
-        
+        <v-btn color="info" outlined x-large :disabled="ccfriOptInOrOut.length != facilityList.length" @click="updateCCFRI()">
+            UPDATE CCFRI APPLICATION</v-btn>
+        {{ccfriOptInOrOut}}
         <!--TODO: The update buttons don't align and I don't like it !!-->
         <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
           this will need to get changed at a later point when the API is more built out 
@@ -12,49 +14,51 @@
         -->
         <LargeButtonContainer>
           
-          <v-card elevation="4" class="pa-2 mx-2 my-10 rounded-lg col-12"
+          <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
             tiled
             exact tile
             :ripple="false"
-            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus} , index) in userInfo.facilityList" :key="facilityId">
+            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus } , index) in facilityList" :key="facilityId">
             <v-card-text>
               <v-row>
-                <v-col cols="" class="col-12 col-md-7">
+                <v-col cols="" class="col-12 col-md-6">
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
                   <p class="text--primary"> Licence : 123456789</p>
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus}}</p> </strong>
                 </v-col>
-                <v-col cols="" class="d-flex align-center col-12 col-md-5"
+                <v-col cols="" class="d-flex align-center col-12 col-md-6"
                   v-if="!showOptStatus[index]"
                 >
-                  <p class="text--primary" width="50px" >Status: {{ccfriStatus}}</p>
+                  <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
                   <br>
                   <v-btn
-                  class = "ma-10 "
+                  class = "my-10 mx-12 justify-end"
                   @click="toggle(index)"
                   :showOptStatus = "showOptStatus[index]" 
                   > 
                     UPDATE
                   </v-btn>
                 </v-col>
-                <v-col v-else cols="" class="d-flex align-center col-12 col-md-5"
+                <v-col v-else cols="" class="d-flex align-center col-12 col-md-6  "
                 >
-                  <p class="text--primary" >Status: {{ccfriStatus}}</p>
+                  <p class="text--primary  " >Status: {{ccfriStatus}}</p> <br>
                   <v-row>
                     <v-radio-group
-                      required
-                      row
+                      mandatory
                       v-model="ccfriOptInOrOut[index]"
                       class = "ml-10"
                     >
                       <v-radio
                         label="Opt-In"
-                        value="Out"
+                        value="1"
+                        
                       ></v-radio>
                       <v-radio
                         label="Opt-Out"
-                        value="In"
+                        value="0"
+                        
                       ></v-radio>
                     </v-radio-group>
                   </v-row>
@@ -70,7 +74,7 @@
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="ccfriOptInOrOut.length != facilityList.length">Next</v-btn>
           <v-btn color="primary" outlined x-large>
             Save</v-btn>
         </v-row>
@@ -82,10 +86,15 @@
 <script>
 
 
-import { mapGetters} from 'vuex';
+import { mapGetters, mapState} from 'vuex';
 import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
+import axios from 'axios';
+import ApiService from '@/common/apiService';
+import { userInfo } from 'os';
+
+const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
 
 export default {
   name: 'CcfriLandingPage',
@@ -94,7 +103,7 @@ export default {
       input : '',
       showOptStatus : '',
       isValidForm: undefined,
-      ccfriOptInOrOut : {},
+      ccfriOptInOrOut : [],
       feeList : [
         {
           date: 'Jan 2022',
@@ -112,21 +121,17 @@ export default {
           post3year: 8223
         }
       ],
+      rules: [
+        (v) => !!v  || 'Required.',
+      ],
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    chosenOrg(){
-      //TODO: This is hardcoom a chosen org from an earlier screen.
-      return this.userInfo;
-    },
-    
-    // allFacilities(){
-    //   return this.chosenOrg.facilityList;
-    // }
+    ...mapState('facility', ['facilityList']),
   },
   beforeMount: function() {
-    this.showOptStatus = new Array(this.userInfo.facilityList.length).fill(false);
+    this.showOptStatus = new Array(this.facilityList.length).fill(false);
   },
   methods: {
     toggle(index) {
@@ -145,6 +150,37 @@ export default {
     refreshWithFacility() {
       let x = this.$route.params.urlFacilityId;
       this.loadFacility(x);
+    },
+    async updateCCFRI () {
+
+      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
+      this.facilityList.forEach (async (facility, index) => {
+
+        let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+
+        payload = JSON.parse(JSON.stringify(payload));
+
+        console.log(payload);
+
+        try {
+          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        } catch (error) {
+          console.info(error);
+        }
+
+      });
+
+      
+
+      
+    },
+    //this.applicationStatus = (await axios.patch('/api/application/ccfri/', payload));
+    async getFacility (id) {
+      try {
+        this.facilityResult = (await axios.get('/api/application/'+id)).data;
+      } catch (error) {
+        console.info(error);
+      }
     }
   },
   components: { MessagesToolbar, LargeButtonContainer,  }
