@@ -345,10 +345,10 @@ export default {
   },
   methods: {
     previous() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.group.facInfo);
     },
     next() {
-      this.$router.push(PATHS.confirmation);
+      this.$router.push(PATHS.group.confirmation);
     },
     allowedStep: m => m % 5 === 0,
     formatTime: v => {

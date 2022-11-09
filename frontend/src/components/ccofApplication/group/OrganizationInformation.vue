@@ -198,7 +198,7 @@ export default {
     ...mapActions('organization', ['saveOrganization']),
 
     next() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.group.facInfo);
     },
     async save() {
       this.processing = true;

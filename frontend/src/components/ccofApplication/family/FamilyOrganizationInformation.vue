@@ -6,11 +6,11 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
+                <v-text-field outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
               </v-col>
 
               <v-col>
-                <v-text-field outlined required v-model="facilityName" :rules="rules.required" label="Facility Name" />
+                <v-text-field outlined required v-model="model.facilityName" :rules="rules.required" label="Facility Name" />
               </v-col>
             </v-row>
 
@@ -20,19 +20,19 @@
 
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="nameOfCareProvider" :rules="rules.required" label="Name of Care Provider (if registered company)" />
+                <v-text-field outlined required v-model="model.nameOfCareProvider" :rules="rules.required" label="Name of Care Provider (if registered company)" />
               </v-col>
               <v-col>
-                <v-text-field outlined required v-model="address1" :rules="rules.required" label="Mailing Address" />
+                <v-text-field outlined required v-model="model.address1" :rules="rules.required" label="Mailing Address" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="city1" :rules="rules.required" label="City/Town" />
+                <v-text-field outlined required v-model="model.city1" :rules="rules.required" label="City/Town" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="postalCode1" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
+                <v-text-field outlined required v-model="model.postalCode1" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
               </v-col>
             </v-row>
 
@@ -42,16 +42,16 @@
 
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="address2" label="Street Address" />
+                <v-text-field outlined required v-model="model.address2" label="Street Address" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="city2" label="City/Town" />
+                <v-text-field outlined required v-model="model.city2" label="City/Town" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="postalCode2" :rules="rules.postalCode" label="Postal Code" />
+                <v-text-field outlined required v-model="model.postalCode2" :rules="rules.postalCode" label="Postal Code" />
               </v-col>
             </v-row>
 
@@ -59,19 +59,19 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="yearBeganOperation" :rules="[...rules.required, ...rules.YYYY]" label="Year Facility began Operation (YYYY)" />
+                <v-text-field outlined required v-model="model.yearBeganOperation" :rules="[...rules.required, ...rules.YYYY]" label="Year Facility began Operation (YYYY)" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
+                <v-text-field outlined required v-model="model.email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="phone" :rules="rules.required" label="Business Phone" />
+                <v-text-field outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="businessId" :rules="rules.required" label="Business BCeID" />
+                <v-text-field outlined required v-model="model.businessId" :rules="rules.required" label="Business BCeID" />
               </v-col>
             </v-row>
 
@@ -80,12 +80,12 @@
             <v-row>
               <v-col cols="12" md="6">
                 <label>Type of Orgnization</label>
-                <v-radio-group v-model="organizationType" :rules="rules.required">
+                <v-radio-group v-model="model.organizationType" :rules="rules.required">
                   <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" v-model.number="incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                <v-text-field outlined required :rules="rules.required" v-model.number="model.incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
               </v-col>
             </v-row>
           </v-container>
@@ -119,74 +119,12 @@ export default {
       get() { return this.$store.state.organization.organizationId; },
       set(value) { this.$store.commit('organization/setOrganizationId', value); }
     },
-    legalName: {
-      get() { return this.$store.state.organization.legalName; },
-      set(value) { this.$store.commit('organization/setLegalName', value); }
-    },
-    address1: {
-      get() { return this.$store.state.organization.address1; },
-      set(value) { this.$store.commit('organization/setAddress1', value); }
-    },
-    city1: {
-      get() { return this.$store.state.organization.city1; },
-      set(value) { this.$store.commit('organization/setCity1', value); }
-    },
-    postalCode1: {
-      get() { return this.$store.state.organization.postalCode1; },
-      set(value) { this.$store.commit('organization/setPostalCode1', value); }
-    },
-    address2: {
-      get() { return this.$store.state.organization.address2; },
-      set(value) { this.$store.commit('organization/setAddress2', value); }
-    },
-    city2: {
-      get() { return this.$store.state.organization.city2; },
-      set(value) { this.$store.commit('organization/setCity2', value); }
-    },
-    postalCode2: {
-      get() { return this.$store.state.organization.postalCode2; },
-      set(value) { this.$store.commit('organization/setPostalCode2', value); }
-    },
-    phone: {
-      get() { return this.$store.state.organization.phone; },
-      set(value) { this.$store.commit('organization/setPhone', value); }
-    },
-    businessId: {
-      get() { return this.$store.state.organization.businessId; },
-      set(value) { this.$store.commit('organization/setBusinessId', value); }
-    },
-    email: {
-      get() { return this.$store.state.organization.email; },
-      set(value) { this.$store.commit('organization/setEmail', value); }
-    },
-    incNumber: {
-      get() { return this.$store.state.organization.incNumber; },
-      set(value) { this.$store.commit('organization/setIncNumber', value); }
-    },
-    organizationType: {
-      get() { return this.$store.state.organization.organizationType; },
-      set(value) { this.$store.commit('organization/setOrganizationType', value); }
-    },
-    isValidForm: {
-      get() { return this.$store.state.organization.isValidForm; },
-      set(value) { this.$store.commit('organization/setIsValidForm', value); }
-    },
-    facilityName: {
-      get() { return this.$store.state.organization.facilityName; },
-      set(value) { this.$store.commit('organization/setFacilityName', value); }
-    },
-    nameOfCareProvider: {
-      get() { return this.$store.state.organization.nameOfCareProvider; },
-      set(value) { this.$store.commit('organization/setNameOfCareProvider', value); }
-    },
-    yearBeganOperation: {
-      get() { return this.$store.state.organization.yearBeganOperation; },
-      set(value) { this.$store.commit('organization/setYearBeganOperation', value); }
-    }
   },
   mixins: [alertMixin],
   data() {
     return {
+      model: {},
+      isValidForm: undefined,
       rules,
       processing: false,
     };
@@ -200,7 +138,7 @@ export default {
     ...mapActions('organization', ['saveOrganization']),
 
     next() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.family.eligibility);
     },
     async save() {
       this.processing = true;

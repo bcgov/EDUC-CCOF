@@ -53,10 +53,10 @@ export default {
   },
   methods: {
     previous() {
-      this.$router.push(PATHS.fundAmount);
+      this.$router.push(PATHS.group.fundAmount);
     },
     addAnotherFacility() { 
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.group.facInfo);
     }
   }
 };

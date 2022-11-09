@@ -47,9 +47,9 @@ export const PATHS = {
     confirmation: '/ccof-application/group/confirmation',
   },
   family: {
-    fundAmount: '/ccof-application/family/funding-amount',
     orgInfo: '/ccof-application/family/organization-information',
     eligibility: '/ccof-application/family/eligibility',
+    fundAmount: '/ccof-application/family/funding-amount',
   },
 };
 

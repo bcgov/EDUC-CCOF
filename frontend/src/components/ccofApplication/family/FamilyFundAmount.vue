@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="model.isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
 
@@ -194,10 +194,10 @@ export default {
   },
   methods: {
     previous() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.family.fundAmount);
     },
     next() {
-      this.$router.push(PATHS.confirmation);
+      this.$router.push(PATHS.group.confirmation);
     },
     allowedStep: m => m % 5 === 0,
     formatTime: v => {

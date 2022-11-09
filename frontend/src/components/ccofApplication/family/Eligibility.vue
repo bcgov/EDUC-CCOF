@@ -78,10 +78,10 @@ export default {
     ...mapActions('facility', ['loadFacility']),
 
     previous() {
-      this.$router.push(PATHS.orgInfo);
+      this.$router.push(PATHS.family.orgInfo);
     },
     next() {
-      this.$router.push(PATHS.fundAmount);
+      this.$router.push(PATHS.family.fundAmount);
     },
     refreshWithFacility() {
       let x = this.$route.params.urlFacilityId;
