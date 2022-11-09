@@ -28,6 +28,15 @@ async function createOrganization(req, res) {
   organization.data.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
   organization.data['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${userGuid}')`;
 
+  // For new organizations, create a CCOF Application header
+  organization.data['ccof_ccof_application_Organization_account'] = [ 
+    {
+      'ccof_providertype': 100000000, //GROUP, 100000001 - Family
+      'ccof_applicationtype': 100000000, // new
+      'ccof_ProgramYear@odata.bind': '/ccof_program_years(fba5721b-9434-ed11-9db1-002248d53d53)',
+    }
+  ];
+
   try {
     let organizationGuid = await postOperation('accounts', organization);
     return res.status(HttpStatus.CREATED).json({ organizationId: organizationGuid });
