@@ -62,6 +62,7 @@
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
                 <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
+                <v-list-item-subtitle v-if="subItem.subTitle">{{ subItem.subTitle }}</v-list-item-subtitle>
               </v-list-item-content>
             </router-link>
           </v-list-item>
@@ -125,7 +126,15 @@ export default {
       immediate: true,
       deep: true
     },
-  },
+    facilityList: {
+      handler() {
+        this.refreshNavBar();
+      },
+      immediate: true,
+      deep: true
+    },
+
+},
   methods: {
     setActive(item) {
       this.items[1].expanded = false;
@@ -210,19 +219,21 @@ export default {
         }
       );
       if (this.facilityList?.length > 0) {
-        this.facilityList?.forEach( item => {
+        this.facilityList?.forEach((item, index) => {
           items.push(
             {
-              title: item.facilityName,
+              title: 'Facility ' + (index + 1),
+              subTitle: item.facilityName,
               id: item.facilityId,
-              link: { name: 'Facility Information', params: {urlFacilityId: item.facilityId}},
+              link: { name: 'Facility Information Guid', params: {urlFacilityId: item.facilityId}},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
               // function: this.loadFacility(x.id)
             },
             {
-              title: 'Funding ' + item.facilityName,
+              title: 'Funding ' +  (index + 1),
+              subTitle: item.facilityName,
               link: { name: 'Funding Amount'},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace

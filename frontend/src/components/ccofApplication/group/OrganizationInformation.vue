@@ -209,7 +209,6 @@ export default {
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
-
       this.processing = false;
     },
     async loadData() {

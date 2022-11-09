@@ -2,7 +2,6 @@
 const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE } = require('../util/constants');
-
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { OrganizationMappings } = require('../util/mapping/Mappings');
 
@@ -26,9 +25,8 @@ async function createOrganization(req, res) {
   const userGuid = getUserGuid(req);
   let organization = req.body;
   organization = new MappableObjectForBack(organization, OrganizationMappings);
-  organization = organization.toJSON();
-  organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
-  organization['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${userGuid}')`;
+  organization.data.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
+  organization.data['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${userGuid}')`;
 
   try {
     let organizationGuid = await postOperation('accounts', organization);

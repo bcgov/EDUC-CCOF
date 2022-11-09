@@ -16,6 +16,38 @@ const OrganizationMappings = [
   { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
 ];
 
+const FacilityMappings = [
+  { back: 'name', front: 'facilityName'},
+  { back: 'ccof_facilitystartdate', front: 'yearBeginOperation'},
+  { back: 'address1_line1', front: 'facilityAddress'},
+  { back: 'address1_city', front: 'city'},
+  { back: 'address1_postalcode', front: 'postalCode'},
+  { back: 'ccof_position', front: 'position'},
+  { back: 'emailaddress1', front: 'email'},
+  { back: 'address1_primarycontactname', front: 'contactName'},
+  { back: 'telephone1', front: 'phone'},
+  { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
+  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+];
+
+const CCOFApplicationMappings = [
+  { back: 'ccof_applicationtype', front: 'applicationType' }, // 100000000 New Org
+  { back: 'ccof_name', front:'name' }, // APP-22000059
+  { back: 'ccof_applicationid', front: 'applicationId' }, // guid
+  { back: '_ccof_organization_value', front: 'organizationId' }, //guid 
+  { back: 'ccof_familychildcare', front: 'isFamiliyChildCare' }, //false,
+  { back: 'ccof_inhomemultiagechildcare', front: 'isHomeMultiAgeChildCare' }, //false,
+  { back: '_ccof_programyear_value', front: 'programYearId' }, //guid
+  { back: 'ccof_multiagechildcare', front: 'isMultiAgeChildCare' }, //false,
+  { back: 'ccof_providertype', front: 'providerTypeId' }, //100000000 Group
+  { back: 'ccof_consent', front: 'hasConset' },  // 1
+];
+
+
+
 module.exports = {
-  OrganizationMappings
+  OrganizationMappings,
+  FacilityMappings,
+  CCOFApplicationMappings
 };
