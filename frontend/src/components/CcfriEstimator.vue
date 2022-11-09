@@ -989,10 +989,10 @@ export default {
       console.log('getFullTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
-    getPartTimeMonthlyParentFee(fee, careDaysPerWeek, feeFrequency) {
+    getPartTimeMonthlyParentFee(fee, feeFrequency) {
       switch (feeFrequency) {
       case 'Daily':
-        return fee * careDaysPerWeek;
+        return fee * 20;
       case 'Weekly':
         return fee * 4;
       case 'Monthly':
@@ -1095,7 +1095,7 @@ export default {
             // console.log('partTimeFullDayReductionAmount: ' + partTimeFullDayReductionAmount);
             totalRateReduction = partTimeHalfDayReductionAmount + partTimeFullDayReductionAmount;
             let rateReductionFloor = this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays);
-            let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee, partTimeNumberOfDays + fullTimeNumberOfDays, this.children[i].parentFeeFrequency);
+            let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
             //Make sure it's at least the Rate Floor amount
             totalRateReduction = Math.max(totalRateReduction, rateReductionFloor);
             //Make sure it's not over the max rate allowed ammount
