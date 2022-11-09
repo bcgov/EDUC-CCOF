@@ -2,9 +2,7 @@
   <!--TODO: add in isValidForm ruleset-->
   <v-form ref="ccfriform" v-model="isValidForm">
     <v-container class="px-10">
-      <!--Start previous year fees-->
-
-      {{currentFacility}}
+      
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
@@ -16,9 +14,7 @@
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
       </p>
 
-      {{currentFacility}}
-
-      {{facilityFees}}
+      
 
       <v-card  
       v-for="({key, date, title} , index) in facilityFees" :key="key"
@@ -66,7 +62,7 @@
               </p>
               <v-radio-group
                 required
-                v-model="previousYoungerChildFixedFee"
+                v-model="isFixedFee[index]"
               >
                 <v-radio
                   label="Yes"
@@ -78,108 +74,108 @@
                 ></v-radio>
               </v-radio-group>
 
-              <v-container v-if="previousYoungerChildFixedFee==='No' && previousYoungerChildFeeSchedule !='daily'" class="ma-0 pa-0">
+              <v-container v-if="isFixedFee[index]==='No' && feeSchedule[index] !='daily'" class="ma-0 pa-0">
               <v-row>
                 <v-col>
-                  <label>Enter your {{previousYoungerChildFeeSchedule}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                  <label>Enter your {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeApr" label="April" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="apr[index]" label="April" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeMay" label="May" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="may[index]" label="May" prefix="$"/>
                 </v-col >
                 <v-col 
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeJun" label="June" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jun[index]" label="June" prefix="$"/>
                 </v-col>
                 <v-col
                 class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeJul" label="July" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jul[index]" label="July" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeAug" label="August" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="aug[index]" label="August" prefix="$" />
                 </v-col>
                 <v-col
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeSep" label="September" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sep[index]" label="September" prefix="$" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col 
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeOct" label="October" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="oct[index]" label="October" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeNov" label="November" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="nov[index]" label="November" prefix="$"/>
                 </v-col >
                 <v-col 
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeDec" label="December" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="dec[index]" label="December" prefix="$"/>
                 </v-col >
                 <v-col
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeJan" label="Jan" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jan[index]" label="Jan" prefix="$"/>
                 </v-col>
                 <v-col
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeFeb" label="Feb" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="feb[index]" label="Feb" prefix="$" />
                 </v-col>
                 <v-col
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeMar" label="March" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="mar[index]" label="March" prefix="$" />
                 </v-col>
               </v-row>
             
               </v-container>
 
-              <v-container v-else-if="previousYoungerChildFeeSchedule ==='daily' && previousYoungerChildFixedFee==='No'" class="ma-0 pa-0">
+              <v-container v-else-if="feeSchedule[index] ==='daily' && isFixedFee[index]==='No'" class="ma-0 pa-0">
                 <v-row>
                   <v-col>
-                    <label>Enter your {{previousYoungerChildFeeSchedule}} fee in every day below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                    <label>Enter your {{feeSchedule[index]}} fee in every day below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeMon" label="Monday" prefix="$"/>
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="mon[index]" label="Monday" prefix="$"/>
                   </v-col>
                   <v-col
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeTue" label="Tuesday" prefix="$" />
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="tue[index]" label="Tuesday" prefix="$" />
                   </v-col>
                   <v-col
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeWed" label="Wednesday" prefix="$" />
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="wed[index]" label="Wednesday" prefix="$" />
                   </v-col>
                   <v-col
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeThu" label="Thursday" prefix="$"/>
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="thu[index]" label="Thursday" prefix="$"/>
                   </v-col>
                   <v-col 
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeFri" label="Friday" prefix="$"/>
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="fri[index]" label="Friday" prefix="$"/>
                   </v-col >
                   <v-col 
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeSat" label="Saturday" prefix="$"/>
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sat[index]" label="Saturday" prefix="$"/>
                   </v-col >
                   <v-col
                     class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeSun" label="Sunday" prefix="$"/>
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sun[index]" label="Sunday" prefix="$"/>
                   </v-col>
                 
                 </v-row>
@@ -189,13 +185,13 @@
               <v-container v-else class="ma-0 pa-0">
                 <v-row>
                     <v-col>
-                      <label>What is the {{previousYoungerChildFeeSchedule}} fixed fee?</label>
+                      <label>What is the {{feeSchedule[index]}} fixed fee?</label>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col
                       class="col-6 col-md-2">
-                        <v-text-field type="number" outlined :rules="feeRules"  v-model.number="previousYoungerChildFeeSchedule" prefix="$"/>
+                        <v-text-field type="number" outlined :rules="feeRules"  v-model.number="fixedFeeAmount[index]" prefix="$"/>
                     </v-col>
                 </v-row>
               </v-container>
@@ -357,13 +353,33 @@ export default {
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
-      dates: [],
       closureFees: undefined,
       closureReason: undefined,
       closedFeesPaid: undefined,
+      dates: [],
+      isFixedFee: [],
+      fixedFeeAmount: [],
       facilityFees: [],
       feeSchedule : [],
-      feeRules: [
+      jan : [],
+      feb : [],
+      mar : [],
+      apr : [],
+      may : [],
+      jun : [],
+      jul : [],
+      aug : [],
+      sep : [],
+      oct : [],
+      nov : [],
+      dec : [],
+      mon : [],
+      tue : [],
+      wed : [],
+      thu : [],
+      fri : [],
+      sat : [],
+      sun : [],   feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
