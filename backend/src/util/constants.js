@@ -148,6 +148,7 @@ const CCOF_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
+
   '1': STATUS_CODES.APPROVED,
   '2': STATUS_CODES.DRAFT,
   '3': STATUS_CODES.SUBMITTED
@@ -157,6 +158,15 @@ const ECEWE_STATUS_CODES = Object.freeze({
   '1': STATUS_CODES.APPROVED,
   '2': STATUS_CODES.DRAFT,
   '3': STATUS_CODES.SUBMITTED});
+
+const FACILITY_AGE_GROUP_CODES = Object.freeze({
+  '1': '0 to 18 months',
+  '2': '18 to 36 months',
+  '3': '3 Years to Kindergarten',
+  '4': 'Out of School Care - Kindergarten',
+  '5': 'Out of School Care - Grade 1+' ,
+  '6': 'Preschool'
+});
 
 module.exports = {
   FILTER_OPERATION,
@@ -171,6 +181,7 @@ module.exports = {
   STATUS_CODES,
   CCOF_STATUS_CODES,
   CCFRI_STATUS_CODES,
-  ECEWE_STATUS_CODES
+  ECEWE_STATUS_CODES,
+  FACILITY_AGE_GROUP_CODES
 };
 

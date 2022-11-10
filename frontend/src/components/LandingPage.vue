@@ -11,6 +11,10 @@
     </v-row >
     <v-row>
       <v-divider class="mx-16"/>
+
+
+      <v-btn color="info" outlined x-large @click="goToCCFRI()">
+          CCFRI</v-btn>
     </v-row>
 
      <!-- Application Approved screens starts here -->
@@ -47,8 +51,10 @@
       </v-divider>
       <br><br>
     
-
-      <v-row v-if="facilityList.length > 2">
+      <!-- <v-row v-if="facilityList.length > 2"> 
+        this is making my facilites not show up...... so taking it out for now -JB  
+      --> 
+      <v-row >
         <v-row>
         <v-col class="col-12 col-md-6 ml-xl-3">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
@@ -107,8 +113,6 @@ import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
 
-import SnackBar from '@/components/util/SnackBar';
-
 export default {
   name: 'LandingPage',
   props: {
@@ -135,7 +139,7 @@ export default {
       return this.currentYear - 1999;
     },
     filteredList() {
-      if (this.input === '' || this.input === ' '){
+      if (this.input === '' || this.input === ' ' || this.input === null){
         return this.facilityList;
       }
       return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
@@ -150,10 +154,22 @@ export default {
     
   },
   methods: {
+
+    clicked (){
+      console.log('clicked');
+      return '';
+
+    },
     startApplicationClicked() {
       this.$router.push(PATHS.orgInfo);
-    }
-  },  
+    },
+    goToCCFRI() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },
+    
+  },
+  
+
   components: { SmallCard, MessagesToolbar}
 };
 </script>

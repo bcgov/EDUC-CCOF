@@ -23,7 +23,8 @@ export default {
     // hasReceivedFunding: null,
 
     isValidForm: false,
-    isStarted: false
+    isStarted: false,
+    ccfriOptInStatus : null,
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
@@ -40,6 +41,7 @@ export default {
     setLicenseNumber: (state, licenseNumber) => { state.licenseNumber = licenseNumber; },
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
+    setCcfriStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
   },
   actions: {
     async saveFacility({ state, commit }) {
@@ -109,5 +111,5 @@ function commitToState(commit, data) {
   commit('setCity', data?.city);
   commit('setPostalCode', data?.postalCode);
   commit('setLicenseNumber', data?.licenseNumber);
+  commit('ccfriOptInStatus', data?.ccfriOptInStatus);
 }
-
