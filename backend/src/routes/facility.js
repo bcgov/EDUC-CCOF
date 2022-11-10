@@ -28,7 +28,7 @@ module.exports = router;
 /**
  * Get Facility details
  */
-router.get('/:facilityId', [// passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+router.get('/:facilityId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
   param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
   return getFacility(req, res);
