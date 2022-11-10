@@ -26,22 +26,24 @@ function hasChildCareCategory(item) {
 function buildPayload(req) {
   let facility = req.body;
   let organizationString = '/accounts(' + facility.organizationId + ')';
+  let applicationString = '/ccof_applications(' + facility.ccofApplicationId + ')';
+
   facility = new MappableObjectForBack(facility, FacilityMappings);
   facility.data['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
   facility.data['parentaccountid@odata.bind'] = organizationString;
+  facility.data['ccof_application@odata.bind'] = applicationString;
   return facility;
 }
 
 async function getFacility(req, res) {
   try {
     // let operation = 'accounts('+req.params.facilityId+')?$select=accountid,address1_city,address1_line1,address1_postalcode,ccof_facilitylicencenumber,ccof_facilitystartdate,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
-    let operation = 'accounts('+req.params.facilityId+')?$select=' + getMappingString(FacilityMappings) + '&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,' + getMappingString(FacilityMappings) + '&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
-    // TODO: confirm with Dynamics team on account type
-    // if (100000001 != facility?.ccof_accounttype) {
-    //   return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
-    // }
+    if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
+      return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
+    }
     let childCareTypes = [];
     facility.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
       if (hasChildCareCategory(item)) {
@@ -81,8 +83,8 @@ async function getFacility(req, res) {
 
 
 async function createFacility(req, res) {
+  let ccofApplicationId = req.body.ccofApplicationId;
   let facility = buildPayload(req);
-
   try {
     let facilityGuid = await postOperation('accounts', facility);
     return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid});

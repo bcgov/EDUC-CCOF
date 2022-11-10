@@ -19,6 +19,8 @@ const facilitySchema = {
     isLength: { options: { max: 80 }, errorMessage: '[city1] has a max length of 80'}},
   organizationId: { in: ['body'],
     exists: { errorMessage: '[organizationId] is required', }},
+  ccofApplicationId: { in: ['body'],
+    exists: { errorMessage: '[ccofApplicationId] is required', }},
   yearBeginOperation: { in: ['body'],
     exists: { errorMessage: '[yearBeginOperation] is required', }},
 };
@@ -28,11 +30,11 @@ module.exports = router;
 /**
  * Get Facility details
  */
-router.get('/:facilityId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return getFacility(req, res);
-});
+router.get('/:facilityId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getFacility(req, res);
+  });
 
 /**
  * Create a new Facility
