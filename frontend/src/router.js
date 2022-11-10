@@ -17,7 +17,8 @@ import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
 
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
-import AddNewFees from '@/components/ccfriApplication/group/CcfriEceLanding';
+import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
+import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
 
 import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -30,6 +31,7 @@ import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
 import SearchFacility from '@/components/FacilitySearch';
+import CcrfiEstimatorSliderSelect from '@/components/CcrfiEstimatorSliderSelect';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 
@@ -156,6 +158,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
+
     {
       path: PATHS.group.fundAmount,
       name: 'Funding Amount',
@@ -191,7 +194,9 @@ const router = new VueRouter({
       name: 'ccfri-home',
       component: CcfriEceLandingPage,
       meta: {
-        pageTitle: 'CCFRI Home'
+        pageTitle: 'CCFRI Home',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
       }
     },
     {
@@ -199,7 +204,17 @@ const router = new VueRouter({
       name: 'ccfri-add-fees',
       component: AddNewFees,
       meta: {
-        pageTitle: 'CCFRI Add New Fees'
+        pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.ccfriRequestMoreInfo,
+      name: 'ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info'
       }
     },
     {

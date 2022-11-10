@@ -8,7 +8,7 @@
           absolute
           :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px` "
           width=200
-          height="calc(100% -368px)"
+          height="calc(100vh - 136px)"
           :permanent="$vuetify.breakpoint.mdAndUp"
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
@@ -62,6 +62,7 @@
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
                 <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
+                <v-list-item-subtitle v-if="subItem.subTitle">{{ subItem.subTitle }}</v-list-item-subtitle>
               </v-list-item-content>
             </router-link>
           </v-list-item>
@@ -125,7 +126,15 @@ export default {
       immediate: true,
       deep: true
     },
-  },
+    facilityList: {
+      handler() {
+        this.refreshNavBar();
+      },
+      immediate: true,
+      deep: true
+    },
+
+},
   methods: {
     setActive(item) {
       this.items[1].expanded = false;
@@ -140,41 +149,42 @@ export default {
     refreshNavBar(){
       this.items = [];
       this.items.push(this.getCCOFNavigation());
-      this.items.push(
-        {
-          title: NAV_BAR_GROUPS.CCFRI,
-          link: { name: 'ccfri-application' },
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
-          expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
-          items: [
-            {
-              title: 'Parent fees 1',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Request for Information 1',
-              link: { name: 'Funding Amount' },
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Parent fees 2',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },
-            {
-              title: 'Request for Information 2',
-              link: '',
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-            },          
-          ],
-        },
-      );
+      this.items.push(this.getCCFRINavigation());
+      // this.items.push(
+      //   {
+      //     title: NAV_BAR_GROUPS.CCFRI,
+      //     link: { name: 'ccfri-application' },
+      //     isAccessible: true,
+      //     icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //     expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
+      //     items: [
+      //       {
+      //         title: 'Parent fees 1',
+      //         link: '',
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },
+      //       {
+      //         title: 'Request for Information 1',
+      //         link: { name: 'Funding Amount' },
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },
+      //       {
+      //         title: 'Parent fees 2',
+      //         link: '',
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },
+      //       {
+      //         title: 'Request for Information 2',
+      //         link: '',
+      //         isAccessible: true,
+      //         icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //       },          
+      //     ],
+      //   },
+      // );
 
       this.items.push(
         {
@@ -198,6 +208,47 @@ export default {
     isExpanded(groupName) {
       return (groupName === this.navBarGroup);
     },
+    getCCFRINavigation(){
+      let items = [];
+      // items.push(
+      //   {
+      //     title: NAV_BAR_GROUPS.CCFRI,
+      //     link: { name: 'ccfri-application' },
+      //     isAccessible: true,
+      //     icon: 'mdi-checkbox-blank-circle-outline', //replace
+      //     expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI)
+      //   }
+      // );
+
+      if (this.facilityList?.length > 0) {
+        this.facilityList?.forEach( item => {
+          items.push(
+            {
+              title: 'Parent Fees for ' + item.facilityName,
+              id: item.facilityId,
+              link: { name: 'Facility Parent Fees'},
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              // function: this.loadFacility(x.id)
+            },
+          );
+        });
+      } 
+
+
+
+      let retval =   {
+        title: NAV_BAR_GROUPS.CCFRI,
+        isAccessible: true,
+        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
+        items: items
+      };
+      return retval;
+      
+
+    },
     getCCOFNavigation() {
       let items = [];
       items.push(
@@ -209,26 +260,52 @@ export default {
           isActive: 'Group Organization Information' === this.$route.name
         }
       );
-      this.facilityList?.forEach( x => {
+      if (this.facilityList?.length > 0) {
+        this.facilityList?.forEach((item, index) => {
+          items.push(
+            {
+              title: 'Facility ' + (index + 1),
+              subTitle: item.facilityName,
+              id: item.facilityId,
+              link: { name: 'Facility Information Guid', params: {urlFacilityId: item.facilityId}},
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              // function: this.loadFacility(x.id)
+            },
+            {
+              title: 'Funding ' +  (index + 1),
+              subTitle: item.facilityName,
+              link: { name: 'Funding Amount'},
+              isAccessible: true,
+              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              isActive: 'Funding Amount' === this.$route.name
+            },
+          );
+        });
+      } else {
+        //No new facilities, setup a blank template
         items.push(
           {
-            title: x.name,
-            id: x.id,
-            link: { name: 'Facility Information', params: {urlFacilityId: x.id}},
+            title: 'Facility',
+            id: null,
+            link: { name: 'Facility Information'},
             isAccessible: true,
             icon: 'mdi-checkbox-blank-circle-outline', //replace
-            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === x.id
+            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId == null
             // function: this.loadFacility(x.id)
           },
           {
-            title: 'Funding ' + x.name,
+            title: 'Funding',
             link: { name: 'Funding Amount'},
             isAccessible: true,
             icon: 'mdi-checkbox-blank-circle-outline', //replace
             isActive: 'Funding Amount' === this.$route.name
           },
         );
-      });
+
+      }
+
       items.push(
         {
           title: 'Direct Deposit',
