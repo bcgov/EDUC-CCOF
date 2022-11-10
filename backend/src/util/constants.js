@@ -41,6 +41,15 @@ const ECEWE_STATUS_CODES = Object.freeze({
   SUBMITTED: 3
 });
 
+const FACILITY_AGE_GROUP_CODES = Object.freeze({
+  '1': '0 to 18 months',
+  '2': '18 to 36 months',
+  '3': '3 Years to Kindergarten',
+  '4': 'Out of School Care - Kindergarten',
+  '5': 'Out of School Care - Grade 1+' ,
+  '6': 'Preschool'
+});
+
 module.exports = {
   CHILD_AGE_CATEGORY_TYPES,
   ACCOUNT_TYPE,
@@ -48,6 +57,7 @@ module.exports = {
   CCOF_STATUS_CODES,
   CCFRI_STATUS_CODES,
   ECEWE_STATUS_CODES,
-  ORGANIZATION_PROVIDER_TYPES
+  ORGANIZATION_PROVIDER_TYPES,
+  FACILITY_AGE_GROUP_CODES
 };
 
