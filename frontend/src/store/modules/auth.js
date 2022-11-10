@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import AuthService from '@/common/authService';
 // import router from '@/router';
 // import { AuthRoutes } from '@/utils/constants';
-
+//
 function isFollowUpVisit({jwtToken}) {
   return !!jwtToken;
 }

@@ -42,8 +42,9 @@ export const PATHS = {
   facInfo: '/ccof-application/group/facility-information',
   fundAmount: '/ccof-application/group/funding-amount',
   confirmation: '/ccof-application/group/confirmation',
-  ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
+  ccfriHome: '/ccfriApplication/group/ccfri-application',
   addNewFees: '/ccfriApplication/group/add-new-fees', 
+  ccfriRequestMoreInfo: '/ccfriApplication/group/ccfri-request-info', 
 };
 
 export const NAV_BAR_GROUPS = {
