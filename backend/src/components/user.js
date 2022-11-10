@@ -1,13 +1,11 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getConstKey} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
-
 const _ = require ('lodash');
 
 async function getUserInfo(req, res) {
@@ -25,6 +23,7 @@ async function getUserInfo(req, res) {
     email: req.session.passport.user._json.email,
     organizationName: null,
     organizationId:  null,
+    applicationId: null,
     applicationStatus: null,
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: true, 
@@ -102,9 +101,10 @@ async function getUserInfo(req, res) {
   //Organization is not normalized, grab organization info from the first element
   resData.organizationName  = userResponse[0]['Organization.name'];
   resData.organizationId  = userResponse[0]['_ccof_organization_value'];
+  resData.applicationId =  userResponse[0]['Application.ccof_applicationid'];
   let statusCode = userResponse[0]['_ccof_organization_value'];
   if (statusCode) {
-    statusCode = CCOF_STATUS_CODES[userResponse[0]['Application.statuscode']];
+    statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
     if (!statusCode) {
       // TODO: should really throw an error, but for now until the
       // statuses are stable, just return whatever the value is.
@@ -120,8 +120,8 @@ async function getUserInfo(req, res) {
     return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
   });
   facilityArr.map( item => {
-    item.ccfriStatus = CCFRI_STATUS_CODES[item.ccfriStatus];
-    item.eceweStatus = ECEWE_STATUS_CODES[item.eceweStatus];
+    item.ccfriStatus = getConstKey(CCFRI_STATUS_CODES, item.ccfriStatus);
+    item.eceweStatus = getConstKey(ECEWE_STATUS_CODES, item.eceweStatus);
     item.facilityAgeGroups = ['1', '2' , '3'];
     item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
     return item;

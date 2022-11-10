@@ -6,7 +6,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="facilityNameCommunityCare" :rules="rules.required" label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
+                <v-text-field outlined required v-model="facilityName" :rules="rules.required" label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
               </v-col>
             </v-row>
 
@@ -42,13 +42,13 @@
                 <v-text-field outlined required v-model="phone" :rules="rules.required" label="Business Phone" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="email" :rules="[...rules.required, ...rules.email]" label="Organization Facility email" />
+                <v-text-field outlined required v-model="email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required type="number" v-model.number="licenseNumber" :rules="rules.required" label="Facility Licence Number" />
+                <v-text-field outlined required v-model.number="licenseNumber" :rules="rules.required" label="Facility Licence Number" />
               </v-col>
               <v-col cols="12" md="6">
                 <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
@@ -87,7 +87,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large>Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -98,12 +98,58 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 
 export default {
+  mixins: [alertMixin],
   props: {
   },
   computed: {
+    facilityName: {
+      get() { return this.$store.state.facility.facilityName; },
+      set(value) { this.$store.commit('facility/setFacilityName', value); }
+    },
+    city: {
+      get() { return this.$store.state.facility.city; },
+      set(value) { this.$store.commit('facility/setCity', value); }
+    },
+    facilityAddress: {
+      get() { return this.$store.state.facility.facilityAddress; },
+      set(value) { this.$store.commit('facility/setFacilityAddress', value); }
+    },    
+    postalCode: {
+      get() { return this.$store.state.facility.postalCode; },
+      set(value) { this.$store.commit('facility/setPostalCode', value); }
+    },    
+    licenseNumber: {
+      get() { return this.$store.state.facility.licenseNumber; },
+      set(value) { this.$store.commit('facility/setLicenseNumber', value); }
+    },    
+    yearBeginOperation: {
+      get() { return this.$store.state.facility.yearBeginOperation; },
+      set(value) { this.$store.commit('facility/setYearBeginOperation', value); }
+    },    
+    contactName: {
+      get() { return this.$store.state.facility.contactName; },
+      set(value) { this.$store.commit('facility/setContactName', value); }
+    },    
+    position: {
+      get() { return this.$store.state.facility.position; },
+      set(value) { this.$store.commit('facility/setPosition', value); }
+    },    
+    phone: {
+      get() { return this.$store.state.facility.phone; },
+      set(value) { this.$store.commit('facility/setPhone', value); }
+    },        
+    email: {
+      get() { return this.$store.state.facility.email; },
+      set(value) { this.$store.commit('facility/setEmail', value); }
+    },    
+    isValidForm: { 
+      get () { return this.$store.state.organization.isValidForm; }, 
+      set (value) { this.$store.commit('organization/setIsValidForm', value); }
+    },       
   },
   watch: {
     '$route.params.urlFacilityId': {
@@ -116,26 +162,15 @@ export default {
   },
   data() {
     return {
-      isValidForm: undefined,
-      facilityName: undefined,
-      yearBeginOperation: undefined,
-      facilityAddress: undefined,
-      city: undefined,
-      postalCode: undefined,
-      contactName: undefined,
-      position: undefined,
-      phone: undefined,
-      email: undefined,
-      licenseNumber: undefined,
       licenseEffectiveDate: undefined,
       hasReceivedFunding: 'no',
-      facilityNameCommunityCare: undefined,
       rules,
       calendarMenu: false,
+      processing: false,
     };
   },
   methods: {
-    ...mapActions('facility', ['loadFacility']),
+    ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
 
     previous() {
       this.$router.push(PATHS.orgInfo);
@@ -147,8 +182,21 @@ export default {
       let facilityId = this.$route.params.urlFacilityId;
       if (facilityId) {
         this.loadFacility(facilityId);
+      } else {
+        this.newFacility();
       }
-    }
+    },
+    async save() {
+      this.processing = true;
+      try {
+        await this.saveFacility();
+        this.setSuccessAlert('Success! Facility information has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      }
+      this.processing = false;
+    },
+
   }
 };
 </script>

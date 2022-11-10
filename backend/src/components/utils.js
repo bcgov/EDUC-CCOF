@@ -13,6 +13,14 @@ const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
 const cache = require('memory-cache');
 
+function getConstKey(constants, value) {
+  for (let key in constants) {
+    if (constants[key] === value) {
+      return key
+    }
+    log.error('Unable to find key for value: ' + value);
+  }
+}
 
 //const {getUserInfo} = require('./user.js');
 let memCache = new cache.Cache();
@@ -401,24 +409,7 @@ function getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     }
   };
 }
-function cacheMiddleware() {
-  return (req, res, next) => {
-    let key = '__express__' + req.originalUrl || req.url;
-    let cacheContent = memCache.get(key);
-    if (cacheContent) {
-      res.send(cacheContent);
-    } else {
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        if (res.statusCode < 300 && res.statusCode >= 200) {
-          memCache.put(key, body);
-        }
-        res.sendResponse(body);
-      };
-      next();
-    }
-  };
-}
+
 function getBackendToken(req) {
   const thisSession = req.session;
   return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
@@ -452,10 +443,10 @@ const utils = {
   formatCommentTimestamp,
   errorResponse,
   getCodes,
-  cacheMiddleware,
   getCodeTable,
   minify,
-  getHttpHeader
+  getHttpHeader,
+  getConstKey
 };
 
 module.exports = utils;

@@ -20,6 +20,7 @@ export default {
     email: null,
     incNumber: null,
     organizationType: null,
+    providerType: null,
     isValidForm: false,
     isStarted: false
   },
@@ -42,11 +43,12 @@ export default {
     setEmail: (state, email) => { state.email = email; },
     setIncNumber: (state, incNumber) => { state.incNumber = incNumber; },
     setOrganizationType: (state, organizationType) => { state.organizationType = organizationType; },
+    setProviderType: (state, providerType) => { state.providerType = providerType; },
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
   },
   actions: {
-    async saveOrganization({ state, commit }) {
+    async saveOrganization({ state, commit, rootState }) {
 
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
@@ -54,7 +56,12 @@ export default {
       }
 
       let payload = JSON.parse(JSON.stringify(state));
-      payload.incNumber = '' + payload.incNumber; // need to ensure it's a string
+      if (payload.incNumber) {
+        payload.incNumber = '' + payload.incNumber; // need to ensure it's a string
+      }
+      
+      //set program year:
+      payload.programYearId = rootState.app.programYearList[0].ccof_program_yearid;
       console.log('payload', payload);
 
       if (state.organizationId) {
@@ -110,5 +117,6 @@ function commitToState(commit, data) {
   commit('setEmail', data?.email);
   commit('setIncNumber', data?.incNumber);
   commit('setOrganizationType', data?.organizationType);
+
 }
 
