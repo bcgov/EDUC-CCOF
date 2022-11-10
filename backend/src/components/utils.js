@@ -16,9 +16,9 @@ const cache = require('memory-cache');
 function getConstKey(constants, value) {
   for (let key in constants) {
     if (constants[key] === value) {
-      return key
+      return key;
     }
-    log.error('Unable to find key for value: ' + value);
+    log.error('getConstKey: Unable to find key for value: ' + value);
   }
 }
 
