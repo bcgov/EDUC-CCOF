@@ -8,6 +8,7 @@ import facility from '@/store/modules/facility.js';
 import familyFundAmount from '@/store/modules/ccof/family/fundAmount.js';
 import ccfriApp from '@/store/modules/ccfriApp.js';
 
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
