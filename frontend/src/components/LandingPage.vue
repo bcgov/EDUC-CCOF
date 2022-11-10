@@ -153,11 +153,7 @@ export default {
       return this.chosenOrg.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      if (this.chosenOrg.applicationStatus === 'APPROVED'){
-        //false because if the application is approved, we will want to set all the disabled status to false)
-        return false;
-      }
-      return true;
+      return this.chosenOrg.applicationStatus === 'APPROVED';
     },
     
   },
