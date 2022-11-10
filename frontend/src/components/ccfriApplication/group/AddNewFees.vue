@@ -56,7 +56,10 @@
                 ></v-radio>
               </v-radio-group>
 
-              <br>
+              <!-- <br>
+                WIreframe comment said to remove fixed fee option. Leaving this here for now in case they change their minds back to include it
+
+
               <p class="text-h6 text--primary">
                 Is your fee a fixed fee?
               </p>
@@ -73,8 +76,11 @@
                   value="No"
                 ></v-radio>
               </v-radio-group>
+              isFixedFee[index]==='No' && 
+            -->
+            <v-container v-if="!feeSchedule[index]"></v-container>
 
-              <v-container v-if="isFixedFee[index]==='No' && feeSchedule[index] !='daily'" class="ma-0 pa-0">
+              <v-container v-else-if="feeSchedule[index] !='daily'" class="ma-0 pa-0">
               <v-row>
                 <v-col>
                   <label>Enter your {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
@@ -142,7 +148,7 @@
             
               </v-container>
 
-              <v-container v-else-if="feeSchedule[index] ==='daily' && isFixedFee[index]==='No'" class="ma-0 pa-0">
+              <v-container v-else-if="feeSchedule[index] ==='daily' " class="ma-0 pa-0">
                 <v-row>
                   <v-col>
                     <label>Enter your {{feeSchedule[index]}} fee in every day below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
@@ -182,7 +188,7 @@
 
               </v-container>
 
-              <v-container v-else class="ma-0 pa-0">
+              <!-- <v-container v-else class="ma-0 pa-0">
                 <v-row>
                     <v-col>
                       <label>What is the {{feeSchedule[index]}} fixed fee?</label>
@@ -194,7 +200,7 @@
                         <v-text-field type="number" outlined :rules="feeRules"  v-model.number="fixedFeeAmount[index]" prefix="$"/>
                     </v-col>
                 </v-row>
-              </v-container>
+              </v-container> -->
             </div>
           </v-card-text>
       </v-card>
@@ -358,7 +364,6 @@ export default {
       closedFeesPaid: undefined,
       dates: [],
       isFixedFee: [],
-      fixedFeeAmount: [],
       facilityFees: [],
       feeSchedule : [],
       jan : [],
