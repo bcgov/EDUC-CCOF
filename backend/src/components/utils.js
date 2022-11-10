@@ -13,6 +13,14 @@ const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
 const cache = require('memory-cache');
 
+function getConstKey(constants, value) {
+  for (let key in constants) {
+    if (constants[key] === value) {
+      return key
+    }
+    log.error('Unable to find key for value: ' + value);
+  }
+}
 
 //const {getUserInfo} = require('./user.js');
 let memCache = new cache.Cache();
@@ -46,6 +54,24 @@ function getSessionUser(req) {
   return session && session.passport && session.passport.user;
 }
 
+function getUserGuid(req) {
+  const userInfo = req.session?.passport?.user;
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+    throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
+  }
+  let guid = req.session?.passport?.user?._json?.bceid_user_guid;
+  if (!guid) {
+    guid = req.session?.passport?.user?._json?.idir_user_guid;
+  }
+  return guid;
+}
+function getUserName(req) {
+  let userName = req.session?.passport?.user?._json?.bceid_username;
+  if (!userName) {
+    userName = req.session?.passport?.user?._json?.idir_username;
+  }
+  return userName;
+}
 function getAccessToken(req) {
   const user = getSessionUser(req);
   return user && user.jwt;
@@ -177,6 +203,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
     logResponse('patchOperationWithObjectId', response);
     return response.data;
   } catch (e) {
+    log.error(e);
     log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
   }
@@ -209,7 +236,7 @@ async function getDataWithParams(token, url, params, correlationID) {
       correlationID: correlationID || uuidv4()
     };
 
-    log.info('get Data Url', url);
+    //log.info('get Data Url', url);
     const response = await axios.get(url, params);
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
     log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
@@ -382,24 +409,7 @@ function getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     }
   };
 }
-function cacheMiddleware() {
-  return (req, res, next) => {
-    let key = '__express__' + req.originalUrl || req.url;
-    let cacheContent = memCache.get(key);
-    if (cacheContent) {
-      res.send(cacheContent);
-    } else {
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        if (res.statusCode < 300 && res.statusCode >= 200) {
-          memCache.put(key, body);
-        }
-        res.sendResponse(body);
-      };
-      next();
-    }
-  };
-}
+
 function getBackendToken(req) {
   const thisSession = req.session;
   return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
@@ -415,6 +425,8 @@ const utils = {
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
   getSessionUser,
   getAccessToken,
+  getUserGuid,
+  getUserName,
   deleteData,
   forwardGetReq,
   getDataWithParams,
@@ -431,10 +443,10 @@ const utils = {
   formatCommentTimestamp,
   errorResponse,
   getCodes,
-  cacheMiddleware,
   getCodeTable,
   minify,
-  getHttpHeader
+  getHttpHeader,
+  getConstKey
 };
 
 module.exports = utils;

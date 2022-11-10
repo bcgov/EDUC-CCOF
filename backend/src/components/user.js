@@ -1,27 +1,14 @@
 'use strict';
-const {getSessionUser, getHttpHeader} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getConstKey} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
 const _ = require ('lodash');
 
 async function getUserInfo(req, res) {
-
-  let resData = {
-    displayName: null,
-    businessGuid: null,
-    userName: null,
-    organizationName: null,
-    organizationId:  null,
-    applicationStatus: null,
-    //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
-    unreadMessages: true, 
-    facilityList: [],
-  };
-
 
   const userInfo = getSessionUser(req);
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
@@ -30,28 +17,80 @@ async function getUserInfo(req, res) {
     });
   }
 
-  //TODO: Rob to clean this up.
-  let displayName = req.session.passport.user.displayName;
-  if (!displayName) {
-    displayName = req.session.passport.user._json.display_name;
-  }
-  let userName = req.session?.passport?.user?._json?.bceid_username;
-  if (!userName) {
-    userName = req.session?.passport?.user?._json?.idir_username;
-  }
-  let businessGuid = req.session?.passport?.user?._json?.bceid_business_guid;
-  if (!businessGuid) {
-    businessGuid = req.session?.passport?.user?._json?.idir_user_guid;
-  }
+  let resData = {
+    displayName: req.session.passport.user._json.display_name,
+    userName: getUserName(req),
+    email: req.session.passport.user._json.email,
+    organizationName: null,
+    organizationId:  null,
+    applicationId: null,
+    applicationStatus: null,
+    //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
+    unreadMessages: true, 
+    facilityList: [],
+  };
 
-  resData.displayName = displayName;
-  resData.businessGuid = businessGuid;
-  resData.userName = userName;
 
-  //TODO: change this before git commiting!
-  const userResponse = await getUserProfile(businessGuid);
+  let userGuid = getUserGuid(req);
+  console.info('User Guid is: ', userGuid);
+  const userResponse = await getUserProfile(userGuid);
 
+  log.verbose('Status  :: is :: ', userResponse.status);
+  log.verbose('StatusText   :: is :: ', userResponse.statusText);
+  log.verbose('Response   :: is :: ', minify(userResponse.data));
+
+  userResponse.push( {
+    'Organization.name' : "Test Org 1",
+    'BCeID.ccof_userid' : "123-bbbb-cccc",
+    'Application.statuscode' : 100000001 ,
+    'CCOF.ccof_facility' : '123456',
+    'CCOF.Facility.name' : 'Best Daycare 1',
+    'CCFRI.statuscode' : 0,
+    'ECEWE.statuscode' : 0,
+    'ccfriOptInStatus': 7
   
+  });
+
+  // const userResponse = [
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '123456',
+  //     'CCOF.Facility.name' : 'Best Daycare 1',
+  //     'CCFRI.statuscode' : 0,
+  //     'ECEWE.statuscode' : 0,
+
+  //   },
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '987352723',
+  //     'CCOF.Facility.name' : 'Wee lil happy babiez',
+  //     'CCFRI.statuscode' : 2,
+  //     'ECEWE.statuscode' : 1,
+  //   },
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '1232464456',
+  //     'CCOF.Facility.name' : 'Best Daycare 2',
+  //     'CCFRI.statuscode' : 1,
+  //     'ECEWE.statuscode' : 1,
+
+  //   },
+  //   {
+  //     'Organization.name' : "Test Org 1",
+  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //     'Application.statuscode' : 100000001 ,
+  //     'CCOF.ccof_facility' : '987353422723',
+  //     'CCOF.Facility.name' : 'Wee lil happy kidoz',
+  //     'CCFRI.statuscode' : 2,
+  //     'ECEWE.statuscode' : 1,
+  //   }
+  // ];   
 
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
@@ -61,17 +100,34 @@ async function getUserInfo(req, res) {
 
   //Organization is not normalized, grab organization info from the first element
   resData.organizationName  = userResponse[0]['Organization.name'];
-  resData.organizationId  = userResponse[0]['BCeID.ccof_userid'];
-  resData.applicationStatus  = APPLICATION_STATUS_CODES[userResponse[0]['Application.statuscode']];
+  resData.organizationId  = userResponse[0]['_ccof_organization_value'];
+  resData.applicationId =  userResponse[0]['Application.ccof_applicationid'];
+  let statusCode = userResponse[0]['_ccof_organization_value'];
+  if (statusCode) {
+    statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
+    if (!statusCode) {
+      // TODO: should really throw an error, but for now until the
+      // statuses are stable, just return whatever the value is.
+      statusCode = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
+    }
+  } else {
+    // No status code means new CCOF application
+    statusCode = STATUS_CODES.NEW;
+  }
+  resData.applicationStatus  = statusCode;
 
   let facilityArr = userResponse.map(item => {
     return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
   });
   facilityArr.map( item => {
-    item.ccfriStatus = CCFRI_STATUS_CODES[item.ccfriStatus];
-    item.eceweStatus = ECEWE_STATUS_CODES[item.eceweStatus];
+    item.ccfriStatus = getConstKey(CCFRI_STATUS_CODES, item.ccfriStatus);
+    item.eceweStatus = getConstKey(ECEWE_STATUS_CODES, item.eceweStatus);
+    item.facilityAgeGroups = ['1', '2' , '3'];
+    item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
     return item;
   });
+
+  
   resData.facilityList = facilityArr;
   
   return res.status(HttpStatus.OK).json(resData);
@@ -82,6 +138,7 @@ const GetUserProfileKeyMap = {
   'CCOF.Facility.name' : 'facilityName',
   'CCFRI.statuscode' : 'ccfriStatus',
   'ECEWE.statuscode' : 'eceweStatus',
+  'CCFRI.ccof_ccfrioptin' : 'ccfriOptInStatus'
 };
 
 
@@ -89,7 +146,7 @@ async function getUserProfile(businessGuid) {
   
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
-    log.verbose('UserProfile Url is', url);
+    log.info('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
   } catch (e) {

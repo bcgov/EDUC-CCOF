@@ -39,6 +39,7 @@ export const PATHS = {
   estimator: '/ccfri-estimator',
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
   addNewFees: '/ccfriApplication/group/add-new-fees',
+  ccfriRequestMoreInfo: '/ccfriApplication/group/ccfri-request-info',
   selectApplicationType: '/ccof-application/select-application-type',
   group: {
     orgInfo: '/ccof-application/group/organization-information',
