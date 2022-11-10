@@ -46,14 +46,18 @@ function getSessionUser(req) {
   return session && session.passport && session.passport.user;
 }
 
-function parseUserGuid(req) {
-  let guid = req.session?.passport?.user?._json?.bceid_username;
+function getUserGuid(req) {
+  const userInfo = req.session?.passport?.user;
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+    throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
+  }
+  let guid = req.session?.passport?.user?._json?.bceid_user_guid;
   if (!guid) {
     guid = req.session?.passport?.user?._json?.idir_user_guid;
   }
   return guid;
 }
-function parseUserName(req) {
+function getUserName(req) {
   let userName = req.session?.passport?.user?._json?.bceid_username;
   if (!userName) {
     userName = req.session?.passport?.user?._json?.idir_username;
@@ -430,8 +434,8 @@ const utils = {
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
   getSessionUser,
   getAccessToken,
-  parseUserGuid,
-  parseUserName,
+  getUserGuid,
+  getUserName,
   deleteData,
   forwardGetReq,
   getDataWithParams,

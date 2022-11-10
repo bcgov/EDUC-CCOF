@@ -169,6 +169,7 @@ export default {
     
   },
   
+
   components: { SmallCard, MessagesToolbar}
 };
 </script>
