@@ -15,5 +15,9 @@ export default {
       state.isValidForm = value;
     },
   },
-  actions: {}
+  actions: {
+    async save() { 
+      console.log('save');
+    }
+  }
 };

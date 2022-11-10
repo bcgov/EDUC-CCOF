@@ -164,7 +164,7 @@
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
         <v-btn color="secondary" outlined x-large :disabled="!isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large>
+        <v-btn color="primary" outlined x-large @click="save()">
           Save</v-btn>
       </v-row>
 
@@ -176,6 +176,7 @@
 
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
+import { mapActions } from 'vuex';
 
 let model = { closedMonths: [] };
 
@@ -192,6 +193,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('familyFundAmount', ['save']),
     previous() {
       this.$router.push(PATHS.family.fundAmount);
     },
