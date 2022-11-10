@@ -1,7 +1,7 @@
 'use strict';
-const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid} = require('./utils');
+const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getLookupKey} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const { ACCOUNT_TYPE } = require('../util/constants');
+const { ACCOUNT_TYPE, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { OrganizationMappings } = require('../util/mapping/Mappings');
 
@@ -24,6 +24,9 @@ async function createOrganization(req, res) {
 
   const userGuid = getUserGuid(req);
   let organization = req.body;
+  let programYear = '/ccof_program_years(' + organization.programYearId +')';
+  // let programYear = '/ccof_program_years(fba5721b-9434-ed11-9db1-002248d53d53)';
+  
   organization = new MappableObjectForBack(organization, OrganizationMappings);
   organization.data.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
   organization.data['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${userGuid}')`;
@@ -31,9 +34,9 @@ async function createOrganization(req, res) {
   // For new organizations, create a CCOF Application header
   organization.data['ccof_ccof_application_Organization_account'] = [ 
     {
-      'ccof_providertype': 100000000, //GROUP, 100000001 - Family
+      'ccof_providertype': ORGANIZATION_PROVIDER_TYPES.GROUP, //10000000, // organization.providerType, //10000000 GROUP, 100000001 - Family
       'ccof_applicationtype': 100000000, // new
-      'ccof_ProgramYear@odata.bind': '/ccof_program_years(fba5721b-9434-ed11-9db1-002248d53d53)',
+      'ccof_ProgramYear@odata.bind': programYear,
     }
   ];
 

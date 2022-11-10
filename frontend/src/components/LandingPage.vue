@@ -22,7 +22,7 @@
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
               <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="startApplicationClicked()">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
