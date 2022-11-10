@@ -12,6 +12,13 @@
           this will need to get changed at a later point when the API is more built out 
           there is also no logic about if you can click next or not 
         -->
+
+        {{this.$store.state.ccfriApp.model}}
+
+        <v-text-field
+              label="Regular"
+              v-model="model.test"
+            ></v-text-field>
         <LargeButtonContainer>
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
@@ -47,7 +54,7 @@
                   <v-row>
                     <v-radio-group
                       mandatory
-                      v-model="ccfriOptInOrOut[index]"
+                      v-model="model.ccfriOptInOrOut[index]"
                       class = "mx-12"
                     >
                       <v-radio
@@ -95,14 +102,18 @@ import ApiService from '@/common/apiService';
 
 const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
 
+let model = { x: [] };
+let ccfriOptInOrOut = { x: [] };
+
 export default {
   name: 'CcfriLandingPage',
   data() {
     return {
       input : '',
+      model,
       showOptStatus : '',
       isValidForm: undefined,
-      ccfriOptInOrOut : [],
+      ccfriOptInOrOut,
       feeList : [
         {
           date: 'Jan 2022',
@@ -181,6 +192,14 @@ export default {
         console.info(error);
       }
     }
+  },
+  mounted() {
+    this.model = this.$store.state.ccfriApp.model ?? model;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('ccfriApp/model', this.model);
+    this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
+    next();
   },
   components: { MessagesToolbar, LargeButtonContainer,  }
 };
