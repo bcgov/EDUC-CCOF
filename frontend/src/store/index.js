@@ -5,16 +5,17 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
-
+import familyFundAmount from '@/store/modules/ccof/family/fundAmount.js';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    auth, 
+    auth,
     edx,
     app,
     organization,
-    facility
+    facility,
+    familyFundAmount
   }
 });
