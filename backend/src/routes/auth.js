@@ -6,7 +6,7 @@ const express = require('express');
 const auth = require('../components/auth');
 const log = require('../components/logger');
 const {v4: uuidv4} = require('uuid');
-// const {getSessionUser} = require('../components/utils');
+const {getUserGuid} = require('../components/utils');
 // const {setupUserAndRedirect} = require('../components/user');
 
 const {
@@ -143,7 +143,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       const correlationID = uuidv4();
       req.session.correlationID = correlationID;
       const correlation = {
-        user_guid: req.session?.passport?.user?._json.user_guid,
+        user_guid: getUserGuid(req),
         correlation_id: correlationID
       };
       log.info('created correlation id and stored in session', correlation);
