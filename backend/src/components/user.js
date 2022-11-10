@@ -5,7 +5,9 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
+
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
+
 const _ = require ('lodash');
 
 async function getUserInfo(req, res) {
@@ -104,7 +106,12 @@ async function getUserInfo(req, res) {
   resData.applicationId =  userResponse[0]['Application.ccof_applicationid'];
   let statusCode = userResponse[0]['_ccof_organization_value'];
   if (statusCode) {
+
     statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
+
+    //statusCode = CCOF_STATUS_CODES[userResponse[0]['Application.statuscode']];
+    statusCode = 1;
+
     if (!statusCode) {
       // TODO: should really throw an error, but for now until the
       // statuses are stable, just return whatever the value is.
@@ -112,7 +119,8 @@ async function getUserInfo(req, res) {
     }
   } else {
     // No status code means new CCOF application
-    statusCode = STATUS_CODES.NEW;
+    // statusCode = STATUS_CODES.NEW;
+    statusCode = 1;
   }
   resData.applicationStatus  = statusCode;
 
