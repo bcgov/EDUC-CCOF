@@ -129,8 +129,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <label>Do you <b>regularly offer</b> extended daily hours of child care
-                  <b>(before 6 am, after 7pm or overnight)</b>?</label>
+                <label>Do you <strong>regularly offer</strong> extended daily hours of child care <strong>(before 6 am, after 7pm or overnight)</strong>?</label>
                 <v-radio-group row v-model="model.isExtendedHours">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
