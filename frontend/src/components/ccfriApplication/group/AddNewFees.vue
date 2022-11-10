@@ -83,7 +83,7 @@
               <v-container v-else-if="feeSchedule[index] !='daily'" class="ma-0 pa-0">
               <v-row>
                 <v-col>
-                  <label>Enter your {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                  <label>Enter your highest full-time {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
                 </v-col>
               </v-row>
               <v-row>

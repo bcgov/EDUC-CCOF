@@ -5,6 +5,7 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
+import ccfriApp from '@/store/modules/ccfriApp.js';
 
 
 Vue.use(Vuex);
@@ -15,6 +16,7 @@ export default new Vuex.Store({
     edx,
     app,
     organization,
-    facility
+    facility,
+    ccfriApp
   }
 });
