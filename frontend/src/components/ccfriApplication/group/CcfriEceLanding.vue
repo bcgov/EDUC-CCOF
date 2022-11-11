@@ -50,7 +50,7 @@
                   <v-row>
                     <v-radio-group
                       mandatory
-                      v-model="model.ccfriOptInOrOut[index]"
+                      v-model="ccfriOptInOrOut[index]"
                       class = "mx-12"
                     >
                       <v-radio
@@ -109,10 +109,8 @@ export default {
     return {
       input : '',
       model,
-      model,
       showOptStatus : '',
       isValidForm: undefined,
-      ccfriOptInOrOut,
       ccfriOptInOrOut,
       feeList : [
         {
