@@ -54,7 +54,7 @@
                   <v-row>
                     <v-radio-group
                       mandatory
-                      v-model="model.ccfriOptInOrOut[index]"
+                      v-model="ccfriOptInOrOut[index]"
                       class = "mx-12"
                     >
                       <v-radio
@@ -195,6 +195,7 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
+    this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);

@@ -1,0 +1,32 @@
+{
+  "logoutEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout",
+  "siteMinder_logout_endpoint": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=",
+  "server": {
+    "logLevel": "info",
+    "morganFormat": "dev",
+    "port": "8080",
+    "frontend": "http://localhost:8082"
+  },
+  "tokenGenerate": {
+    "privateKey": "-----BEGIN RSA PRIVATE KEY-----\n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\n-----END RSA PRIVATE KEY-----",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsUqtn39QWvjDnTHp6WcL cYB70MOYGs9oI0iNSndQWlUpSgKWuo5cvgrUggh1R09kcKaRiVlm9+1P+3ePuvy8 +1wsyw/mqVs1eGK2//xyvexVEVh+5WBSyfdTUryMWsPA12oom5ydZcOpJ/f+Bwbx hjoSzC9WmKBJVmfOSKkht98jrjhAvKb6paevXyyIBvhV4jEb3VwLwDFoPcMledmE VJi09210BoaZT7U1i7NPx7l9xC8i2OhQJh1euHB/RyCf2eu+P/4rvBauboFTCUfh JQDQ22gkBhS772A6ln1yBLjfP8l3/Fvo4WWN8kq9eypfXmDV4rMgv9wn83zeD3s5 RV/+0pkZtnlRtjI72FRnQSbuRy7TsmxBKrRuasnL4BxiaF0Rg8CRL7Io4Vg6l1oy JDxpq6nYoc6d5hfpWls4BQufvj/eKw/8u35NFeRQhFqi7l3/yHi6wc27Yr7YmAQg Pdv1hY2zMvOdpWLa5PkKAd43tEUjQJizO0hBgSgvliLsN7Ed0Qkm/FFEj5qK+EZY iQIsekgSD6v94gM05KVdQ6nz6Ej+ASUdHLy8l+nfp09V9Ma8Vk0Hjh3g6Y+jr1sj oLKjXvC3vUtb1vuP2N9Xi+KAqW+3xoC0F/5q8FFhZW8BfuOOoOAuettWusxcQVMR y6U6cwocxFP69MT+iKbo2bECAwEAAQ==\n-----END PUBLIC KEY-----",
+    "audience": "http://localhost:8082",
+    "issuer": "EDUC_CCOF",
+    "expiresIn": "30m"
+    },
+  "oidc": {
+    "discovery": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuy7zfh2ZgpDV5mH/aXyLDTddZK81rGakJcTy4KvCNOkDDxt1KAhW02lmbCo8YhHCOzjNZBp1+Vi6QiMRgBqAe2GTPZYEiV70aXfROGZe3Nvwcjbtki6HoyRte3SpqLJEIPL2F+hjJkw1UPGnjPTWZkEx9p74b9i3BjuE8RnjJ0Sza2MWw83zoQUZEJRGiopSL0yuVej6t2LO2btVdVf7QuZfPt9ehkcQYlPKpVvJA+pfeqPAdnNt7OjEIeYxinjurZr8Z04hz8UhkRefcWlSbFzFQYmL7O7iArjW0bsSvq8yNUd5r0KCOQkFduwZy26yTzTxj8OLFT91fEmbBBl4rQIDAQAB\n-----END PUBLIC KEY-----",
+    "clientId": "myccs-idir-4142",
+    "clientSecret": "T1Htv2es7JtPEtW60eutWuKuuyh4TsA0",
+    "clientIdIDIR": "myccs-idir-4142",
+    "clientSecretIDIR": "T1Htv2es7JtPEtW60eutWuKuuyh4TsA0"
+
+
+  },
+  "dynamicsApi": {
+    "apiEndpoint": "https://75c86aa567474ca7949bdf594539bfce-b43d2d-dev.apps.silver.devops.gov.bc.ca",
+    "devBasicAuthUser": "kitkat",
+    "devBasicAuthPass": "96280e35ab7e408989831ff93f0c7e43" 
+  }
+}
