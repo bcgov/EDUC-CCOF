@@ -117,7 +117,7 @@
                             </tr>
                           </template>
                           <template slot="no-data">
-                            <span style="color:#0483AF;font-weight:bold;font-size:large;">No facilities were found matching your search criteria.<br/> Try again by entering additional keyworks.</span><br/><br/>
+                            <span style="color:#0483AF;font-weight:bold;font-size:large;">No facilities were found matching your search criteria.<br/> Try again by checking your input and entering additional keywords.</span><br/><br/>
                           </template>
                           <template v-slot:body.append>
                             <tr v-show="!loading && searchResults.length == 50">
@@ -127,7 +127,7 @@
                                     <td colspan="1" with="10%" style="vertical-align:top;"><span style="color:#0FC3ED;font-weight:bold;font-size:x-large;">*</span></td>
                                     <td style="padding-top:2px">
                                       <span style="font-style:italic;font-size:small;">
-                                        Only the 1st 50 records are returned which match your search criteria. If you are unable to find a facilty try both the facility name and city as search critiera.
+                                        Only the 1st 50 records are returned which match your search criteria. If you are unable to find a facilty try both the facility name and city as search criteria.
                                       </span></td>
                                   </tr>
                                 </table>
