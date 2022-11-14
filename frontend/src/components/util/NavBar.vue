@@ -254,10 +254,10 @@ export default {
       items.push(
         {
           title: 'Organization',
-          link: { name: 'Organization Information' },
+          link: { name: 'Group Organization Information' },
           isAccessible: true,
           icon: this.getCheckbox(this.isOrganizationComplete),
-          isActive: 'Organization Information' === this.$route.name
+          isActive: 'Group Organization Information' === this.$route.name
         }
       );
       if (this.facilityList?.length > 0) {

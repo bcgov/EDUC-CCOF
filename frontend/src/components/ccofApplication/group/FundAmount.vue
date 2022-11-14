@@ -203,8 +203,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <label>Do you <b>regularly offer</b> extended daily hours of child care
-                  <b>(before 6 am, after 7pm or overnight)</b>?</label>
+                <label>Do you <strong>regularly offer</strong> extended daily hours of child care <strong>(before 6 am, after 7pm or overnight)</strong>?</label>
                 <v-radio-group row v-model="isExtendedHours">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
@@ -228,16 +227,16 @@
         </v-card>
 
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-subtitle>Write the maximum <b>number of spaces</b> you offer extended hours of child care
+          <v-card-subtitle>Write the maximum <strong>number of spaces</strong> you offer extended hours of child care
             for
             each type of service</v-card-subtitle>
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-card-subtitle><b>4 hours or less</b> extended child care</v-card-subtitle>
+                <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
               </v-col>
               <v-col cols="12" md="6">
-                <v-card-subtitle><b>More than 4</b> extended child care</v-card-subtitle>
+                <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
               </v-col>
             </v-row>
             <v-row>
@@ -345,10 +344,10 @@ export default {
   },
   methods: {
     previous() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.group.facInfo);
     },
     next() {
-      this.$router.push(PATHS.confirmation);
+      this.$router.push(PATHS.group.confirmation);
     },
     allowedStep: m => m % 5 === 0,
     formatTime: v => {

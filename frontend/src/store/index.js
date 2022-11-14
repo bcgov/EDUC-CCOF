@@ -6,17 +6,18 @@ import app from '@/store/modules/app.js';
 import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
 import ccfriApp from '@/store/modules/ccfriApp.js';
-
+import familyFundAmount from '@/store/modules/ccof/family/fundAmount.js';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    auth, 
+    auth,
     edx,
     app,
     organization,
     facility,
-    ccfriApp
+    ccfriApp,
+    familyFundAmount
   }
 });

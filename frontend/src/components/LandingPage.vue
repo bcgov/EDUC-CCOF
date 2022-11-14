@@ -25,9 +25,9 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="startApplicationClicked()">Continue Application</v-btn>
-              <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" :to="paphs.startApplication">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
           <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
@@ -124,7 +124,10 @@ export default {
   },
   data() {
     return {
-      input : '',
+      input: '',
+      paphs: {
+        startApplication:PATHS.selectApplicationType
+      },
       results : {},
       
     };
@@ -145,11 +148,7 @@ export default {
       return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      if (this.userInfo.applicationStatus === 'APPROVED'){
-        //false because if the application is approved, we will want to set all the disabled status to false)
-        return false;
-      }
-      return true;
+      return this.chosenOrg.applicationStatus === 'APPROVED';
     },
     
   },
@@ -159,9 +158,6 @@ export default {
       console.log('clicked');
       return '';
 
-    },
-    startApplicationClicked() {
-      this.$router.push(PATHS.orgInfo);
     },
     goToCCFRI() {
       this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
