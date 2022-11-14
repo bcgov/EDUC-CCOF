@@ -34,7 +34,7 @@
             <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard>
         
-          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
+          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=true>
               <br>
               <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
           </SmallCard>

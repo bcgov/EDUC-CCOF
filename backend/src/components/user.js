@@ -108,13 +108,11 @@ async function getUserInfo(req, res) {
   resData.organizationId  = userResponse[0]['_ccof_organization_value'];
   resData.applicationId =  userResponse[0]['Application.ccof_applicationid'];
   let statusCode = userResponse[0]['_ccof_organization_value'];
+  log.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  log.info(statusCode);
   if (statusCode) {
 
     statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
-    //statusCode = 1;
-
-    //statusCode = CCOF_STATUS_CODES[userResponse[0]['Application.statuscode']];
-    statusCode = 1;
 
     if (!statusCode) {
       // TODO: should really throw an error, but for now until the
@@ -123,7 +121,8 @@ async function getUserInfo(req, res) {
     }
   } else {
     // No status code means new CCOF application
-    statusCode = null;
+    // statusCode = STATUS_CODES.NEW;
+    statusCode = 1;
   }
   resData.applicationStatus  = statusCode;
 
