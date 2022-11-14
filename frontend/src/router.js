@@ -22,7 +22,7 @@ import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestFor
 
 import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
-import FamilyFundAmount from '@/components/ccofApplication/family/FamilyFundAmount';
+import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
@@ -138,8 +138,8 @@ const router = new VueRouter({
     },
     {
       path: PATHS.family.fundAmount,
-      name: 'FamilyFundAmount',
-      component: FamilyFundAmount,
+      name: 'FamilyFunding',
+      component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
