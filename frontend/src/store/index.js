@@ -5,7 +5,7 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
-import familyFundAmount from '@/store/modules/ccof/family/fundAmount.js';
+import familyFundAmount from '@/store/modules/ccof/family/familyFundAmount.js';
 
 Vue.use(Vuex);
 
