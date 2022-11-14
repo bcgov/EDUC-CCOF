@@ -31,7 +31,19 @@ class MappableObjectForBack extends MappableObject {
   }
 }
 
+/**
+ * Dynamics can take a selector with a list of fields
+ * Use this function to generate a list of fields based on mappings
+ */
+function getMappingString(mappings) {
+  let retVal = mappings.map(item => {
+    return item.back;}).join(',');
+  console.log('mapping: ',retVal);
+  return retVal;
+}
+
 module.exports = {
   MappableObjectForFront,
-  MappableObjectForBack
+  MappableObjectForBack,
+  getMappingString  
 };

@@ -7,17 +7,16 @@ export default {
     //Vuex doesn't handle maps. so keep track of the list of facilities
     //and update the facility details with the current selected facility
     facilityList: [],
-    currentFacilityId: null,
     facilityName: null,
     facilityId: null,
     yearBeginOperation: null,
     facilityAddress: null,
     city: null,
     postalCode: null,
-    // contactName: null,
-    // position: null,
-    // phone: null,
-    // email: null,
+    contactName: null,
+    position: null,
+    phone: null,
+    email: null,
     licenseNumber: null,
     // licenseEffectiveDate: null,
     // hasReceivedFunding: null,
@@ -31,7 +30,7 @@ export default {
   },  
   mutations: {
     setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
-    setCurrentFacilityId: (state, currentFacilityId) => { state.currentFacilityId = currentFacilityId; },
+    addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
     setFacilityName: (state, facilityName) => { state.facilityName = facilityName; },
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     setYearBeginOperation: (state, yearBeginOperation) => { state.yearBeginOperation = yearBeginOperation; },
@@ -39,49 +38,57 @@ export default {
     setCity: (state, city) => { state.city = city; },
     setPostalCode: (state, postalCode) => { state.postalCode = postalCode; },
     setLicenseNumber: (state, licenseNumber) => { state.licenseNumber = licenseNumber; },
+    setContactName: (state, contactName) => { state.contactName = contactName; },
+    setPosition: (state, position) => { state.position = position; },
+    setPhone: (state, phone) => { state.phone = phone; },
+    setEmail: (state, email) => { state.email = email; },
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
     setCcfriStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
   },
   actions: {
-    async saveFacility({ state, commit }) {
-      return new Promise((resolve, reject) => {
-        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-          console.log('unable to save because you are not logged in');
-          reject('unable to save because you are not logged in');
-        }
-        const payload = {
-          facilityName: state.facilityName,
-          yearBeginOperation: state.yearBeginOperation,
-          facilityAddress: state.facilityAddress,
-          city: state.city,
-          postalCode: state.postalCode,
-          licenseNumber: '' + state.licenseNumber, //Make sure it's a string
-        };
-        if (state.facilityId) { // has an orgaization ID, so update the data
-          ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload)
-            .then((response) => {
-              commitToState(commit, response.data);
-              resolve(response);
-            })
-            .catch((e) => {
-              console.log(`Failed to update existing Facility - ${e}`);
-              reject(e);
-            });
+    async saveFacility({ state, commit, rootState }) {
+      let organizationId = rootState.organization.organizationId;
+      if (!organizationId) {
+        console.log('unable to save facility because you are not associated to an organization');
+        throw 'unable to save facility because you are not associated to an organization';
 
-        } else {
-          ApiService.apiAxios.post(ApiRoutes.Facility, payload)
-            .then((response) => {
-              commit('setFacilityId: null, response.data?.facilityId');
-              commit('setCurrentFacilityId: null, response.data?.facilityId');
-              resolve(response);
-            })
-            .catch((e) => {
-              console.log(`Failed to save new New - ${e}`);
-              reject(e);
-            });
+      }
+      if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+        console.log('unable to save because you are not logged in');
+        throw 'unable to save because you are not logged in';
+      }
+      let payload = JSON.parse(JSON.stringify(state));
+      payload.organizationId = organizationId;
+      console.log('payload', payload);
+      if (state.facilityId) {
+        // has an orgaization ID, so update the data
+        try {
+          let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
+          commitToState(commit, response.data);
+          return response;
+        } catch (error) {
+          console.log(`Failed to update existing Facility - ${error}`);
+          throw error;
         }
-      });
+      } else {
+        // else create a new facility
+        try {
+          let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
+          commit('setFacilityId', response.data?.facilityId);
+          console.log('FacilityID??? ', response.data?.facilityId);
+          commit('addToFacilityList', {
+            facilityName: state.facilityName,
+            facilityId: state.facilityId,
+            ccfriStatus: 'NEW',
+            eceweStatus: 'NEW'
+          });
+          return response;
+        } catch (error) {
+          console.log(`Failed to save new Facility - ${error}`);
+          throw error;
+        }
+      }
     },
     async loadFacility({commit}, facilityId) {
       return new Promise((resolve, reject) => {
@@ -92,6 +99,7 @@ export default {
         ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId)
           .then((response) => {
             commitToState(commit, response.data);
+            commit('setFacilityId', facilityId);
             resolve(response);
           })
           .catch((e) => {
@@ -100,16 +108,23 @@ export default {
           });
       });
     },
+    newFacility({commit}) {
+      commit('setFacilityId', null);
+      commitToState(commit, null);
+    }
   },
 };
 
 function commitToState(commit, data) {
-  commit('setFacilityId', data?.facilityId);
-  commit('setFacilityName', data?.facilityName);
-  commit('setYearBeginOperation', data?.yearBeginOperation);
-  commit('setFacilityAddress', data?.facilityAddress);
-  commit('setCity', data?.city);
-  commit('setPostalCode', data?.postalCode);
-  commit('setLicenseNumber', data?.licenseNumber);
-  commit('ccfriOptInStatus', data?.ccfriOptInStatus);
+  commit('setFacilityName', data? data.facilityName: null);
+  commit('setYearBeginOperation', data? data.yearBeginOperation: null);
+  commit('setFacilityAddress', data? data.facilityAddress: null);
+  commit('setCity', data? data.city: null);
+  commit('setPostalCode', data? data.postalCode: null);
+  commit('setLicenseNumber', data? data.licenseNumber: null);
+  commit('setContactName', data? data.contactName: null);
+  commit('setPosition', data? data.position: null);
+  commit('setPhone', data? data.phone: null);
+  commit('setEmail', data? data.email: null);
+  commit('ccfriOptInStatus', data? data.ccfriOptInStatus: null);  
 }

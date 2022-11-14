@@ -18,11 +18,9 @@ const facilitySchema = {
     exists: { errorMessage: '[city] is required', },
     isLength: { options: { max: 80 }, errorMessage: '[city1] has a max length of 80'}},
   organizationId: { in: ['body'],
-    exists: { errorMessage: '[organizationId] is required', },
-    isBase64: { errorMessage: '[organizationId] must be a GUID'}},
+    exists: { errorMessage: '[organizationId] is required', }},
   yearBeginOperation: { in: ['body'],
-    exists: { errorMessage: '[yearBeginOperation] is required', },
-    isDate: { errorMessage: '[yearBeginOperation] must be a date'}}
+    exists: { errorMessage: '[yearBeginOperation] is required', }},
 };
 
 module.exports = router;
