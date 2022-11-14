@@ -147,7 +147,6 @@ export default {
   },
   methods: {
     toggle(index) {
-      console.log('hi!');
       console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
       //this.showOptStatus[index] = true;
