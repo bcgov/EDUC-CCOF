@@ -12,7 +12,6 @@
     <v-row>
       <v-divider class="mx-16"/>
 
-
       <v-btn color="info" outlined x-large @click="goToCCFRI()">
           CCFRI</v-btn>
     </v-row>
@@ -35,7 +34,7 @@
             <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard>
         
-          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
+          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=true>
               <br>
               <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
           </SmallCard>
@@ -148,7 +147,7 @@ export default {
       return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      return this.userInfo.applicationStatus === 'APPROVED';
+      return this.userInfo.applicationStatus === null;
     },
     
   },
