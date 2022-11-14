@@ -27,7 +27,7 @@
               <br><br>
               <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" :to="paphs.startApplication">Start Application</v-btn>
               <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'">Continue Application</v-btn>
-              <p v-else> Status: {{chosenOrg.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
+              <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
           <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
@@ -148,7 +148,7 @@ export default {
       return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      return this.chosenOrg.applicationStatus === 'APPROVED';
+      return this.userInfo.applicationStatus === 'APPROVED';
     },
     
   },
