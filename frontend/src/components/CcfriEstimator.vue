@@ -75,10 +75,18 @@
                 <v-col cols="1" class="pl-8 pt-0 text-right" style="color:white">
                   3.
                 </v-col>
-                <v-col cols="11" class="pl-8 pt-0" style="color:white">
+                <v-col cols="11" class="pl-8 pt-0 pb-4" style="color:white">
                   Use the <strong>'Estimate your savings'</strong> button at the bottom of the tool.
                 </v-col>
               </v-row>
+              <v-row justify="center">
+                <v-btn
+                  color="#431782"
+                  style="color:white;font-size:16px;"
+                  href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
+                  target="_blank">We want your feedback</v-btn>
+              </v-row>
+              <v-row><v-col class="pb-2"></v-col></v-row>
             </div>
           </v-card>
         </v-col>
@@ -737,7 +745,7 @@
                             {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/4).toFixed(2)+'/week $('+result.reductionAmountPerChild.toFixed(2)+'/month)' : ''}}
                             {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild.toFixed(2)+'/month' : ''}}-->
                             {{result.feeFrequency=='Daily'? '$'+(result.reductionAmountPerChild/20)+'/day ($'+result.reductionAmountPerChild+'/month)' : ''}}
-                            {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/4)+'/week $('+result.reductionAmountPerChild+'/month)' : ''}}
+                            {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/4)+'/week ($'+result.reductionAmountPerChild+'/month)' : ''}}
                             {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild+'/month' : ''}}
                           </div>
                       </div>
@@ -748,7 +756,7 @@
                           {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/4).toFixed(2)+'/week $('+result.actualParentFeePerChild.toFixed(2)+'/month)' : ''}}
                           {{result.feeFrequency=='Monthly'? '$'+result.actualParentFeePerChild.toFixed(2)+'/month' : ''}}-->
                           {{result.feeFrequency=='Daily'? '$'+(result.actualParentFeePerChild/20)+'/day ($'+result.actualParentFeePerChild+'/month)' : ''}}
-                          {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/4)+'/week $('+result.actualParentFeePerChild+'/month)' : ''}}
+                          {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/4)+'/week ($'+result.actualParentFeePerChild+'/month)' : ''}}
                           {{result.feeFrequency=='Monthly'? '$'+result.actualParentFeePerChild+'/month' : ''}}
                         </div>
                       </v-col>
@@ -1431,5 +1439,8 @@ div.ma-1.fill-height.v-card.v-card--disabled.v-sheet.theme--light {
 }
 .no-hover:before {
   display: none;
+}
+.v-data-footer__select {
+  text-align: left !important;
 }
 </style>

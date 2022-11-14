@@ -116,13 +116,19 @@
                               </td>
                             </tr>
                           </template>
-                          <template slot="body.append">
-                            <tr  v-show="!loading">
+                          <template slot="no-data">
+                            <span style="color:#0483AF;font-weight:bold;font-size:large;">No facilities were found matching your search criteria.<br/> Try again by entering additional keyworks.</span><br/><br/>
+                          </template>
+                          <template v-slot:body.append>
+                            <tr v-show="!loading && searchResults.length == 50">
                               <td colspan="2">
                                 <table> <!--//NOSONAR-->
                                   <tr>
                                     <td colspan="1" with="10%" style="vertical-align:top;"><span style="color:#0FC3ED;font-weight:bold;font-size:x-large;">*</span></td>
-                                    <td style="padding-top:2px"><span style="font-style:italic;">Your search returned {searchResults.totalrecordcount} records. Only the first 50 results are viewable. Try narrowing down your search using additional keywords.</span></td>
+                                    <td style="padding-top:2px">
+                                      <span style="font-style:italic;font-size:small;">
+                                        Only the 1st 50 records are returned which match your search criteria. If you are unable to find a facilty try both the facility name and city as search critiera.
+                                      </span></td>
                                   </tr>
                                 </table>
                               </td>
