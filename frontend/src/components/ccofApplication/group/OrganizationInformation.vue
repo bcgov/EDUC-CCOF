@@ -199,7 +199,7 @@ export default {
     ...mapMutations('organization', ['setIsStarted']),
 
     next() {
-      this.$router.push(PATHS.facInfo);
+      this.$router.push(PATHS.group.facInfo);
     },
     async save() {
       this.processing = true;
