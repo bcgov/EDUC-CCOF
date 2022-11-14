@@ -18,7 +18,7 @@
       <v-radio-group
         required
         row
-        v-model="q1"
+        v-model="model.q1"
         label=""
       >
         <v-radio
@@ -43,7 +43,7 @@
       <v-radio-group
         required
         row
-        v-model="q2"
+        v-model="model.q2"
         label=""
       >
         <v-radio
@@ -64,7 +64,7 @@
       <v-radio-group
         required
         row
-        v-model="q3"
+        v-model="model.q3"
         label=""
       >
         <v-radio
@@ -98,7 +98,7 @@
       <v-radio-group
         required
         row
-        v-model="q4"
+        v-model="model.q4"
         label=""
       >
         <v-radio
@@ -133,7 +133,7 @@
       <v-radio-group
         required
         row
-        v-model="q5"
+        v-model="model.q5"
         label=""
       >
         <v-radio
@@ -167,10 +167,13 @@
 import LargeCard from '../../guiComponents/LargeCard.vue';
 import { PATHS } from '@/utils/constants';
 
+let model = { x: [] };
+
 export default {
   name: 'CcfriRequestMoreInfo',
   data() {
     return {
+      model,
       input : '',
       q1 : '',
       q2: '',
@@ -179,6 +182,15 @@ export default {
       q5 : '',
      
     };
+  },
+  mounted() {
+    this.model = this.$store.state.ccfriApp.model ?? model;
+    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('ccfriApp/model', this.model);
+    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
+    next();
   },
   computed: {
     

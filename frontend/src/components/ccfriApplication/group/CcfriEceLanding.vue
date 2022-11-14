@@ -4,7 +4,7 @@
             <MessagesToolbar></MessagesToolbar>
         </div>
         <br><br>
-        <v-btn color="info" outlined x-large :disabled="ccfriOptInOrOut.length != facilityList.length" @click="updateCCFRI()">
+        <v-btn color="info" outlined x-large  @click="updateCCFRI()">
             UPDATE CCFRI APPLICATION</v-btn>
         {{ccfriOptInOrOut}}
         <!--TODO: The update buttons don't align and I don't like it !!-->
@@ -15,10 +15,6 @@
 
         {{this.$store.state.ccfriApp.model}}
 
-        <v-text-field
-              label="Regular"
-              v-model="model.test"
-            ></v-text-field>
         <LargeButtonContainer>
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
