@@ -101,7 +101,8 @@ import ApiService from '@/common/apiService';
 
 let ccfriOptInOrOut = {};
 
-let model = { x: [], ccfriOptInOrOut};
+let model = { x: [], ccfriOptInOrOut };
+//let ccfriOptInOrOut = { x: [] };
 
 export default {
   name: 'CcfriLandingPage',
