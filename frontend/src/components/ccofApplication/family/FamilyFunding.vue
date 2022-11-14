@@ -205,6 +205,7 @@ export default {
     allowedStep: m => m % 5 === 0,
     formatTime,
     async save() {
+      this.processing = true;
       this.saveModel();
 
       try {
@@ -213,6 +214,7 @@ export default {
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      this.processing = false;
     },
     saveModel() {
       this.$store.commit('familyFunding/model', this.model);
