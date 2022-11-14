@@ -23,7 +23,8 @@ export const ApiRoutes = Object.freeze({
   LOOKUP: baseRoot + '/config/lookup',
   ORGANIZATION: baseRoot + '/organization',
   FACILITY: baseRoot + '/facility',
-  FAMILY_FUND_AMOUNT: baseRoot + '/familyFunding'
+  FAMILY_FUND_AMOUNT: baseRoot + '/familyFunding',
+  FAMILY_ELIGIBILITY: baseRoot + '/familyFunding'
 });
 
 export const PAGE_TITLES = Object.freeze({

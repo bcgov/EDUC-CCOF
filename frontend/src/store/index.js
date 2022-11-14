@@ -5,7 +5,8 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
-import familyFundingStore from '@/store/modules/ccof/family/familyFundingStore';
+import familyFunding from '@/store/modules/ccof/family/familyFundingStore';
+import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStore';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
     app,
     organization,
     facility,
-    familyFundingStore
+    familyFunding,
+    familyEligibility
   }
 });
