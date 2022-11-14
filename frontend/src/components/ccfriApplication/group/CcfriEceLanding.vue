@@ -102,8 +102,10 @@ import ApiService from '@/common/apiService';
 
 const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
 
-let model = { x: [] };
-let ccfriOptInOrOut = { x: [] };
+
+let ccfriOptInOrOut = {};
+
+let model = { x: [], ccfriOptInOrOut};
 
 export default {
   name: 'CcfriLandingPage',
@@ -195,11 +197,11 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
+    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
+    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   components: { MessagesToolbar, LargeButtonContainer,  }
