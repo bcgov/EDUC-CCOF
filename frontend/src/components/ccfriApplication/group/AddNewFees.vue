@@ -2,6 +2,12 @@
   <!--TODO: add in isValidForm ruleset-->
   <v-form ref="ccfriform" v-model="isValidForm">
     <v-container class="px-10">
+
+      {{jan}} 
+
+      {{feb}}
+
+      {{feeSchedule}}
       
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
@@ -344,6 +350,61 @@ import rules from '@/utils/rules';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
 import axios from 'axios';
+
+
+
+
+let dates = {};
+let isFixedFee= {};
+//let facilityFees= {};
+let feeSchedule = {};
+let jan = {};
+let feb = {};
+let mar = {};
+let apr = {};
+let may = {};
+let jun = {};
+let jul = {};
+let aug = {};
+let sep = {};
+let oct = {};
+let nov = {};
+let dec = {};
+let mon = {};
+let tue = {};
+let wed = {};
+let thu = {};
+let fri = {};
+let sat = {};
+let sun = {};   
+let model = { x: [],
+  dates,
+  isFixedFee,
+  //facilityFees,
+  feeSchedule,
+  jan,
+  feb,
+  mar,
+  apr,
+  may,
+  jun,
+  jul,
+  aug,
+  sep,
+  oct,
+  nov,
+  dec,
+  mon,
+  tue,
+  wed,
+  thu,
+  fri,
+  sat,
+  sun
+  
+};
+
+
 export default {
 
   props: {
@@ -356,35 +417,36 @@ export default {
   data() {
     return {
       rules,
+      model,
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
       closureFees: undefined,
       closureReason: undefined,
       closedFeesPaid: undefined,
-      dates: [],
-      isFixedFee: [],
-      facilityFees: [],
-      feeSchedule : [],
-      jan : [],
-      feb : [],
-      mar : [],
-      apr : [],
-      may : [],
-      jun : [],
-      jul : [],
-      aug : [],
-      sep : [],
-      oct : [],
-      nov : [],
-      dec : [],
-      mon : [],
-      tue : [],
-      wed : [],
-      thu : [],
-      fri : [],
-      sat : [],
-      sun : [],   feeRules: [
+      dates,
+      isFixedFee,
+      facilityFees : [],
+      feeSchedule,
+      jan,
+      feb,
+      mar,
+      apr,
+      may,
+      jun,
+      jul,
+      aug,
+      sep,
+      oct,
+      nov,
+      dec,
+      mon,
+      tue,
+      wed,
+      thu,
+      fri,
+      sat,
+      sun,   feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
@@ -392,6 +454,15 @@ export default {
       
 
     };
+  },
+  mounted() {
+    this.model = this.$store.state.ccfriApp.model ?? model;
+    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('ccfriApp/model', this.model);
+    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
+    next();
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),

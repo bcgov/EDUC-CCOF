@@ -7,15 +7,11 @@ export default {
       
     ],
     foo: 'bar',
-    ccfriOptInOrOut: []
   },
   getters: {},
   mutations: {
     model(state, value) {
       state.model = value;
-    },
-    ccfriOptInOrOut(state,value){
-      state.ccfriOptInOrOut = value;
     },
     isValidForm(state, value) {
       state.isValidForm = value;
@@ -23,3 +19,5 @@ export default {
   },
   actions: {}
 };
+
+//Ask monday about having SO many arrays - I think it would work but perhaps there is a better way 
