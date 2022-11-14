@@ -8,6 +8,8 @@ env:
   REPO_NAME: "educ-ccof"
   BRANCH: "main"
   APP_NAME_FRONTEND: "frontend"
+  APP_NAME_BACKEND: "backend"
+
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
 on:
@@ -55,5 +57,4 @@ jobs:
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
 
         oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:latest ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:${{ github.event.inputs.version }}
-
-        #oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-backend-${{ env.BRANCH }}:latest ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-backend-${{ env.BRANCH }}:${{ github.event.inputs.version }}
+        oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}:latest ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}:${{ github.event.inputs.version }}
