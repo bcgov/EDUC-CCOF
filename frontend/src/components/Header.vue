@@ -2,7 +2,7 @@
   <v-system-bar app absolute color="rgb(0, 51, 102)" height="56rem" class="sysBar"
                 :class="{'pl-2': $vuetify.breakpoint.smAndDown, 'pl-10': $vuetify.breakpoint.mdAndUp, 'pr-2': $vuetify.breakpoint.smAndDown, 'pr-10': $vuetify.breakpoint.mdAndUp} ">
     <!-- Navbar content -->
-    <a tabindex="-1" href="/">
+    <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
       <img
           tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
@@ -11,10 +11,6 @@
           alt="B.C. Government Logo"
       >
     </a>
-    <a tabindex="-1" href="/">
-      <v-toolbar-title><h3 class="mainTitle" style="color:white">{{ appTitle }}</h3></v-toolbar-title>
-    </a>
-
 
     <v-spacer></v-spacer>
     <div v-if="isAuthenticated && dataReady">
