@@ -37,8 +37,6 @@ async function getUserInfo(req, res) {
   console.info('User Guid is: ', userGuid);
   const userResponse = await getUserProfile(userGuid);
 
-  //const userResponse = [{}];
-
   log.info(userResponse);
   log.verbose('Status  :: is :: ', userResponse.status);
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
@@ -108,8 +106,6 @@ async function getUserInfo(req, res) {
   resData.organizationId  = userResponse[0]['_ccof_organization_value'];
   resData.applicationId =  userResponse[0]['Application.ccof_applicationid'];
   let statusCode = userResponse[0]['_ccof_organization_value'];
-  log.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  log.info(statusCode);
   if (statusCode) {
 
     statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
@@ -121,8 +117,7 @@ async function getUserInfo(req, res) {
     }
   } else {
     // No status code means new CCOF application
-    // statusCode = STATUS_CODES.NEW;
-    statusCode = 1;
+    statusCode = null;
   }
   resData.applicationStatus  = statusCode;
 
