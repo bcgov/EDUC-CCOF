@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { createCCFRIApplication, updateCCFRIApplication} = require('../components/application');
+const { upsertParentFees, upsertCCFRIApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
@@ -36,14 +36,26 @@ const { log } = require('../components/logger');
 // });
 
 
-/* UPDATE an existing CCFRI application */
-
+/* CREATE or UPDATE an existing CCFRI application for opt-in and out
+  CCOF application guid and facility guid are defined in the payload
+*/
 
 router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
   //validationResult(req).throw();
   //console.log(req.bpdy);
-  return updateCCFRIApplication(req, res);
+  return upsertCCFRIApplication(req, res);
 });
+
+/* CREATE or UPDATE parent fees for a specified age group and year. 
+  age group and year are defined in the payload   
+*/
+router.patch('/parentfee', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
+  //validationResult(req).throw();
+  //console.log(req.bpdy);
+  return upsertParentFees(req, res);
+});
+
+
 
 
 

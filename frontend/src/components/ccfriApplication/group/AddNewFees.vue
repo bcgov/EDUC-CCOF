@@ -3,11 +3,8 @@
   <v-form ref="ccfriform" v-model="isValidForm">
     <v-container class="px-10">
 
-      {{jan}} 
-
-      {{feb}}
-
-      {{feeSchedule}}
+      <v-btn color="info" outlined x-large  @click="updateParentFees()">
+            UPDATE FEES</v-btn>
       
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
@@ -349,10 +346,12 @@
 import rules from '@/utils/rules';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
-import axios from 'axios';
+import ApiService from '@/common/apiService';
 
-
-
+// 0-18 months
+const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang)
+const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
+const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
 
 let dates = {};
 let isFixedFee= {};
@@ -528,13 +527,32 @@ export default {
     next() {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    async getFacility (id) {
+    async updateParentFees () {
+
+      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
+      // this.facilityList.forEach (async (facility, index) => {
+
+      //   let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+
+      //   payload = JSON.parse(JSON.stringify(payload));
+
+      let payload = {
+        ccfriApplicationGuid : CCFRI_APPLICATION_GUID,
+        childCareCategory : CHILD_CARE_CATEGORY_GUID, 
+        programYear : PROGRAM_YEAR
+      };
+
+      payload = JSON.parse(JSON.stringify(payload));
+
+      console.log(payload);
+
       try {
-        this.facilityResult = (await axios.get('/api/public/facilities/'+id)).data;
+        this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
       } catch (error) {
         console.info(error);
       }
-    }
+      //});
+    },
   }
 };
 </script>
