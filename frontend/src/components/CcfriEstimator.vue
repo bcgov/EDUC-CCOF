@@ -50,16 +50,16 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="1" class="pl-8 pt-0 text-right" style="color:white">
+                <v-col cols="1" class="pl-8 pt-0 text-right text-no-wrap" style="color:white">
                   1.
                 </v-col>
-                <v-col cols="11" class="pl-8 pt-0" style="color:white">
+                <v-col cols="10" class="pl-8 pt-0" style="color:white">
                   This estimator below calculates child care cost savings after the Child Care Fee Reduction Initiative (CCFRI). More information on CCFRI eligibility is available on our <a href="https://www2.gov.bc.ca/gov/content?id=77241B9EE085467F94219D69F0008B29#eligibility
 " target="_blank" style="color:#0FC3ED"><u>website</u></a>.
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="1" class="pl-8 pt-0 text-right" style="color:white">
+                <v-col cols="1" class="pl-8 pt-0 text-right text-no-wrap" style="color:white">
                   2.
                 </v-col>
                 <v-col cols="10" class="pl-8 pt-0" style="color:white">
@@ -72,24 +72,16 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="1" class="pl-8 pt-0 text-right" style="color:white">
+                <v-col cols="1" class="pl-8 pt-0 text-right text-no-wrap" style="color:white">
                   3.
                 </v-col>
-                <v-col cols="11" class="pl-8 pt-0 pb-4" style="color:white">
+                <v-col cols="10" class="pl-8 pt-0 pb-4" style="color:white">
                   Use the <strong>'Estimate your savings'</strong> button at the bottom of the tool.
                 </v-col>
               </v-row>
               <v-row><v-col class="pa-1"></v-col></v-row>
             </div>
           </v-card>
-          <v-row v-show="!isParent && !isProvider" justify="center" class="pt-2">
-            <v-btn
-              color="#431782"
-              style="color:white;font-size:16px;"
-              href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
-              target="_blank">We want your feedback
-            </v-btn>
-          </v-row>
         </v-col>
       </v-row>
   <!-- ******************************************************************************************************************************************************** -->
@@ -769,16 +761,16 @@
           </div>
         </v-card>
         </v-col>
-        <v-row justify="center">
-          <v-btn
-            color="#431782"
-            style="color:white;font-size:16px;"
-            href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
-            target="_blank">We want your feedback
-          </v-btn>
-        </v-row>
       </v-row>
     </v-form>
+    <v-row justify="center" class="pb-3">
+      <v-btn
+        color="#431782"
+        style="color:white;font-size:16px;"
+        href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
+        target="_blank">We want your feedback
+      </v-btn>
+    </v-row>
   </v-container>
 </template>
 <script>
