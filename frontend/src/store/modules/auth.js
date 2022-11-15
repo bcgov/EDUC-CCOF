@@ -115,6 +115,7 @@ export default {
       commit('setUserInfo', userInfoRes.data);
       commit('facility/setFacilityList', userInfoRes.data.facilityList, { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
+      commit('organization/setCcofApplicationId', userInfoRes.data.ccofApplicationId, { root: true });
       commit('setIsUserInfoLoaded', true);
     },
 

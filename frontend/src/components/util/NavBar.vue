@@ -133,8 +133,7 @@ export default {
       immediate: true,
       deep: true
     },
-
-},
+  },
   methods: {
     setActive(item) {
       this.items[1].expanded = false;

@@ -24,6 +24,7 @@ export default {
     isValidForm: false,
     isStarted: false,
     ccfriOptInStatus : null,
+    isFacilityComplete: false,
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
@@ -44,6 +45,7 @@ export default {
     setEmail: (state, email) => { state.email = email; },
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
+    setIsFacilityComplete: (state, isFacilityComplete) => { state.isFacilityComplete = isFacilityComplete; },
     setCcfriStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
   },
   actions: {
@@ -60,6 +62,7 @@ export default {
       }
       let payload = JSON.parse(JSON.stringify(state));
       payload.organizationId = organizationId;
+      payload.ccofApplicationId = rootState.organization.ccofApplicationId;
       console.log('payload', payload);
       if (state.facilityId) {
         // has an orgaization ID, so update the data
