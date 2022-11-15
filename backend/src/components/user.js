@@ -35,62 +35,6 @@ async function getUserInfo(req, res) {
   console.info('User Guid is: ', userGuid);
   const userResponse = await getUserProfile(userGuid);
 
-  log.verbose('Status  :: is :: ', userResponse.status);
-  log.verbose('StatusText   :: is :: ', userResponse.statusText);
-  log.verbose('Response   :: is :: ', minify(userResponse.data));
-
-  userResponse.push( {
-    'Organization.name' : "Test Org 1",
-    'BCeID.ccof_userid' : "123-bbbb-cccc",
-    'Application.statuscode' : 100000001 ,
-    'CCOF.ccof_facility' : '123456',
-    'CCOF.Facility.name' : 'Best Daycare 1',
-    'CCFRI.statuscode' : 0,
-    'ECEWE.statuscode' : 0,
-    'ccfriOptInStatus': 7
-  
-  });
-
-  // const userResponse = [
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '123456',
-  //     'CCOF.Facility.name' : 'Best Daycare 1',
-  //     'CCFRI.statuscode' : 0,
-  //     'ECEWE.statuscode' : 0,
-
-  //   },
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '987352723',
-  //     'CCOF.Facility.name' : 'Wee lil happy babiez',
-  //     'CCFRI.statuscode' : 2,
-  //     'ECEWE.statuscode' : 1,
-  //   },
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '1232464456',
-  //     'CCOF.Facility.name' : 'Best Daycare 2',
-  //     'CCFRI.statuscode' : 1,
-  //     'ECEWE.statuscode' : 1,
-
-  //   },
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '987353422723',
-  //     'CCOF.Facility.name' : 'Wee lil happy kidoz',
-  //     'CCFRI.statuscode' : 2,
-  //     'ECEWE.statuscode' : 1,
-  //   }
-  // ];   
 
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
@@ -112,7 +56,7 @@ async function getUserInfo(req, res) {
     }
   } else {
     // No status code means new CCOF application
-    statusCode = STATUS_CODES.NEW;
+    statusCode = 'NEW';
   }
   resData.applicationStatus  = statusCode;
 

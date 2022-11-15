@@ -148,7 +148,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.facInfo + '/:urlFacilityId',
+      path: PATHS.group.facInfo,
       name: 'Facility Information',
       component: FacilityInformation,
       meta: {
@@ -158,7 +158,17 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-
+    {
+      path: PATHS.group.facInfo + '/:urlFacilityId',
+      name: 'Facility Information Guid',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
     {
       path: PATHS.group.fundAmount,
       name: 'Funding Amount',

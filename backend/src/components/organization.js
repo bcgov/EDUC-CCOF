@@ -1,9 +1,11 @@
 'use strict';
-const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getLookupKey} = require('./utils');
+const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getOperation} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { OrganizationMappings } = require('../util/mapping/Mappings');
+const log = require('./logger');
+
 
 async function getOrganization(req, res) {
   try {
@@ -42,7 +44,16 @@ async function createOrganization(req, res) {
 
   try {
     let organizationGuid = await postOperation('accounts', organization);
-    return res.status(HttpStatus.CREATED).json({ organizationId: organizationGuid });
+    //After the application is created, get the application guid
+    let operation = 'accounts(' + organizationGuid + ')?$select=accountid&$expand=ccof_ccof_application_Organization_account($select=ccof_applicationid)';
+    let applicationPayload = await getOperation(operation);
+    let ccofApplicationId = null;
+    if ( applicationPayload?.ccof_ccof_application_Organization_account?.length > 0) {
+      ccofApplicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
+    } else {
+      log.error('Unable to find applicationId when creating organization: ', organizationGuid);
+    }
+    return res.status(HttpStatus.CREATED).json({ organizationId: organizationGuid, ccofApplicationId: ccofApplicationId});
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }

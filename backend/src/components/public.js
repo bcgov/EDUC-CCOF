@@ -22,7 +22,7 @@ async function getFacilities(req, res) {
     }
     return res.status(200).json(results);
   } catch (e) {
-    log.verbose(e, 'getFacilities', 'Error occurred while attempting to GET Facilities.');
+    log.error(e, 'getFacilities', 'Error occurred while attempting to GET Facilities.');
     return errorResponse(res);
   }
 }
