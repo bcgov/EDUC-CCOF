@@ -22,7 +22,7 @@ env:
 
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
-  BRANCH: "main"
+  BRANCH: "release-estimator"
   APP_NAME_BACKEND: "backend"
 
 
@@ -123,8 +123,6 @@ jobs:
         oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
-        # TODO: Add the following parameters to oc process when routes are live
-        # -p CA_CERT=${{ env.CA_CERT }} -p CERTIFICATE=${{ env.CERTIFICATE }} -p PRIVATE_KEY=${{ env.PRIVATE_KEY }}\
         oc process -f tools/openshift/backend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
         | oc apply -f -
 
