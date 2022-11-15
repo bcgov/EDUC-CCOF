@@ -6,7 +6,11 @@ const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
+const { UserProfileFacilityMappings } = require('../util/mapping/Mappings');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
+
+
 
 async function getUserInfo(req, res) {
 
@@ -26,7 +30,7 @@ async function getUserInfo(req, res) {
     applicationId: null,
     applicationStatus: null,
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
-    unreadMessages: true, 
+    unreadMessages: false, 
     facilityList: [],
   };
 
@@ -34,8 +38,9 @@ async function getUserInfo(req, res) {
   let userGuid = getUserGuid(req);
   console.info('User Guid is: ', userGuid);
   const userResponse = await getUserProfile(userGuid);
-
-
+  if (log.isVerboseEnabled) {
+    log.verbose('getUserProfile response:',minify(userResponse));
+  }
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
@@ -60,19 +65,36 @@ async function getUserInfo(req, res) {
   }
   resData.applicationStatus  = statusCode;
 
-  let facilityArr = userResponse.map(item => {
-    return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
+  let facilityList = [];
+  userResponse.forEach(item => {
+    let facility = new MappableObjectForFront(item, UserProfileFacilityMappings);
+    log.info(minify(facility.data));
+    if (!_.isEmpty(facility.data)) {
+      facilityList.push(facility.data);
+    }
   });
-  facilityArr.map( item => {
-    item.ccfriStatus = getConstKey(CCFRI_STATUS_CODES, item.ccfriStatus);
-    item.eceweStatus = getConstKey(ECEWE_STATUS_CODES, item.eceweStatus);
-    item.facilityAgeGroups = ['1', '2' , '3'];
-    item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
-    return item;
-  });
+  
+
+  // UserProfileFacilityMappings
+  // let facilityArr = userResponse.map(item => {
+  //   let ret = _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
+  //   log.info(minify(ret));
+  //   if (_.isEmpty(ret)) {
+  //     _.omit(item);
+  //   } else {
+  //     return ret;
+  //   }
+  // });
+  // facilityArr.map( item => {
+  //   item.ccfriStatus = getConstKey(CCFRI_STATUS_CODES, item.ccfriStatus);
+  //   item.eceweStatus = getConstKey(ECEWE_STATUS_CODES, item.eceweStatus);
+  //   item.facilityAgeGroups = ['1', '2' , '3'];
+  //   item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
+  //   return item;
+  // });
 
   
-  resData.facilityList = facilityArr;
+  resData.facilityList = facilityList;
   
   return res.status(HttpStatus.OK).json(resData);
 }

@@ -47,13 +47,13 @@ async function createOrganization(req, res) {
     //After the application is created, get the application guid
     let operation = 'accounts(' + organizationGuid + ')?$select=accountid&$expand=ccof_ccof_application_Organization_account($select=ccof_applicationid)';
     let applicationPayload = await getOperation(operation);
-    let ccofApplicationId = null;
+    let applicationId = null;
     if ( applicationPayload?.ccof_ccof_application_Organization_account?.length > 0) {
-      ccofApplicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
+      applicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
     } else {
       log.error('Unable to find applicationId when creating organization: ', organizationGuid);
     }
-    return res.status(HttpStatus.CREATED).json({ organizationId: organizationGuid, ccofApplicationId: ccofApplicationId});
+    return res.status(HttpStatus.CREATED).json({ organizationId: organizationGuid, applicationId: applicationId});
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }

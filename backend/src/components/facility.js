@@ -23,15 +23,20 @@ function hasChildCareCategory(item) {
   );
 }
 
-function buildPayload(req) {
+function buildNewFacilityPayload(req) {
   let facility = req.body;
   let organizationString = '/accounts(' + facility.organizationId + ')';
-  let applicationString = '/ccof_applications(' + facility.ccofApplicationId + ')';
+  let applicationString = '/ccof_applications(' + facility.applicationId + ')';
 
   facility = new MappableObjectForBack(facility, FacilityMappings);
   facility.data['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
   facility.data['parentaccountid@odata.bind'] = organizationString;
-  facility.data['ccof_application@odata.bind'] = applicationString;
+  facility.data['ccof_application_basefunding_Facility'] = [
+    {
+      'ccof_Application@odata.bind': applicationString
+    }
+  ];
+  
   return facility;
 }
 
@@ -83,8 +88,7 @@ async function getFacility(req, res) {
 
 
 async function createFacility(req, res) {
-  let ccofApplicationId = req.body.ccofApplicationId;
-  let facility = buildPayload(req);
+  let facility = buildNewFacilityPayload(req);
   try {
     let facilityGuid = await postOperation('accounts', facility);
     return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid});
@@ -94,9 +98,9 @@ async function createFacility(req, res) {
 }
 
 async function updateFacility(req, res) {
-  let facility = buildPayload(req);
+  let facility = new MappableObjectForBack(facility, FacilityMappings);
   try {
-    console.log('Payload is: ', minify(facility));
+    console.log('Payload is: ', minify(facility.data));
     let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
     response = new MappableObjectForFront(response, FacilityMappings);
     console.log('Response is: ', minify(response));
