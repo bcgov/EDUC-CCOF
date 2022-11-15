@@ -6,6 +6,7 @@ export default {
   namespaced: true,
   state: {
     organizationId: null,
+    applicationId: null,
     legalName: null,
     address1: null,
     city1: null,
@@ -29,6 +30,7 @@ export default {
   },  
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
+    setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
     setLegalName: (state, legalName) => { state.legalName = legalName; },
     setAddress1: (state, address1) => { state.address1 = address1; },
     setCity1: (state, city1) => { state.city1 = city1; },
@@ -78,6 +80,7 @@ export default {
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
           commit('setOrganizationId', response.data?.organizationId);
+          commit('setApplicationId', response.data?.applicationId);
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);

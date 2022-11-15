@@ -37,7 +37,12 @@ async function getUserInfo(req, res) {
 
   let userGuid = getUserGuid(req);
   console.info('User Guid is: ', userGuid);
+ 
   const userResponse = await getUserProfile(userGuid);
+
+  if (log.isVerboseEnabled) {
+    log.verbose('getUserProfile response:',minify(userResponse));
+  }
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:',minify(userResponse));
   }

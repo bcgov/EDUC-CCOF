@@ -24,8 +24,8 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" :to="paphs.startApplication">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" :to="paths.startApplication">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" :to="paths.continueApplication">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
@@ -124,8 +124,9 @@ export default {
   data() {
     return {
       input: '',
-      paphs: {
-        startApplication:PATHS.selectApplicationType
+      paths: {
+        startApplication:PATHS.selectApplicationType,
+        continueApplication: PATHS.group.orgInfo,
       },
       results : {},
       

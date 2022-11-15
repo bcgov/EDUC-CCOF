@@ -14,12 +14,16 @@ let discovery = null;
 const cache = require('memory-cache');
 
 function getConstKey(constants, value) {
-  for (let key in constants) {
-    if (constants[key] === value) {
-      return key;
+  if (value) {
+    for (let key in constants) {
+      if (constants[key] === value) {
+        return key;
+      }
+      log.error('getConstKey: Unable to find key for value: ' + value);
     }
-    log.error('getConstKey: Unable to find key for value: ' + value);
   }
+  return undefined;
+  
 }
 
 //const {getUserInfo} = require('./user.js');
