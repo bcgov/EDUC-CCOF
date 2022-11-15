@@ -5,8 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-
-const { CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, APPLICATION_STATUS_CODES } = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
 
 const _ = require ('lodash');
 
@@ -42,17 +41,17 @@ async function getUserInfo(req, res) {
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
   log.verbose('Response   :: is :: ', minify(userResponse.data));
 
-  userResponse.push( {
-    'Organization.name' : "Test Org 1",
-    'BCeID.ccof_userid' : "123-bbbb-cccc",
-    'Application.statuscode' : 100000001 ,
-    'CCOF.ccof_facility' : '123456',
-    'CCOF.Facility.name' : 'Best Daycare 1',
-    'CCFRI.statuscode' : 0,
-    'ECEWE.statuscode' : 0,
-    'ccfriOptInStatus': 7
+  // userResponse.push( {
+  //   'Organization.name' : "Test Org 1",
+  //   'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //   'Application.statuscode' : 100000001 ,
+  //   'CCOF.ccof_facility' : '123456',
+  //   'CCOF.Facility.name' : 'Best Daycare 1',
+  //   'CCFRI.statuscode' : 0,
+  //   'ECEWE.statuscode' : 0,
+  //   'ccfriOptInStatus': 7
   
-  });
+  // });
 
   // const userResponse = [
   //   {

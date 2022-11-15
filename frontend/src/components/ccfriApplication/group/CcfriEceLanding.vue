@@ -12,9 +12,6 @@
           this will need to get changed at a later point when the API is more built out 
           there is also no logic about if you can click next or not 
         -->
-
-        {{this.$store.state.ccfriApp.model}}
-
         <LargeButtonContainer>
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
@@ -71,8 +68,6 @@
           </v-card>
       
         </LargeButtonContainer>
-
-        q{{applicationStatus}}
 
         <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
@@ -161,6 +156,9 @@ export default {
     },
     async updateCCFRI () {
 
+      console.log('f');
+      console.log(this.getFacility(APPLICATION_ID));
+
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
 
@@ -176,9 +174,8 @@ export default {
         console.log(payload);
 
         try {
-          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-          this.applicationStatus = this.applicationStatus.data;
-          console.log(this.applicationStatus);
+          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+          //console.log(response);
         } catch (error) {
           console.info(error);
         }
@@ -186,10 +183,10 @@ export default {
       });
     },
 
-    //this is an example - take me out 
+    //this is an example - take me out /////////////////////////////////////////
     async getFacility (id) {
       try {
-        this.facilityResult = (await axios.get('/api/application/'+id)).data;
+        this.facilityResult = (axios.get('/api/facility/:'+id)).data;
       } catch (error) {
         console.info(error);
       }
