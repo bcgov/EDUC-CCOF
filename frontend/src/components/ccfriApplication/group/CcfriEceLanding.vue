@@ -72,6 +72,7 @@
       
         </LargeButtonContainer>
 
+        q{{applicationStatus}}
 
         <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
@@ -96,8 +97,7 @@ import { PATHS } from '@/utils/constants';
 import axios from 'axios';
 import ApiService from '@/common/apiService';
 
-const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
-
+//const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
 
 let ccfriOptInOrOut = {};
 
@@ -163,7 +163,12 @@ export default {
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
 
-        let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+        console.log(this.userInfo.applicationId);
+        let payload = {
+          applicationID : this.userInfo.applicationId, 
+          facilityID : facility.facilityId, 
+          optInResponse: this.ccfriOptInOrOut[index] 
+        };
 
         payload = JSON.parse(JSON.stringify(payload));
 
@@ -171,17 +176,16 @@ export default {
 
         try {
           this.applicationStatus = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+          this.applicationStatus = this.applicationStatus.data;
+          console.log(this.applicationStatus);
         } catch (error) {
           console.info(error);
         }
 
       });
-
-      
-
-      
     },
-    //this.applicationStatus = (await axios.patch('/api/application/ccfri/', payload));
+
+    //this is an example - take me out 
     async getFacility (id) {
       try {
         this.facilityResult = (await axios.get('/api/application/'+id)).data;
