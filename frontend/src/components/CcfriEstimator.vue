@@ -1299,7 +1299,6 @@ export default {
     },
     clickForOnSlider(key, childIndex) {
       if (this.children[childIndex].items[key].id == this.children[childIndex].selectedMonthIndex) {
-        console.log('isActive = FALSE!!');
         this.children[childIndex].isActive = false;
         this.children[childIndex].approvedFee = undefined;
       }
@@ -1308,6 +1307,7 @@ export default {
       this.children[childIndex].isActive = this.children[childIndex].isActive ? false : true;
       this.children[childIndex].clicked = true;
       this.children[childIndex].approvedFee = this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate;
+      this.children[childIndex].parentFeeFrequency = this.children[childIndex].feeFrequency;
       this.children[childIndex].btnDisabled = false;
     },
     focusAwayFromOnSlider(childIndex) {
