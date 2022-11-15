@@ -93,7 +93,7 @@
       </v-row>
 
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large>Back</v-btn>
+        <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
         <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
@@ -116,10 +116,6 @@ export default {
   computed: {
     ...mapState('app', ['organizationTypeList']),
     ...mapGetters('auth', ['userInfo']),
-    organizationId: {
-      get() { return this.$store.state.organization.organizationId; },
-      set(value) { this.$store.commit('organization/setOrganizationId', value); }
-    },
   },
   mixins: [alertMixin],
   data() {
@@ -132,25 +128,33 @@ export default {
   },
   mounted() {
     this.businessId = this.userInfo.userName;
-    this.$store.commit('organization/setIsStarted', true);
-
+    this.model = this.$store.state.familyOrganization.model ?? model;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.saveModel();
+    next();
   },
   methods: {
     ...mapActions('familyOrganization', ['saveFamilyOrganization']),
-
+    back() { },
     next() {
       this.$router.push(PATHS.family.eligibility);
     },
     async save() {
       this.processing = true;
+      this.saveModel();
+
       try {
-        await this.saveOrganization();
+        await this.saveFamilyOrganization();
         this.setSuccessAlert('Success! Organization information has been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
 
       this.processing = false;
+    },
+    saveModel() {
+      this.$store.commit('familyOrganization/model', this.model);
     }
   }
 };

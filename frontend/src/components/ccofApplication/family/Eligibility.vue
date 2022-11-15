@@ -74,8 +74,6 @@ export default {
       this.$router.push(PATHS.family.fundAmount);
     },
     async save() {
-      console.log('SAVING');
-
       this.processing = true;
       this.saveModel();
 
