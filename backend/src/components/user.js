@@ -6,7 +6,7 @@ const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 
-const { CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
+const { CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, APPLICATION_STATUS_CODES } = require('../util/constants');
 
 const _ = require ('lodash');
 
