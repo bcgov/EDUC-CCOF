@@ -13,6 +13,7 @@
           there is also no logic about if you can click next or not 
         -->
 
+
         {{this.$store.state.ccfriApp.model}}
 
         <LargeButtonContainer>
@@ -72,8 +73,6 @@
       
         </LargeButtonContainer>
 
-        q{{applicationStatus}}
-
         <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
@@ -97,7 +96,7 @@ import { PATHS } from '@/utils/constants';
 import axios from 'axios';
 import ApiService from '@/common/apiService';
 
-//const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
+const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
 
 let ccfriOptInOrOut = {};
 
@@ -160,6 +159,9 @@ export default {
     },
     async updateCCFRI () {
 
+      console.log('f');
+      console.log(this.getFacility(APPLICATION_ID));
+
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
 
@@ -175,9 +177,8 @@ export default {
         console.log(payload);
 
         try {
-          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-          this.applicationStatus = this.applicationStatus.data;
-          console.log(this.applicationStatus);
+          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+          //console.log(response);
         } catch (error) {
           console.info(error);
         }
@@ -185,10 +186,10 @@ export default {
       });
     },
 
-    //this is an example - take me out 
+    //this is an example - take me out /////////////////////////////////////////
     async getFacility (id) {
       try {
-        this.facilityResult = (await axios.get('/api/application/'+id)).data;
+        this.facilityResult = (axios.get('/api/facility/:'+id)).data;
       } catch (error) {
         console.info(error);
       }
