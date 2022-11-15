@@ -498,7 +498,7 @@
                           </span>
                         </template>
                         <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
-                          <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#F3E6F6' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle(clickForOnSlider(n.id, child.number-1))">
+                          <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#F3E6F6' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle()">
                             <v-row style="" justify="center">
                               <v-col align="center" style="padding-top:4px;padding-bottom:5px;margin-top:-2px;">
                                 <span :style="'color:'+(active ? 'white' : 'white')+';font-family:Lucida Grande,monospace;background-color:#431782;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:px;padding-right:19px;padding-top:4px'">
@@ -509,7 +509,7 @@
                             <v-row style="font-size:14px;" justify="center">
                               <v-col align="center" style="padding-top:3px;">
                                 <span :style="'color:'+(active ? '#9D2AB1' : 'black')">
-                                  {{(n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
+                                  {{(n.rate==0 || n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
                                 </span>
                               </v-col>
                             </v-row>
@@ -519,7 +519,7 @@
 <!-- ****************************************************************************************************************************************************************-->
 <!-- *** The following slider is for the OFF (unselected) state *****************************************************************************************************-->
 <!-- ****************************************************************************************************************************************************************-->
-                      <v-slide-group id="monthSelectorOff" v-if="!child.isActive" v-model="child.selectedMonthIndex" class="pa-0" mandatory center-active show-arrows active-class="">
+                      <v-slide-group id="monthSelectorOff" v-if="!child.isActive" v-model="child.selectedMonthIndex" class="pa-0" mandatory center-active show-arrows active-class="" @change="focusAwayFromOnSlider(child.number-1)">
                         <template v-slot:next>
                           <span class="fill-height pt-1 pr-3">
                             <v-icon color="#431782" x-large>mdi-chevron-right</v-icon>
@@ -545,7 +545,7 @@
                           <v-row style="font-size:14px;" justify="center">
                             <v-col align="center" style="padding-top:3px;">
                               <span style="">
-                                {{(n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
+                                {{(n.rate==0 || n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
                               </span>
                             </v-col>
                           </v-row>
@@ -1286,9 +1286,8 @@ export default {
       }
     },
     onChangeParentFeeFrequency (childIndex) {
-      if (this.children[childIndex].approvedFee !== '' && this.children[childIndex].approvedFee !== undefined) {
-        this.children[childIndex].approvedFee = undefined;
-      }
+      this.children[childIndex].approvedFee = undefined;
+      this.children[childIndex].isActive = false;
     },
     getApprovedRatesByMonth: function(childAgeCategory) {
       for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
@@ -1297,21 +1296,15 @@ export default {
         }
       }
     },
-    clickForOnSlider(key, childIndex) {
-      if (this.children[childIndex].items[key].id == this.children[childIndex].selectedMonthIndex) {
-        this.children[childIndex].isActive = false;
-        this.children[childIndex].approvedFee = undefined;
-      }
-    },
     clickForOffSlider(key, childIndex) {
       this.children[childIndex].isActive = this.children[childIndex].isActive ? false : true;
       this.children[childIndex].clicked = true;
-      this.children[childIndex].approvedFee = this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate;
       this.children[childIndex].parentFeeFrequency = this.children[childIndex].feeFrequency;
       this.children[childIndex].btnDisabled = false;
     },
     focusAwayFromOnSlider(childIndex) {
       this.children[childIndex].approvedFee = this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate;
+      this.children[childIndex].parentFeeFrequency = this.children[childIndex].feeFrequency;
       this.$refs.hiddenButton[childIndex].$el.focus();
     },
     /* Set the current month value for the month select slider.. this will show the current month centered in the component. */
