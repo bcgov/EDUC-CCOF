@@ -82,6 +82,14 @@
               <v-row><v-col class="pa-1"></v-col></v-row>
             </div>
           </v-card>
+          <v-row v-show="!isParent && !isProvider" justify="center" class="pt-2">
+            <v-btn
+              color="#431782"
+              style="color:white;font-size:16px;"
+              href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
+              target="_blank">We want your feedback
+            </v-btn>
+          </v-row>
         </v-col>
       </v-row>
   <!-- ******************************************************************************************************************************************************** -->
