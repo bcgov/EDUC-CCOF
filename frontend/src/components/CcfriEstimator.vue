@@ -79,14 +79,7 @@
                   Use the <strong>'Estimate your savings'</strong> button at the bottom of the tool.
                 </v-col>
               </v-row>
-              <v-row justify="center">
-                <v-btn
-                  color="#431782"
-                  style="color:white;font-size:16px;"
-                  href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
-                  target="_blank">We want your feedback</v-btn>
-              </v-row>
-              <v-row><v-col class="pb-2"></v-col></v-row>
+              <v-row><v-col class="pa-1"></v-col></v-row>
             </div>
           </v-card>
         </v-col>
@@ -593,6 +586,7 @@
                     :items="parentFeeFrequencyList"
                     required
                     :rules="rulesParentFeeFrequency"
+                    @change="onChangeParentFeeFrequency(child.number-1)"
                     outlined
                     dense>
                   </v-select>
@@ -741,23 +735,17 @@
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                           <div class="d-flex">
                           <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;">
-                            <!--{{result.feeFrequency=='Daily'? '$'+(result.reductionAmountPerChild/20).toFixed(2)+'/day ($'+result.reductionAmountPerChild.toFixed(2)+'/month)' : ''}}
-                            {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/4).toFixed(2)+'/week $('+result.reductionAmountPerChild.toFixed(2)+'/month)' : ''}}
-                            {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild.toFixed(2)+'/month' : ''}}-->
-                            {{result.feeFrequency=='Daily'? '$'+(result.reductionAmountPerChild/20)+'/day ($'+result.reductionAmountPerChild+'/month)' : ''}}
-                            {{result.feeFrequency=='Weekly'? '$'+(result.reductionAmountPerChild/4)+'/week ($'+result.reductionAmountPerChild+'/month)' : ''}}
-                            {{result.feeFrequency=='Monthly'? '$'+result.reductionAmountPerChild+'/month' : ''}}
+                            {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.reductionAmountPerChild/20))+'/day ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
+                            {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.reductionAmountPerChild/4))+'/week ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
+                            {{result.feeFrequency=='Monthly'? '$'+(display2Decimals(result.reductionAmountPerChild))+'/month' : ''}}
                           </div>
                       </div>
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                         <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px">
-                          <!--{{result.feeFrequency=='Daily'? '$'+(result.actualParentFeePerChild/20).toFixed(2)+'/day ($'+result.actualParentFeePerChild.toFixed(2)+'/month)' : ''}}
-                          {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/4).toFixed(2)+'/week $('+result.actualParentFeePerChild.toFixed(2)+'/month)' : ''}}
-                          {{result.feeFrequency=='Monthly'? '$'+result.actualParentFeePerChild.toFixed(2)+'/month' : ''}}-->
-                          {{result.feeFrequency=='Daily'? '$'+(result.actualParentFeePerChild/20)+'/day ($'+result.actualParentFeePerChild+'/month)' : ''}}
-                          {{result.feeFrequency=='Weekly'? '$'+(result.actualParentFeePerChild/4)+'/week ($'+result.actualParentFeePerChild+'/month)' : ''}}
-                          {{result.feeFrequency=='Monthly'? '$'+result.actualParentFeePerChild+'/month' : ''}}
+                          {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.actualParentFeePerChild/20))+'/day ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
+                          {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.actualParentFeePerChild/4))+'/week ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
+                          {{result.feeFrequency=='Monthly'? '$'+display2Decimals(result.actualParentFeePerChild)+'/month' : ''}}
                         </div>
                       </v-col>
                     </v-row>
@@ -773,6 +761,14 @@
           </div>
         </v-card>
         </v-col>
+        <v-row justify="center">
+          <v-btn
+            color="#431782"
+            style="color:white;font-size:16px;"
+            href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_3qjPIZfTboGpeom"
+            target="_blank">We want your feedback
+          </v-btn>
+        </v-row>
       </v-row>
     </v-form>
   </v-container>
@@ -797,7 +793,6 @@ export default {
       results: null,
       showEstimatorResults: false,
       showPartTimeCareSchedule: false,
-      //showMonthSelector: false,
       loading: false,
       approvedFeesByCategory: [],
       totalNumberOfChildren: '1',
@@ -863,7 +858,19 @@ export default {
       ],
     };
   },
+  computed: {},
   methods: {
+    display2Decimals(val) {
+      if (val != undefined) {
+        if (this.decimalExists(Number(val))) {
+          return Number(val).toFixed(2);
+        } else {
+          return val;
+        }
+      } else {
+        return false;
+      }
+    },
     question1(userType) {
       this.isParent = (userType == 'Parent') ? true : false;
       this.isProvider = (userType == 'Provider') ? true : false;
@@ -1215,62 +1222,73 @@ export default {
         '3 Years to Kindergarten',
         'Before & After School (Kindergarten Only)'];
     },
-
     setApprovedParentFee(childsAgeCategory, childIndex) {
-      this.approvedFeesByCategory = this.getApprovedRatesByMonth(childsAgeCategory);
-      if (childsAgeCategory == '3 Years to Kindergarten') {
-        let ageCatIndex = undefined;
-        this.selectedFacility.approvedFeesByChildAgeCategory.find((o, i) => {
-          if (o.childCareCategory === '3 Years to Kindergarten') {
-            ageCatIndex = i;
-            return true; // stop searching
+      if (this.selectedFacility !== null && this.selectedFacility !== undefined && this.selectedFacility.facilityId !== undefined) {
+        this.approvedFeesByCategory = this.getApprovedRatesByMonth(childsAgeCategory);
+        if (childsAgeCategory == '3 Years to Kindergarten') {
+          let ageCatIndex = undefined;
+          this.selectedFacility.approvedFeesByChildAgeCategory.find((o, i) => {
+            if (o.childCareCategory === '3 Years to Kindergarten') {
+              ageCatIndex = i;
+              return true; // stop searching
+            }
+          });
+          if (this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeApr == 0 &&
+              this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeMay == 0 &&
+              this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeJun == 0 &&
+              this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeJul == 0 &&
+              this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeAug == 0) {
+            this.children[childIndex].items[0].rate = 'N/A';
+            this.children[childIndex].items[1].rate = 'N/A';
+            this.children[childIndex].items[2].rate = 'N/A';
+            this.children[childIndex].items[3].rate = 'N/A';
+            this.children[childIndex].items[4].rate = 'N/A';
+            this.children[childIndex].items[5].rate = this.approvedFeesByCategory.approvedFeeSep;
+            this.children[childIndex].items[6].rate = this.approvedFeesByCategory.approvedFeeOct;
+            this.children[childIndex].items[7].rate = this.approvedFeesByCategory.approvedFeeNov;
+            this.children[childIndex].items[8].rate = this.approvedFeesByCategory.approvedFeeDec;
+            this.children[childIndex].items[9].rate = this.approvedFeesByCategory.approvedFeeJan;
+            this.children[childIndex].items[10].rate = this.approvedFeesByCategory.approvedFeeFeb;
+            this.children[childIndex].items[11].rate = this.approvedFeesByCategory.approvedFeeMar;
+          } else {
+            this.setRatesForMonths(childIndex);
           }
-        });
-        if (this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeApr == 0 &&
-            this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeMay == 0 &&
-            this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeJun == 0 &&
-            this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeJul == 0 &&
-            this.selectedFacility.approvedFeesByChildAgeCategory[ageCatIndex].approvedFeeAug == 0) {
-          this.children[childIndex].items[0].rate = 'N/A';
-          this.children[childIndex].items[1].rate = 'N/A';
-          this.children[childIndex].items[2].rate = 'N/A';
-          this.children[childIndex].items[3].rate = 'N/A';
-          this.children[childIndex].items[4].rate = 'N/A';
-          this.children[childIndex].items[5].rate = this.approvedFeesByCategory.approvedFeeSep;
-          this.children[childIndex].items[6].rate = this.approvedFeesByCategory.approvedFeeOct;
-          this.children[childIndex].items[7].rate = this.approvedFeesByCategory.approvedFeeNov;
-          this.children[childIndex].items[8].rate = this.approvedFeesByCategory.approvedFeeDec;
-          this.children[childIndex].items[9].rate = this.approvedFeesByCategory.approvedFeeJan;
-          this.children[childIndex].items[10].rate = this.approvedFeesByCategory.approvedFeeFeb;
-          this.children[childIndex].items[11].rate = this.approvedFeesByCategory.approvedFeeMar;
         } else {
           this.setRatesForMonths(childIndex);
         }
-      } else {
-        this.setRatesForMonths(childIndex);
-      }
-      this.children[childIndex].parentFeeFrequency = this.approvedFeesByCategory.feeFrequency;
-      this.children[childIndex].feeFrequency = this.approvedFeesByCategory.feeFrequency;
-      this.children[childIndex].programYear = this.approvedFeesByCategory.programYear;
 
-      if (this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate == null || this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate == 0) {
-        this.children[childIndex].selectedMonthIndex = this.children[childIndex].selectedMonthIndex + 1;
+        if (this.approvedFeesByCategory.feeFrequency != undefined) {
+          this.children[childIndex].parentFeeFrequency = this.approvedFeesByCategory.feeFrequency;
+        }
+        this.children[childIndex].feeFrequency = this.approvedFeesByCategory.feeFrequency;
+        this.children[childIndex].programYear = this.approvedFeesByCategory.programYear;
+
+        if (this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate == null || this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate == 0) {
+          this.children[childIndex].selectedMonthIndex = this.children[childIndex].selectedMonthIndex + 1;
+        }
+        this.children[childIndex].showMonthSelector = true;
       }
-      this.children[childIndex].showMonthSelector = true;
     },
     setRatesForMonths(childIndex) {
-      this.children[childIndex].items[0].rate = this.approvedFeesByCategory.approvedFeeApr;
-      this.children[childIndex].items[1].rate = this.approvedFeesByCategory.approvedFeeMay;
-      this.children[childIndex].items[2].rate = this.approvedFeesByCategory.approvedFeeJun;
-      this.children[childIndex].items[3].rate = this.approvedFeesByCategory.approvedFeeJul;
-      this.children[childIndex].items[4].rate = this.approvedFeesByCategory.approvedFeeAug;
-      this.children[childIndex].items[5].rate = this.approvedFeesByCategory.approvedFeeSep;
-      this.children[childIndex].items[6].rate = this.approvedFeesByCategory.approvedFeeOct;
-      this.children[childIndex].items[7].rate = this.approvedFeesByCategory.approvedFeeNov;
-      this.children[childIndex].items[8].rate = this.approvedFeesByCategory.approvedFeeDec;
-      this.children[childIndex].items[9].rate = this.approvedFeesByCategory.approvedFeeJan;
-      this.children[childIndex].items[10].rate = this.approvedFeesByCategory.approvedFeeFeb;
-      this.children[childIndex].items[11].rate = this.approvedFeesByCategory.approvedFeeMar;    
+      if (this.selectedFacility.approvedFeesByChildAgeCategory != undefined) {
+        this.children[childIndex].items[0].rate = this.approvedFeesByCategory.approvedFeeApr;
+        this.children[childIndex].items[1].rate = this.approvedFeesByCategory.approvedFeeMay;
+        this.children[childIndex].items[2].rate = this.approvedFeesByCategory.approvedFeeJun;
+        this.children[childIndex].items[3].rate = this.approvedFeesByCategory.approvedFeeJul;
+        this.children[childIndex].items[4].rate = this.approvedFeesByCategory.approvedFeeAug;
+        this.children[childIndex].items[5].rate = this.approvedFeesByCategory.approvedFeeSep;
+        this.children[childIndex].items[6].rate = this.approvedFeesByCategory.approvedFeeOct;
+        this.children[childIndex].items[7].rate = this.approvedFeesByCategory.approvedFeeNov;
+        this.children[childIndex].items[8].rate = this.approvedFeesByCategory.approvedFeeDec;
+        this.children[childIndex].items[9].rate = this.approvedFeesByCategory.approvedFeeJan;
+        this.children[childIndex].items[10].rate = this.approvedFeesByCategory.approvedFeeFeb;
+        this.children[childIndex].items[11].rate = this.approvedFeesByCategory.approvedFeeMar;
+      }
+    },
+    onChangeParentFeeFrequency (childIndex) {
+      if (this.children[childIndex].approvedFee !== '' && this.children[childIndex].approvedFee !== undefined) {
+        this.children[childIndex].approvedFee = undefined;
+      }
     },
     getApprovedRatesByMonth: function(childAgeCategory) {
       for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
@@ -1300,14 +1318,12 @@ export default {
     setDefaultForMonthPicker() {
       const currentMonth = new Date().getMonth() + 1;
       for (let i in this.children) {
-        this.children[i].selectedMonthIndex = currentMonth-4;
+        this.children[i].selectedMonthIndex = this.children[i].selectedMonthIndex != null ? this.children[i].selectedMonthIndex : currentMonth-4;
       }
     },
-    isDecimalPlace(n) {
+    decimalExists: function(n) {
       if (n != null &&  n != undefined) {
         return (n - Math.floor(n)) !== 0; 
-      } else {
-        return false;
       }
     }
   },
