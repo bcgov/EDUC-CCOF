@@ -23,13 +23,13 @@
                 background-color="white"
                 dense
                 clearable
-                @click:clear="clearNoValidation()"
+                @click:clear="clearAndDontShowValidation('searchCriteria')"
                 hint="Type your keyword here"
                 v-model="searchCriteria"
                 outlined
                 required
                 :rules="rulesSearchCriteria"
-                v-on:keydown.enter="searchFacilities(searchCriteria);loading=true"
+                v-on:keydown.enter="searchFacilities(searchCriteria);"
                 >
               </v-text-field>
             </v-col>
@@ -67,16 +67,20 @@
                     <v-row >
                       <v-col cols="12" class="d-flex pb-0" style="padding-left:24px;padding-bottom:0px;">
                         <v-text-field
+                          ref="searchCriteriaOnDialogue"
                           v-model="searchCriteria"
                           :disabled="loading"
                           outlined
                           required
                           dense
-                          v-on:keydown.enter="searchFacilities(searchCriteria);loading=true"
+                          clearable
+                          @click:clear="clearAndDontShowValidation('searchCriteriaOnDialogue')"
+                          v-on:keydown.enter="searchFacilities(searchCriteria);"
+                          :rules="rulesSearchCriteria"
                           style="padding-right:3px;">
                         </v-text-field>
                         <v-btn icon style="margin-right:18px;" :disabled="loading"
-                          @click="searchFacilities(searchCriteria);loading=true">
+                          @click="searchFacilities(searchCriteria);">
                           <v-card color="#0483AF" style="margin-top:2px;padding-top:8px;padding-bottom:8px;padding-left:6px;padding-right:6px">
                           <v-icon style=""
                             large
@@ -117,7 +121,7 @@
                             </tr>
                           </template>
                           <template slot="no-data">
-                            <span style="color:#0483AF;font-weight:bold;font-size:large;">No facilities were found matching your search criteria.<br/> Try again by checking your input and entering additional keywords.</span><br/><br/>
+                            <span style="color:#0483AF;font-weight:bold;font-size:large;">No facilities were found matching your search criteria.<br/> Try different keywords or check your spelling.</span><br/><br/>
                           </template>
                           <template v-slot:body.append>
                             <tr v-show="!loading && searchResults.length == 50">
@@ -127,7 +131,7 @@
                                     <td colspan="1" with="10%" style="vertical-align:top;"><span style="color:#0FC3ED;font-weight:bold;font-size:x-large;">*</span></td>
                                     <td style="padding-top:2px">
                                       <span style="font-style:italic;font-size:small;">
-                                        Only the 1st 50 records are returned which match your search criteria. If you are unable to find a facilty try both the facility name and city as search criteria.
+                                        Only the first 50 results of your search are viewable. Try narrowing down your search by using additional keywords.
                                       </span></td>
                                   </tr>
                                 </table>
@@ -177,8 +181,12 @@ export default {
     };
   },
   methods: {
-    clearNoValidation() {
-      this.$refs.searchCriteria.resetValidation();
+    clearAndDontShowValidation(ref) {
+      if (ref == 'searchCriteriaOnDialogue') {
+        this.$refs.searchCriteriaOnDialogue.resetValidation();
+      } else if (ref == 'searchCriteria') {
+        this.$refs.searchCriteria.resetValidation();
+      }
     },
     rowSelected(facility) {
       this.toggleSelection(facility.facilityName);
@@ -189,7 +197,6 @@ export default {
         this.$emit('selectedFacility', this.facilityResult);      
       });
       this.dialog = false;
-      //this.$refs.searchForm.reset();
     },
     toggleSelection(keyID) {
       if (this.selectedFacility.includes(keyID)) {
@@ -207,7 +214,7 @@ export default {
           this.dialog = true;
           this.searchResults = (await axios.get('/api/public/facilities?criteria={'+urlEncodedCriteria+'}&pageindex={}')).data;
           this.loading = false;
-        } 
+        }
       } catch (error) {
         console.info(error);
       }
