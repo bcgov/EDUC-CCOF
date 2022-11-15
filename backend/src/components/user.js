@@ -5,7 +5,6 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
 
 const _ = require ('lodash');
@@ -37,24 +36,22 @@ async function getUserInfo(req, res) {
   console.info('User Guid is: ', userGuid);
   const userResponse = await getUserProfile(userGuid);
 
-  //const userResponse = [{}];
-
   log.info(userResponse);
   log.verbose('Status  :: is :: ', userResponse.status);
   log.verbose('StatusText   :: is :: ', userResponse.statusText);
   log.verbose('Response   :: is :: ', minify(userResponse.data));
 
-  userResponse.push( {
-    'Organization.name' : "Test Org 1",
-    'BCeID.ccof_userid' : "123-bbbb-cccc",
-    'Application.statuscode' : 100000001 ,
-    'CCOF.ccof_facility' : '123456',
-    'CCOF.Facility.name' : 'Best Daycare 1',
-    'CCFRI.statuscode' : 0,
-    'ECEWE.statuscode' : 0,
-    'ccfriOptInStatus': 7
+  // userResponse.push( {
+  //   'Organization.name' : "Test Org 1",
+  //   'BCeID.ccof_userid' : "123-bbbb-cccc",
+  //   'Application.statuscode' : 100000001 ,
+  //   'CCOF.ccof_facility' : '123456',
+  //   'CCOF.Facility.name' : 'Best Daycare 1',
+  //   'CCFRI.statuscode' : 0,
+  //   'ECEWE.statuscode' : 0,
+  //   'ccfriOptInStatus': 7
   
-  });
+  // });
 
   // const userResponse = [
   //   {
@@ -112,9 +109,6 @@ async function getUserInfo(req, res) {
 
     statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
     //statusCode = 1;
-
-    //statusCode = CCOF_STATUS_CODES[userResponse[0]['Application.statuscode']];
-    statusCode = 1;
 
     if (!statusCode) {
       // TODO: should really throw an error, but for now until the
