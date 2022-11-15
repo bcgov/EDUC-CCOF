@@ -498,7 +498,7 @@
                           </span>
                         </template>
                         <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
-                          <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#F3E6F6' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle()">
+                          <v-card :disabled="(n.rate == 0 || n.rate == null || n.rate == 'N/A') ? true : false" :color="active ? '#F3E6F6' : '#FFFFFF'" class="ma-1 fill-height" :elevation="active ? 4 : 0" height="67" width="70" @click="toggle(focusAwayFromOnSlider(child.number-1))">
                             <v-row style="" justify="center">
                               <v-col align="center" style="padding-top:4px;padding-bottom:5px;margin-top:-2px;">
                                 <span :style="'color:'+(active ? 'white' : 'white')+';font-family:Lucida Grande,monospace;background-color:#431782;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:px;padding-right:19px;padding-top:4px'">
@@ -1299,6 +1299,7 @@ export default {
     clickForOffSlider(key, childIndex) {
       this.children[childIndex].isActive = this.children[childIndex].isActive ? false : true;
       this.children[childIndex].clicked = true;
+      this.children[childIndex].approvedFee = this.children[childIndex].items[this.children[childIndex].selectedMonthIndex].rate;
       this.children[childIndex].parentFeeFrequency = this.children[childIndex].feeFrequency;
       this.children[childIndex].btnDisabled = false;
     },
