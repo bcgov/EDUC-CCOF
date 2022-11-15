@@ -39,12 +39,18 @@ async function getUserInfo(req, res) {
   console.info('User Guid is: ', userGuid);
   const userResponse = await getUserProfile(userGuid);
 <<<<<<< HEAD
+<<<<<<< HEAD
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:',minify(userResponse));
   }
 =======
 
 
+>>>>>>> interim checkin
+=======
+  if (log.isVerboseEnabled) {
+    log.verbose('getUserProfile response:',minify(userResponse));
+  }
 >>>>>>> interim checkin
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data

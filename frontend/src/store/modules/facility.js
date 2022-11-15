@@ -46,7 +46,7 @@ export default {
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
     setIsFacilityComplete: (state, isFacilityComplete) => { state.isFacilityComplete = isFacilityComplete; },
-    setCcfriStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
+    setCcfriOptInStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
   },
   actions: {
     async saveFacility({ state, commit, rootState }) {
@@ -54,7 +54,6 @@ export default {
       if (!organizationId) {
         console.log('unable to save facility because you are not associated to an organization');
         throw 'unable to save facility because you are not associated to an organization';
-
       }
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
@@ -62,7 +61,8 @@ export default {
       }
       let payload = JSON.parse(JSON.stringify(state));
       payload.organizationId = organizationId;
-      payload.ccofApplicationId = rootState.organization.ccofApplicationId;
+      payload.applicationId = rootState.organization.applicationId;
+      delete payload['facilityList'];
       console.log('payload', payload);
       if (state.facilityId) {
         // has an orgaization ID, so update the data
@@ -129,5 +129,5 @@ function commitToState(commit, data) {
   commit('setPosition', data? data.position: null);
   commit('setPhone', data? data.phone: null);
   commit('setEmail', data? data.email: null);
-  commit('ccfriOptInStatus', data? data.ccfriOptInStatus: null);  
+  commit('setCcfriOptInStatus', data? data.ccfriOptInStatus: null);  
 }

@@ -44,10 +44,17 @@ const CCOFApplicationMappings = [
   { back: 'ccof_consent', front: 'hasConset' },  // 1
 ];
 
-
+const UserProfileFacilityMappings = [
+  { back: 'CCOF.ccof_facility', front: 'facilityId' },
+  { back: 'CCOF.Facility.name', front: 'facilityName'},
+  { back: 'CCFRI.statuscode', front: 'ccfriStatus'},
+  { back: 'ECEWE.statuscode', front: 'eceweStatus'},
+  { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus'}
+];
 
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
-  CCOFApplicationMappings
+  CCOFApplicationMappings,
+  UserProfileFacilityMappings
 };
