@@ -12,7 +12,6 @@
     <v-row>
       <v-divider class="mx-16"/>
 
-
       <v-btn color="info" outlined x-large @click="goToCCFRI()">
           CCFRI</v-btn>
     </v-row>
@@ -148,7 +147,7 @@ export default {
       return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      return this.userInfo.applicationStatus === 'APPROVED';
+      return this.userInfo.applicationStatus === null;
     },
     
   },

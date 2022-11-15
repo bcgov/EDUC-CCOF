@@ -2,6 +2,9 @@
   <!--TODO: add in isValidForm ruleset-->
   <v-form ref="ccfriform" v-model="isValidForm">
     <v-container class="px-10">
+
+      <v-btn color="info" outlined x-large  @click="updateParentFees()">
+            UPDATE FEES</v-btn>
       
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
@@ -83,7 +86,7 @@
               <v-container v-else-if="feeSchedule[index] !='daily'" class="ma-0 pa-0">
               <v-row>
                 <v-col>
-                  <label>Enter your {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                  <label>Enter your highest full-time {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
                 </v-col>
               </v-row>
               <v-row>
@@ -343,7 +346,65 @@
 import rules from '@/utils/rules';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
-import axios from 'axios';
+import ApiService from '@/common/apiService';
+
+// 0-18 months
+const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang)
+const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
+//const PROGRAM_YEAR = '2ad4c331-9434-ed11-9db1-002248d53d53'; //lookup. 2022 - 23
+const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
+
+let dates = {};
+let isFixedFee= {};
+//let facilityFees= {};
+let feeSchedule = {};
+let jan = {};
+let feb = {};
+let mar = {};
+let apr = {};
+let may = {};
+let jun = {};
+let jul = {};
+let aug = {};
+let sep = {};
+let oct = {};
+let nov = {};
+let dec = {};
+let mon = {};
+let tue = {};
+let wed = {};
+let thu = {};
+let fri = {};
+let sat = {};
+let sun = {};   
+let model = { x: [],
+  dates,
+  isFixedFee,
+  //facilityFees,
+  feeSchedule,
+  jan,
+  feb,
+  mar,
+  apr,
+  may,
+  jun,
+  jul,
+  aug,
+  sep,
+  oct,
+  nov,
+  dec,
+  mon,
+  tue,
+  wed,
+  thu,
+  fri,
+  sat,
+  sun
+  
+};
+
+
 export default {
 
   props: {
@@ -356,6 +417,7 @@ export default {
   data() {
     return {
       rules,
+      model,
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
@@ -392,6 +454,15 @@ export default {
       
 
     };
+  },
+  mounted() {
+    this.model = this.$store.state.ccfriApp.model ?? model;
+    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('ccfriApp/model', this.model);
+    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
+    next();
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -457,13 +528,32 @@ export default {
     next() {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    async getFacility (id) {
+    async updateParentFees () {
+
+      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
+      // this.facilityList.forEach (async (facility, index) => {
+
+      //   let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+
+      //   payload = JSON.parse(JSON.stringify(payload));
+
+      let payload = {
+        ccfriApplicationGuid : CCFRI_APPLICATION_GUID,
+        childCareCategory : CHILD_CARE_CATEGORY_GUID, 
+        programYear : PROGRAM_YEAR
+      };
+
+      payload = JSON.parse(JSON.stringify(payload));
+
+      console.log(payload);
+
       try {
-        this.facilityResult = (await axios.get('/api/public/facilities/'+id)).data;
+        this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
       } catch (error) {
         console.info(error);
       }
-    }
+      //});
+    },
   }
 };
 </script>

@@ -4,7 +4,7 @@
             <MessagesToolbar></MessagesToolbar>
         </div>
         <br><br>
-        <v-btn color="info" outlined x-large :disabled="ccfriOptInOrOut.length != facilityList.length" @click="updateCCFRI()">
+        <v-btn color="info" outlined x-large  @click="updateCCFRI()">
             UPDATE CCFRI APPLICATION</v-btn>
         {{ccfriOptInOrOut}}
         <!--TODO: The update buttons don't align and I don't like it !!-->
@@ -69,7 +69,6 @@
       
         </LargeButtonContainer>
 
-
         <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
@@ -93,16 +92,22 @@ import { PATHS } from '@/utils/constants';
 import axios from 'axios';
 import ApiService from '@/common/apiService';
 
-const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
+//const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
+
+let ccfriOptInOrOut = {};
+
+let model = { x: [], ccfriOptInOrOut };
+//let ccfriOptInOrOut = { x: [] };
 
 export default {
   name: 'CcfriLandingPage',
   data() {
     return {
       input : '',
+      model,
       showOptStatus : '',
       isValidForm: undefined,
-      ccfriOptInOrOut : [],
+      ccfriOptInOrOut,
       feeList : [
         {
           date: 'Jan 2022',
@@ -134,7 +139,6 @@ export default {
   },
   methods: {
     toggle(index) {
-      console.log('hi!');
       console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
       //this.showOptStatus[index] = true;
@@ -152,35 +156,50 @@ export default {
     },
     async updateCCFRI () {
 
+      console.log('f');
+      console.log(this.getFacility(APPLICATION_ID));
+
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
 
-        let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+        console.log(this.userInfo.applicationId);
+        let payload = {
+          applicationID : this.userInfo.applicationId, 
+          facilityID : facility.facilityId, 
+          optInResponse: this.ccfriOptInOrOut[index] 
+        };
 
         payload = JSON.parse(JSON.stringify(payload));
 
         console.log(payload);
 
         try {
-          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+          //console.log(response);
         } catch (error) {
           console.info(error);
         }
 
       });
-
-      
-
-      
     },
-    //this.applicationStatus = (await axios.patch('/api/application/ccfri/', payload));
+
+    //this is an example - take me out /////////////////////////////////////////
     async getFacility (id) {
       try {
-        this.facilityResult = (await axios.get('/api/application/'+id)).data;
+        this.facilityResult = (axios.get('/api/facility/:'+id)).data;
       } catch (error) {
         console.info(error);
       }
     }
+  },
+  mounted() {
+    this.model = this.$store.state.ccfriApp.model ?? model;
+    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('ccfriApp/model', this.model);
+    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
+    next();
   },
   components: { MessagesToolbar, LargeButtonContainer,  }
 };

@@ -11,6 +11,7 @@ const ACCOUNT_TYPE = Object.freeze({
 });
 
 const APPLICATION_STATUS_CODES = Object.freeze({
+  NEW: null,
   DRAFT: 1,
   SUBMITTED: 3,
   WITHDRAWN: 4
