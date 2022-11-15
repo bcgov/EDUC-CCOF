@@ -7,6 +7,7 @@ import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
 import familyFunding from '@/store/modules/ccof/family/familyFundingStore';
 import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStore';
+import familyOrganization from '@/store/modules/ccof/family/familyOrganizationStore';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     organization,
     facility,
     familyFunding,
-    familyEligibility
+    familyEligibility,
+    familyOrganization
   }
 });

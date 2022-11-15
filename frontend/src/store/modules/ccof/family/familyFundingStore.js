@@ -7,7 +7,6 @@ export default {
     isValidForm: undefined,
     model: undefined,
   },
-  getters: {},
   mutations: {
     model(state, value) {
       state.model = value;
@@ -18,19 +17,20 @@ export default {
   },
   actions: {
     async saveFamilyFunding({ state }) {
-      console.log('saveFamilyFunding', state);
-
+      
       let payload = { ...state.model };
-
+      
       if (payload.hasClosedMonth !== 'yes') {
         delete payload.closedMonths;
       }
-
+      
       if (payload.isExtendedHours !== 'yes') {
         delete payload.maxCapacityExtended;
         delete payload.maxDaysPerWeekExtended;
         delete payload.maxDaysPerYearExtended;
       }
+
+      console.log('saveFamilyFunding', payload);
 
       return await ApiService.apiAxios.post(ApiRoutes.FAMILY_FUND_AMOUNT, payload);
     }

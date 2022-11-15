@@ -20,7 +20,7 @@ import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLan
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
 
-import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
+import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
 
@@ -117,7 +117,7 @@ const router = new VueRouter({
     {
       path: PATHS.family.orgInfo,
       name: 'Family Organization Information',
-      component: FamilyOrganizationInformation,
+      component: FamilyOrganization,
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,

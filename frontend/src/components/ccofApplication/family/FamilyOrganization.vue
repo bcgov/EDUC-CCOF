@@ -108,6 +108,7 @@ import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
 import { mapGetters, mapState, mapActions } from 'vuex';
 
+let model = { closedMonths: [] };
 
 export default {
   props: {
@@ -123,7 +124,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      model: {},
+      model,
       isValidForm: undefined,
       rules,
       processing: false,
@@ -135,7 +136,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('organization', ['saveOrganization']),
+    ...mapActions('familyOrganization', ['saveFamilyOrganization']),
 
     next() {
       this.$router.push(PATHS.family.eligibility);

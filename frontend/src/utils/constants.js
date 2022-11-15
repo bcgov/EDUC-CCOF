@@ -23,8 +23,9 @@ export const ApiRoutes = Object.freeze({
   LOOKUP: baseRoot + '/config/lookup',
   ORGANIZATION: baseRoot + '/organization',
   FACILITY: baseRoot + '/facility',
-  FAMILY_FUND_AMOUNT: baseRoot + '/familyFunding',
-  FAMILY_ELIGIBILITY: baseRoot + '/familyFunding'
+  FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
+  FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
+  FAMILY_ORGANIZATION: baseRoot + '/family/organization'
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -44,15 +45,15 @@ export const PATHS = {
   ccfriRequestMoreInfo: '/ccfriApplication/group/ccfri-request-info',
   selectApplicationType: '/ccof-application/select-application-type',
   group: {
-    orgInfo: '/ccof-application/group/organization-information',
-    facInfo: '/ccof-application/group/facility-information',
-    fundAmount: '/ccof-application/group/funding-amount',
+    orgInfo: '/ccof-application/group/organization',
+    facInfo: '/ccof-application/group/facility',
+    fundAmount: '/ccof-application/group/funding',
     confirmation: '/ccof-application/group/confirmation',
   },
   family: {
-    orgInfo: '/ccof-application/family/organization-information',
+    orgInfo: '/ccof-application/family/organization',
     eligibility: '/ccof-application/family/eligibility',
-    fundAmount: '/ccof-application/family/funding-amount',
+    fundAmount: '/ccof-application/family/funding',
   },
 };
 

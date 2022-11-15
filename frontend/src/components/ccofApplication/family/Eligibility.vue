@@ -61,8 +61,7 @@ export default {
     return {
       model,
       isValidForm: undefined,
-      rules,
-      calendarMenu: false,
+      rules
     };
   },
   methods: {
@@ -93,11 +92,9 @@ export default {
     }
   },
   mounted() {
-    console.log('MOUNTED', this.model);
     this.model = this.$store.state.familyEligibility.model ?? model;
   },
   beforeRouteLeave(_to, _from, next) {
-    console.log('LEAVING');
     this.saveModel();
     next();
   }

@@ -16,17 +16,14 @@ export default {
     },
   },
   actions: {
-    async saveFamilyEligibility({ state }) {
+    async saveFamilyOrganization({ state }) {
       
       let payload = { ...state.model };
       
-      if (payload.hasReceivedFunding !== 'yes') {
-        delete payload.facilityName;
-      }
 
-      console.log('saveFamilyEligibility', payload);
+      console.log('saveFamilyOrganization', payload);
 
-      return await ApiService.apiAxios.post(ApiRoutes.FAMILY_ELIGIBILITY, payload);
+      return await ApiService.apiAxios.post(ApiRoutes.FAMILY_ORGANIZATION, payload);
     }
   }
 };
