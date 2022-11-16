@@ -275,10 +275,10 @@ export default {
             {
               title: 'Funding ' +  (index + 1),
               subTitle: item.facilityName,
-              link: { name: 'Funding Amount'},
+              link: { name: 'Funding Amount Guid' , params: {urlCcofBaseFundingId: item.ccofBaseFundingId}},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Funding Amount' === this.$route.name
+              isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlCcofBaseFundingId === item.ccofBaseFundingId
             },
           );
         });
