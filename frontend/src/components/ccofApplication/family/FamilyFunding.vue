@@ -164,8 +164,7 @@
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
         <v-btn color="secondary" outlined x-large :disabled="!isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="save()">
-          Save</v-btn>
+        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -176,11 +175,14 @@
 
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
+import formatTime from '@/utils/formatTime';
 import { mapActions } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 let model = { closedMonths: [] };
 
 export default {
+  mixins: [alertMixin],
   props: {
   },
   computed: {
@@ -193,7 +195,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('familyFundAmount', ['save']),
+    ...mapActions('familyFunding', ['saveFamilyFunding']),
     previous() {
       this.$router.push(PATHS.family.fundAmount);
     },
@@ -201,25 +203,28 @@ export default {
       this.$router.push(PATHS.group.confirmation);
     },
     allowedStep: m => m % 5 === 0,
-    formatTime: v => {
-      let hour = v.split(':')[0];
-      hour = parseInt(hour);
+    formatTime,
+    async save() {
+      this.processing = true;
+      this.saveModel();
 
-      let minute = v.split(':')[1];
-      if (hour === 0) {
-        return `12:${minute} AM`;
-      } else if (hour < 12) {
-        return `${hour}:${minute} AM`;
-      } else {
-        return `${hour - 12}:${minute} PM`;
+      try {
+        await this.saveFamilyFunding();
+        this.setSuccessAlert('Success! Funding information has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      this.processing = false;
+    },
+    saveModel() {
+      this.$store.commit('familyFunding/model', this.model);
     }
   },
   mounted() {
-    this.model = this.$store.state.familyFundAmount.model ?? model;
+    this.model = this.$store.state.familyFunding.model ?? model;
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('familyFundAmount/model', this.model);
+    this.saveModel();
     next();
   }
 };

@@ -28,6 +28,7 @@ const organizationRouter = require('./routes/organization');
 const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const applicationRouter = require('./routes/application');
+const fundingRouter = require('./routes/funding');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -164,6 +165,7 @@ apiRouter.use('/organization', organizationRouter);
 apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 apiRouter.use('/application', applicationRouter);
+apiRouter.use('/group/funding', fundingRouter);
 
 
 
