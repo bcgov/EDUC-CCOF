@@ -181,6 +181,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.group.fundAmount + '/:urlCcofBaseFundingId',
+      name: 'Funding Amount Guid',
+      component: GroupFundAmount,
+      meta: {
+        pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.group.confirmation,
       name: 'Application Confirmation',
       component: ApplicationConfirmation,

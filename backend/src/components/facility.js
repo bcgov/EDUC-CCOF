@@ -107,12 +107,12 @@ async function createFacility(req, res) {
 }
 
 async function updateFacility(req, res) {
-  let facility = new MappableObjectForBack(facility, FacilityMappings);
+  let facility = new MappableObjectForBack(req.body, FacilityMappings).data;
   try {
-    console.log('updateFacility: Payload is: ', minify(facility.data));
+    log.info('updateFacility: Payload is: ', minify(facility));
     let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
-    response = new MappableObjectForFront(response, FacilityMappings);
-    console.log('updateFacility: Response is: ', minify(response));
+    response = new MappableObjectForFront(response, FacilityMappings).data;
+    log.info('updateFacility: Response is: ', minify(response));
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
