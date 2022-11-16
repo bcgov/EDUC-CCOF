@@ -8,40 +8,6 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const _ = require ('lodash');
 
-// used to map from Dynamics API to Vue.js
-// const GetFacilityKeyMap = {
-//   name: 'facilityName',
-//   ccof_facilitystartdate: 'yearBeginOperation',
-//   address1_line1: 'facilityAddress',
-//   address1_city: 'city',
-//   address1_postalcode: 'postalCode', 
-//   // XXXXXXXXXXXXX: 'contactName',
-//   // XXXXXXXXXXXXX: 'position',
-//   // XXXXXXXXXXXXX: 'phone',
-//   // XXXXXXXXXXXXX: 'email',
-//   ccof_facilitylicencenumber: 'licenseNumber',
-//   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
-//   // XXXXXXXXXXXXX: 'hasReceivedFunding',
-//   organizationId: 'organizationId: '
-// };
-
-// // used to map from Vue.js to Dynamics API
-// const PostFacilityKeyMap = {
-//   facilityName: 'name',
-//   yearBeginOperation: 'ccof_facilitystartdate',
-//   facilityAddress: 'address1_line1',
-//   city: 'address1_city',
-//   postalCode: 'address1_postalcode',
-//   // contactName: 'XXXXXXXXXXXXX',
-//   // position: 'XXXXXXXXXXXXX',
-//   // phone: 'XXXXXXXXXXXXX',
-//   // email: 'XXXXXXXXXXXXX',
-//   licenseNumber: 'ccof_facilitylicencenumber',
-//   // licenseEffectiveDate: 'XXXXXXXXXXXXX',
-//   // hasReceivedFunding: 'XXXXXXXXXXXXX',
-// };
-
-
 
 //creates or updates CCFRI application. 
 //NOTE - CCOF application GUID is currently hardcoded in CcfriEceLanding! Will need to be replaced with a get or found in the vuex store.
@@ -110,16 +76,16 @@ async function upsertParentFees(req, res) {
     "ccof_frequency": 100000002,
     "ccof_ChildcareCategory@odata.bind": childCareCategory, // 0-18 months
     "ccof_ProgramYear@odata.bind": programYear, // Lookup //2021/22
-    "ccof_apr": 230.00,
-    "ccof_may": 110.00,
+    "ccof_apr": 1230.00,
+    "ccof_may": 550.00,
     "ccof_jun": 110.00,
     "ccof_jul": 110.00,
     "ccof_aug": 110.00,
     "ccof_sep": 340.00,
     "ccof_oct": 450.00,
-    "ccof_nov": 450.00,
+    "ccof_nov": 5450.00,
     "ccof_dec": 45.00,
-    "ccof_jan": 45.00,
+    "ccof_jan": 545.00,
     "ccof_feb": 45.00,
     "ccof_mar": 45.00,
   };

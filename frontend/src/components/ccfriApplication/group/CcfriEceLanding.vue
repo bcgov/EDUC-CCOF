@@ -155,16 +155,12 @@ export default {
       this.loadFacility(x);
     },
     async updateCCFRI () {
-
-      console.log('f');
-      //console.log(this.getFacility(APPLICATION_ID));
-
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
 
         console.log(this.userInfo.applicationId);
         let payload = {
-          applicationID : this.userInfo.applicationId, 
+          applicationID : this.userInfo.applicationId, //CCOF BASE application ID
           facilityID : facility.facilityId, 
           optInResponse: this.ccfriOptInOrOut[index] 
         };
@@ -183,14 +179,14 @@ export default {
       });
     },
 
-    //this is an example - take me out /////////////////////////////////////////
-    async getFacility (id) {
-      try {
-        this.facilityResult = (axios.get('/api/facility/:'+id)).data;
-      } catch (error) {
-        console.info(error);
-      }
-    }
+    // //this is an example - take me out /////////////////////////////////////////
+    // async getFacility (id) {
+    //   try {
+    //     this.facilityResult = (axios.get('/api/facility/:'+id)).data;
+    //   } catch (error) {
+    //     console.info(error);
+    //   }
+    // }
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;

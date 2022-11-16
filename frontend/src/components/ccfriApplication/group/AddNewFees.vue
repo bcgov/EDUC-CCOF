@@ -6,9 +6,11 @@
       <v-btn color="info" outlined x-large  @click="updateParentFees()">
             UPDATE FEES</v-btn>
 
+            {{lookupInfo}}
+
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h5 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: 111 </p> <br><br>
+      <p class="text-h5 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityContactInfo.licenseNumber}} </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care atgit  this facility for the months below. <br><br>
         If you have more than one fee for the same category, enter the highest fee. <br><br>
@@ -19,7 +21,7 @@
       
 
       <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in fullFacilityInfo.childCareTypes" :key="index"
+      v-for="({key, programYear, childCareCategory} , index) in facilityContactInfo.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -231,7 +233,7 @@
             <br>
             <v-radio-group
               required
-              v-model="closureFees"
+              v-model="model.closureFees"
             >
               <v-radio
                 label="Yes"
@@ -243,7 +245,7 @@
               ></v-radio>
             </v-radio-group>
 
-            <v-row v-if = "closureFees === 'Yes'">
+            <v-row v-if = "model.closureFees === 'Yes'">
               <v-col class="col-md-4 col-12">
                 <v-menu  v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
@@ -272,7 +274,7 @@
                 <v-radio-group
                   required
                   row
-                  v-model="closedFeesPaid"
+                  v-model="model.closedFeesPaid"
                   label="Did parents pay for this closure?"
                 >
                   <v-radio
@@ -349,14 +351,15 @@ import ApiService from '@/common/apiService';
 import axios from 'axios';
 
 // 0-18 months
-const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang)
+const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
 const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
 //const PROGRAM_YEAR = '2ad4c331-9434-ed11-9db1-002248d53d53'; //lookup. 2022 - 23
 const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
 
-let dates = {};
+let dates = [];
+let closureFees;
+let closedFeesPaid = [];
 let isFixedFee= {};
-//let facilityFees= {};
 let feeSchedule = {};
 let jan = {};
 let feb = {};
@@ -379,8 +382,9 @@ let sat = {};
 let sun = {};   
 let model = { x: [],
   dates,
+  closureFees,
+  closedFeesPaid,
   isFixedFee,
-  //facilityFees,
   feeSchedule,
   jan,
   feb,
@@ -418,36 +422,34 @@ export default {
     return {
       rules,
       model,
-      fullFacilityInfo: {},
+      facilityContactInfo: {},
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
       closureFees: undefined,
       closureReason: undefined,
-      closedFeesPaid: undefined,
-      dates: [],
-      isFixedFee: [],
-      facilityFees: [],
-      feeSchedule : [],
-      jan : [],
-      feb : [],
-      mar : [],
-      apr : [],
-      may : [],
-      jun : [],
-      jul : [],
-      aug : [],
-      sep : [],
-      oct : [],
-      nov : [],
-      dec : [],
-      mon : [],
-      tue : [],
-      wed : [],
-      thu : [],
-      fri : [],
-      sat : [],
-      sun : [],   feeRules: [
+      closedFeesPaid,
+      dates,
+      feeSchedule,
+      jan,
+      feb,
+      mar,
+      apr,
+      may,
+      jun,
+      jul,
+      aug,
+      sep,
+      oct,
+      nov,
+      dec,
+      mon,
+      tue,
+      wed,
+      thu,
+      fri,
+      sat,
+      sun,   feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
@@ -464,6 +466,7 @@ export default {
     next();
   },
   computed: {
+    ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityList']),
     currentYearTwoDigit() {
@@ -479,13 +482,13 @@ export default {
       return this.currentYear - 2002;
     },
     currentFacility(){
-      return this.facilityList[0];
+      return this.facilityList[0]; //TODO - change this to work with multiple facilities 
     }
   },
   beforeMount: function() {
 
     this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
-    console.log(this.fullFacilityInfo);
+    console.log(this.facilityContactInfo);
 
     // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
     //   let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
@@ -512,15 +515,15 @@ export default {
     //this is an example - take me out /////////////////////////////////////////
     async getFacility (id) {
       try {
-        this.fullFacilityInfo = await (axios.get('/api/facility/'+id));
-        this.fullFacilityInfo = this.fullFacilityInfo.data;
-        //console.log(this.fullFacilityInfo.data);
+        this.facilityContactInfo = await (axios.get('/api/facility/'+id));
+        this.facilityContactInfo = this.facilityContactInfo.data;
+        //console.log(this.facilityContactInfo.data);
       } catch (error) {
         console.info(error);
       }
     },
     addDate(){
-      this.dates.push({
+      dates.push({
         message: this.closureReason,
         selectedDates: this.datePicker,
         feesPaidWhileClosed: this.closedFeesPaid,
@@ -543,30 +546,28 @@ export default {
     },
     async updateParentFees () {
 
-      console.log(this.getFacility(this.facilityList[0].facilityId));
-
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
-      // this.facilityList.forEach (async (facility, index) => {
+     // this.facilityList.forEach (async (facility, index) => { FOR EACH the date groups?
 
-      //   let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+        //let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
 
-      //   payload = JSON.parse(JSON.stringify(payload));
+        //payload = JSON.parse(JSON.stringify(payload));
 
-      // let payload = {
-      //   ccfriApplicationGuid : CCFRI_APPLICATION_GUID,
-      //   childCareCategory : CHILD_CARE_CATEGORY_GUID, 
-      //   programYear : PROGRAM_YEAR
-      // };
+      let payload = {
+        ccfriApplicationGuid : this.currentFacility.ccfriApplicationId,
+        childCareCategory : CHILD_CARE_CATEGORY_GUID, //for each the child care cat -- add child care cat GUID to facility lookup?
+        programYear : this.facilityContactInfo.childCareTypes[2].programYearId //program year GUID
+      };
 
-      // payload = JSON.parse(JSON.stringify(payload));
+      payload = JSON.parse(JSON.stringify(payload));
 
-      // console.log(payload);
+      console.log(payload);
 
-      // try {
-      //   this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-      // } catch (error) {
-      //   console.info(error);
-      // }
+      try {
+        this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+      } catch (error) {
+        console.info(error);
+      }
       //});
     },
   }
