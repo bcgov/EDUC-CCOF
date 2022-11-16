@@ -84,9 +84,44 @@ const CCOFApplicationFundingMapping = [
   { back: 'XXXXX', front: 'multiAgeCare4more' }
 ];
 
+const UserProfileOrganizationMappings = [
+  { back: 'Organization.name', front: 'organizationName' },
+  { back: 'Organization.accountid', front: 'organizationId' },
+  { back: 'Application.ccof_applicationid', front: 'applicationId' },
+  { back: 'Application.statuscode', front: 'applicationStatus' },
+  { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
+  // Unneeded mappings, can be added in later if we want them
+  // { back: 'Application.ccof_applicationtype', front: 'applicationType' },
+  // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
+  // { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
+  // { back: 'Organization.accountnumber', front: 'organizationAccountNumber' },
+];
+
+const UserProfileFacilityMappings = [
+  { back: 'CCOF.ccof_facility', front: 'facilityId' },
+  { back: 'CCOF.Facility.name', front: 'facilityName'},
+  // { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber'},
+  //base funding
+  { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId'},
+  { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus'},
+  // { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
+  //ccfri
+  { back: 'CCFRI.statuscode', front: 'ccfriStatus'},
+  { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus'},
+  { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId'},
+  // { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
+  //ece-we
+  { back: 'ECEWE.statuscode', front: 'eceweStatus'},
+  { back: 'ECEWE.ccof_optintoecewe', front: 'eceweOptInStatus'},
+  { back: 'ECEWE.ccof_applicationeceweid', front: 'eceweApplicationId'},
+  // { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,
-  CCOFApplicationFunding: CCOFApplicationFundingMapping
+  CCOFApplicationFunding: CCOFApplicationFundingMapping,
+  UserProfileFacilityMappings,
+  UserProfileOrganizationMappings
 };

@@ -14,12 +14,31 @@ let discovery = null;
 const cache = require('memory-cache');
 
 function getConstKey(constants, value) {
-  for (let key in constants) {
-    if (constants[key] === value) {
-      return key;
+  if (value) {
+    for (let key in constants) {
+      if (constants[key] === value) {
+        return key;
+      }
     }
-    log.error('getConstKey: Unable to find key for value: ' + value);
+    log.error(`getConstKey: Unable to find key for value: [${value}] for const: [${constants.constructor?.name}]`);
   }
+  return undefined;
+  
+}
+
+function getLabelFromValue(value, constants, defaultValue) {
+  if (!value && defaultValue) {
+    return defaultValue;
+  }
+  if (value) {
+    let retVal = getConstKey(constants,value);
+    if (retVal) {
+      return retVal;
+    } else {
+      return `UNKNOWN - [${value}]`;
+    }
+  } 
+  return value;
 }
 
 //const {getUserInfo} = require('./user.js');
@@ -446,7 +465,8 @@ const utils = {
   getCodeTable,
   minify,
   getHttpHeader,
-  getConstKey
+  getConstKey,
+  getLabelFromValue
 };
 
 module.exports = utils;

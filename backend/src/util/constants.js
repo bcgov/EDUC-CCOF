@@ -11,6 +11,7 @@ const ACCOUNT_TYPE = Object.freeze({
 });
 
 const APPLICATION_STATUS_CODES = Object.freeze({
+  NEW: null,
   DRAFT: 1,
   SUBMITTED: 3,
   WITHDRAWN: 4
@@ -27,6 +28,11 @@ const CCOF_STATUS_CODES = Object.freeze({
 const ORGANIZATION_PROVIDER_TYPES = Object.freeze({
   GROUP: 100000000,
   FAMILY: 100000001,
+});
+
+const OPTIN_STATUS_CODES = Object.freeze({
+  IN: 1,
+  OUT:2,
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
@@ -58,6 +64,7 @@ module.exports = {
   CCFRI_STATUS_CODES,
   ECEWE_STATUS_CODES,
   ORGANIZATION_PROVIDER_TYPES,
-  FACILITY_AGE_GROUP_CODES
+  FACILITY_AGE_GROUP_CODES,
+  OPTIN_STATUS_CODES
 };
 

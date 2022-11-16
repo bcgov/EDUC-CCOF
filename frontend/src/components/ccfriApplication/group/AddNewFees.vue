@@ -2,7 +2,9 @@
   <!--TODO: add in isValidForm ruleset-->
   <v-form ref="ccfriform" v-model="isValidForm">
     <v-container class="px-10">
-      
+
+      <v-btn color="info" outlined x-large  @click="updateParentFees()">
+            UPDATE FEES</v-btn>
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
@@ -17,7 +19,7 @@
       
 
       <v-card  
-      v-for="({key, date, title} , index) in facilityFees" :key="key"
+      v-for="({key, programYear, childCareCategory} , index) in fullFacilityInfo.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -30,7 +32,7 @@
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
-                Parent Fees 20{{date}}: Full-Time {{title}}
+                Parent Fees {{programYear}}: Full-Time {{childCareCategory}}
               </p>
             </div>
             <div class="px-md-12 px-7">
@@ -83,7 +85,7 @@
               <v-container v-else-if="feeSchedule[index] !='daily'" class="ma-0 pa-0">
               <v-row>
                 <v-col>
-                  <label>Enter your {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                  <label>Enter your highest full-time {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
                 </v-col>
               </v-row>
               <v-row>
@@ -343,7 +345,66 @@
 import rules from '@/utils/rules';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
+import ApiService from '@/common/apiService';
 import axios from 'axios';
+
+// 0-18 months
+const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang)
+const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
+//const PROGRAM_YEAR = '2ad4c331-9434-ed11-9db1-002248d53d53'; //lookup. 2022 - 23
+const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
+
+let dates = {};
+let isFixedFee= {};
+//let facilityFees= {};
+let feeSchedule = {};
+let jan = {};
+let feb = {};
+let mar = {};
+let apr = {};
+let may = {};
+let jun = {};
+let jul = {};
+let aug = {};
+let sep = {};
+let oct = {};
+let nov = {};
+let dec = {};
+let mon = {};
+let tue = {};
+let wed = {};
+let thu = {};
+let fri = {};
+let sat = {};
+let sun = {};   
+let model = { x: [],
+  dates,
+  isFixedFee,
+  //facilityFees,
+  feeSchedule,
+  jan,
+  feb,
+  mar,
+  apr,
+  may,
+  jun,
+  jul,
+  aug,
+  sep,
+  oct,
+  nov,
+  dec,
+  mon,
+  tue,
+  wed,
+  thu,
+  fri,
+  sat,
+  sun
+  
+};
+
+
 export default {
 
   props: {
@@ -356,6 +417,8 @@ export default {
   data() {
     return {
       rules,
+      model,
+      fullFacilityInfo: {},
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
@@ -393,6 +456,13 @@ export default {
 
     };
   },
+  mounted() {
+    this.model = this.$store.state.ccfriApp.model ?? model;
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('ccfriApp/model', this.model);
+    next();
+  },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityList']),
@@ -413,28 +483,42 @@ export default {
     }
   },
   beforeMount: function() {
-    this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
-      let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
-      this.facilityFees.push({
-        'key' : currentKey, 
-        'date' : `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}`,
-        'title': this.currentFacility.facilityAgeGroupNames[index],
-        'feeSch' : '',
-      });
-    });
-    this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
-      let currentKey = `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}-${ageGroup}`;
-      //console.log(currentKey);
-      this.facilityFees.push({
-        'key' : currentKey, 
-        'date' : `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}`,
-        'title': this.currentFacility.facilityAgeGroupNames[index]
+
+    this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
+    console.log(this.fullFacilityInfo);
+
+    // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
+    //   let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
+    //   this.facilityFees.push({
+    //     'key' : currentKey, 
+    //     'date' : `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}`,
+    //     'title': this.currentFacility.facilityAgeGroupNames[index],
+    //     'feeSch' : '',
+    //   });
+    // });
+    // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
+    //   let currentKey = `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}-${ageGroup}`;
+    //   //console.log(currentKey);
+    //   this.facilityFees.push({
+    //     'key' : currentKey, 
+    //     'date' : `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}`,
+    //     'title': this.currentFacility.facilityAgeGroupNames[index]
       
-      });
-      //console.log(th)
-    });
+    //   });
+    //   //console.log(th)
+    // });
   },
   methods: {
+    //this is an example - take me out /////////////////////////////////////////
+    async getFacility (id) {
+      try {
+        this.fullFacilityInfo = await (axios.get('/api/facility/'+id));
+        this.fullFacilityInfo = this.fullFacilityInfo.data;
+        //console.log(this.fullFacilityInfo.data);
+      } catch (error) {
+        console.info(error);
+      }
+    },
     addDate(){
       this.dates.push({
         message: this.closureReason,
@@ -457,13 +541,34 @@ export default {
     next() {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    async getFacility (id) {
-      try {
-        this.facilityResult = (await axios.get('/api/public/facilities/'+id)).data;
-      } catch (error) {
-        console.info(error);
-      }
-    }
+    async updateParentFees () {
+
+      console.log(this.getFacility(this.facilityList[0].facilityId));
+
+      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
+      // this.facilityList.forEach (async (facility, index) => {
+
+      //   let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+
+      //   payload = JSON.parse(JSON.stringify(payload));
+
+      // let payload = {
+      //   ccfriApplicationGuid : CCFRI_APPLICATION_GUID,
+      //   childCareCategory : CHILD_CARE_CATEGORY_GUID, 
+      //   programYear : PROGRAM_YEAR
+      // };
+
+      // payload = JSON.parse(JSON.stringify(payload));
+
+      // console.log(payload);
+
+      // try {
+      //   this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+      // } catch (error) {
+      //   console.info(error);
+      // }
+      //});
+    },
   }
 };
 </script>

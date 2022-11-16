@@ -1,12 +1,16 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getConstKey} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES , FACILITY_AGE_GROUP_CODES} = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, OPTIN_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings } = require('../util/mapping/Mappings');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
+
+
 
 async function getUserInfo(req, res) {
 
@@ -26,121 +30,49 @@ async function getUserInfo(req, res) {
     applicationId: null,
     applicationStatus: null,
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
-    unreadMessages: true, 
+    unreadMessages: false, 
     facilityList: [],
   };
 
-
   let userGuid = getUserGuid(req);
-  console.info('User Guid is: ', userGuid);
+  log.verbose('User Guid is: ', userGuid);
+ 
   const userResponse = await getUserProfile(userGuid);
 
-  log.verbose('Status  :: is :: ', userResponse.status);
-  log.verbose('StatusText   :: is :: ', userResponse.statusText);
-  log.verbose('Response   :: is :: ', minify(userResponse.data));
-
-  userResponse.push( {
-    'Organization.name' : "Test Org 1",
-    'BCeID.ccof_userid' : "123-bbbb-cccc",
-    'Application.statuscode' : 100000001 ,
-    'CCOF.ccof_facility' : '123456',
-    'CCOF.Facility.name' : 'Best Daycare 1',
-    'CCFRI.statuscode' : 0,
-    'ECEWE.statuscode' : 0,
-    'ccfriOptInStatus': 7
-  
-  });
-
-  // const userResponse = [
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '123456',
-  //     'CCOF.Facility.name' : 'Best Daycare 1',
-  //     'CCFRI.statuscode' : 0,
-  //     'ECEWE.statuscode' : 0,
-
-  //   },
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '987352723',
-  //     'CCOF.Facility.name' : 'Wee lil happy babiez',
-  //     'CCFRI.statuscode' : 2,
-  //     'ECEWE.statuscode' : 1,
-  //   },
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '1232464456',
-  //     'CCOF.Facility.name' : 'Best Daycare 2',
-  //     'CCFRI.statuscode' : 1,
-  //     'ECEWE.statuscode' : 1,
-
-  //   },
-  //   {
-  //     'Organization.name' : "Test Org 1",
-  //     'BCeID.ccof_userid' : "123-bbbb-cccc",
-  //     'Application.statuscode' : 100000001 ,
-  //     'CCOF.ccof_facility' : '987353422723',
-  //     'CCOF.Facility.name' : 'Wee lil happy kidoz',
-  //     'CCFRI.statuscode' : 2,
-  //     'ECEWE.statuscode' : 1,
-  //   }
-  // ];   
-
+  if (log.isVerboseEnabled) {
+    log.verbose('getUserProfile response:',minify(userResponse));
+  }
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
     return res.status(HttpStatus.OK).json(resData);
   }
-
   //Organization is not normalized, grab organization info from the first element
-  resData.organizationName  = userResponse[0]['Organization.name'];
-  resData.organizationId  = userResponse[0]['_ccof_organization_value'];
-  resData.applicationId =  userResponse[0]['Application.ccof_applicationid'];
-  let statusCode = userResponse[0]['_ccof_organization_value'];
-  if (statusCode) {
-    statusCode = getConstKey(APPLICATION_STATUS_CODES,userResponse[0]['Application.statuscode']);
-    if (!statusCode) {
-      // TODO: should really throw an error, but for now until the
-      // statuses are stable, just return whatever the value is.
-      statusCode = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
+  let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
+  
+  organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
+  organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
+  let facilityList = [];
+  userResponse.forEach(item => {
+    let facility = new MappableObjectForFront(item, UserProfileFacilityMappings).data;
+    if (!_.isEmpty(facility)) {
+      facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
+      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
+      facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
+      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES);
+      facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
+      facilityList.push(facility);
     }
-  } else {
-    // No status code means new CCOF application
-    statusCode = STATUS_CODES.NEW;
-  }
-  resData.applicationStatus  = statusCode;
-
-  let facilityArr = userResponse.map(item => {
-    return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
   });
-  facilityArr.map( item => {
-    item.ccfriStatus = getConstKey(CCFRI_STATUS_CODES, item.ccfriStatus);
-    item.eceweStatus = getConstKey(ECEWE_STATUS_CODES, item.eceweStatus);
-    item.facilityAgeGroups = ['1', '2' , '3'];
-    item.facilityAgeGroupNames = ['0 to 18 months','18 to 36 months','3 Years to Kindergarten'];
-    return item;
-  });
-
   
-  resData.facilityList = facilityArr;
+  resData.facilityList = facilityList;
+  let results = {
+    ...resData,
+    ...organization
+  };
   
-  return res.status(HttpStatus.OK).json(resData);
+  return res.status(HttpStatus.OK).json(results);
 }
-
-const GetUserProfileKeyMap = {
-  'CCOF.ccof_facility' : 'facilityId',
-  'CCOF.Facility.name' : 'facilityName',
-  'CCFRI.statuscode' : 'ccfriStatus',
-  'ECEWE.statuscode' : 'eceweStatus',
-  'CCFRI.ccof_ccfrioptin' : 'ccfriOptInStatus'
-};
-
 
 async function getUserProfile(businessGuid) {
   

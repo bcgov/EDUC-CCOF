@@ -9,6 +9,9 @@ import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
 import familyFunding from '@/store/modules/ccof/family/familyFundingStore';
 import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStore';
 import familyOrganization from '@/store/modules/ccof/family/familyOrganizationStore';
+import ccfriApp from '@/store/modules/ccfriApp.js';
+import familyFundAmount from '@/store/modules/ccof/family/fundAmount.js';
+
 
 Vue.use(Vuex);
 
@@ -22,6 +25,8 @@ export default new Vuex.Store({
     familyFunding,
     familyEligibility,
     familyOrganization,
-    groupFunding
+    groupFunding,
+    ccfriApp,
+    familyFundAmount
   }
 });

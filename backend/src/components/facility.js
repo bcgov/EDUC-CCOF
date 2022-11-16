@@ -1,10 +1,10 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify } = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings } = require('../util/mapping/Mappings');
-const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE } = require('../util/constants');
+const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
 
 function hasChildCareCategory(item) {
   return (
@@ -23,15 +23,20 @@ function hasChildCareCategory(item) {
   );
 }
 
-function buildPayload(req) {
+function buildNewFacilityPayload(req) {
   let facility = req.body;
   let organizationString = '/accounts(' + facility.organizationId + ')';
-  let applicationString = '/ccof_applications(' + facility.ccofApplicationId + ')';
+  let applicationString = '/ccof_applications(' + facility.applicationId + ')';
 
   facility = new MappableObjectForBack(facility, FacilityMappings);
   facility.data['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
   facility.data['parentaccountid@odata.bind'] = organizationString;
-  facility.data['ccof_application@odata.bind'] = applicationString;
+  facility.data['ccof_application_basefunding_Facility'] = [
+    {
+      'ccof_Application@odata.bind': applicationString
+    }
+  ];
+  
   return facility;
 }
 
@@ -83,24 +88,31 @@ async function getFacility(req, res) {
 
 
 async function createFacility(req, res) {
-  let ccofApplicationId = req.body.ccofApplicationId;
-  let facility = buildPayload(req);
+  let facility = buildNewFacilityPayload(req);
   try {
     let facilityGuid = await postOperation('accounts', facility);
-    return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid});
+    //After the base ccof application is created, get the application guid
+    let operation = 'accounts(' + facilityGuid + ')?$select=accountid&$expand=ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
+    let ccofApplicationPayload = await getOperation(operation);
+    let ccofBaseFundingId = undefined;
+    let ccofBaseFundingStatus = undefined;
+    if ( ccofApplicationPayload?.ccof_application_basefunding_Facility?.length > 0) {
+      ccofBaseFundingId = ccofApplicationPayload.ccof_application_basefunding_Facility[0].ccof_application_basefundingid;
+      ccofBaseFundingStatus = getLabelFromValue(ccofApplicationPayload.ccof_application_basefunding_Facility[0].statuscode, CCOF_STATUS_CODES);
+    }
+    return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid, ccofBaseFundingId: ccofBaseFundingId, ccofBaseFundingStatus: ccofBaseFundingStatus});
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
 
 async function updateFacility(req, res) {
-  let facility = buildPayload(req);
+  let facility = new MappableObjectForBack(facility, FacilityMappings);
   try {
-    console.log('Payload is: ', minify(facility));
+    console.log('updateFacility: Payload is: ', minify(facility.data));
     let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
     response = new MappableObjectForFront(response, FacilityMappings);
-    console.log('Response is: ', minify(response));
-
+    console.log('updateFacility: Response is: ', minify(response));
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
