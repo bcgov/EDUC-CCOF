@@ -62,6 +62,10 @@ export default {
       let payload = JSON.parse(JSON.stringify(state));
       payload.organizationId = organizationId;
       payload.applicationId = rootState.organization.applicationId;
+      if (payload.licenseNumber) {
+        payload.licenseNumber = '' + payload.licenseNumber; // need to ensure it's a string
+      }
+
       delete payload['facilityList'];
       console.log('payload', payload);
       if (state.facilityId) {
@@ -83,8 +87,8 @@ export default {
           commit('addToFacilityList', {
             facilityName: state.facilityName,
             facilityId: state.facilityId,
-            ccfriStatus: 'NEW',
-            eceweStatus: 'NEW'
+            ccofBaseFundingId: response.data?.ccofBaseFundingId,
+            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus
           });
           return response;
         } catch (error) {

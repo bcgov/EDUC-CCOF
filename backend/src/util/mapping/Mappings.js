@@ -64,7 +64,7 @@ const UserProfileFacilityMappings = [
   //base funding
   { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId'},
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus'},
-  { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
+  // { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
   //ccfri
   { back: 'CCFRI.statuscode', front: 'ccfriStatus'},
   { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus'},
