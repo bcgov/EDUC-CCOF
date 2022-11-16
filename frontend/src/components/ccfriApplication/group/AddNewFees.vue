@@ -6,9 +6,6 @@
       <v-btn color="info" outlined x-large  @click="updateParentFees()">
             UPDATE FEES</v-btn>
 
-           aa {{fullFacilityInfo}}
-      
-
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
       <p class="text-h5 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: 111 </p> <br><br>
