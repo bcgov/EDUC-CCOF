@@ -5,6 +5,8 @@
 
       <v-btn color="info" outlined x-large  @click="updateParentFees()">
             UPDATE FEES</v-btn>
+
+           aa {{fullFacilityInfo}}
       
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
@@ -20,7 +22,7 @@
       
 
       <v-card  
-      v-for="({key, date, title} , index) in facilityFees" :key="key"
+      v-for="({key, programYear, childCareCategory} , index) in fullFacilityInfo.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -33,7 +35,7 @@
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
-                Parent Fees 20{{date}}: Full-Time {{title}}
+                Parent Fees {{programYear}}: Full-Time {{childCareCategory}}
               </p>
             </div>
             <div class="px-md-12 px-7">
@@ -347,6 +349,7 @@ import rules from '@/utils/rules';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
 import ApiService from '@/common/apiService';
+import axios from 'axios';
 
 // 0-18 months
 const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang)
@@ -418,6 +421,7 @@ export default {
     return {
       rules,
       model,
+      fullFacilityInfo: {},
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
@@ -457,11 +461,9 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
@@ -484,28 +486,42 @@ export default {
     }
   },
   beforeMount: function() {
-    this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
-      let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
-      this.facilityFees.push({
-        'key' : currentKey, 
-        'date' : `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}`,
-        'title': this.currentFacility.facilityAgeGroupNames[index],
-        'feeSch' : '',
-      });
-    });
-    this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
-      let currentKey = `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}-${ageGroup}`;
-      //console.log(currentKey);
-      this.facilityFees.push({
-        'key' : currentKey, 
-        'date' : `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}`,
-        'title': this.currentFacility.facilityAgeGroupNames[index]
+
+    this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
+    console.log(this.fullFacilityInfo);
+
+    // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
+    //   let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
+    //   this.facilityFees.push({
+    //     'key' : currentKey, 
+    //     'date' : `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}`,
+    //     'title': this.currentFacility.facilityAgeGroupNames[index],
+    //     'feeSch' : '',
+    //   });
+    // });
+    // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
+    //   let currentKey = `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}-${ageGroup}`;
+    //   //console.log(currentKey);
+    //   this.facilityFees.push({
+    //     'key' : currentKey, 
+    //     'date' : `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}`,
+    //     'title': this.currentFacility.facilityAgeGroupNames[index]
       
-      });
-      //console.log(th)
-    });
+    //   });
+    //   //console.log(th)
+    // });
   },
   methods: {
+    //this is an example - take me out /////////////////////////////////////////
+    async getFacility (id) {
+      try {
+        this.fullFacilityInfo = await (axios.get('/api/facility/'+id));
+        this.fullFacilityInfo = this.fullFacilityInfo.data;
+        //console.log(this.fullFacilityInfo.data);
+      } catch (error) {
+        console.info(error);
+      }
+    },
     addDate(){
       this.dates.push({
         message: this.closureReason,
@@ -530,6 +546,8 @@ export default {
     },
     async updateParentFees () {
 
+      console.log(this.getFacility(this.facilityList[0].facilityId));
+
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       // this.facilityList.forEach (async (facility, index) => {
 
@@ -537,21 +555,21 @@ export default {
 
       //   payload = JSON.parse(JSON.stringify(payload));
 
-      let payload = {
-        ccfriApplicationGuid : CCFRI_APPLICATION_GUID,
-        childCareCategory : CHILD_CARE_CATEGORY_GUID, 
-        programYear : PROGRAM_YEAR
-      };
+      // let payload = {
+      //   ccfriApplicationGuid : CCFRI_APPLICATION_GUID,
+      //   childCareCategory : CHILD_CARE_CATEGORY_GUID, 
+      //   programYear : PROGRAM_YEAR
+      // };
 
-      payload = JSON.parse(JSON.stringify(payload));
+      // payload = JSON.parse(JSON.stringify(payload));
 
-      console.log(payload);
+      // console.log(payload);
 
-      try {
-        this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-      } catch (error) {
-        console.info(error);
-      }
+      // try {
+      //   this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+      // } catch (error) {
+      //   console.info(error);
+      // }
       //});
     },
   }

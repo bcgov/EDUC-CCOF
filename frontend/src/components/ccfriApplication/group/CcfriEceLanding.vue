@@ -157,7 +157,7 @@ export default {
     async updateCCFRI () {
 
       console.log('f');
-      console.log(this.getFacility(APPLICATION_ID));
+      //console.log(this.getFacility(APPLICATION_ID));
 
       //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
