@@ -7,8 +7,8 @@
       ></v-progress-circular>
     </v-overlay>
     <v-form ref="form">
-      <v-row justify="">
-        <v-col cols="12" class="pt-0" align="center">
+      <v-row>
+        <v-col cols="12" class="pt-0 pb-2" align="center">
           <v-img
             :src="require('../assets/images/estimator image.jpg')"
             max-height="300"
@@ -28,7 +28,7 @@
                   mdi-alert-circle
                 </v-icon>
               </v-col>
-              <v-col cols="10" class="pt-7" style="font-size:14px;color:white;margin-left:-18px;">
+              <v-col cols="10" class="pt-7 text-left" style="font-size:14px;color:white;margin-left:-18px;">
                 The estimation provided in this service is <strong><u>not</u></strong> a guarantee of payments. The estimation does not take into account all of your circumstances and <strong><u>should be used as a guide only.</u></strong>
               </v-col>
             </v-row>
@@ -45,7 +45,7 @@
             </v-row>
             <div v-show="isParent || isProvider">
               <v-row>
-                <v-col class="pl-8 pt-0" style="color:white;font-size:15px">
+                <v-col class="pl-8 pt-0 text-left" style="color:white;font-size:15px">
                   Instructions:
                 </v-col>
               </v-row>
@@ -53,7 +53,7 @@
                 <v-col cols="1" class="pl-8 pt-0 text-right text-no-wrap" style="color:white">
                   1.
                 </v-col>
-                <v-col cols="10" class="pl-8 pt-0" style="color:white">
+                <v-col cols="10" class="pl-8 pt-0 text-left" style="color:white">
                   This estimator below calculates child care cost savings after the Child Care Fee Reduction Initiative (CCFRI). More information on CCFRI eligibility is available on our <a href="https://www2.gov.bc.ca/gov/content?id=77241B9EE085467F94219D69F0008B29#eligibility
 " target="_blank" style="color:#0FC3ED"><u>website</u></a>.
                 </v-col>
@@ -62,7 +62,7 @@
                 <v-col cols="1" class="pl-8 pt-0 text-right text-no-wrap" style="color:white">
                   2.
                 </v-col>
-                <v-col cols="10" class="pl-8 pt-0" style="color:white">
+                <v-col cols="10" class="pl-8 pt-0 text-left" style="color:white">
                   <div v-show="isParent">
                     We recommend you use the 'Optional Facility Search' to find your childcare provider. If you cannot find your provider, contact them directly for the <strong>approved full-time parent fee before fee reduction is applied.</strong>
                   </div>
@@ -75,7 +75,7 @@
                 <v-col cols="1" class="pl-8 pt-0 text-right text-no-wrap" style="color:white">
                   3.
                 </v-col>
-                <v-col cols="10" class="pl-8 pt-0 pb-4" style="color:white">
+                <v-col cols="10" class="pl-8 pt-0 pb-4 text-left" style="color:white">
                   Use the <strong>'Estimate your savings'</strong> button at the bottom of the tool.
                 </v-col>
               </v-row>
@@ -89,7 +89,7 @@
         <FacilitySearch v-show="isParent || isProvider" @selectedFacility="setSelectedFacility($event)"/>
   <!-- ******************************************************************************************************************************************************** -->
       <v-row justify="center" v-show="isParent || isProvider">
-        <v-col cols="12" align="center">
+        <v-col cols="12" align="center" class="pt-1">
         <v-card elevation="4" max-width="1448">
           <v-row>
             <v-col class="py-0">

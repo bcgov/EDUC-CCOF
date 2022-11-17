@@ -1,5 +1,5 @@
 <template>
-  <v-system-bar app absolute color="rgb(0, 51, 102)" height="56rem" class="sysBar ">
+  <v-system-bar app absolute color="rgb(0, 51, 102)" height="66rem" class="sysBar">
     <!-- Navbar content -->
     <v-container
     :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
@@ -8,8 +8,7 @@
       <img
           tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
-          width="175"
-          class="logo "
+          class="logo"
           alt="B.C. Government Logo"
       >
     </a>
@@ -85,6 +84,9 @@ a {
 }
 .logo{
   padding-right: 15px;
+  padding-top: 4px;
+  width: 205px;
+  height: 77px;
 }
 .gov-header .title {
   color: #fff;
