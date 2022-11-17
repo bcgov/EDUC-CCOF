@@ -16,7 +16,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="10" sm=9 class="py-0">
+            <v-col cols="10" sm=9 class="py-0 pr-0">
               <v-text-field
                 ref="searchCriteria"
                 style="padding-left:34px;"
@@ -33,7 +33,7 @@
                 >
               </v-text-field>
             </v-col>
-            <v-col class="pt-0" cols="3">
+            <v-col class="pt-0 pl-0 text-left" cols="3">
               <v-dialog
                 v-model="dialog"
                 persistent
