@@ -60,9 +60,6 @@ export default {
       }
 
       let payload = JSON.parse(JSON.stringify(state));
-      if (payload.incNumber) {
-        payload.incNumber = '' + payload.incNumber; // need to ensure it's a string
-      }
       
       //set program year:
       payload.programYearId = rootState.app.programYearList[0].ccof_program_yearid;
