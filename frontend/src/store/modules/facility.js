@@ -7,6 +7,7 @@ export default {
     //Vuex doesn't handle maps. so keep track of the list of facilities
     //and update the facility details with the current selected facility
     facilityList: [],
+    facilityStore: {},
     facilityName: null,
     facilityId: null,
     yearBeginOperation: null,
@@ -28,6 +29,9 @@ export default {
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
+    getFacilityById: (state) => (facilityId) => { 
+      return state.facilityStore[facilityId];
+    }
   },  
   mutations: {
     setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
@@ -47,6 +51,11 @@ export default {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
     setIsFacilityComplete: (state, isFacilityComplete) => { state.isFacilityComplete = isFacilityComplete; },
     setCcfriOptInStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
+    addFacilityToStore: (state, facilityModel) => {
+      if (facilityModel?.facilityId) {
+        state.facilityStore[facilityModel.facilityId] = facilityModel;  
+      }
+    }
   },
   actions: {
     async saveFacility({ state, commit, rootState }) {
@@ -94,23 +103,28 @@ export default {
         }
       }
     },
-    async loadFacility({commit}, facilityId) {
-      return new Promise((resolve, reject) => {
-        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-          console.log('unable to load facility because you are not logged in');
-          reject('unable to  load facility because you are not logged in');
-        }
-        ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId)
-          .then((response) => {
-            commitToState(commit, response.data);
-            commit('setFacilityId', facilityId);
-            resolve(response);
-          })
-          .catch((e) => {
-            console.log(`Failed to get existing Facility - ${e}`);
-            reject(e);
-          });
-      });
+    async loadFacility({getters, commit}, facilityId) {
+      if (!getters.getFacilityById(facilityId)) {
+        return new Promise((resolve, reject) => {
+          if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+            console.log('unable to load facility because you are not logged in');
+            reject('unable to  load facility because you are not logged in');
+          }
+          ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId)
+            .then((response) => {
+              response.data['facilityId'] = facilityId;
+              commit('addFacilityToStore', response.data);
+              state.facilityStore[facilityId] = response.data;
+              // commitToState(commit, response.data);
+              // commit('setFacilityId', facilityId);
+              resolve(response);
+            })
+            .catch((e) => {
+              console.log(`Failed to get existing Facility - ${e}`);
+              reject(e);
+            });
+        });
+      }
     },
     newFacility({commit}) {
       commit('setFacilityId', null);
