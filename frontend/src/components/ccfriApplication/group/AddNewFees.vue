@@ -6,11 +6,12 @@
       <v-btn color="info" outlined x-large  @click="updateParentFees()">
             UPDATE FEES</v-btn>
 
-            {{lookupInfo}}
+            {{facilityLookupInfo}}
+            <!-- {{lookupInfo.childCareCategory[1]}} -->
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h5 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityContactInfo.licenseNumber}} </p> <br><br>
+      <p class="text-h5 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityLookupInfo.licenseNumber}} </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care atgit  this facility for the months below. <br><br>
         If you have more than one fee for the same category, enter the highest fee. <br><br>
@@ -21,7 +22,7 @@
       
 
       <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in facilityContactInfo.childCareTypes" :key="index"
+      v-for="({key, programYear, childCareCategory} , index) in facilityLookupInfo.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -350,6 +351,8 @@ import { mapGetters, mapState} from 'vuex';
 import ApiService from '@/common/apiService';
 import axios from 'axios';
 
+import _ from 'lodash';
+
 // 0-18 months
 const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
 const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
@@ -422,7 +425,7 @@ export default {
     return {
       rules,
       model,
-      facilityContactInfo: {},
+      facilityLookupInfo: {},
       isValidForm : undefined,
       datePicker: null,
       calendarMenu: undefined,
@@ -487,8 +490,9 @@ export default {
   },
   beforeMount: function() {
 
+
     this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
-    console.log(this.facilityContactInfo);
+    console.log(this.facilityLookupInfo);
 
     // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
     //   let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
@@ -512,12 +516,12 @@ export default {
     // });
   },
   methods: {
-    //this is an example - take me out /////////////////////////////////////////
+    //this gets the more detailed facility info -- maybe we don't need to make the call here?
     async getFacility (id) {
       try {
-        this.facilityContactInfo = await (axios.get('/api/facility/'+id));
-        this.facilityContactInfo = this.facilityContactInfo.data;
-        //console.log(this.facilityContactInfo.data);
+        this.facilityLookupInfo = await (axios.get('/api/facility/'+id));
+        this.facilityLookupInfo = this.facilityLookupInfo.data;
+        //console.log(this.facilityLookupInfo.data);
       } catch (error) {
         console.info(error);
       }
@@ -545,30 +549,36 @@ export default {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async updateParentFees () {
+      // each loop of the forEach will be a seperate request. This might be slow.... Perhaps Rob knows a better way?
+      //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
 
-      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
-     // this.facilityList.forEach (async (facility, index) => { FOR EACH the date groups?
+      this.facilityLookupInfo.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
 
-        //let payload = {applicationID : APPLICATION_ID, facilityID : facility.facilityId, optInResponse: this.ccfriOptInOrOut[index] };
+        //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
+        let childCareCatGUID = _.find(this.lookupInfo.childCareCategory, {ccof_description : childCareType.childCareCategory });
 
-        //payload = JSON.parse(JSON.stringify(payload));
+        if (childCareCatGUID){
+          childCareCatGUID = childCareCatGUID.ccof_childcare_categoryid;
+        }
 
-      let payload = {
-        ccfriApplicationGuid : this.currentFacility.ccfriApplicationId,
-        childCareCategory : CHILD_CARE_CATEGORY_GUID, //for each the child care cat -- add child care cat GUID to facility lookup?
-        programYear : this.facilityContactInfo.childCareTypes[2].programYearId //program year GUID
-      };
+        let payload = {
+          ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
+          childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
+          programYear : childCareType.programYearId //program year GUID
+        };
 
-      payload = JSON.parse(JSON.stringify(payload));
+        payload = JSON.parse(JSON.stringify(payload));
 
-      console.log(payload);
+        console.log(payload);
 
-      try {
-        this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-      } catch (error) {
-        console.info(error);
-      }
-      //});
+        try {
+          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        } catch (error) {
+          console.info(error);
+        }
+
+
+      });
     },
   }
 };

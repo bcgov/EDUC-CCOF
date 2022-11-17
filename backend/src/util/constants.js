@@ -1,9 +1,11 @@
 
 const CHILD_AGE_CATEGORY_TYPES = new Map();
-CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 - 18 Months');
-CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 - 36 Months');
+CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 to 18 months');
+CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 to 36 months');
 CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
-CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only)');
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Out of School Care - Kindergarten');
+
+//Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API 
 
 const ACCOUNT_TYPE = Object.freeze({
   FACILITY: 100000001,
