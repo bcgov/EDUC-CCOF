@@ -1,15 +1,15 @@
 <template>
   <v-form ref="searchForm" @submit.prevent>
     <v-row justify="center">
-      <v-col cols="10" style="padding-top:0px;">
-        <v-card elevation="4">
+      <v-col cols="12" style="padding-top:0px;" align="center">
+        <v-card elevation="4" max-width="1448">
           <v-row>
             <v-col style="padding-top:0%;padding-bottom:0px;">
                 <v-card-title class="pt-2 pb-2" style="color:white;font-style:normal;font-family:BCSans;font-weight:700;font-size:20px;background-color:#431782;">Optional Facility Search</v-card-title>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" class="pt-5">
+            <v-col cols="10" class="pt-5 text-left">
               <div color="#313131" style="padding-left:24px;font-style:normal;font-weight:500;font-family:BCSans;font-size:16px;">
                 Enter a facility name or city of a licensed child care provider participating in CCFRI
               </div>
