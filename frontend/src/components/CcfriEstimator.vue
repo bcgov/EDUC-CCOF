@@ -2,7 +2,7 @@
   <v-container class="py-0">
     <v-overlay :value="loading">
       <v-progress-circular
-        indeterminatey
+        indeterminate
         size="64"
       ></v-progress-circular>
     </v-overlay>
