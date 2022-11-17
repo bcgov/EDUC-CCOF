@@ -6,7 +6,9 @@
       <v-btn color="info" outlined x-large  @click="updateParentFees()">
             UPDATE FEES</v-btn>
 
-            {{facilityLookupInfo}}
+            {{apr}} {{may}}
+
+            <!-- {{facilityLookupInfo}} -->
             <!-- {{lookupInfo.childCareCategory[1]}} -->
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
@@ -549,9 +551,15 @@ export default {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async updateParentFees () {
+      // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' 
+      // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
+      // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
+
+
       // each loop of the forEach will be a seperate request. This might be slow.... Perhaps Rob knows a better way?
       //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
 
+      //index will also match the order of how the cards are displayed. 
       this.facilityLookupInfo.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
 
         //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
@@ -561,11 +569,20 @@ export default {
           childCareCatGUID = childCareCatGUID.ccof_childcare_categoryid;
         }
 
+        //payload will need to look different if fee is monthly / daily 
         let payload = {
           ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
           childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
-          programYear : childCareType.programYearId //program year GUID
+          programYear : childCareType.programYearId,//program year GUID,
+          aprFee : apr[index]
         };
+
+        console.log(model.feeSchedule[index]);
+
+        payload.feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000'  : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
+  
+        console.log('index is: ' + index);
+        console.log(model.apr[index]);
 
         payload = JSON.parse(JSON.stringify(payload));
 

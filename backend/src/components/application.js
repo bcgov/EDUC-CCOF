@@ -73,10 +73,10 @@ async function upsertParentFees(req, res) {
   let programYear = `/ccof_program_years(${body.programYear})`;
 
   let payload = {
-    "ccof_frequency": 100000002,
+    "ccof_frequency": body.feeFrequency,
     "ccof_ChildcareCategory@odata.bind": childCareCategory, // 0-18 months
     "ccof_ProgramYear@odata.bind": programYear, // Lookup //2021/22
-    "ccof_apr": 1230.00,
+    "ccof_apr": body.aprFee,
     "ccof_may": 550.00,
     "ccof_jun": 110.00,
     "ccof_jul": 110.00,
