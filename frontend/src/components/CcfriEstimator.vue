@@ -2,12 +2,12 @@
   <v-container class="py-0">
     <v-overlay :value="loading">
       <v-progress-circular
-        indeterminate
+        indeterminatey
         size="64"
       ></v-progress-circular>
     </v-overlay>
     <v-form ref="form">
-      <v-row justify="center">
+      <v-row justify="">
         <v-col cols="12" class="pt-0" align="center">
           <v-img
             :src="require('../assets/images/estimator image.jpg')"
@@ -17,8 +17,8 @@
         </v-col>
       </v-row>
       <v-row justify="center">
-        <v-col cols="10">
-          <v-card elevation="0" color="#7B2EE5">
+        <v-col cols="12" class="pt-1" align="center">
+          <v-card elevation="0" color="#7B2EE5" max-width="1448">
             <v-row>
               <v-col cols="2" class="pb-0 text-center">
                 <v-icon
@@ -89,8 +89,8 @@
         <FacilitySearch v-show="isParent || isProvider" @selectedFacility="setSelectedFacility($event)"/>
   <!-- ******************************************************************************************************************************************************** -->
       <v-row justify="center" v-show="isParent || isProvider">
-        <v-col cols="10">
-        <v-card elevation="4">
+        <v-col cols="12" align="center">
+        <v-card elevation="4" max-width="1448">
           <v-row>
             <v-col class="py-0">
               <v-card-title style="color:white;font-style:normal;font-weight:700;font-family:BCSans;font-size:20px;padding-top:8px;padding-bottom:8px;background-color:#431782;">Facility Details</v-card-title>
@@ -598,8 +598,8 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
-                  <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
+                <v-col cols="5" class="estimator-label" style="padding-bottom:0px;padding-top:16px;">
+                  <div style="color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
                     <span style="color: #313131">
                       Approved full-time parent fee before fee reduction applied
                     </span>
@@ -619,7 +619,7 @@
                   <v-text-field
                       id="approvedFee"
                       @keypress="currencyFilter"
-                      @change="truncateLeadingZeros(child.number)"
+                      @change="truncateLeadingZerosDecimals(child.number)"
                       v-model="child.approvedFee"
                       :rules="rulesApprovedFee(child.approvedFee)"
                       outlined
@@ -635,8 +635,8 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
-                  <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
+                <v-col cols="5" class="estimator-label" style="padding-bottom:0px;padding-top:16px;">
+                  <div style="color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
                     <span v-if="child.careSchedule == 'Full Time'" style="color: #313131">
                       Actual parent fee before reduction applied (Optional)
                     </span>
@@ -664,7 +664,7 @@
                   <v-text-field
                     id="partTimeFee" 
                     @keypress="currencyFilter"
-                    @change="truncateLeadingZeros(child.number)"
+                    @change="truncateLeadingZerosDecimals(child.number)"
                     v-model="child.partTimeFee"
                     :rules="validateParentFee(child, child.partTimeFee)"
                     outlined
@@ -847,12 +847,6 @@ export default {
       rulesChildsAgeCategory: [
         (v) => !!v || 'Child\'s age category is required'
       ],
-      /*
-      rulesApprovedFee: [
-        (v) => !!v || 'Approved full-time parent fee before fee reduction applied is required',
-        (v) => v <= 9999 || 'Maximum Approved full-time parent fee before fee reduction applied is $9999.00',
-        (v) => v > 0 || 'Approved full-time parent fee before fee reduction applied must be greater than $0'
-      ],*/
       rulesParentFeeFrequency: [
         (v) => !!v || 'Parent fee frequency is required'
       ],
@@ -885,7 +879,7 @@ export default {
       if (!this.skipApprovedFeeValidation) {
         if (v == '' || v == undefined) {
           return ['Approved full-time parent fee before fee reduction applied is required'];
-        } else if (v >= 9999) {
+        } else if (v > 9999) {
           return ['Maximum Approved full-time parent fee before fee reduction applied is $9999.00'];
         } else if (v <= 0) {
           return ['Approved full-time parent fee before fee reduction applied must be greater than $0'];
@@ -1179,17 +1173,22 @@ export default {
         return true;
       }
     },
-    truncateLeadingZeros(index) {
+    truncateLeadingZerosDecimals(index) {
       index = index - 1;
       if (this.children[index].approvedFee.length != 0 && this.children[index].approvedFee.length > 1) {
         this.children[index].approvedFee = this.children[index].approvedFee.replace(/^0+/, '');
-        //this.children[index].approvedFee = Number(this.children[index].approvedFee).toFixed(2).toString();
       }
       if (this.children[index].partTimeFee.length != 0 && this.children[index].partTimeFee.length > 1) {
         this.children[index].partTimeFee = this.children[index].partTimeFee.replace(/^0+/, '');
-        //this.children[index].partTimeFee = Number(this.children[index].partTimeFee).toFixed(2).toString();
       }
 
+      if (this.children[index].approvedFee == '.') {
+        this.children[index].approvedFee = this.children[index].approvedFee.replace(/^.+/, '');
+      }
+
+      if (this.children[index].partTimeFee == '.') {
+        this.children[index].partTimeFee = this.children[index].partTimeFee.replace(/^.+/, '');
+      }
     },
     /* When a faclity is selected, the following will remove any child age category types from the
        drop list which do not have defined rates for the faclity. */
@@ -1392,7 +1391,8 @@ div.v-select__selection.v-select__selection--comma {
   color: #7B7C7E;
   font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   font-weight: 600;
-  font-size: 16px
+  font-size: 16px;
+  text-align: left;
 }
 .v-toolbar__title {
   font-size: 14px !important;
