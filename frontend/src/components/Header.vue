@@ -1,13 +1,15 @@
 <template>
-  <v-system-bar app absolute color="rgb(0, 51, 102)" height="56rem" class="sysBar"
-                :class="{'pl-2': $vuetify.breakpoint.smAndDown, 'pl-10': $vuetify.breakpoint.mdAndUp, 'pr-2': $vuetify.breakpoint.smAndDown, 'pr-10': $vuetify.breakpoint.mdAndUp} ">
+  <v-system-bar app absolute color="rgb(0, 51, 102)" height="56rem" class="sysBar ">
     <!-- Navbar content -->
+    <v-container
+    :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
+    >
     <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
       <img
           tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
-          width="155"
-          class="logo"
+          width="175"
+          class="logo "
           alt="B.C. Government Logo"
       >
     </a>
@@ -41,6 +43,7 @@
       <v-skeleton-loader type="chip">
       </v-skeleton-loader>
     </div>
+  </v-container>
   </v-system-bar>
 </template>
 
@@ -73,6 +76,9 @@ export default {
 <style>
 .gov-header .v-icon{
   padding-left: 10px;
+}
+.sizingForIconXLScreen {
+  width: 1470px;
 }
 a {
   text-decoration: none;

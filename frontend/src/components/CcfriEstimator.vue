@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-0">
+  <v-container class="py-0 howdy">
     <v-overlay :value="loading">
       <v-progress-circular
         indeterminate
