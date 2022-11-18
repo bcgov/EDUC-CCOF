@@ -20,21 +20,23 @@ export default {
       console.log('store model', state.model);
       let payload = { ...state.model };
 
+      let deleteFields = [];
       if (payload.hasClosedMonth !== 'yes') {
-        delete payload.closedMonths;
+
+        for (let i = 1; i <= 12; i++) {
+          deleteFields.push('closedIn' + i);
+        }
       }
 
       if (payload.isSchoolProperty !== 'yes') {
-        delete payload.beforeSchool;
-        delete payload.afterSchool;
-        delete payload.beforeKindergarten;
-        delete payload.afterKindergarten;
+        deleteFields.push('beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten');
       }
 
       if (payload.isExtendedHours !== 'yes') {
-        delete payload.maxDaysPerWeekExtended;
-        delete payload.maxDaysPerYearExtended;
+        deleteFields.push('maxDaysPerWeekExtended', 'maxDaysPerYearExtended');
       }
+
+      deleteFields.forEach(field => delete payload[field]);
 
       console.log('saveFamilyFunding', payload);
 
