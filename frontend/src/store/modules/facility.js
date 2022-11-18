@@ -8,6 +8,8 @@ export default {
     //and update the facility details with the current selected facility
     facilityList: [],
     facilityStore: {},
+    facilityModel: {},
+
     facilityName: null,
     facilityId: null,
     yearBeginOperation: null,
@@ -36,24 +38,28 @@ export default {
   mutations: {
     setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
-    setFacilityName: (state, facilityName) => { state.facilityName = facilityName; },
-    setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
-    setYearBeginOperation: (state, yearBeginOperation) => { state.yearBeginOperation = yearBeginOperation; },
-    setFacilityAddress: (state, facilityAddress) => { state.facilityAddress = facilityAddress; },
-    setCity: (state, city) => { state.city = city; },
-    setPostalCode: (state, postalCode) => { state.postalCode = postalCode; },
-    setLicenseNumber: (state, licenseNumber) => { state.licenseNumber = licenseNumber; },
-    setContactName: (state, contactName) => { state.contactName = contactName; },
-    setPosition: (state, position) => { state.position = position; },
-    setPhone: (state, phone) => { state.phone = phone; },
-    setEmail: (state, email) => { state.email = email; },
-    setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
-    setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
-    setIsFacilityComplete: (state, isFacilityComplete) => { state.isFacilityComplete = isFacilityComplete; },
-    setCcfriOptInStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
-    addFacilityToStore: (state, facilityModel) => {
-      if (facilityModel?.facilityId) {
-        state.facilityStore[facilityModel.facilityId] = facilityModel;  
+    setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
+
+    // setFacilityName: (state, facilityName) => { state.facilityName = facilityName; },
+    // setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
+    // setYearBeginOperation: (state, yearBeginOperation) => { state.yearBeginOperation = yearBeginOperation; },
+    // setFacilityAddress: (state, facilityAddress) => { state.facilityAddress = facilityAddress; },
+    // setCity: (state, city) => { state.city = city; },
+    // setPostalCode: (state, postalCode) => { state.postalCode = postalCode; },
+    // setLicenseNumber: (state, licenseNumber) => { state.licenseNumber = licenseNumber; },
+    // setContactName: (state, contactName) => { state.contactName = contactName; },
+    // setPosition: (state, position) => { state.position = position; },
+    // setPhone: (state, phone) => { state.phone = phone; },
+    // setEmail: (state, email) => { state.email = email; },
+    // setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
+    // setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
+    // setIsFacilityComplete: (state, isFacilityComplete) => { state.isFacilityComplete = isFacilityComplete; },
+    // setCcfriOptInStatus: (state, ccfriOptInStatus) => {state.ccfriOptInStatus = ccfriOptInStatus;},
+    addFacilityToStore: (state, {facilityId, facilityModel} ) => {
+      console.log('STORE! ', facilityModel);
+      if (facilityId) {
+        state.facilityStore[facilityId] = facilityModel;  
+        console.log('STORE123! ', state.facilityStore[facilityId]);
       }
     }
   },
@@ -104,26 +110,25 @@ export default {
       }
     },
     async loadFacility({getters, commit}, facilityId) {
-      if (!getters.getFacilityById(facilityId)) {
-        return new Promise((resolve, reject) => {
-          if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-            console.log('unable to load facility because you are not logged in');
-            reject('unable to  load facility because you are not logged in');
-          }
-          ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId)
-            .then((response) => {
-              response.data['facilityId'] = facilityId;
-              commit('addFacilityToStore', response.data);
-              state.facilityStore[facilityId] = response.data;
-              // commitToState(commit, response.data);
-              // commit('setFacilityId', facilityId);
-              resolve(response);
-            })
-            .catch((e) => {
-              console.log(`Failed to get existing Facility - ${e}`);
-              reject(e);
-            });
-        });
+      let facilityModel = getters.getFacilityById(facilityId);
+      if (facilityModel) {
+        console.log('found facility for guid: ', facilityId);
+        commit('setFacilityModel', facilityModel);
+      } else {
+        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+          console.log('unable to load facility because you are not logged in');
+          throw 'unable to  load facility because you are not logged in';
+        }
+        try {
+          let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
+          commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});
+          commit('setFacilityModel', response.data);
+          return response;
+
+        } catch(e) {
+          console.log(`Failed to get existing Facility with error - ${e}`);
+          throw e;
+        }
       }
     },
     newFacility({commit}) {

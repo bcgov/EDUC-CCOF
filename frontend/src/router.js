@@ -159,7 +159,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.facInfo + '/:urlFacilityId',
+      path: PATHS.group.facInfo + '/:urlGuid',
       name: 'Facility Information Guid',
       component: FacilityInformation,
       meta: {
@@ -181,7 +181,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.fundAmount + '/:urlCcofBaseFundingId',
+      path: PATHS.group.fundAmount + '/:urlGuid',
       name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
