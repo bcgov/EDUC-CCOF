@@ -551,12 +551,11 @@ export default {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async updateParentFees () {
+      let payload = [];
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-
-      // each loop of the forEach will be a seperate request. This might be slow.... Perhaps Rob knows a better way?
       //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
 
       //index will also match the order of how the cards are displayed. 
@@ -569,33 +568,50 @@ export default {
           childCareCatGUID = childCareCatGUID.ccof_childcare_categoryid;
         }
 
+       
         //payload will need to look different if fee is monthly / daily 
-        let payload = {
+        payload[index] = {
           ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
           childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
           programYear : childCareType.programYearId,//program year GUID,
-          aprFee : apr[index]
         };
 
-        console.log(model.feeSchedule[index]);
-
-        payload.feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000'  : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
+        payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000'  : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
   
-        console.log('index is: ' + index);
-        console.log(model.apr[index]);
+        if (model.feeSchedule[index] === 'monthly' || model.feeSchedule[index] === 'weekly' ){
+          Object.assign(payload[index], 
+            {
+              aprFee : apr[index],
+              mayFee : may[index],
+              junFee : jun[index],
+              julFee : jul[index],
+              augFee : aug[index],
+              sepFee : sep[index],
+              octFee : oct[index],
+              novFee : nov[index],
+              decFee : dec[index],
+              janFee : jan[index],
+              febFee : feb[index],
+              marFee : mar[index],
+            }
+          );
+        } //TODO : add daily payload -- but Dynamics does not support that yet ! 
 
-        payload = JSON.parse(JSON.stringify(payload));
 
-        console.log(payload);
+      }); // end FOR EACH
 
-        try {
-          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-        } catch (error) {
-          console.info(error);
-        }
+      payload = JSON.parse(JSON.stringify(payload));
+
+      console.log(payload);
+
+      try {
+        this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+      } catch (error) {
+        console.info(error);
+      }
 
 
-      });
+
     },
   }
 };

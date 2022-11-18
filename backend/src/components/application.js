@@ -23,13 +23,9 @@ async function upsertCCFRIApplication(req, res) {
   payload = JSON.parse(JSON.stringify(payload));
   log.info(payload);
   let url = `_ccof_application_value=${body.applicationID},_ccof_facility_value=${body.facilityID}`;
-  // facility = _(facility).pick(Object.keys(PostFacilityKeyMap)).mapKeys((value,key) => {return PostFacilityKeyMap[key];});
-  // facility = facility.value();
-  // facility.ccof_accounttype = 100000001;
 
   try {
     let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
-    // response = _(response).pick(Object.keys(GetFacilityKeyMap)).mapKeys((value,key) => {return GetFacilityKeyMap[key];});
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     log.error(e);
@@ -61,48 +57,63 @@ async function upsertCCFRIApplication(req, res) {
 // }
 
 
-/* child care and program year GUIDs are hardcoded in AddNewFees.vue 
+/* child care and program year GUIDs are looked up in AddNewFees.vue 
 
-use the mapping feature here because the payload names will be long and complicated
+
 */ 
 async function upsertParentFees(req, res) {
   let body = req.body;
+  
+  //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
+  //for each object.
+  body.forEach(async(feeGroup) => {
 
-  let childCareCategory = `/ccof_childcare_categories(${body.childCareCategory})`;
+    let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
 
-  let programYear = `/ccof_program_years(${body.programYear})`;
+    let programYear = `/ccof_program_years(${feeGroup.programYear})`;
 
-  let payload = {
-    "ccof_frequency": body.feeFrequency,
-    "ccof_ChildcareCategory@odata.bind": childCareCategory, // 0-18 months
-    "ccof_ProgramYear@odata.bind": programYear, // Lookup //2021/22
-    "ccof_apr": body.aprFee,
-    "ccof_may": 550.00,
-    "ccof_jun": 110.00,
-    "ccof_jul": 110.00,
-    "ccof_aug": 110.00,
-    "ccof_sep": 340.00,
-    "ccof_oct": 450.00,
-    "ccof_nov": 5450.00,
-    "ccof_dec": 45.00,
-    "ccof_jan": 545.00,
-    "ccof_feb": 45.00,
-    "ccof_mar": 45.00,
-  };
+    let payload = {
+      "ccof_frequency": feeGroup.feeFrequency,
+      "ccof_ChildcareCategory@odata.bind": childCareCategory, 
+      "ccof_ProgramYear@odata.bind": programYear, 
+      
+    };
 
-  //payload.ccof_ccfrioptin = body.optInResponse;
+    if (feeGroup.feeFrequency == '100000000' || feeGroup.feeFrequency == '100000001'){
+      Object.assign(payload, 
+        {
+          "ccof_apr": feeGroup.aprFee,
+          "ccof_may": feeGroup.mayFee,
+          "ccof_jun": feeGroup.junFee,
+          "ccof_jul": feeGroup.julFee,
+          "ccof_aug": feeGroup.augFee,
+          "ccof_sep": feeGroup.sepFee,
+          "ccof_oct": feeGroup.octFee,
+          "ccof_nov": feeGroup.novFee,
+          "ccof_dec": feeGroup.decFee,
+          "ccof_jan": feeGroup.janFee,
+          "ccof_feb": feeGroup.febFee,
+          "ccof_mar": feeGroup.marFee,
+        }
+      );
+    } //TODO : add daily payload -- but I'm not sure that Dynamics supports that yet ! 
 
-  payload = JSON.parse(JSON.stringify(payload));
-  log.info(payload);
-  let url =  `_ccof_applicationccfri_value=${body.ccfriApplicationGuid},_ccof_childcarecategory_value=${body.childCareCategory}`;
+    //payload.ccof_ccfrioptin = feeGroup.optInResponse;
 
-  try {
-    let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-    log.info('feeResponse', response);
-    return res.status(HttpStatus.CREATED).json(response);
-  } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
+    payload = JSON.parse(JSON.stringify(payload));
+    // log.info(payload);
+    let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory}`;
+
+    try {
+      let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
+      //log.info('feeResponse', response);
+      return res.status(HttpStatus.CREATED).json(response);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    }
+
+
+  });
 }
 
 
