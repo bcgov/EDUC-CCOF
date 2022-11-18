@@ -64,7 +64,7 @@
                 </v-col>
                 <v-col cols="10" class="pl-8 pt-0 text-left" style="color:white">
                   <div v-show="isParent">
-                    We recommend you use the 'Optional Facility Search' to find your childcare provider. If you cannot find your provider, contact them directly for the <strong>approved full-time parent fee before fee reduction is applied.</strong>
+                    We recommend you use the 'Optional Facility Search' to find your child care provider. If you cannot find your provider, contact them directly for the <strong>approved full-time parent fee before fee reduction is applied.</strong>
                   </div>
                   <div v-show="isProvider">
                     You may use the 'Optional Facility Search' to find your facility. If you cannot find your facility, reference your facility's Program Confirmation Form for <strong>your approved full-time parent fee before fee reduction is applied.</strong>
