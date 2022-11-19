@@ -473,7 +473,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>You can select a month starting Dec 2022. Parent fee frequency and<br/> approved full-time parent fee before reduction applied will be populated.</span>
+                    <span>Fees shown are approved <strong>full time</strong> maximum parent fees. For part time<br/> care, click on the month and enter your fee without any reduction into<br/> the box beside: 'Actual parent fee before reduction applied'.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="6" class="flex pt-1 pb-0" style="margin-bottom:-18px;">
