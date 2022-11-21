@@ -252,10 +252,10 @@
               <v-col class="col-md-4 col-12">
                 <v-menu  v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field outlined required v-model="model.datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
-                    <v-date-picker range  v-model="datePicker" @input="calendarMenu = false">
+                    <v-date-picker range  v-model="model.datePicker" @input="calendarMenu = false">
                     </v-date-picker>
                 </v-menu>
               </v-col>
@@ -265,7 +265,7 @@
                 -->
                 <v-text-field
                   class = ""
-                  v-model="closureReason"
+                  v-model="model.closureReason"
                   label="Purpose of Closure"
                   outlined
                   clearable
@@ -280,6 +280,10 @@
                   v-model="model.closedFeesPaid"
                   label="Did parents pay for this closure?"
                 >
+
+                {{model.closureReason}} 
+                {{model.closedFeesPaid}}
+                {{model.datePicker}}
                   <v-radio
                     label="Yes"
                     value="Yes"
@@ -292,16 +296,14 @@
               </v-col>
               <v-col>
                 <v-btn class="col-3 col-md-1"
-                  v-if =" closureReason ==='' || closureReason ===' ' || closureReason ===null|| closureReason ===undefined 
-                  || datePicker===null || datePicker===' ' || datePicker=== undefined
-                  || closedFeesPaid === '' || closedFeesPaid === null || closedFeesPaid === undefined "
+                  v-if =" !model.closureReason || !model.datePicker|| !model.closedFeesPaid"
                     disabled
                 >ADD</v-btn>
                 <v-btn v-else v-on:click="addDate">ADD</v-btn>
               </v-col>
             </v-row>
             <v-row>
-              <v-btn v-for="date in dates" :key="date.message"
+              <v-btn v-for="date in dates" :key="date.id"
                 v-on:click="removeDate(date.id)">
                 {{date.message}} FOR DATES : {{date.selectedDates}} FEES PAID?: {{date.feesPaidWhileClosed}} ID: {{date.id}}
               </v-btn>
@@ -362,8 +364,10 @@ const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
 const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
 
 let dates = [];
+let datePicker= null;          //vmodel for entering closure fees
+let closedFeesPaid = undefined;       //vmodel for entering closure fees
+let closureReason= undefined;  //vmodel for entering closure fees
 let closureFees;
-let closedFeesPaid = [];
 let isFixedFee= {};
 let feeSchedule = {};
 let jan = {};
@@ -387,8 +391,10 @@ let sat = {};
 let sun = {};   
 let model = { x: [],
   dates,
+  datePicker,          //vmodel for entering closure fees
+  closedFeesPaid,       //vmodel for entering closure fees
+  closureReason, 
   closureFees,
-  closedFeesPaid,
   isFixedFee,
   feeSchedule,
   jan,
@@ -429,11 +435,11 @@ export default {
       model,
       facilityLookupInfo: {},
       isValidForm : undefined,
-      datePicker: null,
+      datePicker,          //vmodel for entering closure fees
+      closedFeesPaid,       //vmodel for entering closure fees
+      closureReason,  //vmodel for entering closure fees
       calendarMenu: undefined,
       closureFees: undefined,
-      closureReason: undefined,
-      closedFeesPaid,
       dates,
       feeSchedule,
       jan,
@@ -530,14 +536,14 @@ export default {
     },
     addDate(){
       dates.push({
-        message: this.closureReason,
-        selectedDates: this.datePicker,
-        feesPaidWhileClosed: this.closedFeesPaid,
-        id: this.dates.length
+        message: this.model.closureReason,
+        selectedDates: this.model.datePicker,
+        feesPaidWhileClosed: this.model.closedFeesPaid,
+        id: model.dates.length
       });
-      this.closureReason = '';
-      this.datePicker = '';
-      this.closedFeesPaid= '';
+      this.model.closureReason = '';
+      this.model.datePicker = '';
+      this.model.closedFeesPaid= '';
     },
     removeDate(removedId){
       const indexOfItemToRemove = this.dates.findIndex((obj) => obj.id === removedId);
