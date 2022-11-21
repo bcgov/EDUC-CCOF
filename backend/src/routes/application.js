@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { upsertParentFees, upsertCCFRIApplication} = require('../components/application');
+const { upsertParentFees, updateCCFRIApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
@@ -43,7 +43,7 @@ const { log } = require('../components/logger');
 router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
   //validationResult(req).throw();
   //console.log(req.bpdy);
-  return upsertCCFRIApplication(req, res);
+  return updateCCFRIApplication(req, res);
 });
 
 /* CREATE or UPDATE parent fees for a specified age group and year. 

@@ -12,25 +12,27 @@ const _ = require ('lodash');
 //creates or updates CCFRI application. 
 //NOTE - CCOF application GUID is currently hardcoded in CcfriEceLanding! Will need to be replaced with a get or found in the vuex store.
 
-async function upsertCCFRIApplication(req, res) {
-  let payload = {
-    'ccof_ccfrioptin' : '',
-  };
-  
+async function updateCCFRIApplication(req, res) {
   let body = req.body;
-  payload.ccof_ccfrioptin = body.optInResponse;
 
-  payload = JSON.parse(JSON.stringify(payload));
-  log.info(payload);
-  let url = `_ccof_application_value=${body.applicationID},_ccof_facility_value=${body.facilityID}`;
+  body.forEach(async(facility) => { 
+    let payload = {
+      'ccof_ccfrioptin' : '',
+    };
+    payload.ccof_ccfrioptin = facility.optInResponse;
 
-  try {
-    let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
-    return res.status(HttpStatus.OK).json(response);
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
+    payload = JSON.parse(JSON.stringify(payload));
+    log.info(payload);
+    let url = `_ccof_application_value=${facility.applicationID},_ccof_facility_value=${facility.facilityID}`;
+
+    try {
+      let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
+      return res.status(HttpStatus.OK).json(response);
+    } catch (e) {
+      log.error(e);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    }
+  }); //end for each
 }
 
 
@@ -126,6 +128,6 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
 }
 
 module.exports = {
-  upsertCCFRIApplication,
+  updateCCFRIApplication,
   upsertParentFees
 };

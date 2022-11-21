@@ -13,10 +13,10 @@
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h5 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityLookupInfo.licenseNumber}} </p> <br><br>
+      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityLookupInfo.licenseNumber}} </p> <br><br>
       <p>
-        Enter the fees you charged a new parent for full-time care atgit  this facility for the months below. <br><br>
-        If you have more than one fee for the same category, enter the highest fee. <br><br>
+        Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
+        If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
         <strong>Enter the fee before CCFRI is applied. </strong> <br><br>
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
       </p>
@@ -299,10 +299,18 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-btn v-for="date in dates" :key="date.id"
-                v-on:click="removeDate(date.id)">
-                {{date.message}} FOR DATES : {{date.selectedDates}} FEES PAID?: {{date.feesPaidWhileClosed}} ID: {{date.id}}
-              </v-btn>
+              <v-tooltip top color="warning">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-for="date in dates" :key="date.id"
+                    v-on:click="removeDate(date.id)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    {{date.message}} FOR DATES : {{date.selectedDates}} FEES PAID?: {{date.feesPaidWhileClosed}} ID: {{date.id}}
+                  </v-btn>
+                </template>
+                <span>Delete Date</span>
+              </v-tooltip>
             </v-row>
           </div>
         </v-card-text>

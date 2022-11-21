@@ -92,12 +92,9 @@ import { PATHS } from '@/utils/constants';
 import axios from 'axios';
 import ApiService from '@/common/apiService';
 
-//const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
-
 let ccfriOptInOrOut = {};
 
 let model = { x: [], ccfriOptInOrOut };
-//let ccfriOptInOrOut = { x: [] };
 
 export default {
   name: 'CcfriLandingPage',
@@ -108,7 +105,7 @@ export default {
       showOptStatus : '',
       isValidForm: undefined,
       ccfriOptInOrOut,
-      feeList : [
+      feeList : [ //dummy data for showing the 'current fees' page. TO be replaced with data loaded from Dynamics 
         {
           date: 'Jan 2022',
           pre3year: 1234,
@@ -155,11 +152,12 @@ export default {
       this.loadFacility(x);
     },
     async updateCCFRI () {
-      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
+      let payload = [];
+
       this.facilityList.forEach (async (facility, index) => {
 
         console.log(this.userInfo.applicationId);
-        let payload = {
+        payload[index] = {
           applicationID : this.userInfo.applicationId, //CCOF BASE application ID
           facilityID : facility.facilityId, 
           optInResponse: this.ccfriOptInOrOut[index] 
@@ -167,26 +165,18 @@ export default {
 
         payload = JSON.parse(JSON.stringify(payload));
 
-        console.log(payload);
-
-        try {
-          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-          //console.log(response);
-        } catch (error) {
-          console.info(error);
-        }
-
+        
       });
-    },
+      
+      console.log(payload);
+      try {
+        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        //console.log(response);
+      } catch (error) {
+        console.info(error);
+      }
 
-    // //this is an example - take me out /////////////////////////////////////////
-    // async getFacility (id) {
-    //   try {
-    //     this.facilityResult = (axios.get('/api/facility/:'+id)).data;
-    //   } catch (error) {
-    //     console.info(error);
-    //   }
-    // }
+    },
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
@@ -200,13 +190,4 @@ export default {
   components: { MessagesToolbar, LargeButtonContainer,  }
 };
 </script>
-
-<style scoped>
-
-body {
-white-space: pre-wrap;
-}
-
-
-</style>
 
