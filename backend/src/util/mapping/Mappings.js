@@ -126,7 +126,7 @@ module.exports = {
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,
-  CCOFApplicationFunding: CCOFApplicationFundingMapping,
+  CCOFApplicationFundingMapping,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings
 };

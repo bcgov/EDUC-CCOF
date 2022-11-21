@@ -1,11 +1,12 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
+import { checkSession } from '@/utils/session';
 
 export default {
   namespaced: true,
   state: {
     isValidForm: undefined,
-    model: undefined,
+    model: {},
   },
   mutations: {
     model(state, value) {
@@ -16,7 +17,7 @@ export default {
     },
   },
   actions: {
-    async saveGroupFunding({ state }) {
+    async saveFunding({ state }) {
       console.log('store model', state.model);
       let payload = { ...state.model };
 
@@ -31,7 +32,7 @@ export default {
       if (payload.isSchoolProperty !== 'yes') {
         deleteFields.push('beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten');
         payload.isSchoolProperty = 0;
-      } else { 
+      } else {
         payload.isSchoolProperty = 1;
 
         ['beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten'].forEach(item => {
@@ -48,6 +49,26 @@ export default {
       console.log('saveFamilyFunding', payload);
 
       return await ApiService.apiAxios.post(ApiRoutes.GROUP_FUND_AMOUNT, payload);
+    },
+    async loadFunding({ commit }, fundingId) {
+      checkSession();
+
+      try {
+        let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
+        let funding = response.data;
+
+        for (let i = 1; i <= 12; i++) {
+          if (funding[`closedIn${i}`] === 1) {
+            funding.hasClosedMonth = 'yes';
+          }
+        }
+
+        console.log('response', funding);
+        commit('model', funding);
+      } catch (error) {
+        console.log(`Failed to get Funding - ${error}`);
+        throw error;
+      }
     }
   }
 };

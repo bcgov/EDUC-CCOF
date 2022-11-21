@@ -277,9 +277,9 @@
 </template>
 
 <style>
-  .padded-row {
-    margin: 10px 0;
-  }
+.padded-row {
+  margin: 10px 0;
+}
 </style>
 
 <script>
@@ -287,7 +287,7 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -295,16 +295,16 @@ export default {
   props: {
   },
   computed: {
+    ...mapState('groupFunding', ['model'])
   },
   data() {
     return {
       isValidForm: undefined,
-      model: {},
       rules
     };
   },
   methods: {
-    ...mapActions('groupFunding', ['saveGroupFunding']),
+    ...mapActions('groupFunding', ['saveFunding', 'loadFunding']),
     previous() {
       this.$router.push(PATHS.group.facInfo);
     },
@@ -329,14 +329,18 @@ export default {
     allowedStep: m => m % 5 === 0,
     formatTime
   },
-  mounted() {
-    console.log('mounted');
-    this.model = this.$store.state.groupFunding.model ?? {};
-  },
   beforeRouteLeave(_to, _from, next) {
     console.log('leaving');
     this.saveModel();
     next();
+  },
+  beforeMount() {
+    let urlCcofBaseFundingId = this.$route.params.urlCcofBaseFundingId;
+    if (urlCcofBaseFundingId) {
+      this.loadFunding(urlCcofBaseFundingId);
+    } else {
+      this.newFunding();
+    }
   }
 };
 </script>

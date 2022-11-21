@@ -3,8 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createFunding } = require('../components/funding');
-const { validationResult, checkSchema } = require('express-validator');
+const { createFunding, getFunding } = require('../components/funding');
+const { param, validationResult, checkSchema } = require('express-validator');
 
 module.exports = router;
 
@@ -16,10 +16,14 @@ const organizationSchema = {
   },
 };
 /**
- * Create a new Organization
+ * Create new funding
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [
-  checkSchema(organizationSchema)], (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
   validationResult(req).throw();
   return createFunding(req, res);
+});
+
+router.get('/:fundId', [param('fundId', 'URL param: [fundId] is required').not().isEmpty()], (req, res) => {
+  validationResult(req).throw();
+  return getFunding(req, res);
 });

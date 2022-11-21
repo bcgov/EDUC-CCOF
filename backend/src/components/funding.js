@@ -1,7 +1,7 @@
 'use strict';
-const { getUserGuid, postOperation } = require('./utils');
+const { getUserGuid, postOperation, getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const { MappableObjectForBack } = require('../util/mapping/MappableObject');
+const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 
 async function createFunding(req, res) {
@@ -19,6 +19,23 @@ async function createFunding(req, res) {
   }
 }
 
+async function getFunding(req, res) {
+  try {
+    let operation = `ccof_application_basefundings(${req.params.fundId})`;
+    console.info('operation: ', operation);
+    let funding = await getOperation(operation);
+
+    let model = new MappableObjectForFront(funding, CCOFApplicationFundingMapping);
+    console.log('BACK', funding);
+    console.log('MODEL', model);
+    
+    return res.status(HttpStatus.OK).json(model);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   createFunding,
+  getFunding
 };
