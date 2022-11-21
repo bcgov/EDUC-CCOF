@@ -7,6 +7,7 @@ export default {
   state: {
     organizationId: null,
     applicationId: null,
+    applicationStatus: null,
     legalName: null,
     address1: null,
     city1: null,
@@ -31,6 +32,7 @@ export default {
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
     setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
+    setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
     setLegalName: (state, legalName) => { state.legalName = legalName; },
     setAddress1: (state, address1) => { state.address1 = address1; },
     setCity1: (state, city1) => { state.city1 = city1; },
@@ -58,12 +60,10 @@ export default {
       }
 
       let payload = JSON.parse(JSON.stringify(state));
-      if (payload.incNumber) {
-        payload.incNumber = '' + payload.incNumber; // need to ensure it's a string
-      }
       
       //set program year:
       payload.programYearId = rootState.app.programYearList[0].ccof_program_yearid;
+      delete payload['applicationStatus']; //TODO: verify no need to include status as it will be set automatically.
       console.log('payload', payload);
 
       if (state.organizationId) {
@@ -81,6 +81,7 @@ export default {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
           commit('setOrganizationId', response.data?.organizationId);
           commit('setApplicationId', response.data?.applicationId);
+          commit('setApplicationStatus', response.data?.applicationStatus);
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);

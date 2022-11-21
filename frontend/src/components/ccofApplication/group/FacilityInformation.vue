@@ -48,7 +48,7 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model.number="licenseNumber" :rules="rules.required" label="Facility Licence Number" />
+                <v-text-field outlined required v-model="licenseNumber" :rules="rules.required" label="Facility Licence Number" />
               </v-col>
               <v-col cols="12" md="6">
                 <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">

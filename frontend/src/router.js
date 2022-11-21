@@ -20,9 +20,9 @@ import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLan
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
 
-import FamilyOrganizationInformation from '@/components/ccofApplication/family/FamilyOrganizationInformation';
+import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
-import FamilyFundAmount from '@/components/ccofApplication/family/FamilyFundAmount';
+import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
@@ -117,7 +117,7 @@ const router = new VueRouter({
     {
       path: PATHS.family.orgInfo,
       name: 'Family Organization Information',
-      component: FamilyOrganizationInformation,
+      component: FamilyOrganization,
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,
@@ -138,8 +138,8 @@ const router = new VueRouter({
     },
     {
       path: PATHS.family.fundAmount,
-      name: 'FamilyFundAmount',
-      component: FamilyFundAmount,
+      name: 'FamilyFunding',
+      component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
@@ -172,6 +172,17 @@ const router = new VueRouter({
     {
       path: PATHS.group.fundAmount,
       name: 'Funding Amount',
+      component: GroupFundAmount,
+      meta: {
+        pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.group.fundAmount + '/:urlCcofBaseFundingId',
+      name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
         pageTitle: 'Application Confirmation',
