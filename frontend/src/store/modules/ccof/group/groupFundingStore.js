@@ -30,6 +30,13 @@ export default {
 
       if (payload.isSchoolProperty !== 'yes') {
         deleteFields.push('beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten');
+        payload.isSchoolProperty = 0;
+      } else { 
+        payload.isSchoolProperty = 1;
+
+        ['beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten'].forEach(item => {
+          payload[item] = payload[item] ? 1 : 0;
+        });
       }
 
       if (payload.isExtendedHours !== 'yes') {
