@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 'use strict';
-const { postOperation, patchOperationWithObjectId, getHttpHeader, minify } = require('./utils');
+const { postOperation, patchOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -34,33 +34,8 @@ async function upsertCCFRIApplication(req, res) {
 }
 
 
+/* child care and program year GUIDs are looked up in AddNewFees.vue */ 
 
-// {
-
-
-
-//   "ccof_apr": 0.00,
-//   "ccof_may": 0.00,
-//   "ccof_jun": 0.00,
-//   "ccof_jul": 0.00,
-//   "ccof_aug": 0.00,
-//   "ccof_sep": 0.00,
-//   "ccof_oct": 0.00,
-//   "ccof_nov": 0.00,
-//   "ccof_dec": 45.00,
-//   "ccof_jan": 45.00,
-//   "ccof_feb": 45.00,
-//   "ccof_mar": 45.00,
-//   "ccof_frequency": 100000002,
-//   "ccof_ChildcareCategory@odata.bind": "/ccof_childcare_categories(19abd92c-0436-ed11-9db1-002248d53d53)", // 0-18 months
-//   "ccof_ProgramYear@odata.bind": "/ccof_program_years(fba5721b-9434-ed11-9db1-002248d53d53)" // Lookup //2021/22
-// }
-
-
-/* child care and program year GUIDs are looked up in AddNewFees.vue 
-
-
-*/ 
 async function upsertParentFees(req, res) {
   let body = req.body;
   
@@ -69,14 +44,12 @@ async function upsertParentFees(req, res) {
   body.forEach(async(feeGroup) => {
 
     let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
-
     let programYear = `/ccof_program_years(${feeGroup.programYear})`;
 
     let payload = {
       "ccof_frequency": feeGroup.feeFrequency,
       "ccof_ChildcareCategory@odata.bind": childCareCategory, 
       "ccof_ProgramYear@odata.bind": programYear, 
-      
     };
 
     if (feeGroup.feeFrequency == '100000000' || feeGroup.feeFrequency == '100000001'){
@@ -112,10 +85,45 @@ async function upsertParentFees(req, res) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
 
+  }); //end forEach
 
-  });
+  //if no closure dates, don't bother sending any requests
+  //closure dates are the same for each age group - so pick the first group in the array and take data from there
+  if (body[0].facilityClosureDates){
+    try {
+      let response = postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
+      //log.info('datesRes', response);
+      return res.status(HttpStatus.CREATED).json(response);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    }
+  }
 }
 
+async function postClosureDates(dates, ccfriApplicationGuid, res){
+
+  //if the user selects an end date, create a start and end date. else, use the only date for start and end.
+  dates.forEach(async (date) => {
+
+    let payload = {
+      "ccof_startdate": new Date (date.selectedDates[0]),
+      "ccof_paidclosure": date.feesPaidWhileClosed,
+      "ccof_enddate": date.selectedDates[1]? new Date (date.selectedDates[1]) :new Date (date.selectedDates[0]),
+      "ccof_comment": date.message,
+      "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
+    };
+
+    try {
+      let response = await postOperation('ccof_application_ccfri_closures', payload);
+      log.info('feeResponse', response);
+      return res.status(HttpStatus.CREATED).json(response);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    }
+
+  });
+
+}
 
 module.exports = {
   upsertCCFRIApplication,

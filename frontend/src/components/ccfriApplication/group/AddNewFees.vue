@@ -280,17 +280,13 @@
                   v-model="model.closedFeesPaid"
                   label="Did parents pay for this closure?"
                 >
-
-                {{model.closureReason}} 
-                {{model.closedFeesPaid}}
-                {{model.datePicker}}
                   <v-radio
                     label="Yes"
-                    value="Yes"
+                    value= 1
                   ></v-radio>
                   <v-radio
                     label="No"
-                    value="No"
+                    value= 0
                   ></v-radio>
                 </v-radio-group>
               </v-col>
@@ -558,7 +554,7 @@ export default {
     },
     async updateParentFees () {
       let payload = [];
-      // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' 
+      // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
@@ -580,6 +576,7 @@ export default {
           ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
           childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
           programYear : childCareType.programYearId,//program year GUID,
+          facilityClosureDates: dates
         };
 
         payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000'  : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
@@ -609,15 +606,13 @@ export default {
       payload = JSON.parse(JSON.stringify(payload));
 
       console.log(payload);
+      console.log(dates);
 
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
       } catch (error) {
         console.info(error);
       }
-
-
-
     },
   }
 };
