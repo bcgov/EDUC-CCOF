@@ -6,7 +6,7 @@ export default {
   namespaced: true,
   state: {
     isValidForm: undefined,
-    model: {},
+    model: {}
   },
   mutations: {
     model(state, value) {
@@ -46,7 +46,7 @@ export default {
 
       deleteFields.forEach(field => delete payload[field]);
 
-      console.log('saveFamilyFunding', payload);
+      console.log('save group funding', payload);
 
       return await ApiService.apiAxios.post(ApiRoutes.GROUP_FUND_AMOUNT, payload);
     },
@@ -55,16 +55,17 @@ export default {
 
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
-        let funding = response.data;
+        let model = response.data;
+        model.ccofBaseFundingId = fundingId;
 
         for (let i = 1; i <= 12; i++) {
-          if (funding[`closedIn${i}`] === 1) {
-            funding.hasClosedMonth = 'yes';
+          if (model[`closedIn${i}`] === 1) {
+            model.hasClosedMonth = 'yes';
           }
         }
 
-        console.log('response', funding);
-        commit('model', funding);
+        console.log('response', model);
+        commit('model', model);
       } catch (error) {
         console.log(`Failed to get Funding - ${error}`);
         throw error;

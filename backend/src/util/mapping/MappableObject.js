@@ -17,6 +17,10 @@ class MappableObject {
   toJSON() {
     return this.data;
   }
+
+  toString() { 
+    return this.toJSON();
+  }
 }
 
 class MappableObjectForFront extends MappableObject {

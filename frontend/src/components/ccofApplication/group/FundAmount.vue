@@ -316,7 +316,7 @@ export default {
       this.saveModel();
 
       try {
-        await this.saveGroupFunding();
+        await this.saveFunding();
         this.setSuccessAlert('Success! Funding information has been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
@@ -335,11 +335,9 @@ export default {
     next();
   },
   beforeMount() {
-    let urlCcofBaseFundingId = this.$route.params.urlCcofBaseFundingId;
-    if (urlCcofBaseFundingId) {
-      this.loadFunding(urlCcofBaseFundingId);
-    } else {
-      this.newFunding();
+    let ccofBaseFundingId = this.$route.params.urlCcofBaseFundingId;
+    if (ccofBaseFundingId) {
+      this.loadFunding(ccofBaseFundingId);
     }
   }
 };
