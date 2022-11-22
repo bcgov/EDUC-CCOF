@@ -97,7 +97,7 @@
 
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 
@@ -107,46 +107,6 @@ export default {
   },
   computed: {
     ...mapState('facility', ['facilityModel']),
-    facilityName: {
-      get() { return this.$store.state.facility.facilityName; },
-      set(value) { this.$store.commit('facility/setFacilityName', value); }
-    },
-    city: {
-      get() { return this.$store.state.facility.city; },
-      set(value) { this.$store.commit('facility/setCity', value); }
-    },
-    facilityAddress: {
-      get() { return this.$store.state.facility.facilityAddress; },
-      set(value) { this.$store.commit('facility/setFacilityAddress', value); }
-    },    
-    postalCode: {
-      get() { return this.$store.state.facility.postalCode; },
-      set(value) { this.$store.commit('facility/setPostalCode', value); }
-    },    
-    licenseNumber: {
-      get() { return this.$store.state.facility.licenseNumber; },
-      set(value) { this.$store.commit('facility/setLicenseNumber', value); }
-    },    
-    yearBeginOperation: {
-      get() { return this.$store.state.facility.yearBeginOperation; },
-      set(value) { this.$store.commit('facility/setYearBeginOperation', value); }
-    },    
-    contactName: {
-      get() { return this.$store.state.facility.contactName; },
-      set(value) { this.$store.commit('facility/setContactName', value); }
-    },    
-    position: {
-      get() { return this.$store.state.facility.position; },
-      set(value) { this.$store.commit('facility/setPosition', value); }
-    },    
-    phone: {
-      get() { return this.$store.state.facility.phone; },
-      set(value) { this.$store.commit('facility/setPhone', value); }
-    },        
-    email: {
-      get() { return this.$store.state.facility.email; },
-      set(value) { this.$store.commit('facility/setEmail', value); }
-    },    
     isValidForm: { 
       get () { return this.$store.state.organization.isValidForm; }, 
       set (value) { this.$store.commit('organization/setIsValidForm', value); }
@@ -177,6 +137,7 @@ export default {
 
   methods: {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
+    ...mapMutations('facility', ['setFacilityModel']),
 
     previous() {
       this.$router.push(PATHS.group.orgInfo);
@@ -194,6 +155,7 @@ export default {
     },
     async save() {
       this.processing = true;
+      this.setFacilityModel(this.facilityModel);
       try {
         await this.saveFacility();
         this.setSuccessAlert('Success! Facility information has been saved.');

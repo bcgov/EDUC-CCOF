@@ -8,21 +8,21 @@ const { param, validationResult, checkSchema} = require('express-validator');
 
 
 const facilitySchema = {
-  facilityName: { in: ['body'],
-    exists: { errorMessage: '[facilityName] is required', },
-    isLength: { options: { max: 160 }, errorMessage: '[legalName] has a max length of 160'}},
-  facilityAddress: { in: ['body'],
-    exists: { errorMessage: '[address1] is required', },
-    isLength: { options: { max: 250 }, errorMessage: '[address1] has a max length of 250'}},
-  city: { in: ['body'],
-    exists: { errorMessage: '[city] is required', },
-    isLength: { options: { max: 80 }, errorMessage: '[city1] has a max length of 80'}},
+  // facilityName: { in: ['body'],
+  //   exists: { errorMessage: '[facilityName] is required', },
+  //   isLength: { options: { max: 160 }, errorMessage: '[legalName] has a max length of 160'}},
+  // facilityAddress: { in: ['body'],
+  //   exists: { errorMessage: '[address1] is required', },
+  //   isLength: { options: { max: 250 }, errorMessage: '[address1] has a max length of 250'}},
+  // city: { in: ['body'],
+  //   exists: { errorMessage: '[city] is required', },
+  //   isLength: { options: { max: 80 }, errorMessage: '[city1] has a max length of 80'}},
   organizationId: { in: ['body'],
     exists: { errorMessage: '[organizationId] is required', }},
   applicationId: { in: ['body'],
     exists: { errorMessage: '[applicationId] is required', }},
-  yearBeginOperation: { in: ['body'],
-    exists: { errorMessage: '[yearBeginOperation] is required', }},
+  // yearBeginOperation: { in: ['body'],
+  //   exists: { errorMessage: '[yearBeginOperation] is required', }},
 };
 
 module.exports = router;
