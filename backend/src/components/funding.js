@@ -34,11 +34,12 @@ async function updateFunding(req, res) {
   try {
     let { ccofBaseFundingId } = req.body;
 
-    console.info('patch operation: ', `ccof_application_basefundings(${ccofBaseFundingId})`);
+    console.log('patch operation: ', `ccof_application_basefundings(${ccofBaseFundingId})`);
 
     let payload = req.body;
     payload = new MappableObjectForBack(payload, CCOFApplicationFundingMapping);
-
+    payload = payload.toJSON();
+    console.log('PAYLOAD', payload);
     let response = await patchOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId, payload);
     console.log('BACK', response);
     response = new MappableObjectForFront(response, CCOFApplicationFundingMapping);
