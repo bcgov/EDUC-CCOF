@@ -151,7 +151,7 @@ export default {
       this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
     },
     refreshWithFacility() {
-      let x = this.$route.params.urlFacilityId;
+      let x = this.$route.params.urlGuid;
       this.loadFacility(x);
     },
     async updateCCFRI () {

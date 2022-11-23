@@ -1,62 +1,62 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="facilityModel.isValidForm">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="facilityName" :rules="rules.required" label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
+                <v-text-field outlined required v-model="facilityModel.facilityName" :rules="rules.required" label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model.number="yearBeginOperation" type="number" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
+                <v-text-field outlined required v-model.number="facilityModel.yearBeginOperation" type="number" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="facilityAddress" :rules="rules.required" label="Facility Street Address" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="city" :rules="rules.required" label="City/Town" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="postalCode" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
+                <v-text-field outlined required v-model="facilityModel.facilityAddress" :rules="rules.required" label="Facility Street Address" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="contactName" :rules="rules.required" label="Facility Contact Name" />
+                <v-text-field outlined required v-model="facilityModel.city" :rules="rules.required" label="City/Town" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="position" :rules="rules.required" label="Position" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="phone" :rules="rules.required" label="Business Phone" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
+                <v-text-field outlined required v-model="facilityModel.postalCode" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="licenseNumber" :rules="rules.required" label="Facility Licence Number" />
+                <v-text-field outlined required v-model="facilityModel.contactName" :rules="rules.required" label="Facility Contact Name" />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field outlined required v-model="facilityModel.position" :rules="rules.required" label="Position" />
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field outlined required v-model="facilityModel.phone" :rules="rules.required" label="Business Phone" />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field outlined required v-model="facilityModel.email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field outlined required v-model="facilityModel.licenseNumber" :rules="rules.required" label="Facility Licence Number" />
               </v-col>
               <v-col cols="12" md="6">
                 <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="licenseEffectiveDate" label="Effective Date of Current Licence (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field outlined required v-model="facilityModel.licenseEffectiveDate" label="Effective Date of Current Licence (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
-                  <v-date-picker v-model="licenseEffectiveDate" @input="calendarMenu = false">
+                  <v-date-picker v-model="facilityModel.licenseEffectiveDate" @input="calendarMenu = false">
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -66,7 +66,7 @@
               <v-col>
                 <label>Has this facility or you as the applicant ever received funding
                   under the Child Care Operating Funding Program?</label>
-                <v-radio-group row v-model="hasReceivedFunding">
+                <v-radio-group row v-model="facilityModel.hasReceivedFunding">
                   <v-radio label="No" value="no"></v-radio>
                   <v-radio label="Yes" value="yes"></v-radio>
                   <v-radio label="Yes, as facility" value="yesFacility"></v-radio>
@@ -76,7 +76,7 @@
 
             <v-row v-show="hasReceivedFunding === 'yesFacility'">
               <v-col>
-                <v-text-field outlined required v-model="facilityName" :rules="hasReceivedFunding === 'yesFacility' ? rules.required : []" label="Facility Name" />
+                <v-text-field outlined required v-model="facilityModel.facilityName" :rules="hasReceivedFunding === 'yesFacility' ? rules.required : []" label="Facility Name" />
               </v-col>
             </v-row>
 
@@ -97,7 +97,7 @@
 
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapActions } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 
@@ -106,53 +106,14 @@ export default {
   props: {
   },
   computed: {
-    facilityName: {
-      get() { return this.$store.state.facility.facilityName; },
-      set(value) { this.$store.commit('facility/setFacilityName', value); }
-    },
-    city: {
-      get() { return this.$store.state.facility.city; },
-      set(value) { this.$store.commit('facility/setCity', value); }
-    },
-    facilityAddress: {
-      get() { return this.$store.state.facility.facilityAddress; },
-      set(value) { this.$store.commit('facility/setFacilityAddress', value); }
-    },    
-    postalCode: {
-      get() { return this.$store.state.facility.postalCode; },
-      set(value) { this.$store.commit('facility/setPostalCode', value); }
-    },    
-    licenseNumber: {
-      get() { return this.$store.state.facility.licenseNumber; },
-      set(value) { this.$store.commit('facility/setLicenseNumber', value); }
-    },    
-    yearBeginOperation: {
-      get() { return this.$store.state.facility.yearBeginOperation; },
-      set(value) { this.$store.commit('facility/setYearBeginOperation', value); }
-    },    
-    contactName: {
-      get() { return this.$store.state.facility.contactName; },
-      set(value) { this.$store.commit('facility/setContactName', value); }
-    },    
-    position: {
-      get() { return this.$store.state.facility.position; },
-      set(value) { this.$store.commit('facility/setPosition', value); }
-    },    
-    phone: {
-      get() { return this.$store.state.facility.phone; },
-      set(value) { this.$store.commit('facility/setPhone', value); }
-    },        
-    email: {
-      get() { return this.$store.state.facility.email; },
-      set(value) { this.$store.commit('facility/setEmail', value); }
-    },    
+    ...mapState('facility', ['facilityModel']),
     isValidForm: { 
       get () { return this.$store.state.organization.isValidForm; }, 
       set (value) { this.$store.commit('organization/setIsValidForm', value); }
     },       
   },
   watch: {
-    '$route.params.urlFacilityId': {
+    '$route.params.urlGuid': {
       handler() {
         this.refreshWithFacility();
       },
@@ -169,8 +130,14 @@ export default {
       processing: false,
     };
   },
+  beforeRouteLeave(_to, _from, next) {
+    console.log('leaving');
+    next();
+  },
+
   methods: {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
+    ...mapMutations('facility', ['setFacilityModel']),
 
     previous() {
       this.$router.push(PATHS.group.orgInfo);
@@ -178,16 +145,17 @@ export default {
     next() {
       this.$router.push(PATHS.group.fundAmount);
     },
-    refreshWithFacility() {
-      let facilityId = this.$route.params.urlFacilityId;
+    async refreshWithFacility() {
+      let facilityId = this.$route.params.urlGuid;
       if (facilityId) {
-        this.loadFacility(facilityId);
+        await this.loadFacility(facilityId);
       } else {
         this.newFacility();
       }
     },
     async save() {
       this.processing = true;
+      this.setFacilityModel(this.facilityModel);
       try {
         await this.saveFacility();
         this.setSuccessAlert('Success! Facility information has been saved.');

@@ -106,7 +106,9 @@ export default {
     ...mapState('facility', ['facilityList']),
     ...mapGetters('facility', ['isFacilityComplete']),
     ...mapGetters('organization', ['isOrganizationComplete']),
-
+    navRefresh() {
+      return this.pageTitle + this.$route.params.urlGuid;
+    },
     navWidth () {
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -117,9 +119,10 @@ export default {
         return '15%';
       }
     }
+
   },
   watch:{
-    pageTitle: {
+    navRefresh: {
       handler() {
         this.refreshNavBar();
       },
@@ -146,6 +149,7 @@ export default {
       }
     },    
     refreshNavBar(){
+      console.log('refresh nav bar called');
       this.items = [];
       this.items.push(this.getCCOFNavigation());
       this.items.push(this.getCCFRINavigation());
@@ -228,7 +232,7 @@ export default {
               link: { name: 'Facility Parent Fees'},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid === item.facilityId
               // function: this.loadFacility(x.id)
             },
           );
@@ -266,19 +270,19 @@ export default {
               title: 'Facility ' + (index + 1),
               subTitle: item.facilityName,
               id: item.facilityId,
-              link: { name: 'Facility Information Guid', params: {urlFacilityId: item.facilityId}},
+              link: { name: 'Facility Information Guid', params: {urlGuid: item.facilityId}},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlGuid === item.facilityId
               // function: this.loadFacility(x.id)
             },
             {
               title: 'Funding ' +  (index + 1),
               subTitle: item.facilityName,
-              link: { name: 'Funding Amount Guid' , params: {urlCcofBaseFundingId: item.ccofBaseFundingId}},
+              link: { name: 'Funding Amount Guid' , params: {urlGuid: item.ccofBaseFundingId}},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlCcofBaseFundingId === item.ccofBaseFundingId
+              isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId
             },
           );
         });
@@ -292,7 +296,7 @@ export default {
             link: { name: 'Facility Information'},
             isAccessible: true,
             icon: 'mdi-checkbox-blank-circle-outline', //replace
-            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId == null
+            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null
             // function: this.loadFacility(x.id)
           },
           {
