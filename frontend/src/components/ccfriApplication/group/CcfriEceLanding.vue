@@ -4,15 +4,15 @@
             <MessagesToolbar></MessagesToolbar>
         </div>
         <br><br>
-        <v-btn color="info" outlined x-large  @click="updateCCFRI()">
-            UPDATE CCFRI APPLICATION</v-btn>
-        {{ccfriOptInOrOut}}
-        <!--TODO: The update buttons don't align and I don't like it !!-->
+        
         <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
           this will need to get changed at a later point when the API is more built out 
           there is also no logic about if you can click next or not 
         -->
+
         <LargeButtonContainer>
+
+          <v-form ref="isValidForm" value="false" v-model="isValidForm">
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
@@ -27,7 +27,7 @@
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
                   <p class="text--primary"> Licence : 123456789</p>
                   <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus}}</p> </strong>
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == 0 ? "OUT" : "IN"}}</p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
                   v-if="!showOptStatus[index]"
@@ -38,6 +38,7 @@
                   @click="toggle(index)"
                   :showOptStatus = "showOptStatus[index]"
                   dark color='#003366' 
+                  :rules = "rules"
                   > 
                     UPDATE
                   </v-btn>
@@ -46,9 +47,9 @@
                 >
                   <v-row>
                     <v-radio-group
-                      mandatory
                       v-model="ccfriOptInOrOut[index]"
                       class = "mx-12"
+                      :rules = "rules"
                     >
                       <v-radio
                         label="Opt-In"
@@ -66,15 +67,18 @@
               </v-row>
             </v-card-text>
           </v-card>
-      
-        </LargeButtonContainer>
+        </v-form>
+        
+        <!-- {{ccfriOptInOrOut}} -->
 
+        </LargeButtonContainer>
+      
         <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
-          <v-btn color="primary" outlined x-large>
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
+          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
             Save</v-btn>
         </v-row>
 
@@ -89,12 +93,11 @@ import { mapGetters, mapState} from 'vuex';
 import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
-import axios from 'axios';
 import ApiService from '@/common/apiService';
 
 let ccfriOptInOrOut = {};
-
-let model = { x: [], ccfriOptInOrOut };
+let textInput = '' ;
+let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'CcfriLandingPage',
@@ -102,8 +105,9 @@ export default {
     return {
       input : '',
       model,
+      //textInput,
       showOptStatus : '',
-      isValidForm: undefined,
+      isValidForm: false,
       ccfriOptInOrOut,
       feeList : [ //dummy data for showing the 'current fees' page. TO be replaced with data loaded from Dynamics 
         {
@@ -145,6 +149,7 @@ export default {
       this.$router.push(PATHS.home); //TODO: change this, from CCOF page
     },
     next() {
+      this.updateCCFRI();
       this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
     },
     refreshWithFacility() {

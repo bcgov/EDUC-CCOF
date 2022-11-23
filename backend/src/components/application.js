@@ -52,38 +52,37 @@ async function upsertParentFees(req, res) {
       "ccof_frequency": feeGroup.feeFrequency,
       "ccof_ChildcareCategory@odata.bind": childCareCategory, 
       "ccof_ProgramYear@odata.bind": programYear, 
+      //"ccof_informationccfri" : feeGroup.notes //this is breaking it for some reason
     };
 
-    if (feeGroup.feeFrequency == '100000000' || feeGroup.feeFrequency == '100000001'){
-      Object.assign(payload, 
-        {
-          "ccof_apr": feeGroup.aprFee,
-          "ccof_may": feeGroup.mayFee,
-          "ccof_jun": feeGroup.junFee,
-          "ccof_jul": feeGroup.julFee,
-          "ccof_aug": feeGroup.augFee,
-          "ccof_sep": feeGroup.sepFee,
-          "ccof_oct": feeGroup.octFee,
-          "ccof_nov": feeGroup.novFee,
-          "ccof_dec": feeGroup.decFee,
-          "ccof_jan": feeGroup.janFee,
-          "ccof_feb": feeGroup.febFee,
-          "ccof_mar": feeGroup.marFee,
-        }
-      );
-    } //TODO : add daily payload -- but I'm not sure that Dynamics supports that yet ! 
-
-    //payload.ccof_ccfrioptin = feeGroup.optInResponse;
+    Object.assign(payload, 
+      {
+        "ccof_apr": feeGroup.aprFee,
+        "ccof_may": feeGroup.mayFee,
+        "ccof_jun": feeGroup.junFee,
+        "ccof_jul": feeGroup.julFee,
+        "ccof_aug": feeGroup.augFee,
+        "ccof_sep": feeGroup.sepFee,
+        "ccof_oct": feeGroup.octFee,
+        "ccof_nov": feeGroup.novFee,
+        "ccof_dec": feeGroup.decFee,
+        "ccof_jan": feeGroup.janFee,
+        "ccof_feb": feeGroup.febFee,
+        "ccof_mar": feeGroup.marFee,
+      }
+    );
+    
 
     payload = JSON.parse(JSON.stringify(payload));
     // log.info(payload);
-    let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory}`;
+    let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
 
     try {
       let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       //log.info('feeResponse', response);
       return res.status(HttpStatus.CREATED).json(response);
     } catch (e) {
+      //log.info(e);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
 
@@ -100,6 +99,7 @@ async function upsertParentFees(req, res) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
   }
+
 }
 
 async function postClosureDates(dates, ccfriApplicationGuid, res){

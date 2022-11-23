@@ -1001,7 +1001,7 @@ export default {
       console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
-    estimateTheBenefit() { //NOSONAR
+    estimateTheBenefit() { ///NOSONAR
       if (this.$refs.form.validate()) {
         this.showEstimatorResults = true;
         this.results = [];

@@ -50,9 +50,11 @@ async function getLookupInfo(req, res) {
     let programYear = await getOperation('ccof_program_years');
     programYear = programYear.value;
     // function without filter 
-    // programYear = programYear.map(item => { return _(item).pick(['ccof_name', 'ccof_program_yearid', 'statuscode']); });
-    programYear = programYear.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_name', 'ccof_program_yearid']); });
+    //programYear = programYear.map(item => { return _(item).pick(['ccof_name', 'ccof_program_yearid', 'statuscode']); });
+    programYear = programYear.filter(item => item.statuscode ==1 || item.statuscode ==4).map(item => { return _.pick(item, ['ccof_name', 'ccof_program_yearid']); });
 
+    //code to convert the status codes
+    //facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
     let childCareCategory = await getOperation('ccof_childcare_categories');
     childCareCategory = childCareCategory.value;
     childCareCategory = childCareCategory.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']); });

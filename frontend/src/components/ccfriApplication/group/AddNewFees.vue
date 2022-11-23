@@ -1,15 +1,10 @@
 <template>
   <!--TODO: add in isValidForm ruleset-->
-  <v-form ref="ccfriform" v-model="isValidForm">
+  <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
-      <v-btn color="info" outlined x-large  @click="updateParentFees()">
-            UPDATE FEES</v-btn>
-
-            {{apr}} {{may}}
-
-            <!-- {{facilityLookupInfo}} -->
-            <!-- {{lookupInfo.childCareCategory[1]}} -->
+      <!-- <v-btn color="info" outlined x-large  @click="updateParentFees()">
+            UPDATE FEES</v-btn> -->
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
@@ -47,6 +42,7 @@
               </p>
               
               <v-radio-group
+              :rules = "rules"
                 v-model="feeSchedule[index]"
               >
                 <v-radio
@@ -63,31 +59,9 @@
                 ></v-radio>
               </v-radio-group>
 
-              <!-- <br>
-                WIreframe comment said to remove fixed fee option. Leaving this here for now in case they change their minds back to include it
-
-
-              <p class="text-h6 text--primary">
-                Is your fee a fixed fee?
-              </p>
-              <v-radio-group
-                required
-                v-model="isFixedFee[index]"
-              >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  value="No"
-                ></v-radio>
-              </v-radio-group>
-              isFixedFee[index]==='No' && 
-            -->
             <v-container v-if="!feeSchedule[index]"></v-container>
 
-              <v-container v-else-if="feeSchedule[index] !='daily'" class="ma-0 pa-0">
+              <v-container v-else class="ma-0 pa-0">
               <v-row>
                 <v-col>
                   <label>Enter your highest full-time {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
@@ -154,60 +128,6 @@
               </v-row>
             
               </v-container>
-
-              <v-container v-else-if="feeSchedule[index] ==='daily' " class="ma-0 pa-0">
-                <v-row>
-                  <v-col>
-                    <label>Enter your {{feeSchedule[index]}} fee in every day below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="mon[index]" label="Monday" prefix="$"/>
-                  </v-col>
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="tue[index]" label="Tuesday" prefix="$" />
-                  </v-col>
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="wed[index]" label="Wednesday" prefix="$" />
-                  </v-col>
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="thu[index]" label="Thursday" prefix="$"/>
-                  </v-col>
-                  <v-col 
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="fri[index]" label="Friday" prefix="$"/>
-                  </v-col >
-                  <v-col 
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sat[index]" label="Saturday" prefix="$"/>
-                  </v-col >
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sun[index]" label="Sunday" prefix="$"/>
-                  </v-col>
-                
-                </v-row>
-
-              </v-container>
-
-              <!-- <v-container v-else class="ma-0 pa-0">
-                <v-row>
-                    <v-col>
-                      <label>What is the {{feeSchedule[index]}} fixed fee?</label>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col
-                      class="col-6 col-md-2">
-                        <v-text-field type="number" outlined :rules="feeRules"  v-model.number="fixedFeeAmount[index]" prefix="$"/>
-                    </v-col>
-                </v-row>
-              </v-container> -->
             </div>
           </v-card-text>
       </v-card>
@@ -255,7 +175,11 @@
                     <v-text-field outlined required v-model="model.datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
-                    <v-date-picker range  v-model="model.datePicker" @input="calendarMenu = false">
+                    <v-date-picker
+                      range 
+                      clearable 
+                      v-model="model.datePicker" 
+                      @input="calendarMenu = false">
                     </v-date-picker>
                 </v-menu>
               </v-col>
@@ -299,18 +223,19 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-tooltip top color="warning">
-                <template v-slot:activator="{ on, attrs }">
+              <!-- <v-tooltip top color="warning">
+                <template v-slot:activator="{ on, attrs }"> v-bind="attrs"
+                    v-on="on" -->
                   <v-btn v-for="date in dates" :key="date.id"
                     v-on:click="removeDate(date.id)"
-                    v-bind="attrs"
-                    v-on="on"
+                    
                   >
-                    {{date.message}} FOR DATES : {{date.selectedDates}} FEES PAID?: {{date.feesPaidWhileClosed}} ID: {{date.id}}
+                  Closed from : {{date.selectedDates[0]}} - {{date.selectedDates[1] ? date.selectedDates[1] : date.selectedDates[0] }} 
+                  Reason: {{date.message}}  FEES PAID?: {{date.feesPaidWhileClosed == 1 ? "Yes" : "No"}}
                   </v-btn>
-                </template>
+                <!-- </template>
                 <span>Delete Date</span>
-              </v-tooltip>
+              </v-tooltip> -->
             </v-row>
           </div>
         </v-card-text>
@@ -336,24 +261,26 @@
               outlined
               name="input-7-4"
               label="Describe here"
+              v-model="model.notes"
             ></v-textarea>
           </div>
         </v-card-text>
       </v-card>
 
+      
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
           <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
-        <v-btn color="primary" outlined x-large>
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" !isValidForm">Next</v-btn>
+        <v-btn color="primary" outlined x-large @click="updateParentFees()">
           Save</v-btn>
       </v-row>
+
     </v-container>
   </v-form>
 </template>
 <script>
-import rules from '@/utils/rules';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
 import ApiService from '@/common/apiService';
@@ -362,10 +289,11 @@ import axios from 'axios';
 import _ from 'lodash';
 
 // 0-18 months
-const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
-const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-//const PROGRAM_YEAR = '2ad4c331-9434-ed11-9db1-002248d53d53'; //lookup. 2022 - 23
-const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
+//const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
+///const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
+//const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
+
+//const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
 
 let dates = [];
 let datePicker= null;          //vmodel for entering closure fees
@@ -374,6 +302,7 @@ let closureReason= undefined;  //vmodel for entering closure fees
 let closureFees;
 let isFixedFee= {};
 let feeSchedule = {};
+let notes = '';
 let jan = {};
 let feb = {};
 let mar = {};
@@ -385,14 +314,7 @@ let aug = {};
 let sep = {};
 let oct = {};
 let nov = {};
-let dec = {};
-let mon = {};
-let tue = {};
-let wed = {};
-let thu = {};
-let fri = {};
-let sat = {};
-let sun = {};   
+let dec = {};   
 let model = { x: [],
   dates,
   datePicker,          //vmodel for entering closure fees
@@ -413,14 +335,7 @@ let model = { x: [],
   oct,
   nov,
   dec,
-  mon,
-  tue,
-  wed,
-  thu,
-  fri,
-  sat,
-  sun
-  
+  notes
 };
 
 
@@ -435,12 +350,12 @@ export default {
   },
   data() {
     return {
-      rules,
       model,
       facilityLookupInfo: {},
-      isValidForm : undefined,
+      facilityProgramYears: [],
+      isValidForm : false,
       datePicker,          //vmodel for entering closure fees
-      closedFeesPaid,       //vmodel for entering closure fees
+      //closedFeesPaid,       //vmodel for entering closure fees
       closureReason,  //vmodel for entering closure fees
       calendarMenu: undefined,
       closureFees: undefined,
@@ -458,16 +373,13 @@ export default {
       oct,
       nov,
       dec,
-      mon,
-      tue,
-      wed,
-      thu,
-      fri,
-      sat,
-      sun,   feeRules: [
+      feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
+      ],
+      rules: [
+        (v) => !!v  || 'Required.',
       ],
       
 
@@ -484,51 +396,15 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityList']),
-    currentYearTwoDigit() {
-      return this.currentYear - 2000;
-    },
-    nextYearTwoDigit() {
-      return this.currentYear - 1999;
-    },
-    prevYearTwoDigit() {
-      return this.currentYear - 2001;
-    },
-    twoYearsAgoTwoDigit() {
-      return this.currentYear - 2002;
-    },
     currentFacility(){
       return this.facilityList[0]; //TODO - change this to work with multiple facilities 
     }
   },
   beforeMount: function() {
-
-
     this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
-    console.log(this.facilityLookupInfo);
-
-    // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
-    //   let currentKey = `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}-${ageGroup}`;
-    //   this.facilityFees.push({
-    //     'key' : currentKey, 
-    //     'date' : `${this.prevYearTwoDigit}-${this.currentYearTwoDigit}`,
-    //     'title': this.currentFacility.facilityAgeGroupNames[index],
-    //     'feeSch' : '',
-    //   });
-    // });
-    // this.currentFacility.facilityAgeGroups.forEach((ageGroup, index) => {
-    //   let currentKey = `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}-${ageGroup}`;
-    //   //console.log(currentKey);
-    //   this.facilityFees.push({
-    //     'key' : currentKey, 
-    //     'date' : `${this.currentYearTwoDigit}-${this.nextYearTwoDigit}`,
-    //     'title': this.currentFacility.facilityAgeGroupNames[index]
-      
-    //   });
-    //   //console.log(th)
-    // });
   },
   methods: {
-    //this gets the more detailed facility info -- maybe we don't need to make the call here?
+    //TODO: get this data from the store 
     async getFacility (id) {
       try {
         this.facilityLookupInfo = await (axios.get('/api/facility/'+id));
@@ -578,44 +454,39 @@ export default {
           childCareCatGUID = childCareCatGUID.ccof_childcare_categoryid;
         }
 
-       
         //payload will need to look different if fee is monthly / daily 
         payload[index] = {
           ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
           childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
           programYear : childCareType.programYearId,//program year GUID,
-          facilityClosureDates: dates
+          facilityClosureDates: dates,
+          notes: this.model.notes
         };
 
-        payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000'  : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
-  
-        if (model.feeSchedule[index] === 'monthly' || model.feeSchedule[index] === 'weekly' ){
-          Object.assign(payload[index], 
-            {
-              aprFee : apr[index],
-              mayFee : may[index],
-              junFee : jun[index],
-              julFee : jul[index],
-              augFee : aug[index],
-              sepFee : sep[index],
-              octFee : oct[index],
-              novFee : nov[index],
-              decFee : dec[index],
-              janFee : jan[index],
-              febFee : feb[index],
-              marFee : mar[index],
-            }
-          );
-        } //TODO : add daily payload -- but Dynamics does not support that yet ! 
+        console.log(this.model.notes);
 
+        payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000' : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
+  
+        Object.assign(payload[index], 
+          {
+            aprFee : apr[index],
+            mayFee : may[index],
+            junFee : jun[index],
+            julFee : jul[index],
+            augFee : aug[index],
+            sepFee : sep[index],
+            octFee : oct[index],
+            novFee : nov[index],
+            decFee : dec[index],
+            janFee : jan[index],
+            febFee : feb[index],
+            marFee : mar[index],
+          }
+        );
 
       }); // end FOR EACH
 
       payload = JSON.parse(JSON.stringify(payload));
-
-      console.log(payload);
-      console.log(dates);
-
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
       } catch (error) {

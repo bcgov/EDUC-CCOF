@@ -32,9 +32,10 @@ const ORGANIZATION_PROVIDER_TYPES = Object.freeze({
   FAMILY: 100000001,
 });
 
+
 const OPTIN_STATUS_CODES = Object.freeze({
-  IN: 1,
-  OUT:2,
+  OUT: 0,
+  IN:  1,
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
