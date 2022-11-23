@@ -10,6 +10,8 @@
           there is also no logic about if you can click next or not 
         -->
 
+        <!-- <ExistingFacilityFees></ExistingFacilityFees> -->
+
         <LargeButtonContainer>
 
           <v-form ref="isValidForm" value="false" v-model="isValidForm">
@@ -94,6 +96,7 @@ import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
+import ExistingFacilityFees from './ExistingFacilityFees.vue';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -192,7 +195,7 @@ export default {
     //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
-  components: { MessagesToolbar, LargeButtonContainer,  }
+  components: { MessagesToolbar, LargeButtonContainer, ExistingFacilityFees }
 };
 </script>
 

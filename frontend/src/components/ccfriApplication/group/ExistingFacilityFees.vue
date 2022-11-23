@@ -75,10 +75,20 @@
             </v-card-text>
           </v-card>
 
+          <v-row justify="space-around">
+          <v-btn color="info" outlined x-large @click="previous()">
+            Back</v-btn>
+            <!--add form logic here to disable/enable button-->
+          <v-btn color="secondary" outlined x-large @click="goToCCFRI()" :disabled="false">Next</v-btn>
+          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
+            Save</v-btn>
+        </v-row>
+
   </container>
 </template>
 
 <script>
+import { PATHS } from '@/utils/constants';
 
 export default {
   data() {
@@ -102,7 +112,12 @@ export default {
         }
       ]
     };
-  }
+  },
+  methods: {
+    goToCCFRI() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },
+  },
 };
 
 

@@ -160,7 +160,7 @@ export default {
 
     },
     goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.currentFees); //TODO: change this, from CCOF page
     },
     
   },

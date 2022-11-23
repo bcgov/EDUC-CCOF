@@ -16,7 +16,8 @@
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
       </p>
 
-      
+      {{loading}}
+      <v-skeleton-loader max-height="375px" v-if="loading" :loading="loading" type="table-tbody, table-tfoot"></v-skeleton-loader>
 
       <v-card  
       v-for="({key, programYear, childCareCategory} , index) in facilityLookupInfo.childCareTypes" :key="index"
@@ -350,6 +351,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       model,
       facilityLookupInfo: {},
       facilityProgramYears: [],
@@ -402,6 +404,7 @@ export default {
   },
   beforeMount: function() {
     this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
+    
   },
   methods: {
     //TODO: get this data from the store 
@@ -410,6 +413,7 @@ export default {
         this.facilityLookupInfo = await (axios.get('/api/facility/'+id));
         this.facilityLookupInfo = this.facilityLookupInfo.data;
         //console.log(this.facilityLookupInfo.data);
+        this.loading = false;
       } catch (error) {
         console.info(error);
       }

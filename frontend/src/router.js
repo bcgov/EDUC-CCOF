@@ -34,7 +34,7 @@ import SearchFacility from '@/components/FacilitySearch';
 import CcrfiEstimatorSliderSelect from '@/components/CcrfiEstimatorSliderSelect';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
-
+import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
 
 Vue.prototype.moment = moment;
 
@@ -205,9 +205,12 @@ const router = new VueRouter({
     {
       path: '/ccfri-application',
       name: 'ccfri-application',
-      component: CCFRIApplicationForm,
+      component: currentFees,
       meta: {
-        pageTitle: PAGE_TITLES.CCRFI_APPLICATION
+        pageTitle: 'Current Fees',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
       }
     },
     {
@@ -236,6 +239,16 @@ const router = new VueRouter({
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.currentFees,
+      name: 'ccfri-current-fees',
+      component: currentFees,
+      meta: {
+        pageTitle: 'CCFRI Current Fees',
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI
       }

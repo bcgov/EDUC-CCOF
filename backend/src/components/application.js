@@ -7,6 +7,7 @@ const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const _ = require ('lodash');
+const { info } = require('./logger');
 
 
 //creates or updates CCFRI application. 
@@ -48,11 +49,14 @@ async function upsertParentFees(req, res) {
     let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
     let programYear = `/ccof_program_years(${feeGroup.programYear})`;
 
+    log.info(feeGroup.notes);
+    log.info(feeGroup.ccfriApplicationGuid);
+
     let payload = {
       "ccof_frequency": feeGroup.feeFrequency,
       "ccof_ChildcareCategory@odata.bind": childCareCategory, 
       "ccof_ProgramYear@odata.bind": programYear, 
-      //"ccof_informationccfri" : feeGroup.notes //this is breaking it for some reason
+      //this is breaking it for some reason
     };
 
     Object.assign(payload, 
@@ -88,6 +92,23 @@ async function upsertParentFees(req, res) {
 
   }); //end forEach
 
+
+  //if no notes, don't bother sending any requests
+  if (body[0].notes){
+
+    let payload = {
+      "ccof_informationccfri" : body[0].notes
+    };
+
+    try {
+      let response = patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
+      log.info('notesRes', response);
+      //return res.status(HttpStatus.CREATED).json(response);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    }
+  }
+
   //if no closure dates, don't bother sending any requests
   //closure dates are the same for each age group - so pick the first group in the array and take data from there
   if (body[0].facilityClosureDates){
@@ -99,6 +120,8 @@ async function upsertParentFees(req, res) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
   }
+
+  
 
 }
 
