@@ -357,7 +357,7 @@ export default {
     fundingModel: {
       handler() {
         this.model = { ...this.fundingModel };
-        this.$refs.form.resetValidation();
+        this.$refs.form?.resetValidation();
       },
       immediate: true,
       deep: true

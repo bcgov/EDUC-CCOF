@@ -185,7 +185,7 @@ export default {
     return {
       rules,
       processing: false,
-      isValidForm: undefined,
+      isValidForm: true,
     };
   },
   mounted() {
