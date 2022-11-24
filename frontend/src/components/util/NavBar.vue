@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled']),
     ...mapState('organization', ['isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
@@ -309,15 +309,15 @@ export default {
         {
           title: 'Confirmation',
           link: { name: 'Application Confirmation'},
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          isAccessible: this.ccofConfirmationEnabled,
+          icon: this.getCheckbox(this.ccofApplicationComplete),
           isActive: 'Application Confirmation' === this.$route.name
         }
       );
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        icon: this.getCheckbox(this.ccofApplicationComplete),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items
       };

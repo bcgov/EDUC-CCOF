@@ -25,7 +25,7 @@
 
           <v-row justify="center">
             <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()">Yes</v-btn>
-            <v-btn color="secondary" outlined x-large style="margin: 2em;">No</v-btn>
+            <v-btn color="secondary" outlined x-large style="margin: 2em;"@click="next()">No</v-btn>
           </v-row>
         </v-container>
       </v-card>
@@ -40,22 +40,32 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   props: {
   },
   computed: {
     ...mapState('app', ['navBarList']),
-
   },
   methods: {
+    ...mapMutations('app', ['setCcofApplicationComplete', 'setCcofConfirmationEnabled']),    
     previous() {
-      this.$router.push(PATHS.group.fundAmount);
+      let navItem = this.navBarList[this.navBarList.length - 1];
+      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
     addAnotherFacility() { 
       this.$router.push(PATHS.group.facInfo);
+    },
+    next() {
+      this.setCcofApplicationComplete(true);
+      console.log('next: ', PATHS.ccfriHome);
+      this.$router.push(PATHS.ccfriHome);
     }
-  }
+  },
+  mounted() {
+    this.setCcofConfirmationEnabled(true);
+  },
+    
 };
 </script>

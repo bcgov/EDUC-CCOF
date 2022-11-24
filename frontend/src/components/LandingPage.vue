@@ -9,13 +9,6 @@
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
     </v-row >
-    <v-row>
-      <v-divider class="mx-16"/>
-
-      <v-btn color="info" outlined x-large @click="goToCCFRI()">
-          CCFRI</v-btn>
-    </v-row>
-
      <!-- Application Approved screens starts here -->
     <v-container 
     class="px-10"
@@ -49,12 +42,7 @@
       <v-divider>
       </v-divider>
       <br><br>
-    
-      <!-- <v-row v-if="facilityList.length > 2"> 
-        this is making my facilites not show up...... so taking it out for now -JB  
-      --> 
-      <v-row >
-        <v-row>
+        <v-row v-if="navBarList.length > 2">
         <v-col class="col-12 col-md-6 ml-xl-3">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API 
@@ -100,7 +88,6 @@
             </v-card-text>
         </v-card>
       </v-row>
-      </v-row>
   </v-container>
 </v-container>
   
@@ -134,7 +121,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
     currentYearTwoDigit() {
       return this.currentYear - 2000;
     },
@@ -143,9 +130,9 @@ export default {
     },
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.facilityList;
+        return this.navBarList;
       }
-      return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
+      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
       return this.userInfo.applicationStatus === null;
