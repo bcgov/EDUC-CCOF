@@ -86,7 +86,7 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
@@ -130,7 +130,7 @@ export default {
     facilityModel: {
       handler() {
         this.model = JSON.parse(JSON.stringify(this.facilityModel));
-        this.$refs.form.resetValidation();
+        this.$refs.form?.resetValidation();
       },
       immediate: true,
       deep: true

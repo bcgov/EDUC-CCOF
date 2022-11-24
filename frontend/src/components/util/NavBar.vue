@@ -287,7 +287,6 @@ export default {
         items.push(
           {
             title: 'Facility',
-            subTitle: 'New Facility',
             id: null,
             link: { name: 'Facility Information'},
             isAccessible: this.isNewFacilityStarted,
