@@ -70,7 +70,12 @@
                 Status: {{item.status}}
               </v-col>
               <v-col class="pl-8 text-center">
-                <v-btn>Update</v-btn>
+                <v-btn
+                  color="#003366"
+                  class = "my-10 mx-14 justify-end"
+                  dark> 
+                    UPDATE
+                  </v-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -81,16 +86,10 @@
           </v-card>
         </v-row>
       </v-flex>
-      <v-row>
-        <v-col cols="4" class="text-left">
-          <v-btn outlined required @click="back()">Back</v-btn>
-        </v-col>
-        <v-col cols="4" class="text-center">
-          <v-btn outlined required @click="next()">Next</v-btn>
-        </v-col>
-        <v-col cols="4" class="text-right">
-          <v-btn outlined required @click="save()">Save</v-btn>
-        </v-col>
+      <v-row justify="space-around">
+        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
     </v-container>
   </template>
@@ -118,7 +117,7 @@ export default {
     };
   },
   methods: {
-    back() {
+    previous() {
       return this.$router.go(-1);
     },
     next() {
@@ -139,7 +138,7 @@ export default {
 .notice2 {
   font-size:medium;
   color:#6C4A00;
-  font-family:BCSans;
+  font-family:'BCSans',Verdana,Arial,sans-serif;
   padding-top:8px;
   padding-bottom:8px;
   background-color:#F9F1C6;

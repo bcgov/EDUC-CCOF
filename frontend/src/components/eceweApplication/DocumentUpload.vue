@@ -31,16 +31,10 @@
         </v-card>
       </v-row>
 
-      <v-row>
-        <v-col cols="4" class="text-left">
-          <v-btn outlined required @click="back()">Back</v-btn>
-        </v-col>
-        <v-col cols="4" class="text-center">
-          <v-btn v-show="model.fundingModelQ3" outlined required @click="next()">Next</v-btn>
-        </v-col>
-        <v-col cols="4" class="text-right">
-          <v-btn v-show="model.fundingModelQ3" outlined required @click="save()">Save</v-btn>
-        </v-col>
+      <v-row justify="space-around">
+        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+        <v-btn v-show="model.fundingModelQ3" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn v-show="model.fundingModelQ3" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -68,7 +62,7 @@ export default {
   methods: {
     upload() {},
     hideAttachmentPanel() {},
-    back() {
+    previous() {
       this.$router.push(this.model.previousRoute);
     },
     next() {

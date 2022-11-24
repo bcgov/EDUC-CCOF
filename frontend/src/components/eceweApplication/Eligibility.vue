@@ -31,7 +31,6 @@
                 <v-radio
                   label="No"
                   value="false"
-                  @click="goToDocumentUpload();"
                 ></v-radio>
               </v-col>
               </v-radio-group>
@@ -40,7 +39,7 @@
         </v-card>
       </v-row>
       
-      <v-row v-if="model.eceweOptInQ1=='true'" justify="center">
+      <v-row v-if="model.eceweOptInQ1" justify="center">
         <v-card class="cc-top-level-card eceweCard">
           <v-container>
             <v-row justify="center">
@@ -61,7 +60,6 @@
                 <v-radio
                   label="No"
                   value="false"
-                  @click="goToIntakeFacilities()"
                 ></v-radio>
               </v-col>
               </v-radio-group>
@@ -173,17 +171,12 @@
         </v-card>
       </v-row>
 
-      <v-row>
-        <v-col cols="4" class="text-left">
-          <v-btn outlined @click="previous()">Back</v-btn>
-        </v-col>
-          <v-col cols="4" class="text-center">
-            <v-btn v-show="model.fundingModelQ3" outlined @click="nextPage()">Next</v-btn>
-          </v-col>
-          <v-col cols="4" class="text-right">
-            <v-btn v-show="model.fundingModelQ3" outlined @click="save()">Save</v-btn>
-          </v-col>
+      <v-row justify="space-around">
+        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+        <v-btn v-show="model.employeesBelongToUnionQ2" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn v-show="model.employeesBelongToUnionQ2 == 'true'" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
+
     </v-container>
   </template>
   
@@ -211,7 +204,7 @@ export default {
     };
   },
   methods: {
-    nextPage() {
+    next() {
       this.$router.push(PATHS.eceweFacilities);
     },
     save() {
@@ -251,7 +244,7 @@ export default {
 .notice1 {
   font-size:medium;
   color:#D40D19;
-  font-family:BCSans;
+  font-family:'BCSans',Verdana,Arial,sans-serif;
   padding-top:8px;
   padding-bottom:8px;
   background-color:#F2DEDE;
@@ -263,7 +256,7 @@ export default {
 .notice2 {
   font-size:medium;
   color:#6C4A00;
-  font-family:BCSans;
+  font-family:'BCSans',Verdana,Arial,sans-serif;
   padding-top:8px;
   padding-bottom:8px;
   background-color:#F9F1C6;
@@ -275,7 +268,7 @@ export default {
 .notice3 {
   font-size:medium;
   color:#313132;
-  font-family:BCSans;
+  font-family:'BCSans',Verdana,Arial,sans-serif;
   padding-top:8px;
   padding-bottom:8px;
   background-color:#C1DCF6;

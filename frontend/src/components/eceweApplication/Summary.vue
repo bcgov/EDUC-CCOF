@@ -50,17 +50,12 @@
         </v-card>
       </v-row>
       
-      <v-row>
-        <v-col cols="4" class="text-left">
-          <v-btn outlined required @click="back()">Back</v-btn>
-        </v-col>
-        <v-col cols="4" class="text-center">
-          <v-btn outlined required @click="submit()">Submit</v-btn>
-        </v-col>
-        <v-col cols="4" class="text-right">
-          <v-btn outlined required @click="save()">Save</v-btn>
-        </v-col>
+      <v-row justify="space-around">
+        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+        <v-btn color="primary" outlined x-large @click="next()">Submit</v-btn>
+        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
+
     </v-container>
   </template>
   
@@ -84,7 +79,7 @@ export default {
   methods: {
     upload() {},
     hideAttachmentPanel() {},
-    back() {
+    previous() {
       this.$router.push(PATHS.documentUpload);
     },
   }
