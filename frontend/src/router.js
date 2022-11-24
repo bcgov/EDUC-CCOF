@@ -178,7 +178,7 @@ const router = new VueRouter({
       name: 'Funding Amount',
       component: GroupFundAmount,
       meta: {
-        pageTitle: 'Application Confirmation',
+        pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
@@ -189,7 +189,7 @@ const router = new VueRouter({
       name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
-        pageTitle: 'Application Confirmation',
+        pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF

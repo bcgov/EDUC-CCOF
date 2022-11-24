@@ -269,7 +269,7 @@
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
         <v-btn color="secondary" outlined x-large :disabled="!isValidForm" @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -300,6 +300,7 @@ export default {
   data() {
     return {
       isValidForm: undefined,
+      processing: false,
       model: {},
       rules
     };
@@ -356,6 +357,7 @@ export default {
     fundingModel: {
       handler() {
         this.model = { ...this.fundingModel };
+        this.$refs.form.resetValidation();
       },
       immediate: true,
       deep: true

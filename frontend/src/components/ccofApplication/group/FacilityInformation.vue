@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="model.isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
@@ -66,7 +66,7 @@
               <v-col>
                 <label>Has this facility or you as the applicant ever received funding
                   under the Child Care Operating Funding Program?</label>
-                <v-radio-group row v-model="model.hasReceivedFunding" :rules="rules.required">
+                <v-radio-group row v-model="model.hasReceivedFunding">
                   <v-radio label="No" value="no"></v-radio>
                   <v-radio label="Yes" value="yes"></v-radio>
                   <v-radio label="Yes, as facility" value="yesFacility"></v-radio>
@@ -86,8 +86,8 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!model.isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -106,11 +106,11 @@ export default {
   props: {
   },
   computed: {
-    ...mapState('facility', ['facilityModel']),
+    ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
   },
   beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFacilityComplete({facilityId: this.$route.params.urlGuid, complete: this.model.isValidForm});
+    this.setNavBarFacilityComplete({facilityId: this.$route.params.urlGuid, complete: this.isValidForm});
     this.addFacilityToStore( {facilityId: this.$route.params.urlGuid, facilityModel: this.model});
     next();
   },  
@@ -120,6 +120,8 @@ export default {
         let facilityId = this.$route.params.urlGuid;
         if (facilityId) {
           this.loadFacility(facilityId);
+        } else {
+          this.newFacility();
         }
       },
       immediate: true,
@@ -128,6 +130,7 @@ export default {
     facilityModel: {
       handler() {
         this.model = JSON.parse(JSON.stringify(this.facilityModel));
+        this.$refs.form.resetValidation();
       },
       immediate: true,
       deep: true
@@ -140,7 +143,8 @@ export default {
       rules,
       calendarMenu: false,
       processing: false,
-      model: {}
+      model: {},
+      isValidForm: undefined
     };
   },
   
@@ -158,12 +162,19 @@ export default {
       
     },
     next() {
+      // await this.save();
       let navBar = this.$store.getters['app/getNavByFacilityId'](this.$route.params.urlGuid);
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
         this.$router.push(PATHS.group.fundAmount + '/' + navBar.ccofBaseFundingId);
       } else {
         this.$router.push(PATHS.group.fundAmount);
+      }
+    },
+    async saveClicked() {
+      await this.save();
+      if (!this.$route.params.urlGuid) {
+        this.$router.push(PATHS.group.facInfo + '/' + this.facilityId);
       }
     },
     async save() {

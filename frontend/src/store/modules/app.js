@@ -7,6 +7,8 @@ export default {
     showNavBar: false,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     navBarList: [], //holds the generated nav bar
+    ccofApplicationComplete: false,
+    ccofConfirmationEnabled: false,
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -18,6 +20,28 @@ export default {
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
     },
+    setAlertNotificationText: (state, alertNotificationText) => {
+      state.alertNotificationText = alertNotificationText;
+    },
+    setAlertNotification: (state, alertNotification) => {
+      state.alertNotification = alertNotification;
+    },
+    addAlertNotification(state, text) {
+      state.alertNotificationQueue.push(text);
+      if (!state.alertNotification) {
+        state.alertNotification = true;
+      }
+    },
+    setProgramYearList: (state, programYearList) => {
+      state.programYearList = programYearList;
+    },
+    setChildCareCategoryList: (state, childCareCategoryList) => {
+      state.childCareCategoryList = childCareCategoryList;
+    },
+    setOrganizationTypeList: (state, organizationTypeList) => {
+      state.organizationTypeList = organizationTypeList;
+    },
+    //Nav bar stuff
     setShowNavBar: (state, showNavBar) => {
       state.showNavBar = showNavBar;
     },
@@ -42,27 +66,12 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload); 
     },
-    setAlertNotificationText: (state, alertNotificationText) => {
-      state.alertNotificationText = alertNotificationText;
+    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
+      state.ccofApplicationComplete = ccofApplicationComplete;
     },
-    setAlertNotification: (state, alertNotification) => {
-      state.alertNotification = alertNotification;
+    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
+      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
-    addAlertNotification(state, text) {
-      state.alertNotificationQueue.push(text);
-      if (!state.alertNotification) {
-        state.alertNotification = true;
-      }
-    },
-    setProgramYearList: (state, programYearList) => {
-      state.programYearList = programYearList;
-    },
-    setChildCareCategoryList: (state, childCareCategoryList) => {
-      state.childCareCategoryList = childCareCategoryList;
-    },
-    setOrganizationTypeList: (state, organizationTypeList) => {
-      state.organizationTypeList = organizationTypeList;
-    }
   },
   getters: {
     getNavByFacilityId: (state) => (facilityId) => { 
