@@ -1,25 +1,48 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
+import { isEmpty } from 'lodash';
+
 
 export default {
   namespaced: true,
   state: {
     isValidForm: undefined,
-    model: {}
+    ccofBaseFundingId: undefined,
+    fundingModel: {},
+    modelStore: {},
+
   },
   mutations: {
-    model(state, value) {
-      state.model = value;
+    setFundingModel(state, value) {
+      state.fundingModel = value;
     },
-    isValidForm(state, value) {
+    setIsValidForm(state, value) {
       state.isValidForm = value;
     },
+    setCcofBaseFundingId(state, value) {
+      state.ccofBaseFundingId = value;
+    },
+    setModelStore(state, value) {
+      state.modelStore = value;
+    },
+    addModelToStore: (state, {fundingId, model} ) => {
+      if (fundingId) {
+        state.modelStore[fundingId] = model;  
+      }
+    }    
+  },
+  getters: {
+    isNewFundingStarted: state => !isEmpty(state.fundingModel),
+    getModelById: (state) => (fundingId) => { 
+      return state.modelStore[fundingId];
+    },
+
   },
   actions: {
-    async saveFunding({ state }) {
+    async saveFunding({ state, commit }) {
       console.log('store model', state.model);
-      let payload = { ...state.model };
+      let payload = { ...state.fundingModel };
 
       let deleteFields = [];
       if (payload.hasClosedMonth !== 'yes') {
@@ -48,27 +71,37 @@ export default {
 
       console.log('save group funding', payload);
 
-      return await ApiService.apiAxios.post(ApiRoutes.GROUP_FUND_AMOUNT, payload);
+      let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + state.ccofBaseFundingId, payload);
+      commit('setFundingModel', response.data);
+      commit('addModelToStore', { fundingId: state.ccofBaseFundingId, model: response.data });
+      return response;
+
     },
-    async loadFunding({ commit }, fundingId) {
-      checkSession();
+    async loadFunding({ commit, getters }, fundingId) {
+      commit('setCcofBaseFundingId', fundingId);
+      let model = getters.getModelById(fundingId);
+      if (model) {
+        console.log('found model for guid: ', fundingId);
+        commit('setFundingModel', model);
+      } else {
+        checkSession();
 
-      try {
-        let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
-        let model = response.data;
-        model.ccofBaseFundingId = fundingId;
-
-        for (let i = 1; i <= 12; i++) {
-          if (model[`closedIn${i}`] === 1) {
-            model.hasClosedMonth = 'yes';
+        try {
+          let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
+          let model = response.data;
+          for (let i = 1; i <= 12; i++) {
+            if (model[`closedIn${i}`] === 1) {
+              model.hasClosedMonth = 'yes';
+            }
           }
-        }
+          console.log('response', model);
+          commit('setFundingModel', model);
+          commit('addModelToStore', { fundingId: fundingId, model: model });
 
-        console.log('response', model);
-        commit('model', model);
-      } catch (error) {
-        console.log(`Failed to get Funding - ${error}`);
-        throw error;
+        } catch (error) {
+          console.log(`Failed to get Funding - ${error}`);
+          throw error;
+        }
       }
     }
   }

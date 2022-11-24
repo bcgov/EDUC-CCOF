@@ -23,12 +23,9 @@ export default {
     incNumber: null,
     organizationType: null,
     providerType: null,
-    isValidForm: false,
+    isOrganizationComplete: false,
     isStarted: false
   },
-  getters: {
-    isOrganizationComplete: state => state.isValidForm,
-  },  
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
     setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
@@ -48,7 +45,7 @@ export default {
     setIncNumber: (state, incNumber) => { state.incNumber = incNumber; },
     setOrganizationType: (state, organizationType) => { state.organizationType = organizationType; },
     setProviderType: (state, providerType) => { state.providerType = providerType; },
-    setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
+    setIsOrganizationComplete: (state, isOrganizationComplete) => { state.isOrganizationComplete = isOrganizationComplete; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
   },
   actions: {

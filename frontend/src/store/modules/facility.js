@@ -1,26 +1,27 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
+import {isEmpty} from 'lodash';
 
 export default {
   namespaced: true,
   state: {
-    facilityList: [],
+    // facilityList: [],
     facilityStore: {},
     facilityModel: {},
     facilityId: null,
 
     isValidForm: false,
-    isStarted: false,
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
     getFacilityById: (state) => (facilityId) => { 
       return state.facilityStore[facilityId];
-    }
+    },
+    isNewFacilityStarted: state => !isEmpty(state.facilityModel),
   },  
   mutations: {
-    setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
-    addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
+    // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
+    // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
@@ -60,12 +61,12 @@ export default {
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
           commit('setFacilityId', response.data?.facilityId);
-          commit('addToFacilityList', {
+          commit('app/addToNavBarList', {
             facilityName: state.facilityModel.facilityName,
             facilityId: state.facilityId,
             ccofBaseFundingId: response.data?.ccofBaseFundingId,
             ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus
-          });
+          }, { root: true });
           return response;
         } catch (error) {
           console.log(`Failed to save new Facility - ${error}`);
