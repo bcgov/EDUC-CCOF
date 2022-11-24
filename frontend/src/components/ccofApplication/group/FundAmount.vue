@@ -233,31 +233,31 @@
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare4less" label="Group Child Care (under 36 months)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare4less" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare36School4less" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36School4less" label="Group Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCareSchoolAge4less" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4less" label="Group Child Care (School Age/ School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.multiAgeCare4less" label="Multi-Age Care" />
+                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4less" label="Multi-Age Care" />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare4more" label="Group Child Care (under 36 months)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare4more" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare36School4more" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36School4more" label="Group Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCareSchoolAge4more" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4more" label="Group Child Care (School Age/ School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.multiAgeCare4more" label="Multi-Age Care" />
+                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4more" label="Multi-Age Care" />
                 </v-row>
               </v-col>
             </v-row>
@@ -287,7 +287,7 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -295,25 +295,35 @@ export default {
   props: {
   },
   computed: {
-    ...mapState('groupFunding', ['model'])
+    ...mapState('groupFunding', ['fundingModel'])
   },
   data() {
     return {
       isValidForm: undefined,
+      model: {},
       rules
     };
   },
   methods: {
-    ...mapActions('groupFunding', ['saveFunding', 'loadFunding']),
+    ...mapActions('groupFunding', ['saveFunding', 'loadFunding', 'fundingId']),
+    ...mapMutations('groupFunding', ['setFundingModel', 'addModelToStore']),
+    ...mapMutations('app', ['setNavBarFundingComplete']),
     previous() {
-      this.$router.push(PATHS.group.facInfo);
+      let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
+      this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
     },
     next() {
-      this.$router.push(PATHS.group.confirmation);
+      let navBar = this.$store.getters['app/getNextNavByFundingId'](this.$route.params.urlGuid);
+      if (navBar?.facilityId) {
+        this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
+      } else {
+        this.$router.push(PATHS.group.confirmation);
+      }
+
     },
     async save() {
       this.processing = true;
-      this.saveModel();
+      this.setFundingModel(this.model);
 
       try {
         await this.saveFunding();
@@ -323,21 +333,32 @@ export default {
       }
       this.processing = false;
     },
-    saveModel() {
-      this.$store.commit('groupFunding/model', this.model);
-    },
     allowedStep: m => m % 5 === 0,
     formatTime
   },
   beforeRouteLeave(_to, _from, next) {
-    console.log('leaving');
-    this.saveModel();
+    this.setNavBarFundingComplete({fundingId: this.$route.params.urlGuid, complete: this.isValidForm});
+    this.addModelToStore( {fundingId: this.$route.params.urlGuid, model: this.model});
+
     next();
   },
-  beforeMount() {
-    let ccofBaseFundingId = this.$route.params.urlCcofBaseFundingId;
-    if (ccofBaseFundingId) {
-      this.loadFunding(ccofBaseFundingId);
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        let ccofBaseFundingId = this.$route.params.urlGuid;
+        if (ccofBaseFundingId) {
+          this.loadFunding(ccofBaseFundingId);
+        }
+      },
+      immediate: true,
+      deep: true
+    },
+    fundingModel: {
+      handler() {
+        this.model = { ...this.fundingModel };
+      },
+      immediate: true,
+      deep: true
     }
   }
 };

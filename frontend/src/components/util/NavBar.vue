@@ -57,11 +57,10 @@
             <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
               <v-icon>{{ subItem.icon }}</v-icon>
             </v-list-item-icon>              
-
-            <router-link :to="subItem.link" :target="subItem.newTab ? '_blank' : '_self'" class="router">
+            <router-link :is="subItem.isAccessible ? 'router-link' : 'span'" :to="subItem.link" :target="subItem.newTab ? '_blank' : '_self'" class="router">
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
-                <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
+                <v-list-item-title v-else v-text="subItem.title" :class="subItem.isAccessible? 'menuItem text-wrap' : 'menuItem text-wrap blue-grey--text'"></v-list-item-title>
                 <v-list-item-subtitle v-if="subItem.subTitle">{{ subItem.subTitle }}</v-list-item-subtitle>
               </v-list-item-content>
             </router-link>
@@ -102,10 +101,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup']),
-    ...mapState('facility', ['facilityList']),
-    ...mapGetters('facility', ['isFacilityComplete']),
-    ...mapGetters('organization', ['isOrganizationComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList']),
+    ...mapState('organization', ['isOrganizationComplete']),
+    ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
+    ...mapGetters('groupFunding', ['isNewFundingStarted']),
     navRefresh() {
       return this.pageTitle + this.$route.params.urlGuid;
     },
@@ -129,7 +128,7 @@ export default {
       immediate: true,
       deep: true
     },
-    facilityList: {
+    navBarList: {
       handler() {
         this.refreshNavBar();
       },
@@ -223,8 +222,8 @@ export default {
       //   }
       // );
 
-      if (this.facilityList?.length > 0) {
-        this.facilityList?.forEach( item => {
+      if (this.navBarList?.length > 0) {
+        this.navBarList?.forEach( item => {
           items.push(
             {
               title: 'Parent Fees for ' + item.facilityName,
@@ -238,9 +237,6 @@ export default {
           );
         });
       } 
-
-
-
       let retval =   {
         title: NAV_BAR_GROUPS.CCFRI,
         isAccessible: true,
@@ -263,8 +259,8 @@ export default {
           isActive: 'Group Organization Information' === this.$route.name
         }
       );
-      if (this.facilityList?.length > 0) {
-        this.facilityList?.forEach((item, index) => {
+      if (this.navBarList?.length > 0) {
+        this.navBarList?.forEach((item, index) => {
           items.push(
             {
               title: 'Facility ' + (index + 1),
@@ -272,7 +268,7 @@ export default {
               id: item.facilityId,
               link: { name: 'Facility Information Guid', params: {urlGuid: item.facilityId}},
               isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              icon: this.getCheckbox(item.isFacilityComplete),
               isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlGuid === item.facilityId
               // function: this.loadFacility(x.id)
             },
@@ -281,7 +277,7 @@ export default {
               subTitle: item.facilityName,
               link: { name: 'Funding Amount Guid' , params: {urlGuid: item.ccofBaseFundingId}},
               isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
+              icon: this.getCheckbox(item.isFundingComplete),
               isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId
             },
           );
@@ -294,29 +290,28 @@ export default {
             subTitle: 'New Facility',
             id: null,
             link: { name: 'Facility Information'},
-            isAccessible: true,
-            icon: 'mdi-checkbox-blank-circle-outline', //replace
+            isAccessible: this.isNewFacilityStarted,
+            icon: this.getCheckbox(false),
             isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null
             // function: this.loadFacility(x.id)
           },
           {
             title: 'Funding',
             link: { name: 'Funding Amount'},
-            isAccessible: true,
-            icon: 'mdi-checkbox-blank-circle-outline', //replace
+            isAccessible: this.isNewFundingStarted,
+            icon: this.getCheckbox(false),
             isActive: 'Funding Amount' === this.$route.name
           },
         );
 
       }
-
       items.push(
         {
-          title: 'Direct Deposit',
-          link: '',
+          title: 'Confirmation',
+          link: { name: 'Application Confirmation'},
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
-          isActive: '' === this.$route.name
+          isActive: 'Application Confirmation' === this.$route.name
         }
       );
       let retval =   {

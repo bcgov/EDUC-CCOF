@@ -113,7 +113,7 @@ export default {
       }
       const userInfoRes = await ApiService.getUserInfo();    
       commit('setUserInfo', userInfoRes.data);
-      commit('facility/setFacilityList', userInfoRes.data.facilityList, { root: true });
+      commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
       commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
       commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });

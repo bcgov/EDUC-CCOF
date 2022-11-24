@@ -4,15 +4,6 @@ const HttpStatus = require('http-status-codes');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 
-async function saveFunding(req, res) {
-  console.log('route /funding', req.body);
-
-  if (req.body.ccofBaseFundingId) {
-    return updateFunding(req, res);
-  } else {
-    return createFunding(req, res);
-  }
-}
 
 async function createFunding(req, res) {
   try {
@@ -32,15 +23,15 @@ async function createFunding(req, res) {
 
 async function updateFunding(req, res) {
   try {
-    let { ccofBaseFundingId } = req.body;
+    let fundId = req.params.fundId;
 
-    console.log('patch operation: ', `ccof_application_basefundings(${ccofBaseFundingId})`);
+    console.log('patch operation: ', `ccof_application_basefundings(${fundId})`);
 
     let payload = req.body;
     payload = new MappableObjectForBack(payload, CCOFApplicationFundingMapping);
     payload = payload.toJSON();
     console.log('PAYLOAD', payload);
-    let response = await patchOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId, payload);
+    let response = await patchOperationWithObjectId('ccof_application_basefundings', fundId, payload);
     console.log('BACK', response);
     response = new MappableObjectForFront(response, CCOFApplicationFundingMapping);
     console.log('MODEL', response);
@@ -67,6 +58,7 @@ async function getFunding(req, res) {
 }
 
 module.exports = {
-  saveFunding,
-  getFunding
+  updateFunding,
+  getFunding,
+  createFunding
 };

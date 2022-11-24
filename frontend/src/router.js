@@ -203,7 +203,7 @@ const router = new VueRouter({
         pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
     {

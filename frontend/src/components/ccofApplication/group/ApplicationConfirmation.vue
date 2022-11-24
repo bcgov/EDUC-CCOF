@@ -9,8 +9,8 @@
 
           <v-row justify="center" style="padding-top: 2em;">
             <ul style="list-style: none">
-              <li v-for="item in facilities" :key="item.id" style="">
-                <a>{{ item.name }}</a>
+              <li v-for="item in navBarList" :key="item.facilityId" style="">
+                <a>{{ item.facilityName }}</a>
               </li>
             </ul>
           </v-row>
@@ -40,16 +40,14 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
+import { mapState } from 'vuex';
 
 export default {
   props: {
   },
   computed: {
-  },
-  data() {
-    return {
-      facilities: [{ name: 'Facility 1', id: 'fac1' }, { name: 'Facility 2', id: 'fac2' }, { name: 'Facility 3', id: 'fac3' }]
-    };
+    ...mapState('app', ['navBarList']),
+
   },
   methods: {
     previous() {
