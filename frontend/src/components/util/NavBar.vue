@@ -225,7 +225,7 @@ export default {
             {
               title: 'Parent Fees for ' + item.facilityName,
               id: item.facilityId,
-              link: { name: 'Facility Parent Fees'},
+              link: { name: 'ccfri-home'},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
               isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId

@@ -12,8 +12,8 @@
     <v-row>
       <v-divider class="mx-16"/>
 
-      <v-btn color="info" outlined x-large @click="goToCCFRI()">
-          CCFRI</v-btn>
+      <!-- <v-btn color="info" outlined x-large @click="goToCCFRI()">
+          CCFRI</v-btn> -->
     </v-row>
 
      <!-- Application Approved screens starts here -->
@@ -160,7 +160,7 @@ export default {
 
     },
     goToCCFRI() {
-      this.$router.push(PATHS.currentFees); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
     },
     
   },

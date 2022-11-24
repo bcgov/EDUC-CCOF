@@ -16,8 +16,8 @@
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
       </p>
 
-      {{loading}}
-      <v-skeleton-loader max-height="375px" v-if="loading" :loading="loading" type="table-tbody, table-tfoot"></v-skeleton-loader>
+      
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
       v-for="({key, programYear, childCareCategory} , index) in facilityLookupInfo.childCareTypes" :key="index"
@@ -195,7 +195,7 @@
                   outlined
                   clearable
                   required
-                  :rules="rules.required" 
+                   
                 ></v-text-field>
               </v-col>
               <v-col class="col-md-3 col-12">
@@ -435,9 +435,10 @@ export default {
       console.log(this.dates);
     },
     previous() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.currentFees); //TODO: change this, from CCOF page
     },
     next() {
+      this.updateParentFees();
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async updateParentFees () {

@@ -11,7 +11,6 @@ const { info } = require('./logger');
 
 
 //creates or updates CCFRI application. 
-//NOTE - CCOF application GUID is currently hardcoded in CcfriEceLanding! Will need to be replaced with a get or found in the vuex store.
 
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
@@ -120,8 +119,6 @@ async function upsertParentFees(req, res) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
   }
-
-  
 
 }
 

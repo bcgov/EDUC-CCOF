@@ -73,6 +73,7 @@ async function getFacility(req, res) {
           }
         );
 
+        //ugly I know- but I just need a way to make previous year dates appear for the demo tomorrow. Will change soon to pull the previous date from API
         childCareTypes.push(
           {
             childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),

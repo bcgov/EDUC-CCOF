@@ -27,7 +27,7 @@
                 <v-col cols="" class="col-12 col-md-8">
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
-                  <p class="text--primary"> Licence : 123456789</p>
+                  <!-- <p class="text--primary"> Licence : 123456789</p> -->
                   <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
                   <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == 0 ? "OUT" : "IN"}}</p> </strong>
                 </v-col>
@@ -143,7 +143,6 @@ export default {
   },
   methods: {
     toggle(index) {
-      console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
       //this.showOptStatus[index] = true;
     
@@ -153,7 +152,20 @@ export default {
     },
     next() {
       this.updateCCFRI();
-      this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.$forceUpdate();
+      const ccfriComplete = this.facilityList.every(fac => {
+        return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
+      });
+
+      //console.log(ccfriComplete);
+
+      //if no status- go straight to add new fees page
+      if (ccfriComplete){
+        this.$router.push(PATHS.currentFees); 
+      }
+      else {
+        this.$router.push(PATHS.addNewFees); 
+      }
     },
     refreshWithFacility() {
       let x = this.$route.params.urlFacilityId;
@@ -164,7 +176,6 @@ export default {
 
       this.facilityList.forEach (async (facility, index) => {
 
-        console.log(this.userInfo.applicationId);
         payload[index] = {
           applicationID : this.userInfo.applicationId, //CCOF BASE application ID
           facilityID : facility.facilityId, 
@@ -175,11 +186,8 @@ export default {
 
         
       });
-      
-      console.log(payload);
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-        //console.log(response);
       } catch (error) {
         console.info(error);
       }

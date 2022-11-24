@@ -1,5 +1,6 @@
 <template>
-  <container>
+  <v-container>
+    <v-form ref="isValidForm" value="false" v-model="isValidForm">
       <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
@@ -9,14 +10,14 @@
           >
             <v-card-text>
               <p class="text-h5 text--primary text-center">
-                Facility A
+                {{currentFacility.facilityName}}
               </p>
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for April 2021 to March 2022 are: 
+                Our Records show this facilites' fees for January 2022 to March 2022 are: 
               </p>
-              <p>
+              <!-- <p>
                 Lorem ipsum dolor sit
-              </p>
+              </p> -->
               <br>
               <v-simple-table>
                 <thead>
@@ -61,6 +62,7 @@
               </p>
               <br>
               <v-radio-group
+              :rules = "rules"
                 row
               >
                 <v-radio
@@ -79,43 +81,58 @@
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="goToCCFRI()" :disabled="false">Next</v-btn>
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
           <v-btn color="primary" outlined x-large @click="updateCCFRI()">
             Save</v-btn>
         </v-row>
-
-  </container>
+      </v-form>
+  </v-container>
+  
 </template>
 
 <script>
 import { PATHS } from '@/utils/constants';
+import { mapGetters, mapState} from 'vuex';
 
 export default {
   data() {
     return {
       input : '',
+      isValidForm : false,
       feeList : [
         {
           date: 'Jan 2022',
-          pre3year: 1234,
-          post3year: 2222
+          pre3year: 500,
+          post3year: 700
         },
         {
           date: 'Feb 2022',
-          pre3year: 5555,
-          post3year: 8811
+          pre3year: 550,
+          post3year: 725
         },
         {
           date: 'Mar 2022',
-          pre3year: 6754,
-          post3year: 8223
+          pre3year: 550,
+          post3year: 730
         }
-      ]
+      ],
+      rules: [
+        (v) => !!v  || 'Required.',
+      ],
     };
   },
+  computed: {
+    ...mapState('facility', ['facilityList']),
+    currentFacility(){
+      return this.facilityList[0]; //TODO - change this to work with multiple facilities 
+    }
+  },
   methods: {
-    goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    previous(){
+      this.$router.push(PATHS.ccfriHome);
+    },
+    next() {
+      this.$router.push(PATHS.addNewFees); //TODO: change this, from CCOF page
     },
   },
 };
