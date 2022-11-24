@@ -30,8 +30,12 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
+import EceweEligibility from '@/components/eceweApplication/Eligibility';
+import EceweFacilities from '@/components/eceweApplication/Facilities';
+import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
+import EceweSummary from '@/components/eceweApplication/Summary';
+
 import SearchFacility from '@/components/FacilitySearch';
-import CcrfiEstimatorSliderSelect from '@/components/CcrfiEstimatorSliderSelect';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 
@@ -208,6 +212,38 @@ const router = new VueRouter({
       component: CCFRIApplicationForm,
       meta: {
         pageTitle: PAGE_TITLES.CCRFI_APPLICATION
+      }
+    },
+    {
+      path: PATHS.eceweEligibility,
+      name: 'ECEWE Eligibility',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
+      }
+    },
+    {
+      path: PATHS.eceweFacilities,
+      name: 'ECEWE Facilities',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
+      }
+    },
+    {
+      path: PATHS.documentUpload,
+      name: 'ECEWE Document Upload',
+      component: EceweDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
+      }
+    },
+    {
+      path: PATHS.eceweSummary,
+      name: 'ECEWE Summary',
+      component: EceweSummary,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
       }
     },
     {
