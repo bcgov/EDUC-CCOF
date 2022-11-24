@@ -152,9 +152,9 @@ export default {
     },
     next() {
       this.updateCCFRI();
-      this.$forceUpdate();
-      const ccfriComplete = this.facilityList.every(fac => {
+      const ccfriComplete = this.facilityList.every((fac, index) => {
         return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
+        
       });
 
       //console.log(ccfriComplete);
@@ -175,6 +175,8 @@ export default {
       let payload = [];
 
       this.facilityList.forEach (async (facility, index) => {
+
+        facility.ccfriOptInStatus = ccfriOptInOrOut[index];
 
         payload[index] = {
           applicationID : this.userInfo.applicationId, //CCOF BASE application ID
