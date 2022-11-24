@@ -4,15 +4,17 @@
             <MessagesToolbar></MessagesToolbar>
         </div>
         <br><br>
-        <v-btn color="info" outlined x-large  @click="updateCCFRI()">
-            UPDATE CCFRI APPLICATION</v-btn>
-        {{ccfriOptInOrOut}}
-        <!--TODO: The update buttons don't align and I don't like it !!-->
+        
         <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
           this will need to get changed at a later point when the API is more built out 
           there is also no logic about if you can click next or not 
         -->
+
+        <!-- <ExistingFacilityFees></ExistingFacilityFees> -->
+
         <LargeButtonContainer>
+
+          <v-form ref="isValidForm" value="false" v-model="isValidForm">
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
@@ -25,9 +27,9 @@
                 <v-col cols="" class="col-12 col-md-8">
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
-                  <p class="text--primary"> Licence : 123456789</p>
+                  <!-- <p class="text--primary"> Licence : 123456789</p> -->
                   <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus}}</p> </strong>
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == 0 ? "OUT" : "IN"}}</p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
                   v-if="!showOptStatus[index]"
@@ -38,6 +40,7 @@
                   @click="toggle(index)"
                   :showOptStatus = "showOptStatus[index]"
                   dark color='#003366' 
+                  :rules = "rules"
                   > 
                     UPDATE
                   </v-btn>
@@ -46,9 +49,9 @@
                 >
                   <v-row>
                     <v-radio-group
-                      mandatory
                       v-model="ccfriOptInOrOut[index]"
                       class = "mx-12"
+                      :rules = "rules"
                     >
                       <v-radio
                         label="Opt-In"
@@ -66,15 +69,18 @@
               </v-row>
             </v-card-text>
           </v-card>
-      
-        </LargeButtonContainer>
+        </v-form>
+        
+        <!-- {{ccfriOptInOrOut}} -->
 
+        </LargeButtonContainer>
+      
         <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
-          <v-btn color="primary" outlined x-large>
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
+          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
             Save</v-btn>
         </v-row>
 
@@ -89,15 +95,12 @@ import { mapGetters, mapState} from 'vuex';
 import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
-import axios from 'axios';
 import ApiService from '@/common/apiService';
-
-//const APPLICATION_ID = '41f6494d-1d5d-ed11-9562-002248d53d53'; //This should come from the facility obj -- not implemented yet
+import ExistingFacilityFees from './ExistingFacilityFees.vue';
 
 let ccfriOptInOrOut = {};
-
-let model = { x: [], ccfriOptInOrOut };
-//let ccfriOptInOrOut = { x: [] };
+let textInput = '' ;
+let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'CcfriLandingPage',
@@ -105,10 +108,11 @@ export default {
     return {
       input : '',
       model,
+      //textInput,
       showOptStatus : '',
-      isValidForm: undefined,
+      isValidForm: false,
       ccfriOptInOrOut,
-      feeList : [
+      feeList : [ //dummy data for showing the 'current fees' page. TO be replaced with data loaded from Dynamics 
         {
           date: 'Jan 2022',
           pre3year: 1234,
@@ -139,7 +143,6 @@ export default {
   },
   methods: {
     toggle(index) {
-      console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
       //this.showOptStatus[index] = true;
     
@@ -148,49 +151,50 @@ export default {
       this.$router.push(PATHS.home); //TODO: change this, from CCOF page
     },
     next() {
-      this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.updateCCFRI();
+      const ccfriComplete = this.facilityList.every((fac, index) => {
+        return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
+        
+      });
+
+      //console.log(ccfriComplete);
+
+      //if no status- go straight to add new fees page
+      if (ccfriComplete){
+        this.$router.push(PATHS.currentFees); 
+      }
+      else {
+        this.$router.push(PATHS.addNewFees); 
+      }
     },
     refreshWithFacility() {
       let x = this.$route.params.urlGuid;
       this.loadFacility(x);
     },
     async updateCCFRI () {
+      let payload = [];
 
-      console.log('f');
-      //console.log(this.getFacility(APPLICATION_ID));
-
-      //note - because application / facility is hardcoded rn, the second (dummy) facility will throw an API error. This is expected
       this.facilityList.forEach (async (facility, index) => {
 
-        console.log(this.userInfo.applicationId);
-        let payload = {
-          applicationID : this.userInfo.applicationId, 
+        facility.ccfriOptInStatus = ccfriOptInOrOut[index];
+
+        payload[index] = {
+          applicationID : this.userInfo.applicationId, //CCOF BASE application ID
           facilityID : facility.facilityId, 
           optInResponse: this.ccfriOptInOrOut[index] 
         };
 
         payload = JSON.parse(JSON.stringify(payload));
 
-        console.log(payload);
-
-        try {
-          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-          //console.log(response);
-        } catch (error) {
-          console.info(error);
-        }
-
+        
       });
-    },
-
-    //this is an example - take me out /////////////////////////////////////////
-    async getFacility (id) {
       try {
-        this.facilityResult = (axios.get('/api/facility/:'+id)).data;
+        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
       } catch (error) {
         console.info(error);
       }
-    }
+
+    },
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
@@ -201,16 +205,7 @@ export default {
     //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
-  components: { MessagesToolbar, LargeButtonContainer,  }
+  components: { MessagesToolbar, LargeButtonContainer, ExistingFacilityFees }
 };
 </script>
-
-<style scoped>
-
-body {
-white-space: pre-wrap;
-}
-
-
-</style>
 

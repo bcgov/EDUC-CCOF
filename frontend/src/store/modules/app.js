@@ -14,9 +14,23 @@ export default {
     alertNotification: false,
     programYearList: [],
     childCareCategoryList: [],
-    organizationTypeList: []
+    organizationTypeList: [],
+    lookupInfo: null,
+  },
+  getters: {
+    programYearList: state => state.programYearList,
+    childCareCategoryList: state => state.childCareCategoryList,
+    organizationTypeList: state => state.organizationTypeList,
+    lookupInfo: state => state.lookupInfo,
   },
   mutations: {
+    setLookupInfo: (state, lookupInfo) => {
+      if(lookupInfo){
+        state.lookupInfo = lookupInfo;
+      } else {
+        state.lookupInfo = null;
+      }
+    },
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
     },
@@ -123,6 +137,7 @@ export default {
     async getLookupInfo({ commit }) {
       if (localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const lookupInfo = await ApiService.getLookupInfo();
+        commit('setLookupInfo', lookupInfo.data);
         commit('setProgramYearList', lookupInfo.data?.programYear);
         commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
         commit('setOrganizationTypeList', lookupInfo.data?.organizationType);

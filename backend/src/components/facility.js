@@ -72,6 +72,16 @@ async function getFacility(req, res) {
             feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
           }
         );
+
+        //ugly I know- but I just need a way to make previous year dates appear for the demo tomorrow. Will change soon to pull the previous date from API
+        childCareTypes.push(
+          {
+            childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+            programYear: '2021/22 FY',
+            programYearId: 'fba5721b-9434-ed11-9db1-002248d53d53',
+          }
+        );
+
       }
 
     });
