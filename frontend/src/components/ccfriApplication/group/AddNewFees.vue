@@ -17,7 +17,7 @@
       </p>
 
       
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="facilityLookupInfo.childCareTypes" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
       v-for="({key, programYear, childCareCategory} , index) in facilityLookupInfo.childCareTypes" :key="index"

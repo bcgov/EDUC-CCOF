@@ -15,6 +15,8 @@
         <LargeButtonContainer>
 
           <v-form ref="isValidForm" value="false" v-model="isValidForm">
+
+            <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="true"  type="image, image, image"></v-skeleton-loader> -->
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
