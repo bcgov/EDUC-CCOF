@@ -51,13 +51,11 @@
                 <v-text-field outlined required v-model="model.licenseNumber" :rules="rules.required" label="Facility Licence Number" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-menu v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                <v-menu v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="model.licenseEffectiveDate" label="Effective Date of Current Licence (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
-                    </v-text-field>
+                    <v-text-field outlined required v-model="model.licenseEffectiveDate" :rules="rules.required" label="Effective Date of Current Licence" readonly v-bind="attrs" v-on="on"/>
                   </template>
-                  <v-date-picker v-model="model.licenseEffectiveDate" @input="calendarMenu = false">
-                  </v-date-picker>
+                  <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false"/>
                 </v-menu>
               </v-col>
             </v-row>
@@ -76,7 +74,7 @@
 
             <v-row v-show="model.hasReceivedFunding === 'yesFacility'">
               <v-col>
-                <v-text-field outlined required v-model="model.fundingFacility" :rules="hasReceivedFunding === 'yesFacility' ? rules.required : []" label="Facility Name" />
+                <v-text-field outlined required v-model="model.fundingFacility" :rules="model.hasReceivedFunding === 'yesFacility' ? rules.required : []" label="Facility Name" />
               </v-col>
             </v-row>
 
@@ -138,10 +136,7 @@ export default {
   },
   data() {
     return {
-      licenseEffectiveDate: undefined,
-      hasReceivedFunding: 'no',
       rules,
-      calendarMenu: false,
       processing: false,
       model: {},
       isValidForm: undefined
