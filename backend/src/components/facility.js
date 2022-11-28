@@ -86,6 +86,12 @@ async function getFacility(req, res) {
 
     });
     log.info('child care types: ', childCareTypes);
+
+    if (facility.ccof_facilitystartdate) {
+      let year = facility.ccof_facilitystartdate.split('-')[0];
+      facility.ccof_facilitystartdate = year;
+    }
+    
     facility = new MappableObjectForFront(facility, FacilityMappings);
     facility.data.childCareTypes = childCareTypes;
     return res.status(HttpStatus.OK).json(facility);
