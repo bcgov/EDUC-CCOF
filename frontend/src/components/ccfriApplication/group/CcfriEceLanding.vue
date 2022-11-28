@@ -16,7 +16,7 @@
 
           <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
-            <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="true"  type="image, image, image"></v-skeleton-loader> -->
+            <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
@@ -82,11 +82,11 @@
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
           <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
+          <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
             Save</v-btn>
         </v-row>
 
-
+        <!-- {{loading}} -->
     </v-container>
 </template>
 
@@ -98,7 +98,7 @@ import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
-import ExistingFacilityFees from './ExistingFacilityFees.vue';
+import alertMixin from '@/mixins/alertMixin';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -106,6 +106,7 @@ let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'CcfriLandingPage',
+  mixins: [alertMixin],
   data() {
     return {
       input : '',
@@ -113,6 +114,8 @@ export default {
       //textInput,
       showOptStatus : '',
       isValidForm: false,
+      processing: false,
+      loading: false,
       ccfriOptInOrOut,
       feeList : [ //dummy data for showing the 'current fees' page. TO be replaced with data loaded from Dynamics 
         {
@@ -146,17 +149,15 @@ export default {
   methods: {
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
-      //this.showOptStatus[index] = true;
-    
     },
     previous() {
       this.$router.push(PATHS.home); //TODO: change this, from CCOF page
     },
     next() {
-      this.updateCCFRI();
+      this.save();
       const ccfriComplete = this.facilityList.every((fac, index) => {
         return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
-        
+        //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
       });
 
       //console.log(ccfriComplete);
@@ -173,7 +174,8 @@ export default {
       let x = this.$route.params.urlFacilityId;
       this.loadFacility(x);
     },
-    async updateCCFRI () {
+    async save () {
+      this.processing = true;
       let payload = [];
 
       this.facilityList.forEach (async (facility, index) => {
@@ -188,26 +190,33 @@ export default {
 
         payload = JSON.parse(JSON.stringify(payload));
 
-        
       });
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
       } catch (error) {
         console.info(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
 
+      this.processing = false;
     },
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
+    
+    // if (facilityList){
+    //   this.loading = false;
+    // }
+    // else {
+    //   this.loading = true;
+    // }
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
-  components: { MessagesToolbar, LargeButtonContainer, ExistingFacilityFees }
+  components: { MessagesToolbar, LargeButtonContainer }
 };
 </script>
 

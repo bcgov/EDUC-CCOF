@@ -17,7 +17,7 @@
       </p>
 
       
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="facilityLookupInfo.childCareTypes" type="image, image, image"></v-skeleton-loader>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
       v-for="({key, programYear, childCareCategory} , index) in facilityLookupInfo.childCareTypes" :key="index"
@@ -285,6 +285,7 @@
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState} from 'vuex';
 import ApiService from '@/common/apiService';
+import alertMixin from '@/mixins/alertMixin';
 import axios from 'axios';
 
 import _ from 'lodash';
@@ -349,9 +350,11 @@ export default {
       required: false,
     },
   },
+  mixins: [alertMixin],
   data() {
     return {
       loading: true,
+      processing: false,
       model,
       facilityLookupInfo: {},
       facilityProgramYears: [],
@@ -442,6 +445,7 @@ export default {
       this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async updateParentFees () {
+      this.processing = true;
       let payload = [];
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
@@ -494,9 +498,12 @@ export default {
       payload = JSON.parse(JSON.stringify(payload));
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
       } catch (error) {
         console.info(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      this.processing = false;
     },
   }
 };

@@ -17,13 +17,12 @@ async function updateCCFRIApplication(req, res) {
 
   body.forEach(async(facility) => { 
     let payload = {
-      'ccof_ccfrioptin' : '',
+      'ccof_ccfrioptin' : facility.optInResponse,
     };
-    payload.ccof_ccfrioptin = facility.optInResponse;
-
-    payload = JSON.parse(JSON.stringify(payload));
+    
     log.info(payload);
     let url = `_ccof_application_value=${facility.applicationID},_ccof_facility_value=${facility.facilityID}`;
+    log.info(' brrrr', url);
 
     try {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
@@ -76,7 +75,7 @@ async function upsertParentFees(req, res) {
     );
     
 
-    payload = JSON.parse(JSON.stringify(payload));
+    //payload = JSON.parse(JSON.stringify(payload));
     // log.info(payload);
     let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
 
@@ -92,13 +91,15 @@ async function upsertParentFees(req, res) {
   }); //end forEach
 
 
-  //if no notes, don't bother sending any requests
+  //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
+  //so body[0].notes will always exist 
   if (body[0].notes){
 
     let payload = {
       "ccof_informationccfri" : body[0].notes
     };
 
+    
     try {
       let response = patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
       log.info('notesRes', response);
