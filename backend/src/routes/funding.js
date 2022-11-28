@@ -3,23 +3,26 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createFunding } = require('../components/funding');
-const { validationResult, checkSchema } = require('express-validator');
+const { updateFunding, getFunding } = require('../components/funding');
+const { param, validationResult, checkSchema } = require('express-validator');
 
 module.exports = router;
 
-const organizationSchema = {
-  legalName: {
+const fundingSchema = {
+  maxDaysPerWeek: {
     in: ['body'],
-    exists: { errorMessage: '[legalName] is required', },
-    isLength: { options: { max: 160 }, errorMessage: '[legalName] has a max length of 160' }
+    exists: { errorMessage: '[maxDaysPerWeek] is required', }
   },
 };
 /**
- * Create a new Organization
+ * Create new funding
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [
-  checkSchema(organizationSchema)], (req, res) => {
+router.put('/:fundId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(fundingSchema)], (req, res) => {
   validationResult(req).throw();
-  return createFunding(req, res);
+  return updateFunding(req, res);
+});
+
+router.get('/:fundId', [param('fundId', 'URL param: [fundId] is required').not().isEmpty()], (req, res) => {
+  validationResult(req).throw();
+  return getFunding(req, res);
 });

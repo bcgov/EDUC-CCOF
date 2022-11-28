@@ -171,7 +171,7 @@ export default {
       }
     },
     refreshWithFacility() {
-      let x = this.$route.params.urlFacilityId;
+      let x = this.$route.params.urlGuid;
       this.loadFacility(x);
     },
     async save () {

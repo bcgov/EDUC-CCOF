@@ -57,6 +57,10 @@ export const PATHS = {
     eligibility: '/ccof-application/family/eligibility',
     fundAmount: '/ccof-application/family/funding',
   },
+  documentUpload: '/ecewe-document-upload',
+  eceweEligibility: '/ecewe-eligibility',
+  eceweFacilities: '/ecewe-facilities',
+  eceweSummary:  '/ecewe-summary'
 };
 
 export const NAV_BAR_GROUPS = {

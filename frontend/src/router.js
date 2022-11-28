@@ -30,8 +30,12 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
+import EceweEligibility from '@/components/eceweApplication/Eligibility';
+import EceweFacilities from '@/components/eceweApplication/Facilities';
+import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
+import EceweSummary from '@/components/eceweApplication/Summary';
+
 import SearchFacility from '@/components/FacilitySearch';
-import CcrfiEstimatorSliderSelect from '@/components/CcrfiEstimatorSliderSelect';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
@@ -159,7 +163,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.facInfo + '/:urlFacilityId',
+      path: PATHS.group.facInfo + '/:urlGuid',
       name: 'Facility Information Guid',
       component: FacilityInformation,
       meta: {
@@ -174,18 +178,18 @@ const router = new VueRouter({
       name: 'Funding Amount',
       component: GroupFundAmount,
       meta: {
-        pageTitle: 'Application Confirmation',
+        pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
     {
-      path: PATHS.group.fundAmount + '/:urlCcofBaseFundingId',
+      path: PATHS.group.fundAmount + '/:urlGuid',
       name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
-        pageTitle: 'Application Confirmation',
+        pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
@@ -199,7 +203,7 @@ const router = new VueRouter({
         pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
     {
@@ -211,6 +215,38 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.eceweEligibility,
+      name: 'ECEWE Eligibility',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
+      }
+    },
+    {
+      path: PATHS.eceweFacilities,
+      name: 'ECEWE Facilities',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
+      }
+    },
+    {
+      path: PATHS.documentUpload,
+      name: 'ECEWE Document Upload',
+      component: EceweDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
+      }
+    },
+    {
+      path: PATHS.eceweSummary,
+      name: 'ECEWE Summary',
+      component: EceweSummary,
+      meta: {
+        pageTitle: PAGE_TITLES.ECE_WE
       }
     },
     {

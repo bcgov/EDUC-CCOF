@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="model.isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
@@ -9,14 +9,13 @@
                 <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxDaysPerWeek" label="Maximum number of days per week you provide child care" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxDaysPerYear" label="Maximum of weeks per year you provide child care" />
+                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxWeeksPerYear" label="Maximum of weeks per year you provide child care" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col>
-                <label>Are there months when ALL of the programs at this facility are
-                  closed for the entire month?</label>
+                <label>Are there months when ALL of the programs at this facility are closed for the entire month?</label>
                 <v-radio-group row v-model="model.hasClosedMonth">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
@@ -32,43 +31,43 @@
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="1" label="Jan" />
+                <v-checkbox v-model="model.closedIn1" label="Jan" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="2" label="Feb" />
+                <v-checkbox v-model="model.closedIn2" label="Feb" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="3" label="Mar" />
+                <v-checkbox v-model="model.closedIn3" label="Mar" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="4" label="Apr" />
+                <v-checkbox v-model="model.closedIn4" label="Apr" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="5" label="May" />
+                <v-checkbox v-model="model.closedIn5" label="May" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="6" label="Jun" />
+                <v-checkbox v-model="model.closedIn6" label="Jun" />
               </v-col>
             </v-row>
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="7" label="Jul" />
+                <v-checkbox v-model="model.closedIn7" label="Jul" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="8" label="Aug" />
+                <v-checkbox v-model="model.closedIn8" label="Aug" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="9" label="Sep" />
+                <v-checkbox v-model="model.closedIn9" label="Sep" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="10" label="Oct" />
+                <v-checkbox v-model="model.closedIn10" label="Oct" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="11" label="Nov" />
+                <v-checkbox v-model="model.closedIn11" label="Nov" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="12" label="Dec" />
+                <v-checkbox v-model="model.closedIn12" label="Dec" />
               </v-col>
             </v-row>
 
@@ -218,7 +217,7 @@
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field type="number" outlined required :rules="model.isExtendedHours === 'yes' ? rules.required : []" v-model.number="model.maxDaysPerYearExtended" label="Maximum number of weeks per year you offer extended hours of child care?" />
+                <v-text-field type="number" outlined required :rules="model.isExtendedHours === 'yes' ? rules.required : []" v-model.number="model.maxWeeksPerYearExtended" label="Maximum number of weeks per year you offer extended hours of child care?" />
               </v-col>
             </v-row>
 
@@ -233,44 +232,33 @@
             <v-row>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare4less" label="Group Child Care (under 36 months)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36School4less" label="Group Child Care (36 months to School Age)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4less" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4less" label="Multi-Age Care" />
+                </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare4less" label="Group Child Care (under 36 months)" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare4more" label="Group Child Care (under 36 months)" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare36School4less" label="Group Child Care (36 months to School Age)" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCare36School4more" label="Group Child Care (36 months to School Age)" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCareSchoolAge4less" label="Group Child Care (School Age/ School age care on School Grounds)" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.groupChildCareSchoolAge4more" label="Group Child Care (School Age/ School age care on School Grounds)" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.multiAgeCare4less" label="Multi-Age Care" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" type="number" v-model.number="model.multiAgeCare4more" label="Multi-Age Care" />
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare4more" label="Group Child Care (under 36 months)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36School4more" label="Group Child Care (36 months to School Age)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4more" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4more" label="Multi-Age Care" />
+                </v-row>
               </v-col>
             </v-row>
           </v-container>
@@ -281,71 +269,99 @@
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
         <v-btn color="secondary" outlined x-large :disabled="!isValidForm" @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
   </v-form>
 </template>
 
+<style>
+.padded-row {
+  margin: 10px 0;
+}
+</style>
+
 <script>
 
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
-import { mapActions } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
-
-let model = { closedMonths: [] };
 
 export default {
   mixins: [alertMixin],
   props: {
   },
   computed: {
+    ...mapState('groupFunding', ['fundingModel'])
   },
   data() {
     return {
       isValidForm: undefined,
-      model,
+      processing: false,
+      model: {},
       rules
     };
   },
   methods: {
-    ...mapActions('groupFunding', ['saveGroupFunding']),
+    ...mapActions('groupFunding', ['saveFunding', 'loadFunding', 'fundingId']),
+    ...mapMutations('groupFunding', ['setFundingModel', 'addModelToStore']),
+    ...mapMutations('app', ['setNavBarFundingComplete']),
     previous() {
-      this.$router.push(PATHS.group.facInfo);
+      let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
+      this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
     },
     next() {
-      this.$router.push(PATHS.group.confirmation);
+      let navBar = this.$store.getters['app/getNextNavByFundingId'](this.$route.params.urlGuid);
+      if (navBar?.facilityId) {
+        this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
+      } else {
+        this.$router.push(PATHS.group.confirmation);
+      }
+
     },
     async save() {
       this.processing = true;
-      this.saveModel();
+      this.setFundingModel(this.model);
 
       try {
-        await this.saveGroupFunding();
+        await this.saveFunding();
         this.setSuccessAlert('Success! Funding information has been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
     },
-    saveModel() {
-      this.$store.commit('groupFunding/model', this.model);
-      console.log('model', model);
-    },
     allowedStep: m => m % 5 === 0,
     formatTime
   },
-  mounted() {
-    console.log('mounted');
-    this.model = this.$store.state.groupFunding.model ?? model;
-  },
   beforeRouteLeave(_to, _from, next) {
-    console.log('leaving');
-    this.saveModel();
+    this.setNavBarFundingComplete({fundingId: this.$route.params.urlGuid, complete: this.isValidForm});
+    this.addModelToStore( {fundingId: this.$route.params.urlGuid, model: this.model});
+
     next();
+  },
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        let ccofBaseFundingId = this.$route.params.urlGuid;
+        if (ccofBaseFundingId) {
+          this.loadFunding(ccofBaseFundingId);
+        }
+      },
+      immediate: true,
+      deep: true
+    },
+    fundingModel: {
+      handler() {
+        this.model = { ...this.fundingModel };
+        this.$refs.form?.resetValidation();
+      },
+      immediate: true,
+      deep: true
+    }
   }
 };
 </script>

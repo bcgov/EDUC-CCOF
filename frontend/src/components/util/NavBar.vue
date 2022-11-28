@@ -57,11 +57,10 @@
             <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
               <v-icon>{{ subItem.icon }}</v-icon>
             </v-list-item-icon>              
-
-            <router-link :to="subItem.link" :target="subItem.newTab ? '_blank' : '_self'" class="router">
+            <router-link :is="subItem.isAccessible ? 'router-link' : 'span'" :to="subItem.link" :target="subItem.newTab ? '_blank' : '_self'" class="router">
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
-                <v-list-item-title v-else v-text="subItem.title" class="menuItem text-wrap"></v-list-item-title>
+                <v-list-item-title v-else v-text="subItem.title" :class="subItem.isAccessible? 'menuItem text-wrap' : 'menuItem text-wrap blue-grey--text'"></v-list-item-title>
                 <v-list-item-subtitle v-if="subItem.subTitle">{{ subItem.subTitle }}</v-list-item-subtitle>
               </v-list-item-content>
             </router-link>
@@ -102,11 +101,13 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup']),
-    ...mapState('facility', ['facilityList']),
-    ...mapGetters('facility', ['isFacilityComplete']),
-    ...mapGetters('organization', ['isOrganizationComplete']),
-
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled']),
+    ...mapState('organization', ['isOrganizationComplete']),
+    ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
+    ...mapGetters('groupFunding', ['isNewFundingStarted']),
+    navRefresh() {
+      return this.pageTitle + this.$route.params.urlGuid;
+    },
     navWidth () {
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -117,16 +118,17 @@ export default {
         return '15%';
       }
     }
+
   },
   watch:{
-    pageTitle: {
+    navRefresh: {
       handler() {
         this.refreshNavBar();
       },
       immediate: true,
       deep: true
     },
-    facilityList: {
+    navBarList: {
       handler() {
         this.refreshNavBar();
       },
@@ -146,6 +148,7 @@ export default {
       }
     },    
     refreshNavBar(){
+      console.log('refresh nav bar called');
       this.items = [];
       this.items.push(this.getCCOFNavigation());
       this.items.push(this.getCCFRINavigation());
@@ -219,8 +222,8 @@ export default {
       //   }
       // );
 
-      if (this.facilityList?.length > 0) {
-        this.facilityList?.forEach( item => {
+      if (this.navBarList?.length > 0) {
+        this.navBarList?.forEach( item => {
           items.push(
             {
               title: 'Parent Fees for ' + item.facilityName,
@@ -228,15 +231,12 @@ export default {
               link: { name: 'ccfri-home'},
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid === item.facilityId
               // function: this.loadFacility(x.id)
             },
           );
         });
       } 
-
-
-
       let retval =   {
         title: NAV_BAR_GROUPS.CCFRI,
         isAccessible: true,
@@ -259,26 +259,26 @@ export default {
           isActive: 'Group Organization Information' === this.$route.name
         }
       );
-      if (this.facilityList?.length > 0) {
-        this.facilityList?.forEach((item, index) => {
+      if (this.navBarList?.length > 0) {
+        this.navBarList?.forEach((item, index) => {
           items.push(
             {
               title: 'Facility ' + (index + 1),
               subTitle: item.facilityName,
               id: item.facilityId,
-              link: { name: 'Facility Information Guid', params: {urlFacilityId: item.facilityId}},
+              link: { name: 'Facility Information Guid', params: {urlGuid: item.facilityId}},
               isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlFacilityId === item.facilityId
+              icon: this.getCheckbox(item.isFacilityComplete),
+              isActive: 'Facility Information Guid' === this.$route.name && this.$route.params.urlGuid === item.facilityId
               // function: this.loadFacility(x.id)
             },
             {
               title: 'Funding ' +  (index + 1),
               subTitle: item.facilityName,
-              link: { name: 'Funding Amount Guid' , params: {urlCcofBaseFundingId: item.ccofBaseFundingId}},
+              link: { name: 'Funding Amount Guid' , params: {urlGuid: item.ccofBaseFundingId}},
               isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlCcofBaseFundingId === item.ccofBaseFundingId
+              icon: this.getCheckbox(item.isFundingComplete),
+              isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId
             },
           );
         });
@@ -287,38 +287,36 @@ export default {
         items.push(
           {
             title: 'Facility',
-            subTitle: 'New Facility',
             id: null,
             link: { name: 'Facility Information'},
-            isAccessible: true,
-            icon: 'mdi-checkbox-blank-circle-outline', //replace
-            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlFacilityId == null
+            isAccessible: this.isNewFacilityStarted,
+            icon: this.getCheckbox(false),
+            isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null
             // function: this.loadFacility(x.id)
           },
           {
             title: 'Funding',
             link: { name: 'Funding Amount'},
-            isAccessible: true,
-            icon: 'mdi-checkbox-blank-circle-outline', //replace
+            isAccessible: this.isNewFundingStarted,
+            icon: this.getCheckbox(false),
             isActive: 'Funding Amount' === this.$route.name
           },
         );
 
       }
-
       items.push(
         {
-          title: 'Direct Deposit',
-          link: '',
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
-          isActive: '' === this.$route.name
+          title: 'Confirmation',
+          link: { name: 'Application Confirmation'},
+          isAccessible: this.ccofConfirmationEnabled,
+          icon: this.getCheckbox(this.ccofApplicationComplete),
+          isActive: 'Application Confirmation' === this.$route.name
         }
       );
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        icon: this.getCheckbox(this.ccofApplicationComplete),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items
       };

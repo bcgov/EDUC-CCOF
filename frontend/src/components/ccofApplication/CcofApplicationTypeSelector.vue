@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <div class="pa-10 text-h4">Welcome (Organization name) to CCOF!</div>
+      <div class="pa-10 text-h4">Welcome to CCOF!</div>
     </v-row>
     <v-row justify="space-around">
       <SmallCard title="Group Provider">
@@ -19,6 +19,11 @@
         <v-btn absolute bottom dark color='#003366' :to="paths.family.orgInfo">GO</v-btn>
       </SmallCard>
     </v-row>
+    <v-row justify="space-around">
+      <v-btn color="info" outlined required x-large to="/">Back</v-btn>
+      <span/>
+      <span/>
+    </v-row>    
   </v-container>
 </template>
 

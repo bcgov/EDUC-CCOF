@@ -99,9 +99,9 @@ async function getFacility(req, res) {
     log.info('child care types: ', childCareTypes);
     facility = new MappableObjectForFront(facility, FacilityMappings);
     facility.data.childCareTypes = childCareTypes;
-    log.info(minify(facility));
     return res.status(HttpStatus.OK).json(facility);
   } catch (e) {
+    log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }

@@ -5,7 +5,10 @@ export default {
   state: {
     pageTitle: null,
     showNavBar: false,
-    navBarGroup: '',
+    navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
+    navBarList: [], //holds the generated nav bar
+    ccofApplicationComplete: false,
+    ccofConfirmationEnabled: false,
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -31,12 +34,6 @@ export default {
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
     },
-    setShowNavBar: (state, showNavBar) => {
-      state.showNavBar = showNavBar;
-    },
-    setNavBarGroup: (state, navBarGroup) => {
-      state.navBarGroup = navBarGroup;
-    },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
     },
@@ -57,8 +54,84 @@ export default {
     },
     setOrganizationTypeList: (state, organizationTypeList) => {
       state.organizationTypeList = organizationTypeList;
-    }
+    },
+    //Nav bar stuff
+    setShowNavBar: (state, showNavBar) => {
+      state.showNavBar = showNavBar;
+    },
+    setNavBarGroup: (state, navBarGroup) => {
+      state.navBarGroup = navBarGroup;
+    },
+    bulkAddToNavNBar: (state, facilityList) => {
+      state.navBarList = facilityList;
+    },
+    setNavBarFacilityComplete: (state, {facilityId, complete} ) => {
+      let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
+      if (navBarItem) {
+        navBarItem.isFacilityComplete = complete;
+      }
+    },
+    setNavBarFundingComplete: (state, {fundingId, complete} ) => {
+      let navBarItem = state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+      if (navBarItem) {
+        navBarItem.isFundingComplete = complete;
+      }
+    },    
+    addToNavBarList: (state, payload) => {
+      state.navBarList.push (payload); 
+    },
+    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
+      state.ccofApplicationComplete = ccofApplicationComplete;
+    },
+    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
+      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
+    },
+  },
+  getters: {
+    getNavByFacilityId: (state) => (facilityId) => { 
+      if (!facilityId) {
+        return null;
+      }
+      return state.navBarList.find(item => item.facilityId == facilityId);
+    },
+    getNavByFundingId: (state) => (fundingId) => { 
+      if (!fundingId) {
+        return null;
+      }
+      return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+    },
 
+    getNextNavByFacilityId: (state) => (facilityId) => { 
+      if (!facilityId) {
+        return null;
+      }
+      let index = state.navBarList.findIndex(item => item.facilityId == facilityId);
+      if (index < state.navBarList?.length - 1) {
+        return state.navBarList[index + 1];
+      }
+      return null;
+    },
+    getNextNavByFundingId: (state) => (funding) => { 
+      if (!funding) {
+        return null;
+      }
+      let index = state.navBarList.findIndex(item => item.ccofBaseFundingId == funding);
+      if (index < state.navBarList?.length - 1) {
+        return state.navBarList[index + 1];
+      }
+      return null;
+    },
+
+    getNextPrevByFacilityId: (state) => (facilityId) => { 
+      if (!facilityId) {
+        return null;
+      }
+      let index = state.navBarList.findIndex(item => item.facilityId == facilityId);
+      if (index > 0) {
+        return state.navBarList[index - 1];
+      }
+      return null;
+    }
   },
   actions: {
     async getLookupInfo({ commit }) {
