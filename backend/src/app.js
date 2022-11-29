@@ -27,6 +27,8 @@ const facilityRouter = require('./routes/facility');
 const organizationRouter = require('./routes/organization');
 const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
+const applicationRouter = require('./routes/application');
+const fundingRouter = require('./routes/funding');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -155,8 +157,15 @@ app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/user', userRouter);
+apiRouter.use('/ccof', ccofRouter);
+apiRouter.use('/facility', facilityRouter);
+apiRouter.use('/organization', organizationRouter);
 apiRouter.use('/public', publicRouter);
-
+apiRouter.use('/config',configRouter);
+apiRouter.use('/application', applicationRouter);
+apiRouter.use('/group/funding', fundingRouter);
 
 
 //Handle 500 error

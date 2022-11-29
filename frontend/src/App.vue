@@ -66,6 +66,17 @@ export default {
     ...mapActions('app', ['getLookupInfo']),
   },
   async created() {
+    this.setLoading(true);
+    this.getJwtToken().then(() =>
+      Promise.all([this.getUserInfo(), this.getLookupInfo()])
+    ).catch(e => {
+      if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
+        this.logout();
+        this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
+      }
+    }).finally(() => {
+      this.setLoading(false);
+    });    
     this.setLoading(false);
   }
 };
