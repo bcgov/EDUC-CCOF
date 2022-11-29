@@ -122,9 +122,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
     currentFacility(){
-      return this.facilityList[0]; //TODO - change this to work with multiple facilities 
+      return this.navBarList[0]; //TODO - change this to work with multiple facilities 
     }
   },
   methods: {

@@ -23,7 +23,7 @@
             tiled
             exact tile
             :ripple="false"
-            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus } , index) in facilityList" :key="facilityId">
+            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
             <v-card-text>
               <v-row>
                 <v-col cols="" class="col-12 col-md-8">
@@ -141,10 +141,10 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
   },
   beforeMount: function() {
-    this.showOptStatus = new Array(this.facilityList.length).fill(false);
+    this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
     toggle(index) {
@@ -155,7 +155,7 @@ export default {
     },
     next() {
       this.save();
-      const ccfriComplete = this.facilityList.every((fac, index) => {
+      const ccfriComplete = this.navBarList.every((fac, index) => {
         return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
         //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
       });
@@ -178,7 +178,7 @@ export default {
       this.processing = true;
       let payload = [];
 
-      this.facilityList.forEach (async (facility, index) => {
+      this.navBarList.forEach (async (facility, index) => {
 
         facility.ccfriOptInStatus = ccfriOptInOrOut[index];
 

@@ -18,7 +18,9 @@ import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
 import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
-import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
+
+
+import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';

@@ -272,8 +272,8 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
-          <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" !isValidForm">Next</v-btn>
+          <!--!isValidForm-->
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" false">Next</v-btn>
         <v-btn color="primary" outlined x-large @click="updateParentFees()">
           Save</v-btn>
       </v-row>
@@ -400,13 +400,13 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
     currentFacility(){
-      return this.facilityList[0]; //TODO - change this to work with multiple facilities 
+      return this.navBarList[0]; //TODO - change this to work with multiple facilities 
     }
   },
   beforeMount: function() {
-    this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
+    this.getFacility(this.navBarList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
     
   },
   methods: {
