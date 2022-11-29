@@ -9,10 +9,6 @@
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
     </v-row >
-    <v-row>
-      <v-divider class="mx-16"/>
-    </v-row>
-
      <!-- Application Approved screens starts here -->
     <v-container 
     class="px-10"
@@ -21,8 +17,8 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" @click="startApplicationClicked()">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'">Continue Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" :to="paths.startApplication">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" :to="paths.continueApplication">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
        
@@ -46,10 +42,7 @@
       <v-divider>
       </v-divider>
       <br><br>
-    
-
-      <v-row v-if="facilityList.length > 2">
-        <v-row>
+        <v-row v-if="navBarList.length > 2">
         <v-col class="col-12 col-md-6 ml-xl-3">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API 
@@ -95,7 +88,6 @@
             </v-card-text>
         </v-card>
       </v-row>
-      </v-row>
   </v-container>
 </v-container>
   
@@ -106,8 +98,6 @@ import { mapGetters, mapState} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
-
-import SnackBar from '@/components/util/SnackBar';
 
 export default {
   name: 'LandingPage',
@@ -120,14 +110,18 @@ export default {
   },
   data() {
     return {
-      input : '',
+      input: '',
+      paths: {
+        startApplication:PATHS.selectApplicationType,
+        continueApplication: PATHS.group.orgInfo,
+      },
       results : {},
       
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
     currentYearTwoDigit() {
       return this.currentYear - 2000;
     },
@@ -135,25 +129,30 @@ export default {
       return this.currentYear - 1999;
     },
     filteredList() {
-      if (this.input === '' || this.input === ' '){
-        return this.facilityList;
+      if (this.input === '' || this.input === ' ' || this.input === null){
+        return this.navBarList;
       }
-      return this.facilityList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
+      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      if (this.userInfo.applicationStatus === 'APPROVED'){
-        //false because if the application is approved, we will want to set all the disabled status to false)
-        return false;
-      }
-      return true;
+      return this.userInfo.applicationStatus === null;
     },
     
   },
   methods: {
-    startApplicationClicked() {
-      this.$router.push(PATHS.orgInfo);
-    }
-  },  
+
+    clicked (){
+      console.log('clicked');
+      return '';
+
+    },
+    goToCCFRI() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },
+    
+  },
+  
+
   components: { SmallCard, MessagesToolbar}
 };
 </script>

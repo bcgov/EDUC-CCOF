@@ -6,6 +6,8 @@ export default {
   namespaced: true,
   state: {
     organizationId: null,
+    applicationId: null,
+    applicationStatus: null,
     legalName: null,
     address1: null,
     city1: null,
@@ -20,14 +22,14 @@ export default {
     email: null,
     incNumber: null,
     organizationType: null,
-    isValidForm: false,
+    providerType: null,
+    isOrganizationComplete: false,
     isStarted: false
   },
-  getters: {
-    isOrganizationComplete: state => state.isValidForm,
-  },  
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
+    setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
+    setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
     setLegalName: (state, legalName) => { state.legalName = legalName; },
     setAddress1: (state, address1) => { state.address1 = address1; },
     setCity1: (state, city1) => { state.city1 = city1; },
@@ -42,11 +44,12 @@ export default {
     setEmail: (state, email) => { state.email = email; },
     setIncNumber: (state, incNumber) => { state.incNumber = incNumber; },
     setOrganizationType: (state, organizationType) => { state.organizationType = organizationType; },
-    setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
+    setProviderType: (state, providerType) => { state.providerType = providerType; },
+    setIsOrganizationComplete: (state, isOrganizationComplete) => { state.isOrganizationComplete = isOrganizationComplete; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
   },
   actions: {
-    async saveOrganization({ state, commit }) {
+    async saveOrganization({ state, commit, rootState }) {
 
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
@@ -54,7 +57,10 @@ export default {
       }
 
       let payload = JSON.parse(JSON.stringify(state));
-      payload.incNumber = '' + payload.incNumber; // need to ensure it's a string
+      
+      //set program year:
+      payload.programYearId = rootState.app.programYearList[0].ccof_program_yearid;
+      delete payload['applicationStatus']; //TODO: verify no need to include status as it will be set automatically.
       console.log('payload', payload);
 
       if (state.organizationId) {
@@ -71,6 +77,8 @@ export default {
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
           commit('setOrganizationId', response.data?.organizationId);
+          commit('setApplicationId', response.data?.applicationId);
+          commit('setApplicationStatus', response.data?.applicationStatus);
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
@@ -110,5 +118,6 @@ function commitToState(commit, data) {
   commit('setEmail', data?.email);
   commit('setIncNumber', data?.incNumber);
   commit('setOrganizationType', data?.organizationType);
+
 }
 

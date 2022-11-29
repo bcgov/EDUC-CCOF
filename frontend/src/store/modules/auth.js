@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import AuthService from '@/common/authService';
 // import router from '@/router';
 // import { AuthRoutes } from '@/utils/constants';
-
+//
 function isFollowUpVisit({jwtToken}) {
   return !!jwtToken;
 }
@@ -113,8 +113,10 @@ export default {
       }
       const userInfoRes = await ApiService.getUserInfo();    
       commit('setUserInfo', userInfoRes.data);
-      commit('facility/setFacilityList', userInfoRes.data.facilityList, { root: true });
+      commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
+      commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
+      commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });
       commit('setIsUserInfoLoaded', true);
     },
 

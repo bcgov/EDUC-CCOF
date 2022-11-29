@@ -1,12 +1,16 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { STATUS_CODES, CCOF_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES } = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, OPTIN_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings } = require('../util/mapping/Mappings');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
+
+
 
 async function getUserInfo(req, res) {
 
@@ -23,68 +27,58 @@ async function getUserInfo(req, res) {
     email: req.session.passport.user._json.email,
     organizationName: null,
     organizationId:  null,
+    applicationId: null,
     applicationStatus: null,
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
-    unreadMessages: true, 
+    unreadMessages: false, 
     facilityList: [],
   };
 
   let userGuid = getUserGuid(req);
-  console.info('User Guid is: ', userGuid);
+  log.verbose('User Guid is: ', userGuid);
+ 
   const userResponse = await getUserProfile(userGuid);
 
-  log.verbose('Status  :: is :: ', userResponse.status);
-  log.verbose('StatusText   :: is :: ', userResponse.statusText);
-  log.verbose('Response   :: is :: ', minify(userResponse.data));
+  if (log.isVerboseEnabled) {
+    log.verbose('getUserProfile response:',minify(userResponse));
+  }
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
     return res.status(HttpStatus.OK).json(resData);
   }
-
   //Organization is not normalized, grab organization info from the first element
-  resData.organizationName  = userResponse[0]['Organization.name'];
-  resData.organizationId  = userResponse[0]['_ccof_organization_value'];
-  let statusCode = userResponse[0]['_ccof_organization_value'];
-  if (statusCode) {
-    statusCode = CCOF_STATUS_CODES[userResponse[0]['Application.statuscode']];
-    if (!statusCode) {
-      // TODO: should really throw an error, but for now until the
-      // statuses are stable, just return whatever the value is.
-      statusCode = `UNKNOWN - [${userResponse[0]['Application.statuscode']}]`;
-    }
-  } else {
-    // No status code means new CCOF application
-    statusCode = STATUS_CODES.NEW;
-  }
-  resData.applicationStatus  = statusCode;
-
-  let facilityArr = userResponse.map(item => {
-    return  _(item).pick(Object.keys(GetUserProfileKeyMap)).mapKeys((value,key) => GetUserProfileKeyMap[key]).value();
-  });
-  facilityArr.map( item => {
-    item.ccfriStatus = CCFRI_STATUS_CODES[item.ccfriStatus];
-    item.eceweStatus = ECEWE_STATUS_CODES[item.eceweStatus];
-    return item;
-  });
-  resData.facilityList = facilityArr;
+  let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
   
-  return res.status(HttpStatus.OK).json(resData);
+  organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
+  organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
+  let facilityList = [];
+  userResponse.forEach(item => {
+    let facility = new MappableObjectForFront(item, UserProfileFacilityMappings).data;
+    if (!_.isEmpty(facility)) {
+      facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
+      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
+      facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
+      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES);
+      facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
+      facilityList.push(facility);
+    }
+  });
+  
+  resData.facilityList = facilityList;
+  let results = {
+    ...resData,
+    ...organization
+  };
+  
+  return res.status(HttpStatus.OK).json(results);
 }
-
-const GetUserProfileKeyMap = {
-  'CCOF.ccof_facility' : 'facilityId',
-  'CCOF.Facility.name' : 'facilityName',
-  'CCFRI.statuscode' : 'ccfriStatus',
-  'ECEWE.statuscode' : 'eceweStatus',
-};
-
 
 async function getUserProfile(businessGuid) {
   
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
-    log.verbose('UserProfile Url is', url);
+    log.info('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
   } catch (e) {

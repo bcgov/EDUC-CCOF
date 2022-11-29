@@ -48,6 +48,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'loginError', 'isLoading']),
+    
     ...mapState('app', ['pageTitle', 'showNavBar']),
     isIE() {
       return /Trident\/|MSIE/.test(window.navigator.userAgent);

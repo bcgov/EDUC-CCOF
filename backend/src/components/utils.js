@@ -13,6 +13,33 @@ const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
 const cache = require('memory-cache');
 
+function getConstKey(constants, value) {
+  if (value) {
+    for (let key in constants) {
+      if (constants[key] === value) {
+        return key;
+      }
+    }
+    log.error(`getConstKey: Unable to find key for value: [${value}] for const: [${constants.constructor?.name}]`);
+  }
+  return undefined;
+  
+}
+
+function getLabelFromValue(value, constants, defaultValue) {
+  if (!value && defaultValue) {
+    return defaultValue;
+  }
+  if (value) {
+    let retVal = getConstKey(constants,value);
+    if (retVal) {
+      return retVal;
+    } else {
+      return `UNKNOWN - [${value}]`;
+    }
+  } 
+  return value;
+}
 
 //const {getUserInfo} = require('./user.js');
 let memCache = new cache.Cache();
@@ -195,6 +222,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
     logResponse('patchOperationWithObjectId', response);
     return response.data;
   } catch (e) {
+    log.error(e);
     log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
   }
@@ -227,7 +255,7 @@ async function getDataWithParams(token, url, params, correlationID) {
       correlationID: correlationID || uuidv4()
     };
 
-    log.info('get Data Url', url);
+    //log.info('get Data Url', url);
     const response = await axios.get(url, params);
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
     log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
@@ -400,24 +428,7 @@ function getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     }
   };
 }
-function cacheMiddleware() {
-  return (req, res, next) => {
-    let key = '__express__' + req.originalUrl || req.url;
-    let cacheContent = memCache.get(key);
-    if (cacheContent) {
-      res.send(cacheContent);
-    } else {
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        if (res.statusCode < 300 && res.statusCode >= 200) {
-          memCache.put(key, body);
-        }
-        res.sendResponse(body);
-      };
-      next();
-    }
-  };
-}
+
 function getBackendToken(req) {
   const thisSession = req.session;
   return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
@@ -451,10 +462,11 @@ const utils = {
   formatCommentTimestamp,
   errorResponse,
   getCodes,
-  cacheMiddleware,
   getCodeTable,
   minify,
-  getHttpHeader
+  getHttpHeader,
+  getConstKey,
+  getLabelFromValue
 };
 
 module.exports = utils;
