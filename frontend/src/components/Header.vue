@@ -4,6 +4,7 @@
     <v-container
     :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
     >
+    <v-row class="justify-space-between">
     <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
       <img
           tabindex="-1"
@@ -12,12 +13,11 @@
           alt="B.C. Government Logo"
       >
     </a>
-
-    <v-spacer></v-spacer>
-    <div v-if="isAuthenticated && dataReady">
+    
+    <div v-if="isAuthenticated && dataReady" class="">
       <v-menu name="user_options" offset-y>
         <template v-slot:activator="{ on }">
-          <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
+          <v-chip tabindex="0" v-on="on" pill color="#003366" dark class="mt-7">
             <v-avatar left color="info">
               {{ userInfo.displayName[0] }}
             </v-avatar>
@@ -42,6 +42,7 @@
       <v-skeleton-loader type="chip">
       </v-skeleton-loader>
     </div>
+  </v-row>
   </v-container>
   </v-system-bar>
 </template>
