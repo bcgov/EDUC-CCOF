@@ -44,7 +44,8 @@ export const PATHS = {
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
   addNewFees: '/ccfriApplication/group/add-new-fees',
   currentFees: '/ccfriApplication/group/current-fees',
-  ccfriRequestMoreInfo: '/ccfriApplication/group/ccfri-request-info',
+  ccfriRequestMoreInfo: '/ccfri-application/request-info',
+  WageIncrease: '/ccfri-application/request-info/wage-increase',
   selectApplicationType: '/ccof-application/select-application-type',
   group: {
     orgInfo: '/ccof-application/group/organization',

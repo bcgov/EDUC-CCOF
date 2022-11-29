@@ -21,6 +21,7 @@ import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 
 
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
+import WageIncrease from '@/components/RFI/WageIncrease';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -277,6 +278,16 @@ const router = new VueRouter({
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.WageIncrease,
+      name: 'ccfri-wage-increase',
+      component: WageIncrease,
+      meta: {
+        pageTitle: 'CCFRI Wage Increase',
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI
       }
