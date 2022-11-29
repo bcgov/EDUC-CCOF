@@ -1,44 +1,46 @@
 <template>
   <v-form ref="searchForm" @submit.prevent>
     <v-row justify="center">
-      <v-col cols="10" style="padding-top:0px;">
-        <v-card elevation="4">
+      <v-col cols="12" style="padding-top:0px;" align="center">
+        <v-card elevation="4" max-width="1448">
           <v-row>
             <v-col style="padding-top:0%;padding-bottom:0px;">
-                <v-card-title class="pt-2 pb-2" style="color:white;font-style:normal;font-weight:700;font-family:Inter;font-size:20px;background-color:#431782;">Optional Facility Search</v-card-title>
+                <v-card-title class="pt-2 pb-2" style="color:white;font-style:normal;font-family:BCSans;font-weight:700;font-size:20px;background-color:#431782;">Optional Facility Search</v-card-title>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" class="pt-5">
+            <v-col cols="10" class="pt-5 text-left">
               <div color="#313131" style="padding-left:24px;font-style:normal;font-weight:500;font-family:BCSans;font-size:16px;">
                 Enter a facility name or city of a licensed child care provider participating in CCFRI
               </div>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="10" sm=9 class="py-0">
+            <v-col cols="10" sm=9 class="py-0 pr-0">
               <v-text-field
                 ref="searchCriteria"
+                style="padding-left:34px;"
                 background-color="white"
                 dense
                 clearable
-                @click:clear="clearNoValidation()"
+                @click:clear="clearAndDontShowValidation('searchCriteria')"
                 hint="Type your keyword here"
                 v-model="searchCriteria"
                 outlined
                 required
                 :rules="rulesSearchCriteria"
-                v-on:keydown.enter="searchFacilities(searchCriteria);loading=true"
+                v-on:keydown.enter="searchFacilities(searchCriteria);"
                 >
               </v-text-field>
             </v-col>
-            <v-col class="pt-0" cols="3">
+            <v-col class="pt-0 pl-0 text-left" cols="3">
               <v-dialog
                 v-model="dialog"
                 persistent
+                max-width="650px"
                 @click:outside="dialog = false">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="font-style:normal;font-weight:700;font-family:Inter;font-size:16px;margin-left:10px"
+                  <v-btn style="font-style:normal;font-weight:700;font-family:BCSans;;font-size:16px;margin-left:10px"
                     color="#0483AF"
                     dark
                     v-bind="attrs"
@@ -65,16 +67,20 @@
                     <v-row >
                       <v-col cols="12" class="d-flex pb-0" style="padding-left:24px;padding-bottom:0px;">
                         <v-text-field
+                          ref="searchCriteriaOnDialogue"
                           v-model="searchCriteria"
                           :disabled="loading"
                           outlined
                           required
                           dense
-                          v-on:keydown.enter="searchFacilities(searchCriteria);loading=true"
+                          clearable
+                          @click:clear="clearAndDontShowValidation('searchCriteriaOnDialogue')"
+                          v-on:keydown.enter="searchFacilities(searchCriteria);"
+                          :rules="rulesSearchCriteria"
                           style="padding-right:3px;">
                         </v-text-field>
                         <v-btn icon style="margin-right:18px;" :disabled="loading"
-                          @click="searchFacilities(searchCriteria);loading=true">
+                          @click="searchFacilities(searchCriteria);">
                           <v-card color="#0483AF" style="margin-top:2px;padding-top:8px;padding-bottom:8px;padding-left:6px;padding-right:6px">
                           <v-icon style=""
                             large
@@ -99,20 +105,38 @@
                           loading-text="Loading..."
                           :hide-default-footer="loading">
                           <template v-slot:item="{ item }">
-                          <tr :class="selectedFacility.indexOf(item.name)>-1?'grey':''" @click="rowSelected(item);dialog=false">
-                            <td style="padding-bottom:10px;padding-top:10px;">
-                              <span style="font-weight:600;color:#431782;font-size:16px;font-family:Inter;">{{ item.facilityName }}</span>
-                              <br>
-                              <span style="font-weight:600;color: #000;font-size:14px;font-family:Inter;">City: </span>{{ item.city }}
-                            </td>
-                            <td class="text-right">
-                              <v-btn style="font-style:normal;font-weight:500;font-family:Inter;font-size:14px;padding-left:24px;padding-right:24px;"
-                                color="#0483AF"
-                                dark>
-                                Select
-                              </v-btn>
-                            </td>
-                          </tr>
+                            <tr :class="selectedFacility.indexOf(item.name)>-1?'grey':''" @click="rowSelected(item);dialog=false">
+                              <td style="padding-bottom:10px;padding-top:10px;">
+                                <span style="font-weight:600;color:#431782;font-size:16px;font-family:BCSans;">{{ item.facilityName }}</span>
+                                <br>
+                                <span style="font-weight:600;color: #000;font-size:14px;font-family:BCSans;">City: </span>{{ item.city }}
+                              </td>
+                              <td class="text-right">
+                                <v-btn style="font-style:normal;font-weight:500;font-family:BCSans;font-size:14px;padding-left:24px;padding-right:24px;"
+                                  color="#0483AF"
+                                  dark>
+                                  Select
+                                </v-btn>
+                              </td>
+                            </tr>
+                          </template>
+                          <template slot="no-data">
+                            <span style="color:#0483AF;font-weight:bold;font-size:large;">No facilities were found matching your search criteria.<br/> Try different keywords or check your spelling.</span><br/><br/>
+                          </template>
+                          <template v-slot:body.append>
+                            <tr v-show="!loading && searchResults.length == 50">
+                              <td colspan="2">
+                                <table> <!--//NOSONAR-->
+                                  <tr>
+                                    <td colspan="1" with="10%" style="vertical-align:top;"><span style="color:#0FC3ED;font-weight:bold;font-size:x-large;">*</span></td>
+                                    <td style="padding-top:2px">
+                                      <span style="font-style:italic;font-size:small;">
+                                        Only the first 50 results of your search are viewable. Try narrowing down your search by using additional keywords.
+                                      </span></td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
                           </template>
                         </v-data-table>
                         <v-skeleton-loader max-height="375px" v-if="loading" :loading="loading" type="table-tbody, table-tfoot"></v-skeleton-loader>
@@ -157,8 +181,12 @@ export default {
     };
   },
   methods: {
-    clearNoValidation() {
-      this.$refs.searchCriteria.resetValidation();
+    clearAndDontShowValidation(ref) {
+      if (ref == 'searchCriteriaOnDialogue') {
+        this.$refs.searchCriteriaOnDialogue.resetValidation();
+      } else if (ref == 'searchCriteria') {
+        this.$refs.searchCriteria.resetValidation();
+      }
     },
     rowSelected(facility) {
       this.toggleSelection(facility.facilityName);
@@ -169,7 +197,6 @@ export default {
         this.$emit('selectedFacility', this.facilityResult);      
       });
       this.dialog = false;
-      //this.$refs.searchForm.reset();
     },
     toggleSelection(keyID) {
       if (this.selectedFacility.includes(keyID)) {
@@ -187,7 +214,7 @@ export default {
           this.dialog = true;
           this.searchResults = (await axios.get('/api/public/facilities?criteria={'+urlEncodedCriteria+'}&pageindex={}')).data;
           this.loading = false;
-        } 
+        }
       } catch (error) {
         console.info(error);
       }
@@ -202,3 +229,12 @@ export default {
   }
 };
 </script>
+
+<style>
+.fa-chevron-left:before {
+  color: #0FC3ED !important;
+}
+.fa-chevron-right:before {
+  color: #0FC3ED !important;
+}
+</style>
