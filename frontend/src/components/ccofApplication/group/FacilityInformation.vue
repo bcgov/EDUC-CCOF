@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm ">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
