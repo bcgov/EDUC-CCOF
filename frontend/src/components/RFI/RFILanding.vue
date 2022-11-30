@@ -80,6 +80,7 @@
           :ripple="false"
           
         >
+      
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
@@ -89,15 +90,26 @@
             <v-toolbar 
               color="blue lighten-4"
               justify="center"
+              class="ma-md-4"
             >
-              <v-toolbar-title class="flex " >
-                <h3>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</h3>
+              <v-toolbar-title class="flex ml-md-5" >
+                <v-row>
+                  <font-awesome-icon icon="fa-solid fa-circle-info " class="fa-2x mx-4"/> <h3>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</h3>
+                </v-row>
               </v-toolbar-title >
             </v-toolbar>
             <br>
             <div class="px-md-12 px-7">
               <v-row  v-for="(expense, index) in expenseList" :key="index">
+                <v-btn 
+                text
+                class="my-5"
+                @click="removeExpense(index)"
+                >
+                  <font-awesome-icon icon="fa-solid fa-circle-xmark" class="fa-xl"/>
+                </v-btn>
                 <v-col class="col-md-3 col-12 ">
+                  
                   <v-text-field
                     class = ""
                     v-model="expense.description"
@@ -123,10 +135,6 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <v-text-field type="number" outlined :rules="rules"  v-model.number="expense.expense"  prefix="$"/>
-                </v-col>
-
-                <v-col class="col-md-3 col-12">
                   <v-select
                     :items="items"
                     label=""
@@ -134,6 +142,10 @@
                     v-model="expense.frequency"
                     :rules="rules"
                   ></v-select>
+                </v-col>
+
+                <v-col class="col-md-2 col-12">
+                  <v-text-field type="number" outlined :rules="rules"  v-model.number="expense.expense"  prefix="$"/>
                 </v-col>
 
               </v-row> <!-- end v for-->
@@ -220,6 +232,13 @@
 
                 <div  v-if="model.q3 === 'Yes'">
                   <v-row  v-for="(fundInfo, index) in fundingList" :key="index">
+                    <v-btn 
+                text
+                class="my-5"
+                @click="removeFunding(index)"
+                >
+                  <font-awesome-icon icon="fa-solid fa-circle-xmark" class="fa-xl"/>
+                </v-btn>
                     <v-col class="col-md-3 col-12 ">
                       <v-text-field
                         class = ""
@@ -260,7 +279,7 @@
                       <v-text-field type="number" outlined :rules="rules"  v-model.number="fundInfo.amount"  prefix="$"/>
                     </v-col>
 
-                    <v-col class="col-md-3 col-12 ">
+                    <v-col class="col-md-2 col-12 ">
                       <v-text-field
                         class = ""
                         v-model="fundInfo.expenses"
@@ -385,6 +404,18 @@ export default {
         expense: 0,
         frequency: ''
       });
+    },
+    removeExpense(index){
+      if (index == 0){
+        return;
+      }
+      this.expenseList.splice(index, 1);
+    },
+    removeFunding(index){
+      if (index == 0){
+        return;
+      }
+      this.fundingList.splice(index, 1);
     },
     addFunding () {
       this.fundingList.push({
