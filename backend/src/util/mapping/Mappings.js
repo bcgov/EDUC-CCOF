@@ -105,7 +105,7 @@ const UserProfileOrganizationMappings = [
 const UserProfileFacilityMappings = [
   { back: 'CCOF.ccof_facility', front: 'facilityId' },
   { back: 'CCOF.Facility.name', front: 'facilityName' },
-  // { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber'},
+  { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber'},
   //base funding
   { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId' },
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },

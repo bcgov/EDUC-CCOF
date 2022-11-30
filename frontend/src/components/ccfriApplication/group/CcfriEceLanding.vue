@@ -1,10 +1,5 @@
 <template>
     <v-container>
-        <div>
-            <MessagesToolbar></MessagesToolbar>
-        </div>
-        <br><br>
-        
         <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
           this will need to get changed at a later point when the API is more built out 
           there is also no logic about if you can click next or not 
@@ -21,7 +16,7 @@
             tiled
             exact tile
             :ripple="false"
-            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus } , index) in facilityList" :key="facilityId">
+            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
             <v-card-text>
               <v-row>
                 <v-col cols="" class="col-12 col-md-8">
@@ -136,10 +131,10 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
   },
   beforeMount: function() {
-    this.showOptStatus = new Array(this.facilityList.length).fill(false);
+    this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
     toggle(index) {
@@ -152,7 +147,7 @@ export default {
     },
     next() {
       this.updateCCFRI();
-      const ccfriComplete = this.facilityList.every((fac, index) => {
+      const ccfriComplete = this.navBarList.every((fac, index) => {
         return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
         
       });
@@ -174,7 +169,7 @@ export default {
     async updateCCFRI () {
       let payload = [];
 
-      this.facilityList.forEach (async (facility, index) => {
+      this.navBarList.forEach (async (facility, index) => {
 
         facility.ccfriOptInStatus = ccfriOptInOrOut[index];
 
