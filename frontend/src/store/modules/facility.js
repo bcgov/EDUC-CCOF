@@ -41,14 +41,12 @@ export default {
         console.log('unable to save because you are not logged in');
         throw 'unable to save because you are not logged in';
       }
-      let payload = JSON.parse(JSON.stringify(state.facilityModel));
-      payload.organizationId = organizationId;
-      payload.applicationId = rootState.organization.applicationId;
-      console.log('payload', payload);
+      let payload = { ...state.facilityModel, organizationId,  applicationId:rootState.organization.applicationId};
       if (state.facilityId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
+
           commit('setFacilityModel', response.data);
           commit('addFacilityToStore', {facilityId: state.facilityId, facilityModel: response.data});
           return response;

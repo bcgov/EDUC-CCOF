@@ -1,24 +1,37 @@
 'use strict';
-const { getOperation, patchOperationWithObjectId, getOperationWithObjectId } = require('./utils');
+const { patchOperationWithObjectId, getOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 
+function mapFundingObjectForBack(data) {
 
-async function createFunding(req, res) {
-  try {
-    let operation = 'ccof_application_basefundings';
-    console.info('post operation: ', operation);
-    let funding = await getOperation(operation);
-
-    let model = new MappableObjectForFront(funding, CCOFApplicationFundingMapping);
-    console.log('BACK', funding);
-    console.log('MODEL', model);
-
-    return res.status(HttpStatus.OK).json(model);
-  } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  if (data.hasClosedMonth === 'no') {
+    for (let i = 1; i <= 12; i++) {
+      data[`closedIn${i}`] = 0;
+    }
+  } else { 
+    for (let i = 1; i <= 12; i++) {
+      data[`closedIn${i}`] ? data[`closedIn${i}`] = 1 : data[`closedIn${i}`] = 0;
+    }
   }
+
+  let fundingForBack = new MappableObjectForBack(data, CCOFApplicationFundingMapping).toJSON();
+
+  return fundingForBack;
+}
+
+function mapFundingObjectForFront(data) {
+  let fundingForFront = new MappableObjectForFront(data, CCOFApplicationFundingMapping).toJSON();
+
+  fundingForFront.hasClosedMonth = 'no';
+  for (let i = 1; i <= 12; i++) {
+    if (fundingForFront[`closedIn${i}`] === 1) {
+      fundingForFront.hasClosedMonth = 'yes';
+    }
+  }
+
+  return fundingForFront;
 }
 
 async function updateFunding(req, res) {
@@ -27,14 +40,9 @@ async function updateFunding(req, res) {
 
     console.log('patch operation: ', `ccof_application_basefundings(${fundId})`);
 
-    let payload = req.body;
-    payload = new MappableObjectForBack(payload, CCOFApplicationFundingMapping);
-    payload = payload.toJSON();
-    console.log('PAYLOAD', payload);
+    let payload = mapFundingObjectForBack(req.body);
     let response = await patchOperationWithObjectId('ccof_application_basefundings', fundId, payload);
-    console.log('BACK', response);
-    response = new MappableObjectForFront(response, CCOFApplicationFundingMapping);
-    console.log('MODEL', response);
+    response = mapFundingObjectForFront(response);
 
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -46,10 +54,7 @@ async function getFunding(req, res) {
   try {
     console.info('get operation: ', `ccof_application_basefundings(${req.params.fundId})`);
     let funding = await getOperationWithObjectId('ccof_application_basefundings', req.params.fundId);
-
-    let model = new MappableObjectForFront(funding, CCOFApplicationFundingMapping);
-    console.log('BACK', funding);
-    console.log('MODEL', model);
+    let model = mapFundingObjectForFront(funding);
 
     return res.status(HttpStatus.OK).json(model);
   } catch (e) {
@@ -60,5 +65,4 @@ async function getFunding(req, res) {
 module.exports = {
   updateFunding,
   getFunding,
-  createFunding
 };
