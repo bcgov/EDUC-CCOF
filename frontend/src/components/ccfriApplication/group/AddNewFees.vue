@@ -8,7 +8,7 @@
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityLookupInfo.licenseNumber}} </p> <br><br>
+      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityModel.licenseNumber}} </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in facilityLookupInfo.childCareTypes" :key="index"
+      v-for="({key, programYear, childCareCategory} , index) in facilityModel.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -283,7 +283,7 @@
 </template>
 <script>
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState} from 'vuex';
+import { mapGetters, mapState, mapActions} from 'vuex';
 import ApiService from '@/common/apiService';
 import axios from 'axios';
 
@@ -353,7 +353,6 @@ export default {
     return {
       loading: true,
       model,
-      facilityLookupInfo: {},
       facilityProgramYears: [],
       isValidForm : false,
       datePicker,          //vmodel for entering closure fees
@@ -397,27 +396,25 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityList']),
+    ...mapState('app', ['navBarList']),
+    ...mapState('facility', ['facilityModel']),
     currentFacility(){
-      return this.facilityList[0]; //TODO - change this to work with multiple facilities 
+      return this.navBarList[0]; //TODO - change this to work with multiple facilities 
     }
   },
-  beforeMount: function() {
-    this.getFacility(this.facilityList[0].facilityId); //TODO -- Work on getting this facility into the store and pushing it there
-    
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        console.log('ccfriFacilityGuid', this.$route.params.ccfriFacilityGuid);
+        this.loadFacility(this.$route.params.ccfriFacilityGuid);
+        this.loading = false;
+      },
+      immediate: true,
+      deep: true
+    }
   },
   methods: {
-    //TODO: get this data from the store 
-    async getFacility (id) {
-      try {
-        this.facilityLookupInfo = await (axios.get('/api/facility/'+id));
-        this.facilityLookupInfo = this.facilityLookupInfo.data;
-        //console.log(this.facilityLookupInfo.data);
-        this.loading = false;
-      } catch (error) {
-        console.info(error);
-      }
-    },
+    ...mapActions('facility', ['loadFacility']),    
     addDate(){
       dates.push({
         message: this.model.closureReason,
@@ -450,7 +447,7 @@ export default {
       //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
 
       //index will also match the order of how the cards are displayed. 
-      this.facilityLookupInfo.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
+      this.facilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
 
         //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
         let childCareCatGUID = _.find(this.lookupInfo.childCareCategory, {ccof_description : childCareType.childCareCategory });
