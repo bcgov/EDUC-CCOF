@@ -41,7 +41,7 @@
             <v-spacer></v-spacer>
             <v-card-actions class="mt-auto">
               <v-row >
-                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
+                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
               </v-row>
             </v-card-actions>
           </v-card>

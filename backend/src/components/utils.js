@@ -84,6 +84,14 @@ function getUserGuid(req) {
   }
   return guid;
 }
+function isIdirUser(req) {
+  const userInfo = req.session?.passport?.user;
+  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+    throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
+  }
+  let idirGuid = req.session?.passport?.user?._json?.idir_user_guid;
+  return idirGuid ? true : false;
+}
 function getUserName(req) {
   let userName = req.session?.passport?.user?._json?.bceid_username;
   if (!userName) {
@@ -445,6 +453,7 @@ const utils = {
   getSessionUser,
   getAccessToken,
   getUserGuid,
+  isIdirUser,
   getUserName,
   deleteData,
   forwardGetReq,

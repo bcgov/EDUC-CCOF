@@ -1,5 +1,5 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue, postOperation} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue, postOperation, isIdirUser} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -20,11 +20,13 @@ async function getUserInfo(req, res) {
       message: 'No session data'
     });
   }
-
+  let isIdir = isIdirUser(req);
+  let userName = req.params?.userName;
   let resData = {
-    displayName: req.session.passport.user._json.display_name,
+    displayName: (userName)? req.session.passport.user._json.display_name + '|' + userName : req.session.passport.user._json.display_name,
     userName: getUserName(req),
     email: req.session.passport.user._json.email,
+    isMinistryUser: isIdir,
     organizationName: null,
     organizationId:  null,
     applicationId: null,
@@ -33,10 +35,16 @@ async function getUserInfo(req, res) {
     unreadMessages: false, 
     facilityList: [],
   };
-
-  let userGuid = getUserGuid(req);
+  if (isIdir && !userName) {
+    //Return from here since ministry staff should not have an account
+    return res.status(HttpStatus.OK).json(resData);
+  }
+  let userGuid = (isIdir && userName) ? req.params.userName : getUserGuid(req); //TODO: convert username to guid
   log.verbose('User Guid is: ', userGuid);
- 
+  if (!userGuid) {
+    //userGuid will be null if ministry staff and initial login without userName
+    return res.status(HttpStatus.OK).json(resData);
+  }
   const userResponse = await getUserProfile(userGuid);
 
   if (log.isVerboseEnabled) {
@@ -45,7 +53,11 @@ async function getUserInfo(req, res) {
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
-    return res.status(HttpStatus.OK).json(resData);
+    if (isIdir) {
+      return res.status(HttpStatus.NOT_FOUND).json(resData);      
+    } else {
+      return res.status(HttpStatus.OK).json(resData);
+    }
   }
   if (userResponse === 'abc') { //TODO: get the right way
     creatUser(req);

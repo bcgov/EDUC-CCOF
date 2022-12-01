@@ -5,7 +5,7 @@ let object;
 
 object = {
   LOGIN: authRoot + '/login',
-  LOGIN_IDIR: authRoot + '/login',
+  LOGIN_IDIR: authRoot + '/login-idir',
   DASHBOARD: '/',
   LOGOUT: authRoot + '/logout',
   SESSION_EXPIRED: authRoot + '/logout?sessionExpired=true',
@@ -46,6 +46,7 @@ export const PATHS = {
   currentFees: '/ccfriApplication/group/current-fees',
   ccfriRequestMoreInfo: '/ccfriApplication/group/ccfri-request-info',
   selectApplicationType: '/ccof-application/select-application-type',
+  impersonate: '/impersonate',
   group: {
     orgInfo: '/ccof-application/group/organization',
     facInfo: '/ccof-application/group/facility',
