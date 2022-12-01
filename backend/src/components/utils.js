@@ -89,8 +89,15 @@ function isIdirUser(req) {
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
   }
-  let idirGuid = req.session?.passport?.user?._json?.idir_user_guid;
-  return idirGuid ? true : false;
+  let isIdir = (req.session?.passport?.user?._json?.idir_user_guid) ? true : false;
+
+  //For local development only.
+  //generally set isIdirUser to false, so that developers can log in using their
+  //IDIRS as a normal, non-ministry user.
+  if ('local' === config.get('environment') && !config.get('server:useImpersonate')) {
+    return false;
+  }
+  return isIdir;
 }
 function getUserName(req) {
   let userName = req.session?.passport?.user?._json?.bceid_username;

@@ -25,7 +25,7 @@
           </v-chip>
         </template>
         <v-list dark color="#003366">
-          <v-list-item style="min-height: 4vh" id="home_button" :href='authRoutes.DASHBOARD'>
+          <v-list-item style="min-height: 4vh" id="home_button" :to='authRoutes.DASHBOARD'>
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
           <v-list-item v-if="isMinistryUser" id="impersonate_button" :to='PATHS.impersonate'>

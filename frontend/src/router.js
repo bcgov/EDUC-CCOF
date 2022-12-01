@@ -358,8 +358,12 @@ router.beforeEach((to, _from, next) => {
           } else {
             next();
           }
-        }).catch(() => {
-          next('error');
+        }).catch((error) => {
+          if (error.response?.status == '401') {
+            next('unauthorized');
+          } else {
+            next('error');
+          }
         });
       }
     }).catch(() => {
