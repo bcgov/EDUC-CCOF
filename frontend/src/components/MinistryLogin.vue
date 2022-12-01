@@ -9,11 +9,11 @@
             :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
             max-height="300"
             max-width="1448" >
-            <v-row class=" ml-4 my-16">
+            <v-row class="ml-4 my-16">
               <v-col sm="10" align="left" >
               <span class="white--text" >
-                <p class="text-h3"   style="font-family:BCSans;">My ChildCare Services</p> <br><br>
-                <p class="text-h5 ">Welcome</p>
+                <p class="text-h3">My ChildCare Services</p> <br><br>
+                <p class="text-h5">Ministry Login</p>
               </span>
             </v-col>
           </v-row>
@@ -30,10 +30,9 @@
       <v-row>
         <v-col class="xs-12 lg-4 xl-2 ">
           <v-divider></v-divider>
-          <!-- Add height="100%" to div directly below to have the buttons line up with each other on desktop.-->
           <v-card flat class="d-flex flex-column" >
             <v-card-title class="gov-header">
-              <h4 id="login_text">Use your Business BCeID</h4>
+              <h4 id="login_text">Use your IDIR Account</h4>
             </v-card-title>
             <v-card-text id="login_descriptor">
               Enter your user ID and password to continue.
@@ -41,7 +40,7 @@
             <v-spacer></v-spacer>
             <v-card-actions class="mt-auto">
               <v-row >
-                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
+                <v-btn id="login-button" @click="clearStorage" :href="authRoutes.LOGIN_IDIR" class="ma-5" dark color='#003366'>Log In<v-icon>mdi-login</v-icon></v-btn>
               </v-row>
             </v-card-actions>
           </v-card>
@@ -51,18 +50,12 @@
         <v-divider></v-divider>
         <v-card flat class="d-flex flex-column">
           <v-card-title class="gov-header">
-            <h4 id="login_text">Don't have a BCeID?</h4>
+            <h4 id="login_text">Ministry Login</h4>
           </v-card-title>
           <v-card-text id="login_descriptor">
-            BCeID is a user ID and password. You can use it to log into many participating government services. <br><br>
-            If you have logged into other B.C. government services before, you may already have an account. <br><br>
-            You must register for a Business BCeID before you can log in - it only takes a few minutes.
+            This login is for Ministry users only.
+            You must be authorized to use this login.
           </v-card-text>
-          <v-card-actions>
-            <v-row >
-              <v-btn href="https://www.bceid.ca/register/business/getting_started/getting_started.aspx" class="ma-5" dark color='#003366'>Register for a BCeID<v-icon>mdi-login</v-icon></v-btn>
-            </v-row>
-          </v-card-actions>
         </v-card>
       </v-col>
       </v-row>
@@ -109,8 +102,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { AuthRoutes } from '@/utils/constants';
-import { PATHS } from '@/utils/constants';
+import { AuthRoutes, PATHS } from '@/utils/constants';
 
 export default {
   name: 'Login',
@@ -131,7 +123,7 @@ export default {
       this.$store.commit('auth/setJwtToken');
     },
     toEstimator(){
-      this.$router.push(PATHS.estimator); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.estimator);
     }
   }
 };

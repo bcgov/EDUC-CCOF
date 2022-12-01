@@ -185,4 +185,8 @@ router.get('/user-session-remaining-time', passport.authenticate('jwt', {session
 router.get('/login', passport.authenticate('oidcBceid', {
   failureRedirect: 'error'
 }));
+router.get('/login-idir', passport.authenticate('oidcIdir', {
+  failureRedirect: 'error'
+}));
+
 module.exports = router;
