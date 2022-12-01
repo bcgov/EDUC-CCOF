@@ -76,7 +76,7 @@ export default {
       }
     }).finally(() => {
       this.setLoading(false);
-    });
+    });    
     this.setLoading(false);
   }
 };

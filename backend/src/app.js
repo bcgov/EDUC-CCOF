@@ -168,7 +168,6 @@ apiRouter.use('/application', applicationRouter);
 apiRouter.use('/group/funding', fundingRouter);
 
 
-
 //Handle 500 error
 app.use((err, _req, res, next) => {
   //This is from the ResultValidation

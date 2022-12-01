@@ -1,10 +1,5 @@
 <template>
     <v-container>
-        <div>
-            <MessagesToolbar></MessagesToolbar>
-        </div>
-        <br><br>
-        
         <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
           this will need to get changed at a later point when the API is more built out 
           there is also no logic about if you can click next or not 
@@ -154,7 +149,7 @@ export default {
       this.$router.push(PATHS.home); //TODO: change this, from CCOF page
     },
     next() {
-      this.save();
+      this.updateCCFRI();
       const ccfriComplete = this.navBarList.every((fac, index) => {
         return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
         //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'

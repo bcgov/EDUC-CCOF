@@ -273,6 +273,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.addNewFees + '/:urlGuid',
+      name: 'ccfri-add-fees-guid',
+      component: AddNewFees,
+      meta: {
+        pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+
+    {
       path: PATHS.ccfriRequestMoreInfo,
       name: 'ccfri-request-info',
       component: CCFRIRequestMoreInfo,

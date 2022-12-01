@@ -5,8 +5,17 @@ const log = require('./logger');
 const config = require('../config/index');
 const { errorResponse, minify, HttpStatus, getHttpHeader, getOperation } = require('./utils');
 const {ApiError} = require('./error');
-const { CHILD_AGE_CATEGORY_TYPES } = require('../util/constants');
 
+//This is the Child age category types used by the estimator
+//It is different from the CHILD_AGE_CATEGORY_TYPES in util/constants
+//The wording is used to match values in CCFRIEstimator.
+//TODO: merge this back to util/constants after we figure out which wording is correct.
+//      and update CCFRIEstimator.vue if there are changes.
+const CHILD_AGE_CATEGORY_TYPES = new Map();
+CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 - 18 Months');
+CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 - 36 Months');
+CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only)');
 
 // Get facilities which match user search critiera via query param (i.e. facility/city).
 async function getFacilities(req, res) {
