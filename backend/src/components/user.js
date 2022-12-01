@@ -36,7 +36,7 @@ async function getUserInfo(req, res) {
     }
   }
   let resData = {
-    displayName: (userName)? req.session.passport.user._json.display_name + '|' + userName : req.session.passport.user._json.display_name,
+    displayName: (userName)? req.session.passport.user._json.display_name + '-' + userName : req.session.passport.user._json.display_name,
     userName: getUserName(req),
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
@@ -129,7 +129,7 @@ async function getUserProfile(businessGuid) {
 
 async function getDynamicsUserByEmail(email) {
   try {
-    let response = getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
+    let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;
   } catch (e) {
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
