@@ -73,7 +73,7 @@ export default {
     try{
       return await apiAxios.get(`${ApiRoutes.USER}/${userName}`);
     } catch(e) {
-      console.log(`Failed to get from Nodejs getUserInfo API - ${e}`);
+      console.log(`Failed to get from Nodejs getUserImpersonateInfo API - ${e}`);
       throw e;
     }
   },

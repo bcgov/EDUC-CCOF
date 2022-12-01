@@ -344,9 +344,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _from, next) => {
-  console.log('authStore.state.isMinistryUser', authStore.state.isMinistryUser);
-  console.log('!authStore.state.impersonateId', !authStore.state.impersonateId);
-  console.log('authStore.state.isMinistryUser && !authStore.state.impersonateId', authStore.state.isMinistryUser && !authStore.state.impersonateId);
   if (to.meta.requiresAuth) {
     store.dispatch('auth/getJwtToken').then(() => {
       if (!authStore.state.isAuthenticated) {

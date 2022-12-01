@@ -119,13 +119,10 @@ export default {
       if (state.isUserInfoLoaded) {
         return;
       }
-      console.log('what is it? ',(state.impersonateId && state.isMinistryUser));
       let userInfoRes = undefined;
       if (state.impersonateId && state.isMinistryUser) {
-        console.log('getUserImpersonateInfo');
         userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
       } else {
-        console.log('ApiService.getUserInfo()');
         userInfoRes = await ApiService.getUserInfo();
       }
       
