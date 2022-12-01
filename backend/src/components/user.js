@@ -1,5 +1,5 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue, postOperation} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -47,6 +47,9 @@ async function getUserInfo(req, res) {
   if (userResponse[0] === undefined){
     return res.status(HttpStatus.OK).json(resData);
   }
+  if (userResponse === 'abc') { //TODO: get the right way
+    creatUser(req);
+  }
   //Organization is not normalized, grab organization info from the first element
   let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
   
@@ -64,21 +67,18 @@ async function getUserInfo(req, res) {
       facilityList.push(facility);
     }
   });
-  
   resData.facilityList = facilityList;
   let results = {
     ...resData,
     ...organization
   };
-  
   return res.status(HttpStatus.OK).json(results);
 }
 
 async function getUserProfile(businessGuid) {
-  
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
-    log.info('UserProfile Url is', url);
+    log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
   } catch (e) {
@@ -86,6 +86,24 @@ async function getUserProfile(businessGuid) {
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
+
+async function creatUser(req) {
+  try {
+    let payload = {
+      ccof_userid: getUserGuid,
+      firstname: req.session.passport.user._json.given_name,
+      lastname: req.session.passport.user._json.family_name,
+      emailaddress1: req.session.passport.user._json.email,
+      ccof_username: getUserName(req)
+    };
+    postOperation('contacts', payload);
+  } catch (e) {
+    log.error('Error when creating user: ', e);
+    throw e;
+  }
+}
+
+
 
 module.exports = {
   getUserInfo,
