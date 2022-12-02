@@ -1,5 +1,5 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue} = require('./utils');
+const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue, postOperation, isIdirUser, getOperation} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -20,11 +20,26 @@ async function getUserInfo(req, res) {
       message: 'No session data'
     });
   }
+  let isIdir = isIdirUser(req);
+  let userName = req.params?.userName;
 
+  //if is idir user (ministry user), make sure they are a user in dynamics
+  if (isIdir) {
+    let response = await getDynamicsUserByEmail(req.session.passport.user._json.email);
+    if (response.value?.length > 0 && response.value[0].systemuserid) {
+      log.verbose(`Ministry user: [${req.session.passport.user._json.display_name}] logged in.`);
+    } else {
+      log.info(`Ministry user: [${req.session.passport.user._json.display_name}] attempted to log in but is not part of Dynamics.`);
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'Not Authorized'
+      });
+    }
+  }
   let resData = {
-    displayName: req.session.passport.user._json.display_name,
+    displayName: (userName)? req.session.passport.user._json.display_name + '-' + userName : req.session.passport.user._json.display_name,
     userName: getUserName(req),
     email: req.session.passport.user._json.email,
+    isMinistryUser: isIdir,
     organizationName: null,
     organizationId:  null,
     applicationId: null,
@@ -33,19 +48,47 @@ async function getUserInfo(req, res) {
     unreadMessages: false, 
     facilityList: [],
   };
-
-  let userGuid = getUserGuid(req);
+  let userGuid = undefined;
+  if (isIdir) {
+    if (userName) {
+      try {
+        let profileData = await getOperation(`contacts?$select=ccof_userid,firstname,lastname&$filter=ccof_username eq '${userName}'`);
+        if (profileData.value?.length > 0) {
+          //found something.
+          userGuid = profileData.value[0].ccof_userid;
+          if (!userGuid) {
+            //found the account but no user guid associated
+            return res.status(HttpStatus.CONFLICT).json({
+              message: 'User found but no User Guid associated'
+            });
+          }
+        } else {
+          //didn't find that user
+          return res.status(HttpStatus.NOT_FOUND).json({
+            message: 'No user found with that BCeID UserName'
+          });
+        }
+      } catch (e) {
+        log.error('getUserProfile Error', e.response ? e.response.status : e.message);
+        throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+      }      
+    } else {
+      //If not looking for a username, return from here since ministry staff should not have an account
+      return res.status(HttpStatus.OK).json(resData);
+    }
+  } else {
+    //Not an idir user, so just get the guid from the header
+    userGuid = getUserGuid(req);
+  }
   log.verbose('User Guid is: ', userGuid);
- 
   const userResponse = await getUserProfile(userGuid);
 
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:',minify(userResponse));
   }
 
-  // If no data back, then no associated Organization/Facilities, return empty orgination data
-  if (userResponse[0] === undefined){
-    return res.status(HttpStatus.OK).json(resData);
+  if (userResponse === 'abc') { //TODO: get the right way
+    creatUser(req);
   }
   //Organization is not normalized, grab organization info from the first element
   let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
@@ -64,21 +107,18 @@ async function getUserInfo(req, res) {
       facilityList.push(facility);
     }
   });
-  
   resData.facilityList = facilityList;
   let results = {
     ...resData,
     ...organization
   };
-  
   return res.status(HttpStatus.OK).json(results);
 }
 
 async function getUserProfile(businessGuid) {
-  
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
-    log.info('UserProfile Url is', url);
+    log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
   } catch (e) {
@@ -86,6 +126,34 @@ async function getUserProfile(businessGuid) {
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
+
+async function getDynamicsUserByEmail(email) {
+  try {
+    let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
+    return response;
+  } catch (e) {
+    log.error('getUserProfile Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
+
+async function creatUser(req) {
+  try {
+    let payload = {
+      ccof_userid: getUserGuid,
+      firstname: req.session.passport.user._json.given_name,
+      lastname: req.session.passport.user._json.family_name,
+      emailaddress1: req.session.passport.user._json.email,
+      ccof_username: getUserName(req)
+    };
+    postOperation('contacts', payload);
+  } catch (e) {
+    log.error('Error when creating user: ', e);
+    throw e;
+  }
+}
+
+
 
 module.exports = {
   getUserInfo,

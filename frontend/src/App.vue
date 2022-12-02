@@ -68,7 +68,7 @@ export default {
   async created() {
     this.setLoading(true);
     this.getJwtToken().then(() =>
-      Promise.all([this.getUserInfo(), this.getLookupInfo()])
+      Promise.all([this.getLookupInfo()])
     ).catch(e => {
       if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
         this.logout();
@@ -76,7 +76,7 @@ export default {
       }
     }).finally(() => {
       this.setLoading(false);
-    });
+    });    
     this.setLoading(false);
   }
 };

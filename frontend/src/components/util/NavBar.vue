@@ -212,26 +212,27 @@ export default {
     },
     getCCFRINavigation(){
       let items = [];
-      // items.push(
-      //   {
-      //     title: NAV_BAR_GROUPS.CCFRI,
-      //     link: { name: 'ccfri-application' },
-      //     isAccessible: true,
-      //     icon: 'mdi-checkbox-blank-circle-outline', //replace
-      //     expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI)
-      //   }
-      // );
+      items.push(
+        {
+          title: 'Opt in / Opt out',
+          link: { name: 'ccfri-home'},
+          isAccessible: true,
+          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          isActive: 'ccfri-home' === this.$route.name
+        },
 
-      if (this.navBarList?.length > 0) {
-        this.navBarList?.forEach( item => {
+      );
+      if (this.navBarList?.length > 0) { //TODO- only filter based on item.ccfriOptInStatus
+        this.navBarList?.forEach( item => { 
           items.push(
             {
-              title: 'Parent Fees for ' + item.facilityName,
+              title: 'Parent Fees',
+              subTitle: item.facilityName,
               id: item.facilityId,
-              link: { name: 'ccfri-home'},
+              link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId, ccfriFacilityGuid: item.facilityId}}, //TODO remove ccfriFaciliyGuid and load from getccfriApplication
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid === item.facilityId
+              isActive: 'ccfri-add-fees' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId
               // function: this.loadFacility(x.id)
             },
           );

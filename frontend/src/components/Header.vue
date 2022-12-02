@@ -1,26 +1,23 @@
 <template>
-  <v-system-bar app absolute color="rgb(0, 51, 102)" height="56rem" class="sysBar"
-                :class="{'pl-2': $vuetify.breakpoint.smAndDown, 'pl-10': $vuetify.breakpoint.mdAndUp, 'pr-2': $vuetify.breakpoint.smAndDown, 'pr-10': $vuetify.breakpoint.mdAndUp} ">
+  <v-system-bar app absolute color="rgb(0, 51, 102)" height="66rem" class="sysBar">
     <!-- Navbar content -->
-    <a tabindex="-1" href="/">
+    <v-container
+    :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
+    >
+    <v-row class="justify-space-between">
+    <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
       <img
           tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
-          width="155"
           class="logo"
           alt="B.C. Government Logo"
       >
     </a>
-    <a tabindex="-1" href="/">
-      <v-toolbar-title><h3 class="mainTitle" style="color:white">{{ appTitle }}</h3></v-toolbar-title>
-    </a>
-
-
-    <v-spacer></v-spacer>
-    <div v-if="isAuthenticated && dataReady">
+    
+    <div v-if="isAuthenticated && dataReady" class="">
       <v-menu name="user_options" offset-y>
         <template v-slot:activator="{ on }">
-          <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
+          <v-chip tabindex="0" v-on="on" pill color="#003366" dark class="mt-7">
             <v-avatar left color="info">
               {{ userInfo.displayName[0] }}
             </v-avatar>
@@ -28,11 +25,11 @@
           </v-chip>
         </template>
         <v-list dark color="#003366">
-          <v-list-item style="min-height: 4vh" id="home_button" :href='authRoutes.DASHBOARD'>
+          <v-list-item style="min-height: 4vh" id="home_button" :to='authRoutes.DASHBOARD'>
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="hasSeveralMincodes()" id="switch_dashboard_button" :href='authRoutes.INSTITUTE_SELECTION'>
-            <v-list-item-title>Switch Dashboard</v-list-item-title>
+          <v-list-item v-if="isMinistryUser" id="impersonate_button" :to='PATHS.impersonate'>
+            <v-list-item-title>Impersonate</v-list-item-title>
           </v-list-item>
           <v-list-item style="min-height: 4vh" id="logout_button" :href='authRoutes.LOGOUT'>
             <v-list-item-title>Logout</v-list-item-title>
@@ -45,23 +42,26 @@
       <v-skeleton-loader type="chip">
       </v-skeleton-loader>
     </div>
+  </v-row>
+  </v-container>
   </v-system-bar>
 </template>
 
 <script>
 import {mapGetters} from 'vuex';
-import {AuthRoutes , ApiRoutes} from '@/utils/constants';
+import {AuthRoutes , ApiRoutes, PATHS} from '@/utils/constants';
 
 export default {
   data() {
     return {
       appTitle: process.env.VUE_APP_TITLE,
       authRoutes: AuthRoutes,
+      PATHS: PATHS,
       apiRoutes: ApiRoutes
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
     dataReady: function () {
       return this.userInfo;
     }
@@ -78,11 +78,17 @@ export default {
 .gov-header .v-icon{
   padding-left: 10px;
 }
+.sizingForIconXLScreen {
+  width: 1470px;
+}
 a {
   text-decoration: none;
 }
 .logo{
   padding-right: 15px;
+  padding-top: 4px;
+  width: 205px;
+  height: 77px;
 }
 .gov-header .title {
   color: #fff;

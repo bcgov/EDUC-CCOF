@@ -48,6 +48,8 @@ export default {
     isUserInfoLoaded: false,
     userInfo: null,
     error: false,
+    isMinistryUser: false,
+    impersonateId: null,
     isLoading: true,
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
@@ -60,6 +62,7 @@ export default {
     loginError: state => state.loginError,
     error: state => state.error,
     isLoading: state => state.isLoading,
+    isMinistryUser: state => state.isMinistryUser,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -87,14 +90,19 @@ export default {
     setLoginError: (state) => {
       state.loginError = true;
     },
-
     setError: (state, error) => {
       state.error = error;
     },
 
     setLoading: (state, isLoading) => {
       state.isLoading = isLoading;
-    }
+    },
+    setIsMinistryUser: (state, isMinistryUser) => {
+      state.isMinistryUser = isMinistryUser;
+    },
+    setImpersonateId: (state, impersonateId) => {
+      state.impersonateId = impersonateId;
+    },
   },
   actions: {
     loginErrorRedirect(context){
@@ -111,15 +119,25 @@ export default {
       if (state.isUserInfoLoaded) {
         return;
       }
-      const userInfoRes = await ApiService.getUserInfo();    
+      let userInfoRes = undefined;
+      if (state.impersonateId && state.isMinistryUser) {
+        userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
+      } else {
+        userInfoRes = await ApiService.getUserInfo();
+      }
+      
+        
+        
       commit('setUserInfo', userInfoRes.data);
       commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
       commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
       commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });
       commit('setIsUserInfoLoaded', true);
+      commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
 
+    
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken(context) {
       context.commit('setError', false);
