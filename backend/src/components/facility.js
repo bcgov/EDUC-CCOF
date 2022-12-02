@@ -29,9 +29,9 @@ function buildNewFacilityPayload(req) {
   let applicationString = '/ccof_applications(' + facility.applicationId + ')';
 
   facility = mapFacilityObjectForBack(facility);
-  facility.data['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
-  facility.data['parentaccountid@odata.bind'] = organizationString;
-  facility.data['ccof_application_basefunding_Facility'] = [
+  facility['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
+  facility['parentaccountid@odata.bind'] = organizationString;
+  facility['ccof_application_basefunding_Facility'] = [
     {
       'ccof_Application@odata.bind': applicationString
     }

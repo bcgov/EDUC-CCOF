@@ -12,7 +12,7 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="model.yearBeginOperation" label="Year Facility Began operation (YYYY)" />
+                <v-text-field outlined required v-model="model.yearBeginOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field outlined required v-model="model.facilityAddress" :rules="rules.required" label="Facility Street Address" />
@@ -53,7 +53,7 @@
               <v-col cols="12" md="6">
                 <v-menu v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="model.licenseEffectiveDate" :rules="rules.required" label="Effective Date of Current Licence" readonly v-bind="attrs" v-on="on"/>
+                    <v-text-field outlined required v-model="model.licenseEffectiveDate" :rules="rules.notRequired" label="Effective Date of Current Licence" readonly v-bind="attrs" v-on="on"/>
                   </template>
                   <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false"/>
                 </v-menu>
@@ -64,7 +64,7 @@
               <v-col>
                 <label>Has this facility or you as the applicant ever received funding
                   under the Child Care Operating Funding Program?</label>
-                <v-radio-group row v-model="model.hasReceivedFunding">
+                <v-radio-group row v-model="model.hasReceivedFunding" :rules="rules.notRequired">
                   <v-radio label="No" value="no"></v-radio>
                   <v-radio label="Yes" value="yes"></v-radio>
                   <v-radio label="Yes, as facility" value="yesFacility"></v-radio>
@@ -74,7 +74,7 @@
 
             <v-row v-show="model.hasReceivedFunding === 'yesFacility'">
               <v-col>
-                <v-text-field outlined required v-model="model.fundingFacility" :rules="model.hasReceivedFunding === 'yesFacility' ? rules.required : []" label="Facility Name" />
+                <v-text-field outlined required v-model="model.fundingFacility" :rules="model.hasReceivedFunding === 'yesFacility' ? rules.notRequired : []" label="Facility Name" />
               </v-col>
             </v-row>
 

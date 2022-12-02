@@ -62,10 +62,6 @@ export default {
         });
       }
 
-      if (payload.isExtendedHours !== 'yes') {
-        deleteFields.push('maxDaysPerWeekExtended', 'maxDaysPerYearExtended');
-      }
-
       deleteFields.forEach(field => delete payload[field]);
 
       console.log('save group funding', payload);

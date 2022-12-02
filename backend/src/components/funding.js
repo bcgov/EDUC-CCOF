@@ -6,15 +6,27 @@ const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 
 function mapFundingObjectForBack(data) {
 
-  if (data.hasClosedMonth === 'no') {
-    for (let i = 1; i <= 12; i++) {
-      data[`closedIn${i}`] = 0;
-    }
-  } else { 
-    for (let i = 1; i <= 12; i++) {
-      data[`closedIn${i}`] ? data[`closedIn${i}`] = 1 : data[`closedIn${i}`] = 0;
+  if (data.hasClosedMonth !== undefined) {
+    
+    data.hasClosedMonth = choiceForBack(data.hasClosedMonth);
+    if (data.hasClosedMonth) {
+      for (let i = 1; i <= 12; i++) {
+        data[`closedIn${i}`] = data[`closedIn${i}`] ? 1 : 0;
+      }
+    } else {
+      for (let i = 1; i <= 12; i++) {
+        data[`closedIn${i}`] = null;
+      }
     }
   }
+
+  data.isExtendedHours = choiceForBack(data.isExtendedHours);
+  if (!data.isExtendedHours) {
+    data.maxDaysPerWeekExtended = null;
+    data.maxDaysPerYearExtended = null;
+  }
+
+  data.isSchoolProperty = data.isSchoolProperty ? 1 : 0;
 
   let fundingForBack = new MappableObjectForBack(data, CCOFApplicationFundingMapping).toJSON();
 
@@ -24,14 +36,25 @@ function mapFundingObjectForBack(data) {
 function mapFundingObjectForFront(data) {
   let fundingForFront = new MappableObjectForFront(data, CCOFApplicationFundingMapping).toJSON();
 
-  fundingForFront.hasClosedMonth = 'no';
-  for (let i = 1; i <= 12; i++) {
-    if (fundingForFront[`closedIn${i}`] === 1) {
-      fundingForFront.hasClosedMonth = 'yes';
-    }
-  }
+  fundingForFront.hasClosedMonth = choiceForFront(fundingForFront.hasClosedMonth);
+  fundingForFront.isSchoolProperty = choiceForFront(fundingForFront.isSchoolProperty);
+  fundingForFront.isExtendedHours = choiceForFront(fundingForFront.isExtendedHours);
 
   return fundingForFront;
+}
+
+function choiceForBack(value) { 
+  if (value === 'yes') return 1;
+  if (value === 'no') return 0;
+  
+  return null;
+}
+
+function choiceForFront(value) { 
+  if (value === 1) return 'yes';
+  if (value === 0) return 'no';
+  
+  return null;
 }
 
 async function updateFunding(req, res) {
