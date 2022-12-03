@@ -90,6 +90,12 @@ async function getUserInfo(req, res) {
   if (userResponse === 'abc') { //TODO: get the right way
     creatUser(req);
   }
+
+  // If no data back, then no associated Organization/Facilities, return empty orgination data
+  if (userResponse[0] === undefined){
+    return res.status(HttpStatus.OK).json(resData);
+  }
+
   //Organization is not normalized, grab organization info from the first element
   let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
   

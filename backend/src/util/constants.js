@@ -50,6 +50,14 @@ const ECEWE_STATUS_CODES = Object.freeze({
   SUBMITTED: 3
 });
 
+const PROGRAM_YEAR_STATUS_CODES = Object.freeze({
+  CURRENT:	1,
+  INACTIVE:	2,
+  FUTURE:	3,
+  HISTORICAL:	4,
+});
+
+
 const FACILITY_AGE_GROUP_CODES = Object.freeze({
   '1': '0 to 18 months',
   '2': '18 to 36 months',
@@ -68,6 +76,7 @@ module.exports = {
   ECEWE_STATUS_CODES,
   ORGANIZATION_PROVIDER_TYPES,
   FACILITY_AGE_GROUP_CODES,
-  OPTIN_STATUS_CODES
+  OPTIN_STATUS_CODES,
+  PROGRAM_YEAR_STATUS_CODES,
 };
 
