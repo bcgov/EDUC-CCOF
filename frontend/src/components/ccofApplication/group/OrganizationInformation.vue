@@ -112,8 +112,6 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 
 
 export default {
-  props: {
-  },
   computed: {
     ...mapState('app', ['organizationTypeList', 'navBarList']),
     ...mapState('organization', ['isStarted']),

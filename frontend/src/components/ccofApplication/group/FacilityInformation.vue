@@ -101,8 +101,6 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
   mixins: [alertMixin],
-  props: {
-  },
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
