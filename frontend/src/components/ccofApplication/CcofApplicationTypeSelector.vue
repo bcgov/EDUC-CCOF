@@ -5,17 +5,12 @@
     </v-row>
     <v-row justify="space-around">
       <SmallCard title="Group Provider">
-        <p>Lorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <p>You have a Group or Multi-Age Licence for more than eight children for a facility that is not your personal residence</p>
         <v-btn absolute bottom dark color='#003366' :to="paths.group.orgInfo">GO</v-btn>
       </SmallCard>
 
-      <SmallCard title="Family In Home">
-        <p>Lorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        <v-btn absolute bottom dark color='#003366' :to="paths.family.orgInfo">GO</v-btn>
-      </SmallCard>
-
-      <SmallCard title="Multi Age Provider">
-        <p>Lorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <SmallCard title="Family Provider">
+        <p>Family, In-Home or Multi-Age Licence for eight or fewer children in a personal residence</p>
         <v-btn absolute bottom dark color='#003366' :to="paths.family.orgInfo">GO</v-btn>
       </SmallCard>
     </v-row>
