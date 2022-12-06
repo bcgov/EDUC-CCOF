@@ -52,6 +52,7 @@ export const PATHS = {
     facInfo: '/ccof-application/group/facility',
     fundAmount: '/ccof-application/group/funding',
     confirmation: '/ccof-application/group/confirmation',
+    renewOrganization: '/ccof-application/group/renew',
   },
   family: {
     orgInfo: '/ccof-application/family/organization',

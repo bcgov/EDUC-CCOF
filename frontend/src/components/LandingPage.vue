@@ -17,24 +17,21 @@
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" :to="paths.startApplication">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" :to="paths.continueApplication">Continue Application</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" @click="newApplication()">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="continueApplication()">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
-       
+          <SmallCard title="Renew my funding agreement for 2022/23" :disable=getApplicationStatus>
+              <br>
+              <v-btn absolute bottom class="" dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
+          </SmallCard>
           <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
             <br>
             <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard>
-        
           <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
               <br>
               <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
-          </SmallCard>
-       
-          <SmallCard title="Renew my funding agreement for 2022/23" :disable=getApplicationStatus>
-              <br>
-              <v-btn absolute bottom class="" dark color='#003366'>Renew my funding</v-btn>
           </SmallCard>
       </v-row>
 
@@ -94,7 +91,7 @@
 </template>
 <script>
 
-import { mapGetters, mapState} from 'vuex';
+import { mapGetters, mapState, mapMutations} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
@@ -111,10 +108,7 @@ export default {
   data() {
     return {
       input: '',
-      paths: {
-        startApplication:PATHS.selectApplicationType,
-        continueApplication: PATHS.group.orgInfo,
-      },
+      PATHS: PATHS,
       results : {},
       
     };
@@ -140,16 +134,23 @@ export default {
     
   },
   methods: {
-
+    ...mapMutations('app', ['setIsRenewal']),
     clicked (){
       console.log('clicked');
       return '';
-
     },
-    goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    renewApplication() {
+      this.setIsRenewal(true);
+      this.$router.push(PATHS.group.renewOrganization);
     },
-    
+    newApplication() {
+      this.setIsRenewal(false);
+      this.$router.push(PATHS.selectApplicationType);
+    },
+    continueApplication() {
+      this.setIsRenewal(false);
+      this.$router.push(PATHS.group.orgInfo);
+    }    
   },
   
 

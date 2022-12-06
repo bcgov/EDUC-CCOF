@@ -29,20 +29,6 @@ router.get('/', (_req, res) => {
   });
 });
 
-// function addOIDCRouterGet(strategyName, callbackURI, redirectURL) {
-//   router.get(callbackURI,
-//     passport.authenticate(strategyName, {
-//       failureRedirect: 'error'
-//     }),
-//     (_req, res) => {
-//       res.redirect(redirectURL);
-//     }
-//   );
-// }
-
-// addOIDCRouterGet('oidcBceidActivateUser', '/callback_activate_user', `${config.get('server:frontend')}/user-activation`);
-// addOIDCRouterGet('oidcBceidActivateDistrictUser', '/callback_activate_district_user', `${config.get('server:frontend')}/district-user-activation`);
-
 router.get('/callback',
   passport.authenticate('oidcBceid', {
     failureRedirect: 'error'
@@ -67,14 +53,13 @@ router.get('/error', (_req, res) => {
   res.redirect(config.get('server:frontend') + '/login-error');
 });
 
-function addBaseRouterGet(strategyName, callbackURI) {
-  router.get(callbackURI, passport.authenticate(strategyName, {
-    failureRedirect: 'error'
-  }));
-}
-
-addBaseRouterGet('oidcBceid', '/login');
-addBaseRouterGet('oidcIdir', '/login_idir');
+//redirects to the SSO login screen
+router.get('/login', passport.authenticate('oidcBceid', {
+  failureRedirect: 'error'
+}));
+router.get('/login-idir', passport.authenticate('oidcIdir', {
+  failureRedirect: 'error'
+}));
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
@@ -158,7 +143,8 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   }
 });
 async function generateTokens(req, res) {
-  const result = await auth.renew(req.user.refreshToken);
+  let isIdir = (req.session?.passport?.user?._json?.idir_user_guid) ? true : false;
+  const result = await auth.renew(req.user.refreshToken, isIdir);
   if (result && result.jwt && result.refreshToken) {
     req.user.jwt = result.jwt;
     req.user.refreshToken = result.refreshToken;
@@ -180,13 +166,5 @@ router.get('/user-session-remaining-time', passport.authenticate('jwt', {session
     return res.sendStatus(401);
   }
 });
-
-//redirects to the SSO login screen
-router.get('/login', passport.authenticate('oidcBceid', {
-  failureRedirect: 'error'
-}));
-router.get('/login-idir', passport.authenticate('oidcIdir', {
-  failureRedirect: 'error'
-}));
 
 module.exports = router;

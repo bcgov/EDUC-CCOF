@@ -42,6 +42,9 @@ import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
 
+import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
+
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -131,6 +134,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
+    
     {
       path: PATHS.family.eligibility,
       name: 'Eligibility',
@@ -203,6 +207,17 @@ const router = new VueRouter({
       component: ApplicationConfirmation,
       meta: {
         pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.group.renewOrganization,
+      name: 'Renew Organization',
+      component: RenewOrganization,
+      meta: {
+        pageTitle: 'Renew Organization',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
