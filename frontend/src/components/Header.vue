@@ -5,7 +5,7 @@
     :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
     >
     <v-row class="justify-space-between">
-    <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
+    <a tabindex="-1" href="/">
       <img
           tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
@@ -39,7 +39,7 @@
 
     </div>
     <div v-else-if="isAuthenticated && !dataReady">
-      <v-skeleton-loader type="chip">
+      <v-skeleton-loader type="chip" class="mt-7">
       </v-skeleton-loader>
     </div>
   </v-row>

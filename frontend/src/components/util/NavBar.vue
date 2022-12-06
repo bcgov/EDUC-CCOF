@@ -229,7 +229,7 @@ export default {
               title: 'Parent Fees',
               subTitle: item.facilityName,
               id: item.facilityId,
-              link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId, ccfriFacilityGuid: item.facilityId}}, //TODO remove ccfriFaciliyGuid and load from getccfriApplication
+              link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
               isAccessible: true,
               icon: 'mdi-checkbox-blank-circle-outline', //replace
               isActive: 'ccfri-add-fees' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId

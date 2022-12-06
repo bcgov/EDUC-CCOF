@@ -402,14 +402,28 @@ export default {
     ...mapState('app', ['navBarList']),
     ...mapState('facility', ['facilityModel']),
     currentFacility(){
+      console.log('oi');
+      console.log(this.navBarList[0]);
       return this.navBarList[0]; //TODO - change this to work with multiple facilities 
     }
   },
   watch: {
+    //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
-      handler() {
-        console.log('ccfriFacilityGuid', this.$route.params.ccfriFacilityGuid);
-        this.loadFacility(this.$route.params.ccfriFacilityGuid);
+      async handler() {
+        console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
+
+        try {
+          let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`);
+          ccfriInfo = ccfriInfo.data;
+          console.log(ccfriInfo.facilityId);
+          this.loadFacility(ccfriInfo.facilityId);
+          //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+        } catch (error) {
+          console.log(error);
+          this.setFailureAlert('An error occured while getting.');
+        }
+        
         this.loading = false;
       },
       immediate: true,
@@ -435,7 +449,7 @@ export default {
       console.log(this.dates);
     },
     previous() {
-      this.$router.push(PATHS.currentFees); //TODO: change this, from CCOF page
+      this.$router.back();  
     },
     next() {
       this.updateParentFees();

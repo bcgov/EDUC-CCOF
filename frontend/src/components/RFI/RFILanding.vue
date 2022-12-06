@@ -91,6 +91,7 @@
               color="blue lighten-4"
               justify="center"
               class="ma-md-4"
+              light
             >
               <v-toolbar-title class="flex ml-md-5" >
                 <v-row>
@@ -99,10 +100,12 @@
               </v-toolbar-title >
             </v-toolbar>
             <br>
+            
+            
             <div class="px-md-12 px-7">
               <v-row  v-for="(expense, index) in expenseList" :key="index">
                 <v-btn 
-                text
+                icon
                 class="my-5"
                 @click="removeExpense(index)"
                 >
@@ -233,10 +236,10 @@
                 <div  v-if="model.q3 === 'Yes'">
                   <v-row  v-for="(fundInfo, index) in fundingList" :key="index">
                     <v-btn 
-                text
-                class="my-5"
-                @click="removeFunding(index)"
-                >
+                      icon
+                      class="my-5"
+                      @click="removeFunding(index)"
+                      >
                   <font-awesome-icon icon="fa-solid fa-circle-xmark" class="fa-xl"/>
                 </v-btn>
                     <v-col class="col-md-3 col-12 ">
@@ -395,7 +398,7 @@ export default {
       // }
     },
     previous() {
-      this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.$router.back();  //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
     },
     addExpense () {
       this.expenseList.push({

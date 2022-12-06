@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 'use strict';
-const { postOperation, patchOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
+const { postOperation, patchOperationWithObjectId, getOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -8,10 +8,29 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const _ = require ('lodash');
 const { info } = require('./logger');
+const { loadFiles } = require('../config/index');
 
 
-//creates or updates CCFRI application. 
 
+async function getCCFRIApplication(req,res) {
+
+  log.info(req.params.ccfriId);
+
+  try {
+    let response = await getOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
+
+    //use mappable objects here?
+    const payload = {
+      facilityId : response._ccof_facility_value,
+    };
+    return res.status(HttpStatus.OK).json(payload);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
+
+//creates or updates CCFRI application. TODO: add a post function!
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
 
@@ -150,5 +169,6 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
 
 module.exports = {
   updateCCFRIApplication,
-  upsertParentFees
+  upsertParentFees,
+  getCCFRIApplication
 };

@@ -44,7 +44,7 @@ async function getUserInfo(req, res) {
   }
 
   // If no data back, then no associated Organization/Facilities, return empty orgination data
-  if (userResponse[0] === undefined){
+  if (userResponse === undefined){
     return res.status(HttpStatus.OK).json(resData);
   }
   //Organization is not normalized, grab organization info from the first element
@@ -83,7 +83,7 @@ async function getUserProfile(businessGuid) {
     return response.data;
   } catch (e) {
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    //throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 

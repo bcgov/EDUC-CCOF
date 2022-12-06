@@ -26,7 +26,7 @@
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
                   <!-- <p class="text--primary"> Licence : 123456789</p> -->
                   <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == 0 ? "OUT" : "IN"}}</p> </strong>
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus === "IN" ? "IN" : "OUT" }}</p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
                   v-if="!showOptStatus[index]"
@@ -81,7 +81,8 @@
             Save</v-btn>
         </v-row>
 
-        <!-- {{loading}} -->
+        {{ccfriOptInOrOut}}
+        {{this.ccfriOptInOrOut}}
     </v-container>
 </template>
 
@@ -112,23 +113,6 @@ export default {
       processing: false,
       loading: false,
       ccfriOptInOrOut,
-      feeList : [ //dummy data for showing the 'current fees' page. TO be replaced with data loaded from Dynamics 
-        {
-          date: 'Jan 2022',
-          pre3year: 1234,
-          post3year: 2222
-        },
-        {
-          date: 'Feb 2022',
-          pre3year: 5555,
-          post3year: 8811
-        },
-        {
-          date: 'Mar 2022',
-          pre3year: 6754,
-          post3year: 8223
-        }
-      ],
       rules: [
         (v) => !!v  || 'Required.',
       ],
@@ -146,29 +130,40 @@ export default {
       this.$set(this.showOptStatus, index, true);
     },
     previous() {
-      this.$router.push(PATHS.home); //TODO: change this, from CCOF page
+      this.$router.back();
     },
     next() {
-      this.updateCCFRI();
+      //TODO: what should next do if no updates are made? 
+      //this.save();
       const ccfriComplete = this.navBarList.every((fac, index) => {
         return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
         //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
       });
 
-      //console.log(ccfriComplete);
+      console.log(ccfriComplete);
 
       //if no status- go straight to add new fees page
       if (ccfriComplete){
         this.$router.push(PATHS.currentFees); 
       }
       else {
-        this.$router.push(PATHS.addNewFees); 
+
+        
+        let firstOptInFacility; 
+        Object.values(ccfriOptInOrOut).forEach((element, index) => {
+          if (element == '1'){
+            firstOptInFacility = index;
+            return;
+          }
+        });
+        
+        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`}); //CHANGE ME ! 
       }
     },
-    refreshWithFacility() {
-      let x = this.$route.params.urlGuid;
-      this.loadFacility(x);
-    },
+    // refreshWithFacility() {
+    //   let x = this.$route.params.urlGuid;
+    //   this.loadFacility(x);
+    // },
     async save () {
       this.processing = true;
       let payload = [];
@@ -183,35 +178,30 @@ export default {
           optInResponse: this.ccfriOptInOrOut[index] 
         };
 
-        payload = JSON.parse(JSON.stringify(payload));
+        console.log(payload);
+
+        try {
+          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', [payload[index]]);
+          this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
+        } catch (error) {
+          console.info(error);
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
+        }
 
       });
-      try {
-        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-        this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
-      } catch (error) {
-        console.info(error);
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
+      
 
       this.processing = false;
     },
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    
-    // if (facilityList){
-    //   this.loading = false;
-    // }
-    // else {
-    //   this.loading = true;
-    // }
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
     next();
   },
-  components: { MessagesToolbar, LargeButtonContainer }
+  components: {LargeButtonContainer }
 };
 </script>
 

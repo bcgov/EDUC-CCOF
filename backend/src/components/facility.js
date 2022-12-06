@@ -46,6 +46,7 @@ async function getFacility(req, res) {
     let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,' + getMappingString(FacilityMappings) + '&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
+    
     if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
     }
