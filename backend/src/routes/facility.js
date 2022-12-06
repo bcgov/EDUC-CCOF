@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { getFacility, createFacility, updateFacility } = require('../components/facility');
+const { getFacility, getCCFRIFacility, createFacility, updateFacility } = require('../components/facility');
 const { param, validationResult, checkSchema} = require('express-validator');
 
 
@@ -34,6 +34,16 @@ router.get('/:facilityId', //passport.authenticate('jwt', {session: false}),isVa
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return getFacility(req, res);
+  });
+  
+
+/**
+ * Get Facility details for CCFRI Application (less detailed)
+ */
+router.get('/ccfri/:facilityId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getCCFRIFacility(req, res);
   });
 
 /**

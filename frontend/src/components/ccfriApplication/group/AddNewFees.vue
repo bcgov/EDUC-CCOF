@@ -423,8 +423,10 @@ export default {
           let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`);
           ccfriInfo = ccfriInfo.data;
           console.log(ccfriInfo.facilityId);
-          //this.loadFacility(ccfriInfo.facilityId);
+          //this.loadFacility(ccfriInfo.facilityId); //perhaps call other getFac here - more lightweight one
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+          const lteFac = await ApiService.apiAxios.get(`/api/facility/ccfri/${ccfriInfo.facilityId}`);
+          console.log(lteFac);
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
