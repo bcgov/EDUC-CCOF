@@ -137,18 +137,20 @@ function parseFacilityData(userResponse) {
 
   facilityMap.forEach((value, key, map) => {
     userResponse.forEach(facility => {
+      let ccfriInfo = undefined;
+      let eceweInfo = undefined;
       if (facility['CCFRI.ccof_facility'] === key) {
-        let ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
-        map.set(key, {
-          ...value,
-          ...ccfriInfo});
+        ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
       }
       if (facility['ECEWE.ccof_facility'] === key) {
-        let eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
+        eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
+      }
+      if (ccfriInfo || eceweInfo) {
         map.set(key, {
           ...value,
-          ...eceweInfo});
-      }      
+          ...ccfriInfo,
+          ...eceweInfo});        
+      }     
     });
   });
 
