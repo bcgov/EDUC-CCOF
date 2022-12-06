@@ -235,7 +235,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.eceweEligibility,
+      path: PATHS.eceweEligibility + '/:urlGuid',
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
@@ -245,7 +245,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.eceweFacilities,
+      path: PATHS.eceweFacilities  + '/:urlGuid',
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
