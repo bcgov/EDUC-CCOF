@@ -8,7 +8,7 @@
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityModel.licenseNumber}} </p> <br><br>
+      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{CCFRIFacilityModel.licenseNumber}} </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in facilityModel.childCareTypes" :key="index"
+      v-for="({key, programYear, childCareCategory} , index) in CCFRIFacilityModel.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -400,7 +400,7 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList']),
-    ...mapState('facility', ['facilityModel']),
+    ...mapState('facility', ['CCFRIFacilityModel']),
     currentFacility(){
       console.log('oi');
       //console.log(this.navBarList[0]);
@@ -420,26 +420,27 @@ export default {
         console.log('facModel', this.facilityModel);
 
         try {
-          let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`);
+          let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`); //put this in the store?
           ccfriInfo = ccfriInfo.data;
           console.log(ccfriInfo.facilityId);
-          //this.loadFacility(ccfriInfo.facilityId); //perhaps call other getFac here - more lightweight one
+          await this.loadCCFRIFacility(ccfriInfo.facilityId); //perhaps call other getFac here - more lightweight one
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          const lteFac = await ApiService.apiAxios.get(`/api/facility/ccfri/${ccfriInfo.facilityId}`);
-          console.log(lteFac);
+          //const lteFac = await ApiService.apiAxios.get(`/api/facility/ccfri/${ccfriInfo.facilityId}`);
+          //console.log(lteFac);
+          this.loading = false;
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
         }
         
-        this.loading = false;
+        
       },
       immediate: true,
       deep: true
     }
   },
   methods: {
-    ...mapActions('facility', ['loadFacility']),    
+    ...mapActions('facility', ['loadCCFRIFacility']),    
     addDate(){
       dates.push({
         message: this.model.closureReason,
@@ -473,7 +474,7 @@ export default {
       //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
 
       //index will also match the order of how the cards are displayed. 
-      this.facilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
+      this.CCFRIFacilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
 
         //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
         let childCareCatGUID = _.find(this.lookupInfo.childCareCategory, {ccof_description : childCareType.childCareCategory });

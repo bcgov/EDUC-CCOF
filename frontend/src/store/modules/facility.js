@@ -9,6 +9,7 @@ export default {
     facilityStore: {},
     facilityModel: {},
     facilityId: null,
+    CCFRIFacilityModel : {}, //jb
 
     isValidForm: false,
   },
@@ -23,6 +24,7 @@ export default {
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
+    setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
       if (facilityId) {
@@ -87,6 +89,30 @@ export default {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
           commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});
           commit('setFacilityModel', response.data);
+          return response;
+
+        } catch(e) {
+          console.log(`Failed to get existing Facility with error - ${e}`);
+          throw e;
+        }
+      }
+    },
+    //is it bad to keep the copy/pasted setFacility ID from above?
+    async loadCCFRIFacility({getters, commit}, facilityId) {
+      commit('setFacilityId', facilityId);
+      let CCFRIFacilityModel = getters.getFacilityById(facilityId); //maybe change getFacilityById as well?
+      if (CCFRIFacilityModel) {
+        console.log('found facility for guid: ', facilityId);
+        commit('setCCFRIFacilityModel', CCFRIFacilityModel);
+      } else {
+        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+          console.log('unable to load facility because you are not logged in');
+          throw 'unable to  load facility because you are not logged in';
+        }
+        try {
+          let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facilityId}`); //call the new endpoint 
+          //commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});
+          commit('setCCFRIFacilityModel', response.data);
           return response;
 
         } catch(e) {
