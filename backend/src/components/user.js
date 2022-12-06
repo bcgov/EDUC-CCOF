@@ -6,7 +6,7 @@ const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, OPTIN_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
-const { UserProfileFacilityMappings, UserProfileOrganizationMappings } = require('../util/mapping/Mappings');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
 
@@ -23,7 +23,7 @@ async function getUserInfo(req, res) {
   let isIdir = isIdirUser(req);
   let userName = req.params?.userName;
 
-  //if is idir user (ministry user), make sure they are a user in dynamics
+  // if is idir user (ministry user), make sure they are a user in dynamics
   if (isIdir) {
     let response = await getDynamicsUserByEmail(req.session.passport.user._json.email);
     if (response.value?.length > 0 && response.value[0].systemuserid) {
@@ -35,6 +35,7 @@ async function getUserInfo(req, res) {
       });
     }
   }
+  
   let resData = {
     displayName: (userName)? req.session.passport.user._json.display_name + '-' + userName : req.session.passport.user._json.display_name,
     userName: getUserName(req),
@@ -87,12 +88,12 @@ async function getUserInfo(req, res) {
     log.verbose('getUserProfile response:',minify(userResponse));
   }
 
-  if (userResponse === 'abc') { //TODO: get the right way
-    creatUser(req);
+  if (userResponse === null) { 
+    // creatUser(req); TODO: create the user
+    return res.status(HttpStatus.OK).json(resData);
   }
-
-  // If no data back, then no associated Organization/Facilities, return empty orgination data
   if (userResponse[0] === undefined){
+    // If no data back, then no associated Organization/Facilities, return empty orgination data
     return res.status(HttpStatus.OK).json(resData);
   }
 
@@ -101,19 +102,7 @@ async function getUserInfo(req, res) {
   
   organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
   organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
-  let facilityList = [];
-  userResponse.forEach(item => {
-    let facility = new MappableObjectForFront(item, UserProfileFacilityMappings).data;
-    if (!_.isEmpty(facility)) {
-      facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
-      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
-      facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
-      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES);
-      facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
-      facilityList.push(facility);
-    }
-  });
-  resData.facilityList = facilityList;
+  resData.facilityList = parseFacilityData(userResponse);
   let results = {
     ...resData,
     ...organization
@@ -128,9 +117,53 @@ async function getUserProfile(businessGuid) {
     const response = await axios.get(url, getHttpHeader());
     return response.data;
   } catch (e) {
+    if (e.response?.status == '404') {
+      console.log('response ', e.response.data);
+      if (e.response?.data?.startsWith('User not found')) {
+        return null;
+      }
+      return [];
+    }
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
+}
+
+function parseFacilityData(userResponse) {
+  const facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+  facilityMap.forEach((value,key, map) => {
+    map[key] = new MappableObjectForFront(value, UserProfileFacilityMappings).data;
+  });
+
+  facilityMap.forEach((value, key, map) => {
+    userResponse.forEach(facility => {
+      if (facility['CCFRI.ccof_facility'] === key) {
+        let ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
+        map.set(key, {
+          ...value,
+          ...ccfriInfo});
+      }
+      if (facility['ECEWE.ccof_facility'] === key) {
+        let eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
+        map.set(key, {
+          ...value,
+          ...eceweInfo});
+      }      
+    });
+  });
+
+  let facilityList = [];
+  facilityMap.forEach((facility) => {
+    if (!_.isEmpty(facility)) {
+      facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
+      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
+      facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
+      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES);
+      facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
+      facilityList.push(facility);
+    }
+  });
+  return facilityList;
 }
 
 async function getDynamicsUserByEmail(email) {
