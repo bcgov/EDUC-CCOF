@@ -97,6 +97,25 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
 ];
 
+const ECEWEApplicationMappings = [
+  { back: 'ccof_applicationid', front: 'applicationId' },
+  { back: 'ccof_ecewe_optin', front: 'q1OptInECEWE' },
+  { back: 'ccof_ecewe_employeeunion', front: 'q2BelongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'q3FundingModel' },
+  { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
+  { back: 'ccof_ecewe_confirmation', front: 'userDeclaration' },
+];
+
+const ECEWEFacilityMappings = [
+  { back: 'ccof_name', front: 'facilityId' },
+  { back: '_ccof_facility_value', front: 'facilityGuid' },
+  { back: '_ccof_facility_value@OData.Community.Display.V1.FormattedValue', front: 'name' },
+  { back: 'ccof_optintoecewe', front: 'optInOrOut' },
+  { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
+  { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' }
+];
+
+
 const UserProfileOrganizationMappings = [
   { back: 'Organization.name', front: 'organizationName' },
   { back: 'Organization.accountid', front: 'organizationId' },
@@ -146,6 +165,8 @@ module.exports = {
   FacilityMappings,
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
+  ECEWEApplicationMappings,
+  ECEWEFacilityMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileCCFRIMappings,

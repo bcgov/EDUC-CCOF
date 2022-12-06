@@ -26,7 +26,9 @@ export const ApiRoutes = Object.freeze({
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
-  FAMILY_ORGANIZATION: baseRoot + '/family/organization'
+  FAMILY_ORGANIZATION: baseRoot + '/family/organization',
+  APPLICATION_ECEWE: baseRoot + '/application/ecewe',
+  APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities'
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -35,7 +37,8 @@ export const PAGE_TITLES = Object.freeze({
   FRI_CALCULATOR: 'Fee Reduction Calculator',
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
-  CCRFI_APPLICATION: 'CCRFI Application Form'
+  CCRFI_APPLICATION: 'CCRFI Application Form',
+  ECEWE_APPLICATION: 'ECE-WE Application'
 });
 
 export const PATHS = {

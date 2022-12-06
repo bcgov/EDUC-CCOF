@@ -8,7 +8,9 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const _ = require ('lodash');
 const { info } = require('./logger');
-
+const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
+const { info } = require('./logger');
 
 //creates or updates CCFRI application. 
 
@@ -147,7 +149,63 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
 
 }
 
+async function getECEWEApplication(req, res) {
+  try {
+    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
+    let eceweApp = await getOperation(operation);
+    eceweApp = new MappableObjectForFront(eceweApp, ECEWEApplicationMappings);
+    let forFrontFacilities = [];
+    Object.values(eceweApp.data.facilities).forEach(value => forFrontFacilities.push(new MappableObjectForFront(value, ECEWEFacilityMappings).data));
+    eceweApp.data.facilities = forFrontFacilities;
+    return res.status(HttpStatus.OK).json(eceweApp);
+  } catch (e) {
+    log.info('@#$@$#$ = '+e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function updateECEWEApplication(req, res) {
+  let application = req.body;
+  // remove facilities from request payload (i.e. not updating facilities)
+  delete application.facilities;
+  application = new MappableObjectForBack(application, ECEWEApplicationMappings);
+  application = application.toJSON();
+  try {
+    let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function updateECEWEFacilityApplication(req, res) {
+  let facilities = req.body;
+  let forBackFacilities = [];
+  let response;
+  Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
+  let eceweApplicationId;
+  try {
+    for (let key in forBackFacilities) {
+      // add join attributes for application and facility
+      forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications('+req.params.applicationId+')';
+      forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts('+forBackFacilities[key]._ccof_facility_value+')';
+      eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
+      // remove attributes we are not updating before sending payload.
+      delete forBackFacilities[key].ccof_applicationeceweid;
+      delete forBackFacilities[key]._ccof_facility_value;
+      let facility = forBackFacilities[key];
+      response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
+    }
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
-  updateCCFRIApplication,
-  upsertParentFees
+  upsertCCFRIApplication,
+  upsertParentFees,
+  getECEWEApplication,
+  updateECEWEApplication,
+  updateECEWEFacilityApplication
 };
