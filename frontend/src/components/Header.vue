@@ -25,11 +25,11 @@
           </v-chip>
         </template>
         <v-list dark color="#003366">
-          <v-list-item style="min-height: 4vh" id="home_button" :href='authRoutes.DASHBOARD'>
+          <v-list-item style="min-height: 4vh" id="home_button" :to='authRoutes.DASHBOARD'>
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="hasSeveralMincodes()" id="switch_dashboard_button" :href='authRoutes.INSTITUTE_SELECTION'>
-            <v-list-item-title>Switch Dashboard</v-list-item-title>
+          <v-list-item v-if="isMinistryUser" id="impersonate_button" :to='PATHS.impersonate'>
+            <v-list-item-title>Impersonate</v-list-item-title>
           </v-list-item>
           <v-list-item style="min-height: 4vh" id="logout_button" :href='authRoutes.LOGOUT'>
             <v-list-item-title>Logout</v-list-item-title>
@@ -49,18 +49,19 @@
 
 <script>
 import {mapGetters} from 'vuex';
-import {AuthRoutes , ApiRoutes} from '@/utils/constants';
+import {AuthRoutes , ApiRoutes, PATHS} from '@/utils/constants';
 
 export default {
   data() {
     return {
       appTitle: process.env.VUE_APP_TITLE,
       authRoutes: AuthRoutes,
+      PATHS: PATHS,
       apiRoutes: ApiRoutes
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
     dataReady: function () {
       return this.userInfo;
     }

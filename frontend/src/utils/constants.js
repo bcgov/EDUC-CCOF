@@ -5,7 +5,7 @@ let object;
 
 object = {
   LOGIN: authRoot + '/login',
-  LOGIN_IDIR: authRoot + '/login',
+  LOGIN_IDIR: authRoot + '/login-idir',
   DASHBOARD: '/',
   LOGOUT: authRoot + '/logout',
   SESSION_EXPIRED: authRoot + '/logout?sessionExpired=true',
@@ -47,11 +47,13 @@ export const PATHS = {
   ccfriRequestMoreInfo: '/ccfri-application/request-info',
   WageIncrease: '/ccfri-application/request-info/wage-increase',
   selectApplicationType: '/ccof-application/select-application-type',
+  impersonate: '/impersonate',
   group: {
     orgInfo: '/ccof-application/group/organization',
     facInfo: '/ccof-application/group/facility',
     fundAmount: '/ccof-application/group/funding',
     confirmation: '/ccof-application/group/confirmation',
+    renewOrganization: '/ccof-application/group/renew',
   },
   family: {
     orgInfo: '/ccof-application/family/organization',

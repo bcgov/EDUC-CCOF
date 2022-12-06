@@ -19,6 +19,9 @@ async function getCCFRIApplication(req,res) {
   try {
     let response = await getOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
 
+    log.info('teh');
+    log.info(response);
+
     //use mappable objects here?
     const payload = {
       facilityId : response._ccof_facility_value,

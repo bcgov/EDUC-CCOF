@@ -28,16 +28,35 @@ function buildNewFacilityPayload(req) {
   let organizationString = '/accounts(' + facility.organizationId + ')';
   let applicationString = '/ccof_applications(' + facility.applicationId + ')';
 
-  facility = new MappableObjectForBack(facility, FacilityMappings);
-  facility.data['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
-  facility.data['parentaccountid@odata.bind'] = organizationString;
-  facility.data['ccof_application_basefunding_Facility'] = [
+  facility = mapFacilityObjectForBack(facility);
+  facility['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
+  facility['parentaccountid@odata.bind'] = organizationString;
+  facility['ccof_application_basefunding_Facility'] = [
     {
       'ccof_Application@odata.bind': applicationString
     }
   ];
   
   return facility;
+}
+
+function mapFacilityObjectForBack(data) { 
+  let facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
+
+  if (facilityForBack.ccof_facilitystartdate) { 
+    facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
+  }
+
+  return facilityForBack;
+}
+
+function mapFacilityObjectForFront(data) { 
+  if (data.ccof_facilitystartdate) {
+    let year = data.ccof_facilitystartdate.split('-')[0];
+    data.ccof_facilitystartdate = year;
+  }
+
+  return new MappableObjectForFront(data, FacilityMappings).toJSON();
 }
 
 async function getFacility(req, res) {
@@ -98,8 +117,10 @@ async function getFacility(req, res) {
     });
 
     log.info('child care types: ', childCareTypes);
-    facility = new MappableObjectForFront(facility, FacilityMappings);
-    facility.data.childCareTypes = childCareTypes;
+
+    facility = mapFacilityObjectForFront(facility);
+    facility.childCareTypes = childCareTypes;
+
     return res.status(HttpStatus.OK).json(facility);
   } catch (e) {
     log.error('failed with error', e);
@@ -129,11 +150,11 @@ async function createFacility(req, res) {
 }
 
 async function updateFacility(req, res) {
-  let facility = new MappableObjectForBack(req.body, FacilityMappings).data;
+  let facility = mapFacilityObjectForBack(req.body);
   try {
     log.info('updateFacility: Payload is: ', minify(facility));
     let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
-    response = new MappableObjectForFront(response, FacilityMappings).data;
+    response = mapFacilityObjectForFront(response);
     log.info('updateFacility: Response is: ', minify(response));
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {

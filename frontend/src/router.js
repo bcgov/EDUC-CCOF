@@ -15,7 +15,9 @@ import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
 
-import CCFRIApplicationForm from '@/components/CCFRIApplicationForm';
+import MinistryLogin from '@/components/MinistryLogin';
+import Impersonate from '@/components/Impersonate';
+
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 
@@ -42,6 +44,9 @@ import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
 import LandingPage from '@/components/LandingPage';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
+
+import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
+
 
 Vue.prototype.moment = moment;
 
@@ -132,6 +137,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
+    
     {
       path: PATHS.family.eligibility,
       name: 'Eligibility',
@@ -204,6 +210,17 @@ const router = new VueRouter({
       component: ApplicationConfirmation,
       meta: {
         pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.group.renewOrganization,
+      name: 'Renew Organization',
+      component: RenewOrganization,
+      meta: {
+        pageTitle: 'Renew Organization',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
@@ -322,6 +339,23 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/internal',
+      name: 'ministry login',
+      component: MinistryLogin,
+      meta: {
+        pageTitle: PAGE_TITLES.LOGIN,
+      }
+    },
+    {
+      path: PATHS.impersonate,
+      name: 'impersonate',
+      component: Impersonate,
+      meta: {
+        pageTitle: 'Impersonate a BCeID User',
+        requiresAuth: true
+      }
+    },
+    {
       path: '*',
       name: 'notfound',
       redirect: '/',
@@ -342,11 +376,19 @@ router.beforeEach((to, _from, next) => {
     store.dispatch('auth/getJwtToken').then(() => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
-      } else {
+      }else {
         store.dispatch('auth/getUserInfo').then(() => {
-          next();
-        }).catch(() => {
-          next('error');
+          if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
+            next(PATHS.impersonate);
+          } else {
+            next();
+          }
+        }).catch((error) => {
+          if (error.response?.status == '401') {
+            next('unauthorized');
+          } else {
+            next('error');
+          }
         });
       }
     }).catch(() => {

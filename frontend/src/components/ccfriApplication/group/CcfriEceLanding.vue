@@ -153,10 +153,9 @@ export default {
         Object.values(ccfriOptInOrOut).forEach((element, index) => {
           if (element == '1'){
             firstOptInFacility = index;
-            return;
           }
         });
-        
+        console.log(this.navBarList[firstOptInFacility]);
         this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`}); //CHANGE ME ! 
       }
     },

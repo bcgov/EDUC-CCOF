@@ -403,8 +403,13 @@ export default {
     ...mapState('facility', ['facilityModel']),
     currentFacility(){
       console.log('oi');
-      console.log(this.navBarList[0]);
-      return this.navBarList[0]; //TODO - change this to work with multiple facilities 
+      //console.log(this.navBarList[0]);
+
+      let activeFac = this.navBarList.findIndex((element) =>
+      { 
+        return element.ccfriApplicationId == this.$route.params.urlGuid;
+      });
+      return this.navBarList[activeFac]; //TODO - change this to work with multiple facilities 
     }
   },
   watch: {
@@ -412,12 +417,13 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
+        console.log('facModel', this.facilityModel);
 
         try {
           let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`);
           ccfriInfo = ccfriInfo.data;
           console.log(ccfriInfo.facilityId);
-          this.loadFacility(ccfriInfo.facilityId);
+          //this.loadFacility(ccfriInfo.facilityId);
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
         } catch (error) {
           console.log(error);

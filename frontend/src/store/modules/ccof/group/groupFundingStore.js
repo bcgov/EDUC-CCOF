@@ -46,7 +46,6 @@ export default {
 
       let deleteFields = [];
       if (payload.hasClosedMonth !== 'yes') {
-
         for (let i = 1; i <= 12; i++) {
           deleteFields.push('closedIn' + i);
         }
@@ -61,10 +60,6 @@ export default {
         ['beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten'].forEach(item => {
           payload[item] = payload[item] ? 1 : 0;
         });
-      }
-
-      if (payload.isExtendedHours !== 'yes') {
-        deleteFields.push('maxDaysPerWeekExtended', 'maxDaysPerYearExtended');
       }
 
       deleteFields.forEach(field => delete payload[field]);
@@ -89,14 +84,9 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
           let model = response.data;
-          for (let i = 1; i <= 12; i++) {
-            if (model[`closedIn${i}`] === 1) {
-              model.hasClosedMonth = 'yes';
-            }
-          }
           console.log('response', model);
           commit('setFundingModel', model);
-          commit('addModelToStore', { fundingId: fundingId, model: model });
+          commit('addModelToStore', { fundingId, model });
 
         } catch (error) {
           console.log(`Failed to get Funding - ${error}`);

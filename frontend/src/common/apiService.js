@@ -69,6 +69,15 @@ export default {
     }
   },
 
+  async getUserImpersonateInfo(userName) {
+    try{
+      return await apiAxios.get(`${ApiRoutes.USER}/${userName}`);
+    } catch(e) {
+      console.log(`Failed to get from Nodejs getUserImpersonateInfo API - ${e}`);
+      throw e;
+    }
+  },
+
   async getLookupInfo() {
     try{
       return await apiAxios.get(ApiRoutes.LOOKUP);

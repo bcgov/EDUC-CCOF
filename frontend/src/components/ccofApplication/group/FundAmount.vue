@@ -171,8 +171,7 @@
             </v-row>
           </v-container>
 
-          <v-card-title v-show="model.isSchoolProperty === 'yes'">Group Child Care (School Age Care on School
-            Grounds)</v-card-title>
+          <v-card-title v-show="model.isSchoolProperty === 'yes'">Group Child Care (School Age Care on School Grounds)</v-card-title>
 
           <v-container v-show="model.isSchoolProperty === 'yes'">
             <v-row>
@@ -233,31 +232,31 @@
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.groupChildCare4less" label="Group Child Care (under 36 months)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36School4less" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4less" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (School Age / School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4less" label="Multi-Age Care" />
+                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4OrLess" :rules="rules.notRequired" label="Multi-Age Care" />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.groupChildCare4more" label="Group Child Care (under 36 months)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareUnder36Months4OrMore" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36School4more" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4more" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                  <v-text-field outlined type="number" v-model.number="model.groupChildCareSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (School Age/ School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4more" label="Multi-Age Care" />
+                  <v-text-field outlined type="number" v-model.number="model.multiAgeCare4more" :rules="rules.notRequired" label="Multi-Age Care" />
                 </v-row>
               </v-col>
             </v-row>
@@ -338,8 +337,8 @@ export default {
     formatTime
   },
   beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFundingComplete({fundingId: this.$route.params.urlGuid, complete: this.isValidForm});
-    this.addModelToStore( {fundingId: this.$route.params.urlGuid, model: this.model});
+    this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.isValidForm });
+    this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
 
     next();
   },
