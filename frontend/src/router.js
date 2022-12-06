@@ -219,7 +219,9 @@ const router = new VueRouter({
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true
       }
     },
     {
@@ -227,7 +229,9 @@ const router = new VueRouter({
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true
       }
     },
     {
@@ -235,7 +239,9 @@ const router = new VueRouter({
       name: 'ECEWE Document Upload',
       component: EceweDocumentUpload,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true
       }
     },
     {
@@ -243,7 +249,9 @@ const router = new VueRouter({
       name: 'ECEWE Summary',
       component: EceweSummary,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true        
       }
     },
     {

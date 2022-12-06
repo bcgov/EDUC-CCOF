@@ -1,13 +1,11 @@
 <template>
     <v-container>
-      <v-row justify="center">
-        <br/>
-        Early Childhood Educator-Wage Enhancement (ECE-WE)
+      <v-row justify="center" class="pt-4">
+        <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE)</span>
       </v-row>
-      <v-row justify="center" class="pt-2">
-        {Organization Name}
+      <v-row justify="center" class="pt-4 text-h6" style="color:#003466;">
+        {{this.userInfo.organizationName}}
       </v-row>
-      <v-row><v-col></v-col></v-row>
       <v-row><v-col></v-col></v-row>
 
       <v-row justify="center">
@@ -15,22 +13,22 @@
           <v-container>
             <v-row justify="center">
               <br/>
-              For the {2022/23} funding term, would you like to opt-in to ECE-WE for any facility in your organization?
+              For the 2022/23 funding term, would you like to opt-in to ECE-WE for any facility in your organization?
             </v-row>
             <v-row justify="center">
               <v-radio-group
-                v-model="model.eceweOptInQ1"
+                v-model="q1OptInECEWE"
                 row>
               <v-col>
                 <v-radio style="padding-right:80px"
                   label="Yes"
-                  value="true"
+                  value="1"
               ></v-radio>
               </v-col>
               <v-col>
                 <v-radio
                   label="No"
-                  value="false"
+                  value="0"
                 ></v-radio>
               </v-col>
               </v-radio-group>
@@ -39,7 +37,7 @@
         </v-card>
       </v-row>
       
-      <v-row v-if="model.eceweOptInQ1" justify="center">
+      <v-row v-if="q1OptInECEWE" justify="center">
         <v-card class="cc-top-level-card eceweCard">
           <v-container>
             <v-row justify="center">
@@ -48,18 +46,18 @@
             </v-row>
             <v-row justify="center">
               <v-radio-group
-                v-model="model.employeesBelongToUnionQ2"
+                v-model="q2BelongsToUnion"
                 row>
               <v-col>
                 <v-radio style="padding-right:80px"
                   label="Yes"
-                  value="true"
+                  value="1"
                 ></v-radio>
               </v-col>
               <v-col>
                 <v-radio
                   label="No"
-                  value="false"
+                  value="0"
                 ></v-radio>
               </v-col>
               </v-radio-group>
@@ -68,7 +66,7 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="model.employeesBelongToUnionQ2 == 'true'" justify="center">
+      <v-row v-if="q2BelongsToUnion == '1'" justify="center">
         <v-card class="cc-top-level-card eceweCard">
           <v-container>
             <v-row justify="center" >
@@ -77,18 +75,18 @@
               </v-col>
             </v-row>
             <v-radio-group
-                v-model="model.fundingModelQ3"
+                v-model="q3FundingModel"
                 row>
             <v-row justify="center">
               <v-col class="pt-2">
                 <v-radio
                   label="All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding"
-                  value="Q3-1"
+                  value="100000000"
                   @click="showNextSaveBtns()"
                   ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="model.fundingModelQ3 == 'Q3-1'" width="100%">
+            <v-card v-if="q3FundingModel == '100000000'" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-1 notice1">
@@ -111,12 +109,12 @@
               <v-col class="pt-7">
                 <v-radio
                   label="All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding"
-                  value="Q3-2"
+                  value="100000001"
                   @click="showNextSaveBtns()"
                 ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="model.fundingModelQ3 == 'Q3-2'" width="100%">
+            <v-card v-if="q3FundingModel == '100000001'" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-1 notice2">
@@ -139,12 +137,12 @@
               <v-col class="pt-7">
                 <v-radio
                   label="Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding."
-                  value="Q3-3"
+                  value="100000002"
                   @click="showNextSaveBtns()"
                 ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="model.fundingModelQ3 == 'Q3-3'" width="100%">
+            <v-card v-if="q3FundingModel == '100000002'" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-1 notice3">
@@ -173,8 +171,8 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-show="model.employeesBelongToUnionQ2" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn v-show="model.employeesBelongToUnionQ2 == 'true'" color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn v-show="q2BelongsToUnion" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn v-show="q2BelongsToUnion" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -183,32 +181,81 @@
 <script>
   
 import { PATHS } from '@/utils/constants';
-
-let model = { x: [], };
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
-  props: {},
-  computed: {},
+  mixins: [alertMixin],
   data() {
     return {
-      model,
-      //eceweData,
-      previousPath: '',
-      //eceweOptInQ1: '',
-      //employeesBelongToUnionQ2: '',
-      //fundingModelQ3: '',
       showNextBtn: false,
       showSaveBtn: false,
-      row: '',
-      facilities: [{ name: 'Facility 1', id: 'fac1' }, { name: 'Facility 2', id: 'fac2' }, { name: 'Facility 3', id: 'fac3' }]
+      row: ''
     };
   },
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('eceweApp', ['isStarted']),
+    applicationId: {
+      get() { return this.$store.state.eceweApp.applicationId; },
+      set(value) { this.$store.commit('eceweApp/setApplicationId', value); }
+    },
+    q1OptInECEWE: {
+      get() { return this.$store.state.eceweApp.q1OptInECEWE; },
+      set(value) { this.$store.commit('eceweApp/setQ1OptInECEWE', value); }
+    },
+    q2BelongsToUnion: {
+      get() { return this.$store.state.eceweApp.q2BelongsToUnion; },
+      set(value) { this.$store.commit('eceweApp/setQ2BelongsToUnion', value); }
+    },
+    q3FundingModel: {
+      get() { return this.$store.state.eceweApp.q3FundingModel; },
+      set(value) { this.$store.commit('eceweApp/setQ3FundingModel', value); }
+    },
+    facilities: {
+      get() { return this.$store.state.eceweApp.facilities; },
+      set(value) { this.$store.commit('eceweApp/setFacilities', value); }
+    },
+    isValidForm: { 
+      get () { return this.$store.state.organization.isValidForm; }, 
+      set (value) { this.$store.commit('organization/setIsValidForm', value); }
+    }
+  },
+  mounted() {
+    //TODO get id from userInfo...
+    this.applicationId = '7bef232f-3a6f-ed11-81ac-000d3af4ff05'; //this.userInfo.applicationId;
+    this.loadData();
+  },
   methods: {
+    ...mapActions('eceweApp', ['loadEceweApp', 'saveApplication']),
+    ...mapMutations('eceweApp', ['setIsStarted']),
+    async loadData() {
+      if (this.isStarted) {
+        return;
+      }
+      if (this.applicationId) {
+        this.processing = true;
+        try {
+          await this.loadEceweApp(this.applicationId);
+        } catch (error) {
+          console.log('Error loading ECEWE application.', error);
+          this.setFailureAlert('Error loading ECEWE application.');
+        }
+        this.processing = false;
+        this.setIsStarted(true);
+      }
+    },
     next() {
       this.$router.push(PATHS.eceweFacilities);
     },
-    save() {
-      this.$router.push(PATHS);
+    async save() {
+      try {
+        await this.saveApplication();
+        this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
+      }
+      this.processing = false;
     },
     goToDocumentUpload() {
       this.$router.push(PATHS.documentUpload);
@@ -219,15 +266,7 @@ export default {
     showNextSaveBtns() {
       this.showNextBtn=true;
       this.showSaveBtn=true;
-    }
-  },
-  mounted() {
-    this.model = this.$store.state.eceweApp.model ?? model;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.model.previousRoute = _from.path;
-    this.$store.commit('eceweApp/model', this.model);
-    next();
+    },
   }
 };
 </script>

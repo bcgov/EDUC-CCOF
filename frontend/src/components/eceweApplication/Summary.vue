@@ -1,13 +1,10 @@
 <template>
     <v-container>
-      <v-row justify="center">
-        <br/>
-        Summary
+      <v-row justify="center" class="pt-4">
+        <span class="text-h5">Summary</span>
       </v-row>
-      <v-row>
-        <v-col style="text-align:center">
-          {Organization Name}
-        </v-col>
+      <v-row justify="center" class="pt-4 text-h6" style="color:#003466;">
+        AMBER MELO
       </v-row>
       <v-row><v-col></v-col></v-row>
       <v-row><v-col></v-col></v-row>
@@ -37,11 +34,13 @@
         <v-card class="cc-top-level-card ecewe-card">
           <v-container class="pa-0">
             <v-row>
-              <v-radio-group class="pa-0">
+              <v-radio-group
+                v-model="userDeclaration"
+                class="pa-0">
                 <v-col class="pl-6 py-0">
                   <v-radio
                     label="By selecting this, I declare all the information to be correct {placeholder wording}"
-                    value="true">
+                    :value="1">
                   </v-radio>
                 </v-col>
               </v-radio-group>
@@ -58,29 +57,36 @@
 
     </v-container>
   </template>
-  
 <script>
-  
-import { PATHS } from '@/utils/constants';
-import DocumentUpload from '@/components/common/DocumentUpload';
-  
+
+import { mapActions } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
+
 export default {
-  props: {
-  },
-  components: {
-    DocumentUpload
-  },
+  mixins: [alertMixin],
   computed: {
+    userDeclaration: {
+      get() { return this.$store.state.eceweApp.userDeclaration; },
+      set(value) { this.$store.commit('eceweApp/setUserDeclaration', value); }
+    },
   },
   data() {
     return {
     };
   },
   methods: {
-    upload() {},
-    hideAttachmentPanel() {},
+    ...mapActions('eceweApp', ['saveApplication']),
     previous() {
-      this.$router.push(PATHS.documentUpload);
+      return this.$router.go(-1);
+    },
+    async save() {
+      try {
+        await this.saveApplication();
+        this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
+      }
+      this.processing = false;
     },
   }
 };

@@ -1,11 +1,10 @@
 <template>
     <v-container>
-      <v-row justify="center" class="pb-0">
-        <br/>
-        Early Childhood Educator-Wage Enhancement (ECE-WE)
+      <v-row justify="center" class="pt-4">
+        <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE)</span>
       </v-row>
-      <v-row justify="center" class="pt-2">
-        {Organization Name}
+      <v-row justify="center" class="pt-4 text-h6" style="color:#003466;">
+        AMBER MELO
       </v-row>
       <v-row><v-col></v-col></v-row>
       <v-row><v-col></v-col></v-row>
@@ -54,42 +53,61 @@
         </v-card>
       </v-row>
       <v-row><v-col></v-col></v-row>
-      <v-flex v-for="item in this.facilities" :key="item.id">
+      <div v-for="(item, index) in this.facilities" :key="item.index">
         <v-row justify="center" class="pa-4">
-          <v-card elevation="1" class="cc-top-level-card eceweCard">
+          <v-card elevation="1" class="cc-top-level-card eceweCard" width="75%">
             <v-row>
-              <v-col class="pl-8">
-                {{item.id}}
+              <v-col cols="4" class="d-flex">
+                {{item.facilityId}}
               </v-col>
             </v-row>
-            <v-row>
-              <v-col class="pl-8">
+            <v-row class="">
+              <v-col cols="5" class="flex-column">
                 {{item.name}}
               </v-col>
-              <v-col class="pl-8 text-right">
-                Status: {{item.status}}
+              <v-col cols="4" class="flex-column">
+                <span v-show="item.update === false">
+                  Status: Opt {{item.optInOrOut == '1'?'in':'out'}} ECE-WE
+                </span>
+                <v-radio-group
+                  v-show="item.update === true"
+                  v-model="item.optInOrOut"
+                  class="pt-0"
+                  row
+                  >
+                  <v-radio
+                    @click="toggleRadio(index)"
+                    label="Opt in"
+                    :value="1">
+                  </v-radio>
+                  <v-radio
+                    @click="toggleRadio(index)"
+                    label="Opt out"
+                    :value="0">
+                  </v-radio>
+                </v-radio-group>
               </v-col>
-              <v-col class="pl-8 text-center">
+              <v-col cols="3" class="">
                 <v-btn
+                  @click="item.update=(item.update==false)?true:false"
                   color="#003366"
-                  class = "my-10 mx-14 justify-end"
                   dark> 
-                    UPDATE
+                    Update
                   </v-btn>
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="pl-8">
-                License #: {{item.licence}}
+              <v-col cols="12">
+                License #: {{item.licenseNumber}}
               </v-col>
             </v-row>
           </v-card>
         </v-row>
-      </v-flex>
+      </div>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn color="primary" outlined x-large @click="saveFacilities()">Save</v-btn>
       </v-row>
     </v-container>
   </template>
@@ -97,32 +115,73 @@
 <script>
   
 import { PATHS } from '@/utils/constants';
+import { mapActions } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
-  props: {
-  },
-  computed: {
-  },
+  mixins: [alertMixin],
   data() {
     return {
-      eceweOptInQ1: '',
-      employeesBelongToUnionQ2: '',
-      fundingModelQ3: '',
       row: '',
-      facilities: [
-        { name: 'Some Facility Name 1', id: 'F-00001-00001', licence: '1526632', status: 'Opt in ECE-WE'},
-        { name: 'Some Facility Name 2', id: 'G-00002-00002', licence: '7331621', status: 'Opt out ECE-WE'},
-        { name: 'Some Facility Name 3', id: 'G-00003-00003', licence: '5526423', status: 'Opt out ECE-WE'},
-        { name: 'Some Facility Name 4', id: 'F-00004-00004', licence: '6278422', status: 'Opt out ECE-WE'}]
     };
   },
+  computed: {
+    facilities: {
+      get() { return this.$store.state.eceweApp.facilities; },
+      set(value) { this.$store.commit('eceweApp/setFacilities', value); }
+    }
+  },
+  mounted() {
+    this.facilities = this.facilities.map(obj => ({ ...obj, update: false }));
+  },
   methods: {
+    ...mapActions('eceweApp', ['loadEceweApp', 'saveApplication', 'saveECEWEFacilityApplications']),
+    toggleRadio(index) {
+      this.facilities[index].update = (this.facilities[index].update==true)?false:true;
+    },
     previous() {
       return this.$router.go(-1);
     },
     next() {
       this.$router.push(PATHS.documentUpload);
     },
+    async loadData() {
+      if (this.isStarted) {
+        return;
+      }
+      if (this.applicationId) {
+        this.processing = true;
+        try {
+          await this.loadEceweApp(this.applicationId);
+        } catch (error) {
+          console.log('Error loading ECEWE application.', error);
+          this.setFailureAlert('Error loading ECEWE application.');
+        }
+        this.processing = false;
+        this.setIsStarted(true);
+      }
+    },
+    async save() {
+      try {
+        await this.saveApplication();
+        this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
+      }
+      this.processing = false;
+    },
+    async saveFacilities() {
+      try {
+        await this.saveECEWEFacilityApplications();
+        this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving ECEWE facility applications. Please try again later.'+error);
+      }
+      this.processing = false;
+    }
+
+
+
   }
 };
 </script>
