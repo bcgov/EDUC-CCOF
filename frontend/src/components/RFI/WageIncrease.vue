@@ -160,23 +160,23 @@
                   <p class="text text--primary  mx-4 my-3" > Note: If two or more staff have the same information for each column, they can be included in one row. </p>
                 </v-row>
               </v-toolbar-title >
-              
             </v-toolbar>
+
             <div class="px-md-12 px-7">
 
               <v-row  v-for="(obj, index) in wageList" :key="index">
-                    <v-btn 
-                      icon
-                      class="my-5"
-                      @click="removeFunding(index)"
-                      >
+                <!-- <v-btn 
+                  icon
+                  class="my-5"
+                  @click="removeFunding(index)"
+                >
                   <font-awesome-icon icon="fa-solid fa-circle-xmark" class="fa-xl"/>
-                </v-btn>
-                    <v-col class="col-md-3 col-12 ">
+                </v-btn>   commented out until I can figure out how to make look nice-->
+                    <v-col class="col-md-2 col-12 ">
                       <v-text-field
                         class = ""
-                        v-model="fundInfo.fundingProgram"
-                        label="Funding Program"
+                        v-model="obj.staffRole"
+                        label="Direct Care Staff Role "
                         outlined
                         clearable
                         :rules="rules"
@@ -184,14 +184,36 @@
                     </v-col>
 
                     <v-col class="col-md-2 col-12">
+                      <v-text-field
+                        type="number" 
+                        class = ""
+                        v-model.number="obj.staffNumber"
+                        label="Number of Staff Recieving Wage Increase"
+                        outlined
+                        clearable
+                        :rules="rules"
+                      ></v-text-field>
                       
                     </v-col>
 
                     <v-col class="col-md-2 col-12 ">
                       <v-text-field
+                        prefix="$"
                         class = ""
-                        v-model="fundInfo.status"
-                        label="Status"
+                        v-model.number="obj.wageBeforeIncrease"
+                        label="Wage before increase"
+                        outlined
+                        clearable
+                        :rules="rules"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col class="col-md-2 col-12 ">
+                      <v-text-field
+                       prefix="$"
+                        class = ""
+                        v-model.number="obj.wageAfterIncrease"
+                        label="Wage After increase"
                         outlined
                         clearable
                         :rules="rules"
@@ -199,31 +221,41 @@
                     </v-col>
 
                     <v-col class="col-md-2 col-12">
-                      <v-text-field type="number" outlined :rules="rules"  v-model.number="fundInfo.amount"  prefix="$"/>
+                      <v-text-field type="number" 
+                        outlined :rules="rules" 
+                        v-model.number="obj.averageHours"
+                        label="Average hours per week at this facility"
+                       
+                       />
                     </v-col>
 
-                    <v-col class="col-md-2 col-12 ">
-                      <v-text-field
-                        class = ""
-                        v-model="fundInfo.expenses"
-                        label="Expense(s)"
-                        outlined
-                        clearable
-                        :rules="rules"
-                      ></v-text-field>
+                    <v-col class="col-md-2 col-12">
+                      <v-menu  v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field 
+                          :rules="rules" 
+                          outlined v-model="obj.wageDate" 
+                          label="Month and year of wage increase" 
+                          readonly v-bind="attrs" v-on="on">
+                          </v-text-field>
+                        </template>
+                          <v-date-picker
+                            clearable 
+                            v-model="obj.wageDate" 
+                            @input="wageCalendar[index] = false">
+                          </v-date-picker>
+                      </v-menu>
                     </v-col>
 
-                  </v-row> <!-- end v for-->
+                </v-row> <!-- end v for-->
                 
-            
-                  <div class="form-group">
-                    <v-btn id="funding" @click="addWage()"   class="my-5" dark color='#003366'>Add Funding</v-btn>
-                  </div>
-                  <br>
-              
+                <div class="form-group">
+                  <v-btn id="funding" @click="addRow()"   class="my-5" dark color='#003366'>Add Funding</v-btn>
+                </div>
+                <br>
               
             </div>
-            </v-card-text>
+          </v-card-text>
         </v-card>
 
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
@@ -243,6 +275,47 @@
             <br>
             <div class="px-md-12 px-7">
               
+              <p class="text text--primary" > When did your facility's recruitment and retention challenges begin? </p>
+              <v-text-field
+                placeholder="Describe here"
+                outlined
+                v-model="model.textbox1"
+              ></v-text-field>
+
+              <p class="text text--primary" > How many Direct Care Staff have left your facility due to wages? </p>
+              <v-text-field
+                placeholder="Describe here"
+                outlined
+                v-model=" model.textbox2"
+              ></v-text-field>
+
+              <p class="text text--primary" > What have you done to try to recruit staff? </p>
+              <v-text-field
+                placeholder="Describe here"
+                outlined
+                v-model=" model.textbox3"
+              ></v-text-field>
+
+              <p class="text text--primary" > Have you had to adjust your hours/days of operation? </p>
+              <v-text-field
+                placeholder="Describe here"
+                outlined
+                v-model=" model.textbox4"
+              ></v-text-field>
+
+              <p class="text text--primary" > Is your facility unable to fill spaces due to insufficient staffing? </p>
+              <v-text-field
+                placeholder="Describe here"
+                outlined
+                v-model=" model.textbox5"
+              ></v-text-field>
+
+              <p class="text text--primary" > Is there anything else you would like us to know about the wage increase(s)? </p>
+              <v-text-field
+                placeholder="Describe here"
+                outlined
+                v-model=" model.textbox6"
+              ></v-text-field>
               
             </div>
             </v-card-text>
@@ -289,7 +362,6 @@
 
 import { PATHS } from '@/utils/constants';
 
-//let q1 = '';
 
 let wageList = [
   {
@@ -302,7 +374,7 @@ let wageList = [
   }
 ];
 
-let model = { x: [], wageList  };
+let model = { wageList, };
 
 export default {
   name: 'CcfriRequestMoreInfo',
@@ -310,7 +382,11 @@ export default {
     return {
       model,
       input : '',
-      // q1 : '',
+      wageList,
+      wageCalendar: [],
+      rules: [
+        (v) => !!v  || 'Required.',
+      ],
      
     };
   },
@@ -327,8 +403,8 @@ export default {
     
   },
   methods : {
-    addWage () {
-      this.expenseList.push( {
+    addRow () {
+      this.wageList.push( {
         staffRole: '',
         staffNumber: 0,
         wageBeforeIncrease: 0,
