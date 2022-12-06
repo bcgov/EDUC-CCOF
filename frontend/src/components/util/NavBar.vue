@@ -105,6 +105,7 @@ export default {
     ...mapState('organization', ['isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
+    ...mapGetters('auth', ['userInfo']),
     navRefresh() {
       return this.pageTitle + this.$route.params.urlGuid;
     },
@@ -294,13 +295,23 @@ export default {
       }
       items.push(
         {
-          title: 'Confirmation',
+          title: 'Add Facility',
           link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
           icon: this.getCheckbox(this.ccofApplicationComplete),
           isActive: 'Application Confirmation' === this.$route.name
         }
       );
+      items.push(
+        {
+          title: 'License Upload',
+          link: { name: 'Application Confirmation'}, //TODO update to upload license page
+          isAccessible: this.ccofConfirmationEnabled,
+          icon: this.getCheckbox(this.ccofApplicationComplete),
+          isActive: 'Application Confirmation' === this.$route.name //TODO update to upload license page
+        }
+      );
+
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
@@ -315,7 +326,7 @@ export default {
       items.push(
         {
           title: 'Eligibility',
-          link: { name: 'ECEWE Eligibility'},
+          link: { name: 'ECEWE Eligibility', params: {urlGuid: this.userInfo?.applicationId}},
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           isActive: 'ECEWE Eligibility' === this.$route.name
@@ -324,7 +335,7 @@ export default {
       items.push(
         {
           title: 'Facility',
-          link: { name: 'ECEWE Facilities'},
+          link: { name: 'ECEWE Facilities', params: {urlGuid: this.userInfo?.applicationId}},
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           isActive: 'ECEWE Facilities' === this.$route.name
