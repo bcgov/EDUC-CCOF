@@ -5,30 +5,17 @@ const log = require('./logger');
 const config = require('../config/index');
 const { errorResponse, minify, HttpStatus, getHttpHeader, getOperation } = require('./utils');
 const {ApiError} = require('./error');
-const { CHILD_AGE_CATEGORY_TYPES } = require('../util/constants');
 
-
-
-//i'm not sure how this function ties into the flow yet... 
-//jen to figure out later 
-async function getUserProfile(req, res){
-
-  //let payload = (await axios.get ('/api/UserProfile?userId=a1e5c3f9-299d-4979-92c9-fea3520f428c'));
-  log.info('called from public.js');
-  try {
-
-    let payload = (await axios.get ('https://75c86aa567474ca7949bdf594539bfce-b43d2d-dev.apps.silver.devops.gov.bc.ca/api/UserProfile?userId=a1e5c3f9-299d-4979-92c9-fea3520f428c'));
-    log.info(payload);
-    return res.status(200).json(payload);
-  }
-  catch (e) {
-    log.verbose(e, 'getUserProfile', 'Error occurred while attempting to GET USER PROFILE.');
-    return res.status(469);
-  }
-  
-  
-  
-}
+//This is the Child age category types used by the estimator
+//It is different from the CHILD_AGE_CATEGORY_TYPES in util/constants
+//The wording is used to match values in CCFRIEstimator.
+//TODO: merge this back to util/constants after we figure out which wording is correct.
+//      and update CCFRIEstimator.vue if there are changes.
+const CHILD_AGE_CATEGORY_TYPES = new Map();
+CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 - 18 Months');
+CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 - 36 Months');
+CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only)');
 
 // Get facilities which match user search critiera via query param (i.e. facility/city).
 async function getFacilities(req, res) {
@@ -44,7 +31,7 @@ async function getFacilities(req, res) {
     }
     return res.status(200).json(results);
   } catch (e) {
-    log.verbose(e, 'getFacilities', 'Error occurred while attempting to GET Facilities.');
+    log.error(e, 'getFacilities', 'Error occurred while attempting to GET Facilities.');
     return errorResponse(res);
   }
 }
@@ -115,7 +102,7 @@ async function searchFacility(searchQuery) {
   }
 }
 
-module.exports = {getFacilities,
-                  getFacility,
-                  getUserProfile
-                };
+module.exports = {
+  getFacilities,
+  getFacility,
+};

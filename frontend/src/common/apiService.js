@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {ApiRoutes} from '@/utils/constants';
 import AuthService from '@/common/authService';
-
+//
 // Buffer concurrent requests while refresh token is being acquired
 let failedQueue = [];
 
@@ -65,6 +65,15 @@ export default {
       return await apiAxios.get(ApiRoutes.USER);
     } catch(e) {
       console.log(`Failed to get from Nodejs getUserInfo API - ${e}`);
+      throw e;
+    }
+  },
+
+  async getUserImpersonateInfo(userName) {
+    try{
+      return await apiAxios.get(`${ApiRoutes.USER}/${userName}`);
+    } catch(e) {
+      console.log(`Failed to get from Nodejs getUserImpersonateInfo API - ${e}`);
       throw e;
     }
   },

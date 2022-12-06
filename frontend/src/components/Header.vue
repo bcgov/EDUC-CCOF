@@ -4,6 +4,7 @@
     <v-container
     :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
     >
+    <v-row class="justify-space-between">
     <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
       <img
           tabindex="-1"
@@ -12,12 +13,11 @@
           alt="B.C. Government Logo"
       >
     </a>
-
-    <v-spacer></v-spacer>
-    <div v-if="isAuthenticated && dataReady">
+    
+    <div v-if="isAuthenticated && dataReady" class="">
       <v-menu name="user_options" offset-y>
         <template v-slot:activator="{ on }">
-          <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
+          <v-chip tabindex="0" v-on="on" pill color="#003366" dark class="mt-7">
             <v-avatar left color="info">
               {{ userInfo.displayName[0] }}
             </v-avatar>
@@ -25,11 +25,11 @@
           </v-chip>
         </template>
         <v-list dark color="#003366">
-          <v-list-item style="min-height: 4vh" id="home_button" :href='authRoutes.DASHBOARD'>
+          <v-list-item style="min-height: 4vh" id="home_button" :to='authRoutes.DASHBOARD'>
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="hasSeveralMincodes()" id="switch_dashboard_button" :href='authRoutes.INSTITUTE_SELECTION'>
-            <v-list-item-title>Switch Dashboard</v-list-item-title>
+          <v-list-item v-if="isMinistryUser" id="impersonate_button" :to='PATHS.impersonate'>
+            <v-list-item-title>Impersonate</v-list-item-title>
           </v-list-item>
           <v-list-item style="min-height: 4vh" id="logout_button" :href='authRoutes.LOGOUT'>
             <v-list-item-title>Logout</v-list-item-title>
@@ -42,24 +42,26 @@
       <v-skeleton-loader type="chip">
       </v-skeleton-loader>
     </div>
+  </v-row>
   </v-container>
   </v-system-bar>
 </template>
 
 <script>
 import {mapGetters} from 'vuex';
-import {AuthRoutes , ApiRoutes} from '@/utils/constants';
+import {AuthRoutes , ApiRoutes, PATHS} from '@/utils/constants';
 
 export default {
   data() {
     return {
       appTitle: process.env.VUE_APP_TITLE,
       authRoutes: AuthRoutes,
+      PATHS: PATHS,
       apiRoutes: ApiRoutes
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
     dataReady: function () {
       return this.userInfo;
     }

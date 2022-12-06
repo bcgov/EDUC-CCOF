@@ -75,7 +75,7 @@
                 <v-text-field outlined required v-model="email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" v-model.number="incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                <v-text-field outlined required :rules="rules.required" v-model="incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
               </v-col>
             </v-row>
 
@@ -115,8 +115,9 @@ export default {
   props: {
   },
   computed: {
-    ...mapState('app', ['organizationTypeList']),
+    ...mapState('app', ['organizationTypeList', 'navBarList']),
     ...mapState('organization', ['isStarted']),
+    ...mapState('facility', ['facilityList']),
     ...mapGetters('auth', ['userInfo']),
     organizationId: {
       get() { return this.$store.state.organization.organizationId; },
@@ -178,28 +179,34 @@ export default {
       get() { return this.$store.state.organization.organizationType; },
       set(value) { this.$store.commit('organization/setOrganizationType', value); }
     },
-    isValidForm: { 
-      get () { return this.$store.state.organization.isValidForm; }, 
-      set (value) { this.$store.commit('organization/setIsValidForm', value); }
-    },    
   },
   mixins: [alertMixin],
   data() {
     return {
       rules,
       processing: false,
+      isValidForm: true,
     };
   },
   mounted() {
     this.businessId = this.userInfo.userName;
     this.loadData();
   },
+  beforeRouteLeave(_to, _from, next) {
+    this.setIsOrganizationComplete(this.isValidForm);
+    this.setIsStarted(true);
+    next();
+  },
+
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
-    ...mapMutations('organization', ['setIsStarted']),
-
+    ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete']),
     next() {
-      this.$router.push(PATHS.facInfo);
+      if (this.navBarList && this.navBarList.length > 0) {
+        this.$router.push(PATHS.group.facInfo + '/' + this.navBarList[0].facilityId);
+      } else {
+        this.$router.push(PATHS.group.facInfo);
+      }
     },
     async save() {
       this.processing = true;
@@ -209,7 +216,6 @@ export default {
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
-
       this.processing = false;
     },
     async loadData() {
@@ -225,6 +231,7 @@ export default {
           this.setFailureAlert('An error occurred while saving. Please try again later.');
         }
         this.processing = false;
+        this.setIsOrganizationComplete(this.isFormValid);
         this.setIsStarted(true);
       }
     }

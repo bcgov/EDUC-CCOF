@@ -24,7 +24,7 @@
                 <v-icon
                   size="80"
                   color="white"
-                  class="pl-3">
+                  class="pl-3 d-none d-sm-flex">
                   mdi-alert-circle
                 </v-icon>
               </v-col>
@@ -64,7 +64,7 @@
                 </v-col>
                 <v-col cols="10" class="pl-8 pt-0 text-left" style="color:white">
                   <div v-show="isParent">
-                    We recommend you use the 'Optional Facility Search' to find your childcare provider. If you cannot find your provider, contact them directly for the <strong>approved full-time parent fee before fee reduction is applied.</strong>
+                    We recommend you use the 'Optional Facility Search' to find your child care provider. If you cannot find your provider, contact them directly for the <strong>approved full-time parent fee before fee reduction is applied.</strong>
                   </div>
                   <div v-show="isProvider">
                     You may use the 'Optional Facility Search' to find your facility. If you cannot find your facility, reference your facility's Program Confirmation Form for <strong>your approved full-time parent fee before fee reduction is applied.</strong>
@@ -473,7 +473,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>You can select a month starting Dec 2022. Parent fee frequency and<br/> approved full-time parent fee before reduction applied will be populated.</span>
+                    <span>Fees shown are approved <strong>full time</strong> maximum parent fees. For part time<br/> care, click on the month and enter your fee without any reduction into<br/> the box beside: 'Actual parent fee before reduction applied'.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="6" class="flex pt-1 pb-0" style="margin-bottom:-18px;">
@@ -735,7 +735,7 @@
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                           <div class="d-flex">
                           <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;">
-                            {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.reductionAmountPerChild/20))+'/day ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
+                            {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.reductionAmountPerChild/20))+'/day ($'+display2Decimals((result.reductionAmountPerChild / 20 * result.daysOfCare))+'/month)' : ''}}
                             {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.reductionAmountPerChild/4))+'/week ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
                             {{result.feeFrequency=='Monthly'? '$'+(display2Decimals(result.reductionAmountPerChild))+'/month' : ''}}
                           </div>
@@ -743,7 +743,7 @@
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                         <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px">
-                          {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.actualParentFeePerChild/20))+'/day ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
+                          {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.actualParentFeePerChild/20))+'/day ($'+display2Decimals((result.actualParentFeePerChild / 20 * result.daysOfCare))+'/month)' : ''}}
                           {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.actualParentFeePerChild/4))+'/week ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
                           {{result.feeFrequency=='Monthly'? '$'+display2Decimals(result.actualParentFeePerChild)+'/month' : ''}}
                         </div>
@@ -1009,7 +1009,7 @@ export default {
       console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
     },
-    estimateTheBenefit() { //NOSONAR
+    estimateTheBenefit() { ///NOSONAR
       if (this.$refs.form.validate()) {
         this.showEstimatorResults = true;
         this.results = [];
@@ -1058,12 +1058,14 @@ export default {
           let totalRateReduction;
           let reductionAmountPerChild;
           let actualParentFeePerChild;
+          let daysOfCare; //Number of days of care per month.
           // If care schedule is part time then determine the part/full time daily rate and part/full time totals.
           // i.e. A partime care schedule could include both parttime and fulltime days... 3 days of parttime and 2 days at fulltime.
           /**
-                                * FULL TIME RATE Reduction Calculations
-                                */
+          * FULL TIME RATE Reduction Calculations
+          */
           // Always calculate the fulltime daily rate and fulltime total
+          daysOfCare = 20; // for full time, always 20 days a month
           fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
           fullTimeTotal = fullTimeDailyRate * 20;
           partTimeTotal = 0;
@@ -1094,6 +1096,7 @@ export default {
             //multiply by 4 since there are decided on 4 weeks / month
             partTimeNumberOfDays = partTimeNumberOfDays * 4;
             fullTimeNumberOfDays = fullTimeNumberOfDays * 4;
+            daysOfCare = partTimeNumberOfDays + fullTimeNumberOfDays;
             // console.log('reductionAmountPerChild ' + reductionAmountPerChild);
             let dailyPartTimeReductionamount = reductionAmountPerChild / 20; // 20 days per month.
             let partTimeHalfDayReductionAmount = dailyPartTimeReductionamount * partTimeNumberOfDays / 2;
@@ -1147,9 +1150,10 @@ export default {
           // actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
           // Update the results
           this.results.push({ number: i + 1,
-            reductionAmountPerChild: Math.round(reductionAmountPerChild),
-            actualParentFeePerChild: Math.round(actualParentFeePerChild),
-            feeFrequency: this.children[i].parentFeeFrequency });
+            reductionAmountPerChild: reductionAmountPerChild,
+            actualParentFeePerChild: actualParentFeePerChild,
+            feeFrequency: this.children[i].parentFeeFrequency,
+            daysOfCare: daysOfCare });
         }
       }
     },

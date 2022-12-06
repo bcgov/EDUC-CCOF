@@ -6,7 +6,7 @@ env:
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
   REPO_NAME: "educ-ccof"
-  BRANCH: "release-estimator"
+  BRANCH: "main"
   APP_NAME_FRONTEND: "frontend"
   APP_NAME_BACKEND: "backend"
 
