@@ -21,7 +21,7 @@
               <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="continueApplication()">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
-          <SmallCard title="Renew my funding agreement for 2022/23" :disable=getApplicationStatus>
+          <SmallCard :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable=getApplicationStatus>
               <br>
               <v-btn absolute bottom class="" dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
           </SmallCard>
@@ -98,13 +98,6 @@ import { PATHS } from '@/utils/constants';
 
 export default {
   name: 'LandingPage',
-  props: {
-    currentYear: {
-      type: Number,
-      default: 2023,
-      required: false,
-    },
-  },
   data() {
     return {
       input: '',
@@ -115,13 +108,8 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('app', ['futureYearLabel']),
     ...mapState('app', ['navBarList']),
-    currentYearTwoDigit() {
-      return this.currentYear - 2000;
-    },
-    nextYearTwoDigit() {
-      return this.currentYear - 1999;
-    },
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;

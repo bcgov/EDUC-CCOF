@@ -86,7 +86,8 @@ export default {
     },     
   },
   getters: {
-    programYearList: state => state.programYearList,
+    currentYearLabel: state => state.programYearList?.current?.name,
+    futureYearLabel: state => state.programYearList?.future?.name,
     childCareCategoryList: state => state.childCareCategoryList,
     organizationTypeList: state => state.organizationTypeList,
     lookupInfo: state => state.lookupInfo,
@@ -140,7 +141,7 @@ export default {
     async getLookupInfo({ commit }) {
       if (localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const lookupInfo = await ApiService.getLookupInfo();
-        commit('setLookupInfo', lookupInfo.data);
+        commit('setLookupInfo', lookupInfo.data); //TODO: remove this one
         commit('setProgramYearList', lookupInfo.data?.programYear);
         commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
         commit('setOrganizationTypeList', lookupInfo.data?.organizationType);
