@@ -21,7 +21,8 @@ function processQueue(error, token = null) {
 const apiAxios = axios.create();
 const intercept = apiAxios.interceptors.response.use(config => config, error => {
   const originalRequest = error.config;
-  if (error.response.status !== 401) {
+  console.log('ERROR', error);
+  if (error.response?.status !== 401) {
     return Promise.reject(error);
   }
   axios.interceptors.response.eject(intercept);
