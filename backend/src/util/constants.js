@@ -39,7 +39,7 @@ const OPTIN_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
-  APPROVED: 11, //change back to 1, testing 
+  APPROVED: 1, //change back to 1, testing 
   DRAFT: 2,
   SUBMITTED: 3
 });

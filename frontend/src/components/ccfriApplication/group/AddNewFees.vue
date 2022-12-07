@@ -402,14 +402,10 @@ export default {
     ...mapState('app', ['navBarList']),
     ...mapState('facility', ['CCFRIFacilityModel']),
     currentFacility(){
-      console.log('oi');
-      //console.log(this.navBarList[0]);
-
-      let activeFac = this.navBarList.findIndex((element) =>
-      { 
+      let activeFac = this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
       });
-      return this.navBarList[activeFac]; //TODO - change this to work with multiple facilities 
+      return this.navBarList[activeFac];
     }
   },
   watch: {
@@ -417,13 +413,12 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
-        console.log('facModel', this.facilityModel);
-
         try {
           let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`); //put this in the store?
           ccfriInfo = ccfriInfo.data;
           console.log(ccfriInfo.facilityId);
           await this.loadCCFRIFacility(ccfriInfo.facilityId); //perhaps call other getFac here - more lightweight one
+          await this.loadFacility(ccfriInfo.facilityId); //TAKE THIS OUT! Just making sure I'm removing the right things from the endpoint 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           //const lteFac = await ApiService.apiAxios.get(`/api/facility/ccfri/${ccfriInfo.facilityId}`);
           //console.log(lteFac);
@@ -432,8 +427,6 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
         }
-        
-        
       },
       immediate: true,
       deep: true
@@ -441,6 +434,7 @@ export default {
   },
   methods: {
     ...mapActions('facility', ['loadCCFRIFacility']),    
+    ...mapActions('facility', ['loadFacility']),    
     addDate(){
       dates.push({
         message: this.model.closureReason,

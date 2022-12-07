@@ -134,29 +134,35 @@ export default {
     },
     next() {
       //TODO: what should next do if no updates are made? 
-      //this.save();
-      const ccfriComplete = this.navBarList.every((fac, index) => {
-        return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
-        //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
-      });
+      //this.save(); put this back in !
+      // const ccfriComplete = this.navBarList.every((fac, index) => {
+      //   return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
+      //   //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
+      // });
 
-      console.log(ccfriComplete);
+      let ccfriComplete = false;
 
-      //if no status- go straight to add new fees page
+     // console.log(ccfriComplete);
+
+      //if CCFRI has been approved - go to page to verify current fees. Else - go to the first OPT IN add new fees page
       if (ccfriComplete){
         this.$router.push(PATHS.currentFees); 
       }
       else {
 
         
-        let firstOptInFacility; 
-        Object.values(ccfriOptInOrOut).forEach((element, index) => {
-          if (element == '1'){
-            firstOptInFacility = index;
+        let firstOptInFacility = -1; 
+        for (let i = 0; i < this.showOptStatus.length; i++) {
+          //elemnt is true if update button has been clicked. 
+          if (this.showOptStatus[i]){
+            if(this.ccfriOptInOrOut[i] == '1'){
+              firstOptInFacility = i;
+              break;
+            }
           }
-        });
-        console.log(this.navBarList[firstOptInFacility]);
-        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`}); //CHANGE ME ! 
+        }
+        //if -1, go to ECEWE screen! 
+        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
       }
     },
     // refreshWithFacility() {
