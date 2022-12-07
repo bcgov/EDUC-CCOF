@@ -1,5 +1,5 @@
 'use strict';
-const {getOperation, getLabelFromValue} = require('./utils');
+const {getOperation, getLabelFromValue, minify} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const _ = require ('lodash');
 const cache = require('memory-cache');
@@ -82,6 +82,7 @@ async function getLookupInfo(req, res) {
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }
+  console.log('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
 module.exports = {
