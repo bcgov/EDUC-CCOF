@@ -40,6 +40,7 @@ router.get('/:facilityId', //passport.authenticate('jwt', {session: false}),isVa
 /**
  * Get Facility details for CCFRI Application (less detailed)
  */
+//i think i want ccfri guid here 
 router.get('/ccfri/:facilityId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();

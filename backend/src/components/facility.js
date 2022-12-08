@@ -89,57 +89,57 @@ async function getFacilityChildCareTypes(req, res) {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
     }
     //take out everything below to see all childcare types even those without fees 
-    // let childCareTypes = [];
-    // let currentProgramYear;
-    // facility.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
-    //   if (hasChildCareCategory(item)) {
-    //     currentProgramYear = item._ccof_programyear_value;
-    //     childCareTypes.push(
-    //       {
-    //         childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-    //         programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
-    //         programYearId: item._ccof_programyear_value,
-    //         approvedFeeApr: item.ccof_apr,
-    //         approvedFeeAug: item.ccof_aug,
-    //         approvedFeeDec: item.ccof_dec,
-    //         approvedFeeFeb: item.ccof_feb,
-    //         approvedFeeJan: item.ccof_jan,
-    //         approvedFeeJul: item.ccof_jul,
-    //         approvedFeeJun: item.ccof_jun,
-    //         approvedFeeMar: item.ccof_mar,
-    //         approvedFeeMay: item.ccof_may,
-    //         approvedFeeNov: item.ccof_nov,
-    //         approvedFeeOct: item.ccof_oct,
-    //         approvedFeeSep: item.ccof_sep,
-    //         feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
-    //       }
-    //     );
-    //   }
-    // }); //end for each
+    let childCareTypes = [];
+    let currentProgramYear;
+    facility.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
+     // if (hasChildCareCategory(item)) {
+      currentProgramYear = item._ccof_programyear_value;
+      childCareTypes.push(
+        {
+          childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+          programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
+          programYearId: item._ccof_programyear_value,
+          approvedFeeApr: item.ccof_apr,
+          approvedFeeAug: item.ccof_aug,
+          approvedFeeDec: item.ccof_dec,
+          approvedFeeFeb: item.ccof_feb,
+          approvedFeeJan: item.ccof_jan,
+          approvedFeeJul: item.ccof_jul,
+          approvedFeeJun: item.ccof_jun,
+          approvedFeeMar: item.ccof_mar,
+          approvedFeeMay: item.ccof_may,
+          approvedFeeNov: item.ccof_nov,
+          approvedFeeOct: item.ccof_oct,
+          approvedFeeSep: item.ccof_sep,
+          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
+        }
+      );
+     // }
+    }); //end for each
 
 
-    // //this hits the API to grab the previous program year GUID based on the current year GUID. 
-    // operation = `ccof_program_years(${currentProgramYear})?$select=_ccof_previousyear_value`;
-    // let previousProgramYear = await getOperation(operation);
+    //this hits the API to grab the previous program year GUID based on the current year GUID. 
+    operation = `ccof_program_years(${currentProgramYear})?$select=_ccof_previousyear_value`;
+    let previousProgramYear = await getOperation(operation);
 
-    // //I run another forEach loop down here so the age group categories stay seperate for the front end. This ensures the previous year
-    // //fees always come after the current year fees per the wireframes
-    // facility.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
-    //   if (hasChildCareCategory(item)) {
-    //     childCareTypes.push(
-    //       {
-    //         childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-    //         programYear: previousProgramYear['_ccof_previousyear_value@OData.Community.Display.V1.FormattedValue'],
-    //         programYearId: previousProgramYear._ccof_previousyear_value
-    //       }
-    //     );
-    //   }
-    // });
+    //I run another forEach loop down here so the age group categories stay seperate for the front end. This ensures the previous year
+    //fees always come after the current year fees per the wireframes
+    facility.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
+     // if (hasChildCareCategory(item)) {
+      childCareTypes.push(
+        {
+          childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+          programYear: previousProgramYear['_ccof_previousyear_value@OData.Community.Display.V1.FormattedValue'],
+          programYearId: previousProgramYear._ccof_previousyear_value
+        }
+      );
+      //}
+    });
 
-    // log.info('child care types: ', childCareTypes);
+    log.info('child care types: ', childCareTypes);
 
-    // facility = mapFacilityObjectForFront(facility);
-    // facility.childCareTypes = childCareTypes;
+    facility = mapFacilityObjectForFront(facility);
+    facility.childCareTypes = childCareTypes;
 
     return res.status(HttpStatus.OK).json(facility);
   } catch (e) {

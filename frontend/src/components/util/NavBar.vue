@@ -212,18 +212,20 @@ export default {
       );
       if (this.navBarList?.length > 0) { //TODO- only filter based on item.ccfriOptInStatus
         this.navBarList?.forEach((item, index) => {
-          items.push(
-            {
-              title: 'Parent Fees '+ (index + 1),
-              subTitle: item.facilityName,
-              id: item.facilityId,
-              link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'ccfri-add-fees' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId
-              // function: this.loadFacility(x.id)
-            },
-          );
+          if (item.ccfriOptInStatus === 'IN'){
+            items.push(
+              {
+                title: 'Parent Fees '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                isAccessible: true,
+                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
+                // function: this.loadFacility(x.id)
+              },
+            );
+          }
         });
       } 
       let retval =   {

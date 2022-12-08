@@ -14,6 +14,7 @@ const OrganizationMappings = [
   { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number    
   { back: 'ccof_typeoforganization', front: 'organizationType' },
   { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
+  { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
 ];
 
 const FacilityMappings = [
@@ -148,6 +149,14 @@ const UserProfileECEWEMappings = [
   { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
 ];
 
+const ProgramYearMappings = [
+  { back: 'ccof_program_yearid', front: 'programYearId' },
+  { back: 'ccof_name', front: 'name' },
+  { back: 'statuscode', front: 'status' },
+  { back: 'ccof_programyearnumber', front: 'order' },
+  { back: '_ccof_previousyear_value', front: 'previousYearId' },
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -157,5 +166,6 @@ module.exports = {
   UserProfileOrganizationMappings,
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
+  ProgramYearMappings,
   CCFRIFacilityMappings
 };

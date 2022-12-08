@@ -89,7 +89,7 @@ async function getUserInfo(req, res) {
   }
 
   if (userResponse === null) { 
-    // creatUser(req); TODO: create the user
+    creatUser(req);
     return res.status(HttpStatus.OK).json(resData);
   }
   if (userResponse[0] === undefined){
@@ -173,15 +173,16 @@ async function getDynamicsUserByEmail(email) {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;
   } catch (e) {
-    log.error('getUserProfile Error', e.response ? e.response.status : e.message);
-    //throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    log.error('getDynamicsUserByEmail Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
 async function creatUser(req) {
+  log.info('No user found, creating BCeID User: ', getUserName(req));
   try {
     let payload = {
-      ccof_userid: getUserGuid,
+      ccof_userid: getUserGuid(req),
       firstname: req.session.passport.user._json.given_name,
       lastname: req.session.passport.user._json.family_name,
       emailaddress1: req.session.passport.user._json.email,

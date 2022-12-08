@@ -58,8 +58,6 @@ export default {
 
       let payload = JSON.parse(JSON.stringify(state));
       
-      //set program year:
-      payload.programYearId = rootState.app.programYearList[0].ccof_program_yearid;
       delete payload['applicationStatus']; //TODO: verify no need to include status as it will be set automatically.
       console.log('payload', payload);
 
@@ -74,6 +72,8 @@ export default {
           throw error;
         }
       } else {
+        // else create a new application and set the program year
+        payload.programYearId = rootState.app.programYearList.current.programYearId;
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
           commit('setOrganizationId', response.data?.organizationId);

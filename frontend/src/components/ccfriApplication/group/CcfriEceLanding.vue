@@ -25,8 +25,8 @@
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
                   <!-- <p class="text--primary"> Licence : 123456789</p> -->
-                  <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus === "IN" ? "IN" : "OUT" }}</p> </strong>
+                  <p class="text--primary " min-width="250px" >Status: {{ccfriStatus == undefined ? "NOT STARTED" : ccfriStatus}}</p>
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN" : ccfriOptInStatus == "1" ? "IN" : "OUT" }}</p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
                   v-if="!showOptStatus[index]"
@@ -69,6 +69,8 @@
         </v-form>
         
         <!-- {{ccfriOptInOrOut}} -->
+        {{isValidForm}}
+        
 
         </LargeButtonContainer>
       
@@ -76,7 +78,7 @@
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="((!isValidForm) || (!hasCCFRIApplications()))">Next</v-btn>
           <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
             Save</v-btn>
         </v-row>
@@ -132,24 +134,33 @@ export default {
     previous() {
       this.$router.back();
     },
+    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
+    hasCCFRIApplications(){
+      const q = this.navBarList.every((fac) => {
+        console.log(fac.ccfriApplicationId);
+        return (fac.ccfriApplicationId);
+      });
+
+      console.log(q);
+      return q;
+    },
     next() {
       //TODO: what should next do if no updates are made? 
       //this.save(); put this back in !
-      // const ccfriComplete = this.navBarList.every((fac, index) => {
-      //   return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
-      //   //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
-      // });
+      const ccfriComplete = this.navBarList.every((fac, index) => {
+        return (fac.ccfriStatus == 'APPROVED' || fac.ccfriStatus == 'UNKNOWN - [7]' ); //TODO: change this! leaving here for the demo
+        //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
+      });
 
-      let ccfriComplete = false;
+     // let ccfriComplete = false;
 
-     // console.log(ccfriComplete);
+       console.log('ccfri complete', ccfriComplete);
 
       //if CCFRI has been approved - go to page to verify current fees. Else - go to the first OPT IN add new fees page
       if (ccfriComplete){
         this.$router.push(PATHS.currentFees); 
       }
       else {
-
         
         let firstOptInFacility = -1; 
         for (let i = 0; i < this.showOptStatus.length; i++) {
@@ -169,35 +180,39 @@ export default {
     //   let x = this.$route.params.urlGuid;
     //   this.loadFacility(x);
     // },
+
     async save () {
       this.processing = true;
+      this.hasCCFRIApplications();
       let payload = [];
 
-      this.navBarList.forEach (async (facility, index) => {
+      for (let i = 0; i < this.navBarList.length; i++) {
+        //change this to only send payloads with value chosen --- don't send undefined 
 
-        facility.ccfriOptInStatus = ccfriOptInOrOut[index];
+        if (!ccfriOptInOrOut[i]){
+          continue;
+        }
+        this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
 
-        payload[index] = {
+        payload.push( {
           applicationID : this.userInfo.applicationId, //CCOF BASE application ID
-          facilityID : facility.facilityId, 
-          optInResponse: this.ccfriOptInOrOut[index] 
-        };
+          facilityID : this.navBarList[i].facilityId, 
+          optInResponse: this.ccfriOptInOrOut[i] 
+        });
 
         console.log(payload);
+      }
 
-        try {
-          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', [payload[index]]);
-          this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
-        } catch (error) {
-          console.info(error);
-          this.setFailureAlert('An error occurred while saving. Please try again later.');
-        }
-
-      });
-      
-
+      try {
+        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
+      } catch (error) {
+        console.info(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      }
       this.processing = false;
     },
+    
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
