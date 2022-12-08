@@ -14,6 +14,7 @@ const OrganizationMappings = [
   { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number    
   { back: 'ccof_typeoforganization', front: 'organizationType' },
   { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
+  { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
 ];
 
 const FacilityMappings = [
@@ -113,21 +114,40 @@ const UserProfileOrganizationMappings = [
 const UserProfileFacilityMappings = [
   { back: 'CCOF.ccof_facility', front: 'facilityId' },
   { back: 'CCOF.Facility.name', front: 'facilityName' },
-  { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber'},
+  { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber' },
+  { back: 'CCOF.Facility.ccof_formcomplete', front: 'facilityFormComplete' },
   //base funding
   { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId' },
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },
-  // { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
-  //ccfri
+  { back: 'CCOF.ccof_formcomplete', front: 'ccofFormComplete' },
+  { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
+];
+
+const UserProfileCCFRIMappings = [
   { back: 'CCFRI.statuscode', front: 'ccfriStatus' },
   { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus' },
   { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
-  // { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
-  //ece-we
+  { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
+  { back: 'CCFRI.ccof_facility', front: 'ccfriFacilityId' },
+  { back: 'CCFRI.ccof_formcomplete', front: 'ccfriFormComplete' },
+  { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
+];
+
+const UserProfileECEWEMappings = [
   { back: 'ECEWE.statuscode', front: 'eceweStatus' },
   { back: 'ECEWE.ccof_optintoecewe', front: 'eceweOptInStatus' },
   { back: 'ECEWE.ccof_applicationeceweid', front: 'eceweApplicationId' },
-  // { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
+  { back: 'ECEWE.ccof_facility', front: 'eceweFacilityId' },
+  { back: 'ECEWE.ccof_formcomplete', front: 'eceweFormComplete' },
+  { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
+];
+
+const ProgramYearMappings = [
+  { back: 'ccof_program_yearid', front: 'programYearId' },
+  { back: 'ccof_name', front: 'name' },
+  { back: 'statuscode', front: 'status' },
+  { back: 'ccof_programyearnumber', front: 'order' },
+  { back: '_ccof_previousyear_value', front: 'previousYearId' },
 ];
 
 module.exports = {
@@ -136,5 +156,8 @@ module.exports = {
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
   UserProfileFacilityMappings,
-  UserProfileOrganizationMappings
+  UserProfileOrganizationMappings,
+  UserProfileCCFRIMappings,
+  UserProfileECEWEMappings,
+  ProgramYearMappings,
 };

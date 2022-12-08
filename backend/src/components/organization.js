@@ -28,7 +28,6 @@ async function createOrganization(req, res) {
     const userGuid = getUserGuid(req);
     let organization = req.body;
     let programYear = '/ccof_program_years(' + organization.programYearId +')';
-    // let programYear = '/ccof_program_years(fba5721b-9434-ed11-9db1-002248d53d53)';
     
     log.info('about to map: ', organization);
     organization = new MappableObjectForBack(organization, OrganizationMappings);

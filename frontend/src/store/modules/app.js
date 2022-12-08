@@ -7,6 +7,7 @@ export default {
     showNavBar: false,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     navBarList: [], //holds the generated nav bar
+    isRenewal: false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
     alertNotificationText: '',
@@ -16,12 +17,6 @@ export default {
     childCareCategoryList: [],
     organizationTypeList: [],
     lookupInfo: null,
-  },
-  getters: {
-    programYearList: state => state.programYearList,
-    childCareCategoryList: state => state.childCareCategoryList,
-    organizationTypeList: state => state.organizationTypeList,
-    lookupInfo: state => state.lookupInfo,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -86,8 +81,17 @@ export default {
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
+    setIsRenewal: (state, isRenewal) => {
+      state.isRenewal = isRenewal;
+    },     
   },
   getters: {
+    currentYearLabel: state => state.programYearList?.current?.name,
+    futureYearLabel: state => state.programYearList?.future?.name,
+    childCareCategoryList: state => state.childCareCategoryList,
+    organizationTypeList: state => state.organizationTypeList,
+    lookupInfo: state => state.lookupInfo,
+
     getNavByFacilityId: (state) => (facilityId) => { 
       if (!facilityId) {
         return null;
@@ -137,7 +141,7 @@ export default {
     async getLookupInfo({ commit }) {
       if (localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const lookupInfo = await ApiService.getLookupInfo();
-        commit('setLookupInfo', lookupInfo.data);
+        commit('setLookupInfo', lookupInfo.data); //TODO: remove this one
         commit('setProgramYearList', lookupInfo.data?.programYear);
         commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
         commit('setOrganizationTypeList', lookupInfo.data?.organizationType);
