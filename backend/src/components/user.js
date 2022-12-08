@@ -185,11 +185,22 @@ async function getDynamicsUserByEmail(req) {
 
 async function creatUser(req) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
+  let firstname = req.session.passport.user._json.given_name;
+  let lastname = req.session.passport.user._json.family_name;
   try {
+    if (!lastname && firstname && firstname.split(' ').length > 1) {
+      //If for some reason we don't have a last name from SSO, see if firstname has 2 words
+      firstname = firstname.split(' ').slice(0, -1).join(' ');
+      lastname = firstname.split(' ').slice(-1).join(' ');
+    } else if (!firstname && lastname && lastname.split(' ').length > 1) {
+      //If for some reason we don't have a firstname name from SSO, see if lastname has 2 words
+      firstname = lastname.split(' ').slice(0, -1).join(' ');
+      lastname = lastname.split(' ').slice(-1).join(' ');
+    }
     let payload = {
       ccof_userid: getUserGuid(req),
-      firstname: req.session.passport.user._json.given_name,
-      lastname: req.session.passport.user._json.family_name,
+      firstname: firstname,
+      lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req)
     };
