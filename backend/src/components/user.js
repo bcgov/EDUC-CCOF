@@ -25,7 +25,7 @@ async function getUserInfo(req, res) {
 
   // if is idir user (ministry user), make sure they are a user in dynamics
   if (isIdir) {
-    let response = await getDynamicsUserByEmail(req.session.passport.user._json.email);
+    let response = await getDynamicsUserByEmail(req);
     if (response.value?.length > 0 && response.value[0].systemuserid) {
       log.verbose(`Ministry user: [${req.session.passport.user._json.display_name}] logged in.`);
     } else {
@@ -168,7 +168,12 @@ function parseFacilityData(userResponse) {
   return facilityList;
 }
 
-async function getDynamicsUserByEmail(email) {
+async function getDynamicsUserByEmail(req) {
+  let email = req.session.passport.user._json.email;
+  if (!email) {
+    //If for some reason, an email is not associated with the IDIR, just use IDR@gov.bc.ca
+    email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`; 
+  }
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;
