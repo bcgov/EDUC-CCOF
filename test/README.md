@@ -8,11 +8,11 @@
 # install dependencies
 npm install
 
+# add configuration
+Get the local-test.json file from your team and place it in the .src/config folder
+
 # run all automated tests located in the src/testCases folder
 npm run serve
-
-# build for production with minification
-npm run test
 
 
 ```
