@@ -1,0 +1,74 @@
+{
+  "name": "CCOF-Test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CCOF Automated test scripts",
+  "author": "CGI",
+  "scripts": {
+    "local:e2e": "testcafe chrome ./tests/e2e/testCases",
+    "local:e2e:headless": "testcafe chrome:headless ./tests/e2e/testCases",
+    "local:e2e:mobile": "testcafe chrome:emulation:device=iphone 11 ./tests/e2e/testCases",
+    "test": "testcafe chrome ./src/testCases",
+    "lint:fix": "vue-cli-service lint --fix",
+    "lint": "vue-cli-service lint --no-fix",
+    "purge": "rm -rf node_modules",
+    "rebuild": "npm run clean && npm run build",
+    "reinstall": "npm run purge && npm install"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "nconf": "^0.12.0",
+    "path": "^0.12.7",
+    "testcafe": "1.6.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 20 versions",
+    "not ie <= 8"
+  ],
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "es6": true,
+      "jest": true,
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly",
+      "_": false
+    },
+    "parserOptions": {
+      "parser": "babel-eslint",
+      "sourceType": "module",
+      "ecmaVersion": 8
+    },
+    "rules": {
+      "no-console": "off",
+      "eol-last": [
+        "error",
+        "always"
+      ],
+      "indent": [
+        "error",
+        2
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  }
+}
