@@ -101,9 +101,13 @@ const CCOFApplicationFundingMapping = [
 const UserProfileOrganizationMappings = [
   { back: 'Organization.name', front: 'organizationName' },
   { back: 'Organization.accountid', front: 'organizationId' },
+  { back: 'Organization.ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'Application.ccof_applicationid', front: 'applicationId' },
   { back: 'Application.statuscode', front: 'applicationStatus' },
   { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
+
+
+  
   // Unneeded mappings, can be added in later if we want them
   // { back: 'Application.ccof_applicationtype', front: 'applicationType' },
   // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
@@ -115,12 +119,14 @@ const UserProfileFacilityMappings = [
   { back: 'CCOF.ccof_facility', front: 'facilityId' },
   { back: 'CCOF.Facility.name', front: 'facilityName' },
   { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber' },
-  { back: 'CCOF.Facility.ccof_formcomplete', front: 'facilityFormComplete' },
+  { back: 'CCOF.Facility.ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'CCOF.Facility.ccof_facilitylicencenumber', front: 'licenseNumber'},
   //base funding
   { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId' },
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },
-  { back: 'CCOF.ccof_formcomplete', front: 'ccofFormComplete' },
+  { back: 'CCOF.ccof_formcomplete', front: 'isCCOFComplete' },
   { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
+  
 ];
 
 const UserProfileCCFRIMappings = [
@@ -129,7 +135,7 @@ const UserProfileCCFRIMappings = [
   { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: 'CCFRI.ccof_facility', front: 'ccfriFacilityId' },
-  { back: 'CCFRI.ccof_formcomplete', front: 'ccfriFormComplete' },
+  { back: 'CCFRI.ccof_formcomplete', front: 'isCCFRIComplete' },
   { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
 ];
 
@@ -138,7 +144,7 @@ const UserProfileECEWEMappings = [
   { back: 'ECEWE.ccof_optintoecewe', front: 'eceweOptInStatus' },
   { back: 'ECEWE.ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: 'ECEWE.ccof_facility', front: 'eceweFacilityId' },
-  { back: 'ECEWE.ccof_formcomplete', front: 'eceweFormComplete' },
+  { back: 'ECEWE.ccof_formcomplete', front: 'isECEWEComplete' },
   { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
 ];
 

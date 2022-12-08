@@ -102,7 +102,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal']),
-    ...mapState('organization', ['isOrganizationComplete']),
+    ...mapState('app', ['isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
