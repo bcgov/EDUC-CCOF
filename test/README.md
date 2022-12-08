@@ -12,7 +12,7 @@ npm install
 Get the local-test.json file from your team and place it in the .src/config folder
 
 # run all automated tests located in the src/testCases folder
-npm run serve
+npm run test
 
 
 ```
