@@ -197,6 +197,7 @@ async function creatUser(req) {
       firstname = lastname.split(' ').slice(0, -1).join(' ');
       lastname = lastname.split(' ').slice(-1).join(' ');
     }
+
     let payload = {
       ccof_userid: getUserGuid(req),
       firstname: firstname,
