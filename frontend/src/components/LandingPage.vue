@@ -21,9 +21,9 @@
               <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="continueApplication()">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
-          <SmallCard :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable=getApplicationStatus>
+          <SmallCard :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="isRenewDisabled">
               <br>
-              <v-btn absolute bottom class="" dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
+              <v-btn absolute bottom dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
           </SmallCard>
           <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
             <br>
@@ -119,7 +119,9 @@ export default {
     getApplicationStatus(){
       return this.userInfo.applicationStatus === null;
     },
-    
+    isRenewDisabled() {
+      return false;
+    }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
