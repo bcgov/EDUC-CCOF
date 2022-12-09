@@ -56,7 +56,16 @@ function mapFacilityObjectForFront(data) {
     data.ccof_facilitystartdate = year;
   }
 
-  return new MappableObjectForFront(data, FacilityMappings).toJSON();
+  return new MappableObjectForFront(data, FacilityMappings).toJSON(); ///switching this to ccfri - maybe we need to build a seperate fn 
+}
+
+function mapCCFRIObjectForFront(data) { 
+  // if (data.ccof_facilitystartdate) {
+  //   let year = data.ccof_facilitystartdate.split('-')[0];
+  //   data.ccof_facilitystartdate = year;
+  // } don't think we neeed this but lets see 
+
+  return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON(); ///switching this to ccfri - maybe we need to build a seperate fn 
 }
 
 async function getFacility(req, res) {
@@ -80,20 +89,21 @@ async function getFacility(req, res) {
 async function getFacilityChildCareTypes(req, res){
   try {
     //this is actually the CCFRI guid rn
-    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select=ccof_ccfrioptin,_ccof_facility_value&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency)';
+    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency)';
     log.info('operation: ', operation);
     let ccfriData = await getOperation(operation);
     log.info('dataaaaaa', ccfriData);
 
 
     let childCareTypes = [];
-    let currentProgramYear;
+    // let currentProgramYear;
     ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
       // if (hasChildCareCategory(item)) {
-      currentProgramYear = item._ccof_programyear_value;
+      //currentProgramYear = item._ccof_programyear_value;
       childCareTypes.push(
         {
           childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+          childCareCategoryId: item._ccof_childcarecategory_value,
           programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
           programYearId: item._ccof_programyear_value,
           approvedFeeApr: item.ccof_apr,
@@ -113,6 +123,8 @@ async function getFacilityChildCareTypes(req, res){
       );
       // }
     }); //end for each
+
+    ccfriData = mapCCFRIObjectForFront(ccfriData); //////
 
     ccfriData.childCareTypes = childCareTypes;
 
