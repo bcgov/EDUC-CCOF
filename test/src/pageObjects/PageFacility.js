@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 import log from 'npmlog';
 
+=======
+>>>>>>> f02eac4 (Adding Page Facility, update facility testcase)
 const { getTextField, mapFieldsFromFile, getButton } = require('../utils/selectors');
 
 
@@ -15,10 +18,17 @@ class PageOrganization {
       'Facility Contact Name',
       'Position',
       'Business Phone',
+<<<<<<< HEAD
       'Facility Email Address',
       'Facility Licence Number',
       { date: 'Effective Date of Current Licence'},
       { radio: 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?', addedField: 'Facility Name'},
+=======
+      'Organization Facility Email',
+      'Facility Licence Number',
+      { date: 'Effective Date of Current Licence'},
+      { radio: 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?'}
+>>>>>>> f02eac4 (Adding Page Facility, update facility testcase)
     ];
 
     this.backButton = getButton('Back');
@@ -32,6 +42,7 @@ class PageOrganization {
   async loadFieldsFromFile(t, fileName) {
     await mapFieldsFromFile(t, this.fieldNames, fileName);
   }
+<<<<<<< HEAD
 
   async clickSaveButton(t) {
     await t.click(this.saveButton).wait(3000);
@@ -64,5 +75,7 @@ class PageOrganization {
     await t.expect(this.nextButton.hasAttribute('disabled')).notOk();
     log.info('Next button is enabled');
   }
+=======
+>>>>>>> f02eac4 (Adding Page Facility, update facility testcase)
 }
 export default PageOrganization;
