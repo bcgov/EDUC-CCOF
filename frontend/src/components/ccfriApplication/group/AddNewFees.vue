@@ -414,14 +414,13 @@ export default {
       async handler() {
         console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
         try {
-          let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`); //put this in the store?
-          ccfriInfo = ccfriInfo.data;
-          console.log(ccfriInfo.facilityId);
-          await this.loadCCFRIFacility(ccfriInfo.facilityId); //perhaps call other getFac here - more lightweight one
-          await this.loadFacility(ccfriInfo.facilityId); //TAKE THIS OUT! Just making sure I'm removing the right things from the endpoint 
+          // let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`); //perhaps I can get rid of this 
+          // ccfriInfo = ccfriInfo.data;
+          // console.log(ccfriInfo.facilityId);
+          //CHUCKING CCFRI GUID HERE FRO SCIENCE 
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); //perhaps call other getFac here - more lightweight one
+          //await this.loadFacility(ccfriInfo.facilityId); //TAKE THIS OUT! Just making sure I'm removing the right things from the endpoint 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          //const lteFac = await ApiService.apiAxios.get(`/api/facility/ccfri/${ccfriInfo.facilityId}`);
-          //console.log(lteFac);
           this.loading = false;
         } catch (error) {
           console.log(error);

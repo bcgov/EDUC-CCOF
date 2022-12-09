@@ -40,9 +40,9 @@ router.get('/:facilityId', //passport.authenticate('jwt', {session: false}),isVa
 /**
  * Get Facility details for CCFRI Application (less detailed)
  */
-//i think i want ccfri guid here 
-router.get('/ccfri/:facilityId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
+//i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out 
+router.get('/ccfri/:ccfriId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return getFacilityChildCareTypes(req, res);
   });

@@ -10,13 +10,17 @@ export default {
     facilityModel: {},
     facilityId: null,
     CCFRIFacilityModel : {}, //jb
-
+    ccfriId: {},//jb
+    ccfriStore :{},
     isValidForm: false,
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
     getFacilityById: (state) => (facilityId) => { 
       return state.facilityStore[facilityId];
+    },
+    getCCFRIById: (state) => (ccfriId) => { 
+      return state.ccfriStore[ccfriId];
     },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
   },  
@@ -26,9 +30,15 @@ export default {
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
     setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
+    setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
       if (facilityId) {
         state.facilityStore[facilityId] = facilityModel;  
+      }
+    },
+    addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
+      if (ccfriId) {
+        state.facilityStore[ccfriId] = CCFRIFacilityModel;  
       }
     }
   },
@@ -98,20 +108,20 @@ export default {
       }
     },
     //is it bad to keep the copy/pasted setFacility ID from above?
-    async loadCCFRIFacility({getters, commit}, facilityId) {
-      commit('setFacilityId', facilityId);
-      let CCFRIFacilityModel = getters.getFacilityById(facilityId); //maybe change getFacilityById as well?
+    async loadCCFRIFacility({getters, commit}, ccfriId) {
+      commit('setCcfriId', ccfriId);
+      let CCFRIFacilityModel = getters.getFacilityById(ccfriId); //maybe change getFacilityById as well?
       if (CCFRIFacilityModel) {
-        console.log('found facility for guid: ', facilityId);
+        console.log('found CCFRI data for guid: ', ccfriId);
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
       } else {
         if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
           console.log('unable to load facility because you are not logged in');
           throw 'unable to  load facility because you are not logged in';
         }
-        try {
-          let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facilityId}`); //call the new endpoint 
-          //commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});
+        try {//chucking in CCFRI application GUID for science 
+          let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
+          commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
           commit('setCCFRIFacilityModel', response.data);
           return response;
 
@@ -119,6 +129,7 @@ export default {
           console.log(`Failed to get existing Facility with error - ${e}`);
           throw e;
         }
+        //I want to add the call to load the CCFRI fees here also..
       }
     },
     newFacility({commit}) {
