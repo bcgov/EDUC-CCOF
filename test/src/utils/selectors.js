@@ -118,6 +118,65 @@ function getSelectOption(labelName, selectedName) {
   return Selector('label').withText(labelName).parent().parent().nextSibling().find('label').withText(selectedName).prevSibling();
 }
 
+function convertToMonth(date_month){
+  let month = ""
+  switch (date_month) {
+    case "01":
+      month = "Jan";
+      break;
+    case "02":
+      month = "Feb";
+      break;
+    case "03":
+      month = "Mar";
+      break;
+    case "04":
+      month = "Apr";
+      break;
+    case "05":
+      month = "May";
+      break;
+    case "06":
+      month = "Jun";
+      break;
+    case "07":
+      month = "Jul";
+      break;
+    case "08":
+      month = "Aug";
+      break;
+    case "09":
+      month = "Sep";
+      break;
+    case "10":
+      month = "Oct";
+      break;
+    case "11":
+      month = "Nov";
+      break;
+    case "12":
+      month = "Dec"
+      break;
+  }
+  return month;
+}
+
+async function selectDate(t, date_data){
+  const date_arr = date_data.split('-');
+  const date_year = date_arr[0];
+  const date_month = date_arr[1];
+  const date_day = date_arr[2]; 
+
+  const year_title = Selector('div.v-date-picker-title__year');
+  await t.click(year_title);
+  const year_option = Selector('ul.v-date-picker-years').find('li').withText(date_year);
+  await t.click(year_option);
+  const month_option = Selector('div.v-date-picker-table--month').find('div').withText(convertToMonth(date_month));
+  await t.click(month_option);
+  const day_option = Selector('div.v-date-picker-table--date').find('div').withText(date_day.replace(/^0+/, '')); //remove the leading zero
+  await t.click(day_option);
+} 
+
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
   let lines = data.split('\n');
@@ -132,34 +191,11 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
         await t.typeText(fieldElement, lines[index], { replace: true });
       }
     } else if (fields[index].radio) {
-      if(fields[index].addedField){
-        const option = lines[index].split('/')[0];
-        const field = lines[index].split('/')[1];
-        await t.click(getRadioOption(fields[index].radio, option));
-        if(field){
-          await t.typeText(getRadioTextField(fields[index].addedField), field, {replace: true});
-        }
-      }else{
-        await t.typeText(fieldElement, lines[index], { replace: true });
-      }
+      await t.click(getRadioOption(fields[index].radio, lines[index]));
     } else if (fields[index].date){
       const date_picker = getTextField(fields[index].date);
-      await t.click(date_picker).wait(1000);
+      await t.click(date_picker);
       await selectDate(t, lines[index]);
-    } else if (fields[index].time){
-      console.info("---time picker called")
-      const time_picker = getTextField(fields[index].time);
-      await t.click(time_picker).wait(1000);
-      await selectTime(t, lines[index]);
-    }
-    else if (fields[index].select) {
-      let n = 0;
-      let options = lines[index].split(",");
-
-      for (n; n < options.length; n++){
-        await t.click(getSelectOption(fields[index].select, options[n]));
-      }
-
     } else {
 
       await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
