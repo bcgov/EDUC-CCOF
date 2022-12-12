@@ -16,6 +16,7 @@
                 <v-text-field 
                   outlined
                   required v-model="businessBCeId"
+                  id="businessBCeId-field"
                   :rules="rules.required"
                   label="Business BCeID" 
                   v-on:keydown.enter="setBCeID();"

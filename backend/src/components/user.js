@@ -25,7 +25,7 @@ async function getUserInfo(req, res) {
 
   // if is idir user (ministry user), make sure they are a user in dynamics
   if (isIdir) {
-    let response = await getDynamicsUserByEmail(req.session.passport.user._json.email);
+    let response = await getDynamicsUserByEmail(req);
     if (response.value?.length > 0 && response.value[0].systemuserid) {
       log.verbose(`Ministry user: [${req.session.passport.user._json.display_name}] logged in.`);
     } else {
@@ -89,7 +89,7 @@ async function getUserInfo(req, res) {
   }
 
   if (userResponse === null) { 
-    // creatUser(req); TODO: create the user
+    creatUser(req);
     return res.status(HttpStatus.OK).json(resData);
   }
   if (userResponse[0] === undefined){
@@ -137,18 +137,20 @@ function parseFacilityData(userResponse) {
 
   facilityMap.forEach((value, key, map) => {
     userResponse.forEach(facility => {
+      let ccfriInfo = undefined;
+      let eceweInfo = undefined;
       if (facility['CCFRI.ccof_facility'] === key) {
-        let ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
-        map.set(key, {
-          ...value,
-          ...ccfriInfo});
+        ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
       }
       if (facility['ECEWE.ccof_facility'] === key) {
-        let eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
+        eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
+      }
+      if (ccfriInfo || eceweInfo) {
         map.set(key, {
           ...value,
-          ...eceweInfo});
-      }      
+          ...ccfriInfo,
+          ...eceweInfo});        
+      }     
     });
   });
 
@@ -166,22 +168,45 @@ function parseFacilityData(userResponse) {
   return facilityList;
 }
 
-async function getDynamicsUserByEmail(email) {
+async function getDynamicsUserByEmail(req) {
+  let email = req.session.passport.user._json.email;
+  if (!email) {
+    //If for some reason, an email is not associated with the IDIR, just use IDR@gov.bc.ca
+    email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`; 
+  }
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;
   } catch (e) {
-    log.error('getUserProfile Error', e.response ? e.response.status : e.message);
+    log.error('getDynamicsUserByEmail Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
 async function creatUser(req) {
+  log.info('No user found, creating BCeID User: ', getUserName(req));
+  let given_name = req.session.passport.user._json.given_name; 
+  let family_name = req.session.passport.user._json.family_name;
+  let firstname = undefined;
+  let lastname = undefined;
   try {
+    if (!family_name && given_name && given_name.split(' ').length > 1) {
+      //If for some reason we don't have a last name from SSO, see if firstname has 2 words
+      firstname = given_name.split(' ').slice(0, -1).join(' ');
+      lastname = given_name.split(' ').slice(-1).join(' ');
+    } else if (!given_name && family_name && family_name.split(' ').length > 1) {
+      //If for some reason we don't have a firstname name from SSO, see if lastname has 2 words
+      firstname = family_name.split(' ').slice(0, -1).join(' ');
+      lastname = family_name.split(' ').slice(-1).join(' ');
+    } else {
+      firstname = given_name;
+      lastname = family_name;
+    }
+
     let payload = {
-      ccof_userid: getUserGuid,
-      firstname: req.session.passport.user._json.given_name,
-      lastname: req.session.passport.user._json.family_name,
+      ccof_userid: getUserGuid(req),
+      firstname: firstname,
+      lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req)
     };
