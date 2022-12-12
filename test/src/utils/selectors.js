@@ -191,42 +191,11 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
         await t.typeText(fieldElement, lines[index], { replace: true });
       }
     } else if (fields[index].radio) {
-<<<<<<< HEAD
-      if(fields[index].addedField){
-        const option = lines[index].split('/')[0];
-        const field = lines[index].split('/')[1];
-        await t.click(getRadioOption(fields[index].radio, option));
-        if(field){
-          await t.typeText(getRadioTextField(fields[index].addedField), field, {replace: true});
-        }
-      }else{
-        await t.click(getRadioOption(fields[index].radio, lines[index]));
-      }
-    } else if (fields[index].date){
-      const date_picker = getTextField(fields[index].date);
-      await t.click(date_picker).wait(1000);
-      await selectDate(t, lines[index]);
-    } else if (fields[index].time){
-      console.info("---time picker called")
-      const time_picker = getTextField(fields[index].time);
-      await t.click(time_picker).wait(1000);
-      await selectTime(t, lines[index]);
-    }
-    else if (fields[index].select) {
-      let n = 0;
-      let options = lines[index].split(",");
-
-      for (n; n < options.length; n++){
-        await t.click(getSelectOption(fields[index].select, options[n]));
-      }
-
-=======
       await t.click(getRadioOption(fields[index].radio, lines[index]));
     } else if (fields[index].date){
       const date_picker = getTextField(fields[index].date);
       await t.click(date_picker);
       await selectDate(t, lines[index]);
->>>>>>> f02eac4 (Adding Page Facility, update facility testcase)
     } else {
 
       await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
