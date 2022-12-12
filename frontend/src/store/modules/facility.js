@@ -2,9 +2,14 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import {isEmpty} from 'lodash';
 
+
 export default {
   namespaced: true,
   state: {
+    model: [
+      {sampleFee: 69},
+    ],
+    foo: 'bar',
     // facilityList: [],
     facilityStore: {},
     facilityModel: {},
@@ -23,8 +28,16 @@ export default {
       return state.ccfriStore[ccfriId];
     },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
+
+    getModel: state => {return state.model;}
   },  
   mutations: {
+    model(state, value) {
+      state.model = value;
+    },
+    isValidForm(state, value) {
+      state.isValidForm = value;
+    },
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
@@ -110,7 +123,7 @@ export default {
     //is it bad to keep the copy/pasted setFacility ID from above?
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
-      let CCFRIFacilityModel = getters.getFacilityById(ccfriId); //maybe change getFacilityById as well?
+      let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); //maybe change getFacilityById as well?
       if (CCFRIFacilityModel) {
         console.log('found CCFRI data for guid: ', ccfriId);
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
@@ -123,6 +136,9 @@ export default {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
           commit('setCCFRIFacilityModel', response.data);
+          //commit('model', response.data);
+
+          //console.log('model is: ', getters.getModel()); //?
           return response;
 
         } catch(e) {

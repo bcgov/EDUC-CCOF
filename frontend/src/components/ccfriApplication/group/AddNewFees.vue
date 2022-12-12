@@ -8,7 +8,7 @@
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{CCFRIFacilityModel.licenseNumber}} </p> <br><br>
+      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in CCFRIFacilityModel.childCareTypes" :key="index"
+      v-for="({key, programYear, childCareCategory,} , index) in CCFRIFacilityModel.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -40,8 +40,9 @@
               <br>
               <p class="text-h6 text--primary">
                 Are your parent fees
+                
               </p>
-              
+              qqq: {{childCareTypes.approvedFeeApr}}
               <v-radio-group
               :rules = "rules"
                 v-model="feeSchedule[index]"
@@ -72,7 +73,9 @@
                 <v-col
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="apr[index]" label="April" prefix="$"/>
+                {{model.sampleFee}}
+                
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="model.sampleFee" label="April" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
@@ -316,7 +319,8 @@ let aug = {};
 let sep = {};
 let oct = {};
 let nov = {};
-let dec = {};   
+let dec = {};
+let childCareTypes = {};   
 let model = { x: [],
   dates,
   datePicker,          //vmodel for entering closure fees
@@ -337,7 +341,8 @@ let model = { x: [],
   oct,
   nov,
   dec,
-  notes
+  notes,
+  childCareTypes
 };
 
 
@@ -377,6 +382,7 @@ export default {
       oct,
       nov,
       dec,
+      childCareTypes,
       feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
@@ -390,10 +396,11 @@ export default {
     };
   },
   mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
+    this.model = this.$store.state.facility.model ?? model;
+    this.model = this.CCFRIFacilityModel;
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
+    this.$store.commit('facility/model', this.model);
     next();
   },
   computed: {
@@ -414,13 +421,12 @@ export default {
       async handler() {
         console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
         try {
-          // let ccfriInfo = await ApiService.apiAxios.get(`/api/application/ccfri/${this.$route.params.urlGuid}`); //perhaps I can get rid of this 
-          // ccfriInfo = ccfriInfo.data;
-          // console.log(ccfriInfo.facilityId);
           //CHUCKING CCFRI GUID HERE FRO SCIENCE 
-          await this.loadCCFRIFacility(this.$route.params.urlGuid); //perhaps call other getFac here - more lightweight one
-          //await this.loadFacility(ccfriInfo.facilityId); //TAKE THIS OUT! Just making sure I'm removing the right things from the endpoint 
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+          console.log(this.CCFRIFacilityModel);
+          this.$set(this.childCareTypes, this.CCFRIFacilityModel.childCareTypes[0]);
+          childCareTypes = this.CCFRIFacilityModel.childCareTypes[0];
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -433,7 +439,7 @@ export default {
   },
   methods: {
     ...mapActions('facility', ['loadCCFRIFacility']),    
-    ...mapActions('facility', ['loadFacility']),    
+    //...mapActions('facility', ['loadFacility']),    // take this out 
     addDate(){
       dates.push({
         message: this.model.closureReason,
@@ -454,8 +460,11 @@ export default {
       this.$router.back();  
     },
     next() {
-      this.updateParentFees();
-      this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
+      console.log(model);
+      console.log(childCareTypes);
+      console.log(childCareTypes.approvedFeeApr);
+      //this.updateParentFees();
+      //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async updateParentFees () {
       this.processing = true;
