@@ -16,7 +16,7 @@ class PageOrganization {
       'Organization Facility Email',
       'Facility Licence Number',
       { date: 'Effective Date of Current Licence'},
-      { radio: 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?'}
+      { radio: 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?', addedField: 'Facility Name'},
     ];
 
     this.backButton = getButton('Back');

@@ -4,20 +4,20 @@ const path = require('path');
 
 
 function getButton(buttonName) {
-  return Selector('button', {timeout: 10000}).child('span').withText(buttonName).parent();
+  return Selector('button', {timeout: 10000}).child('span').withExactText(buttonName).parent();
 }
 
 function getTextField(labelName) {
-  return Selector('label', {timeout: 10000}).withText(labelName).nextSibling();
+  return Selector('label', {timeout: 10000}).withExactText(labelName).nextSibling();
 }
 
 function getTextFieldWithDivHeading(labelName, heading) {
-  return Selector('div', {timeout: 10000}).withText(heading).nextSibling().find('label').withText(labelName).nextSibling();
+  return Selector('div', {timeout: 10000}).withExactText(heading).nextSibling().find('label').withExactText(labelName).nextSibling();
 }
 
 function getRadioOption(labelName, selectedName) {
   // return Selector('div.v-input--radio-group__input').find('label').withText(labelName).prevSibling().child('input');
-  return Selector('label').withText(labelName).nextSibling().find('label').withText(selectedName);
+  return Selector('label').withExactText(labelName).nextSibling().find('label').withExactText(selectedName);
 }
 
 function convertToMonth(date_month){
@@ -87,7 +87,14 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
     if (fields[index].heading) {
       await t.typeText(getTextFieldWithDivHeading(fields[index].label, fields[index].heading), lines[index], { replace: true });
     } else if (fields[index].radio) {
-      await t.click(getRadioOption(fields[index].radio, lines[index]));
+      if(fields[index].addedField){
+        const option = lines[index].split('/')[0];
+        const field = lines[index].split('/')[1];
+        await t.click(getRadioOption(fields[index].radio, option));
+        await t.typeText(getTextField(fields[index].addedField), field, {replace: true});
+      }else{
+        await t.click(getRadioOption(fields[index].radio, lines[index]));
+      }
     } else if (fields[index].date){
       const date_picker = getTextField(fields[index].date);
       await t.click(date_picker);
