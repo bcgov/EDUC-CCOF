@@ -1,13 +1,12 @@
 /* eslint-disable quotes */
 'use strict';
-const { postOperation, patchOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const _ = require ('lodash');
-const { info } = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
 const { info } = require('./logger');
@@ -166,11 +165,11 @@ async function getECEWEApplication(req, res) {
 
 async function updateECEWEApplication(req, res) {
   let application = req.body;
-  // remove facilities from request payload (i.e. not updating facilities)
-  delete application.facilities;
   application = new MappableObjectForBack(application, ECEWEApplicationMappings);
   application = application.toJSON();
+  application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
   try {
+    log.info(application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -184,17 +183,38 @@ async function updateECEWEFacilityApplication(req, res) {
   let response;
   Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
   let eceweApplicationId;
+  
   try {
     for (let key in forBackFacilities) {
+      forBackFacilities[key].statuscode = 0;
       // add join attributes for application and facility
       forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications('+req.params.applicationId+')';
       forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts('+forBackFacilities[key]._ccof_facility_value+')';
       eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
-      // remove attributes we are not updating before sending payload.
+      // remove attributes that are already used in payload join (above) and not needed.
       delete forBackFacilities[key].ccof_applicationeceweid;
       delete forBackFacilities[key]._ccof_facility_value;
+
       let facility = forBackFacilities[key];
-      response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
+      log.info('TEMP FACLITY JSON = '+JSON.stringify(facility, null, 2));
+
+      if (eceweApplicationId) {
+        // send PATCH (update existing ECEWE facility)
+        log.info('~~~~~~~~~~~~~~~~~ SEND PATCH')
+        response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
+      } else {
+        if (facility.ccof_optintoecewe != null) {
+          log.info('~~~~~~~~~~~~~~~~~ SEND POST')
+          // send POST (create a new ECEWE facility)
+          let operation = 'ccof_applicationecewes';
+          response = await postOperation(operation, facility) ;
+        }
+        /*
+        let forFrontFacilities = [];
+        Object.values(eceweApp.data.facilities).forEach(value => forFrontFacilities.push(new MappableObjectForFront(value, ECEWEFacilityMappings).data));
+        eceweApp.data.facilities = forFrontFacilities; 
+        */
+      }
     }
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -203,7 +223,7 @@ async function updateECEWEFacilityApplication(req, res) {
 }
 
 module.exports = {
-  upsertCCFRIApplication,
+  updateCCFRIApplication,
   upsertParentFees,
   getECEWEApplication,
   updateECEWEApplication,

@@ -69,7 +69,7 @@ router.patch('/ecewe/:applicationId', passport.authenticate('jwt', {session: fal
 });
 
 /* Update an ECEWE facility applciation for an ecewe application id. */
-router.patch('/ecewe/facilities/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+router.put('/ecewe/facilities/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
   param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
   return updateECEWEFacilityApplication(req, res);
 });

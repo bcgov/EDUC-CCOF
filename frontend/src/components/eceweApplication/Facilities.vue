@@ -4,7 +4,7 @@
         <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE)</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h6" style="color:#003466;">
-        AMBER MELO
+        {{this.userInfo.organizationName}}
       </v-row>
       <v-row><v-col></v-col></v-row>
       <v-row><v-col></v-col></v-row>
@@ -53,43 +53,43 @@
         </v-card>
       </v-row>
       <v-row><v-col></v-col></v-row>
-      <div v-for="(item, index) in this.facilities" :key="item.index">
+      <div v-for="(item, index) in this.navBarList" :key="(index)">
         <v-row justify="center" class="pa-4">
           <v-card elevation="1" class="cc-top-level-card eceweCard" width="75%">
             <v-row>
               <v-col cols="4" class="d-flex">
-                {{item.facilityId}}
+                {{item.facilityAccountNumber}}
               </v-col>
             </v-row>
-            <v-row class="">
+            <v-row>
               <v-col cols="5" class="flex-column">
-                {{item.name}}
+                {{item.facilityName}}
               </v-col>
-              <v-col cols="4" class="flex-column">
-                <span v-show="item.update === false">
-                  Status: Opt {{item.optInOrOut == '1'?'in':'out'}} ECE-WE
+              <v-col v-if="!facilities?.[index]?.update" cols="4" class="flex-column text-center">
+                <span>
+                  Status: Opt {{facilities?.[index]?.optInOrOut == 1?'in':'out'}}
                 </span>
+              </v-col>
+              <v-col v-else cols="7" class="d-flex justify-center align-center pt-0">
                 <v-radio-group
-                  v-show="item.update === true"
-                  v-model="item.optInOrOut"
-                  class="pt-0"
-                  row
-                  >
+                  v-model="facilities[index].optInOrOut"
+                  class="pt-0 my-0"
+                  row>
                   <v-radio
                     @click="toggleRadio(index)"
-                    label="Opt in"
+                    label="Opt-In"
                     :value="1">
                   </v-radio>
                   <v-radio
                     @click="toggleRadio(index)"
-                    label="Opt out"
+                    label="Opt-Out"
                     :value="0">
                   </v-radio>
                 </v-radio-group>
-              </v-col>
-              <v-col cols="3" class="">
+              </v-col>        
+              <v-col v-if="!facilities?.[index]?.update" cols="3" class="">
                 <v-btn
-                  @click="item.update=(item.update==false)?true:false"
+                  @click="facilities[index].update=(facilities[index].update==false)?true:false"
                   color="#003366"
                   dark> 
                     Update
@@ -98,7 +98,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                License #: {{item.licenseNumber}}
+                License #: {{'??? NO LICENSE ???'}}
               </v-col>
             </v-row>
           </v-card>
@@ -115,7 +115,7 @@
 <script>
   
 import { PATHS } from '@/utils/constants';
-import { mapActions } from 'vuex';
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -123,24 +123,51 @@ export default {
   data() {
     return {
       row: '',
+      updateMode: '',
     };
   },
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        this.applicationId = this.$route.params.urlGuid;
+        if (this.applicationId) {
+          this.loadData().then(() => {
+            this.initFacilities();
+          });
+        }
+      },
+      immediate: true,
+      deep: true
+    },
+  },
   computed: {
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['navBarList']),
+    applicationId: {
+      get() { return this.$store.state.eceweApp.applicationId; },
+      set(value) { this.$store.commit('eceweApp/setApplicationId', value); }
+    },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     }
   },
-  mounted() {
-    this.facilities = this.facilities.map(obj => ({ ...obj, update: false }));
+  beforeMount() {
+    // this.initFacilities();
+/*
+    this.loadData().then(() => {
+      this.initFacilities();
+    });
+*/
   },
+  mounted() {},
   methods: {
-    ...mapActions('eceweApp', ['loadEceweApp', 'saveApplication', 'saveECEWEFacilityApplications']),
+    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities']),
     toggleRadio(index) {
-      this.facilities[index].update = (this.facilities[index].update==true)?false:true;
+      this.facilities[index].update = (this.facilities[index].update===true)?false:true;
     },
     previous() {
-      return this.$router.go(-1);
+      return this.$router.push(PATHS.eceweEligibility);
     },
     next() {
       this.$router.push(PATHS.documentUpload);
@@ -152,36 +179,47 @@ export default {
       if (this.applicationId) {
         this.processing = true;
         try {
-          await this.loadEceweApp(this.applicationId);
+          await this.loadECEWE(this.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
         this.processing = false;
-        this.setIsStarted(true);
       }
-    },
-    async save() {
-      try {
-        await this.saveApplication();
-        this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
-      }
-      this.processing = false;
     },
     async saveFacilities() {
       try {
-        await this.saveECEWEFacilityApplications();
+        await this.saveECEWEFacilities();
         this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE facility applications. Please try again later.'+error);
       }
       this.processing = false;
+    },
+    /* If no ECEWE faclities found, then create the faclities list from navBarList. */
+    initFacilities() {
+      if (this.facilities?.length == 0 || this.facilities == null) {
+        this.facilities = new Array(this.navBarList.length).fill({});
+        for (let i = 0; i < this.navBarList.length; i++) {
+          this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null};
+        }
+        this.facilities = this.facilities.map(obj => ({ ...obj, update: true }));
+      } else {
+        this.facilities = this.facilities.map(obj => ({ ...obj, update: false }));
+      }
+    },
+    updating(index) {
+      let result = false;
+      try {
+        if (this.facilities?.[index]?.optInOrOut != null && this.facilities?.[index]?.update == true) {
+          result = true;
+        }
+      } catch (error) {
+        //TODO remove...
+        console.log('WERSRSERSERESRSEREs '+error);
+      }
+      return result;
     }
-
-
-
   }
 };
 </script>

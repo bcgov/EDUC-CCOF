@@ -37,7 +37,7 @@
         </v-card>
       </v-row>
       
-      <v-row v-if="q1OptInECEWE" justify="center">
+      <v-row v-if="(q1OptInECEWE == 1)" justify="center">
         <v-card class="cc-top-level-card eceweCard">
           <v-container>
             <v-row justify="center">
@@ -66,7 +66,7 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="q2BelongsToUnion == '1'" justify="center">
+      <v-row v-if="(q2BelongsToUnion == 1 && q1OptInECEWE == 1)" justify="center">
         <v-card class="cc-top-level-card eceweCard">
           <v-container>
             <v-row justify="center" >
@@ -171,8 +171,8 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-show="q2BelongsToUnion" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn v-show="q2BelongsToUnion" color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn v-show="q2BelongsToUnion" :disabled="this.disableNextBtn" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn v-show="q2BelongsToUnion" :disabled="this.disableSaveBtn" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -190,12 +190,45 @@ export default {
     return {
       showNextBtn: false,
       showSaveBtn: false,
+      disableNextBtn: true,
+      disableSaveBtn: true,
       row: ''
     };
+  },
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        this.applicationId = this.$route.params.urlGuid;
+        if (this.applicationId) {
+          this.loadData().then(() => {
+            if (this.facilities?.length == 0 || this.facilities == null) {
+              this.facilities = new Array(this.navBarList.length).fill({});
+              for (let i = 0; i < this.navBarList.length; i++) {
+                this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null};
+              }
+              this.facilities = this.facilities.map(obj => ({ ...obj, update: true }));
+            } else {
+              this.facilities = this.facilities.map(obj => ({ ...obj, update: false }));
+            }
+          });
+        }
+      },
+      immediate: true,
+      deep: true
+    },
+    'q1OptInECEWE': {
+      handler() {
+        this.disableNextBtn = (this.q1OptInECEWE == 1 || this.q1OptInECEWE == 0) ? false : true;
+        this.disableSaveBtn = (this.q1OptInECEWE == 1 || this.q1OptInECEWE == 0) ? false : true;
+      },
+      immediate: true,
+      deep: true
+    },
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted']),
+    ...mapState('app', ['navBarList']),
     applicationId: {
       get() { return this.$store.state.eceweApp.applicationId; },
       set(value) { this.$store.commit('eceweApp/setApplicationId', value); }
@@ -221,14 +254,11 @@ export default {
       set (value) { this.$store.commit('organization/setIsValidForm', value); }
     }
   },
-  mounted() {
-    //TODO get id from userInfo...
-    this.applicationId = '7bef232f-3a6f-ed11-81ac-000d3af4ff05'; //this.userInfo.applicationId;
-    this.loadData();
-  },
+  mounted() {},
   methods: {
-    ...mapActions('eceweApp', ['loadEceweApp', 'saveApplication']),
+    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE']),
     ...mapMutations('eceweApp', ['setIsStarted']),
+    //...mapState('app', ['navBarList']),
     async loadData() {
       if (this.isStarted) {
         return;
@@ -236,7 +266,7 @@ export default {
       if (this.applicationId) {
         this.processing = true;
         try {
-          await this.loadEceweApp(this.applicationId);
+          await this.loadECEWE(this.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
@@ -250,7 +280,9 @@ export default {
     },
     async save() {
       try {
-        await this.saveApplication();
+        this.q2BelongsToUnion = (this.q1OptInECEWE==0)?null:this.q2BelongsToUnion;
+        //this.q3FundingModel = (this.q2BelongsToUnion==0)?null:this.q3FundingModel;
+        await this.saveECEWE();
         this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);

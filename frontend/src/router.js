@@ -236,22 +236,46 @@ const router = new VueRouter({
     },
     {
       path: PATHS.eceweEligibility + '/:urlGuid',
+      name: 'ECEWE Eligibility GuID',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: PATHS.eceweEligibility,
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {
       path: PATHS.eceweFacilities  + '/:urlGuid',
+      name: 'ECEWE Facilities GuID',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: PATHS.eceweFacilities,
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {

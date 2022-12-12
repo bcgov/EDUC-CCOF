@@ -28,14 +28,13 @@ export default {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; }
   },
   actions: {
-    async loadEceweApp({ commit }, applicationId) {
+    async loadECEWE({ commit }, applicationId) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to load ECEWE Application because you are not logged in');
         throw 'unable to load ECEWE Application because you are not logged in';
       }
       try {
         console.log('about to call = '+ApiRoutes.APPLICATION_ECEWE + '/' + applicationId);
-        //let response = (await ApiService.apiAxios.get(ApiRoutes.ECEWE_APPLICATION + '/' + applicationId)).data;
         let payload = (await axios.get('/api/application/ecewe/'+applicationId)).data;
         commitToState(commit, payload);
       } catch (error) {
@@ -43,7 +42,7 @@ export default {
         throw error;
       }
     },
-    async saveApplication({ state, commit }) {
+    async saveECEWE({ state, commit }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
         throw 'unable to save ecewe application because you are not logged in';
@@ -52,62 +51,35 @@ export default {
       if (state.applicationId) {
         // has an application ID, so update the data
         try {
+          // remove attributes we are not updating before sending payload.
+          delete payload.facilities;
           let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
           return response;
         } catch (error) {
           console.log(`Failed to update existing ECEWE application - ${error}`);
           throw error;
         }
-      } else {
-        console.log('NO APPLICATION ID... INSERTING.');
-        /*
-        try {
-          let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
-          commit('setOrganizationId', response.data?.organizationId);
-          commit('setApplicationId', response.data?.applicationId);
-          commit('setApplicationStatus', response.data?.applicationStatus);
-          return response;
-        } catch (error) {
-          console.log(`Failed to save new Organization - ${error}`);
-          throw error;
-        }
-        */
       }
     },
-    async saveECEWEFacilityApplications({ state, commit }) {
+    async saveECEWEFacilities({ state, commit }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
         throw 'unable to save ecewe facility application because you are not logged in';
       }
-      let payload = JSON.parse(JSON.stringify(state.facilities));
+      let facilitiesForBackend = state.facilities;
+      facilitiesForBackend.forEach(object => {
+        delete object['update'];
+      });
+      let payload = JSON.parse(JSON.stringify(facilitiesForBackend));
       if (state.applicationId) {
         // has an application ID, so update the data
         try {
-          // remove attributes we are not updating before sending payload.
-          for (var key in payload) {
-            delete payload[key].facilityId;
-            delete payload[key].name;
-          }
-          let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
+          let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
           return response;
         } catch (error) {
           console.log(`Failed to update existing ECEWE facility application - ${error}`);
           throw error;
         }
-      } else {
-        console.log('NO APPLICATION ID... INSERTING.');
-        /*
-        try {
-          let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
-          commit('setOrganizationId', response.data?.organizationId);
-          commit('setApplicationId', response.data?.applicationId);
-          commit('setApplicationStatus', response.data?.applicationStatus);
-          return response;
-        } catch (error) {
-          console.log(`Failed to save new Organization - ${error}`);
-          throw error;
-        }
-        */
       }
     }
   },
