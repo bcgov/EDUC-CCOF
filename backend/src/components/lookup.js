@@ -6,6 +6,8 @@ const cache = require('memory-cache');
 const { PROGRAM_YEAR_STATUS_CODES } = require('../util/constants');
 const { ProgramYearMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const log = require('./logger');
+
 
 const lookupCache = new cache.Cache();
 
@@ -67,7 +69,7 @@ async function getLookupInfo(req, res) {
    * 4 - Historica
    */
   let resData = lookupCache.get('lookups');
-  if (resData == undefined) {
+  if (!resData) {
     let programYear = await getOperation('ccof_program_years');
     programYear = programYear.value;
     // function without filter 
@@ -85,7 +87,7 @@ async function getLookupInfo(req, res) {
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }
-  console.log('lookupData is: ', minify(resData));
+  log.info('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
 module.exports = {
