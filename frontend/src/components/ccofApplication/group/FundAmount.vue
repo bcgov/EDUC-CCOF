@@ -291,8 +291,6 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
   mixins: [alertMixin],
-  props: {
-  },
   computed: {
     ...mapState('groupFunding', ['fundingModel'])
   },

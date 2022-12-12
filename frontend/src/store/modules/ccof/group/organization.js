@@ -1,6 +1,6 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
-
+import { checkSession } from '@/utils/session';
 
 export default {
   namespaced: true,
@@ -8,64 +8,34 @@ export default {
     organizationId: null,
     applicationId: null,
     applicationStatus: null,
-    legalName: null,
-    address1: null,
-    city1: null,
-    postalCode1: null,
-    address2: null,
-    city2: null,
-    postalCode2: null,
-    contactName: null,
-    position: null,
-    phone: null,
-    businessId: null,
-    email: null,
-    incNumber: null,
     organizationType: null,
     providerType: null,
     isOrganizationComplete: false,
-    isStarted: false
+    isStarted: false,
+    organizationModel: {}
   },
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
     setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
     setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
-    setLegalName: (state, legalName) => { state.legalName = legalName; },
-    setAddress1: (state, address1) => { state.address1 = address1; },
-    setCity1: (state, city1) => { state.city1 = city1; },
-    setPostalCode1: (state, postalCode1) => { state.postalCode1 = postalCode1; },
-    setAddress2: (state, address2) => { state.address2 = address2; },
-    setCity2: (state, city2) => { state.city2 = city2; },
-    setPostalCode2: (state, postalCode2) => { state.postalCode2 = postalCode2; },
-    setContactName: (state, contactName) => { state.contactName = contactName; },
-    setPosition: (state, position) => { state.position = position; },
-    setPhone: (state, phone) => { state.phone = phone; },
-    setBusinessId: (state, businessId) => { state.businessId = businessId; },
-    setEmail: (state, email) => { state.email = email; },
-    setIncNumber: (state, incNumber) => { state.incNumber = incNumber; },
-    setOrganizationType: (state, organizationType) => { state.organizationType = organizationType; },
-    setProviderType: (state, providerType) => { state.providerType = providerType; },
-    setIsOrganizationComplete: (state, isOrganizationComplete) => { state.isOrganizationComplete = isOrganizationComplete; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
+    setOrganizationModel: (state, model) => { state.organizationModel = model; }
   },
   actions: {
     async saveOrganization({ state, commit, rootState }) {
 
-      if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-        console.log('unable to save because you are not logged in');
-        throw 'unable to save because you are not logged in';
-      }
+      checkSession();
 
-      let payload = JSON.parse(JSON.stringify(state));
-      
+      let payload = { ...state.organizationModel };
+
       delete payload['applicationStatus']; //TODO: verify no need to include status as it will be set automatically.
-      console.log('payload', payload);
+      console.log('saveOrganization, payload', payload);
 
       if (state.organizationId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
-          commitToState(commit, response.data);
+          commit('setOrganizationModel', response.data);
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
@@ -79,6 +49,7 @@ export default {
           commit('setOrganizationId', response.data?.organizationId);
           commit('setApplicationId', response.data?.applicationId);
           commit('setApplicationStatus', response.data?.applicationStatus);
+          commit('setOrganizationModel', response.data);
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
@@ -87,37 +58,15 @@ export default {
       }
     },
     async loadOrganization({ commit }, organizationId) {
-      if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-        console.log('unable to load organization because you are not logged in');
-        throw 'unable to load organization because you are not logged in';
-      }
+      checkSession();
+
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
-        commitToState(commit, response.data);
+        commit('model', response.data);
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
         throw error;
       }
-    }    
+    }
   },
 };
-
-function commitToState(commit, data) {
-  commit('setLegalName', data?.legalName);
-  commit('setAddress1', data?.address1);
-  commit('setCity1', data?.city1);
-  commit('setPostalCode1', data?.postalCode1);
-  commit('setAddress2', data?.address2);
-  commit('setCity2', data?.city2);
-  commit('setPostalCode2', data?.postalCode2);
-  commit('setContactName', data?.contactName);
-  commit('setPosition', data?.position);
-  commit('setPhone', data?.phone);
-  // don't update business Id just yet
-  // commit('setBusinessId', response.data?.businessId); 
-  commit('setEmail', data?.email);
-  commit('setIncNumber', data?.incNumber);
-  commit('setOrganizationType', data?.organizationType);
-
-}
-
