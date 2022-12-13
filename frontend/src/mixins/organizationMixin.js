@@ -1,13 +1,13 @@
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 
 export default {
   computed: {
     ...mapState('app', ['organizationTypeList', 'navBarList']),
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
-    ...mapGetters('auth', ['userInfo']),
+    ...mapState('auth', ['userInfo']),
   },
   data() {
     return {
@@ -19,6 +19,7 @@ export default {
     };
   },
   async mounted() {
+    console.log('this.userInfo', this.userInfo);
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {

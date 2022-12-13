@@ -71,8 +71,10 @@ export const NAV_BAR_GROUPS = {
   ECEWE: 'ECE-WE'
 };
 
-
-
+export const ORGANIZATION_PROVIDER_TYPES = {
+  GROUP: 100000000,
+  FAMILY: 100000001,
+};
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 
