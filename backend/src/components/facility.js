@@ -106,7 +106,7 @@ async function getFacilityChildCareTypes(req, res){
           childCareCategoryId: item._ccof_childcarecategory_value,
           programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
           programYearId: item._ccof_programyear_value,
-          approvedFeeApr: item.ccof_apr,
+          approvedFeeApr: item.ccof_apr ?? 0,
           approvedFeeAug: item.ccof_aug,
           approvedFeeDec: item.ccof_dec,
           approvedFeeFeb: item.ccof_feb,

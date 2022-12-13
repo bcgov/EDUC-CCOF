@@ -51,7 +51,7 @@ export default {
     },
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
       if (ccfriId) {
-        state.facilityStore[ccfriId] = CCFRIFacilityModel;  
+        state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
       }
     }
   },

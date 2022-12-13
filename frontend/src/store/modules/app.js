@@ -1,5 +1,6 @@
 import ApiService from '@/common/apiService';
 
+
 export default {
   namespaced: true,
   state: {
@@ -10,6 +11,7 @@ export default {
     isRenewal: false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
+    ccfriOptInComplete: false,       //jb
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -77,6 +79,9 @@ export default {
     },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
+    },
+    setCcfriOptInComplete: (state, ccfriOptInComplete) => {
+      state.ccfriOptInComplete = ccfriOptInComplete;
     },
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;

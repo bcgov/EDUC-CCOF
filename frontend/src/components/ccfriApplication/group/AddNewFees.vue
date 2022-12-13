@@ -42,7 +42,7 @@
                 Are your parent fees
                 
               </p>
-              qqq: {{childCareTypes.approvedFeeApr}}
+              <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
               <v-radio-group
               :rules = "rules"
                 v-model="feeSchedule[index]"
@@ -73,9 +73,8 @@
                 <v-col
                   class="col-6 col-md-2"
                 >
-                {{model.sampleFee}}
-                
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="model.sampleFee" label="April" prefix="$"/>
+                <!-- I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="childCareTypes[index].approvedFeeApr" label="April" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
@@ -311,7 +310,7 @@ let notes = '';
 let jan = {};
 let feb = {};
 let mar = {};
-let apr = {};
+//let apr = {};
 let may = {};
 let jun = {};
 let jul = {};
@@ -332,7 +331,6 @@ let model = { x: [],
   jan,
   feb,
   mar,
-  apr,
   may,
   jun,
   jul,
@@ -373,7 +371,6 @@ export default {
       jan,
       feb,
       mar,
-      apr,
       may,
       jun,
       jul,
@@ -396,11 +393,12 @@ export default {
     };
   },
   mounted() {
-    this.model = this.$store.state.facility.model ?? model;
-    this.model = this.CCFRIFacilityModel;
+    this.model = this.$store.state.ccfriApp.model ?? model;
+    this.childCareTypes = this.model.childCareTypes;
+    //this.model = this.CCFRIFacilityModel;
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('facility/model', this.model);
+    this.$store.commit('ccfriApp/model', this.model);
     next();
   },
   computed: {
@@ -421,12 +419,9 @@ export default {
       async handler() {
         console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
         try {
-          //CHUCKING CCFRI GUID HERE FRO SCIENCE 
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          console.log(this.CCFRIFacilityModel);
-          this.$set(this.childCareTypes, this.CCFRIFacilityModel.childCareTypes[0]);
-          childCareTypes = this.CCFRIFacilityModel.childCareTypes[0];
+          this.childCareTypes = this.CCFRIFacilityModel.childCareTypes;
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -500,7 +495,7 @@ export default {
   
         Object.assign(payload[index], 
           {
-            aprFee : apr[index],
+            //aprFee : childCareTypes[index].approvedFeeApr,
             mayFee : may[index],
             junFee : jun[index],
             julFee : jul[index],

@@ -68,9 +68,6 @@
           </v-card>
         </v-form>
         
-        <!-- {{ccfriOptInOrOut}} -->
-        {{isValidForm}}
-        
 
         </LargeButtonContainer>
       
@@ -78,20 +75,18 @@
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="((!isValidForm) || (!hasCCFRIApplications()))">Next</v-btn>
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
           <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
             Save</v-btn>
         </v-row>
 
-        {{ccfriOptInOrOut}}
-        {{this.ccfriOptInOrOut}}
     </v-container>
 </template>
 
 <script>
 
 
-import { mapGetters, mapState} from 'vuex';
+import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
@@ -122,60 +117,76 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
   },
   beforeMount: function() {
+    try {
+      this.getUserInfo();
+    }catch (e){
+      console.log(e);
+    }
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
+    ...mapMutations('app', ['setCcfriOptInComplete']), 
+    ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
     previous() {
-      this.$router.back();
+      //console.log(this.ccfriOptInComplete);
+      //this.isPageComplete();
+      //this.$router.back();
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
-    hasCCFRIApplications(){
+    isPageComplete(){
       const q = this.navBarList.every((fac) => {
-        console.log(fac.ccfriApplicationId);
         return (fac.ccfriApplicationId);
       });
-
-      console.log(q);
-      return q;
+      if (!q){
+        return q;
+      }
+      return this.isValidForm;
     },
     next() {
-      //TODO: what should next do if no updates are made? 
-      //this.save(); put this back in !
-      const ccfriComplete = this.navBarList.every((fac, index) => {
-        return (fac.ccfriStatus == 'APPROVED' || fac.ccfriStatus == 'UNKNOWN - [7]' ); //TODO: change this! leaving here for the demo
-        //hoping to use this logic to see if the user needs goes to the page that displays current fees, or straight to the 'addnewfee page'
-      });
+      //this.save(); //put this back in !
+      
+      //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
+      //if (this.isRenewal){
+       // this.$router.push(); 
+        this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[0].ccfriApplicationId}`});
+      // }
+      // else {
+      //   //check if new opt in status was selected first
+      //   let firstOptInFacility = -1; 
+      //   for (let i = 0; i < this.showOptStatus.length; i++) {
+      //     //elemnt is true if update button has been clicked. 
+      //     if (this.showOptStatus[i]){
+      //       if(this.ccfriOptInOrOut[i] == '1'){
+      //         firstOptInFacility = i;
+      //         break;
+      //       }
+      //     }
+      //   }
+      //   //if not - check opt in status in NavBarList
+      //   if (firstOptInFacility === -1){
+      //     for (let i = 0; i < this.navBarList.length; i++) {
+      //       //elemnt is true if update button has been clicked. 
+      //       if (this.navBarList[i].ccfriOptInStatus ==='IN'){
+      //         firstOptInFacility = i;
+      //         break;
+      //       }
+      //     }
+      //   }
+      //   //if -1, go to ECEWE screen! 
 
-     // let ccfriComplete = false;
-
-       console.log('ccfri complete', ccfriComplete);
-
-      //if CCFRI has been approved - go to page to verify current fees. Else - go to the first OPT IN add new fees page
-      if (ccfriComplete){
-        this.$router.push(PATHS.currentFees); 
-      }
-      else {
+      //   this.setCcfriOptInComplete(true);
         
-        let firstOptInFacility = -1; 
-        for (let i = 0; i < this.showOptStatus.length; i++) {
-          //elemnt is true if update button has been clicked. 
-          if (this.showOptStatus[i]){
-            if(this.ccfriOptInOrOut[i] == '1'){
-              firstOptInFacility = i;
-              break;
-            }
-          }
-        }
-        //if -1, go to ECEWE screen! 
-        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
-      }
+      //   this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
+      // }
+
     },
+       
     // refreshWithFacility() {
     //   let x = this.$route.params.urlGuid;
     //   this.loadFacility(x);
@@ -183,7 +194,6 @@ export default {
 
     async save () {
       this.processing = true;
-      this.hasCCFRIApplications();
       let payload = [];
 
       for (let i = 0; i < this.navBarList.length; i++) {
@@ -205,11 +215,18 @@ export default {
 
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        console.log(response);
         this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
       } catch (error) {
         console.info(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      
+
+      
+
+      location.reload(true);
+
       this.processing = false;
     },
     

@@ -226,17 +226,17 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-    {
-      path: '/ccfri-application',
-      name: 'ccfri-application',
-      component: currentFees,
-      meta: {
-        pageTitle: 'Current Fees',
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
-      }
-    },
+    // {
+    //   path: '/ccfri-application' + '/urlGuid',
+    //   name: 'ccfri-application',
+    //   component: currentFees,
+    //   meta: {
+    //     pageTitle: 'Current Fees',
+    //     requiresAuth: true,
+    //     showNavBar: true,
+    //     navBarGroup: NAV_BAR_GROUPS.CCFRI
+    //   }
+    // },
     {
       path: PATHS.eceweEligibility + '/:urlGuid',
       name: 'ECEWE Eligibility',
@@ -321,7 +321,17 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.currentFees,
+      path: PATHS.currentFees + '/:urlGuid',
+      name: 'ccfri-current-fees',
+      component: currentFees,
+      meta: {
+        pageTitle: 'CCFRI Current Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.currentFees ,
       name: 'ccfri-current-fees',
       component: currentFees,
       meta: {

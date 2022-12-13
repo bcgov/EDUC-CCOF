@@ -87,7 +87,7 @@ async function getLookupInfo(req, res) {
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }
-  log.info('lookupData is: ', minify(resData));
+  //log.info('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
 module.exports = {

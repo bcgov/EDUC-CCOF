@@ -11,7 +11,7 @@ const { info } = require('./logger');
 const { loadFiles } = require('../config/index');
 
 
-
+//I think we most likely can take this out 
 async function getCCFRIApplication(req,res) {
 
   log.info(req.params.ccfriId);
@@ -48,6 +48,7 @@ async function updateCCFRIApplication(req, res) {
 
     try {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
+      log.info('res data:' , response);
       return res.status(HttpStatus.OK).json(response);
     } catch (e) {
       log.error(e);

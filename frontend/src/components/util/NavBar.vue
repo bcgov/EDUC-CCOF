@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete']),
     ...mapState('organization', ['isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
@@ -130,6 +130,13 @@ export default {
       deep: true
     },
     navBarList: {
+      handler() {
+        this.refreshNavBar();
+      },
+      immediate: true,
+      deep: true
+    },
+    ccfriOptInComplete: {
       handler() {
         this.refreshNavBar();
       },
@@ -205,12 +212,12 @@ export default {
           title: 'Opt in / Opt out',
           link: { name: 'ccfri-home'},
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.ccfriOptInComplete),
           isActive: 'ccfri-home' === this.$route.name
         },
 
       );
-      if (this.navBarList?.length > 0) { //TODO- only filter based on item.ccfriOptInStatus
+      if (this.navBarList?.length > 0) { 
         this.navBarList?.forEach((item, index) => {
           if (item.ccfriOptInStatus === 'IN'){
             items.push(
