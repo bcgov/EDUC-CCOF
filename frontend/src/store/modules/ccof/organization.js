@@ -64,6 +64,8 @@ export default {
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
         commit('setOrganizationModel', response.data);
+        commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
+        console.log('response.data?.isOrganizationComplete', response.data?.isOrganizationComplete);
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
         throw error;

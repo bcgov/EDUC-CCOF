@@ -1,4 +1,5 @@
 const OrganizationMappings = [
+  { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'name', front: 'legalName' },
   { back: 'address1_name', front: 'address1' }, //Address 
   { back: 'address1_city', front: 'city1' },
@@ -13,13 +14,13 @@ const OrganizationMappings = [
   { back: 'emailaddress1', front: 'email' },
   { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number    
   { back: 'ccof_typeoforganization', front: 'organizationType' },
-  { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
+  // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
 ];
 
 const FacilityMappings = [
   { back: 'name', front: 'facilityName' },
-  { back: 'ccof_facilitystartdate', front: 'yearBeginOperation' },
+  { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'address1_line1', front: 'facilityAddress' },
   { back: 'address1_city', front: 'city' },
   { back: 'address1_postalcode', front: 'postalCode' },

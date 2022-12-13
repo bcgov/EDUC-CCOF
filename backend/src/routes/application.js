@@ -21,9 +21,9 @@ const { log } = require('../components/logger');
 //   organizationId: { in: ['body'],
 //     exists: { errorMessage: '[organizationId] is required', },
 //     isBase64: { errorMessage: '[organizationId] must be a GUID'}},
-//   yearBeginOperation: { in: ['body'],
-//     exists: { errorMessage: '[yearBeginOperation] is required', },
-//     isDate: { errorMessage: '[yearBeginOperation] must be a date'}}
+//   yearBeganOperation: { in: ['body'],
+//     exists: { errorMessage: '[yearBeganOperation] is required', },
+//     isDate: { errorMessage: '[yearBeganOperation] must be a date'}}
 // };
 
 

@@ -21,8 +21,8 @@ const facilitySchema = {
     exists: { errorMessage: '[organizationId] is required', }},
   applicationId: { in: ['body'],
     exists: { errorMessage: '[applicationId] is required', }},
-  // yearBeginOperation: { in: ['body'],
-  //   exists: { errorMessage: '[yearBeginOperation] is required', }},
+  // yearBeganOperation: { in: ['body'],
+  //   exists: { errorMessage: '[yearBeganOperation] is required', }},
 };
 
 module.exports = router;
