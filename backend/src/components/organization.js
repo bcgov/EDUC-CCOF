@@ -1,5 +1,5 @@
 'use strict';
-const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getOperation, minify } = require('./utils');
+const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
