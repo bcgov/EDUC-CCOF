@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="model.isCCOFComplete">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
@@ -267,7 +267,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
-        <v-btn color="secondary" outlined x-large :disabled="!isValidForm" @click="next()">Next</v-btn>
+        <v-btn color="secondary" outlined x-large :disabled="!model.isCCOFComplete" @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
 
@@ -298,7 +298,6 @@ export default {
   },
   data() {
     return {
-      isValidForm: undefined,
       processing: false,
       model: {},
       rules
@@ -337,7 +336,7 @@ export default {
     formatTime
   },
   beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.isValidForm });
+    this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
     this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
 
     next();

@@ -55,7 +55,6 @@ export default {
         console.log('unable to save because you are not logged in');
         throw 'unable to save because you are not logged in';
       }
-
       let payload = JSON.parse(JSON.stringify(state));
       
       delete payload['applicationStatus']; //TODO: verify no need to include status as it will be set automatically.
@@ -113,11 +112,10 @@ function commitToState(commit, data) {
   commit('setContactName', data?.contactName);
   commit('setPosition', data?.position);
   commit('setPhone', data?.phone);
-  // don't update business Id just yet
-  // commit('setBusinessId', response.data?.businessId); 
   commit('setEmail', data?.email);
   commit('setIncNumber', data?.incNumber);
   commit('setOrganizationType', data?.organizationType);
+  commit('setIsOrganizationComplete', data?.isOrganizationComplete);
 
 }
 

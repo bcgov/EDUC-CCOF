@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="isOrganizationComplete">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
@@ -96,7 +96,7 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large>Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isOrganizationComplete">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
     </v-container>
@@ -179,13 +179,16 @@ export default {
       get() { return this.$store.state.organization.organizationType; },
       set(value) { this.$store.commit('organization/setOrganizationType', value); }
     },
+    isOrganizationComplete: {
+      get() { return this.$store.state.organization.isOrganizationComplete; },
+      set(value) { this.$store.commit('organization/setIsOrganizationComplete', value); }
+    },    
   },
   mixins: [alertMixin],
   data() {
     return {
       rules,
       processing: false,
-      isValidForm: true,
     };
   },
   mounted() {
@@ -193,14 +196,14 @@ export default {
     this.loadData();
   },
   beforeRouteLeave(_to, _from, next) {
-    this.setIsOrganizationComplete(this.isValidForm);
+    this.$store.commit('app/setIsOrganizationComplete', this.isOrganizationComplete);
     this.setIsStarted(true);
     next();
   },
 
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
-    ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete']),
+    ...mapMutations('organization', ['setIsStarted']),
     next() {
       if (this.navBarList && this.navBarList.length > 0) {
         this.$router.push(PATHS.group.facInfo + '/' + this.navBarList[0].facilityId);
@@ -231,7 +234,6 @@ export default {
           this.setFailureAlert('An error occurred while saving. Please try again later.');
         }
         this.processing = false;
-        this.setIsOrganizationComplete(this.isFormValid);
         this.setIsStarted(true);
       }
     }
