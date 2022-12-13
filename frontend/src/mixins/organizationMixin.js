@@ -30,7 +30,7 @@ export default {
       this.processing = true;
       try {
         await this.loadOrganization(this.organizationId);
-        this.model = { ...this.organizationModel};
+        this.model = { ...this.organizationModel };
       } catch (error) {
         console.log('Error loading organization.', error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
@@ -59,7 +59,7 @@ export default {
     async save() {
       this.processing = true;
       try {
-        this.setOrganizationModel(this.model);
+        this.setOrganizationModel({ ...this.model, providerType: this.providerType });
         await this.saveOrganization();
         this.setSuccessAlert('Success! Organization information has been saved.');
       } catch (error) {
