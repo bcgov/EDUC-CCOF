@@ -52,6 +52,7 @@ export default {
           commit('setApplicationId', response.data?.applicationId);
           commit('setApplicationStatus', response.data?.applicationStatus);
           commit('setOrganizationModel', response.data);
+          commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
