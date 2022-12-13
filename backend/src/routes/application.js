@@ -58,7 +58,7 @@ router.patch('/parentfee', passport.authenticate('jwt', {session: false}),isVali
 
 
 /* Retrieve an ECEWE application for an application id. */
-router.get('/ecewe/:applicationId', (req, res) => {
+router.get('/ecewe/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, (req, res) => {
   return getECEWEApplication(req, res);
 });
 

@@ -158,7 +158,7 @@ async function getECEWEApplication(req, res) {
     eceweApp.data.facilities = forFrontFacilities;
     return res.status(HttpStatus.OK).json(eceweApp);
   } catch (e) {
-    log.info('@#$@$#$ = '+e);
+    log.error('An error occurred while getting ECEWEApplication', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
