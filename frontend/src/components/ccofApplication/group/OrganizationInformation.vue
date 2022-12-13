@@ -115,7 +115,7 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState('app', ['organizationTypeList', 'navBarList']),
-    ...mapState('organization', ['isStarted']),
+    ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapGetters('auth', ['userInfo']),
   },
@@ -129,7 +129,7 @@ export default {
   },
   async mounted() {
     this.businessId = this.userInfo.userName;
-
+    
     if (this.isStarted) {
       return;
     }
@@ -138,6 +138,7 @@ export default {
       this.processing = true;
       try {
         await this.loadOrganization(this.organizationId);
+        this.model = { ...this.organizationModel };
       } catch (error) {
         console.log('Error loading organization.', error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');

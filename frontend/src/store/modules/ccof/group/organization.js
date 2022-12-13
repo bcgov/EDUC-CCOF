@@ -19,7 +19,8 @@ export default {
     setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
     setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
-    setOrganizationModel: (state, model) => { state.organizationModel = model; }
+    setOrganizationModel: (state, model) => { state.organizationModel = model; },
+    setIsOrganizationComplete: (state, value) => { state.isOrganizationComplete = value; }
   },
   actions: {
     async saveOrganization({ state, commit, rootState }) {
@@ -62,11 +63,12 @@ export default {
 
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
-        commit('model', response.data);
+        commit('setOrganizationModel', response.data);
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
         throw error;
       }
+      
     }
   },
 };
