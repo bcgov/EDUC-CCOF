@@ -36,7 +36,7 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
-      this.setIsOrganizationComplete(this.isFormValid);
+      this.setIsOrganizationComplete(this.isValidForm);
       this.setIsStarted(true);
     }
   },
@@ -59,7 +59,8 @@ export default {
     async save() {
       this.processing = true;
       try {
-        this.setOrganizationModel({ ...this.model, providerType: this.providerType });
+        this.setIsOrganizationComplete(this.isValidForm);
+        this.setOrganizationModel({ ...this.model, providerType: this.providerType, isOrganizationComplete: this.isValidForm });
         await this.saveOrganization();
         this.setSuccessAlert('Success! Organization information has been saved.');
       } catch (error) {

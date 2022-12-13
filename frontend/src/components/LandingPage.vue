@@ -141,13 +141,15 @@ export default {
     },
     continueApplication() {
       this.setIsRenewal(false);
-      if (this.userInfo.organizationProviderType === 'GROUP') {
-        this.$router.push(PATHS.group.orgInfo);
-      } else if (this.userInfo.organizationProviderType === 'FAMILY') {
-        this.$router.push(PATHS.family.orgInfo);
-      } else { 
-        this.setFailureAlert(`Unknown Organization Provider Type: ${this.userInfo.organizationProviderType}`);
-      }
+      console.log('continueApplication userInfo.organizationProviderType', this.userInfo.organizationProviderType);
+      this.$router.push(PATHS.group.orgInfo);
+      // if (this.userInfo.organizationProviderType === 'GROUP') {
+      //   this.$router.push(PATHS.group.orgInfo);
+      // } else if (this.userInfo.organizationProviderType === 'FAMILY') {
+      //   this.$router.push(PATHS.family.orgInfo);
+      // } else { 
+      //   this.setFailureAlert(`Unknown Organization Provider Type: ${this.userInfo.organizationProviderType}`);
+      // }
     }    
   },
   
