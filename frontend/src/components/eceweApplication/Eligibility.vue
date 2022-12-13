@@ -209,8 +209,8 @@ export default {
     },
     'q1OptInECEWE': {
       handler() {
-        this.disableNextBtn = (this.q1OptInECEWE == 1 || this.q1OptInECEWE == 0) ? false : true;
-        this.disableSaveBtn = (this.q1OptInECEWE == 1 || this.q1OptInECEWE == 0) ? false : true;
+        this.disableNextBtn = (this.q1OptInECEWE) ? false : true;
+        this.disableSaveBtn = (this.q1OptInECEWE) ? false : true;
       },
       immediate: true,
       deep: true
