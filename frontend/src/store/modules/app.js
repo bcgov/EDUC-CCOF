@@ -4,15 +4,19 @@ export default {
   namespaced: true,
   state: {
     pageTitle: null,
+    //NavBar Details
     showNavBar: false,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
-    ccofApplicationComplete: false,
-    ccofConfirmationEnabled: false,
+    isOrganizationComplete: false,
+
+    //Notification Details
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+
+    //Lookup Table Details
     programYearList: [],
     childCareCategoryList: [],
     organizationTypeList: [],
@@ -57,6 +61,9 @@ export default {
     setNavBarGroup: (state, navBarGroup) => {
       state.navBarGroup = navBarGroup;
     },
+    setIsOrganizationComplete: (state, isOrganizationComplete) => {
+      state.isOrganizationComplete = isOrganizationComplete;
+    },    
     bulkAddToNavNBar: (state, facilityList) => {
       state.navBarList = facilityList;
     },
@@ -69,17 +76,11 @@ export default {
     setNavBarFundingComplete: (state, {fundingId, complete} ) => {
       let navBarItem = state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
       if (navBarItem) {
-        navBarItem.isFundingComplete = complete;
+        navBarItem.isCCOFComplete = complete;
       }
     },    
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload); 
-    },
-    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
-      state.ccofApplicationComplete = ccofApplicationComplete;
-    },
-    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
-      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;

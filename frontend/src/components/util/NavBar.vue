@@ -101,8 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal']),
-    ...mapState('organization', ['isOrganizationComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -266,7 +265,7 @@ export default {
               subTitle: item.facilityName,
               link: { name: 'Funding Amount Guid' , params: {urlGuid: item.ccofBaseFundingId}},
               isAccessible: true,
-              icon: this.getCheckbox(item.isFundingComplete),
+              icon: this.getCheckbox(item.isCCOFComplete),
               isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId
             },
           );
