@@ -47,7 +47,8 @@ async function createOrganization(req, res) {
     const userGuid = getUserGuid(req);
     let organization = req.body;
     let programYear = '/ccof_program_years(' + organization.programYearId + ')';
-    organization = mapOrganizationForBack(req.body);
+    let providerType = organization.programYear;
+    organization = mapOrganizationForBack(organization);
 
     organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
     organization['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${userGuid}')`;
@@ -55,7 +56,7 @@ async function createOrganization(req, res) {
     // For new organizations, create a CCOF Application header
     organization.ccof_ccof_application_Organization_account = [
       {
-        'ccof_providertype': organization.ccof_providertype, //10000000 GROUP, 100000001 - Family
+        'ccof_providertype': providerType, //10000000 GROUP, 100000001 - Family
         'ccof_applicationtype': 100000000, // new
         'ccof_ProgramYear@odata.bind': programYear,
       }

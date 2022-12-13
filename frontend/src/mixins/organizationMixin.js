@@ -20,6 +20,7 @@ export default {
   },
   async mounted() {
     console.log('this.userInfo', this.userInfo);
+    console.log('this.providerType', this.providerType);
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {
