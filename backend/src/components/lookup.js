@@ -59,6 +59,20 @@ function parseProgramYear(value) {
   return programYears;
 }
 
+async function getLicenseCategory() {
+  let resData = lookupCache.get('licenseCategory');
+  if (!resData) {
+    resData = {};
+    const GROUP_FAMILIY_DIVIDER = 4; // The license category list has both family and group licenses.  Category number 4 and below are Group,
+    let licenseCategory = await getOperation('ccof_license_categories');
+    licenseCategory = licenseCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_license_categoryid', 'ccof_name', 'ccof_categorynumber']); });
+    resData.groupLicenseCategory = licenseCategory.filter( item => item.ccof_categorynumber <= GROUP_FAMILIY_DIVIDER).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    resData.familiyLicenseCategory = licenseCategory.filter( item => item.ccof_categorynumber > GROUP_FAMILIY_DIVIDER).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    lookupCache.put('licenseCategory', resData, 60 * 60 * 1000);
+  }
+  return resData;
+}
+
 async function getLookupInfo(req, res) {
   /**
    * Look ups from Dynamics365. 
@@ -74,13 +88,15 @@ async function getLookupInfo(req, res) {
     programYear = parseProgramYear(programYear.value);
 
     let childCareCategory = await getOperation('ccof_childcare_categories');
-    childCareCategory = childCareCategory.value;
-    childCareCategory = childCareCategory.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']); });
-  
+    childCareCategory = childCareCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']); });
+
+    let licenseCategory = await getLicenseCategory();
     resData = {
       'programYear': programYear,
       'childCareCategory': childCareCategory,
-      'organizationType': organizationType
+      'organizationType': organizationType,
+      'groupLicenseCategory': licenseCategory.groupLicenseCategory,
+      'familiyLicenseCategory': licenseCategory.familiyLicenseCategory
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }
@@ -88,5 +104,6 @@ async function getLookupInfo(req, res) {
   return res.status(HttpStatus.OK).json(resData);
 }
 module.exports = {
-  getLookupInfo
+  getLookupInfo,
+  getLicenseCategory
 };

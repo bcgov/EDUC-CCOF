@@ -1,10 +1,12 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
+const { getLicenseCategory } = require('./lookup');
+
 
 function hasChildCareCategory(item) {
   return (
@@ -116,6 +118,66 @@ async function getFacility(req, res) {
   }
 }
 
+async function updateFacilityLicenseType(facilityId, data) {
+  // Load the license categories from Lookup
+  let categories = await getLicenseCategory();
+  let groupLicenseCategory = categories.groupLicenseCategory;
+  
+  // Figure out new License categories from data form
+  let newLicenseCategories = []; //TODO: verify the mappings
+  log.info('updateFacilityLicenseType DATA: ', data);
+  if (data.maxGroupChildCare && data.maxGroupChildCare > 0) {
+    // licenseCategories.push({'ccof_LicenseCategory@odata.bind':`/ccof_license_categories(${groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid})`});
+    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid);
+  }
+  if (data.maxGroupChildCare36 && data.maxGroupChildCare36 > 0) {
+    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 2).ccof_license_categoryid);
+  }
+  if (data.maxPreschool && data.maxPreschool > 0) {
+    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3).ccof_license_categoryid);
+  }
+  if (data.maxGroupChildCareSchool && data.maxGroupChildCareSchool > 0) {
+    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 4).ccof_license_categoryid);
+  }
+  // Find the current License Categories associated with this facility
+  let toDelete = [];
+  log.info('New license categories: ', newLicenseCategories);
+  try {
+    let currentCategoryList = await getOperation(`ccof_facility_licenseses?$select=ccof_facility_licensesid,_ccof_licensecategory_value,_ccof_facility_value&$filter=_ccof_facility_value eq '${facilityId}'`);
+    currentCategoryList = currentCategoryList.value;
+    log.info('current categories: ', currentCategoryList);
+    if (currentCategoryList?.length) {
+      currentCategoryList.forEach(currentItem => {
+        let index = newLicenseCategories.indexOf(currentItem._ccof_licensecategory_value);
+        if (index > -1) {
+          // item found, so no need to add it, remove for list
+          log.info(`Found category for ${currentItem._ccof_licensecategory_value}, removing it from newLicenseCategories`);
+          newLicenseCategories.splice(index, 1);
+        } else {
+          // item not in new list, so delete from current
+          log.info(`Did not find category for ${currentItem._ccof_licensecategory_value}, adding it toDelete list`);
+          toDelete.push(currentItem.ccof_facility_licensesid);
+        }
+      });
+    }
+    // delete old unneeded categories
+    log.info(`Number of items to delete: [${toDelete.length}]`);
+    toDelete.forEach( async itemId =>  {
+      await deleteOperationWithObjectId('ccof_facility_licenseses', itemId);
+    });
+    // add new reccords
+    log.info(`Number of items to add: [${newLicenseCategories.length}]`);
+    newLicenseCategories.forEach ( async item => {
+      await postOperation('ccof_facility_licenseses', {
+        _ccof_licensecategory_value: item,
+        _ccof_facility_value: facilityId
+      });
+    });
+  } catch (e) {
+    console.log('Error while trying to get list of FacilityLicenses.', e);
+    throw e;
+  }
+}
 
 
 async function createFacility(req, res) {
@@ -153,6 +215,7 @@ async function updateFacility(req, res) {
 module.exports = {
   getFacility,
   createFacility,
-  updateFacility
+  updateFacility,
+  updateFacilityLicenseType
 };
 

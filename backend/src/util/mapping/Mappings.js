@@ -99,6 +99,7 @@ const CCOFApplicationFundingMapping = [
   
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
   
 ];
 
