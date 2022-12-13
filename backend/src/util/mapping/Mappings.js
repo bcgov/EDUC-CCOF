@@ -103,6 +103,20 @@ const CCOFApplicationFundingMapping = [
   
 ];
 
+const ECEWEApplicationMappings = [
+  { back: 'ccof_applicationid', front: 'applicationId' },
+  { back: 'ccof_ecewe_optin', front: 'q1OptInECEWE' },
+  { back: 'ccof_ecewe_employeeunion', front: 'q2BelongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'q3FundingModel' },
+  { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
+];
+
+const ECEWEFacilityMappings = [
+  { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_optintoecewe', front: 'optInOrOut' },
+];
+
 const UserProfileOrganizationMappings = [
   { back: 'Organization.name', front: 'organizationName' },
   { back: 'Organization.accountid', front: 'organizationId' },
@@ -169,6 +183,8 @@ module.exports = {
   FacilityMappings,
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
+  ECEWEApplicationMappings,
+  ECEWEFacilityMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileCCFRIMappings,

@@ -1,22 +1,17 @@
 <template>
     <v-container>
-      <v-row justify="center">
-        <br/>
-        Supporting Document Upload
+      <v-row justify="center" class="pt-4">
+        <span class="text-h5">Supporting Document Upload</span>
       </v-row>
-      <v-row>
-        <v-col style="text-align:center">
-          {Organization Name}
-        </v-col>
+      <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
+        {{this.userInfo.organizationName}}
       </v-row>
-      <v-row><v-col></v-col></v-row>
-      <v-row><v-col></v-col></v-row>
 
       <v-row justify="center">
-        <v-card class="cc-top-level-card">
+        <v-card class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row>
-              Upload your documents here:
+              Please upload any supporting documentation for your Program Confirmation Form (PCF)
             </v-row>
             <v-row>
               <DocumentUpload
@@ -31,10 +26,10 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
+      <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-show="model.fundingModelQ3" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn v-show="model.fundingModelQ3" color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn v-show="q3FundingModel" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn v-show="q3FundingModel" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -44,38 +39,47 @@
   
 import { PATHS } from '@/utils/constants';
 import DocumentUpload from '@/components/common/DocumentUpload';
-
-let model = { x: [], };
+import { mapGetters, mapActions } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
-  props: {},
+  mixins: [alertMixin],
   components: {
     DocumentUpload
   },
-  computed: {},
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
+    q3FundingModel: {
+      get() { return this.$store.state.eceweApp.q3FundingModel; }
+    }
+  },
   data() {
     return {
-      model,
       previousPage: this.previousPath,
     };
   },
   methods: {
+    ...mapActions('eceweApp', ['saveApplication']),
     upload() {},
     hideAttachmentPanel() {},
     previous() {
-      this.$router.push(this.model.previousRoute);
+      this.$router.push(PATHS.eceweFacilities);
     },
     next() {
-      this.$router.push(PATHS.eceweSummary);
+      this.$router.push(PATHS.summaryDeclaration);
+    },
+    async save() {
+      try {
+        await this.saveApplication();
+        this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
+      }
+      this.processing = false;
     }
   },
   mounted() {
-    this.model = this.$store.state.eceweApp.model ?? model;
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('eceweApp/model', this.model);
-    next();
-  }
 };
 </script>
   

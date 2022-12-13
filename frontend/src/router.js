@@ -35,7 +35,6 @@ import ApplicationConfirmation from '@/components/ccofApplication/group/Applicat
 import EceweEligibility from '@/components/eceweApplication/Eligibility';
 import EceweFacilities from '@/components/eceweApplication/Facilities';
 import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
-import EceweSummary from '@/components/eceweApplication/Summary';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -43,7 +42,7 @@ import LandingPage from '@/components/LandingPage';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
 
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
-
+import SummaryDeclaration from '@/components/SummaryDeclaration';
 
 Vue.prototype.moment = moment;
 
@@ -236,34 +235,66 @@ const router = new VueRouter({
     },
     {
       path: PATHS.eceweEligibility + '/:urlGuid',
+      name: 'ECEWE Eligibility GuID',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: PATHS.eceweEligibility,
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {
       path: PATHS.eceweFacilities  + '/:urlGuid',
+      name: 'ECEWE Facilities GuID',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: PATHS.eceweFacilities,
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {
-      path: PATHS.documentUpload,
+      path: PATHS.eceweDocUpload,
       name: 'ECEWE Document Upload',
       component: EceweDocumentUpload,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true
       }
     },
     {
-      path: PATHS.eceweSummary,
-      name: 'ECEWE Summary',
-      component: EceweSummary,
+      path: PATHS.summaryDeclaration,
+      name: 'SummaryDeclaration',
+      component: SummaryDeclaration,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: true        
       }
     },
     {
