@@ -37,6 +37,7 @@ export default {
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
           commit('setOrganizationModel', response.data);
+          commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
