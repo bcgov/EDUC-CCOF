@@ -76,7 +76,7 @@ export default {
     setNavBarFundingComplete: (state, {fundingId, complete} ) => {
       let navBarItem = state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
       if (navBarItem) {
-        navBarItem.isFundingComplete = complete;
+        navBarItem.isCCOFComplete = complete;
       }
     },    
     addToNavBarList: (state, payload) => {

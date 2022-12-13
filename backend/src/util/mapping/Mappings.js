@@ -28,6 +28,8 @@ const FacilityMappings = [
   { back: 'address1_primarycontactname', front: 'contactName' },
   { back: 'telephone1', front: 'phone' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+  { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
@@ -96,6 +98,8 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_multiagechildcaremorethan4hourextendedcc', front: 'multiAgeCare4more' },
   
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
+  { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
+  
 ];
 
 const UserProfileOrganizationMappings = [
@@ -154,6 +158,9 @@ const ProgramYearMappings = [
   { back: 'statuscode', front: 'status' },
   { back: 'ccof_programyearnumber', front: 'order' },
   { back: '_ccof_previousyear_value', front: 'previousYearId' },
+  { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
+  { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
+  { back: 'ccof_declarationbstart', front: 'declarationbStart' },
 ];
 
 module.exports = {

@@ -196,13 +196,14 @@ export default {
     this.loadData();
   },
   beforeRouteLeave(_to, _from, next) {
+    this.$store.commit('app/setIsOrganizationComplete', this.isOrganizationComplete);
     this.setIsStarted(true);
     next();
   },
 
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
-    ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete']),
+    ...mapMutations('organization', ['setIsStarted']),
     next() {
       if (this.navBarList && this.navBarList.length > 0) {
         this.$router.push(PATHS.group.facInfo + '/' + this.navBarList[0].facilityId);
@@ -233,7 +234,6 @@ export default {
           this.setFailureAlert('An error occurred while saving. Please try again later.');
         }
         this.processing = false;
-        this.setIsOrganizationComplete(this.isFormValid);
         this.setIsStarted(true);
       }
     }
