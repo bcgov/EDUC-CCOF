@@ -204,11 +204,19 @@ export default {
             if (this.facilities?.length == 0 || this.facilities == null) {
               this.facilities = new Array(this.navBarList.length).fill({});
               for (let i = 0; i < this.navBarList.length; i++) {
-                this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null};
+                this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null, statuscode: 1};
               }
               this.facilities = this.facilities.map(obj => ({ ...obj, update: true }));
             } else {
-              this.facilities = this.facilities.map(obj => ({ ...obj, update: false }));
+              let tempFacilities = new Array(this.navBarList.length).fill({});
+              for (let j = 0; j < this.navBarList.length; j++) {
+                tempFacilities[j] = {facilityId: this.navBarList[j].facilityId,
+                                     eceweApplicationId: this.getEceweApplicationId(this.navBarList[j].facilityId),
+                                     optInOrOut: this.getOptInOrOut(this.navBarList[j].facilityId),
+                                     statuscode: this.getStatuscode(this.navBarList[j].facilityId),
+                                     update: this.getUpdate(this.navBarList[j].facilityId)};
+              }
+              this.facilities = tempFacilities;
             }
           });
         }

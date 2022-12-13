@@ -74,7 +74,7 @@ export default {
       if (state.applicationId) {
         // has an application ID, so update the data
         try {
-          let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
+          let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
           return response;
         } catch (error) {
           console.log(`Failed to update existing ECEWE facility application - ${error}`);

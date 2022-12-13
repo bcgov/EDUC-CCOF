@@ -65,7 +65,7 @@
               <v-col cols="5" class="flex-column">
                 {{item.facilityName}}
               </v-col>
-              <v-col v-if="!facilities?.[index]?.update" cols="4" class="flex-column text-center">
+              <v-col v-if="/*updating(index)*/!facilities?.[index]?.update" cols="4" class="flex-column text-center">
                 <span>
                   Status: Opt {{facilities?.[index]?.optInOrOut == 1?'in':'out'}}
                 </span>
@@ -152,14 +152,7 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     }
   },
-  beforeMount() {
-    // this.initFacilities();
-/*
-    this.loadData().then(() => {
-      this.initFacilities();
-    });
-*/
-  },
+  beforeMount() {},
   mounted() {},
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities']),
@@ -201,11 +194,20 @@ export default {
       if (this.facilities?.length == 0 || this.facilities == null) {
         this.facilities = new Array(this.navBarList.length).fill({});
         for (let i = 0; i < this.navBarList.length; i++) {
-          this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null};
+          this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null, statuscode: 1};
         }
         this.facilities = this.facilities.map(obj => ({ ...obj, update: true }));
       } else {
-        this.facilities = this.facilities.map(obj => ({ ...obj, update: false }));
+        let tempFacilities = new Array(this.navBarList.length).fill({});
+        for (let j = 0; j < this.navBarList.length; j++) {
+          tempFacilities[j] = {applicationid: this.applicationId,
+                               facilityId: this.navBarList[j].facilityId,
+                               optInOrOut: this.getOptInOrOut(this.navBarList[j].facilityId),
+                               eceweApplicationId: this.getEceweApplicationId(this.navBarList[j].facilityId),
+                               statuscode: this.getStatuscode(this.navBarList[j].facilityId),
+                               update: this.getUpdate(this.navBarList[j].facilityId)};
+        }
+        this.facilities = tempFacilities;
       }
     },
     updating(index) {
@@ -219,6 +221,22 @@ export default {
         console.log('WERSRSERSERESRSEREs '+error);
       }
       return result;
+    },
+    getEceweApplicationId(facilityId) {
+      const index = this.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+      return (index >= 0)?this.facilities[index].eceweApplicationId:null;
+    },
+    getOptInOrOut(facilityId) {
+      const index = this.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+      return (index >= 0)?this.facilities[index].optInOrOut:null;
+    },
+    getStatuscode(facilityId) {
+      const index = this.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+      return (index >= 0)?this.facilities[index].statuscode:null;
+    },
+    getUpdate(facilityId) {
+      const index = this.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+      return (index >= 0)?(this.facilities[index].optInOrOut !=null?false:true):true;
     }
   }
 };

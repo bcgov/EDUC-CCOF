@@ -186,7 +186,6 @@ async function updateECEWEFacilityApplication(req, res) {
   
   try {
     for (let key in forBackFacilities) {
-      forBackFacilities[key].statuscode = 0;
       // add join attributes for application and facility
       forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications('+req.params.applicationId+')';
       forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts('+forBackFacilities[key]._ccof_facility_value+')';
