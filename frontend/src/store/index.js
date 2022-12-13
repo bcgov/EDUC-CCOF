@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import auth from '@/store/modules/auth.js';
 import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
-import organization from '@/store/modules/ccof/group/organization';
+import organization from '@/store/modules/ccof/organization';
 import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
 import facility from '@/store/modules/ccof/group/facility.js';
 

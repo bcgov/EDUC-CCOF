@@ -64,7 +64,7 @@
                 <v-text-field outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="model.businessId" :rules="rules.required" label="Business BCeID" />
+                <v-text-field outlined required v-model="businessId" readonly label="Business BCeID" />
               </v-col>
             </v-row>
 
@@ -105,76 +105,11 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
-import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
-
+import organizationMixin from '@/mixins/organizationMixin';
 
 export default {
-  mixins: [alertMixin],
-  computed: {
-    ...mapState('app', ['organizationTypeList', 'navBarList']),
-    ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
-    ...mapState('facility', ['facilityList']),
-    ...mapGetters('auth', ['userInfo']),
-  },
-  data() {
-    return {
-      rules,
-      model: {},
-      processing: false,
-      isValidForm: true,
-    };
-  },
-  async mounted() {
-    this.businessId = this.userInfo.userName;
-    
-    if (this.isStarted) {
-      return;
-    }
-
-    if (this.organizationId) {
-      this.processing = true;
-      try {
-        await this.loadOrganization(this.organizationId);
-        this.model = { ...this.organizationModel };
-      } catch (error) {
-        console.log('Error loading organization.', error);
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
-      this.processing = false;
-      this.setIsOrganizationComplete(this.isFormValid);
-      this.setIsStarted(true);
-    }
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    this.setIsOrganizationComplete(this.isValidForm);
-    this.setIsStarted(true);
-    this.setOrganizationModel(this.model);
-    next();
-  },
-  methods: {
-    ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
-    ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
-    next() {
-      if (this.navBarList && this.navBarList.length > 0) {
-        this.$router.push(PATHS.group.facInfo + '/' + this.navBarList[0].facilityId);
-      } else {
-        this.$router.push(PATHS.group.facInfo);
-      }
-    },
-    async save() {
-      this.processing = true;
-      try {
-        this.setOrganizationModel(this.model);
-        await this.saveOrganization();
-        this.setSuccessAlert('Success! Organization information has been saved.');
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
-      this.processing = false;
-    }
-  }
+  mixins: [alertMixin, organizationMixin]
 };
+
 </script>

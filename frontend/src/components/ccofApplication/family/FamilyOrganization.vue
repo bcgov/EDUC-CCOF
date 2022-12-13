@@ -71,7 +71,7 @@
                 <v-text-field outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="model.businessId" :rules="rules.required" label="Business BCeID" />
+                <v-text-field outlined required v-model="businessId" readonly label="Business BCeID" />
               </v-col>
             </v-row>
 
@@ -85,7 +85,7 @@
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required :rules="rules.required" v-model.number="model.incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                <v-text-field outlined required :rules="rules.required" v-model="model.incNumber" label="Incorporation Number (as it appears in BC Corporate Registry)" />
               </v-col>
             </v-row>
           </v-container>
@@ -103,59 +103,11 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
-import rules from '@/utils/rules';
 import alertMixin from '@/mixins/alertMixin';
-import { mapGetters, mapState, mapActions } from 'vuex';
-
-let model = { closedMonths: [] };
+import organizationMixin from '@/mixins/organizationMixin';
 
 export default {
-  props: {
-  },
-  computed: {
-    ...mapState('app', ['organizationTypeList']),
-    ...mapGetters('auth', ['userInfo']),
-  },
-  mixins: [alertMixin],
-  data() {
-    return {
-      model,
-      isValidForm: undefined,
-      rules,
-      processing: false,
-    };
-  },
-  mounted() {
-    this.businessId = this.userInfo.userName;
-    this.model = this.$store.state.familyOrganization.model ?? model;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.saveModel();
-    next();
-  },
-  methods: {
-    ...mapActions('familyOrganization', ['saveFamilyOrganization']),
-    back() { },
-    next() {
-      this.$router.push(PATHS.family.eligibility);
-    },
-    async save() {
-      this.processing = true;
-      this.saveModel();
-
-      try {
-        await this.saveFamilyOrganization();
-        this.setSuccessAlert('Success! Organization information has been saved.');
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
-
-      this.processing = false;
-    },
-    saveModel() {
-      this.$store.commit('familyOrganization/model', this.model);
-    }
-  }
+  mixins: [alertMixin, organizationMixin]
 };
+
 </script>
