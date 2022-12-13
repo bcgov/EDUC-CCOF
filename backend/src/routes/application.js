@@ -3,7 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { upsertParentFees, updateCCFRIApplication} = require('../components/application');
+const { upsertParentFees, upsertCCFRIApplication} = require('../components/application');
+const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication } = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
@@ -56,7 +57,22 @@ router.patch('/parentfee', passport.authenticate('jwt', {session: false}),isVali
 });
 
 
+/* Retrieve an ECEWE application for an application id. */
+router.get('/ecewe/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, (req, res) => {
+  return getECEWEApplication(req, res);
+});
 
+/* Update an ECEWE applciation for an application id. */
+router.patch('/ecewe/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
+  return updateECEWEApplication(req, res);
+});
 
+/* Update an ECEWE facility applciation for an ecewe application id. */
+router.post('/ecewe/facilities/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
+  return updateECEWEFacilityApplication(req, res);
+});
 
 module.exports = router;
+
