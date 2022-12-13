@@ -199,20 +199,13 @@ async function updateECEWEFacilityApplication(req, res) {
 
       if (eceweApplicationId) {
         // send PATCH (update existing ECEWE facility)
-        log.info('~~~~~~~~~~~~~~~~~ SEND PATCH')
         response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
       } else {
         if (facility.ccof_optintoecewe != null) {
-          log.info('~~~~~~~~~~~~~~~~~ SEND POST')
           // send POST (create a new ECEWE facility)
           let operation = 'ccof_applicationecewes';
-          response = await postOperation(operation, facility) ;
+          response = await postOperation(operation, facility);
         }
-        /*
-        let forFrontFacilities = [];
-        Object.values(eceweApp.data.facilities).forEach(value => forFrontFacilities.push(new MappableObjectForFront(value, ECEWEFacilityMappings).data));
-        eceweApp.data.facilities = forFrontFacilities; 
-        */
       }
     }
     return res.status(HttpStatus.OK).json(response);

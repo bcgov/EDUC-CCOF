@@ -38,7 +38,8 @@ export const PAGE_TITLES = Object.freeze({
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
   CCRFI_APPLICATION: 'CCRFI Application Form',
-  ECEWE_APPLICATION: 'ECE-WE Application'
+  ECEWE_APPLICATION: 'ECE-WE Application',
+  SUMMARY_DECLARATION: 'Summary and Declaration'
 });
 
 export const PATHS = {
@@ -62,10 +63,10 @@ export const PATHS = {
     eligibility: '/ccof-application/family/eligibility',
     fundAmount: '/ccof-application/family/funding',
   },
-  documentUpload: '/ecewe-document-upload',
+  eceweDocUpload: '/ecewe-document-upload',
   eceweEligibility: '/ecewe-eligibility',
   eceweFacilities: '/ecewe-facilities',
-  eceweSummary:  '/ecewe-summary'
+  summaryDeclaration:  '/summary-declaration'
 };
 
 export const NAV_BAR_GROUPS = {

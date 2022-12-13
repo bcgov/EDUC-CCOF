@@ -1,16 +1,13 @@
 <template>
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h5">Summary</span>
+        <span class="text-h5">Summary and Declaration</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h6" style="color:#003466;">
-        AMBER MELO
+        ORG/FACILTY NAME
       </v-row>
-      <v-row><v-col></v-col></v-row>
-      <v-row><v-col></v-col></v-row>
-
       <v-row justify="center">
-        <v-card class="cc-top-level-card ecewe-card">
+        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row>
               <v-col>
@@ -31,7 +28,7 @@
       </v-row>
  
       <v-row justify="center">
-        <v-card class="cc-top-level-card ecewe-card">
+        <v-card class="py-2 px-5 mx-2 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
               <v-radio-group
@@ -49,7 +46,7 @@
         </v-card>
       </v-row>
       
-      <v-row justify="space-around">
+      <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="primary" outlined x-large @click="next()">Submit</v-btn>
         <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
@@ -66,8 +63,8 @@ export default {
   mixins: [alertMixin],
   computed: {
     userDeclaration: {
-      get() { return this.$store.state.eceweApp.userDeclaration; },
-      set(value) { this.$store.commit('eceweApp/setUserDeclaration', value); }
+      get() { return this.$store.state.userDeclaration; },
+      set(value) { this.$store.commit('setUserDeclaration', value); }
     },
   },
   data() {
@@ -75,7 +72,6 @@ export default {
     };
   },
   methods: {
-    ...mapActions('eceweApp', ['saveApplication']),
     previous() {
       return this.$router.go(-1);
     },
@@ -92,8 +88,4 @@ export default {
 };
 </script>
   
-<style>
-.ecewe-card {
-  width:60%;
-}
-</style>
+<style></style>

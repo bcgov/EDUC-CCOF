@@ -35,7 +35,6 @@ import ApplicationConfirmation from '@/components/ccofApplication/group/Applicat
 import EceweEligibility from '@/components/eceweApplication/Eligibility';
 import EceweFacilities from '@/components/eceweApplication/Facilities';
 import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
-import EceweSummary from '@/components/eceweApplication/Summary';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -43,7 +42,7 @@ import LandingPage from '@/components/LandingPage';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
 
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
-
+import SummaryDeclaration from '@/components/SummaryDeclaration';
 
 Vue.prototype.moment = moment;
 
@@ -279,7 +278,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.documentUpload,
+      path: PATHS.eceweDocUpload,
       name: 'ECEWE Document Upload',
       component: EceweDocumentUpload,
       meta: {
@@ -289,11 +288,11 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.eceweSummary,
-      name: 'ECEWE Summary',
-      component: EceweSummary,
+      path: PATHS.summaryDeclaration,
+      name: 'SummaryDeclaration',
+      component: SummaryDeclaration,
       meta: {
-        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true        
       }

@@ -3,13 +3,12 @@
       <v-row justify="center" class="pt-4">
         <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE)</span>
       </v-row>
-      <v-row justify="center" class="pt-4 text-h6" style="color:#003466;">
+      <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
       </v-row>
-      <v-row><v-col></v-col></v-row>
 
       <v-row justify="center">
-        <v-card class="cc-top-level-card eceweCard">
+        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row justify="center">
               <br/>
@@ -38,7 +37,7 @@
       </v-row>
       
       <v-row v-if="(q1OptInECEWE == 1)" justify="center">
-        <v-card class="cc-top-level-card eceweCard">
+        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row justify="center">
               <br/>
@@ -67,7 +66,7 @@
       </v-row>
 
       <v-row v-if="(q2BelongsToUnion == 1 && q1OptInECEWE == 1)" justify="center">
-        <v-card class="cc-top-level-card eceweCard">
+        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row justify="center" >
               <v-col style="padding-bottom:0px;margin-bottom:0px;">
@@ -89,11 +88,11 @@
             <v-card v-if="q3FundingModel == '100000000'" width="100%">
               <v-row>
                 <v-col class="py-0">
-                  <v-card-title class="py-1 notice1">
+                  <v-card-title class="py-1 noticeAlert">
                     <span style="float:left">
                   <v-icon
                     x-large
-                    class="py-1 px-3 iconNotice1">
+                    class="py-1 px-3 noticeAlertIcon">
                     mdi-alert-octagon
                   </v-icon>
                   </span>
@@ -117,11 +116,11 @@
             <v-card v-if="q3FundingModel == '100000001'" width="100%">
               <v-row>
                 <v-col class="py-0">
-                  <v-card-title class="py-1 notice2">
+                  <v-card-title class="py-1 noticeWarning">
                     <span style="float:left">
                   <v-icon
                     x-large
-                    class="py-1 px-3 iconNotice2">
+                    class="py-1 px-3 noticeWarningIcon">
                     mdi-alert
                   </v-icon>
                   </span>
@@ -145,12 +144,12 @@
             <v-card v-if="q3FundingModel == '100000002'" width="100%">
               <v-row>
                 <v-col class="py-0">
-                  <v-card-title class="py-1 notice3">
+                  <v-card-title class="py-1 noticeInfo">
                     <span style="float:left">
                   <v-icon
                     x-large
                     color="#D40D19"
-                    class="py-1 px-3 iconNotice3">
+                    class="py-1 px-3 noticeInfoIcon">
                     mdi-information
                   </v-icon>
                   </span>
@@ -169,7 +168,7 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
+      <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn v-show="q2BelongsToUnion" :disabled="this.disableNextBtn" color="secondary" outlined x-large @click="next()">Next</v-btn>
         <v-btn v-show="q2BelongsToUnion" :disabled="this.disableSaveBtn" color="primary" outlined x-large @click="save()">Save</v-btn>
@@ -201,23 +200,7 @@ export default {
         this.applicationId = this.$route.params.urlGuid;
         if (this.applicationId) {
           this.loadData().then(() => {
-            if (this.facilities?.length == 0 || this.facilities == null) {
-              this.facilities = new Array(this.navBarList.length).fill({});
-              for (let i = 0; i < this.navBarList.length; i++) {
-                this.facilities[i] = {applicationid: this.applicationId, facilityId: this.navBarList[i].facilityId, optInOrOut: null, statuscode: 1};
-              }
-              this.facilities = this.facilities.map(obj => ({ ...obj, update: true }));
-            } else {
-              let tempFacilities = new Array(this.navBarList.length).fill({});
-              for (let j = 0; j < this.navBarList.length; j++) {
-                tempFacilities[j] = {facilityId: this.navBarList[j].facilityId,
-                                     eceweApplicationId: this.getEceweApplicationId(this.navBarList[j].facilityId),
-                                     optInOrOut: this.getOptInOrOut(this.navBarList[j].facilityId),
-                                     statuscode: this.getStatuscode(this.navBarList[j].facilityId),
-                                     update: this.getUpdate(this.navBarList[j].facilityId)};
-              }
-              this.facilities = tempFacilities;
-            }
+            this.initECEWEFacilities(this.navBarList);
           });
         }
       },
@@ -264,9 +247,8 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE']),
+    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities']),
     ...mapMutations('eceweApp', ['setIsStarted']),
-    //...mapState('app', ['navBarList']),
     async loadData() {
       if (this.isStarted) {
         return;
@@ -284,12 +266,17 @@ export default {
       }
     },
     next() {
-      this.$router.push(PATHS.eceweFacilities);
+      if (this.q1OptInECEWE == 0) {
+        this.$router.push(PATHS.eceweDocUpload);
+      } else {
+        this.$router.push(PATHS.eceweFacilities);
+      }
+
     },
     async save() {
       try {
         this.q2BelongsToUnion = (this.q1OptInECEWE==0)?null:this.q2BelongsToUnion;
-        //this.q3FundingModel = (this.q2BelongsToUnion==0)?null:this.q3FundingModel;
+        this.q3FundingModel = (this.q2BelongsToUnion==0)?null:this.q3FundingModel;
         await this.saveECEWE();
         this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
       } catch (error) {
@@ -311,47 +298,4 @@ export default {
 };
 </script>
   
-<style>
-
-.eceweCard {
-  width:60%;
-}
-
-.iconNotice1 {
-  color:#D40D19 !important;
-}
-.notice1 {
-  font-size:medium;
-  color:#D40D19;
-  font-family:'BCSans',Verdana,Arial,sans-serif;
-  padding-top:8px;
-  padding-bottom:8px;
-  background-color:#F2DEDE;
-  border:1px solid #D40D19;
-}
-.iconNotice2 {
-  color:#6C4A00 !important;
-}
-.notice2 {
-  font-size:medium;
-  color:#6C4A00;
-  font-family:'BCSans',Verdana,Arial,sans-serif;
-  padding-top:8px;
-  padding-bottom:8px;
-  background-color:#F9F1C6;
-  border:1px solid #6C4A00;
-}
-.iconNotice3 {
-  color:#313132 !important;
-}
-.notice3 {
-  font-size:medium;
-  color:#313132;
-  font-family:'BCSans',Verdana,Arial,sans-serif;
-  padding-top:8px;
-  padding-bottom:8px;
-  background-color:#C1DCF6;
-  border:1px solid #313132;
-}
-
-</style>
+<style></style>

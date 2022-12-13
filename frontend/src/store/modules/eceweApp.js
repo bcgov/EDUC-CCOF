@@ -81,6 +81,46 @@ export default {
           throw error;
         }
       }
+    },
+    /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
+    initECEWEFacilities({ state }, navBarList) {
+      if (state.facilities?.length == 0 || state.facilities == null) {
+        state.facilities = new Array(navBarList.length).fill({});
+        for (let i = 0; i < navBarList.length; i++) {
+          // TODO statuscode behavior confimration
+          state.facilities[i] = {applicationid: applicationId, facilityId: navBarList[i].facilityId, optInOrOut: null, statuscode: 1};
+        }
+        state.facilities = state.facilities.map(obj => ({ ...obj, update: true }));
+      } else {
+        let tempFacilities = new Array(navBarList.length).fill({});
+        for (let j = 0; j < navBarList.length; j++) {
+          tempFacilities[j] = {facilityId: navBarList[j].facilityId,
+                              eceweApplicationId: getEceweApplicationId(navBarList[j].facilityId),
+                              optInOrOut: getOptInOrOut(navBarList[j].facilityId),
+                              statuscode: getStatuscode(navBarList[j].facilityId),
+                              update: getUpdate(navBarList[j].facilityId)};
+        }
+        state.facilities = tempFacilities;
+      }
+      function getEceweApplicationId(facilityId) {
+        const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+        return (index >= 0)?state.facilities[index].eceweApplicationId:null;
+      }
+      
+      function getOptInOrOut(facilityId) {
+        const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+        return (index >= 0)?state.facilities[index].optInOrOut:null;
+      }
+      
+      function getStatuscode(facilityId) {
+        const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+        return (index >= 0)?state.facilities[index].statuscode:null;
+      }
+      
+      function getUpdate(facilityId) {
+        const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+        return (index >= 0)?(state.facilities[index].optInOrOut !=null?false:true):true;
+      }
     }
   },
 };
