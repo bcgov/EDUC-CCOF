@@ -3,7 +3,7 @@
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
-      <!-- <v-btn color="info" outlined x-large  @click="updateParentFees()">
+      <!-- <v-btn color="info" outlined x-large  @click="save()">
             UPDATE FEES</v-btn> -->
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
@@ -73,8 +73,9 @@
                 <v-col
                   class="col-6 col-md-2"
                 >
-                <!-- I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="childCareTypes[index].approvedFeeApr" label="April" prefix="$"/>
+                <!-- childCareTypes[index].approvedFeeApr 
+                  I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="apr[index]" label="April" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
@@ -276,7 +277,7 @@
           Back</v-btn>
           <!--!isValidForm-->
         <v-btn color="secondary" outlined x-large @click="next()" :disabled=" false">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="updateParentFees()">
+        <v-btn color="primary" outlined x-large @click="save()">
           Save</v-btn>
       </v-row>
 
@@ -292,13 +293,6 @@ import axios from 'axios';
 
 import _ from 'lodash';
 
-// 0-18 months
-//const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
-///const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-//const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-
-//const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
-
 let dates = [];
 let datePicker= null;          //vmodel for entering closure fees
 let closedFeesPaid = undefined;       //vmodel for entering closure fees
@@ -310,7 +304,7 @@ let notes = '';
 let jan = {};
 let feb = {};
 let mar = {};
-//let apr = {};
+let apr = {};
 let may = {};
 let jun = {};
 let jul = {};
@@ -331,6 +325,7 @@ let model = { x: [],
   jan,
   feb,
   mar,
+  apr,
   may,
   jun,
   jul,
@@ -371,6 +366,7 @@ export default {
       jan,
       feb,
       mar,
+      apr,
       may,
       jun,
       jul,
@@ -394,8 +390,7 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    this.childCareTypes = this.model.childCareTypes;
-    //this.model = this.CCFRIFacilityModel;
+    this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
@@ -404,23 +399,28 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'isRenewal']),
     ...mapState('facility', ['CCFRIFacilityModel']),
-    currentFacility(){
-      let activeFac = this.navBarList.findIndex((element) =>{ 
+    ...mapState('organization', ['applicationId']),
+
+    findIndexOfFacility(){
+      return this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
       });
-      return this.navBarList[activeFac];
+    },
+    currentFacility(){
+      return this.navBarList[this.findIndexOfFacility];
+    },
+    nextFacility(){
+      return this.navBarList[this.findIndexOfFacility + 1];
     }
   },
   watch: {
     //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
       async handler() {
-        console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           this.childCareTypes = this.CCFRIFacilityModel.childCareTypes;
           this.loading = false;
         } catch (error) {
@@ -434,7 +434,6 @@ export default {
   },
   methods: {
     ...mapActions('facility', ['loadCCFRIFacility']),    
-    //...mapActions('facility', ['loadFacility']),    // take this out 
     addDate(){
       dates.push({
         message: this.model.closureReason,
@@ -452,23 +451,38 @@ export default {
       console.log(this.dates);
     },
     previous() {
-      this.$router.back();  
+      console.log(this.navBarList);
+      //this.$router.back();  
     },
     next() {
-      console.log(model);
-      console.log(childCareTypes);
-      console.log(childCareTypes.approvedFeeApr);
-      //this.updateParentFees();
+      //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
+      console.log(this.nextFacility);
+
+      if (this.nextFacility && this.isRenewal){
+        console.log('going to next fac EXISTING FEES page');
+        //check here if renew - then send them to appropriate screen 
+      }
+      else if (this.nextFacility ){
+        console.log('going to next fac NEW fees page');
+        //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
+        this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
+      }
+      else {
+        console.log('going to ece-we!');
+        this.$router.push({path : `${PATHS.eceweEligibility}/${this.applicationId}`});
+      }
+    
+      this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
       //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    async updateParentFees () {
+    async save () {
       this.processing = true;
       let payload = [];
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
+      //for each child care type - send a request. 
 
       //index will also match the order of how the cards are displayed. 
       this.CCFRIFacilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?

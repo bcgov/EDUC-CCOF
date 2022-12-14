@@ -1,17 +1,11 @@
 <template>
     <v-container>
-        <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
-          this will need to get changed at a later point when the API is more built out 
-          there is also no logic about if you can click next or not 
-        -->
-
-        <!-- <ExistingFacilityFees></ExistingFacilityFees> -->
-
+        
         <LargeButtonContainer>
 
           <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
-            <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
+          <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
@@ -24,7 +18,7 @@
                 <v-col cols="" class="col-12 col-md-8">
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
-                  <!-- <p class="text--primary"> Licence : 123456789</p> -->
+                  <!-- <p class="text--primary"> Licence : 123456789</p>  add back in when license number is in userProfile-->
                   <p class="text--primary " min-width="250px" >Status: {{ccfriStatus == undefined ? "NOT STARTED" : ccfriStatus}}</p>
                   <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN" : ccfriOptInStatus == "1" ? "IN" : "OUT" }}</p> </strong>
                 </v-col>
@@ -87,7 +81,6 @@
 
 
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
-import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
@@ -136,62 +129,56 @@ export default {
     previous() {
       //console.log(this.ccfriOptInComplete);
       //this.isPageComplete();
-      //this.$router.back();
+      this.$router.back();
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
-      const q = this.navBarList.every((fac) => {
+      const allFacilitiesComplete = this.navBarList.every((fac) => {
         return (fac.ccfriApplicationId);
       });
-      if (!q){
-        return q;
+      if (!allFacilitiesComplete){
+        return allFacilitiesComplete;
       }
       return this.isValidForm;
     },
     next() {
-      //this.save(); //put this back in !
+      //this.save();
       
-      //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
-      //if (this.isRenewal){
-       // this.$router.push(); 
-        this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[0].ccfriApplicationId}`});
+      //check if new opt in status was selected -- because I am forcing a save rn we don't need this top part
+      let firstOptInFacility = -1; 
+      // for (let i = 0; i < this.showOptStatus.length; i++) {
+      //   //elemnt is true if update button has been clicked. 
+      //   if (this.showOptStatus[i]){
+      //     if(this.ccfriOptInOrOut[i] == '1'){
+      //       firstOptInFacility = i;
+      //       break;
+      //     }
+      //   }
       // }
-      // else {
-      //   //check if new opt in status was selected first
-      //   let firstOptInFacility = -1; 
-      //   for (let i = 0; i < this.showOptStatus.length; i++) {
-      //     //elemnt is true if update button has been clicked. 
-      //     if (this.showOptStatus[i]){
-      //       if(this.ccfriOptInOrOut[i] == '1'){
-      //         firstOptInFacility = i;
-      //         break;
-      //       }
-      //     }
-      //   }
-      //   //if not - check opt in status in NavBarList
-      //   if (firstOptInFacility === -1){
-      //     for (let i = 0; i < this.navBarList.length; i++) {
-      //       //elemnt is true if update button has been clicked. 
-      //       if (this.navBarList[i].ccfriOptInStatus ==='IN'){
-      //         firstOptInFacility = i;
-      //         break;
-      //       }
-      //     }
-      //   }
-      //   //if -1, go to ECEWE screen! 
+      //if not - check opt in status in NavBarList
+      if (firstOptInFacility === -1){
+        for (let i = 0; i < this.navBarList.length; i++) {
+          //elemnt is true if update button has been clicked. 
+          if (this.navBarList[i].ccfriOptInStatus ==='IN'){
+            firstOptInFacility = i;
+            break;
+          }
+        }
+      }
 
-      //   this.setCcfriOptInComplete(true);
-        
-      //   this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
-      // }
+      //if firstOptInFacility == -1, go to ECEWE screen! 
+
+      this.setCcfriOptInComplete(true);
+      //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
+      if (this.isRenewal){
+        this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
+      }
+      else {
+        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
+      }
 
     },
        
-    // refreshWithFacility() {
-    //   let x = this.$route.params.urlGuid;
-    //   this.loadFacility(x);
-    // },
-
     async save () {
       this.processing = true;
       let payload = [];
@@ -211,7 +198,7 @@ export default {
         });
 
         console.log(payload);
-      }
+      }//end for loop
 
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
@@ -222,10 +209,7 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       
-
-      
-
-      location.reload(true);
+      location.reload(true);  //I feel like you won't like this Rob, but I could not get the timing to work out with the Nav bar
 
       this.processing = false;
     },

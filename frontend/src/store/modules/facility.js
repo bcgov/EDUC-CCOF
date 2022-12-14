@@ -125,7 +125,7 @@ export default {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); //maybe change getFacilityById as well?
       if (CCFRIFacilityModel) {
-        console.log('found CCFRI data for guid: ', ccfriId);
+        //console.log('found CCFRI data for guid: ', ccfriId);
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
       } else {
         if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.

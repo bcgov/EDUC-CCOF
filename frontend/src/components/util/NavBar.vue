@@ -185,7 +185,7 @@ export default {
       this.items.push(
         {
           title: 'Summary',
-          link: { name: 'ccfri-application' },
+          link: { name: 'landing-page' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           expanded: false,
