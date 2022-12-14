@@ -177,7 +177,7 @@ async function updateFacilityLicenseType(facilityId, data) {
     });
 
   } catch (e) {
-    console.log('Error while trying to get list of FacilityLicenses.', e);
+    log.error('Error while trying to get list of FacilityLicenses.', e);
     throw e;
   }
 }
