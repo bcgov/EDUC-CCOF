@@ -5,6 +5,7 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/organization.js';
 import facility from '@/store/modules/facility.js';
+import licenseUpload from '@/store/modules/licenseUpload.js';
 import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
 import familyFunding from '@/store/modules/ccof/family/familyFundingStore';
 import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStore';
@@ -25,6 +26,7 @@ export default new Vuex.Store({
     familyFunding,
     familyEligibility,
     familyOrganization,
+    licenseUpload,
     groupFunding,
     ccfriApp,
     eceweApp,

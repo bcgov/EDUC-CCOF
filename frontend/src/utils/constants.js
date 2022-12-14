@@ -23,6 +23,7 @@ export const ApiRoutes = Object.freeze({
   LOOKUP: baseRoot + '/config/lookup',
   ORGANIZATION: baseRoot + '/organization',
   FACILITY: baseRoot + '/facility',
+  LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
@@ -56,6 +57,7 @@ export const PATHS = {
     facInfo: '/ccof-application/group/facility',
     fundAmount: '/ccof-application/group/funding',
     confirmation: '/ccof-application/group/confirmation',
+    licenseUpload: '/ccof-application/group/licenseUpload',
     renewOrganization: '/ccof-application/group/renew',
   },
   family: {

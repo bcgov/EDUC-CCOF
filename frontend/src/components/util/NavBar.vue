@@ -1,5 +1,5 @@
 <template>
-  
+
 <div class="mb-1">
 
   <v-navigation-drawer
@@ -56,7 +56,7 @@
           >
             <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
               <v-icon>{{ subItem.icon }}</v-icon>
-            </v-list-item-icon>              
+            </v-list-item-icon>
             <router-link :is="subItem.isAccessible ? 'router-link' : 'span'" :to="subItem.link" :target="subItem.newTab ? '_blank' : '_self'" class="router">
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap"><strong>{{ subItem.title }}</strong></v-list-item-title>
@@ -69,8 +69,8 @@
       </div>
     </v-list>
   </v-navigation-drawer>
-  <v-app-bar v-if="hasAnyItems" app absolute elevation="0" 
-    color="#38598A" :dark="true" id="navBar" 
+  <v-app-bar v-if="hasAnyItems" app absolute elevation="0"
+    color="#38598A" :dark="true" id="navBar"
     class="pl-4 pr-8 justify-start" :class="{'pl-16': $vuetify.breakpoint.mdAndUp}" clipped-left>
     <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
       <v-icon v-if="!drawer">$menu</v-icon>
@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'isOrganizationComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'isOrganizationComplete','cCOFLicenseUploadComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -146,7 +146,7 @@ export default {
         this.items.filter(obj => obj.items && obj.active).forEach(obj => obj.active = !obj.active);
         this.items[index].active = true;
       }
-    },    
+    },
     refreshNavBar(){
       console.log('refresh nav bar called');
       this.items = [];
@@ -171,7 +171,7 @@ export default {
       } else {
         this.items.push(this.getCCOFNavigation());
       }
-      
+
       this.items.push(this.getCCFRINavigation());
       this.items.push(this.getECEWENavigation());
       this.items.push(
@@ -224,7 +224,7 @@ export default {
             },
           );
         });
-      } 
+      }
       let retval =   {
         title: NAV_BAR_GROUPS.CCFRI,
         isAccessible: true,
@@ -233,7 +233,7 @@ export default {
         items: items
       };
       return retval;
-      
+
 
     },
     getCCOFNavigation() {
@@ -304,10 +304,10 @@ export default {
       items.push(
         {
           title: 'License Upload',
-          link: { name: 'Application Confirmation'}, //TODO update to upload license page
+          link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
           icon: this.getCheckbox(this.ccofApplicationComplete),
-          isActive: 'Application Confirmation' === this.$route.name //TODO update to upload license page
+          isActive: 'Application Confirmation' === this.$route.name
         }
       );
 
