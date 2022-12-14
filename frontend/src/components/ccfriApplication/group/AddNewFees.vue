@@ -400,7 +400,7 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal']),
-    ...mapState('facility', ['CCFRIFacilityModel']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
 
     findIndexOfFacility(){
@@ -433,7 +433,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('facility', ['loadCCFRIFacility']),    
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),    
     addDate(){
       dates.push({
         message: this.model.closureReason,

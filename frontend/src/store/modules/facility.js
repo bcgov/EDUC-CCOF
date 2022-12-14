@@ -7,16 +7,15 @@ export default {
   namespaced: true,
   state: {
     model: [
-      {sampleFee: 69},
     ],
     foo: 'bar',
     // facilityList: [],
     facilityStore: {},
     facilityModel: {},
     facilityId: null,
-    CCFRIFacilityModel : {}, //jb
-    ccfriId: {},//jb
-    ccfriStore :{},
+    // CCFRIFacilityModel : {}, //jb
+    // ccfriId: {},//jb
+    // ccfriStore :{},
     isValidForm: false,
   },
   getters: {
@@ -24,9 +23,9 @@ export default {
     getFacilityById: (state) => (facilityId) => { 
       return state.facilityStore[facilityId];
     },
-    getCCFRIById: (state) => (ccfriId) => { 
-      return state.ccfriStore[ccfriId];
-    },
+    // getCCFRIById: (state) => (ccfriId) => { 
+    //   return state.ccfriStore[ccfriId];
+    // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
 
     getModel: state => {return state.model;}
@@ -41,19 +40,19 @@ export default {
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
-    setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
+    // setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
-    setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
+    // setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
       if (facilityId) {
         state.facilityStore[facilityId] = facilityModel;  
       }
     },
-    addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
-      if (ccfriId) {
-        state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
-      }
-    }
+    // addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
+    //   if (ccfriId) {
+    //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
+    //   }
+    // }
   },
   actions: {
     async saveFacility({ state, commit, rootState }) {
@@ -120,34 +119,33 @@ export default {
         }
       }
     },
-    //is it bad to keep the copy/pasted setFacility ID from above?
-    async loadCCFRIFacility({getters, commit}, ccfriId) {
-      commit('setCcfriId', ccfriId);
-      let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); //maybe change getFacilityById as well?
-      if (CCFRIFacilityModel) {
-        //console.log('found CCFRI data for guid: ', ccfriId);
-        commit('setCCFRIFacilityModel', CCFRIFacilityModel);
-      } else {
-        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-          console.log('unable to load facility because you are not logged in');
-          throw 'unable to  load facility because you are not logged in';
-        }
-        try {//chucking in CCFRI application GUID for science 
-          let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
-          commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
-          commit('setCCFRIFacilityModel', response.data);
-          //commit('model', response.data);
+    // async loadCCFRIFacility({getters, commit}, ccfriId) {
+    //   commit('setCcfriId', ccfriId);
+    //   let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); //maybe change getFacilityById as well?
+    //   if (CCFRIFacilityModel) {
+    //     //console.log('found CCFRI data for guid: ', ccfriId);
+    //     commit('setCCFRIFacilityModel', CCFRIFacilityModel);
+    //   } else {
+    //     if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+    //       console.log('unable to load facility because you are not logged in');
+    //       throw 'unable to  load facility because you are not logged in';
+    //     }
+    //     try {//chucking in CCFRI application GUID for science 
+    //       let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
+    //       commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
+    //       commit('setCCFRIFacilityModel', response.data);
+    //       //commit('model', response.data);
 
-          //console.log('model is: ', getters.getModel()); //?
-          return response;
+    //       //console.log('model is: ', getters.getModel()); //?
+    //       return response;
 
-        } catch(e) {
-          console.log(`Failed to get existing Facility with error - ${e}`);
-          throw e;
-        }
-        //I want to add the call to load the CCFRI fees here also..
-      }
-    },
+    //     } catch(e) {
+    //       console.log(`Failed to get existing Facility with error - ${e}`);
+    //       throw e;
+    //     }
+    //     //I want to add the call to load the CCFRI fees here also..
+    //   }
+    // },
     newFacility({commit}) {
       commit('setFacilityId', null);
       commit('setFacilityModel', {});

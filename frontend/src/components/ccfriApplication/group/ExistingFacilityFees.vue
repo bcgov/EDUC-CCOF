@@ -133,7 +133,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['navBarList']),
-    ...mapState('facility', ['CCFRIFacilityModel']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
     
     findIndexOfFacility(){
@@ -159,7 +159,7 @@ export default {
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          
+
           //quick assumption that there will always be at least 2 child care types. TODO: add more logic to ensure a safe index
           //also perhaps we should get most recent fees (most recent program year) instead of just the first two in the array?
           const concatChildCareTypes = [this.CCFRIFacilityModel.childCareTypes[0], this.CCFRIFacilityModel.childCareTypes[1]];
@@ -176,7 +176,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('facility', ['loadCCFRIFacility']),  
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
     previous(){
       console.log(this.feeList);
       //this.$router.push(PATHS.ccfriHome);
