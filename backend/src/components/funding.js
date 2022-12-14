@@ -3,9 +3,10 @@ const { patchOperationWithObjectId, getOperationWithObjectId } = require('./util
 const HttpStatus = require('http-status-codes');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
+const {updateFacilityLicenseType} = require('./facility');
+const log = require('./logger');
 
 function mapFundingObjectForBack(data) {
-
   if (data.hasClosedMonth !== undefined) {
     
     data.hasClosedMonth = choiceForBack(data.hasClosedMonth);
@@ -32,6 +33,7 @@ function mapFundingObjectForBack(data) {
 
   return fundingForBack;
 }
+
 
 function mapFundingObjectForFront(data) {
   let fundingForFront = new MappableObjectForFront(data, CCOFApplicationFundingMapping).toJSON();
@@ -60,22 +62,26 @@ function choiceForFront(value) {
 async function updateFunding(req, res) {
   try {
     let fundId = req.params.fundId;
-
-    console.log('patch operation: ', `ccof_application_basefundings(${fundId})`);
-
+    let facilityId = req.body.facilityId;
+    delete req.body.facilityId;
+    log.verbose('patch operation: ', `ccof_application_basefundings(${fundId})`);
+    await updateFacilityLicenseType(facilityId, req.body);
     let payload = mapFundingObjectForBack(req.body);
     let response = await patchOperationWithObjectId('ccof_application_basefundings', fundId, payload);
     response = mapFundingObjectForFront(response);
-
+    // update to funding will not return back facilityId.  add it back!
+    // we will need it for further updates.
+    response.facilityId = facilityId;
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
+    log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 async function getFunding(req, res) {
   try {
-    console.info('get operation: ', `ccof_application_basefundings(${req.params.fundId})`);
+    log.info('get operation: ', `ccof_application_basefundings(${req.params.fundId})`);
     let funding = await getOperationWithObjectId('ccof_application_basefundings', req.params.fundId);
     let model = mapFundingObjectForFront(funding);
 
