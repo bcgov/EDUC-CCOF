@@ -136,26 +136,6 @@ async function clearActiveSession(req) {
   req.session.activeInstituteTitle = '';
 }
 
-async function removeUserSchoolAccess(req, res) {
-  try {
-    const token = getAccessToken(req);
-    validateAccessToken(token, res);
-    let permission = req.session.activeInstitutePermissions.includes('EDX_USER_SCHOOL_ADMIN');
-    if (req.session.activeInstituteIdentifier !== req.body.params.mincode || !permission) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
-
-    await deleteData(token, config.get('edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`, req.session.correlationID);
-
-    return res.status(HttpStatus.OK).json('');
-  } catch (e) {
-    log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove user school access.');
-    return errorResponse(res);
-  }
-}
 
 async function findPrimaryEdxActivationCode(req, res) {
   const token = getAccessToken(req);
@@ -191,7 +171,6 @@ module.exports = {
   downloadFile,
   uploadFile,
   deleteDocument,
-  removeUserSchoolAccess,
   findPrimaryEdxActivationCode,
   clearActiveSession
 };

@@ -27,7 +27,9 @@ export const ApiRoutes = Object.freeze({
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
-  FAMILY_ORGANIZATION: baseRoot + '/family/organization'
+  FAMILY_ORGANIZATION: baseRoot + '/family/organization',
+  APPLICATION_ECEWE: baseRoot + '/application/ecewe',
+  APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities'
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -36,7 +38,9 @@ export const PAGE_TITLES = Object.freeze({
   FRI_CALCULATOR: 'Fee Reduction Calculator',
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
-  CCRFI_APPLICATION: 'CCRFI Application Form'
+  CCRFI_APPLICATION: 'CCRFI Application Form',
+  ECEWE_APPLICATION: 'ECE-WE Application',
+  SUMMARY_DECLARATION: 'Summary and Declaration'
 });
 
 export const PATHS = {
@@ -61,10 +65,10 @@ export const PATHS = {
     eligibility: '/ccof-application/family/eligibility',
     fundAmount: '/ccof-application/family/funding',
   },
-  documentUpload: '/ecewe-document-upload',
+  eceweDocUpload: '/ecewe-document-upload',
   eceweEligibility: '/ecewe-eligibility',
   eceweFacilities: '/ecewe-facilities',
-  eceweSummary:  '/ecewe-summary'
+  summaryDeclaration:  '/summary-declaration'
 };
 
 export const NAV_BAR_GROUPS = {

@@ -2,7 +2,7 @@
 
 const passport = require('passport');
 const express = require('express');
-const { clearActiveSession, verifyRequest, downloadFile, uploadFile, deleteDocument, removeUserSchoolAccess, findPrimaryEdxActivationCode} = require('../components/secure');
+const { clearActiveSession, verifyRequest, downloadFile, uploadFile, deleteDocument, findPrimaryEdxActivationCode} = require('../components/secure');
 const { forwardGetReq } = require('../components/utils');
 const config = require('../config/index');
 const auth = require('../components/auth');
@@ -33,7 +33,6 @@ router.get('/exchange/:id/documents/:documentId/download/:fileName', auth.refres
 
 router.delete('/exchange/:id/documents/:documentId', passport.authenticate('jwt', {session: false}), isValidBackendToken, [verifyRequest, deleteDocument]);
 router.get('/users/clearActiveUserSession', passport.authenticate('jwt', {session: false}, undefined), isValidBackendToken, clearActiveSession) ;
-router.post('/users/remove', passport.authenticate('jwt', {session: false}, undefined), isValidBackendToken, removeUserSchoolAccess);
 router.get('/users/user-schools/mincodes', passport.authenticate('jwt', {session: false}, undefined), isValidBackendToken,
   (req, res) => forwardGetReq(req, res,`${config.get('edx:rootURL')}/users/user-schools/mincodes`)
 );

@@ -101,8 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete']),
-    ...mapState('organization', ['isOrganizationComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -275,7 +274,7 @@ export default {
               subTitle: item.facilityName,
               link: { name: 'Funding Amount Guid' , params: {urlGuid: item.ccofBaseFundingId}},
               isAccessible: true,
-              icon: this.getCheckbox(item.isFundingComplete),
+              icon: this.getCheckbox(item.isCCOFComplete),
               isActive: 'Funding Amount Guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId
             },
           );
@@ -335,7 +334,7 @@ export default {
       items.push(
         {
           title: 'Eligibility',
-          link: { name: 'ECEWE Eligibility', params: {urlGuid: this.userInfo?.applicationId}},
+          link: { name: 'ECEWE Eligibility'},
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           isActive: 'ECEWE Eligibility' === this.$route.name
@@ -344,7 +343,7 @@ export default {
       items.push(
         {
           title: 'Facility',
-          link: { name: 'ECEWE Facilities', params: {urlGuid: this.userInfo?.applicationId}},
+          link: { name: 'ECEWE Facilities'},
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           isActive: 'ECEWE Facilities' === this.$route.name
