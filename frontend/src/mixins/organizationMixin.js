@@ -24,6 +24,7 @@ export default {
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {
+      this.model = { ...this.organizationModel };
       return;
     }
 
