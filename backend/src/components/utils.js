@@ -119,28 +119,6 @@ function logResponse(methodName, response) {
   }
 }
 
-async function deleteData(token, url, correlationID) {
-  try {
-    const delConfig = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        correlationID: correlationID || uuidv4()
-      }
-    };
-
-    log.info('delete Data Url', url);
-    const response = await axios.delete(url, delConfig);
-    log.info(`delete Data Status for url ${url} :: is :: `, response.status);
-    log.info(`delete Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`delete Data Response for url ${url}  :: is :: `, minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('deleteData Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Delete error'}, e);
-  }
-}
 
 async function forwardGetReq(req, res, url) {
   try {
@@ -186,6 +164,24 @@ async function getData(token, url, correlationID) {
     log.error('getData Error', e.response ? e.response.status : e.message);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API Get error'}, e);
+  }
+}
+
+async function deleteOperationWithObjectId(operation, objectId) {
+  const operationWithObject = `${operation}(${objectId})`;
+  return await deleteOperation(operationWithObject);
+}
+
+async function deleteOperation(operation) {
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
+    log.info('delete Data Url', url);
+    const response = await axios.delete(url, getHttpHeader());
+    //logResponse('getOperation', response);
+    return response.data;
+  } catch (e) {
+    log.error('deleteOperation Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
@@ -462,7 +458,6 @@ const utils = {
   getUserGuid,
   isIdirUser,
   getUserName,
-  deleteData,
   forwardGetReq,
   getDataWithParams,
   getOperationWithObjectId,
@@ -482,7 +477,9 @@ const utils = {
   minify,
   getHttpHeader,
   getConstKey,
-  getLabelFromValue
+  getLabelFromValue,
+  deleteOperationWithObjectId,
+  deleteOperation
 };
 
 module.exports = utils;

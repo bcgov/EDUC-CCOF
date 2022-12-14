@@ -68,8 +68,10 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom12hr' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo12hr' },
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
-  { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCare' },
-  { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCare36' },
+  { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
+  { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
+  
+  { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
   { back: 'ccof_preschoolsessionmon', front: 'monday' },
@@ -99,6 +101,7 @@ const CCOFApplicationFundingMapping = [
   
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
   
 ];
 
