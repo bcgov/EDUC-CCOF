@@ -169,7 +169,7 @@ async function updateECEWEApplication(req, res) {
   application = application.toJSON();
   application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
   try {
-    log.info(application);
+    log.verbose('updateECEWEApplication: payload', application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {

@@ -41,13 +41,9 @@ async function getUserInfo(req, res) {
     userName: getUserName(req),
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
-    organizationName: null,
-    organizationId:  null,
-    applicationId: null,
-    applicationStatus: null,
+    serverTime: new Date(),
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: false, 
-    facilityList: [],
   };
   let userGuid = undefined;
   if (isIdir) {
@@ -158,9 +154,9 @@ function parseFacilityData(userResponse) {
   facilityMap.forEach((facility) => {
     if (!_.isEmpty(facility)) {
       facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
-      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
+      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES, 'NEW');
       facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
-      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES);
+      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES, 'NEW');
       facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
       facilityList.push(facility);
     }
