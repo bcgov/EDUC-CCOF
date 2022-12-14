@@ -125,7 +125,6 @@ async function updateFacilityLicenseType(facilityId, data) {
   
   // Figure out new License categories from data form
   let newLicenseCategories = [];
-  log.info('updateFacilityLicenseType DATA: ', data);
   if (data.maxGroupChildCareUnder36 > 0) {
     newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid);
   }
@@ -144,32 +143,32 @@ async function updateFacilityLicenseType(facilityId, data) {
 
   // Find the current License Categories associated with this facility
   let toDelete = [];
-  log.info('New license categories: ', newLicenseCategories);
+  log.verbose('New license categories: ', newLicenseCategories);
   try {
     let currentCategoryList = await getOperation(`ccof_facility_licenseses?$select=ccof_facility_licensesid,_ccof_licensecategory_value,_ccof_facility_value&$filter=_ccof_facility_value eq '${facilityId}'`);
     currentCategoryList = currentCategoryList.value;
-    log.info('current categories: ', currentCategoryList);
+    log.verbose('current categories: ', currentCategoryList);
     if (currentCategoryList?.length) {
       currentCategoryList.forEach(currentItem => {
         let index = newLicenseCategories.indexOf(currentItem._ccof_licensecategory_value);
         if (index > -1) {
           // item found, so no need to add it, remove for list
-          log.info(`Found category for ${currentItem._ccof_licensecategory_value}, removing it from newLicenseCategories`);
+          log.verbose(`Found category for ${currentItem._ccof_licensecategory_value}, removing it from newLicenseCategories`);
           newLicenseCategories.splice(index, 1);
         } else {
           // item not in new list, so delete from current
-          log.info(`Did not find category for ${currentItem._ccof_licensecategory_value}, adding it toDelete list`);
+          log.verbose(`Did not find category for ${currentItem._ccof_licensecategory_value}, adding it toDelete list`);
           toDelete.push(currentItem.ccof_facility_licensesid);
         }
       });
     }
     // delete old unneeded categories
-    log.info(`Number of items to delete: [${toDelete.length}]`);
+    log.verbose(`Number of items to delete: [${toDelete.length}]`);
     toDelete.forEach( async itemId =>  {
       await deleteOperationWithObjectId('ccof_facility_licenseses', itemId);
     });
     // add new reccords
-    log.info(`Number of items to add: [${newLicenseCategories.length}]`);
+    log.verbose(`Number of items to add: [${newLicenseCategories.length}]`);
     newLicenseCategories.forEach ( async item => {
       await postOperation('ccof_facility_licenseses', {
         'ccof_LicenseCategory@odata.bind': `/ccof_license_categories(${item})`,
@@ -206,10 +205,10 @@ async function createFacility(req, res) {
 async function updateFacility(req, res) {
   let facility = mapFacilityObjectForBack(req.body);
   try {
-    log.info('updateFacility: Payload is: ', minify(facility));
+    log.verbose('updateFacility: Payload is: ', minify(facility));
     let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
     response = mapFacilityObjectForFront(response);
-    log.info('updateFacility: Response is: ', minify(response));
+    log.verbose('updateFacility: Response is: ', minify(response));
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );

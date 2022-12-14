@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 const {updateFacilityLicenseType} = require('./facility');
+const log = require('./logger');
 
 function mapFundingObjectForBack(data) {
   if (data.hasClosedMonth !== undefined) {
@@ -63,11 +64,9 @@ async function updateFunding(req, res) {
     let fundId = req.params.fundId;
     let facilityId = req.body.facilityId;
     delete req.body.facilityId;
-    console.log('patch operation: ', `ccof_application_basefundings(${fundId})`);
-    console.log('patch operation facilityID: ', facilityId);
+    log.verbose('patch operation: ', `ccof_application_basefundings(${fundId})`);
     await updateFacilityLicenseType(facilityId, req.body);
     let payload = mapFundingObjectForBack(req.body);
-    console.log('patch operation: ', `ccof_application_basefundings(${payload.toJSON})`);
     let response = await patchOperationWithObjectId('ccof_application_basefundings', fundId, payload);
     response = mapFundingObjectForFront(response);
     // update to funding will not return back facilityId.  add it back!
@@ -75,14 +74,14 @@ async function updateFunding(req, res) {
     response.facilityId = facilityId;
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
-    console.log('error', e);
+    log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 async function getFunding(req, res) {
   try {
-    console.info('get operation: ', `ccof_application_basefundings(${req.params.fundId})`);
+    log.info('get operation: ', `ccof_application_basefundings(${req.params.fundId})`);
     let funding = await getOperationWithObjectId('ccof_application_basefundings', req.params.fundId);
     let model = mapFundingObjectForFront(funding);
 
