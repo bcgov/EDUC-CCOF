@@ -173,5 +173,5 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
-  getCCFRIApplication
+  //getCCFRIApplication
 };
