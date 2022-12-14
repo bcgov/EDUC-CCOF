@@ -11,27 +11,26 @@ const { info } = require('./logger');
 const { loadFiles } = require('../config/index');
 
 
-//I think we most likely can take this out 
-async function getCCFRIApplication(req,res) {
+//I think we most likely can take this out -- I get info from the CCFRI application now 
+// async function getCCFRIApplication(req,res) {
 
-  log.info(req.params.ccfriId);
+//   log.info(req.params.ccfriId);
 
-  try {
-    let response = await getOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
+//   try {
+//     let response = await getOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
 
-    log.info('teh');
-    log.info(response);
+//     log.info(response);
 
-    //use mappable objects here?
-    const payload = {
-      facilityId : response._ccof_facility_value,
-    };
-    return res.status(HttpStatus.OK).json(payload);
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
-}
+//     //use mappable objects here?
+//     const payload = {
+//       facilityId : response._ccof_facility_value,
+//     };
+//     return res.status(HttpStatus.OK).json(payload);
+//   } catch (e) {
+//     log.error(e);
+//     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+//   }
+// }
 
 //creates or updates CCFRI application. TODO: add a post function!
 async function updateCCFRIApplication(req, res) {
@@ -44,7 +43,7 @@ async function updateCCFRIApplication(req, res) {
     
     log.info(payload);
     let url = `_ccof_application_value=${facility.applicationID},_ccof_facility_value=${facility.facilityID}`;
-    log.info(' brrrr', url);
+    log.info(' updateURL: ', url);
 
     try {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
