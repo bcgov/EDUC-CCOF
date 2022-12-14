@@ -3,7 +3,7 @@ const {getOperation, getLabelFromValue, minify} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const _ = require ('lodash');
 const cache = require('memory-cache');
-const { PROGRAM_YEAR_STATUS_CODES } = require('../util/constants');
+const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { ProgramYearMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const log = require('./logger');
@@ -63,11 +63,10 @@ async function getLicenseCategory() {
   let resData = lookupCache.get('licenseCategory');
   if (!resData) {
     resData = {};
-    const GROUP_FAMILIY_DIVIDER = 4; // The license category list has both family and group licenses.  Category number 4 and below are Group,
     let licenseCategory = await getOperation('ccof_license_categories');
-    licenseCategory = licenseCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_license_categoryid', 'ccof_name', 'ccof_categorynumber']); });
-    resData.groupLicenseCategory = licenseCategory.filter( item => item.ccof_categorynumber <= GROUP_FAMILIY_DIVIDER).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
-    resData.familiyLicenseCategory = licenseCategory.filter( item => item.ccof_categorynumber > GROUP_FAMILIY_DIVIDER).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    licenseCategory = licenseCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_license_categoryid', 'ccof_providertype', 'ccof_name', 'ccof_categorynumber']); });
+    resData.groupLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.GROUP).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    resData.familiyLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.FAMILY).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
     lookupCache.put('licenseCategory', resData, 60 * 60 * 1000);
   }
   return resData;

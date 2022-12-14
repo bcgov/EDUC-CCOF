@@ -124,21 +124,24 @@ async function updateFacilityLicenseType(facilityId, data) {
   let groupLicenseCategory = categories.groupLicenseCategory;
   
   // Figure out new License categories from data form
-  let newLicenseCategories = []; //TODO: verify the mappings
+  let newLicenseCategories = [];
   log.info('updateFacilityLicenseType DATA: ', data);
-  if (data.maxGroupChildCare && data.maxGroupChildCare > 0) {
-    // licenseCategories.push({'ccof_LicenseCategory@odata.bind':`/ccof_license_categories(${groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid})`});
+  if (data.maxGroupChildCareUnder36 > 0) {
     newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid);
   }
-  if (data.maxGroupChildCare36 && data.maxGroupChildCare36 > 0) {
+  if (data.maxGroupChildCare36 > 0) {
     newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 2).ccof_license_categoryid);
   }
-  if (data.maxPreschool && data.maxPreschool > 0) {
+  if (data.maxGroupChildCareMultiAge > 0) {
     newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3).ccof_license_categoryid);
   }
-  if (data.maxGroupChildCareSchool && data.maxGroupChildCareSchool > 0) {
-    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 4).ccof_license_categoryid);
+  if (data.maxGroupChildCareSchool > 0) {
+    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 7).ccof_license_categoryid);
   }
+  if (data.maxPreschool > 0) {
+    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 8).ccof_license_categoryid);
+  }
+
   // Find the current License Categories associated with this facility
   let toDelete = [];
   log.info('New license categories: ', newLicenseCategories);
@@ -169,10 +172,11 @@ async function updateFacilityLicenseType(facilityId, data) {
     log.info(`Number of items to add: [${newLicenseCategories.length}]`);
     newLicenseCategories.forEach ( async item => {
       await postOperation('ccof_facility_licenseses', {
-        _ccof_licensecategory_value: item,
-        _ccof_facility_value: facilityId
+        'ccof_LicenseCategory@odata.bind': `/ccof_license_categories(${item})`,
+        'ccof_Facility@odata.bind': `/accounts(${facilityId})`
       });
     });
+
   } catch (e) {
     console.log('Error while trying to get list of FacilityLicenses.', e);
     throw e;

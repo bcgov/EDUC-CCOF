@@ -6,7 +6,6 @@ const { CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 const {updateFacilityLicenseType} = require('./facility');
 
 function mapFundingObjectForBack(data) {
-  console.log('why???', data);
   if (data.hasClosedMonth !== undefined) {
     
     data.hasClosedMonth = choiceForBack(data.hasClosedMonth);
@@ -71,7 +70,9 @@ async function updateFunding(req, res) {
     console.log('patch operation: ', `ccof_application_basefundings(${payload.toJSON})`);
     let response = await patchOperationWithObjectId('ccof_application_basefundings', fundId, payload);
     response = mapFundingObjectForFront(response);
-
+    // update to funding will not return back facilityId.  add it back!
+    // we will need it for further updates.
+    response.facilityId = facilityId;
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     console.log('error', e);
