@@ -6,7 +6,6 @@
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
       </v-row>
-
       <v-row justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
@@ -170,8 +169,8 @@
 
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-show="q2BelongsToUnion" :disabled="this.disableNextBtn" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn v-show="q2BelongsToUnion" :disabled="this.disableSaveBtn" color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn v-show="q2BelongsToUnion" :disabled="!this.q1OptInECEWE" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn v-show="q2BelongsToUnion" :disabled="!this.q1OptInECEWE" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -189,41 +188,13 @@ export default {
     return {
       showNextBtn: false,
       showSaveBtn: false,
-      disableNextBtn: true,
-      disableSaveBtn: true,
-      row: ''
+      row: '' //TODO: do we need this?
     };
-  },
-  watch: {
-    '$route.params.urlGuid': {
-      handler() {
-        this.applicationId = this.$route.params.urlGuid;
-        if (this.applicationId) {
-          this.loadData().then(() => {
-            this.initECEWEFacilities(this.navBarList);
-          });
-        }
-      },
-      immediate: true,
-      deep: true
-    },
-    'q1OptInECEWE': {
-      handler() {
-        this.disableNextBtn = (this.q1OptInECEWE) ? false : true;
-        this.disableSaveBtn = (this.q1OptInECEWE) ? false : true;
-      },
-      immediate: true,
-      deep: true
-    },
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted']),
     ...mapState('app', ['navBarList']),
-    applicationId: {
-      get() { return this.$store.state.eceweApp.applicationId; },
-      set(value) { this.$store.commit('eceweApp/setApplicationId', value); }
-    },
     q1OptInECEWE: {
       get() { return this.$store.state.eceweApp.q1OptInECEWE; },
       set(value) { this.$store.commit('eceweApp/setQ1OptInECEWE', value); }
@@ -245,7 +216,10 @@ export default {
       set (value) { this.$store.commit('organization/setIsValidForm', value); }
     }
   },
-  mounted() {},
+  beforeMount() {
+    this.loadData().then(() => this.initECEWEFacilities(this.navBarList));
+
+  },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities']),
     ...mapMutations('eceweApp', ['setIsStarted']),
@@ -253,10 +227,10 @@ export default {
       if (this.isStarted) {
         return;
       }
-      if (this.applicationId) {
+      if (this.userInfo.applicationId) {
         this.processing = true;
         try {
-          await this.loadECEWE(this.applicationId);
+          await this.loadECEWE(this.userInfo.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
@@ -297,5 +271,6 @@ export default {
   }
 };
 </script>
-  
-<style></style>
+//TODO: add the styles here, prefix ECEWE on filenames
+<style>
+</style>

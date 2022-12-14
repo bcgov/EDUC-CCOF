@@ -115,7 +115,7 @@
 <script>
   
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -126,33 +126,19 @@ export default {
       updateMode: '',
     };
   },
-  watch: {
-    '$route.params.urlGuid': {
-      handler() {
-        this.applicationId = this.$route.params.urlGuid;
-        if (this.applicationId) {
-          this.loadData().then(() => {
-            this.initECEWEFacilities(this.navBarList);
-          });
-        }
-      },
-      immediate: true,
-      deep: true
-    },
-  },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList']),
-    applicationId: {
-      get() { return this.$store.state.eceweApp.applicationId; },
-      set(value) { this.$store.commit('eceweApp/setApplicationId', value); }
-    },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     }
   },
-  beforeMount() {},
+  beforeMount() {
+    this.loadData().then(() => {
+      this.initECEWEFacilities(this.navBarList);
+    });
+  },
   mounted() {},
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
@@ -169,10 +155,10 @@ export default {
       if (this.isStarted) {
         return;
       }
-      if (this.applicationId) {
+      if (this.userInfo.applicationId) {
         this.processing = true;
         try {
-          await this.loadECEWE(this.applicationId);
+          await this.loadECEWE(this.userInfo.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
@@ -192,5 +178,7 @@ export default {
   }
 };
 </script>
-
-<style></style>
+//TODO add styles here and add prefex ECEWE to filename
+<style>
+  
+</style>
