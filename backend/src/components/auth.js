@@ -36,6 +36,8 @@ const auth = {
     let result = {};
     let clientId = isIdirUser? config.get('oidc:clientIdIDIR') : config.get('oidc:clientId');
     let clientSecret = isIdirUser? config.get('oidc:clientSecretIDIR') : config.get('oidc:clientId');
+    log.info('using client :: ', clientId);
+    log.info('using secret :: ', clientSecret);
     try {
       const discovery = await utils.getOidcDiscovery();
       const response = await axios.post(discovery.token_endpoint,
