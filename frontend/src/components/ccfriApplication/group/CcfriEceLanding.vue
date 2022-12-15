@@ -158,7 +158,7 @@ export default {
       if (firstOptInFacility === -1){
         for (let i = 0; i < this.navBarList.length; i++) {
           //elemnt is true if update button has been clicked. 
-          if (this.navBarList[i].ccfriOptInStatus ==='IN'){
+          if (this.navBarList[i].ccfriOptInStatus == 1){
             firstOptInFacility = i;
             break;
           }
