@@ -164,13 +164,11 @@ export default {
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
         }
-
         await this.createTable();
         this.setSuccessAlert('Changes Successfully Saved');
       } catch (e) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
-        await this.createTable();
         this.processing = false;
       }
     },
@@ -212,7 +210,7 @@ export default {
           const doc = {
             filename: getFileNameWithMaxNameLength(file.name),
             filesize: file.size,
-            documentbody: Buffer.from(reader.result).toString('base64')
+            documentbody: window.btoa(reader.result)
           };
           resolve(doc);
         };
