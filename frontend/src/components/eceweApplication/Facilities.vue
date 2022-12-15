@@ -157,14 +157,12 @@ export default {
         return;
       }
       if (this.userInfo.applicationId) {
-        this.processing = true;
         try {
           await this.loadECEWE(this.userInfo.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
-        this.processing = false;
       }
     },
     async saveFacilities() {

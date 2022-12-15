@@ -312,6 +312,7 @@ export default {
     ...mapActions('groupFunding', ['saveFunding', 'loadFunding', 'fundingId']),
     ...mapMutations('groupFunding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
+    
     previous() {
       let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
       this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);

@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -116,6 +116,15 @@ export default {
         return '50%';
       default:
         return '15%';
+      }
+    },
+    ccofConfirmationEnabled() {
+      if (this.navBarList?.length > 0 
+        && this.navBarList[this.navBarList.length - 1].isFacilityComplete
+        && this.navBarList[this.navBarList.length - 1].isCCOFComplete) {
+        return true;
+      } else {
+        return false;
       }
     }
 
