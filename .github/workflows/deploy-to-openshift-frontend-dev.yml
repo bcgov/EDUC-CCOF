@@ -49,7 +49,7 @@ jobs:
   openshift-ci-cd:
     name: Build and deploy Frontend to DEV
     # ubuntu-20.04 can also be used.
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     environment: dev
 
     outputs:
