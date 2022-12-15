@@ -102,12 +102,6 @@ export default {
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
     },
-    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
-      state.ccofApplicationComplete = ccofApplicationComplete;
-    },
-    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
-      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
-    },
     setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
       state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
     }
