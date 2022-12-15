@@ -35,7 +35,7 @@ const auth = {
     log.info('Attempting to renew token user isIderUser :: ', isIdirUser);
     let result = {};
     let clientId = isIdirUser? config.get('oidc:clientIdIDIR') : config.get('oidc:clientId');
-    let clientSecret = isIdirUser? config.get('oidc:clientSecretIDIR') : config.get('oidc:clientId');
+    let clientSecret = isIdirUser? config.get('oidc:clientSecretIDIR') : config.get('oidc:clientSecret');
     log.info('using client :: ', clientId);
     log.info('using secret :: ', clientSecret);
     try {
