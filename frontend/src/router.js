@@ -43,6 +43,7 @@ import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFee
 
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
 import SummaryDeclaration from '@/components/SummaryDeclaration';
+import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 
 Vue.prototype.moment = moment;
 
@@ -133,7 +134,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-    
+
     {
       path: PATHS.family.eligibility,
       name: 'Eligibility',
@@ -212,6 +213,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.group.licenseUpload,
+      name: 'License Upload',
+      component: LicenseUpload,
+      meta: {
+        pageTitle: 'License Upload',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.group.renewOrganization,
       name: 'Renew Organization',
       component: RenewOrganization,
@@ -273,7 +285,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: true        
+        showNavBar: true
       }
     },
     {
