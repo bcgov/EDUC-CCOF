@@ -49,23 +49,22 @@ export default {
     ...mapState('app', ['navBarList']),
   },
   methods: {
-    ...mapMutations('app', ['setCcofApplicationComplete', 'setCcofConfirmationEnabled']),    
+    ...mapMutations('app', ['setCcofApplicationComplete', 'setCcofConfirmationEnabled']),
     previous() {
       let navItem = this.navBarList[this.navBarList.length - 1];
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
-    addAnotherFacility() { 
+    addAnotherFacility() {
       this.$router.push(PATHS.group.facInfo);
     },
     next() {
       this.setCcofApplicationComplete(true);
-      console.log('next: ', PATHS.ccfriHome);
-      this.$router.push(PATHS.ccfriHome);
+      this.$router.push(PATHS.group.licenseUpload);
     }
   },
   mounted() {
     this.setCcofConfirmationEnabled(true);
   },
-    
+
 };
 </script>
