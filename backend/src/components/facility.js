@@ -1,6 +1,8 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader} = require('./utils');
 const HttpStatus = require('http-status-codes');
+const axios = require('axios');
+const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
@@ -87,6 +89,29 @@ async function getFacility(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
+
+async function getLicenseCategories(req, res){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Facility?id=' + req.params.facilityId;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    let map = new Map();
+    response.data.value.forEach(item => {
+      map.set(item['CareType.ccof_childcare_categoryid'], {
+        childCareCategoryId: item['CareType.ccof_childcare_categoryid'],
+        childCareCategoryName: item['CareType.ccof_name'],
+        licenseCategoryName: item['License.ccof_name'],
+        childCareCategory: item['License.ccof_name'], //TODO figure out display name
+      });
+    });
+    return res.status(HttpStatus.OK).json(Array.from(map.values()));
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+
+  }
+}
+
 
 async function getFacilityChildCareTypes(req, res){
   try {
@@ -239,6 +264,6 @@ module.exports = {
   getFacilityChildCareTypes,
   createFacility,
   updateFacility,
-  updateFacilityLicenseType
+  getLicenseCategories
 };
 

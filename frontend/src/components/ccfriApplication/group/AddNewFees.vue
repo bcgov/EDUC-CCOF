@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({key, programYear, childCareCategory,} , index) in CCFRIFacilityModel.childCareTypes" :key="index"
+      v-for="({programYear, childCareCategory,} , index) in ccfriChildCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -401,6 +401,7 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal']),
+    ...mapState('facility', ['ccfriChildCareTypes']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
 
@@ -421,8 +422,9 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
+          this.childCareTypes = await this.loadFacilityCareTypes(this.currentFacility.facilityId);
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          this.childCareTypes = this.CCFRIFacilityModel.childCareTypes;
+          
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -434,8 +436,13 @@ export default {
     }
   },
   methods: {
+<<<<<<< HEAD
     ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
+=======
+    ...mapActions('facility', ['loadFacilityCareTypes']),    
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),    
+>>>>>>> f364469f110289f778a7e90abb41920884418a8d
     addDate(){
       dates.push({
         message: this.model.closureReason,

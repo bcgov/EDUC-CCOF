@@ -19,7 +19,6 @@
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
                   <!-- <p class="text--primary"> Licence : 123456789</p>  add back in when license number is in userProfile-->
-                  <p class="text--primary " min-width="250px" >Status: {{ccfriStatus == undefined ? "NOT STARTED" : ccfriStatus}}</p>
                   <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN" : ccfriOptInStatus == "1" ? "IN" : "OUT" }}</p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
@@ -121,7 +120,7 @@ export default {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete']), 
+    ...mapMutations('app', ['setCcfriOptInComplete', 'refreshNavBar']), 
     ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
@@ -194,7 +193,8 @@ export default {
         payload.push( {
           applicationID : this.userInfo.applicationId, //CCOF BASE application ID
           facilityID : this.navBarList[i].facilityId, 
-          optInResponse: this.ccfriOptInOrOut[i] 
+          optInResponse: this.ccfriOptInOrOut[i],
+          ccfriApplicationId: this.navBarList[i].ccfriApplicationId
         });
 
         console.log(payload);
@@ -203,14 +203,21 @@ export default {
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
         console.log(response);
+        response.data.forEach(item => {
+          if (item.ccfriApplicationId) {
+            this.navBarList.find(facility => {
+              if (facility.facilityId == item.facilityId) {
+                facility.ccfriApplicationId = item.ccfriApplicationId;
+              }
+            });
+          }
+        });
+        this.refreshNavBar();
         this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
       } catch (error) {
         console.info(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
-      
-      location.reload(true);  //I feel like you won't like this Rob, but I could not get the timing to work out with the Nav bar
-
       this.processing = false;
     },
     

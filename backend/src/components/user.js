@@ -159,7 +159,6 @@ function parseFacilityData(userResponse) {
     if (!_.isEmpty(facility)) {
       facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
       facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES);
-      facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
       facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES);
       facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
       facilityList.push(facility);
