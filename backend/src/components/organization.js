@@ -47,7 +47,7 @@ async function createOrganization(req, res) {
     const userGuid = getUserGuid(req);
     let organization = req.body;
     let programYear = '/ccof_program_years(' + organization.programYearId + ')';
-    let providerType = organization.programYear;
+    let { providerType } = organization;
     organization = mapOrganizationForBack(organization);
 
     organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
