@@ -65,6 +65,7 @@ const auth = {
       }
     } catch (error) {
       log.error('renew', error.message);
+      log.error('renew', error);
       result = error.response && error.response.data;
     }
 
