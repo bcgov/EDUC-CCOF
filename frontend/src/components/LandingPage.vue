@@ -25,10 +25,10 @@
               <br>
               <v-btn absolute bottom dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
           </SmallCard>
-          <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
+          <!-- <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
             <br>
             <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
-          </SmallCard>
+          </SmallCard> -->
           <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
               <br>
               <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
@@ -140,7 +140,13 @@ export default {
     continueApplication() {
       this.setIsRenewal(false);
       this.$router.push(PATHS.group.orgInfo);
-    }    
+    } ,
+    goToRFI(){
+      this.$router.push(PATHS.ccfriRequestMoreInfo);
+    },
+    goToCCFRI() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },   
   },
   
 
