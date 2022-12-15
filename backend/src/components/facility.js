@@ -1,9 +1,11 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader} = require('./utils');
 const HttpStatus = require('http-status-codes');
+const axios = require('axios');
+const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { FacilityMappings } = require('../util/mapping/Mappings');
+const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
@@ -58,60 +60,102 @@ function mapFacilityObjectForFront(data) {
     data.ccof_facilitystartdate = year;
   }
 
-  return new MappableObjectForFront(data, FacilityMappings).toJSON();
+  return new MappableObjectForFront(data, FacilityMappings).toJSON(); ///switching this to ccfri - maybe we need to build a seperate fn 
+}
+
+function mapCCFRIObjectForFront(data) { 
+  // if (data.ccof_facilitystartdate) {
+  //   let year = data.ccof_facilitystartdate.split('-')[0];
+  //   data.ccof_facilitystartdate = year;
+  // } don't think we neeed this but lets see 
+
+  return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON(); ///switching this to ccfri - maybe we need to build a seperate fn 
 }
 
 async function getFacility(req, res) {
   try {
     // let operation = 'accounts('+req.params.facilityId+')?$select=accountid,address1_city,address1_line1,address1_postalcode,ccof_facilitylicencenumber,ccof_facilitystartdate,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,' + getMappingString(FacilityMappings) + '&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,' + getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
+    
     if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
     }
-    let childCareTypes = [];
-    facility.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
-      if (hasChildCareCategory(item)) {
-        childCareTypes.push(
-          {
-            childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-            programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
-            programYearId: item._ccof_programyear_value,
-            approvedFeeApr: item.ccof_apr,
-            approvedFeeAug: item.ccof_aug,
-            approvedFeeDec: item.ccof_dec,
-            approvedFeeFeb: item.ccof_feb,
-            approvedFeeJan: item.ccof_jan,
-            approvedFeeJul: item.ccof_jul,
-            approvedFeeJun: item.ccof_jun,
-            approvedFeeMar: item.ccof_mar,
-            approvedFeeMay: item.ccof_may,
-            approvedFeeNov: item.ccof_nov,
-            approvedFeeOct: item.ccof_oct,
-            approvedFeeSep: item.ccof_sep,
-            feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
-          }
-        );
-
-        //ugly I know- but I just need a way to make previous year dates appear for the demo tomorrow. Will change soon to pull the previous date from API
-        childCareTypes.push(
-          {
-            childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-            programYear: '2021/22 FY',
-            programYearId: 'fba5721b-9434-ed11-9db1-002248d53d53',
-          }
-        );
-
-      }
-
-    });
-    log.info('child care types: ', childCareTypes);
-
-    facility = mapFacilityObjectForFront(facility);
-    facility.childCareTypes = childCareTypes;
 
     return res.status(HttpStatus.OK).json(facility);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
+
+async function getLicenseCategories(req, res){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Facility?id=' + req.params.facilityId;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    let map = new Map();
+    response.data.value.forEach(item => {
+      map.set(item['CareType.ccof_childcare_categoryid'], {
+        childCareCategoryId: item['CareType.ccof_childcare_categoryid'],
+        childCareCategoryName: item['CareType.ccof_name'],
+        licenseCategoryName: item['License.ccof_name'],
+        childCareCategory: item['License.ccof_name'], //TODO figure out display name
+      });
+    });
+    return res.status(HttpStatus.OK).json(Array.from(map.values()));
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+
+  }
+}
+
+
+async function getFacilityChildCareTypes(req, res){
+  try {
+    //this is actually the CCFRI guid rn
+    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency)';
+    log.info('operation: ', operation);
+    let ccfriData = await getOperation(operation);
+    log.info('dataaaaaa', ccfriData);
+
+
+    let childCareTypes = [];
+    // let currentProgramYear;
+    ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
+      // if (hasChildCareCategory(item)) {
+      //currentProgramYear = item._ccof_programyear_value;
+      childCareTypes.push(
+        {
+          childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+          childCareCategoryId: item._ccof_childcarecategory_value,
+          programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
+          programYearId: item._ccof_programyear_value,
+          approvedFeeApr: item.ccof_apr ?? 0,
+          approvedFeeAug: item.ccof_aug,
+          approvedFeeDec: item.ccof_dec,
+          approvedFeeFeb: item.ccof_feb,
+          approvedFeeJan: item.ccof_jan,
+          approvedFeeJul: item.ccof_jul,
+          approvedFeeJun: item.ccof_jun,
+          approvedFeeMar: item.ccof_mar,
+          approvedFeeMay: item.ccof_may,
+          approvedFeeNov: item.ccof_nov,
+          approvedFeeOct: item.ccof_oct,
+          approvedFeeSep: item.ccof_sep,
+          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
+        }
+      );
+      // }
+    }); //end for each
+
+    ccfriData = mapCCFRIObjectForFront(ccfriData); //////
+
+    ccfriData.childCareTypes = childCareTypes;
+
+    return res.status(HttpStatus.OK).json(ccfriData);
   } catch (e) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
@@ -217,8 +261,9 @@ async function updateFacility(req, res) {
 
 module.exports = {
   getFacility,
+  getFacilityChildCareTypes,
   createFacility,
   updateFacility,
-  updateFacilityLicenseType
+  getLicenseCategories
 };
 

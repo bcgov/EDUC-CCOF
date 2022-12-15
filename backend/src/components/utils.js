@@ -193,6 +193,7 @@ async function getOperation(operation) {
     //logResponse('getOperation', response);
     return response.data;
   } catch (e) {
+    log.info(e);
     log.error('getOperation Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }

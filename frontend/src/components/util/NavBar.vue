@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'isOrganizationComplete','ccofLicenseUploadComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -129,6 +129,13 @@ export default {
       deep: true
     },
     navBarList: {
+      handler() {
+        this.refreshNavBar();
+      },
+      immediate: true,
+      deep: true
+    },
+    navBarRefresh: {
       handler() {
         this.refreshNavBar();
       },
@@ -177,7 +184,7 @@ export default {
       this.items.push(
         {
           title: 'Summary',
-          link: { name: 'ccfri-application' },
+          link: { name: 'landing-page' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           expanded: false,
@@ -204,25 +211,27 @@ export default {
           title: 'Opt in / Opt out',
           link: { name: 'ccfri-home'},
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.ccfriOptInComplete),
           isActive: 'ccfri-home' === this.$route.name
         },
 
       );
-      if (this.navBarList?.length > 0) { //TODO- only filter based on item.ccfriOptInStatus
+      if (this.navBarList?.length > 0) { 
         this.navBarList?.forEach((item, index) => {
-          items.push(
-            {
-              title: 'Parent Fees '+ (index + 1),
-              subTitle: item.facilityName,
-              id: item.facilityId,
-              link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId, ccfriFacilityGuid: item.facilityId}}, //TODO remove ccfriFaciliyGuid and load from getccfriApplication
-              isAccessible: true,
-              icon: 'mdi-checkbox-blank-circle-outline', //replace
-              isActive: 'ccfri-add-fees' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId
-              // function: this.loadFacility(x.id)
-            },
-          );
+          if (item.ccfriOptInStatus == 1){
+            items.push(
+              {
+                title: 'Parent Fees '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                isAccessible: true,
+                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
+                // function: this.loadFacility(x.id)
+              },
+            );
+          }
         });
       }
       let retval =   {

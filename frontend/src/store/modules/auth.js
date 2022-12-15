@@ -114,6 +114,8 @@ export default {
       // router.push(AuthRoutes.LOGOUT);
     },
     async getUserInfo({state, commit}){
+
+      console.log('getUserInfo called!');
       //This method is called by the router.
       //Only hit the API service if the info has not already been loaded.
       if (state.isUserInfoLoaded) {

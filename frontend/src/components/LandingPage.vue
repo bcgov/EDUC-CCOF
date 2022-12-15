@@ -8,6 +8,9 @@
         class="pa-10"
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
+
+        <v-btn @click="goToCCFRI()">CCFRI</v-btn>
+        <v-btn @click="goToRFI()">RFI</v-btn>
     </v-row >
      <!-- Application Approved screens starts here -->
     <v-container 
@@ -140,7 +143,13 @@ export default {
     continueApplication() {
       this.setIsRenewal(false);
       this.$router.push(PATHS.group.orgInfo);
-    }    
+    } ,
+    goToRFI(){
+      this.$router.push(PATHS.ccfriRequestMoreInfo);
+    },
+    goToCCFRI() {
+      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    },   
   },
   
 
