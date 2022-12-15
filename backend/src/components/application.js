@@ -38,14 +38,15 @@ const { loadFiles } = require('../config/index');
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
   let retVal= [];
-  await Promise.all(body.map(async(facility) => { 
-    let payload = {
-      'ccof_ccfrioptin' : facility.optInResponse,
-      'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-      'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
-    };
-    log.info(payload);
-    try {
+  try {
+    await Promise.all(body.map(async(facility) => { 
+      let payload = {
+        'ccof_ccfrioptin' : facility.optInResponse,
+        'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
+        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
+      };
+      log.info(payload);
+
       let response = undefined;
       if (facility.ccfriApplicationId) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
@@ -60,11 +61,12 @@ async function updateCCFRIApplication(req, res) {
         });
       }
       log.info('res data:' , response);
-    } catch (e) {
-      log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-    }
-  })); //end for each
+    })); //end for each
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+
   return res.status(HttpStatus.OK).json(retVal);
 }
 

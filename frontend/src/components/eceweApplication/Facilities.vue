@@ -107,7 +107,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="saveFacilities()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="saveFacilities()">Save</v-btn>
       </v-row>
     </v-container>
   </template>
@@ -124,6 +124,7 @@ export default {
     return {
       row: '',
       updateMode: '',
+      processing: false,
     };
   },
   computed: {
@@ -156,17 +157,16 @@ export default {
         return;
       }
       if (this.userInfo.applicationId) {
-        this.processing = true;
         try {
           await this.loadECEWE(this.userInfo.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
-        this.processing = false;
       }
     },
     async saveFacilities() {
+      this.processing = true;
       try {
         await this.saveECEWEFacilities();
         this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');

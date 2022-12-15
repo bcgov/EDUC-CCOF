@@ -165,7 +165,6 @@ const UserProfileCCFRIMappings = [
   { back: 'CCFRI.statuscode', front: 'ccfriStatus' },
   { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus' },
   { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
-  { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: 'CCFRI.ccof_facility', front: 'ccfriFacilityId' },
   { back: 'CCFRI.ccof_formcomplete', front: 'isCCFRIComplete' },
   { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
