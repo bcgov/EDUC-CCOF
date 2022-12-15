@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
@@ -82,7 +82,7 @@ async function getFacility(req, res) {
     if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
     }
-
+    facility = mapFacilityObjectForFront(facility);
     return res.status(HttpStatus.OK).json(facility);
   } catch (e) {
     log.error('failed with error', e);
@@ -264,6 +264,7 @@ module.exports = {
   getFacilityChildCareTypes,
   createFacility,
   updateFacility,
-  getLicenseCategories
+  getLicenseCategories,
+  updateFacilityLicenseType
 };
 

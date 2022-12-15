@@ -42,6 +42,7 @@ function parseProgramYear(value) {
   let programYears = {
     current: undefined,
     future: undefined,
+    previous: undefined,
     list: []
   };
   value.forEach(item => {
@@ -55,6 +56,7 @@ function parseProgramYear(value) {
     }
     programYears.list.push(p);
   });
+  programYears.previous = programYears.list.find(p => p.programYearId == programYears.current.previousYearId);
   programYears.list.sort((a,b) => { return b.order - a.order; } );
   return programYears;
 }
@@ -84,10 +86,7 @@ async function getLookupInfo(req, res) {
   let resData = lookupCache.get('lookups');
   if (!resData) {
     let programYear = await getOperation('ccof_program_years');
-    programYear = programYear.value;
-    // function without filter 
-    programYear = programYear.map(item => { return _(item).pick(['ccof_name', 'ccof_program_yearid', 'statuscode']); });
-    //programYear = programYear.filter(item => item.statuscode ==1 || item.statuscode ==4).map(item => { return _.pick(item, ['ccof_name', 'ccof_program_yearid']); });
+    programYear = parseProgramYear(programYear.value);
 
     let childCareCategory = await getOperation('ccof_childcare_categories');
     childCareCategory = childCareCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']); });
