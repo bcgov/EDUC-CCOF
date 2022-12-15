@@ -135,12 +135,12 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
-    ...mapMutations('app', ['setCCOFLicenseUploadComplete']),
+    ...mapMutations('app', ['setCcofLicenseUploadComplete']),
     previous() {
       this.$router.push(PATHS.group.confirmation);
     },
     next() {
-      this.setCCOFLicenseUploadComplete(true);
+      this.setCcofLicenseUploadComplete(true);
       this.$router.push(PATHS.ccfriHome);
     },
     deleteFile(item) {

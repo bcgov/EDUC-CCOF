@@ -10,7 +10,7 @@ export default {
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
     isOrganizationComplete: false,
-    cCOFLicenseUploadComplete:false,
+    ccofLicenseUploadComplete:false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
     //Notification Details
@@ -93,8 +93,8 @@ export default {
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
-    setCCOFLicenseUploadComplete:(state, cCOFLicenseUploadComplete) => {
-      state.cCOFLicenseUploadComplete = cCOFLicenseUploadComplete;
+    setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
+      state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
     }
   },
   getters: {
