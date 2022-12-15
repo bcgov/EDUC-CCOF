@@ -53,11 +53,6 @@ export default {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
           commit('setCCFRIFacilityModel', response.data);
-          //commit('model', response.data);
-
-          //console.log('model is: ', getters.getModel()); //?
-          return response;
-
         } catch(e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
           throw e;

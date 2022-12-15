@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({programYear, childCareCategory,} , index) in ccfriChildCareTypes" :key="index"
+      v-for="({programYear, childCareCategoryName,} , index) in ccfriChildCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -33,7 +33,7 @@
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
-                Parent Fees {{programYear}}: Full-Time {{childCareCategory}}
+                Parent Fees {{programYear}}: Full-Time {{childCareCategoryName}}
               </p>
             </div>
             <div class="px-md-12 px-7">
@@ -135,13 +135,6 @@
             </div>
           </v-card-text>
       </v-card>
-
-      
-      
-
-
-
-
       <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
         rounded
@@ -289,9 +282,6 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import axios from 'axios';
-
-import _ from 'lodash';
 
 let dates = [];
 let datePicker= null;          //vmodel for entering closure fees
@@ -424,7 +414,7 @@ export default {
         try {
           await this.loadFacilityCareTypes(this.currentFacility.facilityId);
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          
+          loadToScreen();
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -433,7 +423,7 @@ export default {
       },
       immediate: true,
       deep: true
-    }
+    },
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes']),  
@@ -479,6 +469,9 @@ export default {
       this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
       //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
+    loadToScreen() {
+
+    },
     async save () {
       this.processing = true;
       let payload = [];
@@ -489,44 +482,39 @@ export default {
       //for each child care type - send a request. 
 
       //index will also match the order of how the cards are displayed. 
-      this.CCFRIFacilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
-
-        //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
-        let childCareCatGUID = _.find(this.lookupInfo.childCareCategory, {ccof_description : childCareType.childCareCategory });
-
-        if (childCareCatGUID){
-          childCareCatGUID = childCareCatGUID.ccof_childcare_categoryid;
-        }
-
+      this.ccfriChildCareTypes.forEach (async (item, index) => { // FOR EACH the date groups?
+        if (model.feeSchedule[index]) {
         //payload will need to look different if fee is monthly / daily 
-        payload[index] = {
-          ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
-          childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
-          programYear : childCareType.programYearId,//program year GUID,
-          facilityClosureDates: dates,
-          notes: this.model.notes
-        };
+          payload[index] = {
+            ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
+            childCareCategory : item.childCareCategoryId,
+            programYear : item.programYearId,
+            facilityClosureDates: dates,
+            notes: this.model.notes
+          };
 
-        console.log(this.model.notes);
+          console.log(this.model.notes);
 
-        payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000' : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
-  
-        Object.assign(payload[index], 
-          {
-            //aprFee : childCareTypes[index].approvedFeeApr,
-            mayFee : may[index],
-            junFee : jun[index],
-            julFee : jul[index],
-            augFee : aug[index],
-            sepFee : sep[index],
-            octFee : oct[index],
-            novFee : nov[index],
-            decFee : dec[index],
-            janFee : jan[index],
-            febFee : feb[index],
-            marFee : mar[index],
-          }
-        );
+          payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000' : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
+    
+          Object.assign(payload[index], 
+            {
+              aprFee : apr[index],
+              mayFee : may[index],
+              junFee : jun[index],
+              julFee : jul[index],
+              augFee : aug[index],
+              sepFee : sep[index],
+              octFee : oct[index],
+              novFee : nov[index],
+              decFee : dec[index],
+              janFee : jan[index],
+              febFee : feb[index],
+              marFee : mar[index],
+            }
+          );
+
+        }
 
       }); // end FOR EACH
 
