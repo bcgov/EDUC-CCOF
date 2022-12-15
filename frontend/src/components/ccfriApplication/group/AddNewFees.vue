@@ -400,7 +400,8 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal']),
-    ...mapState('facility', ['CCFRIFacilityModel', 'ccfriChildCareTypes']),
+    ...mapState('facility', ['ccfriChildCareTypes']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
 
     findIndexOfFacility(){
@@ -434,7 +435,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('facility', ['loadCCFRIFacility', 'loadFacilityCareTypes']),    
+    ...mapActions('facility', ['loadFacilityCareTypes']),    
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),    
     addDate(){
       dates.push({
         message: this.model.closureReason,
