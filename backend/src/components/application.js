@@ -35,25 +35,35 @@ const { loadFiles } = require('../config/index');
 //creates or updates CCFRI application. TODO: add a post function!
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
-
-  body.forEach(async(facility) => { 
+  let retVal= [];
+  await Promise.all(body.map(async(facility) => { 
     let payload = {
       'ccof_ccfrioptin' : facility.optInResponse,
+      'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
+      'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
     };
-    
     log.info(payload);
-    let url = `_ccof_application_value=${facility.applicationID},_ccof_facility_value=${facility.facilityID}`;
-    log.info(' updateURL: ', url);
-
     try {
-      let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
+      let response = undefined;
+      if (facility.ccfriApplicationId) {
+        response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
+        retVal.push(response);
+      } else {
+        response = await postOperation('ccof_applicationccfris', payload);
+        retVal.push({
+          facilityId: facility.facilityID,
+          applicationId: facility.applicationID,
+          ccfriApplicationId: response,
+          ccof_ccfrioptin: facility.optInResponse,
+        });
+      }
       log.info('res data:' , response);
-      return res.status(HttpStatus.OK).json(response);
     } catch (e) {
       log.error(e);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
-  }); //end for each
+  })); //end for each
+  return res.status(HttpStatus.OK).json(retVal);
 }
 
 

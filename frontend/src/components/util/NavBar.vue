@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'ccofConfirmationEnabled','isRenewal', 'ccfriOptInComplete', 'navBarRefresh']),
     ...mapState('organization', ['isOrganizationComplete']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
@@ -136,7 +136,7 @@ export default {
       immediate: true,
       deep: true
     },
-    ccfriOptInComplete: {
+    navBarRefresh: {
       handler() {
         this.refreshNavBar();
       },
@@ -219,7 +219,7 @@ export default {
       );
       if (this.navBarList?.length > 0) { 
         this.navBarList?.forEach((item, index) => {
-          if (item.ccfriOptInStatus === 'IN'){
+          if (item.ccfriOptInStatus == 1){
             items.push(
               {
                 title: 'Parent Fees '+ (index + 1),

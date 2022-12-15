@@ -19,6 +19,7 @@ export default {
     childCareCategoryList: [],
     organizationTypeList: [],
     lookupInfo: null,
+    navBarRefresh: 1,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -36,6 +37,9 @@ export default {
     },
     setAlertNotification: (state, alertNotification) => {
       state.alertNotification = alertNotification;
+    },
+    refreshNavBar(state) {
+      state.navBarRefresh++;
     },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);

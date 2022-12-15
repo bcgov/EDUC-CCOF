@@ -15,6 +15,7 @@ export default {
     facilityModel: {},
     facilityId: null,
     CCFRIFacilityModel : {}, //jb
+    ccfriChildCareTypes: [],
     ccfriId: {},//jb
     ccfriStore :{},
     isValidForm: false,
@@ -44,6 +45,7 @@ export default {
     setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
+    setCcfriChildCareTypes: (state, ccfriChildCareTypes) => { state.ccfriChildCareTypes = ccfriChildCareTypes; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
       if (facilityId) {
         state.facilityStore[facilityId] = facilityModel;  
@@ -120,7 +122,35 @@ export default {
         }
       }
     },
-    //is it bad to keep the copy/pasted setFacility ID from above?
+
+    async loadFacilityCareTypes({commit}, facilityId) {
+      try {
+        let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
+        console.log('reponse is is: ', response); //?
+        let careTypes = [];
+        response.data.forEach(item => {
+          careTypes.push( {
+            programYear: '2021/22 FY',
+            programYearId: 'abc',
+            ...item
+          });
+        });
+        response.data.forEach(item => {
+          careTypes.push( {
+            programYear: '2022/23 FY',
+            programYearId: 'ddsd',
+            ...item
+          });
+        });        
+        commit('setCcfriChildCareTypes', careTypes);
+        return response;
+      } catch(e) {
+        console.log(`Failed to get existing Facility with error - ${e}`);
+        throw e;
+      }
+    },
+
+
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); //maybe change getFacilityById as well?
