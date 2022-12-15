@@ -286,7 +286,7 @@
 </template>
 <script>
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions} from 'vuex';
+import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import axios from 'axios';
@@ -394,6 +394,7 @@ export default {
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
+    this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model });
     next();
   },
   computed: {
@@ -433,7 +434,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility']),    
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
+    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
     addDate(){
       dates.push({
         message: this.model.closureReason,

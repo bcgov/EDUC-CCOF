@@ -78,7 +78,6 @@ async function upsertParentFees(req, res) {
       "ccof_frequency": feeGroup.feeFrequency,
       "ccof_ChildcareCategory@odata.bind": childCareCategory, 
       "ccof_ProgramYear@odata.bind": programYear, 
-      //this is breaking it for some reason
     };
 
     Object.assign(payload, 
@@ -99,10 +98,10 @@ async function upsertParentFees(req, res) {
     );
     
 
-    //payload = JSON.parse(JSON.stringify(payload));
-    // log.info(payload);
+    log.info(payload);
     let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
 
+    log.info("SUPER URL:" , url);
     try {
       let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       //log.info('feeResponse', response);
