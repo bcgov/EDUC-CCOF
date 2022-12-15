@@ -37,6 +37,7 @@ const FacilityMappings = [
 const CCFRIFacilityMappings = [
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
+  { back: 'ccof_informationccfri', front: 'ccfriApplicationNotes'},
   //{ back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',

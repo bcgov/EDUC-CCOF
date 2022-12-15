@@ -258,7 +258,7 @@
               outlined
               name="input-7-4"
               label="Describe here"
-              v-model="CCFRIFacilityModel.notes"
+              v-model="CCFRIFacilityModel.ccfriApplicationNotes"
             ></v-textarea>
           </div>
         </v-card-text>

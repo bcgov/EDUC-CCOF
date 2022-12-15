@@ -46,7 +46,7 @@ export default {
           console.log('unable to load facility because you are not logged in');
           throw 'unable to  load facility because you are not logged in';
         }
-        try {//chucking in CCFRI application GUID for science 
+        try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
           commit('setCCFRIFacilityModel', response.data);
