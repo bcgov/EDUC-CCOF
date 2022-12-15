@@ -13,7 +13,6 @@ export default {
     facilityStore: {},
     facilityModel: {},
     facilityId: null,
-    ccfriChildCareTypes: [],
     // CCFRIFacilityModel : {}, //jb
     // ccfriId: {},//jb
     // ccfriStore :{},
@@ -43,7 +42,6 @@ export default {
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
     // setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
-    setCcfriChildCareTypes: (state, ccfriChildCareTypes) => { state.ccfriChildCareTypes = ccfriChildCareTypes; },
     // setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
       if (facilityId) {
@@ -121,33 +119,6 @@ export default {
         }
       }
     },
-    async loadFacilityCareTypes({commit}, facilityId) {
-      try {
-        let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
-        console.log('reponse is is: ', response); //?
-        let careTypes = [];
-        response.data.forEach(item => {
-          careTypes.push( {
-            programYear: '2021/22 FY',
-            programYearId: 'abc',
-            ...item
-          });
-        });
-        response.data.forEach(item => {
-          careTypes.push( {
-            programYear: '2022/23 FY',
-            programYearId: 'ddsd',
-            ...item
-          });
-        });        
-        commit('setCcfriChildCareTypes', careTypes);
-        return response;
-      } catch(e) {
-        console.log(`Failed to get existing Facility with error - ${e}`);
-        throw e;
-      }
-    },
-
 
     // async loadCCFRIFacility({getters, commit}, ccfriId) {
     //   commit('setCcfriId', ccfriId);

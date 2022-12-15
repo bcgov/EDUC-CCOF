@@ -8,7 +8,7 @@
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
+      <p class="text-h6 text-center"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({programYear, childCareCategory,} , index) in childCareTypes" :key="index"
+      v-for="({programYear, childCareCategory,} , index) in ccfriChildCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -402,7 +402,7 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal']),
-    ...mapState('ccfriApp', ['CCFRIFacilityModel']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes']),
     ...mapState('organization', ['applicationId']),
 
     findIndexOfFacility(){
@@ -422,7 +422,7 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
-          this.childCareTypes = await this.loadFacilityCareTypes(this.currentFacility.facilityId);
+          await this.loadFacilityCareTypes(this.currentFacility.facilityId);
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           
           this.loading = false;
@@ -436,8 +436,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('facility', ['loadFacilityCareTypes']),    
-    ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
     addDate(){
       dates.push({

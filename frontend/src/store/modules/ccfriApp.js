@@ -1,6 +1,5 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
-import {isEmpty} from 'lodash';
 
 
 export default {
@@ -10,9 +9,11 @@ export default {
     model: [
       
     ],
-    CCFRIFacilityModel : {}, //jb
-    ccfriId: {},//jb
+    CCFRIFacilityModel : {},
+    ccfriId: {},
     ccfriStore :{},
+    ccfriChildCareTypes: [],
+
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => { 
@@ -28,6 +29,7 @@ export default {
     },
     setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
+    setCcfriChildCareTypes: (state, ccfriChildCareTypes) => { state.ccfriChildCareTypes = ccfriChildCareTypes; },
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
       if (ccfriId) {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
@@ -63,6 +65,33 @@ export default {
         //I want to add the call to load the CCFRI fees here also..
       }
     },
+    async loadFacilityCareTypes({commit, rootState}, facilityId) {
+      try {
+        let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
+        console.log('reponse is is: ', response); //?
+        let careTypes = [];
+        response.data.forEach(item => {
+          careTypes.push( {
+            programYear: rootState.app.programYearList.previous.name,
+            programYearId: rootState.app.programYearList.previous.programYearId,
+            ...item
+          });
+        });
+        response.data.forEach(item => {
+          careTypes.push( {
+            programYear: rootState.app.programYearList.current.name,
+            programYearId: rootState.app.programYearList.current.programYearId,
+            ...item
+          });
+        });        
+        commit('setCcfriChildCareTypes', careTypes);
+        return response;
+      } catch(e) {
+        console.log(`Failed to get existing Facility with error - ${e}`);
+        throw e;
+      }
+    },
+
   }
 };
 
