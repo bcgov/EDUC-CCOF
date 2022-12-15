@@ -1,5 +1,6 @@
 import ApiService from '@/common/apiService';
 
+
 export default {
   namespaced: true,
   state: {
@@ -10,8 +11,11 @@ export default {
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
     isOrganizationComplete: false,
-
+    ccofLicenseUploadComplete:false,
+    ccofApplicationComplete: false,
+    ccofConfirmationEnabled: false,
     //Notification Details
+    ccfriOptInComplete: false,       //jb
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -21,6 +25,7 @@ export default {
     childCareCategoryList: [],
     organizationTypeList: [],
     lookupInfo: null,
+    navBarRefresh: 1,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -38,6 +43,9 @@ export default {
     },
     setAlertNotification: (state, alertNotification) => {
       state.alertNotification = alertNotification;
+    },
+    refreshNavBar(state) {
+      state.navBarRefresh++;
     },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
@@ -63,7 +71,7 @@ export default {
     },
     setIsOrganizationComplete: (state, isOrganizationComplete) => {
       state.isOrganizationComplete = isOrganizationComplete;
-    },    
+    },
     bulkAddToNavNBar: (state, facilityList) => {
       state.navBarList = facilityList;
     },
@@ -78,13 +86,31 @@ export default {
       if (navBarItem) {
         navBarItem.isCCOFComplete = complete;
       }
-    },    
+    },
     addToNavBarList: (state, payload) => {
-      state.navBarList.push (payload); 
+      state.navBarList.push (payload);
+    },
+    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
+      state.ccofApplicationComplete = ccofApplicationComplete;
+    },
+    setCcfriOptInComplete: (state, ccfriOptInComplete) => {
+      state.ccfriOptInComplete = ccfriOptInComplete;
+    },
+    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
+      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
-    },     
+    },
+    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
+      state.ccofApplicationComplete = ccofApplicationComplete;
+    },
+    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
+      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
+    },
+    setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
+      state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
+    }
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
@@ -93,20 +119,20 @@ export default {
     organizationTypeList: state => state.organizationTypeList,
     lookupInfo: state => state.lookupInfo,
 
-    getNavByFacilityId: (state) => (facilityId) => { 
+    getNavByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
         return null;
       }
       return state.navBarList.find(item => item.facilityId == facilityId);
     },
-    getNavByFundingId: (state) => (fundingId) => { 
+    getNavByFundingId: (state) => (fundingId) => {
       if (!fundingId) {
         return null;
       }
       return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
     },
 
-    getNextNavByFacilityId: (state) => (facilityId) => { 
+    getNextNavByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
         return null;
       }
@@ -116,7 +142,7 @@ export default {
       }
       return null;
     },
-    getNextNavByFundingId: (state) => (funding) => { 
+    getNextNavByFundingId: (state) => (funding) => {
       if (!funding) {
         return null;
       }
@@ -127,7 +153,7 @@ export default {
       return null;
     },
 
-    getNextPrevByFacilityId: (state) => (facilityId) => { 
+    getNextPrevByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
         return null;
       }

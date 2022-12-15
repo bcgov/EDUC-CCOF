@@ -37,6 +37,14 @@ const FacilityMappings = [
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
 
+const CCFRIFacilityMappings = [
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
+  //{ back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
+  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+];
+
 const CCOFApplicationMappings = [
   { back: 'ccof_applicationtype', front: 'applicationType' }, // 100000000 New Org
   { back: 'ccof_name', front: 'name' }, // APP-22000059
@@ -195,4 +203,5 @@ module.exports = {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
+  CCFRIFacilityMappings
 };

@@ -3,12 +3,12 @@
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
-      <!-- <v-btn color="info" outlined x-large  @click="updateParentFees()">
+      <!-- <v-btn color="info" outlined x-large  @click="save()">
             UPDATE FEES</v-btn> -->
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityModel.licenseNumber}} </p> <br><br>
+      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in facilityModel.childCareTypes" :key="index"
+      v-for="({programYear, childCareCategory,} , index) in childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -40,8 +40,9 @@
               <br>
               <p class="text-h6 text--primary">
                 Are your parent fees
+                
               </p>
-              
+              <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
               <v-radio-group
               :rules = "rules"
                 v-model="feeSchedule[index]"
@@ -72,6 +73,8 @@
                 <v-col
                   class="col-6 col-md-2"
                 >
+                <!-- childCareTypes[index].approvedFeeApr 
+                  I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
                   <v-text-field type="number" outlined :rules="feeRules"  v-model.number="apr[index]" label="April" prefix="$"/>
                 </v-col>
                 <v-col 
@@ -272,9 +275,9 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
-          <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" !isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="updateParentFees()">
+          <!--!isValidForm-->
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" false">Next</v-btn>
+        <v-btn color="primary" outlined x-large @click="save()">
           Save</v-btn>
       </v-row>
 
@@ -283,18 +286,12 @@
 </template>
 <script>
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions} from 'vuex';
+import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
+import alertMixin from '@/mixins/alertMixin';
 import axios from 'axios';
 
 import _ from 'lodash';
-
-// 0-18 months
-//const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
-///const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-//const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-
-//const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
 
 let dates = [];
 let datePicker= null;          //vmodel for entering closure fees
@@ -315,7 +312,8 @@ let aug = {};
 let sep = {};
 let oct = {};
 let nov = {};
-let dec = {};   
+let dec = {};
+let childCareTypes = {};   
 let model = { x: [],
   dates,
   datePicker,          //vmodel for entering closure fees
@@ -336,7 +334,8 @@ let model = { x: [],
   oct,
   nov,
   dec,
-  notes
+  notes,
+  childCareTypes
 };
 
 
@@ -349,9 +348,11 @@ export default {
       required: false,
     },
   },
+  mixins: [alertMixin],
   data() {
     return {
       loading: true,
+      processing: false,
       model,
       facilityProgramYears: [],
       isValidForm : false,
@@ -374,6 +375,7 @@ export default {
       oct,
       nov,
       dec,
+      childCareTypes,
       feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
@@ -388,33 +390,55 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
+    this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
+    
+    this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //addModel - 
     next();
   },
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('facility', ['facilityModel']),
+    ...mapState('app', ['navBarList', 'isRenewal']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel']),
+    ...mapState('organization', ['applicationId']),
+
+    findIndexOfFacility(){
+      return this.navBarList.findIndex((element) =>{ 
+        return element.ccfriApplicationId == this.$route.params.urlGuid;
+      });
+    },
     currentFacility(){
-      return this.navBarList[0]; //TODO - change this to work with multiple facilities 
+      return this.navBarList[this.findIndexOfFacility];
+    },
+    nextFacility(){
+      return this.navBarList[this.findIndexOfFacility + 1];
     }
   },
   watch: {
+    //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
-      handler() {
-        console.log('ccfriFacilityGuid', this.$route.params.ccfriFacilityGuid);
-        this.loadFacility(this.$route.params.ccfriFacilityGuid);
-        this.loading = false;
+      async handler() {
+        try {
+          this.childCareTypes = await this.loadFacilityCareTypes(this.currentFacility.facilityId);
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+          
+          this.loading = false;
+        } catch (error) {
+          console.log(error);
+          this.setFailureAlert('An error occured while getting.');
+        }
       },
       immediate: true,
       deep: true
     }
   },
   methods: {
-    ...mapActions('facility', ['loadFacility']),    
+    ...mapActions('facility', ['loadFacilityCareTypes']),    
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
+    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
     addDate(){
       dates.push({
         message: this.model.closureReason,
@@ -432,22 +456,41 @@ export default {
       console.log(this.dates);
     },
     previous() {
-      this.$router.push(PATHS.currentFees); //TODO: change this, from CCOF page
+      console.log(this.navBarList);
+      //this.$router.back();  
     },
     next() {
-      this.updateParentFees();
-      this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
+      //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
+      console.log(this.nextFacility);
+
+      if (this.nextFacility && this.isRenewal){
+        console.log('going to next fac EXISTING FEES page');
+        //check here if renew - then send them to appropriate screen 
+      }
+      else if (this.nextFacility ){
+        console.log('going to next fac NEW fees page');
+        //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
+        this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
+      }
+      else {
+        console.log('going to ece-we!');
+        this.$router.push({path : `${PATHS.eceweEligibility}/${this.applicationId}`});
+      }
+    
+      this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
+      //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    async updateParentFees () {
+    async save () {
+      this.processing = true;
       let payload = [];
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
+      //for each child care type - send a request. 
 
       //index will also match the order of how the cards are displayed. 
-      this.facilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
+      this.CCFRIFacilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
 
         //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
         let childCareCatGUID = _.find(this.lookupInfo.childCareCategory, {ccof_description : childCareType.childCareCategory });
@@ -471,7 +514,7 @@ export default {
   
         Object.assign(payload[index], 
           {
-            aprFee : apr[index],
+            //aprFee : childCareTypes[index].approvedFeeApr,
             mayFee : may[index],
             junFee : jun[index],
             julFee : jul[index],
@@ -491,9 +534,12 @@ export default {
       payload = JSON.parse(JSON.stringify(payload));
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
       } catch (error) {
         console.info(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      this.processing = false;
     },
   }
 };

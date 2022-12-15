@@ -42,6 +42,7 @@ function parseProgramYear(value) {
   let programYears = {
     current: undefined,
     future: undefined,
+    previous: undefined,
     list: []
   };
   value.forEach(item => {
@@ -55,6 +56,7 @@ function parseProgramYear(value) {
     }
     programYears.list.push(p);
   });
+  programYears.previous = programYears.list.find(p => p.programYearId == programYears.current.previousYearId);
   programYears.list.sort((a,b) => { return b.order - a.order; } );
   return programYears;
 }
@@ -99,7 +101,7 @@ async function getLookupInfo(req, res) {
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }
-  log.info('lookupData is: ', minify(resData));
+  //log.info('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
 module.exports = {

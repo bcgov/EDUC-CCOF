@@ -20,7 +20,10 @@ import Impersonate from '@/components/Impersonate';
 
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
-import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
+
+
+import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
+import WageIncrease from '@/components/RFI/WageIncrease';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -43,6 +46,7 @@ import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFee
 
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
 import SummaryDeclaration from '@/components/SummaryDeclaration';
+import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 
 Vue.prototype.moment = moment;
 
@@ -133,7 +137,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-    
+
     {
       path: PATHS.family.eligibility,
       name: 'Eligibility',
@@ -212,6 +216,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.group.licenseUpload,
+      name: 'License Upload',
+      component: LicenseUpload,
+      meta: {
+        pageTitle: 'License Upload',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.group.renewOrganization,
       name: 'Renew Organization',
       component: RenewOrganization,
@@ -222,17 +237,17 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-    {
-      path: '/ccfri-application',
-      name: 'ccfri-application',
-      component: currentFees,
-      meta: {
-        pageTitle: 'Current Fees',
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
-      }
-    },
+    // {
+    //   path: '/ccfri-application' + '/urlGuid',
+    //   name: 'ccfri-application',
+    //   component: currentFees,
+    //   meta: {
+    //     pageTitle: 'Current Fees',
+    //     requiresAuth: true,
+    //     showNavBar: true,
+    //     navBarGroup: NAV_BAR_GROUPS.CCFRI
+    //   }
+    // },
     {
       path: PATHS.eceweEligibility,
       name: 'ECEWE Eligibility',
@@ -273,7 +288,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: true        
+        showNavBar: true
       }
     },
     {
@@ -318,7 +333,27 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.currentFees,
+      path: PATHS.WageIncrease,
+      name: 'ccfri-wage-increase',
+      component: WageIncrease,
+      meta: {
+        pageTitle: 'CCFRI Wage Increase',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.currentFees + '/:urlGuid',
+      name: 'ccfri-current-fees',
+      component: currentFees,
+      meta: {
+        pageTitle: 'CCFRI Current Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI
+      }
+    },
+    {
+      path: PATHS.currentFees ,
       name: 'ccfri-current-fees',
       component: currentFees,
       meta: {
