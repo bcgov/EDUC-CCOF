@@ -12,8 +12,6 @@ export default {
     CCFRIFacilityModel : {},
     ccfriId: {},
     ccfriStore :{},
-    ccfriChildCareTypes: [],
-
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => { 
@@ -29,7 +27,6 @@ export default {
     },
     setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
-    setCcfriChildCareTypes: (state, ccfriChildCareTypes) => { state.ccfriChildCareTypes = ccfriChildCareTypes; },
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
       if (ccfriId) {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
@@ -60,33 +57,43 @@ export default {
         //I want to add the call to load the CCFRI fees here also..
       }
     },
-    async loadFacilityCareTypes({commit, rootState}, facilityId) {
+    async decorateWithCareTypes({commit, state, rootState}, facilityId) {
       try {
         let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
         console.log('reponse is is: ', response); //?
         let careTypes = [];
         response.data.forEach(item => {
-          careTypes.push( {
-            programYear: rootState.app.programYearList.previous.name,
-            programYearId: rootState.app.programYearList.previous.programYearId,
-            ...item
+          let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+            return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+            searchItem.programYearId == rootState.app.programYearList.current.programYearId);
           });
+          if (!found) {
+            careTypes.push( {
+              programYear: rootState.app.programYearList.current.name,
+              programYearId: rootState.app.programYearList.current.programYearId,
+              ...item
+            });
+          }
         });
         response.data.forEach(item => {
-          careTypes.push( {
-            programYear: rootState.app.programYearList.current.name,
-            programYearId: rootState.app.programYearList.current.programYearId,
-            ...item
+          let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+            return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+            searchItem.programYearId == rootState.app.programYearList.previous.programYearId);
           });
-        });        
-        commit('setCcfriChildCareTypes', careTypes);
-        return response;
-      } catch(e) {
-        console.log(`Failed to get existing Facility with error - ${e}`);
-        throw e;
+          if (!found) {
+            careTypes.push( {
+              programYear: rootState.app.programYearList.previous.name,
+              programYearId: rootState.app.programYearList.previous.programYearId,
+              ...item
+            });
+          }
+        });
+        state.CCFRIFacilityModel.childCareTypes.push(...careTypes);
+        commit('setCCFRIFacilityModel', state.CCFRIFacilityModel);
+      } catch (e) {
+        console.log('error', e);
       }
     },
-
   }
 };
 

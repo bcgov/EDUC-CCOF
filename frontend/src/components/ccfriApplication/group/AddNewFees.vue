@@ -20,7 +20,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
       <v-card  
-      v-for="({programYear, childCareCategoryName,} , index) in ccfriChildCareTypes" :key="index"
+      v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index"
       
       elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -33,7 +33,7 @@
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
-                Parent Fees {{programYear}}: Full-Time {{childCareCategoryName}}
+                Parent Fees {{item.programYear}}: Full-Time {{item.childCareCategory}}
               </p>
             </div>
             <div class="px-md-12 px-7">
@@ -45,28 +45,28 @@
               <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
               <v-radio-group
               :rules = "rules"
-                v-model="feeSchedule[index]"
+                v-model="item.feeFrequency"
               >
                 <v-radio
                   label="Daily"
-                  value="daily"
+                  value="Daily"
                 ></v-radio>
                 <v-radio
                   label="Weekly"
-                  value="weekly"
+                  value="Weekly"
                 ></v-radio>
                 <v-radio
                   label="Monthly"
-                  value="monthly"
+                  value="Monthly"
                 ></v-radio>
               </v-radio-group>
 
-            <v-container v-if="!feeSchedule[index]"></v-container>
+            <v-container v-if="!item.feeFrequency"></v-container>
 
               <v-container v-else class="ma-0 pa-0">
               <v-row>
                 <v-col>
-                  <label>Enter your highest full-time {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                  <label>Enter your highest full-time {{item.feeFrequency}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
                 </v-col>
               </v-row>
               <v-row>
@@ -75,59 +75,59 @@
                 >
                 <!-- childCareTypes[index].approvedFeeApr 
                   I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="apr[index]" label="April" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeApr" label="April" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="may[index]" label="May" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeMay" label="May" prefix="$"/>
                 </v-col >
                 <v-col 
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jun[index]" label="June" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeJun" label="June" prefix="$"/>
                 </v-col>
                 <v-col
                 class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jul[index]" label="July" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeJul" label="July" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="aug[index]" label="August" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeAug" label="August" prefix="$" />
                 </v-col>
                 <v-col
                   class="col-6 col-md-2"
                 >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sep[index]" label="September" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeSep" label="September" prefix="$" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col 
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="oct[index]" label="October" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeOct" label="October" prefix="$"/>
                 </v-col>
                 <v-col 
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="nov[index]" label="November" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeNov" label="November" prefix="$"/>
                 </v-col >
                 <v-col 
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="dec[index]" label="December" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeDec" label="December" prefix="$"/>
                 </v-col >
                 <v-col
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jan[index]" label="Jan" prefix="$"/>
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeJan" label="Jan" prefix="$"/>
                 </v-col>
                 <v-col
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="feb[index]" label="Feb" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeFeb" label="Feb" prefix="$" />
                 </v-col>
                 <v-col
                   class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="mar[index]" label="March" prefix="$" />
+                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeMar" label="March" prefix="$" />
                 </v-col>
               </v-row>
             
@@ -258,7 +258,7 @@
               outlined
               name="input-7-4"
               label="Describe here"
-              v-model="model.notes"
+              v-model="CCFRIFacilityModel.notes"
             ></v-textarea>
           </div>
         </v-card-text>
@@ -289,8 +289,6 @@ let closedFeesPaid = undefined;       //vmodel for entering closure fees
 let closureReason= undefined;  //vmodel for entering closure fees
 let closureFees;
 let isFixedFee= {};
-let feeSchedule = {};
-let notes = '';
 let jan = {};
 let feb = {};
 let mar = {};
@@ -311,7 +309,6 @@ let model = { x: [],
   closureReason, 
   closureFees,
   isFixedFee,
-  feeSchedule,
   jan,
   feb,
   mar,
@@ -324,20 +321,12 @@ let model = { x: [],
   oct,
   nov,
   dec,
-  notes,
   childCareTypes
 };
 
 
 export default {
 
-  props: {
-    currentYear: {
-      type: Number,
-      default: 2023,
-      required: false,
-    },
-  },
   mixins: [alertMixin],
   data() {
     return {
@@ -352,7 +341,6 @@ export default {
       calendarMenu: undefined,
       closureFees: undefined,
       dates,
-      feeSchedule,
       jan,
       feb,
       mar,
@@ -412,9 +400,9 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
-          await this.loadFacilityCareTypes(this.currentFacility.facilityId);
+          
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          loadToScreen();
+          await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -426,7 +414,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes']),  
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
     addDate(){
       dates.push({
@@ -469,9 +457,6 @@ export default {
       this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
       //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    loadToScreen() {
-
-    },
     async save () {
       this.processing = true;
       let payload = [];
@@ -482,43 +467,33 @@ export default {
       //for each child care type - send a request. 
 
       //index will also match the order of how the cards are displayed. 
-      this.ccfriChildCareTypes.forEach (async (item, index) => { // FOR EACH the date groups?
-        if (model.feeSchedule[index]) {
+      this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { // FOR EACH the date groups?
+        if (item.feeFrequency) {
         //payload will need to look different if fee is monthly / daily 
           payload[index] = {
             ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
             childCareCategory : item.childCareCategoryId,
             programYear : item.programYearId,
             facilityClosureDates: dates,
-            notes: this.model.notes
+            notes: this.CCFRIFacilityModel.notes,
+            aprFee : item.approvedFeeApr,
+            mayFee : item.approvedFeeMay,
+            junFee : item.approvedFeeJun,
+            julFee : item.approvedFeeJul,
+            augFee : item.approvedFeeAug,
+            sepFee : item.approvedFeeSep,
+            octFee : item.approvedFeeOct,
+            novFee : item.approvedFeeNov,
+            decFee : item.approvedFeeDec,
+            janFee : item.approvedFeeJan,
+            febFee : item.approvedFeeFeb,
+            marFee : item.approvedFeeMar,
           };
 
-          console.log(this.model.notes);
-
-          payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000' : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
-    
-          Object.assign(payload[index], 
-            {
-              aprFee : apr[index],
-              mayFee : may[index],
-              junFee : jun[index],
-              julFee : jul[index],
-              augFee : aug[index],
-              sepFee : sep[index],
-              octFee : oct[index],
-              novFee : nov[index],
-              decFee : dec[index],
-              janFee : jan[index],
-              febFee : feb[index],
-              marFee : mar[index],
-            }
-          );
-
+          payload[index].feeFrequency = item.feeFrequency === 'Monthly'? '100000000' : item.feeFrequency  === 'Weekly'? '100000001' :item.feeFrequency === 'Daily'? '100000002' :'null';
         }
 
       }); // end FOR EACH
-
-      payload = JSON.parse(JSON.stringify(payload));
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
         this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');

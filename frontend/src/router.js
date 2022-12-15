@@ -308,7 +308,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Add New Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
@@ -318,7 +319,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Add New Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
 
@@ -329,7 +331,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
@@ -339,7 +342,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Wage Increase',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
@@ -349,7 +353,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Current Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
@@ -359,7 +364,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Current Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
