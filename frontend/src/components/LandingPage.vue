@@ -21,7 +21,7 @@
               <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="continueApplication()">Continue Application</v-btn>
               <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
           </SmallCard>
-          <SmallCard :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="isRenewDisabled">
+          <SmallCard :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
               <br>
               <v-btn absolute bottom dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
           </SmallCard>
@@ -111,7 +111,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'programYearList']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;
@@ -121,8 +121,20 @@ export default {
     getApplicationStatus(){
       return this.userInfo.applicationStatus === null;
     },
-    isRenewDisabled() {
-      return false;
+    isRenewEnabled() {
+      if (this.userInfo.applicationStatus === 'DRAFT') {
+        return true; //TODO update this when we know what values we
+      }
+      if (this.userInfo.serverTime < this.programYearList.future.intakeStart || this.userInfo.serverTime > this.programYearList.future.intakeEnd) {
+        return false; //Must be within future program year intake period.
+      }
+      let enabled = true;
+      this.navBarList.forEach(item => {
+        if (item.eceweStatus === 'NEW' && item.ccfriStatus === 'NEW') {
+          enabled = false; 
+        }
+      });
+      return enabled;
     }
   },
   methods: {

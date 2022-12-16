@@ -41,13 +41,9 @@ async function getUserInfo(req, res) {
     userName: getUserName(req),
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
-    organizationName: null,
-    organizationId:  null,
-    applicationId: null,
-    applicationStatus: null,
+    serverTime: new Date(),
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: false, 
-    facilityList: [],
   };
   let userGuid = undefined;
   if (isIdir) {
