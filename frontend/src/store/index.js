@@ -3,10 +3,11 @@ import Vuex from 'vuex';
 import auth from '@/store/modules/auth.js';
 import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
-import organization from '@/store/modules/organization.js';
-import facility from '@/store/modules/facility.js';
+import organization from '@/store/modules/ccof/organization';
 import licenseUpload from '@/store/modules/licenseUpload.js';
 import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
+import facility from '@/store/modules/ccof/group/facility.js';
+
 import familyFunding from '@/store/modules/ccof/family/familyFundingStore';
 import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStore';
 import familyOrganization from '@/store/modules/ccof/family/familyOrganizationStore';

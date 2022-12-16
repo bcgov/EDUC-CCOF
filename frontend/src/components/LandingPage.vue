@@ -95,9 +95,11 @@ import { mapGetters, mapState, mapMutations} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'LandingPage',
+  mixins: [alertMixin],
   data() {
     return {
       input: '',
@@ -139,7 +141,14 @@ export default {
     },
     continueApplication() {
       this.setIsRenewal(false);
-      this.$router.push(PATHS.group.orgInfo);
+      console.log('continueApplication userInfo.organizationProviderType', this.userInfo.organizationProviderType);
+      if (this.userInfo.organizationProviderType === 'GROUP') {
+        this.$router.push(PATHS.group.orgInfo);
+      } else if (this.userInfo.organizationProviderType === 'FAMILY') {
+        this.$router.push(PATHS.family.orgInfo);
+      } else { 
+        this.setFailureAlert(`Unknown Organization Provider Type: ${this.userInfo.organizationProviderType}`);
+      }
     } ,
     goToRFI(){
       this.$router.push(PATHS.ccfriRequestMoreInfo);
