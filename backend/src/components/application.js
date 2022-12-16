@@ -11,8 +11,10 @@ const { MappableObjectForFront, MappableObjectForBack } = require('../util/mappi
 const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
 const { info } = require('./logger');
 
+async function renewCCOFApplication(req, res) {
+  return res.status(HttpStatus.OK).json({});
+}
 //creates or updates CCFRI application. 
-
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
 
@@ -219,5 +221,6 @@ module.exports = {
   upsertParentFees,
   getECEWEApplication,
   updateECEWEApplication,
-  updateECEWEFacilityApplication
+  updateECEWEFacilityApplication,
+  renewCCOFApplication
 };
