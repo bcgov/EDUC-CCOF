@@ -2,14 +2,20 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import {isEmpty} from 'lodash';
 
+
 export default {
   namespaced: true,
   state: {
+    model: [
+    ],
+    foo: 'bar',
     // facilityList: [],
     facilityStore: {},
     facilityModel: {},
     facilityId: null,
-
+    // CCFRIFacilityModel : {}, //jb
+    // ccfriId: {},//jb
+    // ccfriStore :{},
     isValidForm: false,
   },
   getters: {
@@ -17,18 +23,36 @@ export default {
     getFacilityById: (state) => (facilityId) => { 
       return state.facilityStore[facilityId];
     },
+    // getCCFRIById: (state) => (ccfriId) => { 
+    //   return state.ccfriStore[ccfriId];
+    // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
+
+    getModel: state => {return state.model;}
   },  
   mutations: {
+    model(state, value) {
+      state.model = value;
+    },
+    isValidForm(state, value) {
+      state.isValidForm = value;
+    },
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
     setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
+    // setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
+    // setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addFacilityToStore: (state, {facilityId, facilityModel} ) => {
       if (facilityId) {
         state.facilityStore[facilityId] = facilityModel;  
       }
-    }
+    },
+    // addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
+    //   if (ccfriId) {
+    //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
+    //   }
+    // }
   },
   actions: {
     async saveFacility({ state, commit, rootState }) {
@@ -95,6 +119,7 @@ export default {
         }
       }
     },
+
     newFacility({commit}) {
       commit('setFacilityId', null);
       commit('setFacilityModel', {});

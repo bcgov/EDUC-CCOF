@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { getFacility, createFacility, updateFacility } = require('../components/facility');
+const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, getLicenseCategories } = require('../components/facility');
 const { param, validationResult, checkSchema} = require('express-validator');
 
 
@@ -21,8 +21,8 @@ const facilitySchema = {
     exists: { errorMessage: '[organizationId] is required', }},
   applicationId: { in: ['body'],
     exists: { errorMessage: '[applicationId] is required', }},
-  // yearBeginOperation: { in: ['body'],
-  //   exists: { errorMessage: '[yearBeginOperation] is required', }},
+  // yearBeganOperation: { in: ['body'],
+  //   exists: { errorMessage: '[yearBeganOperation] is required', }},
 };
 
 module.exports = router;
@@ -34,6 +34,26 @@ router.get('/:facilityId', //passport.authenticate('jwt', {session: false}),isVa
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return getFacility(req, res);
+  });
+
+
+router.get('/:facilityId/licenseCategories', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getLicenseCategories(req, res);
+  });
+
+  
+
+
+/**
+ * Get Facility details for CCFRI Application (less detailed)
+ */
+//i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out 
+router.get('/ccfri/:ccfriId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getFacilityChildCareTypes(req, res);
   });
 
 /**
@@ -54,6 +74,8 @@ router.put('/:facilityId', passport.authenticate('jwt', {session: false}),isVali
   validationResult(req).throw();
   return updateFacility(req, res);
 });
+
+
 
 /**
  * Submit a complete application

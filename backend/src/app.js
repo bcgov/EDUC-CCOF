@@ -29,6 +29,7 @@ const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const applicationRouter = require('./routes/application');
 const fundingRouter = require('./routes/funding');
+const licenseUploadRouter = require('./routes/licenseUpload');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -119,7 +120,7 @@ const parseJwt = (token) => {
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
   addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');  
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');
 
   //JWT strategy is used for authorization  keycloak_bcdevexchange_idir
   passport.use('jwt', new JWTStrategy({
@@ -166,6 +167,7 @@ apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 apiRouter.use('/application', applicationRouter);
 apiRouter.use('/group/funding', fundingRouter);
+apiRouter.use('/licenseUpload', licenseUploadRouter);
 
 
 //Handle 500 error

@@ -23,7 +23,7 @@ function getConstKey(constants, value) {
     log.error(`getConstKey: Unable to find key for value: [${value}] for const: [${constants.constructor?.name}]`);
   }
   return undefined;
-  
+
 }
 
 function getLabelFromValue(value, constants, defaultValue) {
@@ -37,7 +37,7 @@ function getLabelFromValue(value, constants, defaultValue) {
     } else {
       return `UNKNOWN - [${value}]`;
     }
-  } 
+  }
   return value;
 }
 
@@ -119,28 +119,6 @@ function logResponse(methodName, response) {
   }
 }
 
-async function deleteData(token, url, correlationID) {
-  try {
-    const delConfig = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        correlationID: correlationID || uuidv4()
-      }
-    };
-
-    log.info('delete Data Url', url);
-    const response = await axios.delete(url, delConfig);
-    log.info(`delete Data Status for url ${url} :: is :: `, response.status);
-    log.info(`delete Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`delete Data Response for url ${url}  :: is :: `, minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('deleteData Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Delete error'}, e);
-  }
-}
 
 async function forwardGetReq(req, res, url) {
   try {
@@ -189,6 +167,24 @@ async function getData(token, url, correlationID) {
   }
 }
 
+async function deleteOperationWithObjectId(operation, objectId) {
+  const operationWithObject = `${operation}(${objectId})`;
+  return await deleteOperation(operationWithObject);
+}
+
+async function deleteOperation(operation) {
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
+    log.info('delete Data Url', url);
+    const response = await axios.delete(url, getHttpHeader());
+    //logResponse('getOperation', response);
+    return response.data;
+  } catch (e) {
+    log.error('deleteOperation Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
+
 async function getOperation(operation) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
@@ -197,6 +193,7 @@ async function getOperation(operation) {
     //logResponse('getOperation', response);
     return response.data;
   } catch (e) {
+    log.info(e);
     log.error('getOperation Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
@@ -224,6 +221,45 @@ async function postOperation(operation, payload) {
   }
 }
 
+async function postApplicationDocument(payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationDocument';
+  log.info('postApplicationDocument Url', url);
+  if (log.isDebugEnabled()) {
+    log.debug(`postApplicationDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postApplicationDocument', response);
+    return response.data;
+  } catch (e) {
+    log.error('postOperation Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+  }
+}
+async function getApplicationDocument(applicationID){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationDocument?applicationId=' + applicationID;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error(' getApplicationDocument Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
+
+async function deleteDocument(annotationid){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationid=' + annotationid;
+    log.info('delete Data Url', url);
+    const response = await axios.delete(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error(' deleteDocument Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
+
 async function patchOperationWithObjectId(operation, objectId, payload) {
   const operationWithObject = `${operation}(${objectId})`;
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operationWithObject;
@@ -231,7 +267,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
 
   if (log.isInfoEnabled) {
     log.verbose(`patchOperationWithObjectId post data for ${url}  :: is :: `, minify(payload));
-  }  
+  }
   try {
     const response = await axios.patch(url, payload, getHttpHeader());
     logResponse('patchOperationWithObjectId', response);
@@ -462,7 +498,6 @@ const utils = {
   getUserGuid,
   isIdirUser,
   getUserName,
-  deleteData,
   forwardGetReq,
   getDataWithParams,
   getOperationWithObjectId,
@@ -482,7 +517,12 @@ const utils = {
   minify,
   getHttpHeader,
   getConstKey,
-  getLabelFromValue
+  getLabelFromValue,
+  deleteOperationWithObjectId,
+  deleteOperation,
+  postApplicationDocument,
+  getApplicationDocument,
+  deleteDocument,
 };
 
 module.exports = utils;

@@ -106,7 +106,7 @@
 
             <v-row>
               <v-col>
-                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxGroupChildCare" label="Maximum Number for Group Child Care (under 36 months)" />
+                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxGroupChildCareUnder36" label="Maximum Number for Group Child Care (under 36 months)" />
               </v-col>
             </v-row>
 
@@ -121,12 +121,17 @@
                 <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxPreschool" label="Maximum Number for Preschool" />
               </v-col>
             </v-row>
-
             <v-row>
               <v-col>
                 <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxGroupChildCareSchool" label="Maximum Number for Group Child Care (School Age/ School age care on School Grounds)" />
               </v-col>
             </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxGroupChildCareMultiAge" label="Maximum Multi-Age Child Care" />
+              </v-col>
+            </v-row>
+
           </v-container>
         </v-card>
 
@@ -291,8 +296,6 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
   mixins: [alertMixin],
-  props: {
-  },
   computed: {
     ...mapState('groupFunding', ['fundingModel'])
   },
@@ -307,6 +310,7 @@ export default {
     ...mapActions('groupFunding', ['saveFunding', 'loadFunding', 'fundingId']),
     ...mapMutations('groupFunding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
+    
     previous() {
       let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
       this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);

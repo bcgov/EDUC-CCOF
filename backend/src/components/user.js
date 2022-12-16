@@ -127,37 +127,34 @@ async function getUserProfile(businessGuid) {
 
 function parseFacilityData(userResponse) {
   const facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
-  facilityMap.forEach((value,key, map) => {
-    map[key] = new MappableObjectForFront(value, UserProfileFacilityMappings).data;
-  });
 
+  console.log('facility map size: ', facilityMap.size);
   facilityMap.forEach((value, key, map) => {
+    let ccfriInfo = undefined;
+    let eceweInfo = undefined;
+
     userResponse.forEach(facility => {
-      let ccfriInfo = undefined;
-      let eceweInfo = undefined;
       if (facility['CCFRI.ccof_facility'] === key) {
+        console.log('CCFRI FOUND FOR ' + key);
         ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
+        console.log('CCFRI FOUND data ', minify(ccfriInfo));
       }
       if (facility['ECEWE.ccof_facility'] === key) {
         eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
       }
-      if (ccfriInfo || eceweInfo) {
-        map.set(key, {
-          ...value,
-          ...ccfriInfo,
-          ...eceweInfo});        
-      }     
     });
+    map.set(key, {
+      ...value,
+      ...ccfriInfo,
+      ...eceweInfo});        
   });
 
   let facilityList = [];
   facilityMap.forEach((facility) => {
     if (!_.isEmpty(facility)) {
       facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
-      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES, 'NEW');
-      facility.ccfriOptInStatus = getLabelFromValue(facility.ccfriOptInStatus, OPTIN_STATUS_CODES);
-      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES, 'NEW');
-      facility.eceweOptInStatus = getLabelFromValue(facility.eceweOptInStatus, OPTIN_STATUS_CODES);
+      facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
+      facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES, 'NOT STARTED');
       facilityList.push(facility);
     }
   });

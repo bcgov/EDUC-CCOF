@@ -107,7 +107,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="saveFacilities()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="saveFacilities()">Save</v-btn>
       </v-row>
     </v-container>
   </template>
@@ -115,7 +115,7 @@
 <script>
   
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -124,35 +124,22 @@ export default {
     return {
       row: '',
       updateMode: '',
+      processing: false,
     };
-  },
-  watch: {
-    '$route.params.urlGuid': {
-      handler() {
-        this.applicationId = this.$route.params.urlGuid;
-        if (this.applicationId) {
-          this.loadData().then(() => {
-            this.initECEWEFacilities(this.navBarList);
-          });
-        }
-      },
-      immediate: true,
-      deep: true
-    },
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList']),
-    applicationId: {
-      get() { return this.$store.state.eceweApp.applicationId; },
-      set(value) { this.$store.commit('eceweApp/setApplicationId', value); }
-    },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     }
   },
-  beforeMount() {},
+  beforeMount() {
+    this.loadData().then(() => {
+      this.initECEWEFacilities(this.navBarList);
+    });
+  },
   mounted() {},
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
@@ -169,18 +156,17 @@ export default {
       if (this.isStarted) {
         return;
       }
-      if (this.applicationId) {
-        this.processing = true;
+      if (this.userInfo.applicationId) {
         try {
-          await this.loadECEWE(this.applicationId);
+          await this.loadECEWE(this.userInfo.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
-        this.processing = false;
       }
     },
     async saveFacilities() {
+      this.processing = true;
       try {
         await this.saveECEWEFacilities();
         this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
@@ -192,5 +178,7 @@ export default {
   }
 };
 </script>
-
-<style></style>
+//TODO add styles here and add prefex ECEWE to filename
+<style>
+  
+</style>
