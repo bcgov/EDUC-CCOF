@@ -3,11 +3,17 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { upsertParentFees, upsertCCFRIApplication, updateCCFRIApplication} = require('../components/application');
+const { upsertParentFees, upsertCCFRIApplication, updateCCFRIApplication, renewCCOFApplication} = require('../components/application');
 const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication , getCCFRIApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
+
+router.post('/renew-ccof', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
+  //validationResult(req).throw();
+  //console.log(req.bpdy);
+  return renewCCOFApplication(req, res);
+});
 
 // const facilitySchema = {
 //   facilityName: { in: ['body'],

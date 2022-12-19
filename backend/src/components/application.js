@@ -13,6 +13,11 @@ const { info } = require('./logger');
 const { loadFiles } = require('../config/index');
 
 
+async function renewCCOFApplication(req, res) {
+  return res.status(HttpStatus.OK).json({});
+}
+
+
 //I think we most likely can take this out -- I get info from the CCFRI application now 
 // async function getCCFRIApplication(req,res) {
 
@@ -204,7 +209,7 @@ async function updateECEWEApplication(req, res) {
   application = application.toJSON();
   application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
   try {
-    log.info(application);
+    log.verbose('updateECEWEApplication: payload', application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -255,6 +260,6 @@ module.exports = {
   getECEWEApplication,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
-
+  renewCCOFApplication
   //getCCFRIApplication
 };
