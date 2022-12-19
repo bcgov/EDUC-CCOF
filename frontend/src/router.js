@@ -20,7 +20,10 @@ import Impersonate from '@/components/Impersonate';
 
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
-import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
+
+
+import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
+import WageIncrease from '@/components/RFI/WageIncrease';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -234,17 +237,17 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-    {
-      path: '/ccfri-application',
-      name: 'ccfri-application',
-      component: currentFees,
-      meta: {
-        pageTitle: 'Current Fees',
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
-      }
-    },
+    // {
+    //   path: '/ccfri-application' + '/urlGuid',
+    //   name: 'ccfri-application',
+    //   component: currentFees,
+    //   meta: {
+    //     pageTitle: 'Current Fees',
+    //     requiresAuth: true,
+    //     showNavBar: true,
+    //     navBarGroup: NAV_BAR_GROUPS.CCFRI
+    //   }
+    // },
     {
       path: PATHS.eceweEligibility,
       name: 'ECEWE Eligibility',
@@ -305,7 +308,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Add New Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
@@ -315,7 +319,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Add New Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
 
@@ -326,17 +331,41 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
-      path: PATHS.currentFees,
+      path: PATHS.WageIncrease,
+      name: 'ccfri-wage-increase',
+      component: WageIncrease,
+      meta: {
+        pageTitle: 'CCFRI Wage Increase',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.currentFees + '/:urlGuid',
       name: 'ccfri-current-fees',
       component: currentFees,
       meta: {
         pageTitle: 'CCFRI Current Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.currentFees ,
+      name: 'ccfri-current-fees',
+      component: currentFees,
+      meta: {
+        pageTitle: 'CCFRI Current Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {

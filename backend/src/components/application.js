@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, getOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -10,30 +10,69 @@ const _ = require ('lodash');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
 const { info } = require('./logger');
+const { loadFiles } = require('../config/index');
 
-//creates or updates CCFRI application. 
 
+async function renewCCOFApplication(req, res) {
+  return res.status(HttpStatus.OK).json({});
+}
+
+
+//I think we most likely can take this out -- I get info from the CCFRI application now 
+// async function getCCFRIApplication(req,res) {
+
+//   log.info(req.params.ccfriId);
+
+//   try {
+//     let response = await getOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
+
+//     log.info(response);
+
+//     //use mappable objects here?
+//     const payload = {
+//       facilityId : response._ccof_facility_value,
+//     };
+//     return res.status(HttpStatus.OK).json(payload);
+//   } catch (e) {
+//     log.error(e);
+//     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+//   }
+// }
+
+//creates or updates CCFRI application. TODO: add a post function!
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
+  let retVal= [];
+  try {
+    await Promise.all(body.map(async(facility) => { 
+      let payload = {
+        'ccof_ccfrioptin' : facility.optInResponse,
+        'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
+        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
+      };
+      log.info(payload);
 
-  body.forEach(async(facility) => { 
-    let payload = {
-      'ccof_ccfrioptin' : '',
-    };
-    payload.ccof_ccfrioptin = facility.optInResponse;
+      let response = undefined;
+      if (facility.ccfriApplicationId) {
+        response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
+        retVal.push(response);
+      } else {
+        response = await postOperation('ccof_applicationccfris', payload);
+        retVal.push({
+          facilityId: facility.facilityID,
+          applicationId: facility.applicationID,
+          ccfriApplicationId: response,
+          ccof_ccfrioptin: facility.optInResponse,
+        });
+      }
+      log.info('res data:' , response);
+    })); //end for each
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
 
-    payload = JSON.parse(JSON.stringify(payload));
-    log.info(payload);
-    let url = `_ccof_application_value=${facility.applicationID},_ccof_facility_value=${facility.facilityID}`;
-
-    try {
-      let response = await patchOperationWithObjectId('ccof_applicationccfris', url, payload);
-      return res.status(HttpStatus.OK).json(response);
-    } catch (e) {
-      log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-    }
-  }); //end for each
+  return res.status(HttpStatus.OK).json(retVal);
 }
 
 
@@ -56,7 +95,6 @@ async function upsertParentFees(req, res) {
       "ccof_frequency": feeGroup.feeFrequency,
       "ccof_ChildcareCategory@odata.bind": childCareCategory, 
       "ccof_ProgramYear@odata.bind": programYear, 
-      //this is breaking it for some reason
     };
 
     Object.assign(payload, 
@@ -77,10 +115,10 @@ async function upsertParentFees(req, res) {
     );
     
 
-    payload = JSON.parse(JSON.stringify(payload));
-    // log.info(payload);
+    log.info(payload);
     let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
 
+    log.info("SUPER URL:" , url);
     try {
       let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       //log.info('feeResponse', response);
@@ -93,13 +131,15 @@ async function upsertParentFees(req, res) {
   }); //end forEach
 
 
-  //if no notes, don't bother sending any requests
+  //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
+  //so body[0].notes will always exist 
   if (body[0].notes){
 
     let payload = {
       "ccof_informationccfri" : body[0].notes
     };
 
+    
     try {
       let response = patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
       log.info('notesRes', response);
@@ -169,7 +209,7 @@ async function updateECEWEApplication(req, res) {
   application = application.toJSON();
   application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
   try {
-    log.info(application);
+    log.verbose('updateECEWEApplication: payload', application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -219,5 +259,7 @@ module.exports = {
   upsertParentFees,
   getECEWEApplication,
   updateECEWEApplication,
-  updateECEWEFacilityApplication
+  updateECEWEFacilityApplication,
+  renewCCOFApplication
+  //getCCFRIApplication
 };

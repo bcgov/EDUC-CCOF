@@ -23,6 +23,7 @@ export const ApiRoutes = Object.freeze({
   LOOKUP: baseRoot + '/config/lookup',
   ORGANIZATION: baseRoot + '/organization',
   FACILITY: baseRoot + '/facility',
+  CCFRIFACILITY : baseRoot + '/facility/ccfri',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
@@ -49,7 +50,8 @@ export const PATHS = {
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
   addNewFees: '/ccfriApplication/group/add-new-fees',
   currentFees: '/ccfriApplication/group/current-fees',
-  ccfriRequestMoreInfo: '/ccfriApplication/group/ccfri-request-info',
+  ccfriRequestMoreInfo: '/ccfri-application/request-info',
+  WageIncrease: '/ccfri-application/request-info/wage-increase',
   selectApplicationType: '/ccof-application/select-application-type',
   impersonate: '/impersonate',
   group: {
@@ -77,8 +79,10 @@ export const NAV_BAR_GROUPS = {
   ECEWE: 'ECE-WE'
 };
 
-
-
+export const ORGANIZATION_PROVIDER_TYPES = {
+  GROUP: 100000000,
+  FAMILY: 100000001,
+};
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 

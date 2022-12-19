@@ -34,7 +34,7 @@ const auth = {
   async renew(refreshToken, isIdirUser) {
     let result = {};
     let clientId = isIdirUser? config.get('oidc:clientIdIDIR') : config.get('oidc:clientId');
-    let clientSecret = isIdirUser? config.get('oidc:clientSecretIDIR') : config.get('oidc:clientId');
+    let clientSecret = isIdirUser? config.get('oidc:clientSecretIDIR') : config.get('oidc:clientSecret');
     try {
       const discovery = await utils.getOidcDiscovery();
       const response = await axios.post(discovery.token_endpoint,
@@ -62,6 +62,7 @@ const auth = {
       }
     } catch (error) {
       log.error('renew', error.message);
+      log.error('renew', error);
       result = error.response && error.response.data;
     }
 
