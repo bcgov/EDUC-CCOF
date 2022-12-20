@@ -43,6 +43,15 @@ const CCFRIFacilityMappings = [
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
 
+const CCFRIClosureDateMappings = [
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
+  { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
+  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
+  { back: 'ccof_comment', front: 'closureReason' },
+];
+
 const CCOFApplicationMappings = [
   { back: 'ccof_applicationtype', front: 'applicationType' }, // 100000000 New Org
   { back: 'ccof_name', front: 'name' }, // APP-22000059

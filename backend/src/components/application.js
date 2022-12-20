@@ -75,6 +75,8 @@ async function updateCCFRIApplication(req, res) {
 
 async function upsertParentFees(req, res) {
   let body = req.body;
+
+  
   
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
@@ -164,10 +166,10 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
   dates.forEach(async (date) => {
 
     let payload = {
-      "ccof_startdate": new Date (date.selectedDates[0]),
-      "ccof_paidclosure": date.feesPaidWhileClosed,
-      "ccof_enddate": date.selectedDates[1]? new Date (date.selectedDates[1]) :new Date (date.selectedDates[0]),
-      "ccof_comment": date.message,
+      "ccof_startdate": new Date (date.datePicker[0]),
+      "ccof_paidclosure": date.closedFeesPaid,
+      "ccof_enddate": date.datePicker[1]? new Date (date.datePicker[1]) :new Date (date.datePicker[0]),
+      "ccof_comment": date.closureReason,
       "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
     };
 

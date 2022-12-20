@@ -166,73 +166,79 @@
             </v-radio-group>
 
             <v-row v-if = "model.closureFees === 'Yes'">
-              <v-col class="col-md-4 col-12">
-                <v-menu  v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+
+
+              <v-row  v-for="(obj, index) in dateList" :key="index">
+              
+                <v-col class="col-md-1 col-12">
+                  <v-icon
+                    large
+                    color="blue darken-4"
+                    class=""
+                    @click="removeIndex(index)"
+                    > mdi-close
+                  </v-icon>
+                </v-col>
+                
+                
+                <v-col class="col-md-4 col-12">
+                  <v-menu  v-model="obj.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="model.datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field outlined required v-model="obj.datePicker"  label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
                     <v-date-picker
                       range 
                       clearable 
-                      v-model="model.datePicker" 
+                      v-model="obj.datePicker" 
                       @input="calendarMenu = false">
                     </v-date-picker>
-                </v-menu>
-              </v-col>
-              <v-col class="col-md-4 col-12 ">
-                  <!-- I added in Alexy's "required" ruleset that makes the textbox go red. Maybe not needed here since the button
-                  will not work unless all fields are filled in?
-                -->
-                <v-text-field
-                  class = ""
-                  v-model="model.closureReason"
-                  label="Purpose of Closure"
-                  outlined
-                  clearable
-                  required
-                   
-                ></v-text-field>
-              </v-col>
-              <v-col class="col-md-3 col-12">
-                <v-radio-group
-                  required
-                  row
-                  v-model="model.closedFeesPaid"
-                  label="Did parents pay for this closure?"
-                >
-                  <v-radio
-                    label="Yes"
-                    value= 1
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    value= 0
-                  ></v-radio>
-                </v-radio-group>
-              </v-col>
-              <v-col>
-                <v-btn class="col-3 col-md-1"
-                  v-if =" !model.closureReason || !model.datePicker|| !model.closedFeesPaid"
-                    disabled
-                >ADD</v-btn>
-                <v-btn v-else v-on:click="addDate">ADD</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <!-- <v-tooltip top color="warning">
-                <template v-slot:activator="{ on, attrs }"> v-bind="attrs"
-                    v-on="on" -->
-                  <v-btn v-for="date in dates" :key="date.id"
-                    v-on:click="removeDate(date.id)"
-                    
+                 </v-menu>
+                </v-col>
+                
+                <v-col class="col-md-4 col-12 ">
+                  <v-text-field
+                    class = ""
+                    v-model="obj.closureReason"
+                    label="Closure Reason"
+                    outlined
+                    clearable
+                    :rules="rules"
+                  ></v-text-field>
+                </v-col>
+
+
+                <v-col class="col-md-3 col-12 mt-n6">
+                  <v-radio-group
+                    required
+                    row
+                    v-model="obj.closedFeesPaid"
+                    label="Did parents pay for this closure?"
                   >
-                  Closed from : {{date.selectedDates[0]}} - {{date.selectedDates[1] ? date.selectedDates[1] : date.selectedDates[0] }} 
-                  Reason: {{date.message}}  FEES PAID?: {{date.feesPaidWhileClosed == 1 ? "Yes" : "No"}}
-                  </v-btn>
-                <!-- </template>
-                <span>Delete Date</span>
-              </v-tooltip> -->
+                    <v-radio
+                      label="Yes"
+                      value= 1
+                    ></v-radio>
+                    <v-radio
+                      label="No"
+                      value= 0
+                    ></v-radio>
+                  </v-radio-group>
+                </v-col>
+
+                
+              </v-row> <!-- end v for-->
+              
+                
+                <div class="form-group">
+                  <!-- v-if =" !model.closureReason || !model.datePicker|| !model.closedFeesPaid" disabled -->
+                <v-btn @click="addRow()"  
+                   class="my-5" dark color='#003366'
+                   
+                   >ADD NEW CLOSURE</v-btn>
+                </div>
+                <br> 
+
             </v-row>
           </div>
         </v-card-text>
@@ -283,10 +289,7 @@ import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 
-let dates = [];
-let datePicker= null;          //vmodel for entering closure fees
-let closedFeesPaid = undefined;       //vmodel for entering closure fees
-let closureReason= undefined;  //vmodel for entering closure fees
+
 let closureFees;
 let isFixedFee= {};
 let jan = {};
@@ -303,10 +306,7 @@ let nov = {};
 let dec = {};
 let childCareTypes = {};   
 let model = { x: [],
-  dates,
-  datePicker,          //vmodel for entering closure fees
-  closedFeesPaid,       //vmodel for entering closure fees
-  closureReason, 
+  dateList,
   closureFees,
   isFixedFee,
   jan,
@@ -325,6 +325,16 @@ let model = { x: [],
 };
 
 
+let dateList = [
+  {
+    datePicker: [],
+    closureReason : '',
+    closedFeesPaid: '',
+    calendarMenu: undefined,
+  }
+];
+
+
 export default {
 
   mixins: [alertMixin],
@@ -335,12 +345,7 @@ export default {
       model,
       facilityProgramYears: [],
       isValidForm : false,
-      datePicker,          //vmodel for entering closure fees
-      //closedFeesPaid,       //vmodel for entering closure fees
-      closureReason,  //vmodel for entering closure fees
-      calendarMenu: undefined,
-      closureFees: undefined,
-      dates,
+      dateList,
       jan,
       feb,
       mar,
@@ -416,21 +421,19 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
-    addDate(){
-      dates.push({
-        message: this.model.closureReason,
-        selectedDates: this.model.datePicker,
-        feesPaidWhileClosed: this.model.closedFeesPaid,
-        id: model.dates.length
+   
+    addRow () {
+      this.dateList.push( {
+        datePicker: null,
+        closureReason : '',
+        closedFeesPaid: '',
       });
-      this.model.closureReason = '';
-      this.model.datePicker = '';
-      this.model.closedFeesPaid= '';
     },
-    removeDate(removedId){
-      const indexOfItemToRemove = this.dates.findIndex((obj) => obj.id === removedId);
-      this.dates.splice(indexOfItemToRemove,1);
-      console.log(this.dates);
+    removeIndex(index){
+      if (index == 0){
+        return;
+      }
+      this.dateList.splice(index, 1);
     },
     previous() {
       console.log(this.navBarList);
@@ -460,6 +463,7 @@ export default {
     async save () {
       this.processing = true;
       let payload = [];
+      console.log(this.dateList);
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
@@ -474,8 +478,8 @@ export default {
             ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
             childCareCategory : item.childCareCategoryId,
             programYear : item.programYearId,
-            facilityClosureDates: dates,
-            notes: this.CCFRIFacilityModel.notes,
+            facilityClosureDates: this.dateList,
+            notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
             aprFee : item.approvedFeeApr,
             mayFee : item.approvedFeeMay,
             junFee : item.approvedFeeJun,

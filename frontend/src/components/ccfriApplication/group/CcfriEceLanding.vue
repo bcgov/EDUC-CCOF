@@ -1,6 +1,13 @@
 <template>
     <v-container>
         
+      <v-btn
+        class = "my-10 mx-14 justify-end"
+        @click="toggleAll()"
+        dark color='#003366' 
+        > 
+        Opt-in All Facilities
+      </v-btn>
         <LargeButtonContainer>
 
           <v-form ref="isValidForm" value="false" v-model="isValidForm">
@@ -124,6 +131,12 @@ export default {
     ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
+    },
+    toggleAll(){
+      this.navBarList.forEach((fac, index) => {
+        this.toggle(index);
+        this.ccfriOptInOrOut[index] = '1';
+      });
     },
     previous() {
       //console.log(this.ccfriOptInComplete);
