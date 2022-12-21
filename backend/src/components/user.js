@@ -5,7 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, OPTIN_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
 const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
@@ -98,6 +98,8 @@ async function getUserInfo(req, res) {
   
   organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
   organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
+  organization.applicationType = getLabelFromValue(organization.applicationType, CCOF_APPLICATION_TYPES);
+  
   resData.facilityList = parseFacilityData(userResponse);
   let results = {
     ...resData,

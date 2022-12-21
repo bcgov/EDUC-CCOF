@@ -139,13 +139,13 @@ const UserProfileOrganizationMappings = [
   { back: 'Application.ccof_applicationid', front: 'applicationId' },
   { back: 'Application.statuscode', front: 'applicationStatus' },
   { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
+  { back: 'Application.ccof_applicationtype', front: 'applicationType' },
+  { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
 
 
   
   // Unneeded mappings, can be added in later if we want them
-  // { back: 'Application.ccof_applicationtype', front: 'applicationType' },
   // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
-  // { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
   // { back: 'Organization.accountnumber', front: 'organizationAccountNumber' },
 ];
 

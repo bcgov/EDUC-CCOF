@@ -30,7 +30,8 @@ export const ApiRoutes = Object.freeze({
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
-  APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities'
+  APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
+  APPLICATION_RENEW: baseRoot + '/application/renew-ccof'
 });
 
 export const PAGE_TITLES = Object.freeze({
