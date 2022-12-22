@@ -169,6 +169,7 @@ async function getData(token, url, correlationID) {
 
 async function deleteOperationWithObjectId(operation, objectId) {
   const operationWithObject = `${operation}(${objectId})`;
+  log.info('del OPERATION:' , operationWithObject);
   return await deleteOperation(operationWithObject);
 }
 

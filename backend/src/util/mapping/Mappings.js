@@ -209,5 +209,6 @@ module.exports = {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
-  CCFRIFacilityMappings
+  CCFRIFacilityMappings,
+  CCFRIClosureDateMappings
 };

@@ -47,8 +47,8 @@ export default {
           throw 'unable to  load facility because you are not logged in';
         }
         try {
-          let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); //call the new endpoint 
-          commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       ///////////////
+          let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); 
+          commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       
           commit('setCCFRIFacilityModel', response.data);
         } catch(e) {
           console.log(`Failed to get existing Facility with error - ${e}`);

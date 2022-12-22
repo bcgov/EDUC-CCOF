@@ -168,9 +168,9 @@
             <v-row v-if = "model.closureFees === 'Yes'">
 
 
-              <v-row  v-for="(obj, index) in dateList" :key="index">
+              <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
               
-                <v-col class="col-md-1 col-12">
+                <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                     large
                     color="blue darken-4"
@@ -181,22 +181,36 @@
                 </v-col>
                 
                 
-                <v-col class="col-md-4 col-12">
-                  <v-menu  v-model="obj.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                <v-col class="col-md-3 col-12">
+                  <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="obj.datePicker"  label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field outlined :rules="rules" v-model="obj.formattedStartDate"  label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
-                    <v-date-picker
-                      range 
+                    <v-date-picker 
                       clearable 
-                      v-model="obj.datePicker" 
-                      @input="calendarMenu = false">
+                      v-model="obj.formattedStartDate" 
+                      @input="calendarMenu1 = false">
+                      
+                    </v-date-picker>
+                 </v-menu>
+                </v-col>
+
+                <v-col class="col-md-3 col-12">
+                  <v-menu  v-model="obj.calendarMenu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field outlined required v-model="obj.formattedEndDate"  label="Select End Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    </v-text-field>
+                  </template>
+                    <v-date-picker 
+                      clearable 
+                      v-model="obj.formattedEndDate" 
+                      @input="calendarMenu2 = false">
                     </v-date-picker>
                  </v-menu>
                 </v-col>
                 
-                <v-col class="col-md-4 col-12 ">
+                <v-col class="col-md-3 col-12 ">
                   <v-text-field
                     class = ""
                     v-model="obj.closureReason"
@@ -207,26 +221,28 @@
                   ></v-text-field>
                 </v-col>
 
-
-                <v-col class="col-md-3 col-12 mt-n6">
+                <v-col class="col-md-2 col-12 mt-n10">
                   <v-radio-group
-                    required
                     row
-                    v-model="obj.closedFeesPaid"
+                    v-model="obj.feesPaidWhileClosed"
+                    mandatory
                     label="Did parents pay for this closure?"
                   >
                     <v-radio
+                    
                       label="Yes"
                       value= 1
                     ></v-radio>
                     <v-radio
+                    
                       label="No"
                       value= 0
                     ></v-radio>
                   </v-radio-group>
                 </v-col>
 
-                
+                <span class="white--text"> . </span>
+                <v-divider></v-divider>
               </v-row> <!-- end v for-->
               
                 
@@ -290,7 +306,7 @@ import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 
 
-let closureFees;
+let closureFees = '';
 let isFixedFee= {};
 let jan = {};
 let feb = {};
@@ -306,7 +322,6 @@ let nov = {};
 let dec = {};
 let childCareTypes = {};   
 let model = { x: [],
-  dateList,
   closureFees,
   isFixedFee,
   jan,
@@ -325,15 +340,6 @@ let model = { x: [],
 };
 
 
-let dateList = [
-  {
-    datePicker: [],
-    closureReason : '',
-    closedFeesPaid: '',
-    calendarMenu: undefined,
-  }
-];
-
 
 export default {
 
@@ -345,7 +351,6 @@ export default {
       model,
       facilityProgramYears: [],
       isValidForm : false,
-      dateList,
       jan,
       feb,
       mar,
@@ -398,7 +403,8 @@ export default {
     },
     nextFacility(){
       return this.navBarList[this.findIndexOfFacility + 1];
-    }
+    },
+   
   },
   watch: {
     //get facilityID from here and then set it ! 
@@ -408,6 +414,11 @@ export default {
           
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
+
+          //so the card will display as open if dates already exist
+          if (this.CCFRIFacilityModel.dates){
+            this.model.closureFees = 'Yes';
+          }
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -423,17 +434,15 @@ export default {
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
    
     addRow () {
-      this.dateList.push( {
-        datePicker: null,
+      this.CCFRIFacilityModel.dates.push( {
+        datePicker1: undefined,
+        datePicker2: undefined,
         closureReason : '',
-        closedFeesPaid: '',
+        feesPaidWhileClosed: '',
       });
     },
     removeIndex(index){
-      if (index == 0){
-        return;
-      }
-      this.dateList.splice(index, 1);
+      this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     previous() {
       console.log(this.navBarList);
@@ -463,22 +472,30 @@ export default {
     async save () {
       this.processing = true;
       let payload = [];
-      console.log(this.dateList);
+  
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      //for each child care type - send a request. 
+      
 
+      this.CCFRIFacilityModel.dates.forEach ((item, index) => {
+        //checks if blank - don't send over incomplete closure dates
+        if (!item.formattedStartDate && !item.closureReason){
+          this.CCFRIFacilityModel.dates.splice(index, 1);
+        }
+      });
+
+      //for each child care type - send a request. 
       //index will also match the order of how the cards are displayed. 
       this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { // FOR EACH the date groups?
         if (item.feeFrequency) {
-        //payload will need to look different if fee is monthly / daily 
+        
+          
           payload[index] = {
             ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
             childCareCategory : item.childCareCategoryId,
             programYear : item.programYearId,
-            facilityClosureDates: this.dateList,
             notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
             aprFee : item.approvedFeeApr,
             mayFee : item.approvedFeeMay,
@@ -497,7 +514,11 @@ export default {
           payload[index].feeFrequency = item.feeFrequency === 'Monthly'? '100000000' : item.feeFrequency  === 'Weekly'? '100000001' :item.feeFrequency === 'Daily'? '100000002' :'null';
         }
 
+       
       }); // end FOR EACH
+
+      payload[0].facilityClosureDates = this.CCFRIFacilityModel.dates;
+      
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
         this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');

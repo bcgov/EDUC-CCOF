@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, getOperationWithObjectId, getHttpHeader, minify,} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, getOperationWithObjectId, getHttpHeader, minify, deleteOperationWithObjectId} = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
@@ -9,7 +9,7 @@ const log = require('./logger');
 const _ = require ('lodash');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
-const { info } = require('./logger');
+const { getCCFRIClosureDates } = require('./facility');
 const { loadFiles } = require('../config/index');
 
 
@@ -45,7 +45,7 @@ async function updateCCFRIApplication(req, res) {
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
         'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
       };
-      log.info(payload);
+      //log.info(payload);
 
       let response = undefined;
       if (facility.ccfriApplicationId) {
@@ -60,7 +60,7 @@ async function updateCCFRIApplication(req, res) {
           ccof_ccfrioptin: facility.optInResponse,
         });
       }
-      log.info('res data:' , response);
+      //log.info('res data:' , response);
     })); //end for each
   } catch (e) {
     log.error(e);
@@ -85,8 +85,8 @@ async function upsertParentFees(req, res) {
     let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
     let programYear = `/ccof_program_years(${feeGroup.programYear})`;
 
-    log.info(feeGroup.notes);
-    log.info(feeGroup.ccfriApplicationGuid);
+    // log.info(feeGroup.notes);
+    // log.info(feeGroup.ccfriApplicationGuid);
 
     let payload = {
       "ccof_frequency": feeGroup.feeFrequency,
@@ -112,10 +112,10 @@ async function upsertParentFees(req, res) {
     );
     
 
-    log.info(payload);
+    //log.info(payload);
     let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
 
-    log.info("SUPER URL:" , url);
+    //log.info("SUPER URL:" , url);
     try {
       let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       //log.info('feeResponse', response);
@@ -139,7 +139,7 @@ async function upsertParentFees(req, res) {
     
     try {
       let response = patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-      log.info('notesRes', response);
+      //log.info('notesRes', response);
       //return res.status(HttpStatus.CREATED).json(response);
     } catch (e) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
@@ -149,8 +149,9 @@ async function upsertParentFees(req, res) {
   //if no closure dates, don't bother sending any requests
   //closure dates are the same for each age group - so pick the first group in the array and take data from there
   if (body[0].facilityClosureDates){
+    log.info(body[0].facilityClosureDates);
     try {
-      let response = postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
+      let response = await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
       //log.info('datesRes', response);
       return res.status(HttpStatus.CREATED).json(response);
     } catch (e) {
@@ -161,27 +162,56 @@ async function upsertParentFees(req, res) {
 }
 
 async function postClosureDates(dates, ccfriApplicationGuid, res){
+  let retVal= [];
 
-  //if the user selects an end date, create a start and end date. else, use the only date for start and end.
-  dates.forEach(async (date) => {
-
-    let payload = {
-      "ccof_startdate": new Date (date.datePicker[0]),
-      "ccof_paidclosure": date.closedFeesPaid,
-      "ccof_enddate": date.datePicker[1]? new Date (date.datePicker[1]) :new Date (date.datePicker[0]),
-      "ccof_comment": date.closureReason,
-      "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
-    };
-
-    try {
-      let response = await postOperation('ccof_application_ccfri_closures', payload);
-      log.info('feeResponse', response);
-      return res.status(HttpStatus.CREATED).json(response);
-    } catch (e) {
+  //delete all the old closure dates from the application - otherwise we will get duplicates when we save
+  let dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
+ 
+  //don't bother trying to delete if there are no dates saved
+  if (dynamicsClosureDates.length > 0){  
+    try{
+      await Promise.all(dynamicsClosureDates.map(async (date) => {
+        let response = await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
+        log.info(response);
+      }));
+    }catch (e){
+      log.info(e);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
+  }
 
-  });
+  try{
+    //if the user selects an end date, create a start and end date. else, use the only date for start and end.
+    await Promise.all(dates.map(async (date) => {
+
+      let payload = {
+        "ccof_startdate": new Date (date.formattedStartDate),
+        "ccof_paidclosure": date.feesPaidWhileClosed,
+        "ccof_enddate": date.formattedEndDate? new Date (date.formattedEndDate) :new Date (date.formattedStartDate),
+        "ccof_comment": date.closureReason,
+        "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
+      };
+
+      try {
+        let response = await postOperation('ccof_application_ccfri_closures', payload);
+        log.info('feeResponse', response);
+        retVal.push(response);
+        //return res.status(HttpStatus.CREATED).json(response);
+      } catch (e) {
+        log.info(e);
+        //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+      }
+
+      return res.status(HttpStatus.CREATED).json(retVal);
+
+    }));
+  
+  } catch (e){
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+
+  }
+  
+
 
 }
 
@@ -206,7 +236,7 @@ async function updateECEWEApplication(req, res) {
   application = application.toJSON();
   application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
   try {
-    log.info(application);
+   // log.info(application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -232,7 +262,7 @@ async function updateECEWEFacilityApplication(req, res) {
       delete forBackFacilities[key]._ccof_facility_value;
 
       let facility = forBackFacilities[key];
-      log.info('TEMP FACLITY JSON = '+JSON.stringify(facility, null, 2));
+      //log.info('TEMP FACLITY JSON = '+JSON.stringify(facility, null, 2));
 
       if (eceweApplicationId) {
         // send PATCH (update existing ECEWE facility)
