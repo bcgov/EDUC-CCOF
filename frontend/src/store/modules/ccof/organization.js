@@ -60,6 +60,25 @@ export default {
         }
       }
     },
+    async renewApplication({ commit, rootState }) {
+      checkSession();
+
+      let payload = {
+        providerType: rootState.auth.userInfo.organizationProviderType,
+        programYearId: rootState.app.programYearList.future.programYearId,
+        organizationId: rootState.auth.userInfo.organizationId,
+      };
+      console.log('renewApplication, payload', payload);
+      try {
+        const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
+        commit('setApplicationId', response.data?.applicationId);
+        return response;
+      } catch (error) {
+        console.log(`Failed to renew Application - ${error}`);
+        throw error;
+      }
+    },
+
     async loadOrganization({ commit }, organizationId) {
       checkSession();
 

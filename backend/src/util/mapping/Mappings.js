@@ -139,13 +139,13 @@ const UserProfileOrganizationMappings = [
   { back: 'Application.ccof_applicationid', front: 'applicationId' },
   { back: 'Application.statuscode', front: 'applicationStatus' },
   { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
+  { back: 'Application.ccof_applicationtype', front: 'applicationType' },
+  { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
 
 
   
   // Unneeded mappings, can be added in later if we want them
-  // { back: 'Application.ccof_applicationtype', front: 'applicationType' },
   // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
-  // { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
   // { back: 'Organization.accountnumber', front: 'organizationAccountNumber' },
 ];
 
@@ -160,8 +160,16 @@ const UserProfileFacilityMappings = [
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },
   { back: 'CCOF.ccof_formcomplete', front: 'isCCOFComplete' },
   { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
-  
 ];
+
+const OrganizationFacilityMappings = [
+  { back: 'accountid', front: 'facilityId' },
+  { back: 'name', front: 'facilityName' },
+  { back: 'accountnumber', front: 'facilityAccountNumber' },
+  { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+];
+
 
 const UserProfileCCFRIMappings = [
   { back: 'CCFRI.statuscode', front: 'ccfriStatus' },
@@ -204,5 +212,6 @@ module.exports = {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
-  CCFRIFacilityMappings
+  CCFRIFacilityMappings,
+  OrganizationFacilityMappings,
 };

@@ -177,12 +177,11 @@ export default {
       if (this.isRenewal) {
         this.items.push(
           {
-            title: 'Program Renewal',
-            link: { name: 'Renew Organization' },
+            title: 'License Upload',
+            link: { name: 'License Upload'},
             isAccessible: true,
-            icon: 'mdi-checkbox-blank-circle-outline', //replace
-            isActive: 'Renew Organization' === this.$route.name,
-            expanded: false,
+            icon: this.getCheckbox(this.ccofApplicationComplete),
+            isActive: 'License Upload' === this.$route.name
           });
       } else {
         this.items.push(this.getCCOFNavigation());
