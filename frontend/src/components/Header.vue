@@ -14,10 +14,26 @@
       >
     </a>
     
-    <div v-if="isAuthenticated && dataReady" class="">
+    <div v-if="isAuthenticated && dataReady" class="mt-7">
+      <v-btn 
+        id="mail_box_button" @click="goToMessagePage()"
+        color="#003366" rounded dark elevation="0" style="margin-right:50px"
+      >
+        <v-badge
+          color="red"
+          :content="unreadMessageCount"
+          bottom right 
+          overlap offset-x="20" offset-y="20"
+        >
+          <v-icon aria-hidden="false" size="40" color='white'>
+              mdi-email-outline
+          </v-icon>
+        </v-badge>
+      </v-btn>
+      
       <v-menu name="user_options" offset-y>
         <template v-slot:activator="{ on }">
-          <v-chip tabindex="0" v-on="on" pill color="#003366" dark class="mt-7">
+          <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
             <v-avatar left color="info">
               {{ userInfo.displayName[0] }}
             </v-avatar>
@@ -62,15 +78,26 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
+    ...mapGetters('message', ['unreadMessageCount']),
     dataReady: function () {
       return this.userInfo;
-    }
+    },
   },
   methods: {
     hasSeveralMincodes() {
       return this.userInfo?.userMinCodes?.length > 1;
-    }
-
+    },
+    goToMessagePage() {
+      this.$router.push(PATHS.messagesPage).catch(err => {
+        // Ignore the vuex err regarding  navigating to the page they are already on.
+        if (
+          err.name !== 'NavigationDuplicated' &&
+          !err.message.includes('Avoided redundant navigation to current location')
+        ) 
+          console.log(err);
+      });
+    },
+    
   }
 };
 </script>

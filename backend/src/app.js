@@ -29,6 +29,7 @@ const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const applicationRouter = require('./routes/application');
 const fundingRouter = require('./routes/funding');
+const messageRouter = require('./routes/message');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -166,6 +167,7 @@ apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 apiRouter.use('/application', applicationRouter);
 apiRouter.use('/group/funding', fundingRouter);
+apiRouter.use('/messages', messageRouter);
 
 
 //Handle 500 error

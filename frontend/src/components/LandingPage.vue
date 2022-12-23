@@ -1,14 +1,15 @@
 <template>
-  <v-container>
-    <div v-if ="userInfo.unreadMessages">
-      <MessagesToolbar></MessagesToolbar>
-    </div>
+  <v-container fluid style="padding:0">
+
+    <MessagesToolbar :isActionRequiredMessageDisplayed="isActionRequiredMessageDisplayed" :isBroadcastingMessageDisplayed="isBroadcastingMessageDisplayed"></MessagesToolbar>
+
     <v-row justify="center">
       <div
         class="pa-10"
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
     </v-row >
+    
      <!-- Application Approved screens starts here -->
     <v-container 
     class="px-10"
@@ -91,7 +92,7 @@
 </template>
 <script>
 
-import { mapGetters, mapState, mapMutations} from 'vuex';
+import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
@@ -102,9 +103,11 @@ export default {
     return {
       input: '',
       PATHS: PATHS,
-      results : {},
-      
+      results : {}
     };
+  },
+  created() {
+    this.getAllMessagesVuex();
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -121,10 +124,17 @@ export default {
     },
     isRenewDisabled() {
       return false;
+    },
+    isActionRequiredMessageDisplayed() {
+      return true;
+    },
+    isBroadcastingMessageDisplayed(){
+      return false;
     }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
+    ...mapActions('message', ['getAllMessages']),
     clicked (){
       console.log('clicked');
       return '';
@@ -140,7 +150,15 @@ export default {
     continueApplication() {
       this.setIsRenewal(false);
       this.$router.push(PATHS.group.orgInfo);
-    }    
+    },    
+    async getAllMessagesVuex() {
+      try {
+        const organizationId = this.userInfo.organizationId;
+        await this.getAllMessages(organizationId);
+      } catch (error) {
+        console.info(error);
+      }
+    },    
   },
   
 

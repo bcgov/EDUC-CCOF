@@ -17,6 +17,7 @@ import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
+import MessagesPage from '@/components/MessagesPage';
 
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
@@ -339,6 +340,15 @@ const router = new VueRouter({
       component: Impersonate,
       meta: {
         pageTitle: 'Impersonate a BCeID User',
+        requiresAuth: true
+      }
+    },
+    {
+      path: PATHS.messagesPage,
+      name: 'messagesPage',
+      component: MessagesPage,
+      meta: {
+        pageTitle: 'Messages Page',
         requiresAuth: true
       }
     },

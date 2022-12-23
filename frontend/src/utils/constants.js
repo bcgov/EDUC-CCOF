@@ -26,7 +26,8 @@ export const ApiRoutes = Object.freeze({
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
-  FAMILY_ORGANIZATION: baseRoot + '/family/organization'
+  FAMILY_ORGANIZATION: baseRoot + '/family/organization',
+  MESSAGE: baseRoot + '/messages'
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -62,7 +63,8 @@ export const PATHS = {
   documentUpload: '/ecewe-document-upload',
   eceweEligibility: '/ecewe-eligibility',
   eceweFacilities: '/ecewe-facilities',
-  eceweSummary:  '/ecewe-summary'
+  eceweSummary:  '/ecewe-summary',
+  messagesPage: '/messages'
 };
 
 export const NAV_BAR_GROUPS = {

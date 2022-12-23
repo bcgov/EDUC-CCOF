@@ -150,6 +150,16 @@ const ProgramYearMappings = [
   { back: '_ccof_previousyear_value', front: 'previousYearId' },
 ];
 
+const MessageMappings = [
+  { back: 'activityid', front: 'messageId' },
+  { back: 'createdon', front: 'sentDate' },
+  { back: 'description', front: 'messageContent' },
+  { back: 'lastopenedtime', front: 'lastOpenedTime' },
+  { back: 'subject', front: 'subject' },
+  { back: 'regardingobjectid_account_email.accountid', front: 'organizationId' },
+  { back: 'regardingobjectid_account_email.name', front: 'organizationName' },
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -160,4 +170,5 @@ module.exports = {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
+  MessageMappings,
 };
