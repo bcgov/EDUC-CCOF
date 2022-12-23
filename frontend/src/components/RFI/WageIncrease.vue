@@ -22,7 +22,12 @@
             >
               <v-toolbar-title class="flex ml-md-4" >
                 <v-row>
-                  <font-awesome-icon icon="fa-solid fa-circle-info " class="fa-2x mx-4 my-2"/> 
+                  <v-icon
+                    large
+                    color="blue darken-4"
+                    class=""
+                    > mdi-information
+                  </v-icon>
                   <p class="text text--primary  mx-4 my-3" > Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required to apply for ECE-WE prior to being approved for a fee increase under this policy. </p>
                 </v-row>
               </v-toolbar-title >
@@ -156,7 +161,12 @@
             >
               <v-toolbar-title class="flex ml-md-4" >
                 <v-row>
-                  <font-awesome-icon icon="fa-solid fa-circle-info " class="fa-2x mx-4 my-2"/> 
+                  <v-icon
+                    large
+                    color="blue darken-4"
+                    class=""
+                    > mdi-information
+                  </v-icon>
                   <p class="text text--primary  mx-4 my-3" > Note: If two or more staff have the same information for each column, they can be included in one row. </p>
                 </v-row>
               </v-toolbar-title >
@@ -414,12 +424,10 @@ export default {
       });
     },
     next(){
-      if (this.model.q1 === 'Yes'){
-        this.$router.push(PATHS.addNewFees);
-      }
+      this.$router.push(PATHS.ServiceExpansion);
     },
     previous() {
-      this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.$router.back(); 
     },
   },
   components: { }

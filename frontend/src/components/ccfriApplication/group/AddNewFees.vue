@@ -447,8 +447,8 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     previous() {
-      console.log(this.navBarList);
-      //this.$router.back();  
+      //console.log(this.navBarList);
+      this.$router.back();  
     },
     next() {
       //TODO: Logic will need to exist here to eval if we should go to the RFI screens also

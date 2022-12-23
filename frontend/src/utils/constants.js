@@ -53,6 +53,7 @@ export const PATHS = {
   currentFees: '/ccfriApplication/group/current-fees',
   ccfriRequestMoreInfo: '/ccfri-application/request-info',
   WageIncrease: '/ccfri-application/request-info/wage-increase',
+  ServiceExpansion: '/ccfri-application/request-info/service-expansion',
   selectApplicationType: '/ccof-application/select-application-type',
   impersonate: '/impersonate',
   group: {
