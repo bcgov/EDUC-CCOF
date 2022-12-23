@@ -151,7 +151,7 @@ async function upsertParentFees(req, res) {
 
     
     try {
-      let response = patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
+      let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
       //log.info('notesRes', response);
       //return res.status(HttpStatus.CREATED).json(response);
     } catch (e) {
