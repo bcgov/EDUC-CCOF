@@ -1,4 +1,5 @@
 const OrganizationMappings = [
+  { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'name', front: 'legalName' },
   { back: 'address1_name', front: 'address1' }, //Address 
   { back: 'address1_city', front: 'city1' },
@@ -13,13 +14,15 @@ const OrganizationMappings = [
   { back: 'emailaddress1', front: 'email' },
   { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number    
   { back: 'ccof_typeoforganization', front: 'organizationType' },
-  { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
+  // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
+  // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
+  // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
 
 const FacilityMappings = [
   { back: 'name', front: 'facilityName' },
-  { back: 'ccof_facilitystartdate', front: 'yearBeginOperation' },
+  { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'address1_line1', front: 'facilityAddress' },
   { back: 'address1_city', front: 'city' },
   { back: 'address1_postalcode', front: 'postalCode' },
@@ -28,6 +31,8 @@ const FacilityMappings = [
   { back: 'address1_primarycontactname', front: 'contactName' },
   { back: 'telephone1', front: 'phone' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+  { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
+  { back: 'ccof_ facility_received_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
@@ -144,13 +149,13 @@ const UserProfileOrganizationMappings = [
   { back: 'Application.ccof_applicationid', front: 'applicationId' },
   { back: 'Application.statuscode', front: 'applicationStatus' },
   { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
+  { back: 'Application.ccof_applicationtype', front: 'applicationType' },
+  { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
 
 
   
   // Unneeded mappings, can be added in later if we want them
-  // { back: 'Application.ccof_applicationtype', front: 'applicationType' },
   // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
-  // { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
   // { back: 'Organization.accountnumber', front: 'organizationAccountNumber' },
 ];
 
@@ -165,8 +170,16 @@ const UserProfileFacilityMappings = [
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },
   { back: 'CCOF.ccof_formcomplete', front: 'isCCOFComplete' },
   { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
-  
 ];
+
+const OrganizationFacilityMappings = [
+  { back: 'accountid', front: 'facilityId' },
+  { back: 'name', front: 'facilityName' },
+  { back: 'accountnumber', front: 'facilityAccountNumber' },
+  { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+];
+
 
 const UserProfileCCFRIMappings = [
   { back: 'CCFRI.statuscode', front: 'ccfriStatus' },
@@ -210,5 +223,6 @@ module.exports = {
   UserProfileECEWEMappings,
   ProgramYearMappings,
   CCFRIFacilityMappings,
-  CCFRIClosureDateMappings
+  CCFRIClosureDateMappings,
+  OrganizationFacilityMappings,
 };

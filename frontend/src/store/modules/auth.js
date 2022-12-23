@@ -133,10 +133,11 @@ export default {
       commit('setUserInfo', userInfoRes.data);
       commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
       commit('app/setIsOrganizationComplete', userInfoRes.data.isOrganizationComplete, { root: true });
+      commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
       commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
       commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });
-      
+
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },

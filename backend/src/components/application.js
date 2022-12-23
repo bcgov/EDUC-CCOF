@@ -1,16 +1,34 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, getOperationWithObjectId, getHttpHeader, minify, deleteOperationWithObjectId} = require('./utils');
-const config = require('../config/index');
-const ApiError = require('./error');
-const axios = require('axios');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId} = require('./utils');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const _ = require ('lodash');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
 const { loadFiles } = require('../config/index');
+
+async function renewCCOFApplication(req, res) {
+  log.info('renew CCOF application called');
+  try {
+    const application = req.body;
+    let payload = {
+      'ccof_providertype': application.providerType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
+      'ccof_applicationtype': CCOF_APPLICATION_TYPES.RENEW,
+      'ccof_ProgramYear@odata.bind': `/ccof_program_years(${application.programYearId})`,
+      'ccof_Organization@odata.bind': `/ccof_program_years(${application.organizationId})`
+    };
+    log.info('Payload for renew is: ', payload.toJSON);
+    let applicationGuid = await postOperation('ccof_applications', payload);
+    //After the application is created, get the application guid
+    return res.status(HttpStatus.CREATED).json({ applicationId: applicationGuid });
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }  
+}
+
 
 
 //creates or updates CCFRI application. 
@@ -231,7 +249,7 @@ async function updateECEWEApplication(req, res) {
   application = application.toJSON();
   application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
   try {
-   // log.info(application);
+    log.verbose('updateECEWEApplication: payload', application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -282,6 +300,6 @@ module.exports = {
   getECEWEApplication,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
-
+  renewCCOFApplication
   //getCCFRIApplication
 };

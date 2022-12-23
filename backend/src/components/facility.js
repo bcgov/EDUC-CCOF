@@ -51,6 +51,16 @@ function mapFacilityObjectForBack(data) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
 
+  if (data.hasReceivedFunding === 'no') {
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 0;
+  } else if (data.hasReceivedFunding === 'yes') { 
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 1;
+  } else if (data.hasReceivedFunding === 'yesFacility') { 
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 2;
+  } else if (data.hasReceivedFunding) {
+    console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
+  }
+
   return facilityForBack;
 }
 
@@ -60,7 +70,19 @@ function mapFacilityObjectForFront(data) {
     data.ccof_facilitystartdate = year;
   }
 
-  return new MappableObjectForFront(data, FacilityMappings).toJSON(); 
+  let obj = new MappableObjectForFront(data, FacilityMappings).toJSON(); 
+
+  if (data.ccof_everreceivedfundingundertheccofprogram === 0) {
+    obj.hasReceivedFunding = 'no';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 1) {
+    obj.hasReceivedFunding = 'yes';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 2) {
+    obj.hasReceivedFunding = 'yesFacility';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
+    console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
+  }
+
+  return obj;
 }
 
 function mapCCFRIObjectForFront(data) { 

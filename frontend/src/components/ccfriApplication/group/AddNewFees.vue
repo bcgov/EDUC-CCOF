@@ -465,7 +465,7 @@ export default {
       }
       else {
         console.log('going to ece-we!');
-        this.$router.push({path : `${PATHS.eceweEligibility}/${this.applicationId}`});
+        this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
     
       this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 

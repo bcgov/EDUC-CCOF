@@ -32,12 +32,9 @@ const auth = {
 
   // Get new JWT and Refresh tokens
   async renew(refreshToken, isIdirUser) {
-    log.info('Attempting to renew token user isIderUser :: ', isIdirUser);
     let result = {};
     let clientId = isIdirUser? config.get('oidc:clientIdIDIR') : config.get('oidc:clientId');
     let clientSecret = isIdirUser? config.get('oidc:clientSecretIDIR') : config.get('oidc:clientSecret');
-    log.info('using client :: ', clientId);
-    log.info('using secret :: ', clientSecret);
     try {
       const discovery = await utils.getOidcDiscovery();
       const response = await axios.post(discovery.token_endpoint,
@@ -86,7 +83,6 @@ const auth = {
 
             // Get new JWT and Refresh Tokens and update the request
             let isIdir = (req.session?.passport?.user?._json?.idir_user_guid) ? true : false;
-            log.info('attemtping to renew token from refreshJWT with isIdirUser: ', isIdir);
             const result = await auth.renew(req.user.refreshToken, isIdir);
             req.user.jwt = result.jwt; // eslint-disable-line require-atomic-updates
             req.user.refreshToken = result.refreshToken; // eslint-disable-line require-atomic-updates

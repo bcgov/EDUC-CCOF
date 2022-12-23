@@ -233,8 +233,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'Renew Organization',
         requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        showNavBar: false,
       }
     },
     // {
