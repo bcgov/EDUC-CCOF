@@ -37,7 +37,7 @@ export default {
   actions: {
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
-      let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); //maybe change getFacilityById as well?
+      let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
       if (CCFRIFacilityModel) {
         //console.log('found CCFRI data for guid: ', ccfriId);
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
@@ -62,6 +62,8 @@ export default {
         let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
         console.log('reponse is is: ', response); //?
         let careTypes = [];
+
+        console.log('resp:', response);
         response.data.forEach(item => {
           let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
             return (searchItem.childCareCategoryId == item.childCareCategoryId &&
@@ -71,6 +73,7 @@ export default {
             careTypes.push( {
               programYear: rootState.app.programYearList.current.name,
               programYearId: rootState.app.programYearList.current.programYearId,
+              current: 1, //jb - we found a valid liscence for this child care cat - but it doesn't exist on the CCFRI form yet 
               ...item
             });
           }
@@ -84,10 +87,31 @@ export default {
             careTypes.push( {
               programYear: rootState.app.programYearList.previous.name,
               programYearId: rootState.app.programYearList.previous.programYearId,
+              current: 1,
               ...item
             });
           }
         });
+        console.log('len of childCareTypes before push: ',  state.CCFRIFacilityModel.childCareTypes.length); //from CCFRI form dynamics
+       
+
+        //if childcarecat GUID exists in childcaretypes but NOT in response - run delete
+        //this handles the edge case of a user entering fees for CCFRI then going back to CCOF
+        //and removing that child care type
+        state.CCFRIFacilityModel.childCareTypes.forEach((childCareCat) => {
+          console.log('care type guid:' , childCareCat.childCareCategoryId);
+
+          let found = response.data.find(searchItem => {
+            return (searchItem.childCareCategoryId == childCareCat.childCareCategoryId);
+          });
+
+          
+          //Mark the child care type, and call the delete API with the parentFeeGUID
+          if (!found) {
+            childCareCat.deleteMe = true;
+          }
+        });
+        
         state.CCFRIFacilityModel.childCareTypes.push(...careTypes);
         commit('setCCFRIFacilityModel', state.CCFRIFacilityModel);
       } catch (e) {
@@ -97,4 +121,4 @@ export default {
   }
 };
 
-//I would maybe like a way to load the CCFRI model data into here?
+//

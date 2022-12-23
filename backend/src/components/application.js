@@ -13,28 +13,7 @@ const { getCCFRIClosureDates } = require('./facility');
 const { loadFiles } = require('../config/index');
 
 
-//I think we most likely can take this out -- I get info from the CCFRI application now 
-// async function getCCFRIApplication(req,res) {
-
-//   log.info(req.params.ccfriId);
-
-//   try {
-//     let response = await getOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
-
-//     log.info(response);
-
-//     //use mappable objects here?
-//     const payload = {
-//       facilityId : response._ccof_facility_value,
-//     };
-//     return res.status(HttpStatus.OK).json(payload);
-//   } catch (e) {
-//     log.error(e);
-//     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-//   }
-// }
-
-//creates or updates CCFRI application. TODO: add a post function!
+//creates or updates CCFRI application. 
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
   let retVal= [];
@@ -76,54 +55,70 @@ async function updateCCFRIApplication(req, res) {
 async function upsertParentFees(req, res) {
   let body = req.body;
 
-  
-  
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async(feeGroup) => {
 
-    let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
-    let programYear = `/ccof_program_years(${feeGroup.programYear})`;
+    if (feeGroup.deleteMe){
+      log.info('DELETEEEEEEEEEEEEEEEEEEEEEEEE this cat! : ');
+      log.info('DELETEEEEEEEEEEEEEEEEEEEEEEEE this cat! : ', feeGroup.parentFeeGUID);
 
-    // log.info(feeGroup.notes);
-    // log.info(feeGroup.ccfriApplicationGuid);
-
-    let payload = {
-      "ccof_frequency": feeGroup.feeFrequency,
-      "ccof_ChildcareCategory@odata.bind": childCareCategory, 
-      "ccof_ProgramYear@odata.bind": programYear, 
-    };
-
-    Object.assign(payload, 
-      {
-        "ccof_apr": feeGroup.aprFee,
-        "ccof_may": feeGroup.mayFee,
-        "ccof_jun": feeGroup.junFee,
-        "ccof_jul": feeGroup.julFee,
-        "ccof_aug": feeGroup.augFee,
-        "ccof_sep": feeGroup.sepFee,
-        "ccof_oct": feeGroup.octFee,
-        "ccof_nov": feeGroup.novFee,
-        "ccof_dec": feeGroup.decFee,
-        "ccof_jan": feeGroup.janFee,
-        "ccof_feb": feeGroup.febFee,
-        "ccof_mar": feeGroup.marFee,
+      try {
+        let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
+        log.info('delete feeGroup res:', response);
+        return res.status(HttpStatus.OK).json(response);
+      } catch (e) {
+        //log.info(e);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
       }
-    );
-    
-
-    //log.info(payload);
-    let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
-
-    //log.info("SUPER URL:" , url);
-    try {
-      let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-      //log.info('feeResponse', response);
-      return res.status(HttpStatus.CREATED).json(response);
-    } catch (e) {
-      //log.info(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
+
+    else{
+
+      let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
+      let programYear = `/ccof_program_years(${feeGroup.programYear})`;
+
+      // log.info(feeGroup.notes);
+      // log.info(feeGroup.ccfriApplicationGuid);
+
+      let payload = {
+        "ccof_frequency": feeGroup.feeFrequency,
+        "ccof_ChildcareCategory@odata.bind": childCareCategory, 
+        "ccof_ProgramYear@odata.bind": programYear, 
+      };
+
+      Object.assign(payload, 
+        {
+          "ccof_apr": feeGroup.aprFee,
+          "ccof_may": feeGroup.mayFee,
+          "ccof_jun": feeGroup.junFee,
+          "ccof_jul": feeGroup.julFee,
+          "ccof_aug": feeGroup.augFee,
+          "ccof_sep": feeGroup.sepFee,
+          "ccof_oct": feeGroup.octFee,
+          "ccof_nov": feeGroup.novFee,
+          "ccof_dec": feeGroup.decFee,
+          "ccof_jan": feeGroup.janFee,
+          "ccof_feb": feeGroup.febFee,
+          "ccof_mar": feeGroup.marFee,
+        }
+      );
+      
+
+      //log.info(payload);
+      let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
+
+      //log.info("SUPER URL:" , url);
+      try {
+        let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
+        //log.info('feeResponse', response);
+        return res.status(HttpStatus.CREATED).json(response);
+      } catch (e) {
+        //log.info(e);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+      }
+
+  }
 
   }); //end forEach
 
@@ -172,7 +167,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
     try{
       await Promise.all(dynamicsClosureDates.map(async (date) => {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
-        log.info(response);
+        //log.info(response);
       }));
     }catch (e){
       log.info(e);

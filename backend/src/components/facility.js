@@ -112,7 +112,7 @@ async function getLicenseCategories(req, res){
 async function getFacilityChildCareTypes(req, res){
   try {
     //this is actually the CCFRI guid rn
-    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency)';
+    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)';
     log.info('operation: ', operation);
     let ccfriData = await getOperation(operation);
     log.info('dataaaaaa', ccfriData);
@@ -125,6 +125,7 @@ async function getFacilityChildCareTypes(req, res){
       //currentProgramYear = item._ccof_programyear_value;
       childCareTypes.push(
         {
+          parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
           childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
           childCareCategoryId: item._ccof_childcarecategory_value,
           programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
@@ -152,7 +153,7 @@ async function getFacilityChildCareTypes(req, res){
     ccfriData.childCareTypes = childCareTypes;
     ccfriData.dates = await getCCFRIClosureDates(req.params.ccfriId);
 
-    log.info('theDATEs: ', ccfriData);
+    //log.info('theDATEs: ', ccfriData);
 
     return res.status(HttpStatus.OK).json(ccfriData);
   } catch (e) {
