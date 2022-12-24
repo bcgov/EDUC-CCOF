@@ -42,9 +42,19 @@ const FacilityMappings = [
 const CCFRIFacilityMappings = [
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
+  { back: 'ccof_informationccfri', front: 'ccfriApplicationNotes'},
   //{ back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
+];
+
+const CCFRIClosureDateMappings = [
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
+  { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
+  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
+  { back: 'ccof_comment', front: 'closureReason' },
 ];
 
 const CCOFApplicationMappings = [
@@ -213,5 +223,6 @@ module.exports = {
   UserProfileECEWEMappings,
   ProgramYearMappings,
   CCFRIFacilityMappings,
+  CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
 };

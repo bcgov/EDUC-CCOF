@@ -169,13 +169,14 @@ async function getData(token, url, correlationID) {
 
 async function deleteOperationWithObjectId(operation, objectId) {
   const operationWithObject = `${operation}(${objectId})`;
+  //log.info('del OPERATION:' , operationWithObject);
   return await deleteOperation(operationWithObject);
 }
 
 async function deleteOperation(operation) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
-    log.info('delete Data Url', url);
+    //log.info('delete Data Url', url);
     const response = await axios.delete(url, getHttpHeader());
     //logResponse('getOperation', response);
     return response.data;

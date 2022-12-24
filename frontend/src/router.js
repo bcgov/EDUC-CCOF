@@ -24,6 +24,7 @@ import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
 import WageIncrease from '@/components/RFI/WageIncrease';
+import ServiceExpansion from '@/components/RFI/ServiceExpansion';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -340,6 +341,17 @@ const router = new VueRouter({
       component: WageIncrease,
       meta: {
         pageTitle: 'CCFRI Wage Increase',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.ServiceExpansion,
+      name: 'ccfri-service-expansion',
+      component: ServiceExpansion,
+      meta: {
+        pageTitle: 'Priority Service Expansion',
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
