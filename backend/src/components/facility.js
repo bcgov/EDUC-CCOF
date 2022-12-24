@@ -96,8 +96,7 @@ function mapCCFRIObjectForFront(data) {
 
 async function getFacility(req, res) {
   try {
-    // let operation = 'accounts('+req.params.facilityId+')?$select=accountid,address1_city,address1_line1,address1_postalcode,ccof_facilitylicencenumber,ccof_facilitystartdate,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,ccof_apr,ccof_aug,_ccof_childcarecategory_value,ccof_dec,_ccof_facility_value,ccof_feb,ccof_jan,ccof_jul,ccof_jun,ccof_mar,ccof_may,ccof_nov,ccof_oct,_ccof_programyear_value,ccof_sep,ccof_frequency),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)';
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,' + getMappingString(FacilityMappings);
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
     
@@ -188,7 +187,7 @@ async function updateFacilityLicenseType(facilityId, data) {
   // Load the license categories from Lookup
   let categories = await getLicenseCategory();
   let groupLicenseCategory = categories.groupLicenseCategory;
-  
+  console.log('GroupLicenseCategory list: ', groupLicenseCategory);
   // Figure out new License categories from data form
   let newLicenseCategories = [];
   if (data.maxGroupChildCareUnder36 > 0) {
