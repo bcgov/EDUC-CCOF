@@ -15,18 +15,20 @@
             </v-row>
             <v-row justify="center">
               <v-radio-group
-                v-model="q1OptInECEWE"
+                v-model="optInECEWE"
                 row>
               <v-col>
                 <v-radio style="padding-right:80px"
                   label="Yes"
-                  value="1"
+                  :value="1"
+                  @click="enableButtons()"
               ></v-radio>
               </v-col>
               <v-col>
                 <v-radio
                   label="No"
-                  value="0"
+                  :value="0"
+                  @click="enableButtons()"
                 ></v-radio>
               </v-col>
               </v-radio-group>
@@ -35,7 +37,7 @@
         </v-card>
       </v-row>
       
-      <v-row v-if="(q1OptInECEWE == 1)" justify="center">
+      <v-row v-if="(optInECEWE == 1)" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row justify="center">
@@ -44,18 +46,20 @@
             </v-row>
             <v-row justify="center">
               <v-radio-group
-                v-model="q2BelongsToUnion"
+                v-model="belongsToUnion"
                 row>
               <v-col>
                 <v-radio style="padding-right:80px"
                   label="Yes"
-                  value="1"
+                  :value="1"
+                  @click="enableButtons()"
                 ></v-radio>
               </v-col>
               <v-col>
                 <v-radio
                   label="No"
-                  value="0"
+                  :value="0"
+                  @click="enableButtons()"                  
                 ></v-radio>
               </v-col>
               </v-radio-group>
@@ -64,7 +68,7 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="(q2BelongsToUnion == 1 && q1OptInECEWE == 1)" justify="center">
+      <v-row v-if="(belongsToUnion == 1 && optInECEWE == 1)" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row justify="center" >
@@ -73,18 +77,17 @@
               </v-col>
             </v-row>
             <v-radio-group
-                v-model="q3FundingModel"
+                v-model="fundingModel"
                 row>
             <v-row justify="center">
               <v-col class="pt-2">
                 <v-radio
-                  label="All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding"
-                  value="100000000"
-                  @click="showNextSaveBtns()"
+                  :label="this.fundingModelTypeList[0].description"
+                  :value="this.fundingModelTypeList[0].id"
                   ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="q3FundingModel == '100000000'" width="100%">
+            <v-card v-if="fundingModel == this.fundingModelTypeList[0].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-1 noticeAlert">
@@ -106,13 +109,12 @@
             <v-row>
               <v-col class="pt-7">
                 <v-radio
-                  label="All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding"
-                  value="100000001"
-                  @click="showNextSaveBtns()"
+                  :label="this.fundingModelTypeList[1].description"
+                  :value="this.fundingModelTypeList[1].id"
                 ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="q3FundingModel == '100000001'" width="100%">
+            <v-card v-if="fundingModel == this.fundingModelTypeList[1].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-1 noticeWarning">
@@ -134,13 +136,12 @@
             <v-row>
               <v-col class="pt-7">
                 <v-radio
-                  label="Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding."
-                  value="100000002"
-                  @click="showNextSaveBtns()"
+                  :label="this.fundingModelTypeList[2].description"
+                  :value="this.fundingModelTypeList[2].id"
                 ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="q3FundingModel == '100000002'" width="100%">
+            <v-card v-if="fundingModel === this.fundingModelTypeList[2].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-1 noticeInfo">
@@ -157,7 +158,11 @@
                 </v-col>
               </v-row>
               <v-row justify="center">
-                <v-col class="pl-6">
+                <v-col cols="1" class="pl-6">
+                  <v-checkbox v-model="confirmation" :value="1" @click="enableButtons()">
+                  </v-checkbox>
+                </v-col>
+                <v-col>
                 I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement.
                 </v-col>
               </v-row>
@@ -169,8 +174,8 @@
 
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-show="q2BelongsToUnion" :disabled="!this.q1OptInECEWE" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn v-show="q2BelongsToUnion" :disabled="!this.q1OptInECEWE" color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn :disabled="!this.enableNextBtn" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn :disabled="!this.enableSaveBtn" color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -186,26 +191,29 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      showNextBtn: false,
-      showSaveBtn: false,
-      row: '' //TODO: do we need this?
+      enableNextBtn: false,
+      enableSaveBtn: false,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted']),
-    ...mapState('app', ['navBarList']),
-    q1OptInECEWE: {
-      get() { return this.$store.state.eceweApp.q1OptInECEWE; },
-      set(value) { this.$store.commit('eceweApp/setQ1OptInECEWE', value); }
+    ...mapState('app', ['navBarList', 'fundingModelTypeList']),
+    optInECEWE: {
+      get() { return this.$store.state.eceweApp.optInECEWE; },
+      set(value) { this.$store.commit('eceweApp/setOptInECEWE', value); }
     },
-    q2BelongsToUnion: {
-      get() { return this.$store.state.eceweApp.q2BelongsToUnion; },
-      set(value) { this.$store.commit('eceweApp/setQ2BelongsToUnion', value); }
+    belongsToUnion: {
+      get() { return this.$store.state.eceweApp.belongsToUnion; },
+      set(value) { this.$store.commit('eceweApp/setBelongsToUnion', value); }
     },
-    q3FundingModel: {
-      get() { return this.$store.state.eceweApp.q3FundingModel; },
-      set(value) { this.$store.commit('eceweApp/setQ3FundingModel', value); }
+    fundingModel: {
+      get() { return this.$store.state.eceweApp.fundingModel; },
+      set(value) { this.$store.commit('eceweApp/setFundingModel', value); }
+    },
+    confirmation: {
+      get() { return this.$store.state.eceweApp.confirmation; },
+      set(value) { this.$store.commit('eceweApp/setConfirmation', value); }
     },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
@@ -217,8 +225,11 @@ export default {
     }
   },
   beforeMount() {
-    this.loadData().then(() => this.initECEWEFacilities(this.navBarList));
-
+    this.loadData().then(() => this.initECEWEFacilities(this.navBarList)).then(() => {
+      if (this.optInECEWE != null) {
+        this.enableButtons();
+      }
+    });
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities']),
@@ -240,37 +251,60 @@ export default {
       }
     },
     next() {
-      if (this.q1OptInECEWE == 0) {
+      if (this.optInECEWE == 0) {
         this.$router.push(PATHS.eceweDocUpload);
       } else {
         this.$router.push(PATHS.eceweFacilities);
       }
-
+    },
+    enableButtons() {
+      if ((this.belongsToUnion == 1 && this.fundingModel == this.fundingModelTypeList[2].id && this.confirmation == 1) ||
+         (this.belongsToUnion == 0) ||
+         (this.optInECEWE == 0)) {
+        this.enableNextBtn = true;
+      } else {
+        this.enableNextBtn = false;
+      }
+      this.enableSaveBtn = true;
     },
     async save() {
       try {
-        this.q2BelongsToUnion = (this.q1OptInECEWE==0)?null:this.q2BelongsToUnion;
-        this.q3FundingModel = (this.q2BelongsToUnion==0)?null:this.q3FundingModel;
+        this.belongsToUnion = (this.optInECEWE==0)?null:this.belongsToUnion;
+        this.fundingModel = (this.belongsToUnion==0)?null:this.fundingModel;
+        this.confirmation = (this.fundingModel!=this.fundingModelTypeList[2].id)?null:this.confirmation;
         await this.saveECEWE();
         this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
       }
       this.processing = false;
-    },
-    goToDocumentUpload() {
-      this.$router.push(PATHS.documentUpload);
-    },
-    goToIntakeFacilities() {
-      this.$router.push(PATHS.eceweFacilities);
-    },
-    showNextSaveBtns() {
-      this.showNextBtn=true;
-      this.showSaveBtn=true;
-    },
+    }
   }
 };
 </script>
-//TODO: add the styles here, prefix ECEWE on filenames
 <style>
+.noticeAlertIcon {
+  color:#D40D19 !important;
+}
+.noticeAlert {
+  font-size:medium;
+  color:#D40D19;
+  font-family:'BCSans',Verdana,Arial,sans-serif;
+  padding-top:8px;
+  padding-bottom:8px;
+  background-color:#F2DEDE;
+  border:1px solid #D40D19;
+}
+.noticeInfoIcon {
+  color:#313132 !important;
+}
+.noticeInfo {
+  font-size:medium;
+  color:#313132;
+  font-family:'BCSans',Verdana,Arial,sans-serif;
+  padding-top:8px;
+  padding-bottom:8px;
+  background-color:#C1DCF6;
+  border:1px solid #313132;
+}
 </style>

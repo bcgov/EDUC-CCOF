@@ -4,11 +4,11 @@ import { ApiRoutes } from '@/utils/constants';
 export default {
   namespaced: true,
   state: {
-    q1OptInECEWE: null,
-    q2BelongsToUnion: null,
-    q3FundingModel: null,
+    optInECEWE: null,
+    belongsToUnion: null,
+    fundingModel: null,
     facilities: [],
-    userDeclaration: null,
+    confirmation: null,
     isValidForm: false,
     isStarted: false
   },
@@ -16,11 +16,11 @@ export default {
     isEceweComplete: state => state.isValidForm,
   },  
   mutations: {
-    setQ1OptInECEWE: (state, q1OptInECEWE) => { state.q1OptInECEWE = q1OptInECEWE; },
-    setQ2BelongsToUnion: (state, q2BelongsToUnion) => { state.q2BelongsToUnion = q2BelongsToUnion; },
-    setQ3FundingModel: (state, q3FundingModel) => { state.q3FundingModel = q3FundingModel; },
+    setOptInECEWE: (state, optInECEWE) => { state.optInECEWE = optInECEWE; },
+    setBelongsToUnion: (state, belongsToUnion) => { state.belongsToUnion = belongsToUnion; },
+    setFundingModel: (state, fundingModel) => { state.fundingModel = fundingModel; },
     setFacilities: (state, facilities) => { state.facilities = facilities; },
-    setUserDeclaration: (state, userDeclaration) => { state.userDeclaration = userDeclaration; },
+    setConfirmation: (state, confirmation) => { state.confirmation = confirmation; },
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; }
   },
@@ -33,43 +33,58 @@ export default {
       try {
         console.log('about to call = '+ApiRoutes.APPLICATION_ECEWE + '/' + rootState.auth.userInfo.applicationId);
         let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + rootState.auth.userInfo.applicationId)).data;
-        //TODO move initECEWEFacilities here.
         commitToState(commit, payload);
       } catch (error) {
         console.log(`Failed to get ECEWE Application - ${error}`);
         throw error;
       }
     },
-    async saveECEWE({ state, rootState }) {
+    async saveECEWE({ state, rootState, dispatch }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
         throw 'unable to save ecewe application because you are not logged in';
       }
-      let payload = JSON.parse(JSON.stringify(state));
-      // has an application ID, so update the data
+
       try {
+        // Flag if user is opting out of ECEWE and has previously saved ECEWE facilities with
+        // opt-in/out values. We will check this flag after saving the parent ECEWE record below.
+        let updateFacilities = false;
+        if (state.facilities != null || state.facilities?.length > 0) {
+          state.facilities.find(facility => {
+            if (facility.eceweApplicationId != null && facility.optInOrOut != null) {
+              facility.optInOrOut = null;
+              updateFacilities = true;
+            }
+          });
+        }
+        let payload = JSON.parse(JSON.stringify(state));
         // remove attributes we are not updating before sending payload.
         delete payload.facilities;
+        // Save ECEWE parent record.
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + rootState.auth.userInfo.applicationId, payload);
+
+        // If parent ECEWE save was successfull and ECEWE facilties have been flagged for update, issue update on ECEWE facilties as their
+        // previous optinout responses are no longer applicable.
+        if (response?.status == '200' && updateFacilities) {
+          dispatch('saveECEWEFacilities');
+        }
         return response;
       } catch (error) {
         console.log(`Failed to update existing ECEWE application - ${error}`);
         throw error;
       }
     },
-    async saveECEWEFacilities({ state, rootState }) {
+    async saveECEWEFacilities({ state, rootState, commit }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
         throw 'unable to save ecewe facility application because you are not logged in';
       }
       let facilitiesForBackend = state.facilities;
-      facilitiesForBackend.forEach(object => {
-        delete object['update'];
-      });
       let payload = JSON.parse(JSON.stringify(facilitiesForBackend));
       // has an application ID, so update the data
       try {
         let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + rootState.auth.userInfo.applicationId, payload);
+        commit('setFacilities', response.data.facilities);
         return response;
       } catch (error) {
         console.log(`Failed to update existing ECEWE facility application - ${error}`);
@@ -81,7 +96,6 @@ export default {
       if (state.facilities?.length == 0 || state.facilities == null) {
         state.facilities = new Array(navBarList.length).fill({});
         for (let i = 0; i < navBarList.length; i++) {
-          // TODO statuscode behavior confimration
           state.facilities[i] = {applicationid: rootState.auth.userInfo.applicationId, facilityId: navBarList[i].facilityId, optInOrOut: null, statuscode: 1};
         }
         state.facilities = state.facilities.map(obj => ({ ...obj, update: true }));
@@ -120,10 +134,10 @@ export default {
 };
 
 function commitToState(commit, data) {
-  commit('setQ1OptInECEWE', String(data?.q1OptInECEWE));
-  commit('setQ2BelongsToUnion', String(data?.q2BelongsToUnion));
-  commit('setQ3FundingModel', String(data?.q3FundingModel));
+  commit('setOptInECEWE', data?.optInECEWE);
+  commit('setBelongsToUnion', data?.belongsToUnion);
+  commit('setFundingModel', data?.fundingModel);
+  commit('setConfirmation', data?.confirmation);
   commit('setFacilities', data?.facilities);
-  commit('setUserDeclaration', data?.userDeclaration);
 }
 

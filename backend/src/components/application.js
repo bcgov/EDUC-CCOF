@@ -230,7 +230,6 @@ async function updateECEWEFacilityApplication(req, res) {
       delete forBackFacilities[key]._ccof_facility_value;
 
       let facility = forBackFacilities[key];
-      log.info('TEMP FACLITY JSON = '+JSON.stringify(facility, null, 2));
 
       if (eceweApplicationId) {
         // send PATCH (update existing ECEWE facility)
@@ -240,10 +239,11 @@ async function updateECEWEFacilityApplication(req, res) {
           // send POST (create a new ECEWE facility)
           let operation = 'ccof_applicationecewes';
           response = await postOperation(operation, facility);
+          facilities[key].eceweApplicationId = response;
         }
       }
     }
-    return res.status(HttpStatus.OK).json(response);
+    return res.status(HttpStatus.OK).json({facilities: facilities});
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }

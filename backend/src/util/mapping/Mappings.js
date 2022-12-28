@@ -115,9 +115,10 @@ const CCOFApplicationFundingMapping = [
 
 const ECEWEApplicationMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' },
-  { back: 'ccof_ecewe_optin', front: 'q1OptInECEWE' },
-  { back: 'ccof_ecewe_employeeunion', front: 'q2BelongsToUnion' },
-  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'q3FundingModel' },
+  { back: 'ccof_ecewe_optin', front: 'optInECEWE' },
+  { back: 'ccof_ecewe_employeeunion', front: 'belongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' },
+  { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
 ];
 

@@ -24,6 +24,7 @@ export default {
     programYearList: [],
     childCareCategoryList: [],
     organizationTypeList: [],
+    fundingModelTypeList: [],
     lookupInfo: null,
     navBarRefresh: 1,
   },
@@ -61,6 +62,10 @@ export default {
     },
     setOrganizationTypeList: (state, organizationTypeList) => {
       state.organizationTypeList = organizationTypeList;
+    },
+
+    setFundingModelTypeList: (state, fundingModelTypeList) => {
+      state.fundingModelTypeList = fundingModelTypeList;
     },
     //Nav bar stuff
     setShowNavBar: (state, showNavBar) => {
@@ -111,6 +116,7 @@ export default {
     futureYearLabel: state => state.programYearList?.future?.name,
     childCareCategoryList: state => state.childCareCategoryList,
     organizationTypeList: state => state.organizationTypeList,
+    fundingModelTypeList: state => state.fundingModelTypeList,
     lookupInfo: state => state.lookupInfo,
 
     getNavByFacilityId: (state) => (facilityId) => {
@@ -166,6 +172,7 @@ export default {
         commit('setProgramYearList', lookupInfo.data?.programYear);
         commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
         commit('setOrganizationTypeList', lookupInfo.data?.organizationType);
+        commit('setFundingModelTypeList', lookupInfo.data?.fundingModelType);
       }
     },
 
