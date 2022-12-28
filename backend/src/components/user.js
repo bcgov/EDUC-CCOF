@@ -135,7 +135,7 @@ async function getFacilityMapFromOrganization(userResponse) {
   return map;
 }
 async function parseFacilityData(userResponse) {
-  let facilityMap  = new Map(userResponse.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+  let facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
   if (facilityMap?.size == 1 && userResponse[0]['Application.ccof_applicationtype'] == CCOF_APPLICATION_TYPES.RENEW) { //&& facilityMap.keys().next() &&
     facilityMap = await getFacilityMapFromOrganization(userResponse);
