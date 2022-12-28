@@ -25,6 +25,9 @@ import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
 import WageIncrease from '@/components/RFI/WageIncrease';
 import ServiceExpansion from '@/components/RFI/ServiceExpansion';
+import IndigenousServiceExpansion from '@/components/RFI/IndigenousServiceExpansion';
+import UnderservedPop from '@/components/RFI/UnderservedPop';
+import NMF from '@/components/RFI/NMF';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -352,6 +355,39 @@ const router = new VueRouter({
       component: ServiceExpansion,
       meta: {
         pageTitle: 'Priority Service Expansion',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.IndigenousServiceExpansion,
+      name: 'ccfri-indigenous-service-expansion',
+      component: IndigenousServiceExpansion,
+      meta: {
+        pageTitle: 'Indigenous Service Expansion',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.UnderservedPop,
+      name: 'underserved-populations',
+      component: UnderservedPop,
+      meta: {
+        pageTitle: 'Affordable Child Care for Underserved Populations',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.NMF,
+      name: 'new-facilities',
+      component: NMF,
+      meta: {
+        pageTitle: 'New Facilities',
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,

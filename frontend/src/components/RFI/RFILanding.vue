@@ -87,27 +87,22 @@
                 Expense Information
               </p>
             </div>
-            <v-toolbar 
+
+            <v-banner
+              class="ma-4"
               color="blue lighten-4"
-              justify="center"
-              class="ma-md-4"
-              light
+              elevation="5"
             >
-              <v-toolbar-title class="flex ml-md-7" >
-                <v-row>
-                  <v-icon
-                    large
-                    color="blue darken-4"
-                    class=""
-                    > mdi-information
-                  </v-icon>
-                   <h3 class="ml-md-5">Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</h3>
-                </v-row>
-              </v-toolbar-title >
-            </v-toolbar>
-            <br>
-            
-            
+              <v-icon
+                large
+                color="blue darken-4"
+                class="mr-5"
+                > mdi-information
+              </v-icon>
+              <strong>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</strong> 
+            </v-banner>
+
+
             <div class="px-md-12 px-7">
               <v-row  v-for="(expense, index) in expenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
