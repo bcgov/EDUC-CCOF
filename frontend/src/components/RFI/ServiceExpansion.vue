@@ -161,6 +161,7 @@
                       ></v-text-field>
                     </template>
                     <v-time-picker
+                      :min="obj.timefrom"
                       v-if="obj.menuto"
                       v-model="obj.timeto"
                       full-width
@@ -225,6 +226,7 @@
                       ></v-text-field>
                     </template>
                     <v-time-picker
+                      :min="obj.newtimefrom"
                       v-if="obj.newmenuto"
                       v-model="obj.newtimeto"
                       full-width
@@ -524,7 +526,7 @@ export default {
       newmenuto: false,
       calendarMenu: [],
       fundingCalendar : [],
-      // expense,
+    
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
       rules: [
         (v) => !!v  || 'Required.',
@@ -534,11 +536,9 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
@@ -546,17 +546,10 @@ export default {
   },
   methods : {
     next(){
-      this.$router.push(PATHS.WageIncrease);
-
-      // if (this.model.q1 === 'Yes'){
-      //   this.$router.push(PATHS.addNewFees);
-      // }
-      // else {
-        
-      // }
+      this.$router.push(PATHS.IndigenousServiceExpansion);
     },
     previous() {
-      this.$router.back();  //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.$router.back();
     },
     addExpense () {
       this.expenseList.push({
@@ -579,21 +572,6 @@ export default {
         return;
       }
       this.expenseList.splice(index, 1);
-    },
-    removeFunding(index){
-      if (index == 0){
-        return;
-      }
-      this.fundingList.splice(index, 1);
-    },
-    addFunding () {
-      this.fundingList.push({
-        fundingProgram: '',
-        date: undefined,
-        status: '',
-        amount: 0,
-        expenses: ''
-      });
     },
   },
   components: { }

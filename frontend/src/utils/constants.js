@@ -54,6 +54,9 @@ export const PATHS = {
   ccfriRequestMoreInfo: '/ccfri-application/request-info',
   WageIncrease: '/ccfri-application/request-info/wage-increase',
   ServiceExpansion: '/ccfri-application/request-info/service-expansion',
+  IndigenousServiceExpansion: '/ccfri-application/request-info/indigenous-service-expansion',
+  UnderservedPop: '/ccfri-application/request-info/underserved-populations',
+  NMF: '/ccfri-application/request-info/new-facilities',
   selectApplicationType: '/ccof-application/select-application-type',
   impersonate: '/impersonate',
   group: {

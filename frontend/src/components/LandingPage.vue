@@ -259,7 +259,7 @@ export default {
       this.$router.push(PATHS.ccfriRequestMoreInfo);
     },
     goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.ccfriHome); 
     },   
   },
   ccofStatusLabel() {
