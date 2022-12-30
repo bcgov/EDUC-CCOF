@@ -138,6 +138,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel', 'programYearList']),
     ...mapState('app', ['navBarList', 'programYearList']),
+    ...mapState('organization', ['applicationType', 'applicationStatus', 'organizationProviderType']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;
@@ -145,7 +146,7 @@ export default {
       return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      return this.userInfo.applicationStatus === null;
+      return this.applicationStatus === null;
     },
     isCCFRIandECEWEComplete() {
       if (!this.navBarList) {
@@ -172,22 +173,22 @@ export default {
       return isEnabled;
     },
     isRenewEnabled() {
-      if (this.userInfo.applicationType === 'RENEW') {
-        if (this.userInfo.applicationStatus === 'DRAFT') {
+      if (this.applicationType === 'RENEW') {
+        if (this.applicationStatus === 'DRAFT') {
           console.log('isRenewEnabled1: ', true);
           return true;
-        } else if (this.userInfo.applicationStatus === 'SUBMITTED') {
+        } else if (this.applicationStatus === 'SUBMITTED') {
           let isEnabled = (this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
             && this.userInfo.ccofProgramYearId == this.programYearList?.current?.programYearId);
           console.log('isRenewEnabled2: ', isEnabled);
           return isEnabled;
         }
-      } else if (this.userInfo.applicationType === 'NEW') {
-        if (this.userInfo.applicationStatus === 'DRAFT') {
+      } else if (this.applicationType === 'NEW') {
+        if (this.applicationStatus === 'DRAFT') {
           console.log('isRenewEnabled3: ', false);
           return false;
-        } else if (this.userInfo.applicationStatus === 'SUBMITTED') {
+        } else if (this.applicationStatus === 'SUBMITTED') {
           let isEnabled = (this.isCCFRIandECEWEComplete
           && this.isWithinRenewDate
           && this.userInfo.ccofProgramYearId == this.programYearList?.current?.programYearId);
@@ -198,10 +199,13 @@ export default {
       return false;
     },
     ccofStatus() {
-      if (this.userInfo.applicationType === 'NEW') {
-        if (this.userInfo.applicationStatus === 'DRAFT') {
+      if (!this.applicationType) {
+        return this.CCOF_STATUS_NEW;
+      }
+      if (this.applicationType === 'NEW') {
+        if (this.applicationStatus === 'DRAFT') {
           return this.CCOF_STATUS_CONTINUE;
-        } else if (this.userInfo.applicationStatus === 'SUBMITTED') {
+        } else if (this.applicationStatus === 'SUBMITTED') {
           return this.CCOF_STATUS_COMPLETE;
         }else {
           return this.CCOF_STATUS_NEW;
@@ -211,14 +215,14 @@ export default {
       }
     },
     ccofRenewStatus() {
-      if (this.userInfo.applicationType === 'RENEW') {
-        if (this.userInfo.applicationStatus === 'DRAFT') {
+      if (this.applicationType === 'RENEW') {
+        if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
         } else {
           return this.RENEW_STATUS_COMPLETE;
         }
       } else {
-        return this.NEW_STATUS_NEW;
+        return this.RENEW_STATUS_NEW;
       }
     }  
   },
@@ -242,13 +246,13 @@ export default {
     },
     continueApplication() {
       this.setIsRenewal(false);
-      console.log('continueApplication userInfo.organizationProviderType', this.userInfo.organizationProviderType);
-      if (this.userInfo.organizationProviderType === 'GROUP') {
+      console.log('continueApplication .organizationProviderType', this.organizationProviderType);
+      if (this.organizationProviderType === 'GROUP') {
         this.$router.push(PATHS.group.orgInfo);
-      } else if (this.userInfo.organizationProviderType === 'FAMILY') {
+      } else if (this.organizationProviderType === 'FAMILY') {
         this.$router.push(PATHS.family.orgInfo);
       } else { 
-        this.setFailureAlert(`Unknown Organization Provider Type: ${this.userInfo.organizationProviderType}`);
+        this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
       }
     } ,
     goToRFI(){

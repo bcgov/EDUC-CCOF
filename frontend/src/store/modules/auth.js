@@ -137,6 +137,8 @@ export default {
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
       commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
       commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });
+      commit('organization/setApplicationType', userInfoRes.data.applicationType, { root: true });
+      commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
 
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
