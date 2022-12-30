@@ -50,6 +50,8 @@ export default {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       
           commit('setCCFRIFacilityModel', response.data);
+
+         
         } catch(e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
           throw e;
@@ -64,34 +66,57 @@ export default {
         let careTypes = [];
 
         console.log('resp:', response);
-        response.data.forEach(item => {
-          let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
-            return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-            searchItem.programYearId == rootState.app.programYearList.current.programYearId);
-          });
-          if (!found) {
-            careTypes.push( {
-              programYear: rootState.app.programYearList.current.name,
-              programYearId: rootState.app.programYearList.current.programYearId,
-              current: 1, //jb - we found a valid liscence for this child care cat - but it doesn't exist on the CCFRI form yet 
-              ...item
+
+        if (!state.CCFRIFacilityModel.prevYearFeesCorrect){ //if current year fees are correct (ExistingFacilityFees.vue -> Yes), don't display those cards to the user. First time CCFRI will always show this
+          response.data.forEach(item => {
+            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+              searchItem.programYearId == rootState.app.programYearList.current.programYearId);
             });
-          }
-        });
-        response.data.forEach(item => {
-          let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
-            return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-            searchItem.programYearId == rootState.app.programYearList.previous.programYearId);
+            if (!found) {
+              careTypes.push( {
+                programYear: rootState.app.programYearList.current.name,
+                programYearId: rootState.app.programYearList.current.programYearId,
+                current: 1, //jb - we found a valid liscence for this child care cat - but it doesn't exist on the CCFRI form yet 
+                ...item
+              });
+            }
           });
-          if (!found) {
-            careTypes.push( {
-              programYear: rootState.app.programYearList.previous.name,
-              programYearId: rootState.app.programYearList.previous.programYearId,
-              current: 1,
-              ...item
+        }
+
+        if (rootState.app.isRenewal){ //if app is a renewal, we will always need the future year cards regardless if yes/no is answered on the ExistingFacilityFees page
+          response.data.forEach(item => {
+            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+              searchItem.programYearId == rootState.app.programYearList.current.programYearId);
             });
-          }
-        });
+            if (!found) {
+              careTypes.push( {
+                programYear: rootState.app.programYearList.future.name,
+                programYearId: rootState.app.programYearList.future.programYearId,
+                current: 1, //jb - we found a valid liscence for this child care cat - but it doesn't exist on the CCFRI form yet 
+                ...item
+              });
+            }
+          });
+        }
+        
+        if (!rootState.app.isRenewal){ //only display previous year fees if it's the first time CCFRI application
+          response.data.forEach(item => {
+            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+              searchItem.programYearId == rootState.app.programYearList.previous.programYearId);
+            });
+            if (!found) {
+              careTypes.push( {
+                programYear: rootState.app.programYearList.previous.name,
+                programYearId: rootState.app.programYearList.previous.programYearId,
+                current: 1,
+                ...item
+              });
+            }
+          });
+        }
         console.log('len of childCareTypes before push: ',  state.CCFRIFacilityModel.childCareTypes.length); //from CCFRI form dynamics
        
 

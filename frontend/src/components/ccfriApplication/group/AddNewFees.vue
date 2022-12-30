@@ -415,7 +415,7 @@ export default {
         try {
           
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          await this.decorateWithCareTypes(this.currentFacility.facilityId);
+          await this.decorateWithCareTypes(this.currentFacility.facilityId); //add logic in this function to check if isRenewel flag set
 
           //so the card will display as open if dates already exist
           if (this.CCFRIFacilityModel.dates){

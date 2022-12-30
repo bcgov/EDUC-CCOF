@@ -2,7 +2,7 @@
   <v-container>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
+      <!-- <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader> -->
       <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
@@ -15,11 +15,8 @@
                 {{currentFacility.facilityName}}
               </p>
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{feeList[0].programYear}} are: 
+                Our Records show this facilites' fees for {{CCFRIFacilityModel.childCareTypes[0].programYear}} are: 
               </p>
-              <!-- <p>
-                Lorem ipsum dolor sit
-              </p> -->
               <br>
               <v-simple-table>
                 <thead>
@@ -27,7 +24,7 @@
                     <th  scope="col" class="text-left">
                       Date
                     </th>
-                    <th  v-for="item in feeList"
+                    <th  v-for="item in CCFRIFacilityModel.childCareTypes"
                     :key="item.childCareCategoryId"
                      class="text-center"
                      scope="col">
@@ -38,25 +35,25 @@
                 <tbody>
                   <tr>
                     <td >January </td>
-                    <td v-for="item in feeList"
+                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
                     :key="item.childCareCategoryId"
                      class="text-center">${{ item.approvedFeeJan }}</td>
                   </tr>
                   <tr>
                     <td >February </td>
-                    <td v-for="item in feeList"
+                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
                     :key="item.childCareCategoryId"
                      class="text-center">${{ item.approvedFeeFeb }}</td>
                   </tr>
                   <tr>
                     <td >March </td>
-                    <td v-for="item in feeList"
+                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
                     :key="item.childCareCategoryId"
                      class="text-center">${{ item.approvedFeeMar }}</td>
                   </tr>
                   <tr>
                     <td >April </td>
-                    <td v-for="item in feeList"
+                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
                     :key="item.childCareCategoryId"
                      class="text-center">${{ item.approvedFeeApr }}</td>
                   </tr>
@@ -97,6 +94,8 @@
             </v-card-text>
           </v-card>
 
+          {{model.q1 }}
+
           <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
@@ -121,11 +120,22 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      prevFees: {},
       input : '',
       loading: true,
       model,
       isValidForm : false,
-      feeList : [],
+      feeList : [
+        // {
+        //   childCareCategory: 'PreSchool',
+        //   childCareCategoryId: 123,
+        //   programYear: '21/22 FY',
+        //   approvedFeeJan: 100,
+        //   approvedFeeFeb: 100,
+        //   approvedFeeMar: 100,
+        //   approvedFeeApr: 100,
+        // }//above obj is a placeholder until I iron out pulling prev year fees
+      ],
       rules: [
         (v) => !!v  || 'Required.',
       ],
@@ -140,7 +150,7 @@ export default {
       let activeFac = this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
       });
-      //console.log('activeFac', activeFac);
+      
       return activeFac;
     },
     currentFacility(){
@@ -160,11 +170,10 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
 
-          //quick assumption that there will always be at least 2 child care types. TODO: add more logic to ensure a safe index
-          //also perhaps we should get most recent fees (most recent program year) instead of just the first two in the array?
-          const concatChildCareTypes = [this.CCFRIFacilityModel.childCareTypes[0], this.CCFRIFacilityModel.childCareTypes[1]];
+          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
 
-          this.feeList.push(...concatChildCareTypes);
+         
+          //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -178,13 +187,27 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
     previous(){
-      console.log(this.feeList);
+      //console.log(this.feeList);
+      console.log(this.prevFees);
       //this.$router.push(PATHS.ccfriHome);
+    },
+    async setFees (){
+      await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+      this.CCFRIFacilityModel.prevYearFeesCorrect = true;
+      //grab the previous years fees and save it to the store - so then AddNewFees will have this data ready to go 
     },
     next() {
       console.log(this.nextFacility);
 
-      if (this.nextFacility){
+      if (this.model.q1== 'No'){
+        this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
+      }
+      else if (this.model.q1== 'Yes') {
+        console.log('add new fees but only current year cards!');
+        this.setFees();
+        this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
+      }
+      else if (this.nextFacility){
         //TODO: this needs to check if opt in exists
         console.log('going to next fac');
       }

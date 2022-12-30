@@ -395,7 +395,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.currentFees + '/:urlGuid',
-      name: 'ccfri-current-fees',
+      name: 'ccfri-current-fees-guid',
       component: currentFees,
       meta: {
         pageTitle: 'CCFRI Current Fees',

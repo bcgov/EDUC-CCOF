@@ -42,9 +42,6 @@
           </v-radio-group>
           <br>
 
-
-
-
           <div v-if="model.q1 === 'Yes'">
 
           <p class="text-h6 text--primary py-5 my-0">
@@ -122,9 +119,7 @@
           </v-card-text>
         </v-card>
 
-       
-        
-      </div> <!--end show if yes / yes selected-->
+       <!--end show if yes / yes selected-->
 
       <v-row justify="space-around">
               <v-btn color="info" outlined x-large @click="previous()">

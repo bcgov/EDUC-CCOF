@@ -26,7 +26,7 @@
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
                   <!-- <p class="text--primary"> Licence : 123456789</p>  add back in when license number is in userProfile-->
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN" : ccfriOptInStatus == "1" ? "IN" : "OUT" }}</p> </strong>
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
                   v-if="!showOptStatus[index]"
@@ -130,16 +130,16 @@ export default {
     ...mapMutations('app', ['setCcfriOptInComplete', 'refreshNavBar']), 
     ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
+      console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
     },
     toggleAll(){
       this.navBarList.forEach((fac, index) => {
         this.toggle(index);
-        this.ccfriOptInOrOut[index] = '1';
+        this.$set(this.ccfriOptInOrOut, index, '1');
       });
     },
     previous() {
-      //console.log(this.ccfriOptInComplete);
       //this.isPageComplete();
       this.$router.back();
     },
@@ -154,23 +154,15 @@ export default {
       return this.isValidForm;
     },
     next() {
-      //this.save();
+      this.save();
       
       //check if new opt in status was selected -- because I am forcing a save rn we don't need this top part
       let firstOptInFacility = -1; 
-      // for (let i = 0; i < this.showOptStatus.length; i++) {
-      //   //elemnt is true if update button has been clicked. 
-      //   if (this.showOptStatus[i]){
-      //     if(this.ccfriOptInOrOut[i] == '1'){
-      //       firstOptInFacility = i;
-      //       break;
-      //     }
-      //   }
-      // }
-      //if not - check opt in status in NavBarList
+      
+      //check opt in status in NavBarList
       if (firstOptInFacility === -1){
         for (let i = 0; i < this.navBarList.length; i++) {
-          //elemnt is true if update button has been clicked. 
+          
           if (this.navBarList[i].ccfriOptInStatus == 1){
             firstOptInFacility = i;
             break;
