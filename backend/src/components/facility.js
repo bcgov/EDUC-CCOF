@@ -5,7 +5,7 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
+const { FacilityMappings, CCFRIFacilityMappings, CCFRIClosureDateMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
@@ -51,6 +51,16 @@ function mapFacilityObjectForBack(data) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
 
+  if (data.hasReceivedFunding === 'no') {
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 0;
+  } else if (data.hasReceivedFunding === 'yes') { 
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 1;
+  } else if (data.hasReceivedFunding === 'yesFacility') { 
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 2;
+  } else if (data.hasReceivedFunding) {
+    console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
+  }
+
   return facilityForBack;
 }
 
@@ -60,16 +70,24 @@ function mapFacilityObjectForFront(data) {
     data.ccof_facilitystartdate = year;
   }
 
-  return new MappableObjectForFront(data, FacilityMappings).toJSON(); ///switching this to ccfri - maybe we need to build a seperate fn 
+  let obj = new MappableObjectForFront(data, FacilityMappings).toJSON(); 
+
+  if (data.ccof_everreceivedfundingundertheccofprogram === 0) {
+    obj.hasReceivedFunding = 'no';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 1) {
+    obj.hasReceivedFunding = 'yes';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 2) {
+    obj.hasReceivedFunding = 'yesFacility';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
+    console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
+  }
+
+  return obj;
 }
 
 function mapCCFRIObjectForFront(data) { 
-  // if (data.ccof_facilitystartdate) {
-  //   let year = data.ccof_facilitystartdate.split('-')[0];
-  //   data.ccof_facilitystartdate = year;
-  // } don't think we neeed this but lets see 
-
-  return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON(); ///switching this to ccfri - maybe we need to build a seperate fn 
+  
+  return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON(); 
 }
 
 async function getFacility(req, res) {
@@ -116,7 +134,7 @@ async function getLicenseCategories(req, res){
 async function getFacilityChildCareTypes(req, res){
   try {
     //this is actually the CCFRI guid rn
-    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency)';
+    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)';
     log.info('operation: ', operation);
     let ccfriData = await getOperation(operation);
     log.info('dataaaaaa', ccfriData);
@@ -129,11 +147,12 @@ async function getFacilityChildCareTypes(req, res){
       //currentProgramYear = item._ccof_programyear_value;
       childCareTypes.push(
         {
+          parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
           childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
           childCareCategoryId: item._ccof_childcarecategory_value,
           programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
           programYearId: item._ccof_programyear_value,
-          approvedFeeApr: item.ccof_apr ?? 0,
+          approvedFeeApr: item.ccof_apr ,
           approvedFeeAug: item.ccof_aug,
           approvedFeeDec: item.ccof_dec,
           approvedFeeFeb: item.ccof_feb,
@@ -154,12 +173,50 @@ async function getFacilityChildCareTypes(req, res){
     ccfriData = mapCCFRIObjectForFront(ccfriData); //////
 
     ccfriData.childCareTypes = childCareTypes;
+    ccfriData.dates = await getCCFRIClosureDates(req.params.ccfriId);
+
+    //log.info('theDATEs: ', ccfriData);
 
     return res.status(HttpStatus.OK).json(ccfriData);
   } catch (e) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
+}
+
+async function getCCFRIClosureDates(ccfriId){
+  const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
+  let data = await getOperation(url);
+  log.info('get CCFRI closure dates url', url);
+  data = data.ccof_ccfri_closure_application_ccfri;
+
+  let closureDates = [];
+
+  data.forEach((date) => {
+
+    let formattedStartDate = new Date(date.ccof_startdate).toISOString().slice(0, 10);
+    // formattedStartDate.
+
+    let formattedEndDate = new Date(date.ccof_enddate).toISOString().slice(0, 10);
+    // formattedEndDate.toISOString().slice(0, 10);
+    
+    closureDates.push({
+      'closureDateId' : date.ccof_application_ccfri_closureid,
+      'startDate' : date.ccof_startdate,
+      'endDate' : date.ccof_enddate,
+      'feesPaidWhileClosed' : date.ccof_paidclosure,
+      'closureReason' : date.ccof_comment,
+      'formattedStartDate': formattedStartDate,
+      'formattedEndDate' : formattedEndDate
+    });
+    //Mapping does not work i don't know why! :(
+    //closureDates.push( new MappableObjectForFront(date, CCFRIClosureDateMappings).toJSON());
+  });
+
+  log.info('returned closed dates: ' , closureDates);
+
+  return closureDates;
+
 }
 
 async function updateFacilityLicenseType(facilityId, data) {
@@ -265,6 +322,7 @@ module.exports = {
   createFacility,
   updateFacility,
   getLicenseCategories,
-  updateFacilityLicenseType
+  updateFacilityLicenseType,
+  getCCFRIClosureDates
 };
 

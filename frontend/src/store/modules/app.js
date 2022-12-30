@@ -46,7 +46,7 @@ export default {
       state.alertNotification = alertNotification;
     },
     refreshNavBar(state) {
-      state.navBarRefresh++;
+      state.navBarRefresh = state.navBarRefresh + 1;
     },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
