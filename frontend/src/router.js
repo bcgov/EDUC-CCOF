@@ -39,9 +39,9 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
-import EceweEligibility from '@/components/eceweApplication/Eligibility';
-import EceweFacilities from '@/components/eceweApplication/Facilities';
-import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
+import EceweEligibility from '@/components/eceweApplication/EceweEligibility';
+import EceweFacilities from '@/components/eceweApplication/EceweFacilities';
+import EceweDocumentUpload from '@/components/eceweApplication/EceweDocumentUpload';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';

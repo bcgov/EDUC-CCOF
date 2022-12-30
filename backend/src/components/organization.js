@@ -1,9 +1,10 @@
 'use strict';
 const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const { ACCOUNT_TYPE } = require('../util/constants');
+const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { OrganizationMappings } = require('../util/mapping/Mappings');
+const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
 
@@ -69,14 +70,20 @@ async function createOrganization(req, res) {
     let applicationPayload = await getOperation(operation);
     let applicationId = undefined;
     let applicationStatus = undefined;
+    let providerTypeLabel = getLabelFromValue(providerType, ORGANIZATION_PROVIDER_TYPES);
     if (applicationPayload?.ccof_ccof_application_Organization_account?.length > 0) {
       applicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
-      applicationStatus = applicationPayload.ccof_ccof_application_Organization_account[0].statuscode;
+      applicationStatus = getLabelFromValue(applicationPayload.ccof_ccof_application_Organization_account[0].statuscode, APPLICATION_STATUS_CODES);
 
     } else {
       log.error('Unable to find applicationId when creating organization: ', organizationGuid);
     }
-    return res.status(HttpStatus.CREATED).json({ organizationId: organizationGuid, applicationId: applicationId, applicationStatus: applicationStatus });
+    return res.status(HttpStatus.CREATED).json({ 
+      organizationId: organizationGuid,
+      applicationId: applicationId,
+      applicationStatus: applicationStatus,
+      organizationProviderType: providerTypeLabel,
+      applicationType: 'NEW'});
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

@@ -32,7 +32,7 @@ const FacilityMappings = [
   { back: 'telephone1', front: 'phone' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
-  { back: 'ccof_ facility_received_ccof_funding', front: 'fundingFacility' },
+  { back: 'ccof_facility_received_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
@@ -130,9 +130,10 @@ const CCOFApplicationFundingMapping = [
 
 const ECEWEApplicationMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' },
-  { back: 'ccof_ecewe_optin', front: 'q1OptInECEWE' },
-  { back: 'ccof_ecewe_employeeunion', front: 'q2BelongsToUnion' },
-  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'q3FundingModel' },
+  { back: 'ccof_ecewe_optin', front: 'optInECEWE' },
+  { back: 'ccof_ecewe_employeeunion', front: 'belongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' },
+  { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
 ];
 
