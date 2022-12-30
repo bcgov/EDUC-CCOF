@@ -136,6 +136,7 @@ async function getFacilityMapFromOrganization(userResponse) {
 }
 async function parseFacilityData(userResponse) {
   let facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+
   if (facilityMap?.size == 1 && userResponse[0]['Application.ccof_applicationtype'] == CCOF_APPLICATION_TYPES.RENEW) { //&& facilityMap.keys().next() &&
     log.verbose('RENEW: grabbing facilities from opertaions API');
     facilityMap = await getFacilityMapFromOrganization(userResponse);

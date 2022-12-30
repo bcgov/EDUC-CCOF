@@ -42,9 +42,19 @@ const FacilityMappings = [
 const CCFRIFacilityMappings = [
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
+  { back: 'ccof_informationccfri', front: 'ccfriApplicationNotes'},
   //{ back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
+];
+
+const CCFRIClosureDateMappings = [
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
+  { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
+  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
+  { back: 'ccof_comment', front: 'closureReason' },
 ];
 
 const CCOFApplicationMappings = [
@@ -120,9 +130,10 @@ const CCOFApplicationFundingMapping = [
 
 const ECEWEApplicationMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' },
-  { back: 'ccof_ecewe_optin', front: 'q1OptInECEWE' },
-  { back: 'ccof_ecewe_employeeunion', front: 'q2BelongsToUnion' },
-  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'q3FundingModel' },
+  { back: 'ccof_ecewe_optin', front: 'optInECEWE' },
+  { back: 'ccof_ecewe_employeeunion', front: 'belongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' },
+  { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
 ];
 
@@ -213,5 +224,6 @@ module.exports = {
   UserProfileECEWEMappings,
   ProgramYearMappings,
   CCFRIFacilityMappings,
+  CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
 };
