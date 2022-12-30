@@ -28,8 +28,8 @@
 
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-show="q3FundingModel" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn v-show="q3FundingModel" color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -49,8 +49,8 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    q3FundingModel: {
-      get() { return this.$store.state.eceweApp.q3FundingModel; }
+    q2BelongsToUnion: {
+      get() { return this.$store.state.eceweApp.belongsToUnion; }
     }
   },
   data() {
@@ -63,7 +63,11 @@ export default {
     upload() {},
     hideAttachmentPanel() {},
     previous() {
-      this.$router.push(PATHS.eceweFacilities);
+      if (JSON.parse(this.q2BelongsToUnion) == null) {
+        this.$router.push(PATHS.eceweEligibility);
+      } else {
+        this.$router.push(PATHS.eceweFacilities);
+      }
     },
     next() {
       this.$router.push(PATHS.summaryDeclaration);
