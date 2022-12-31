@@ -61,13 +61,13 @@ const RFIApplicationMappings = [
   { back: 'statuscode', front: 'status' }, // 1 or 0
   { back: 'ccof_feeincreasedduetoanexceptionalcircumstance', front: 'exceptionalCircumstances'}, // 0,
   { back: 'ccof_pleaseexplainwhyyouhaveincurredorwillincu', front: 'xxx1'}, // "Please explain why you have incurred or will incur",
-  { back: 'ccof_feeincreasedduetoawageincrease', front: 'xxx2' }, // 1 or 0
+  { back: 'ccof_feeincreasedduetoawageincrease', front: 'feeIncreaseDueToWage' }, // 1 or 0
   { back: 'ccof_name', front: 'xxx3'}, // "RFI-22000025",
   { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'xxx4'}, // "please describe how the majority of children you provide",
   { back: '_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue', front: 'xxx5'}, // "ID-22000522",
   { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId'}, // "1d261039-0e7c-ed11-81ad-000d3af4f277",
   { back: 'ccof_increasedparentfeesbefore', front: 'xxx6' }, // 1 or 0
-  { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'xxx7'}, // null,
+  { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'circumstanceOccurWithin6Month'}, // null,
 ];
 
 

@@ -328,24 +328,24 @@ const router = new VueRouter({
     },
 
     {
-      path: PATHS.ccfriRequestMoreInfo,
+      path: PATHS.ccfriRequestMoreInfo + '/:urlGuid',
       name: 'ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        navBarGroup: NAV_BAR_GROUPS.RFI,
         requiresAuth: true,
       }
     },
     {
-      path: PATHS.WageIncrease,
+      path: PATHS.WageIncrease + '/:urlGuid',
       name: 'ccfri-wage-increase',
       component: WageIncrease,
       meta: {
         pageTitle: 'CCFRI Wage Increase',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        navBarGroup: NAV_BAR_GROUPS.RFI,
         requiresAuth: true,
       }
     },

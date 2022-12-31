@@ -20,8 +20,9 @@ async function getUserInfo(req, res) {
       message: 'No session data'
     });
   }
-  let isIdir = isIdirUser(req);
-  let userName = req.params?.userName;
+  const isIdir = isIdirUser(req);
+  const queryUserName = req.params?.queryUserName;
+  const userName = getUserName(req);
 
   // if is idir user (ministry user), make sure they are a user in dynamics
   if (isIdir) {
@@ -37,33 +38,23 @@ async function getUserInfo(req, res) {
   }
   
   let resData = {
-    displayName: (userName)? req.session.passport.user._json.display_name + '-' + userName : req.session.passport.user._json.display_name,
-    userName: getUserName(req),
+    displayName: (queryUserName)? req.session.passport.user._json.display_name + '-' + queryUserName : req.session.passport.user._json.display_name,
+    userName: userName,
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
     serverTime: new Date(),
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: false, 
   };
-  let userGuid = undefined;
+  // let userGuid = undefined;
+  let userResponse = undefined;
   if (isIdir) {
-    if (userName) {
+    if (queryUserName) {
       try {
-        let profileData = await getOperation(`contacts?$select=ccof_userid,firstname,lastname&$filter=ccof_username eq '${userName}'`);
-        if (profileData.value?.length > 0) {
-          //found something.
-          userGuid = profileData.value[0].ccof_userid;
-          if (!userGuid) {
-            //found the account but no user guid associated
-            return res.status(HttpStatus.CONFLICT).json({
-              message: 'User found but no User Guid associated'
-            });
-          }
-        } else {
-          //didn't find that user
-          return res.status(HttpStatus.NOT_FOUND).json({
-            message: 'No user found with that BCeID UserName'
-          });
+        log.info(`Ministry user [${userName}] is impersonating with username: [${queryUserName}].`);
+        userResponse = await getUserProfile('\'\'', queryUserName);
+        if (userResponse === null) { 
+          return res.status(HttpStatus.NOT_FOUND).json({message: 'No user found with that BCeID UserName'});
         }
       } catch (e) {
         log.error('getUserProfile Error', e.response ? e.response.status : e.message);
@@ -75,10 +66,11 @@ async function getUserInfo(req, res) {
     }
   } else {
     //Not an idir user, so just get the guid from the header
-    userGuid = getUserGuid(req);
+    const userGuid = getUserGuid(req);
+    log.verbose('User Guid is: ', userGuid);
+    userResponse = await getUserProfile(userGuid, userName );
   }
-  log.verbose('User Guid is: ', userGuid);
-  const userResponse = await getUserProfile(userGuid);
+  
 
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:',minify(userResponse));
@@ -108,9 +100,9 @@ async function getUserInfo(req, res) {
   return res.status(HttpStatus.OK).json(results);
 }
 
-async function getUserProfile(businessGuid) {
+async function getUserProfile(businessGuid, userName) {
   try {
-    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
+    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}&userName=${userName}`;
     log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;

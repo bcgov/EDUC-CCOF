@@ -14,6 +14,7 @@ export default {
     ccofLicenseUploadComplete:false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
+    rfiList: [],
     //Notification Details
     ccfriOptInComplete: false,       //jb
     alertNotificationText: '',
@@ -95,6 +96,10 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
     },
+    setRfiList: (state, rfiList) => {
+      state.rfiList = rfiList;
+    },
+
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
