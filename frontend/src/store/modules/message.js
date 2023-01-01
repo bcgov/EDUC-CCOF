@@ -27,35 +27,23 @@ export default {
     // Unread messages are messages having no lastOpenedTime
     updateUnreadMessagesCount(state) {
       if (state.allMessages) {
-        state.unreadMessageCount = state.allMessages.filter(item => !item.lastOpenedTime).length; 
+        state.unreadMessageCount = state.allMessages.filter(item => !item.status).length; 
       }
     },
 
-    updateMessage(state, updatedMessage){
+    updateMessageInMemory(state, updatedMessage){
       try {
         if (state.allMessages) {
           state.allMessages.forEach(item => {
             if (item.messageId === updatedMessage.messageId)
-              item = updatedMessage;
+              item.status = updatedMessage.status;
           });
         }
+        
       } catch (error) {
         console.log(error);
       }
     },
-
-    updateMessageLastOpenedTime(state, messageId) {
-      try {
-        if (state.allMessages) {
-          state.allMessages.forEach(item => {
-            if (item.messageId === messageId)
-              item.lastOpenedTime = new Date();
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },    
   },
 
   actions: {
@@ -66,9 +54,10 @@ export default {
       }
       if (organizationId) {
         try {
-          let response = await ApiService.apiAxios.get(ApiRoutes.MESSAGE + '/' + organizationId);
+          let response = await ApiService.apiAxios.get(ApiRoutes.MESSAGE + '/organization/' + organizationId);
           commit('setAllMessages', response.data);
           commit('updateUnreadMessagesCount');
+          console.log('getAllmessges Vuex: ' + JSON.stringify(response.data[0]));
         } catch (error) {
           console.log(`Failed to get Organization messages - ${error}`);
           throw error;
@@ -76,53 +65,24 @@ export default {
       }
     },
 
-    async getMessage({ commit }, messageId) {
-      if (!localStorage.getItem('jwtToken')) { 
-        console.log('unable to get Message data because you are not logged in');
-        throw 'unable to get Message data because you are not logged in';
-      }
-      if (messageId) {
-        try {
-          let response = await ApiService.apiAxios.get(ApiRoutes.MESSAGE + '/' + messageId);
-          commit('updateMessage', response.data);
-          commit('updateUnreadMessagesCount');
-        } catch (error) {
-          console.log(`Failed to get Organization messages - ${error}`);
-          throw error;
-        }
-      }
-    },
-
-    // To avoid sending too many GET API queries to Dynamics server every time provider open an email
-    // Logic: Whenever the provider open an email, it will update that email status in Vuex.
-    // It will only send GET API to Dynamics when user reload the page.
-    async updateMessagesLocally({ commit }, messageId) {
-      if (!localStorage.getItem('jwtToken')) { 
-        console.log('unable to update Messages data in Local Env because you are not logged in');
-        throw 'unable to update Messages data in Local Env because you are not logged in';
-      }
-      try {
-        commit('updateMessageLastOpenedTime', messageId);
-        commit('updateUnreadMessagesCount');
-      } catch (error) {
-        console.log(`Failed to update existing Message in Local Env - ${error}`);
-        throw error;
-      }
-    },
-
-    async updateMessagesDynamics(messageId) {
+    async updateMessage({ commit }, messageId) {
       if (!localStorage.getItem('jwtToken')) { 
         console.log('unable to update Messages data in DYNAMICS because you are not logged in');
         throw 'unable to update Messages data in DYNAMICS because you are not logged in';
       }
       if (messageId) {
         try {
-          let currentDate = new Date();
-          let payload = {
-            'lastopenedtime': currentDate.toISOString(),
+          let updatedMessage = {
+            'messageId': messageId,
+            'status': true,
           };
-          let response = await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);
-          console.log('Update message ID ' + messageId + ' - payload: ' + response.data);
+          commit('updateMessageInMemory', updatedMessage);
+          commit('updateUnreadMessagesCount');
+          let payload = {
+            'lastopenedtime': (new Date()).toISOString(),
+          };
+          await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);
+          // console.log('Update message ID ' + messageId + ' - response: ' + response.data.lastopenedtime);          
         } catch (error) {
           console.log(`Failed to update existing Message in Dynamics - ${error}`);
           throw error;

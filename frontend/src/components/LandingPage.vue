@@ -154,6 +154,7 @@ export default {
     async getAllMessagesVuex() {
       try {
         const organizationId = this.userInfo.organizationId;
+        console.log('organization id = ' + organizationId);
         await this.getAllMessages(organizationId);
       } catch (error) {
         console.info(error);
@@ -162,7 +163,7 @@ export default {
   },
   
 
-  components: { SmallCard, MessagesToolbar}
+  components: { SmallCard, MessagesToolbar }
 };
 </script>
 

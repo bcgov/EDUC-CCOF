@@ -23,20 +23,16 @@
               <v-data-table
                 :headers="headers"
                 :items="allMessages"
-                :sort-by="['sentDate']"
-                :sort-desc="[true]"
                 mobile-breakpoint="960"
-                fluid
-                height="100vh"
+                fluid height="100vh"
                 fixed-header
                 :item-class="getStyle"
-                disable-pagination
-                hide-default-footer
+                disable-pagination hide-default-footer
                 @click:row="rowClickHandler"
                 item-key="messageId" single-select
               >
-                <template v-slot:item.lastOpenedTime="{item}">
-                  <p v-if="item.lastOpenedTime">
+                <template v-slot:item.status="{item}">
+                  <p v-if="item.status">
                     Read
                   </p>
                   <p v-else>
@@ -96,7 +92,7 @@
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import Spinner from '@/components/common/Spinner';
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'MessagesPage',
@@ -114,7 +110,7 @@ export default {
         {
           text: 'Read/Unread',
           align: 'start',
-          value: 'lastOpenedTime'
+          value: 'status'
         },
         // { text: 'Action Required', value: 'actionRequired' },
         { text: 'Subjects', value: 'subject' },
@@ -128,12 +124,18 @@ export default {
       },
     };
   },
+
+  created() {
+    this.getAllMessagesVuex();
+  },
+  
   computed: {
+    ...mapGetters('auth', ['userInfo']),
     ...mapGetters('message', ['allMessages']),
   },
   methods: {
-    ...mapMutations('message', ['updateMessagesLocally','updateUnreadMessagesCount']),
-    ...mapActions('message', ['updateMessagesDynamics']),
+    
+    ...mapActions('message', ['updateMessage','getAllMessages']),
 
     rowClickHandler(item,row) {
       this.message.subject = item.subject;
@@ -141,13 +143,11 @@ export default {
       this.message.messageContent = item.messageContent;
       this.message.sender = 'From: My Childcare Services';
       row.select(true);
-      this.updateMessagesLocally(item.messageId);
-      this.updateMessagesDynamics(item.messageId);
-      this.updateUnreadMessagesCount();
+      this.updateMessage(item.messageId);
     },
 
     getStyle(item){
-      if (item.lastOpenedTime) return 'read';
+      if (item.status) return 'read';
       else return 'unread';
     },
 
@@ -155,6 +155,14 @@ export default {
       this.$router.push(PATHS.home);
     },
     
+    async getAllMessagesVuex() {
+      try {
+        const organizationId = this.userInfo.organizationId;
+        await this.getAllMessages(organizationId);
+      } catch (error) {
+        console.info(error);
+      }
+    },    
   },
 
   components: { MessagesToolbar, Spinner }
