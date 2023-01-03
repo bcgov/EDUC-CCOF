@@ -21,14 +21,15 @@ fixture `Organization Tests`
 
 test('Update Organization', async t => {
   await login.idirLogin(t);
-  await impersonate.loadUser(t, 'rlo');
+  await impersonate.loadUser(t, config.get('bceid_credentials').username);
   await t
     .click(landing.continueButton)
     .wait(2000);
   await organization.updateField(t, 'Mailing Address', '111 sutter street');
   await organization.loadFieldsFromFile(t, 'test1-organization.txt');
   await t.takeScreenshot({fullPage: true});
-  await t.click(organization.nextButton);
+  // await t.click(organization.nextButton);
+  await t.expect(organization.nextButton.hasAttribute('disabled')).ok();
   //Have to test something or the test will fail.
   await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
 });
