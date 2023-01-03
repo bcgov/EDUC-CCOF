@@ -118,6 +118,19 @@ function getSelectOption(labelName, selectedName) {
   return Selector('label').withText(labelName).parent().parent().nextSibling().find('label').withText(selectedName).prevSibling();
 }
 
+function getErrorMessage(element, message){
+  return element.parent().parent().nextSibling().find('div').withExactText(message);
+}
+
+async function removeContent(t, element){
+  const text = await element.value;
+  // const len = text.length;
+  // const deleteComm = "delete ".repeat(len).trim();
+  console.log(text);
+  await t.typeText(element, 'a', { replace: true })
+          .pressKey('backspace');
+}
+
 function convertToMonth(date_month){
   let month = ""
   switch (date_month) {
@@ -179,14 +192,23 @@ async function selectDate(t, date_data){
 
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
-  let lines = data.split('\n');
+  let lines =data.split('\n');
+  console.log(lines);
   let index = 0;
   for (index; index < fields.length; index ++) {
     if (fields[index].heading) {
-      const fieldElement = getTextFieldWithDivHeading(fields[index].label, fields[index].heading);
-      await t.expect(fieldElement.exists).ok({timeout:50000});
       if(lines[index]=== ""){
-        await removeContent(t, fieldElement);
+        await removeContent(t, getTextFieldWithDivHeading(fields[index].label, fields[index].heading));
+        await t.expect(getErrorMessage(getTextFieldWithDivHeading(fields[index].label, fields[index].heading), 'This field is required').exists).ok({timeout: 2000})
+      }else{
+        await t.typeText(getTextFieldWithDivHeading(fields[index].label, fields[index].heading), lines[index], { replace: true });
+      }
+    } else if (fields[index].radio) {
+      if(fields[index].addedField){
+        const option = lines[index].split('/')[0];
+        const field = lines[index].split('/')[1];
+        await t.click(getRadioOption(fields[index].radio, option));
+        await t.typeText(getTextField(fields[index].addedField), field, {replace: true});
       }else{
         await t.typeText(fieldElement, lines[index], { replace: true });
       }
@@ -197,8 +219,12 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       await t.click(date_picker);
       await selectDate(t, lines[index]);
     } else {
-
-      await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
+      if(lines[index]=== ""){
+        await removeContent(t, getTextField(fields[index]));
+        await t.expect(getErrorMessage(getTextField(fields[index],'This field is required')).exists).ok({timeout: 2000})
+      }else{
+        await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
+      }
     }
   }
 
