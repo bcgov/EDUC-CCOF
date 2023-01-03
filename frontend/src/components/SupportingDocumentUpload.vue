@@ -34,6 +34,9 @@
                         :items="facilityNames"
                         item-text="facilityName"
                         return-object
+                        class="drop-down-select"
+                        required
+                        :rules="selectRules"
               ></v-select>
             </template>
             <template v-slot:item.documentType="{ item }">
@@ -45,6 +48,9 @@
                         :items="documentTypes"
                         item-text="name"
                         return-object
+                        class="drop-down-select"
+                        required
+                        :rules="selectRules"
               ></v-select>
             </template>
             <template v-slot:item.document="{ item }">
@@ -64,6 +70,8 @@
                             :error-messages="fileInputError"
                             @change="selectFile"
                             @click="uploadDocumentClicked($event)"
+                            required
+
               ></v-file-input>
             </template>
             <template v-slot:item.actions="{ item }">
@@ -81,7 +89,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -109,12 +117,18 @@ export default {
     ...mapState('app', ['navBarList']),
     ...mapState('organization', ['applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
+
+    isSaveDisabled(){
+      const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
+      return this.isValidForm && (newFilesAdded.length > 0);
+    }
   },
 
   async mounted() {
     const maxSize = 2180000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
+      v => !!v || 'This is required',
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
       value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
       value => !value || !this.fileAccept.includes(value.type) || `File formats should be one of these ${this.fileFormats}.`,
@@ -133,7 +147,7 @@ export default {
       documentTypes: [],
       model: {},
       tempFacilityId: null,
-      isValidForm: undefined,
+      isValidForm: false,
       currentrow: null,
       headers: [
         {
@@ -177,7 +191,9 @@ export default {
       defaultItem: {
         selectFacility: '',
         selectDocumentType: ''
-      }
+      },
+      selectRules: [v => !!v || 'This is required']
+
     };
   },
 
@@ -337,5 +353,11 @@ export default {
 <style scoped>
 .table-header {
   background-color: #F2F2F2;
+}
+.drop-down-select{
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
