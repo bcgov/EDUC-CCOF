@@ -22,7 +22,7 @@ fixture `Funding Tests`
 
 test('Update Organization', async t => {
   await login.idirLogin(t);
-  await impersonate.loadUser(t, 'ccoftest06');
+  await impersonate.loadUser(t, config.get('bceid_credentials').username);
   await t
     .click(landing.continueButton)
     .wait(2000);
@@ -33,6 +33,8 @@ test('Update Organization', async t => {
     .wait(2000)
   await funding.loadFieldsFromFile(t, 'test1-funding.txt');
   await t.takeScreenshot({fullPage: true});
+  // await t.click(organization.nextButton);
+  await t.expect(organization.nextButton.hasAttribute('disabled')).ok();
   //Have to test something or the test will fail.
   await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
 });
