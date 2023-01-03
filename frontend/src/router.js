@@ -24,6 +24,10 @@ import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
 
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
 import WageIncrease from '@/components/RFI/WageIncrease';
+import ServiceExpansion from '@/components/RFI/ServiceExpansion';
+import IndigenousServiceExpansion from '@/components/RFI/IndigenousServiceExpansion';
+import UnderservedPop from '@/components/RFI/UnderservedPop';
+import NMF from '@/components/RFI/NMF';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -35,9 +39,9 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
-import EceweEligibility from '@/components/eceweApplication/Eligibility';
-import EceweFacilities from '@/components/eceweApplication/Facilities';
-import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
+import EceweEligibility from '@/components/eceweApplication/EceweEligibility';
+import EceweFacilities from '@/components/eceweApplication/EceweFacilities';
+import EceweDocumentUpload from '@/components/eceweApplication/EceweDocumentUpload';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -234,8 +238,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'Renew Organization',
         requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        showNavBar: false,
       }
     },
     // {
@@ -358,8 +361,52 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.ServiceExpansion,
+      name: 'ccfri-service-expansion',
+      component: ServiceExpansion,
+      meta: {
+        pageTitle: 'Priority Service Expansion',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.IndigenousServiceExpansion,
+      name: 'ccfri-indigenous-service-expansion',
+      component: IndigenousServiceExpansion,
+      meta: {
+        pageTitle: 'Indigenous Service Expansion',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.UnderservedPop,
+      name: 'underserved-populations',
+      component: UnderservedPop,
+      meta: {
+        pageTitle: 'Affordable Child Care for Underserved Populations',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.NMF,
+      name: 'new-facilities',
+      component: NMF,
+      meta: {
+        pageTitle: 'New Facilities',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
       path: PATHS.currentFees + '/:urlGuid',
-      name: 'ccfri-current-fees',
+      name: 'ccfri-current-fees-guid',
       component: currentFees,
       meta: {
         pageTitle: 'CCFRI Current Fees',

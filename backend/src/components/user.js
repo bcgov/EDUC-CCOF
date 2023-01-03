@@ -5,8 +5,8 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, OPTIN_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
-const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
+const { UserProfileFacilityMappings, OrganizationFacilityMappings, UserProfileOrganizationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
 
@@ -98,7 +98,9 @@ async function getUserInfo(req, res) {
   
   organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
   organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
-  resData.facilityList = parseFacilityData(userResponse);
+  organization.applicationType = getLabelFromValue(organization.applicationType, CCOF_APPLICATION_TYPES);
+  
+  resData.facilityList = await parseFacilityData(userResponse);
   let results = {
     ...resData,
     ...organization
@@ -108,13 +110,13 @@ async function getUserInfo(req, res) {
 
 async function getUserProfile(businessGuid) {
   try {
-    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}`;
+    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}&userName=''`;
     log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
   } catch (e) {
     if (e.response?.status == '404') {
-      console.log('response ', e.response.data);
+      log.verbose('response ', e.response.data);
       if (e.response?.data?.startsWith('User not found')) {
         return null;
       }
@@ -125,19 +127,27 @@ async function getUserProfile(businessGuid) {
   }
 }
 
-function parseFacilityData(userResponse) {
-  const facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+async function getFacilityMapFromOrganization(userResponse) {
+  let query  = `accounts?$select=name,accountnumber,ccof_facilitystatus,accountid&$expand=parentaccountid($select=accountid)&$filter=(ccof_facilitystatus ne 100000009) and (parentaccountid/accountid eq ${userResponse[0]['Organization.accountid']})`;
+  const response = await getOperation(query);
+  let map = new Map(response.value.map((m) => [m['accountid'], new MappableObjectForFront(m, OrganizationFacilityMappings).data]));
 
-  console.log('facility map size: ', facilityMap.size);
+  return map;
+}
+async function parseFacilityData(userResponse) {
+  let facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+
+  if (facilityMap?.size == 1 && userResponse[0]['Application.ccof_applicationtype'] == CCOF_APPLICATION_TYPES.RENEW) { //&& facilityMap.keys().next() &&
+    log.verbose('RENEW: grabbing facilities from opertaions API');
+    facilityMap = await getFacilityMapFromOrganization(userResponse);
+  }
   facilityMap.forEach((value, key, map) => {
     let ccfriInfo = undefined;
     let eceweInfo = undefined;
 
     userResponse.forEach(facility => {
       if (facility['CCFRI.ccof_facility'] === key) {
-        console.log('CCFRI FOUND FOR ' + key);
         ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
-        console.log('CCFRI FOUND data ', minify(ccfriInfo));
       }
       if (facility['ECEWE.ccof_facility'] === key) {
         eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;

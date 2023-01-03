@@ -31,6 +31,7 @@ export const ApiRoutes = Object.freeze({
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
+  APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
   SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument'
 });
 
@@ -54,6 +55,10 @@ export const PATHS = {
   currentFees: '/ccfriApplication/group/current-fees',
   ccfriRequestMoreInfo: '/ccfri-application/request-info',
   WageIncrease: '/ccfri-application/request-info/wage-increase',
+  ServiceExpansion: '/ccfri-application/request-info/service-expansion',
+  IndigenousServiceExpansion: '/ccfri-application/request-info/indigenous-service-expansion',
+  UnderservedPop: '/ccfri-application/request-info/underserved-populations',
+  NMF: '/ccfri-application/request-info/new-facilities',
   selectApplicationType: '/ccof-application/select-application-type',
   impersonate: '/impersonate',
   group: {

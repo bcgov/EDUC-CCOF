@@ -81,16 +81,15 @@
       </v-row>
 
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large>Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!(fundingGroup == 'true')">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
+        <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'true')">Next</v-btn>
       </v-row>
     </v-container>
   </v-form>
 </template>
 <script>
 
-import { mapGetters, mapState} from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 
@@ -105,36 +104,18 @@ export default {
     };
   },  
   computed: {
-    ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel']),
-
-    ...mapState('app', ['navBarList']),
-    currentYearTwoDigit() {
-      return this.currentYear - 2000;
-    },
-    nextYearTwoDigit() {
-      return this.currentYear - 1999;
-    },
-    filteredList() {
-      if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.navBarList;
-      }
-      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
-    },
-    getApplicationStatus(){
-      return this.userInfo.applicationStatus === null;
-    },
-    
   },
   methods: {
-
-    clicked (){
-      console.log('clicked');
-      return '';
-
+    ...mapActions('organization', ['renewApplication']),
+    async next (){
+      this.processing = true;
+      await this.renewApplication();
+      this.processing = false;
+      this.$router.push(PATHS.group.licenseUpload);
     },
-    goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    back() {
+      this.$router.push(PATHS.home);
     },
     
   },

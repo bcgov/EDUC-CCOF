@@ -1,6 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
+import { getChanges } from '@/utils/validation';
 
 export default {
   namespaced: true,
@@ -8,35 +9,40 @@ export default {
     organizationId: null,
     applicationId: null,
     applicationStatus: null,
+    applicationType: null,
     organizationType: null,
-    providerType: null,
+    organizationProviderType: null,
     isOrganizationComplete: false,
     isStarted: false,
-    organizationModel: {}
+    organizationModel: {},
+    loadedModel: {},
   },
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
     setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
+    setApplicationType: (state, applicationType) => { state.applicationType = applicationType; },
     setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
+    setOrganizationProviderType: (state, organizationProviderType) => { state.organizationProviderType = organizationProviderType; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
     setOrganizationModel: (state, model) => { state.organizationModel = model; },
+    setLoadedModel: (state, model) => { state.loadedModel = model; },
     setIsOrganizationComplete: (state, value) => { state.isOrganizationComplete = value; }
   },
   actions: {
     async saveOrganization({ state, commit, rootState }) {
 
       checkSession();
-
-      let payload = { ...state.organizationModel };
-
-      delete payload['applicationStatus']; //TODO: verify no need to include status as it will be set automatically.
+      const payload = getChanges(state.organizationModel, state.loadedModel);
       console.log('saveOrganization, payload', payload);
+      if (!payload) {
+        return; //No changes. so return from function
+      }
+      commit('setLoadedModel', state.organizationModel);
 
       if (state.organizationId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
-          commit('setOrganizationModel', response.data);
           commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
@@ -51,7 +57,8 @@ export default {
           commit('setOrganizationId', response.data?.organizationId);
           commit('setApplicationId', response.data?.applicationId);
           commit('setApplicationStatus', response.data?.applicationStatus);
-          commit('setOrganizationModel', response.data);
+          commit('setApplicationType', response.data?.applicationType);
+          commit('setOrganizationProviderType', response.data?.organizationProviderType);
           commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
@@ -60,12 +67,32 @@ export default {
         }
       }
     },
+    async renewApplication({ commit, state, rootState }) {
+      checkSession();
+
+      let payload = {
+        providerType: state.organizationProviderType,
+        programYearId: rootState.app.programYearList.future.programYearId,
+        organizationId: state.organizationId,
+      };
+      console.log('renewApplication, payload', payload);
+      try {
+        const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
+        commit('setApplicationId', response.data?.applicationId);
+        return response;
+      } catch (error) {
+        console.log(`Failed to renew Application - ${error}`);
+        throw error;
+      }
+    },
+
     async loadOrganization({ commit }, organizationId) {
       checkSession();
 
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
         commit('setOrganizationModel', response.data);
+        commit('setLoadedModel', response.data);
         commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
         console.log('response.data?.isOrganizationComplete', response.data?.isOrganizationComplete);
       } catch (error) {

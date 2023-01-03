@@ -12,25 +12,14 @@
       <v-card-text class="pa-0" >
         <div class="pa-2 pa-md-4 ma-0 backG">
           <p class="text-h5 text--primary px-5 py-0 my-0">
-            Exceptional Circumstances
+            Priority Service Expansion: Increase in Hours of Operation
           </p>
         </div>
         <br>
-        <p class="text-h6 text--primary px-5 py-0 my-0">
-            As outlined in the <a href="#" >Funding Guidelines</a>, exceptional circumstances are expenses that are:
-          </p>
+        
         <div class="px-md-12 px-7">
           <br>
-          <ul>
-            <li>
-              Sudden, unexpected, or oustide of the Organization's control; and
-            </li>
-            <li>
-              Must also address an immediate health/safety concern, or is necessary for the facility to remain operational
-            </li>
-          </ul>
-          <br>
-          <p>Is your fee increase due to an exceptional circumstance?</p>
+          <p>Is your fee increase due to an increase in hours/days of operation in order to provide care during expanded, extended (defined as after 7 pm and before 6 am and/or overnight), and/or non-traditional hours?</p>
           <v-radio-group
             required
             row
@@ -47,29 +36,11 @@
             ></v-radio>
           </v-radio-group>
           <br>
-          <div v-if="model.q1 === 'Yes'">
-            <p>Does the exceptional circumstance occur within 6 months of the fee increase?</p>
-            <v-radio-group
-              required
-              row
-              v-model="model.q2"
-              label=""
-            >
-              <v-radio
-                label="Yes"
-                value="Yes"
-              ></v-radio>
-              <v-radio
-                label="No"
-                value="No"
-              ></v-radio>
-            </v-radio-group>
-          </div>
         </div>
         </v-card-text>
       </v-card>
 
-      <div v-if="model.q1 === 'Yes' && model.q2 === 'Yes' ">
+      <div v-if="model.q1 === 'Yes'">
 
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -84,27 +55,47 @@
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
-                Expense Information
+                Service Expansion Details
               </p>
             </div>
-
-            <v-banner
-              class="ma-4"
-              color="blue lighten-4"
-              elevation="5"
-            >
-              <v-icon
-                large
-                color="blue darken-4"
-                class="mr-5"
-                > mdi-information
-              </v-icon>
-              <strong>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</strong> 
-            </v-banner>
-
-
+            <br>
+            
             <div class="px-md-12 px-7">
-              <v-row  v-for="(expense, index) in expenseList" :key="index">
+
+              <v-row>
+                <v-col class="col-md-1 col-12 mx-0">
+                  <!--here for spacing-->
+                </v-col>
+
+                <v-col class="col-md-2 col-12 ">
+                  <h3> Facility's previous hours of operation</h3>
+                  <br>
+                  <p>(e.g. 9:00 am - 4:00 pm)</p>
+                </v-col>
+
+                <v-col class="col-md-2 col-12 ">
+                  <h3> Facility's new hours of operation</h3>
+                  <br>
+                  <p>(e.g. 6:00 am - 5:00 pm)</p>
+                </v-col>
+
+                <v-col class="col-md-2 col-12 ">
+                  <h3> Date of Change</h3>
+                </v-col>
+
+                <v-col class="col-md-2 col-12 ">
+                  <h3> Amount of Expense</h3>
+                </v-col>
+
+                <v-col class="col-md-2 col-12 ">
+                  <h3> Payment frequency </h3>
+                </v-col>
+              </v-row>
+              <span class="white--text"> . </span>
+                <v-divider></v-divider>
+
+
+              <v-row  v-for="(obj, index) in expenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                       large
@@ -114,58 +105,183 @@
                       > mdi-close
                     </v-icon>
                 </v-col>
-                <v-col class="col-md-3 col-12 ">
+                <v-col class="col-md-1 col-12 ml-md-n8">
                   
-                  <v-text-field
-                    class = ""
-                    v-model="expense.description"
-                    label="Description"
-                    outlined
-                    clearable
-                    :rules="rules"
-                  ></v-text-field>
+                  <v-menu
+                    ref="menufrom"
+                    v-model="obj.menufrom"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="timefrom"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="obj.timefrom"
+                        label="From:"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      v-if="obj.menufrom"
+                      v-model="obj.timefrom"
+                      full-width
+                      @click:minute="$refs.menufrom[index].save(timefrom)"
+                    ></v-time-picker>
+                  </v-menu>
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
+                <v-col class="col-md-1 col-12 ">
+                  
+                  <v-menu
+                    ref="menuto"
+                    v-model="obj.menuto"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="timeto"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="obj.timeto"
+                        label="To:"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      :min="obj.timefrom"
+                      v-if="obj.menuto"
+                      v-model="obj.timeto"
+                      full-width
+                      @click:minute="$refs.menuto[index].save(timeto)"
+                    ></v-time-picker>
+                  </v-menu>
+                </v-col>
+
+                <v-col class="col-md-1 col-12">
+                  
+                  <v-menu
+                    ref="newmenufrom"
+                    v-model="obj.newmenufrom"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="newtimefrom"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="obj.newtimefrom"
+                        label="From:"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      v-if="obj.newmenufrom"
+                      v-model="obj.newtimefrom"
+                      full-width
+                      @click:minute="$refs.newmenufrom[index].save(newtimefrom)"
+                    ></v-time-picker>
+                  </v-menu>
+                </v-col>
+
+                <v-col class="col-md-1 col-12 ">
+                  
+                  <v-menu
+                    ref="newmenuto"
+                    v-model="obj.newmenuto"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="newtimeto"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="obj.newtimeto"
+                        label="To:"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      :min="obj.newtimefrom"
+                      v-if="obj.newmenuto"
+                      v-model="obj.newtimeto"
+                      full-width
+                      @click:minute="$refs.newmenuto[index].save(newtimeto)"
+                    ></v-time-picker>
+                  </v-menu>
+                </v-col>
+
+              
+                <v-col class="col-md-2 col-12">
                   <v-menu  v-model="calendarMenu[index]" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-text-field :rules="rules" outlined v-model="expense.date" label="Date of Expense (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                      <v-text-field :rules="rules" outlined v-model="obj.date" label="Date of Change (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
                       <v-date-picker
                         clearable 
-                        v-model="expense.date" 
+                        v-model="obj.date" 
                         @input="calendarMenu[index] = false">
                       </v-date-picker>
                   </v-menu>
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
+                <v-col class="col-md-2 col-12">
+                  <v-text-field type="number" outlined :rules="rules"  v-model.number="obj.expense"  prefix="$"/>
+                </v-col>
+
+                <v-col class="col-md-2 col-12">
                   <v-select
                     :items="items"
-                    label="Expense Frequency"
+                    label="Payment Frequency"
                     outlined
-                    v-model="expense.frequency"
+                    v-model="obj.frequency"
                     :rules="rules"
                   ></v-select>
                 </v-col>
 
-                <v-col class="col-md-2 col-12">
-                  <v-text-field type="number" outlined :rules="rules"  v-model.number="expense.expense"  prefix="$"/>
+                <v-col class="col-md-1 col-12 mx-0">
+                  <!--here for spacing-->
                 </v-col>
 
-                <span class="white--text"> . </span>
+                <br><br>
+              <v-row>
+                <span class="white--text">  </span>
                 <v-divider></v-divider>
-
+              </v-row>
               </v-row> <!-- end v for-->
             
               <div class="form-group">
-                <v-btn id="login-button" @click="addExpense"   class="my-5" dark color='#003366'>Add Expense</v-btn>
+                <v-btn @click="addExpense"   class="my-5" dark color='#003366'>Add Expense</v-btn>
               </div>
+
               <br>
-              
               <p class="text-h6 text--primary py-5 my-0">
-                Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above.
+                Please explain why you have incurred (or will incur) each expense you have listed above.(e.g. Wages, Utilities)
               </p>
               
               <div class="">
@@ -177,8 +293,25 @@
                   v-model="model.notes"
                 ></v-textarea>
               </div>
+
+              <br>
+              <p class="text-h6 text--primary py-5 my-0">
+                Is there anything else about your change in hours of operation you would like us to know?
+              </p>
+              
+              <div class="">
+                <br>
+                <v-textarea
+                  outlined
+                  name="input-7-4"
+                  label="Describe here"
+                  v-model="model.notes2"
+                ></v-textarea>
+              </div>
+
             </div>
 
+            
           </v-card-text>
         </v-card> 
 
@@ -348,6 +481,14 @@ let datePicker= null;
 
 let expenseList = [
   {
+    timeto: null,
+    timefrom: null,
+    menufrom: false,
+    menuto: false,
+    newtimeto: null,
+    newtimefrom: null,
+    newmenufrom: false,
+    newmenuto: false,
     description: '',
     date: undefined,
     expense: 0,
@@ -375,9 +516,17 @@ export default {
       input : '',
       expenseList,
       fundingList,
+      timeto: null,
+      timefrom: null,
+      menufrom: false,
+      menuto: false,
+      newtimeto: null,
+      newtimefrom: null,
+      newmenufrom: false,
+      newmenuto: false,
       calendarMenu: [],
       fundingCalendar : [],
-      // expense,
+    
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
       rules: [
         (v) => !!v  || 'Required.',
@@ -387,11 +536,9 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
@@ -399,20 +546,21 @@ export default {
   },
   methods : {
     next(){
-      this.$router.push(PATHS.WageIncrease);
-
-      // if (this.model.q1 === 'Yes'){
-      //   this.$router.push(PATHS.addNewFees);
-      // }
-      // else {
-        
-      // }
+      this.$router.push(PATHS.IndigenousServiceExpansion);
     },
     previous() {
-      this.$router.back();  //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.$router.back();
     },
     addExpense () {
       this.expenseList.push({
+        timeto: null,
+        timefrom: null,
+        menufrom: false,
+        menuto: false,
+        newtimeto: null,
+        newtimefrom: null,
+        newmenufrom: false,
+        newmenuto: false,
         description: '',
         date: null,
         expense: 0,
@@ -424,21 +572,6 @@ export default {
         return;
       }
       this.expenseList.splice(index, 1);
-    },
-    removeFunding(index){
-      if (index == 0){
-        return;
-      }
-      this.fundingList.splice(index, 1);
-    },
-    addFunding () {
-      this.fundingList.push({
-        fundingProgram: '',
-        date: undefined,
-        status: '',
-        amount: 0,
-        expenses: ''
-      });
     },
   },
   components: { }

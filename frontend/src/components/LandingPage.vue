@@ -8,6 +8,15 @@
         class="pa-10"
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
+        <v-btn
+        @click="goToCCFRI()">
+        CCFRI 
+        </v-btn>
+        <v-btn
+        @click="goToRFI()">
+        GO TO RFI
+        </v-btn>
+        
     </v-row >
      <!-- Application Approved screens starts here -->
     <v-container 
@@ -15,21 +24,24 @@
     >
       <v-row class="" align="stretch" justify="space-around" > 
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
-          <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable=false>
+          <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable="(ccofStatus === CCOF_STATUS_COMPLETE)">
               <br><br>
-              <v-btn absolute bottom  class="" dark color='#003366' v-if="userInfo.applicationStatus === null" @click="newApplication()">Start Application</v-btn>
-              <v-btn absolute bottom class="" dark color='#003366' v-else-if="userInfo.applicationStatus === 'DRAFT'" @click="continueApplication()">Continue Application</v-btn>
-              <p v-else> Status: {{userInfo.applicationStatus}}</p> <!--TODO: pull the status from the api so will show in progress or approved-->
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="ccofStatus === CCOF_STATUS_NEW" @click="newApplication()">Start Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="ccofStatus === CCOF_STATUS_CONTINUE" @click="continueApplication()">Continue Application</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else >Complete</v-btn>
           </SmallCard>
           <SmallCard :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
               <br>
-              <v-btn absolute bottom dark color='#003366' @click="renewApplication()">Renew my funding</v-btn>
+              <v-btn absolute bottom  class="" dark color='#003366' v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my funding</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
+              <v-btn absolute bottom class="" dark color='#003366' v-else >Complete</v-btn>
+
           </SmallCard>
           <!-- <SmallCard  title="Make a change to my information, parent fees, or funding agreement" :disable=getApplicationStatus>
             <br>
             <v-btn  absolute bottom  class="" dark color='#003366'>Make a change</v-btn>
           </SmallCard> -->
-          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable=getApplicationStatus>
+          <SmallCard title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable="ccofStatus != CCOF_STATUS_COMPLETE">
               <br>
               <v-btn absolute bottom class="" dark color='#003366'>Submit reports</v-btn>
           </SmallCard>
@@ -39,7 +51,7 @@
       <v-divider>
       </v-divider>
       <br><br>
-        <v-row v-if="navBarList.length > 2">
+        <v-row v-if="navBarList?.length > 2">
         <v-col class="col-12 col-md-6 ml-xl-3">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API 
@@ -108,10 +120,25 @@ export default {
       
     };
   },
+  created () {
+    //Used for constants
+    // this.CCOF_STATUS_COMPLETE = 'Completed';
+    // this.CCOF_STATUS_NEW = 'Start Application';
+    // this.CCOF_STATUS_CONTINUE = 'Continue Application';
+    this.CCOF_STATUS_COMPLETE = 'COMPLETE';
+    this.CCOF_STATUS_NEW = 'NEW';
+    this.CCOF_STATUS_CONTINUE = 'CONTINUE';
+
+    this.RENEW_STATUS_NEW = 'NEW';
+    this.RENEW_STATUS_COMPLETE = 'COMPLETE';
+    this.RENEW_STATUS_CONTINUE = 'CONTINUE';
+
+  },  
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['futureYearLabel']),
+    ...mapGetters('app', ['futureYearLabel', 'programYearList']),
     ...mapState('app', ['navBarList', 'programYearList']),
+    ...mapState('organization', ['applicationType', 'applicationStatus', 'organizationProviderType']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;
@@ -119,23 +146,85 @@ export default {
       return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     getApplicationStatus(){
-      return this.userInfo.applicationStatus === null;
+      return this.applicationStatus === null;
     },
-    isRenewEnabled() {
-      if (this.userInfo.applicationStatus === 'DRAFT') {
-        return true; //TODO update this when we know what values we
-      }
-      if (this.userInfo.serverTime < this.programYearList.future.intakeStart || this.userInfo.serverTime > this.programYearList.future.intakeEnd) {
-        return false; //Must be within future program year intake period.
+    isCCFRIandECEWEComplete() {
+      if (!this.navBarList) {
+        return false;
       }
       let enabled = true;
-      this.navBarList.forEach(item => {
-        if (item.eceweStatus === 'NEW' && item.ccfriStatus === 'NEW') {
+      let navBarLength = this.navBarList?.length;
+      for (let i = 0; i < navBarLength; i ++) {
+        if (this.navBarList[i].eceweStatus === 'NOT STARTED' || this.navBarList[i].ccfriStatus === 'NOT STARTED '
+          || this.navBarList[i].eceweStatus === 'DRAFT' || this.navBarList[i].ccfriStatus === 'DRAFT'
+          || this.navBarList[i].eceweStatus === 'ACTION_REQUIRED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED'
+          || this.navBarList[i].eceweStatus === 'SUBMITTED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED') {
           enabled = false; 
+          i = navBarLength;  //Can't break a foreach in javascript, so end the for loop.
         }
-      });
+      }
+      console.log('isCCFRIandECEWEComplete: ', enabled);
       return enabled;
-    }
+    },
+    isWithinRenewDate() {
+      let isEnabled = (this.userInfo.serverTime > this.programYearList?.future?.intakeStart 
+        && this.userInfo.serverTime < this.programYearList?.future?.intakeEnd);
+      console.log('isWithinRenewDate: ', isEnabled);
+      return isEnabled;
+    },
+    isRenewEnabled() {
+      if (this.applicationType === 'RENEW') {
+        if (this.applicationStatus === 'DRAFT') {
+          console.log('isRenewEnabled1: ', true);
+          return true;
+        } else if (this.applicationStatus === 'SUBMITTED') {
+          let isEnabled = (this.isCCFRIandECEWEComplete
+            && this.isWithinRenewDate
+            && this.userInfo.ccofProgramYearId == this.programYearList?.current?.programYearId);
+          console.log('isRenewEnabled2: ', isEnabled);
+          return isEnabled;
+        }
+      } else if (this.applicationType === 'NEW') {
+        if (this.applicationStatus === 'DRAFT') {
+          console.log('isRenewEnabled3: ', false);
+          return false;
+        } else if (this.applicationStatus === 'SUBMITTED') {
+          let isEnabled = (this.isCCFRIandECEWEComplete
+          && this.isWithinRenewDate
+          && this.userInfo.ccofProgramYearId == this.programYearList?.current?.programYearId);
+          console.log('isRenewEnabled4: ', isEnabled);
+          return isEnabled;
+        }
+      }
+      return false;
+    },
+    ccofStatus() {
+      if (!this.applicationType) {
+        return this.CCOF_STATUS_NEW;
+      }
+      if (this.applicationType === 'NEW') {
+        if (this.applicationStatus === 'DRAFT') {
+          return this.CCOF_STATUS_CONTINUE;
+        } else if (this.applicationStatus === 'SUBMITTED') {
+          return this.CCOF_STATUS_COMPLETE;
+        }else {
+          return this.CCOF_STATUS_NEW;
+        }
+      } else {
+        return this.CCOF_STATUS_COMPLETE;
+      }
+    },
+    ccofRenewStatus() {
+      if (this.applicationType === 'RENEW') {
+        if (this.applicationStatus === 'DRAFT') {
+          return this.RENEW_STATUS_CONTINUE;
+        } else {
+          return this.RENEW_STATUS_COMPLETE;
+        }
+      } else {
+        return this.RENEW_STATUS_NEW;
+      }
+    }  
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
@@ -147,30 +236,37 @@ export default {
       this.setIsRenewal(true);
       this.$router.push(PATHS.group.renewOrganization);
     },
+    continueRenewal() {
+      this.$router.push(PATHS.group.licenseUpload);
+    },
+
     newApplication() {
       this.setIsRenewal(false);
       this.$router.push(PATHS.selectApplicationType);
     },
     continueApplication() {
       this.setIsRenewal(false);
-      console.log('continueApplication userInfo.organizationProviderType', this.userInfo.organizationProviderType);
-      if (this.userInfo.organizationProviderType === 'GROUP') {
+      console.log('continueApplication .organizationProviderType', this.organizationProviderType);
+      if (this.organizationProviderType === 'GROUP') {
         this.$router.push(PATHS.group.orgInfo);
-      } else if (this.userInfo.organizationProviderType === 'FAMILY') {
+      } else if (this.organizationProviderType === 'FAMILY') {
         this.$router.push(PATHS.family.orgInfo);
       } else { 
-        this.setFailureAlert(`Unknown Organization Provider Type: ${this.userInfo.organizationProviderType}`);
+        this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
       }
     } ,
     goToRFI(){
       this.$router.push(PATHS.ccfriRequestMoreInfo);
     },
     goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+      this.$router.push(PATHS.ccfriHome); 
     },   
   },
-  
-
+  ccofStatusLabel() {
+    if (this.applicationType === 'RENEW') {
+      return 'Compelete';
+    }
+  },
   components: { SmallCard, MessagesToolbar}
 };
 </script>

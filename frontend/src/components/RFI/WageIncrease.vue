@@ -15,19 +15,21 @@
               Direct Care Staff Wages Increases
             </p>
           </div>
-          <v-toolbar 
-              color="blue lighten-4"
-              justify="center"
-              class="ma-md-4"
-            >
-              <v-toolbar-title class="flex ml-md-4" >
-                <v-row>
-                  <font-awesome-icon icon="fa-solid fa-circle-info " class="fa-2x mx-4 my-2"/> 
-                  <p class="text text--primary  mx-4 my-3" > Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required to apply for ECE-WE prior to being approved for a fee increase under this policy. </p>
-                </v-row>
-              </v-toolbar-title >
-              
-            </v-toolbar>
+
+          <v-banner
+            two-line
+            class="ma-4"
+            color="blue lighten-4"
+            elevation="5"
+          >
+            <v-icon
+              large
+              color="blue darken-4"
+              class="mr-5"
+              > mdi-information
+            </v-icon>
+            <strong>Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required to apply for ECE-WE prior to being approved for a fee increase under this policy. </strong> 
+          </v-banner>
           <br>
           
           <p class="text-h6 text--primary px-5 py-0 my-0">
@@ -131,7 +133,6 @@
         </v-card-text>
       </v-card>
 
-
       <div v-if="model.q1 == 'Yes'">
 
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
@@ -149,105 +150,114 @@
               </p>
             </div>
             <br>
-            <v-toolbar 
+
+            <v-banner
+              two-line
+              class="ma-4"
               color="blue lighten-4"
-              justify="center"
-              class="ma-md-4"
+              elevation="5"
             >
-              <v-toolbar-title class="flex ml-md-4" >
-                <v-row>
-                  <font-awesome-icon icon="fa-solid fa-circle-info " class="fa-2x mx-4 my-2"/> 
-                  <p class="text text--primary  mx-4 my-3" > Note: If two or more staff have the same information for each column, they can be included in one row. </p>
-                </v-row>
-              </v-toolbar-title >
-            </v-toolbar>
+              <v-icon
+                large
+                color="blue darken-4"
+                class="mr-5"
+                > mdi-information
+              </v-icon>
+              <strong>Note: If two or more staff have the same information for each column, they can be included in one row. </strong> 
+            </v-banner>
 
             <div class="px-md-12 px-7">
 
               <v-row  v-for="(obj, index) in wageList" :key="index">
-                <!-- <v-btn 
-                  icon
-                  class="my-5"
-                  @click="removeFunding(index)"
-                >
-                  <font-awesome-icon icon="fa-solid fa-circle-xmark" class="fa-xl"/>
-                </v-btn>   commented out until I can figure out how to make look nice-->
-                    <v-col class="col-md-2 col-12 ">
-                      <v-text-field
-                        class = ""
-                        v-model="obj.staffRole"
-                        label="Direct Care Staff Role "
-                        outlined
-                        clearable
-                        :rules="rules"
-                      ></v-text-field>
-                    </v-col>
 
-                    <v-col class="col-md-2 col-12">
-                      <v-text-field
-                        type="number" 
-                        class = ""
-                        v-model.number="obj.staffNumber"
-                        label="Number of Staff Recieving Wage Increase"
-                        outlined
-                        clearable
-                        :rules="rules"
-                      ></v-text-field>
-                      
-                    </v-col>
+                <v-col class="col-md-1 col-12 mx-0">
+                  <v-icon
+                      large
+                      color="blue darken-4"
+                      class="mt-md-4"
+                      @click="removeRow(index)"
+                      > mdi-close
+                    </v-icon>
+                </v-col>
 
-                    <v-col class="col-md-2 col-12 ">
-                      <v-text-field
-                        prefix="$"
-                        class = ""
-                        v-model.number="obj.wageBeforeIncrease"
-                        label="Wage before increase"
-                        outlined
-                        clearable
-                        :rules="rules"
-                      ></v-text-field>
-                    </v-col>
+                <v-col class="col-md-1 col-12">
+                  <v-text-field
+                    type="number" 
+                    class = ""
+                    v-model.number="obj.staffNumber"
+                    label="Number of Staff Recieving Wage Increase"
+                    outlined
+                    clearable
+                    :rules="rules"
+                  ></v-text-field>
+                </v-col>
+            
+                <v-col class="col-md-2 col-12 ">
+                  <v-text-field
+                    class = ""
+                    v-model="obj.staffRole"
+                    label="Direct Care Staff Role "
+                    outlined
+                    clearable
+                    :rules="rules"
+                  ></v-text-field>
+                </v-col>
 
-                    <v-col class="col-md-2 col-12 ">
-                      <v-text-field
-                       prefix="$"
-                        class = ""
-                        v-model.number="obj.wageAfterIncrease"
-                        label="Wage After increase"
-                        outlined
-                        clearable
-                        :rules="rules"
-                      ></v-text-field>
-                    </v-col>
+                <v-col class="col-md-2 col-12 ">
+                  <v-text-field
+                    prefix="$"
+                    class = ""
+                    v-model.number="obj.wageBeforeIncrease"
+                    label="Wage before increase"
+                    outlined
+                    clearable
+                    :rules="rules"
+                  ></v-text-field>
+                </v-col>
 
-                    <v-col class="col-md-2 col-12">
-                      <v-text-field type="number" 
-                        outlined :rules="rules" 
-                        v-model.number="obj.averageHours"
-                        label="Average hours per week at this facility"
-                       
-                       />
-                    </v-col>
+                <v-col class="col-md-2 col-12 ">
+                  <v-text-field
+                    prefix="$"
+                    class = ""
+                    v-model.number="obj.wageAfterIncrease"
+                    label="Wage After increase"
+                    outlined
+                    clearable
+                    :rules="rules"
+                  ></v-text-field>
+                </v-col>
 
-                    <v-col class="col-md-2 col-12">
-                      <v-menu  v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field 
-                          :rules="rules" 
-                          outlined v-model="obj.wageDate" 
-                          label="Month and year of wage increase" 
-                          readonly v-bind="attrs" v-on="on">
-                          </v-text-field>
-                        </template>
-                          <v-date-picker
-                            clearable 
-                            v-model="obj.wageDate" 
-                            @input="wageCalendar[index] = false">
-                          </v-date-picker>
-                      </v-menu>
-                    </v-col>
+                <v-col class="col-md-2 col-12">
+                  <v-text-field type="number" 
+                    outlined :rules="rules" 
+                    v-model.number="obj.averageHours"
+                    label="Average hours per week at this facility"
+                    
+                    />
+                </v-col>
 
-                </v-row> <!-- end v for-->
+                <v-col class="col-md-2 col-12">
+                  <v-menu  v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field 
+                      :rules="rules" 
+                      outlined v-model="obj.wageDate" 
+                      label="Month and year of wage increase" 
+                      readonly v-bind="attrs" v-on="on">
+                      </v-text-field>
+                    </template>
+                      <v-date-picker
+                        clearable 
+                        v-model="obj.wageDate" 
+                        @input="wageCalendar[index] = false">
+                      </v-date-picker>
+                  </v-menu>
+                </v-col>
+
+                <span class="white--text"> . </span>
+                <v-divider></v-divider>
+
+              </v-row> <!-- end v for-->
                 
                 <div class="form-group">
                   <v-btn id="funding" @click="addRow()"   class="my-5" dark color='#003366'>Add Funding</v-btn>
@@ -392,11 +402,9 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
@@ -413,13 +421,17 @@ export default {
         wageDate: undefined
       });
     },
-    next(){
-      if (this.model.q1 === 'Yes'){
-        this.$router.push(PATHS.addNewFees);
+    removeRow(index){
+      if (index == 0){
+        return;
       }
+      this.wageList.splice(index, 1);
+    },
+    next(){
+      this.$router.push(PATHS.ServiceExpansion);
     },
     previous() {
-      this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
+      this.$router.back(); 
     },
   },
   components: { }
