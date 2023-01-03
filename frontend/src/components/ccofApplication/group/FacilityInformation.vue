@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="model.isFacilityComplete">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
@@ -12,7 +12,7 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="model.yearBeginOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
+                <v-text-field outlined required v-model="model.yearBeganOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field outlined required v-model="model.facilityAddress" :rules="rules.required" label="Facility Street Address" />
@@ -84,7 +84,7 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
@@ -101,14 +101,12 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
   mixins: [alertMixin],
-  props: {
-  },
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
   },
   beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFacilityComplete({facilityId: this.$route.params.urlGuid, complete: this.isValidForm});
+    this.setNavBarFacilityComplete({facilityId: this.$route.params.urlGuid, complete: this.model.isFacilityComplete});
     this.addFacilityToStore( {facilityId: this.$route.params.urlGuid, facilityModel: this.model});
     next();
   },  
@@ -138,8 +136,7 @@ export default {
     return {
       rules,
       processing: false,
-      model: {},
-      isValidForm: undefined
+      model: {}
     };
   },
   

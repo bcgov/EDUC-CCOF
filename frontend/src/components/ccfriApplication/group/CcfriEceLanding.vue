@@ -1,15 +1,18 @@
 <template>
     <v-container>
-        <!--TODO: Right now there is no logic to pull current facility fees. This just brings you directly to opt in or out, which then brings you to fill in all fees.
-          this will need to get changed at a later point when the API is more built out 
-          there is also no logic about if you can click next or not 
-        -->
-
-        <!-- <ExistingFacilityFees></ExistingFacilityFees> -->
-
+        
+      <v-btn
+        class = "my-10 mx-14 justify-end"
+        @click="toggleAll()"
+        dark color='#003366' 
+        > 
+        Opt-in All Facilities
+      </v-btn>
         <LargeButtonContainer>
 
           <v-form ref="isValidForm" value="false" v-model="isValidForm">
+
+          <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
           
           <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
             rounded
@@ -22,9 +25,8 @@
                 <v-col cols="" class="col-12 col-md-8">
                   <p class="text--primary"> Facility ID: {{facilityId}}</p>
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
-                  <!-- <p class="text--primary"> Licence : 123456789</p> -->
-                  <p class="text--primary " min-width="250px" >Status: {{ccfriStatus}}</p>
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == 0 ? "OUT" : "IN"}}</p> </strong>
+                  <!-- <p class="text--primary"> Licence : 123456789</p>  add back in when license number is in userProfile-->
+                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-4"
                   v-if="!showOptStatus[index]"
@@ -66,7 +68,6 @@
           </v-card>
         </v-form>
         
-        <!-- {{ccfriOptInOrOut}} -->
 
         </LargeButtonContainer>
       
@@ -74,11 +75,10 @@
           <v-btn color="info" outlined x-large @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
+          <v-btn color="secondary" outlined x-large @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
+          <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
             Save</v-btn>
         </v-row>
-
 
     </v-container>
 </template>
@@ -86,12 +86,11 @@
 <script>
 
 
-import { mapGetters, mapState} from 'vuex';
-import MessagesToolbar from '../../guiComponents/MessagesToolbar.vue';
+import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
-import ExistingFacilityFees from './ExistingFacilityFees.vue';
+import alertMixin from '@/mixins/alertMixin';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -99,6 +98,7 @@ let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'CcfriLandingPage',
+  mixins: [alertMixin],
   data() {
     return {
       input : '',
@@ -106,24 +106,9 @@ export default {
       //textInput,
       showOptStatus : '',
       isValidForm: false,
+      processing: false,
+      loading: false,
       ccfriOptInOrOut,
-      feeList : [ //dummy data for showing the 'current fees' page. TO be replaced with data loaded from Dynamics 
-        {
-          date: 'Jan 2022',
-          pre3year: 1234,
-          post3year: 2222
-        },
-        {
-          date: 'Feb 2022',
-          pre3year: 5555,
-          post3year: 8811
-        },
-        {
-          date: 'Mar 2022',
-          pre3year: 6754,
-          post3year: 8223
-        }
-      ],
       rules: [
         (v) => !!v  || 'Required.',
       ],
@@ -131,76 +116,125 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
   },
   beforeMount: function() {
+    try {
+      this.getUserInfo();
+    }catch (e){
+      console.log(e);
+    }
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
+    ...mapMutations('app', ['setCcfriOptInComplete', 'refreshNavBar']), 
+    ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
+      console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
-      //this.showOptStatus[index] = true;
-    
+    },
+    toggleAll(){
+      this.navBarList.forEach((fac, index) => {
+        this.toggle(index);
+        this.$set(this.ccfriOptInOrOut, index, '1');
+      });
     },
     previous() {
-      this.$router.push(PATHS.home); //TODO: change this, from CCOF page
+      //this.isPageComplete();
+      this.$router.back();
+    },
+    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
+    isPageComplete(){
+      const allFacilitiesComplete = this.navBarList.every((fac) => {
+        return (fac.ccfriApplicationId);
+      });
+      if (!allFacilitiesComplete){
+        return allFacilitiesComplete;
+      }
+      return this.isValidForm;
     },
     next() {
-      this.updateCCFRI();
-      const ccfriComplete = this.navBarList.every((fac, index) => {
-        return (fac.ccfriStatus == 'APPROVED'); //TODO: change this! leaving here for the demo
-        
-      });
+      this.save();
+      
+      //check if new opt in status was selected -- because I am forcing a save rn we don't need this top part
+      let firstOptInFacility = -1; 
+      
+      //check opt in status in NavBarList
+      if (firstOptInFacility === -1){
+        for (let i = 0; i < this.navBarList.length; i++) {
+          
+          if (this.navBarList[i].ccfriOptInStatus == 1){
+            firstOptInFacility = i;
+            break;
+          }
+        }
+      }
 
-      //console.log(ccfriComplete);
+      //if firstOptInFacility == -1, go to ECEWE screen! 
 
-      //if no status- go straight to add new fees page
-      if (ccfriComplete){
-        this.$router.push(PATHS.currentFees); 
+      this.setCcfriOptInComplete(true);
+      //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
+      if (this.isRenewal){
+        this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
       }
       else {
-        this.$router.push(PATHS.addNewFees); 
+        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
       }
+
     },
-    refreshWithFacility() {
-      let x = this.$route.params.urlGuid;
-      this.loadFacility(x);
-    },
-    async updateCCFRI () {
+       
+    async save () {
+      this.processing = true;
       let payload = [];
 
-      this.navBarList.forEach (async (facility, index) => {
+      for (let i = 0; i < this.navBarList.length; i++) {
+        //change this to only send payloads with value chosen --- don't send undefined 
 
-        facility.ccfriOptInStatus = ccfriOptInOrOut[index];
+        if (!ccfriOptInOrOut[i]){
+          continue;
+        }
+        this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
 
-        payload[index] = {
+        payload.push( {
           applicationID : this.userInfo.applicationId, //CCOF BASE application ID
-          facilityID : facility.facilityId, 
-          optInResponse: this.ccfriOptInOrOut[index] 
-        };
+          facilityID : this.navBarList[i].facilityId, 
+          optInResponse: this.ccfriOptInOrOut[i],
+          ccfriApplicationId: this.navBarList[i].ccfriApplicationId
+        });
 
-        payload = JSON.parse(JSON.stringify(payload));
+        console.log(payload);
+      }//end for loop
 
-        
-      });
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        console.log(response);
+        response.data.forEach(item => {
+          if (item.ccfriApplicationId) {
+            this.navBarList.find(facility => {
+              if (facility.facilityId == item.facilityId) {
+                facility.ccfriApplicationId = item.ccfriApplicationId;
+              }
+            });
+          }
+        });
+        this.refreshNavBar();
+        this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
       } catch (error) {
         console.info(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
-
+      this.processing = false;
     },
+    
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.ccfriOptInOrOut = this.$store.ccfriOptInOrOut.ccfriApp.ccfriOptInOrOut ?? ccfriOptInOrOut;
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
-  components: { MessagesToolbar, LargeButtonContainer, ExistingFacilityFees }
+  components: {LargeButtonContainer }
 };
 </script>
 

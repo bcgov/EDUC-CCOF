@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation, getOperationWithObjectId, patchOperationWithObjectId, minify} = require('./utils');
+const { getOperation, patchOperationWithObjectId } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { MessageMappings } = require('../util/mapping/Mappings');
 const HttpStatus = require('http-status-codes');
@@ -32,12 +32,12 @@ async function getAllMessages(req, res) {
     operationResponse.value.forEach(item => {
       let message = mapMessageObjectForFront(item);
       if (message.lastOpenedTime)
-        message['status'] = true;
+        message['isRead'] = true;
       else
-        message['status'] = false;
+        message['isRead'] = false;
       allMessages.push(message);
     });
-    allMessages.sort(sortByPropertyDesc('sentDate'));
+    allMessages.sort(sortByPropertyDesc('dateReceived'));
     return res.status(HttpStatus.OK).json(allMessages);
   } catch (e) {
     log.error('failed with error', e);

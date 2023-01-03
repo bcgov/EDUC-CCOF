@@ -28,7 +28,7 @@
       dense
       color="yellow lighten-4"
       justify="center"
-      v-if="isActionRequiredMessageDisplayed"
+      v-if="hasUnreadActionRequiredMessage"
     >
       <v-toolbar-title class="flex text-center" style="color: black">
         <h3>Action Required: New Messages</h3>
@@ -36,30 +36,15 @@
     </v-toolbar> 
 
     <v-toolbar 
+      dense
       color="#B3E5FF"
       justify="center"
-      dense
-      v-if="isBroadcastingMessageDisplayed"
+      v-if="hasBroadcastingMessage"
     >
       <v-toolbar-title class="flex text-center overflow-auto" style="color:black">
         <h4 class="text-center">
           This is a Broadcasting message will only appear if broadcast status from Dynamics is TRUE.
-
-          This is a Broadcasting message will only appear if broadcast status from Dynamics is TRUE. 
-
-
-          This is a Broadcasting message will only appear if broadcast status from Dynamics is TRUE.
-
-
-          This is a Broadcasting message will only appear if broadcast status from Dynamics is TRUE.
-
-
-          This is a Broadcasting message will only appear if broadcast status from Dynamics is TRUE. 
-
-
-          This is a Broadcasting message will only appear if broadcast status from Dynamics is TRUE. 
         </h4>
-          
       </v-toolbar-title>
     </v-toolbar>
 
@@ -68,19 +53,12 @@
 
 <script>
 import { PATHS } from '@/utils/constants';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'MessagesToolbar',
-  props: {
-    isActionRequiredMessageDisplayed: {
-      type: Boolean,
-      default: false
-    },
-    isBroadcastingMessageDisplayed: {
-      type: Boolean,
-      default: false
-    },
-    broadcastingMessage: String
+  computed: {
+    ...mapGetters('message', ['hasUnreadActionRequiredMessage','hasBroadcastingMessage']),
   },
   methods: {
     messageScreen() {

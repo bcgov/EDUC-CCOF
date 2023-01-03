@@ -12,6 +12,14 @@ const ACCOUNT_TYPE = Object.freeze({
   ORGANIZATION: 100000000
 });
 
+
+const CCOF_APPLICATION_TYPES = Object.freeze({
+  NEW: 100000000,
+  FACILITY: 100000001,
+  RENEW: 100000002
+});
+
+
 const APPLICATION_STATUS_CODES = Object.freeze({
   NEW: null,
   DRAFT: 1,
@@ -39,15 +47,21 @@ const OPTIN_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
-  APPROVED: 1,
+  APPROVED: 3, 
   DRAFT: 2,
-  SUBMITTED: 3
+  SUBMITTED: 1,
+  NOT_APPROVED: 4,
+  INELIGIBLE: 5,
+  ACTION_REQUIRED: 6
 });
 
 const ECEWE_STATUS_CODES = Object.freeze({
-  APPROVED: 1,
+  APPROVED: 3,
   DRAFT: 2,
-  SUBMITTED: 3
+  SUBMITTED: 1,
+  NOT_APPROVED: 4,
+  INELIGIBLE: 5,
+  ACTION_REQUIRED: 6
 });
 
 const PROGRAM_YEAR_STATUS_CODES = Object.freeze({
@@ -78,5 +92,6 @@ module.exports = {
   FACILITY_AGE_GROUP_CODES,
   OPTIN_STATUS_CODES,
   PROGRAM_YEAR_STATUS_CODES,
+  CCOF_APPLICATION_TYPES,
 };
 

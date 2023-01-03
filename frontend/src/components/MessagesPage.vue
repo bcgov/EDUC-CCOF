@@ -1,15 +1,5 @@
 <template>
   <v-container fluid style="padding:0">
-
-    <MessagesToolbar :isActionRequiredMessageDisplayed="false" :isBroadcastingMessageDisplayed="false"></MessagesToolbar>
-    
-    <!-- <v-row justify="center">
-      <div
-        class="pa-10"
-        :class="'text-h4'"
-        v-text="'MESSAGES'">
-      </div>
-    </v-row > -->
     
     <v-container id="messages" fluid style="padding:0" >
       <template v-if="!allMessages">
@@ -26,13 +16,13 @@
                 mobile-breakpoint="960"
                 fluid height="100vh"
                 fixed-header
-                :item-class="getStyle"
+                :item-class="getMessageStyle"
                 disable-pagination hide-default-footer
                 @click:row="rowClickHandler"
                 item-key="messageId" single-select
               >
-                <template v-slot:item.status="{item}">
-                  <p v-if="item.status">
+                <template v-slot:item.isRead="{item}">
+                  <p v-if="item.isRead">
                     Read
                   </p>
                   <p v-else>
@@ -61,7 +51,7 @@
                     {{this.message.sender}}
                   </v-col>
                   <v-col align="right" :cols="4">
-                    {{this.message.sentDate}}
+                    {{this.message.dateReceived}}
                   </v-col>
                 </template>
                 <template>
@@ -89,7 +79,6 @@
 
 
 <script>
-import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import Spinner from '@/components/common/Spinner';
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapActions } from 'vuex';
@@ -97,29 +86,24 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'MessagesPage',
 
-  props: {
-  },
-
   data() {
     return {
-      input: '',
       PATHS: PATHS,
-      results : {},
       selectedId: -1,
       headers: [
         {
           text: 'Read/Unread',
           align: 'start',
-          value: 'status'
+          value: 'isRead'
         },
         // { text: 'Action Required', value: 'actionRequired' },
         { text: 'Subjects', value: 'subject' },
-        { text: 'Date Received', value: 'sentDate' }
+        { text: 'Date Received', value: 'dateReceived' }
       ],
       message: {
         sender: '',
         subject:'',
-        sentDate:'',
+        dateReceived:'',
         messageContent: '',
       },
     };
@@ -139,15 +123,15 @@ export default {
 
     rowClickHandler(item,row) {
       this.message.subject = item.subject;
-      this.message.sentDate = item.sentDate;
+      this.message.dateReceived = item.dateReceived;
       this.message.messageContent = item.messageContent;
       this.message.sender = 'From: My Childcare Services';
       row.select(true);
       this.updateMessage(item.messageId);
     },
 
-    getStyle(item){
-      if (item.status) return 'read';
+    getMessageStyle(message){
+      if (message.isRead) return 'read';
       else return 'unread';
     },
 
@@ -165,7 +149,7 @@ export default {
     },    
   },
 
-  components: { MessagesToolbar, Spinner }
+  components: { Spinner }
 };
 </script>
 

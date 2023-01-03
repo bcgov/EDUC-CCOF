@@ -7,7 +7,8 @@ export default {
   state: {
     allMessages: null,
     unreadMessageCount: 0,
-    hasUnreadActionRequiredMessage: null,
+    hasUnreadActionRequiredMessage: false,
+    hasBroadcastingMessage: false,
   },
   getters: {
     allMessages: state => state.allMessages,
@@ -17,29 +18,36 @@ export default {
       else
         return '0';
     },
-    hasUnreadActionRequiredMessage: state => state.hasUnreadActionRequiredMessage,
+    hasUnreadActionRequiredMessage(state) {
+      if (state.unreadMessageCount > 0)
+        return true;
+      else
+        return false;
+    },
+    hasBroadcastingMessage() {
+      return false;
+    } 
   },
   mutations: {
     setAllMessages: (state, allMessages) => { state.allMessages = allMessages; },
     setUnreadMessageCount: (state, unreadMessageCount) => { state.unreadMessageCount = unreadMessageCount; },
     setHasUnreadActionRequiredMessage: (state, hasUnreadActionRequiredMessage) => { state.hasUnreadActionRequiredMessage = hasUnreadActionRequiredMessage; },
+    setHasBroadcastingMessage: (state, hasBroadcastingMessage) => { state.hasBroadcastingMessage = hasBroadcastingMessage; },
 
-    // Unread messages are messages having no lastOpenedTime
     updateUnreadMessagesCount(state) {
       if (state.allMessages) {
-        state.unreadMessageCount = state.allMessages.filter(item => !item.status).length; 
+        state.unreadMessageCount = state.allMessages.filter(message => !message.isRead).length; 
       }
     },
 
     updateMessageInMemory(state, updatedMessage){
       try {
         if (state.allMessages) {
-          state.allMessages.forEach(item => {
-            if (item.messageId === updatedMessage.messageId)
-              item.status = updatedMessage.status;
+          state.allMessages.forEach(message => {
+            if (message.messageId === updatedMessage.messageId)
+              message.isRead = updatedMessage.isRead;
           });
-        }
-        
+        }      
       } catch (error) {
         console.log(error);
       }
@@ -57,7 +65,7 @@ export default {
           let response = await ApiService.apiAxios.get(ApiRoutes.MESSAGE + '/organization/' + organizationId);
           commit('setAllMessages', response.data);
           commit('updateUnreadMessagesCount');
-          console.log('getAllmessges Vuex: ' + JSON.stringify(response.data[0]));
+          // console.log('getAllmessges Vuex: ' + JSON.stringify(response.data[0]));
         } catch (error) {
           console.log(`Failed to get Organization messages - ${error}`);
           throw error;
@@ -67,14 +75,14 @@ export default {
 
     async updateMessage({ commit }, messageId) {
       if (!localStorage.getItem('jwtToken')) { 
-        console.log('unable to update Messages data in DYNAMICS because you are not logged in');
-        throw 'unable to update Messages data in DYNAMICS because you are not logged in';
+        console.log('unable to update Messages data because you are not logged in');
+        throw 'unable to update Messages data because you are not logged in';
       }
       if (messageId) {
         try {
           let updatedMessage = {
             'messageId': messageId,
-            'status': true,
+            'isRead': true,
           };
           commit('updateMessageInMemory', updatedMessage);
           commit('updateUnreadMessagesCount');
@@ -84,7 +92,7 @@ export default {
           await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);
           // console.log('Update message ID ' + messageId + ' - response: ' + response.data.lastopenedtime);          
         } catch (error) {
-          console.log(`Failed to update existing Message in Dynamics - ${error}`);
+          console.log(`Failed to update existing Message - ${error}`);
           throw error;
         }
       }

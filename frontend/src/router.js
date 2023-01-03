@@ -21,7 +21,14 @@ import MessagesPage from '@/components/MessagesPage';
 
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
-import CCFRIRequestMoreInfo from '@/components/ccfriApplication/group/RequestForInfo';
+
+
+import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
+import WageIncrease from '@/components/RFI/WageIncrease';
+import ServiceExpansion from '@/components/RFI/ServiceExpansion';
+import IndigenousServiceExpansion from '@/components/RFI/IndigenousServiceExpansion';
+import UnderservedPop from '@/components/RFI/UnderservedPop';
+import NMF from '@/components/RFI/NMF';
 
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
 import Eligibility from '@/components/ccofApplication/family/Eligibility';
@@ -33,10 +40,9 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
 
-import EceweEligibility from '@/components/eceweApplication/Eligibility';
-import EceweFacilities from '@/components/eceweApplication/Facilities';
-import EceweDocumentUpload from '@/components/eceweApplication/DocumentUpload';
-import EceweSummary from '@/components/eceweApplication/Summary';
+import EceweEligibility from '@/components/eceweApplication/EceweEligibility';
+import EceweFacilities from '@/components/eceweApplication/EceweFacilities';
+import EceweDocumentUpload from '@/components/eceweApplication/EceweDocumentUpload';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -44,7 +50,8 @@ import LandingPage from '@/components/LandingPage';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
 
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
-
+import SummaryDeclaration from '@/components/SummaryDeclaration';
+import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 
 Vue.prototype.moment = moment;
 
@@ -135,7 +142,7 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
-    
+
     {
       path: PATHS.family.eligibility,
       name: 'Eligibility',
@@ -214,57 +221,78 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.renewOrganization,
-      name: 'Renew Organization',
-      component: RenewOrganization,
+      path: PATHS.group.licenseUpload,
+      name: 'License Upload',
+      component: LicenseUpload,
       meta: {
-        pageTitle: 'Renew Organization',
+        pageTitle: 'License Upload',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
     {
-      path: '/ccfri-application',
-      name: 'ccfri-application',
-      component: currentFees,
+      path: PATHS.group.renewOrganization,
+      name: 'Renew Organization',
+      component: RenewOrganization,
       meta: {
-        pageTitle: 'Current Fees',
+        pageTitle: 'Renew Organization',
         requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        showNavBar: false,
       }
     },
+    // {
+    //   path: '/ccfri-application' + '/urlGuid',
+    //   name: 'ccfri-application',
+    //   component: currentFees,
+    //   meta: {
+    //     pageTitle: 'Current Fees',
+    //     requiresAuth: true,
+    //     showNavBar: true,
+    //     navBarGroup: NAV_BAR_GROUPS.CCFRI
+    //   }
+    // },
     {
-      path: PATHS.eceweEligibility + '/:urlGuid',
+      path: PATHS.eceweEligibility,
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {
-      path: PATHS.eceweFacilities  + '/:urlGuid',
+      path: PATHS.eceweFacilities,
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {
-      path: PATHS.documentUpload,
+      path: PATHS.eceweDocUpload,
       name: 'ECEWE Document Upload',
       component: EceweDocumentUpload,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
     {
-      path: PATHS.eceweSummary,
-      name: 'ECEWE Summary',
-      component: EceweSummary,
+      path: PATHS.summaryDeclaration,
+      name: 'SummaryDeclaration',
+      component: SummaryDeclaration,
       meta: {
-        pageTitle: PAGE_TITLES.ECE_WE
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: true
       }
     },
     {
@@ -284,7 +312,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Add New Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
@@ -294,7 +323,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Add New Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
 
@@ -305,17 +335,85 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
-      path: PATHS.currentFees,
+      path: PATHS.WageIncrease,
+      name: 'ccfri-wage-increase',
+      component: WageIncrease,
+      meta: {
+        pageTitle: 'CCFRI Wage Increase',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.ServiceExpansion,
+      name: 'ccfri-service-expansion',
+      component: ServiceExpansion,
+      meta: {
+        pageTitle: 'Priority Service Expansion',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.IndigenousServiceExpansion,
+      name: 'ccfri-indigenous-service-expansion',
+      component: IndigenousServiceExpansion,
+      meta: {
+        pageTitle: 'Indigenous Service Expansion',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.UnderservedPop,
+      name: 'underserved-populations',
+      component: UnderservedPop,
+      meta: {
+        pageTitle: 'Affordable Child Care for Underserved Populations',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.NMF,
+      name: 'new-facilities',
+      component: NMF,
+      meta: {
+        pageTitle: 'New Facilities',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.currentFees + '/:urlGuid',
+      name: 'ccfri-current-fees-guid',
+      component: currentFees,
+      meta: {
+        pageTitle: 'CCFRI Current Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.currentFees ,
       name: 'ccfri-current-fees',
       component: currentFees,
       meta: {
         pageTitle: 'CCFRI Current Fees',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {

@@ -1,4 +1,5 @@
 const OrganizationMappings = [
+  { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'name', front: 'legalName' },
   { back: 'address1_name', front: 'address1' }, //Address 
   { back: 'address1_city', front: 'city1' },
@@ -13,13 +14,15 @@ const OrganizationMappings = [
   { back: 'emailaddress1', front: 'email' },
   { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number    
   { back: 'ccof_typeoforganization', front: 'organizationType' },
-  { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
+  // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
+  // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
+  // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
 
 const FacilityMappings = [
   { back: 'name', front: 'facilityName' },
-  { back: 'ccof_facilitystartdate', front: 'yearBeginOperation' },
+  { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'address1_line1', front: 'facilityAddress' },
   { back: 'address1_city', front: 'city' },
   { back: 'address1_postalcode', front: 'postalCode' },
@@ -28,8 +31,30 @@ const FacilityMappings = [
   { back: 'address1_primarycontactname', front: 'contactName' },
   { back: 'telephone1', front: 'phone' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+  { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
+  { back: 'ccof_facility_received_ccof_funding', front: 'fundingFacility' },
+  { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
+];
+
+const CCFRIFacilityMappings = [
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
+  { back: 'ccof_informationccfri', front: 'ccfriApplicationNotes'},
+  { back: '_ccof_previousccfri_value', front: 'previousCcfriId' },
+  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
+  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+];
+
+const CCFRIClosureDateMappings = [
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
+  { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
+  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
+  { back: 'ccof_comment', front: 'closureReason' },
 ];
 
 const CCOFApplicationMappings = [
@@ -66,8 +91,10 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom12hr' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo12hr' },
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
-  { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCare' },
-  { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCare36' },
+  { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
+  { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
+  
+  { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
   { back: 'ccof_preschoolsessionmon', front: 'monday' },
@@ -96,18 +123,40 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_multiagechildcaremorethan4hourextendedcc', front: 'multiAgeCare4more' },
   
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
+  { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  
+];
+
+const ECEWEApplicationMappings = [
+  { back: 'ccof_applicationid', front: 'applicationId' },
+  { back: 'ccof_ecewe_optin', front: 'optInECEWE' },
+  { back: 'ccof_ecewe_employeeunion', front: 'belongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' },
+  { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
+  { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
+];
+
+const ECEWEFacilityMappings = [
+  { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_optintoecewe', front: 'optInOrOut' },
 ];
 
 const UserProfileOrganizationMappings = [
   { back: 'Organization.name', front: 'organizationName' },
   { back: 'Organization.accountid', front: 'organizationId' },
+  { back: 'Organization.ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'Application.ccof_applicationid', front: 'applicationId' },
   { back: 'Application.statuscode', front: 'applicationStatus' },
   { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
+  { back: 'Application.ccof_applicationtype', front: 'applicationType' },
+  { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
+
+
+  
   // Unneeded mappings, can be added in later if we want them
-  // { back: 'Application.ccof_applicationtype', front: 'applicationType' },
   // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
-  // { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
   // { back: 'Organization.accountnumber', front: 'organizationAccountNumber' },
 ];
 
@@ -115,21 +164,30 @@ const UserProfileFacilityMappings = [
   { back: 'CCOF.ccof_facility', front: 'facilityId' },
   { back: 'CCOF.Facility.name', front: 'facilityName' },
   { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber' },
-  { back: 'CCOF.Facility.ccof_formcomplete', front: 'facilityFormComplete' },
+  { back: 'CCOF.Facility.ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'CCOF.Facility.ccof_facilitylicencenumber', front: 'licenseNumber'},
   //base funding
   { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId' },
   { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },
-  { back: 'CCOF.ccof_formcomplete', front: 'ccofFormComplete' },
+  { back: 'CCOF.ccof_formcomplete', front: 'isCCOFComplete' },
   { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
 ];
+
+const OrganizationFacilityMappings = [
+  { back: 'accountid', front: 'facilityId' },
+  { back: 'name', front: 'facilityName' },
+  { back: 'accountnumber', front: 'facilityAccountNumber' },
+  { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+];
+
 
 const UserProfileCCFRIMappings = [
   { back: 'CCFRI.statuscode', front: 'ccfriStatus' },
   { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus' },
   { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
-  { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: 'CCFRI.ccof_facility', front: 'ccfriFacilityId' },
-  { back: 'CCFRI.ccof_formcomplete', front: 'ccfriFormComplete' },
+  { back: 'CCFRI.ccof_formcomplete', front: 'isCCFRIComplete' },
   { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
 ];
 
@@ -138,7 +196,7 @@ const UserProfileECEWEMappings = [
   { back: 'ECEWE.ccof_optintoecewe', front: 'eceweOptInStatus' },
   { back: 'ECEWE.ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: 'ECEWE.ccof_facility', front: 'eceweFacilityId' },
-  { back: 'ECEWE.ccof_formcomplete', front: 'eceweFormComplete' },
+  { back: 'ECEWE.ccof_formcomplete', front: 'isECEWEComplete' },
   { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
 ];
 
@@ -148,11 +206,14 @@ const ProgramYearMappings = [
   { back: 'statuscode', front: 'status' },
   { back: 'ccof_programyearnumber', front: 'order' },
   { back: '_ccof_previousyear_value', front: 'previousYearId' },
+  { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
+  { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
+  { back: 'ccof_declarationbstart', front: 'declarationbStart' },
 ];
 
 const MessageMappings = [
   { back: 'activityid', front: 'messageId' },
-  { back: 'createdon', front: 'sentDate' },
+  { back: 'createdon', front: 'dateReceived' },
   { back: 'description', front: 'messageContent' },
   { back: 'lastopenedtime', front: 'lastOpenedTime' },
   { back: 'subject', front: 'subject' },
@@ -165,10 +226,15 @@ module.exports = {
   FacilityMappings,
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
+  ECEWEApplicationMappings,
+  ECEWEFacilityMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
   MessageMappings,
+  CCFRIFacilityMappings,
+  CCFRIClosureDateMappings,
+  OrganizationFacilityMappings,
 };

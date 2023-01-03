@@ -3,12 +3,12 @@
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
-      <!-- <v-btn color="info" outlined x-large  @click="updateParentFees()">
+      <!-- <v-btn color="info" outlined x-large  @click="save()">
             UPDATE FEES</v-btn> -->
 
       <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
 
-      <p class="text-h6 text-center"> CCOF ID: {{currentFacility.facilityId}}, Facility Name:  {{currentFacility.facilityName}}  , Licence #: {{facilityModel.licenseNumber}} </p> <br><br>
+      <p class="text-h6 text-center"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -19,125 +19,124 @@
       
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
 
-      <v-card  
-      v-for="({key, programYear, childCareCategory} , index) in facilityModel.childCareTypes" :key="index"
-      
-      elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
-          min-height="230"
-          rounded
-          tiled
-          exact 
-          tile
-          :ripple="false"
-        >
-          <v-card-text class="pa-0" >
-            <div class="pa-2 pa-md-4 ma-0 backG">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Parent Fees {{programYear}}: Full-Time {{childCareCategory}}
-              </p>
-            </div>
-            <div class="px-md-12 px-7">
-              <br>
-              <p class="text-h6 text--primary">
-                Are your parent fees
-              </p>
+      <div v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
+        <v-card  v-if = "!item.deleteMe"
+        
+        
+        elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+            min-height="230"
+            rounded
+            tiled
+            exact 
+            tile
+            :ripple="false"
+          >
+            <v-card-text class="pa-0" >
+              <div class="pa-2 pa-md-4 ma-0 backG">
+                <p class="text-h5 text--primary px-5 py-0 my-0">
+                  Parent Fees {{item.programYear}}: Full-Time {{item.childCareCategory}}
+                </p>
+              </div>
+              <div class="px-md-12 px-7">
+                <br>
+                <p class="text-h6 text--primary">
+                  Are your parent fees
+                  
+                </p>
+                <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
+                <v-radio-group
+                :rules = "rules"
+                  v-model="item.feeFrequency"
+                >
+                  <v-radio
+                    label="Daily"
+                    value="Daily"
+                  ></v-radio>
+                  <v-radio
+                    label="Weekly"
+                    value="Weekly"
+                  ></v-radio>
+                  <v-radio
+                    label="Monthly"
+                    value="Monthly"
+                  ></v-radio>
+                </v-radio-group>
+
+              <v-container v-if="!item.feeFrequency"></v-container>
+
+                <v-container v-else class="ma-0 pa-0">
+                <v-row>
+                  <v-col>
+                    <label>Enter your highest full-time {{item.feeFrequency}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col
+                    class="col-6 col-md-2"
+                  >
+                  <!-- childCareTypes[index].approvedFeeApr 
+                    I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeApr" label="April" prefix="$"/>
+                  </v-col>
+                  <v-col 
+                    class="col-6 col-md-2"
+                  >
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeMay" label="May" prefix="$"/>
+                  </v-col >
+                  <v-col 
+                    class="col-6 col-md-2"
+                  >
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeJun" label="June" prefix="$"/>
+                  </v-col>
+                  <v-col
+                  class="col-6 col-md-2"
+                  >
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeJul" label="July" prefix="$"/>
+                  </v-col>
+                  <v-col 
+                    class="col-6 col-md-2"
+                  >
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeAug" label="August" prefix="$" />
+                  </v-col>
+                  <v-col
+                    class="col-6 col-md-2"
+                  >
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeSep" label="September" prefix="$" />
+                  </v-col>
+                </v-row>
+
+                <v-row>
+                  <v-col 
+                    class="col-6 col-md-2">
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeOct" label="October" prefix="$"/>
+                  </v-col>
+                  <v-col 
+                    class="col-6 col-md-2">
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeNov" label="November" prefix="$"/>
+                  </v-col >
+                  <v-col 
+                    class="col-6 col-md-2">
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeDec" label="December" prefix="$"/>
+                  </v-col >
+                  <v-col
+                    class="col-6 col-md-2">
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeJan" label="Jan" prefix="$"/>
+                  </v-col>
+                  <v-col
+                    class="col-6 col-md-2">
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeFeb" label="Feb" prefix="$" />
+                  </v-col>
+                  <v-col
+                    class="col-6 col-md-2">
+                    <v-text-field type="number" outlined :rules="feeRules"  v-model.number="item.approvedFeeMar" label="March" prefix="$" />
+                  </v-col>
+                </v-row>
               
-              <v-radio-group
-              :rules = "rules"
-                v-model="feeSchedule[index]"
-              >
-                <v-radio
-                  label="Daily"
-                  value="daily"
-                ></v-radio>
-                <v-radio
-                  label="Weekly"
-                  value="weekly"
-                ></v-radio>
-                <v-radio
-                  label="Monthly"
-                  value="monthly"
-                ></v-radio>
-              </v-radio-group>
-
-            <v-container v-if="!feeSchedule[index]"></v-container>
-
-              <v-container v-else class="ma-0 pa-0">
-              <v-row>
-                <v-col>
-                  <label>Enter your highest full-time {{feeSchedule[index]}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  class="col-6 col-md-2"
-                >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="apr[index]" label="April" prefix="$"/>
-                </v-col>
-                <v-col 
-                  class="col-6 col-md-2"
-                >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="may[index]" label="May" prefix="$"/>
-                </v-col >
-                <v-col 
-                  class="col-6 col-md-2"
-                >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jun[index]" label="June" prefix="$"/>
-                </v-col>
-                <v-col
-                class="col-6 col-md-2"
-                >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jul[index]" label="July" prefix="$"/>
-                </v-col>
-                <v-col 
-                  class="col-6 col-md-2"
-                >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="aug[index]" label="August" prefix="$" />
-                </v-col>
-                <v-col
-                  class="col-6 col-md-2"
-                >
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="sep[index]" label="September" prefix="$" />
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col 
-                  class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="oct[index]" label="October" prefix="$"/>
-                </v-col>
-                <v-col 
-                  class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="nov[index]" label="November" prefix="$"/>
-                </v-col >
-                <v-col 
-                  class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="dec[index]" label="December" prefix="$"/>
-                </v-col >
-                <v-col
-                  class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="jan[index]" label="Jan" prefix="$"/>
-                </v-col>
-                <v-col
-                  class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="feb[index]" label="Feb" prefix="$" />
-                </v-col>
-                <v-col
-                  class="col-6 col-md-2">
-                  <v-text-field type="number" outlined :rules="feeRules"  v-model.number="mar[index]" label="March" prefix="$" />
-                </v-col>
-              </v-row>
-            
-              </v-container>
-            </div>
-          </v-card-text>
-      </v-card>
-
-      
-      
-
-
-
+                </v-container>
+              </div>
+            </v-card-text>
+        </v-card>
+      </div>
 
       <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
@@ -170,73 +169,94 @@
             </v-radio-group>
 
             <v-row v-if = "model.closureFees === 'Yes'">
-              <v-col class="col-md-4 col-12">
-                <v-menu  v-model="calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+
+
+              <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
+              
+                <v-col class="col-md-1 col-12 mx-0">
+                  <v-icon
+                    large
+                    color="blue darken-4"
+                    class=""
+                    @click="removeIndex(index)"
+                    > mdi-close
+                  </v-icon>
+                </v-col>
+                
+                
+                <v-col class="col-md-3 col-12">
+                  <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="model.datePicker" label="Select Start and End Dates (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field outlined :rules="rules" v-model="obj.formattedStartDate"  label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
-                    <v-date-picker
-                      range 
+                    <v-date-picker 
                       clearable 
-                      v-model="model.datePicker" 
-                      @input="calendarMenu = false">
+                      v-model="obj.formattedStartDate" 
+                      @input="calendarMenu1 = false">
+                      
                     </v-date-picker>
-                </v-menu>
-              </v-col>
-              <v-col class="col-md-4 col-12 ">
-                  <!-- I added in Alexy's "required" ruleset that makes the textbox go red. Maybe not needed here since the button
-                  will not work unless all fields are filled in?
-                -->
-                <v-text-field
-                  class = ""
-                  v-model="model.closureReason"
-                  label="Purpose of Closure"
-                  outlined
-                  clearable
-                  required
-                   
-                ></v-text-field>
-              </v-col>
-              <v-col class="col-md-3 col-12">
-                <v-radio-group
-                  required
-                  row
-                  v-model="model.closedFeesPaid"
-                  label="Did parents pay for this closure?"
-                >
-                  <v-radio
-                    label="Yes"
-                    value= 1
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    value= 0
-                  ></v-radio>
-                </v-radio-group>
-              </v-col>
-              <v-col>
-                <v-btn class="col-3 col-md-1"
-                  v-if =" !model.closureReason || !model.datePicker|| !model.closedFeesPaid"
-                    disabled
-                >ADD</v-btn>
-                <v-btn v-else v-on:click="addDate">ADD</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <!-- <v-tooltip top color="warning">
-                <template v-slot:activator="{ on, attrs }"> v-bind="attrs"
-                    v-on="on" -->
-                  <v-btn v-for="date in dates" :key="date.id"
-                    v-on:click="removeDate(date.id)"
-                    
+                 </v-menu>
+                </v-col>
+
+                <v-col class="col-md-3 col-12">
+                  <v-menu  v-model="obj.calendarMenu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field outlined required v-model="obj.formattedEndDate"  label="Select End Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    </v-text-field>
+                  </template>
+                    <v-date-picker 
+                      clearable 
+                      v-model="obj.formattedEndDate" 
+                      @input="calendarMenu2 = false">
+                    </v-date-picker>
+                 </v-menu>
+                </v-col>
+                
+                <v-col class="col-md-3 col-12 ">
+                  <v-text-field
+                    class = ""
+                    v-model="obj.closureReason"
+                    label="Closure Reason"
+                    outlined
+                    clearable
+                    :rules="rules"
+                  ></v-text-field>
+                </v-col>
+
+                <v-col class="col-md-2 col-12 mt-n10">
+                  <v-radio-group
+                    row
+                    v-model="obj.feesPaidWhileClosed"
+                    label="Did parents pay for this closure?"
                   >
-                  Closed from : {{date.selectedDates[0]}} - {{date.selectedDates[1] ? date.selectedDates[1] : date.selectedDates[0] }} 
-                  Reason: {{date.message}}  FEES PAID?: {{date.feesPaidWhileClosed == 1 ? "Yes" : "No"}}
-                  </v-btn>
-                <!-- </template>
-                <span>Delete Date</span>
-              </v-tooltip> -->
+                    <v-radio
+                      :off-icon="obj.feesPaidWhileClosed == 1 ? '$radioOn' : '$radioOff'"
+                      label="Yes"
+                      value= 1
+                    ></v-radio>
+                    <v-radio
+                    :off-icon="obj.feesPaidWhileClosed == 0 ? '$radioOn' : '$radioOff'"
+                      label="No"
+                      value= 0
+                    ></v-radio>
+                  </v-radio-group>
+                </v-col>
+
+                <span class="white--text"> . </span>
+                <v-divider></v-divider>
+              </v-row> <!-- end v for-->
+              
+                
+                <div class="form-group">
+                  <!-- v-if =" !model.closureReason || !model.datePicker|| !model.closedFeesPaid" disabled -->
+                <v-btn @click="addRow()"  
+                   class="my-5" dark color='#003366'
+                   
+                   >ADD NEW CLOSURE</v-btn>
+                </div>
+                <br> 
+
             </v-row>
           </div>
         </v-card-text>
@@ -262,7 +282,7 @@
               outlined
               name="input-7-4"
               label="Describe here"
-              v-model="model.notes"
+              v-model="CCFRIFacilityModel.ccfriApplicationNotes"
             ></v-textarea>
           </div>
         </v-card-text>
@@ -272,9 +292,9 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
-          <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" !isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="updateParentFees()">
+          <!--!isValidForm-->
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" false">Next</v-btn>
+        <v-btn color="primary" outlined x-large @click="save()">
           Save</v-btn>
       </v-row>
 
@@ -283,27 +303,13 @@
 </template>
 <script>
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions} from 'vuex';
+import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
-import axios from 'axios';
+import alertMixin from '@/mixins/alertMixin';
 
-import _ from 'lodash';
 
-// 0-18 months
-//const CHILD_CARE_CATEGORY_GUID = '19abd92c-0436-ed11-9db1-002248d53d53'; //TODO - this should be a lookup guid saved in cache? (says Hoang) 0-18mo
-///const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-//const PROGRAM_YEAR = 'fba5721b-9434-ed11-9db1-002248d53d53'; //lookup. 2021 - 22
-
-//const CCFRI_APPLICATION_GUID = '43f6494d-1d5d-ed11-9562-002248d53d53'; //todo - should get grabbed from the page;
-
-let dates = [];
-let datePicker= null;          //vmodel for entering closure fees
-let closedFeesPaid = undefined;       //vmodel for entering closure fees
-let closureReason= undefined;  //vmodel for entering closure fees
-let closureFees;
+let closureFees = '';
 let isFixedFee= {};
-let feeSchedule = {};
-let notes = '';
 let jan = {};
 let feb = {};
 let mar = {};
@@ -315,15 +321,11 @@ let aug = {};
 let sep = {};
 let oct = {};
 let nov = {};
-let dec = {};   
+let dec = {};
+let childCareTypes = {};   
 let model = { x: [],
-  dates,
-  datePicker,          //vmodel for entering closure fees
-  closedFeesPaid,       //vmodel for entering closure fees
-  closureReason, 
   closureFees,
   isFixedFee,
-  feeSchedule,
   jan,
   feb,
   mar,
@@ -336,32 +338,21 @@ let model = { x: [],
   oct,
   nov,
   dec,
-  notes
+  childCareTypes
 };
+
 
 
 export default {
 
-  props: {
-    currentYear: {
-      type: Number,
-      default: 2023,
-      required: false,
-    },
-  },
+  mixins: [alertMixin],
   data() {
     return {
       loading: true,
+      processing: false,
       model,
       facilityProgramYears: [],
       isValidForm : false,
-      datePicker,          //vmodel for entering closure fees
-      //closedFeesPaid,       //vmodel for entering closure fees
-      closureReason,  //vmodel for entering closure fees
-      calendarMenu: undefined,
-      closureFees: undefined,
-      dates,
-      feeSchedule,
       jan,
       feb,
       mar,
@@ -374,6 +365,7 @@ export default {
       oct,
       nov,
       dec,
+      childCareTypes,
       feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
@@ -388,112 +380,159 @@ export default {
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
+    this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
+    
+    this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //addModel - 
     next();
   },
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('facility', ['facilityModel']),
+    ...mapState('app', ['navBarList', 'isRenewal']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes']),
+    ...mapState('organization', ['applicationId']),
+
+    findIndexOfFacility(){
+      return this.navBarList.findIndex((element) =>{ 
+        return element.ccfriApplicationId == this.$route.params.urlGuid;
+      });
+    },
     currentFacility(){
-      return this.navBarList[0]; //TODO - change this to work with multiple facilities 
-    }
+      return this.navBarList[this.findIndexOfFacility];
+    },
+    nextFacility(){
+      return this.navBarList[this.findIndexOfFacility + 1];
+    },
+   
   },
   watch: {
+    //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
-      handler() {
-        console.log('ccfriFacilityGuid', this.$route.params.ccfriFacilityGuid);
-        this.loadFacility(this.$route.params.ccfriFacilityGuid);
-        this.loading = false;
+      async handler() {
+        try {
+          
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+          await this.decorateWithCareTypes(this.currentFacility.facilityId); //add logic in this function to check if isRenewel flag set
+
+          //so the card will display as open if dates already exist
+          if (this.CCFRIFacilityModel.dates){
+            this.model.closureFees = 'Yes';
+          }
+          this.loading = false;
+        } catch (error) {
+          console.log(error);
+          this.setFailureAlert('An error occured while getting.');
+        }
       },
       immediate: true,
       deep: true
-    }
+    },
   },
   methods: {
-    ...mapActions('facility', ['loadFacility']),    
-    addDate(){
-      dates.push({
-        message: this.model.closureReason,
-        selectedDates: this.model.datePicker,
-        feesPaidWhileClosed: this.model.closedFeesPaid,
-        id: model.dates.length
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes']),  
+    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
+   
+    addRow () {
+      this.CCFRIFacilityModel.dates.push( {
+        datePicker1: undefined,
+        datePicker2: undefined,
+        closureReason : '',
+        feesPaidWhileClosed: '',
       });
-      this.model.closureReason = '';
-      this.model.datePicker = '';
-      this.model.closedFeesPaid= '';
     },
-    removeDate(removedId){
-      const indexOfItemToRemove = this.dates.findIndex((obj) => obj.id === removedId);
-      this.dates.splice(indexOfItemToRemove,1);
-      console.log(this.dates);
+    removeIndex(index){
+      this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     previous() {
-      this.$router.push(PATHS.currentFees); //TODO: change this, from CCOF page
+      //console.log(this.navBarList);
+      this.$router.back();  
     },
     next() {
-      this.updateParentFees();
-      this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
+      //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
+      console.log(this.nextFacility);
+
+      if (this.nextFacility && this.isRenewal){
+        console.log('going to next fac EXISTING FEES page');
+        //check here if renew - then send them to appropriate screen 
+      }
+      else if (this.nextFacility ){
+        console.log('going to next fac NEW fees page');
+        //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
+        this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
+      }
+      else {
+        console.log('going to ece-we!');
+        this.$router.push({path : `${PATHS.eceweEligibility}`});
+      }
+    
+      this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
+      //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
-    async updateParentFees () {
+    async save () {
+      this.processing = true;
       let payload = [];
+  
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      //for each child care type - send a request. This will need to be done x2 per child care type. One request for each year of fees. 
+      
 
+      this.CCFRIFacilityModel.dates.forEach ((item, index) => {
+        //checks if blank - don't send over incomplete closure dates
+        if (!item.formattedStartDate && !item.closureReason){
+          this.CCFRIFacilityModel.dates.splice(index, 1);
+        }
+      });
+
+      //for each child care type - send a request. 
       //index will also match the order of how the cards are displayed. 
-      this.facilityModel.childCareTypes.forEach (async (childCareType, index) => { // FOR EACH the date groups?
+      this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { // FOR EACH the date groups?
+        if (item.feeFrequency) {
+        
+          if(item.deleteMe){
+            console.log('deteeeee');
+          }
+          payload[index] = {
+            parentFeeGUID : item.parentFeeGUID,
+            deleteMe: item.deleteMe,
+            ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
+            childCareCategory : item.childCareCategoryId,
+            programYear : item.programYearId,
+            notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
+            aprFee : item.approvedFeeApr,
+            mayFee : item.approvedFeeMay,
+            junFee : item.approvedFeeJun,
+            julFee : item.approvedFeeJul,
+            augFee : item.approvedFeeAug,
+            sepFee : item.approvedFeeSep,
+            octFee : item.approvedFeeOct,
+            novFee : item.approvedFeeNov,
+            decFee : item.approvedFeeDec,
+            janFee : item.approvedFeeJan,
+            febFee : item.approvedFeeFeb,
+            marFee : item.approvedFeeMar,
+          };
 
-        //this finds the GUID for the child care category from the lookup api. It checks against the string title -- this could be risky if the strings don't match exactly
-        let childCareCatGUID = _.find(this.lookupInfo.childCareCategory, {ccof_description : childCareType.childCareCategory });
-
-        if (childCareCatGUID){
-          childCareCatGUID = childCareCatGUID.ccof_childcare_categoryid;
+          payload[index].feeFrequency = item.feeFrequency === 'Monthly'? '100000000' : item.feeFrequency  === 'Weekly'? '100000001' :item.feeFrequency === 'Daily'? '100000002' :'null';
         }
 
-        //payload will need to look different if fee is monthly / daily 
-        payload[index] = {
-          ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
-          childCareCategory : childCareCatGUID, //found by .find above -- uses the /lookup api data to find childcare category GUID. 
-          programYear : childCareType.programYearId,//program year GUID,
-          facilityClosureDates: dates,
-          notes: this.model.notes
-        };
-
-        console.log(this.model.notes);
-
-        payload[index].feeFrequency = model.feeSchedule[index] === 'monthly'? '100000000' : model.feeSchedule[index]  === 'weekly'? '100000001' :model.feeSchedule[index ] === 'daily'? '100000002' :'null';
-  
-        Object.assign(payload[index], 
-          {
-            aprFee : apr[index],
-            mayFee : may[index],
-            junFee : jun[index],
-            julFee : jul[index],
-            augFee : aug[index],
-            sepFee : sep[index],
-            octFee : oct[index],
-            novFee : nov[index],
-            decFee : dec[index],
-            janFee : jan[index],
-            febFee : feb[index],
-            marFee : mar[index],
-          }
-        );
-
+       
       }); // end FOR EACH
 
-      payload = JSON.parse(JSON.stringify(payload));
+      payload[0].facilityClosureDates = this.CCFRIFacilityModel.dates;
+      
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
       } catch (error) {
         console.info(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      this.processing = false;
     },
   }
 };

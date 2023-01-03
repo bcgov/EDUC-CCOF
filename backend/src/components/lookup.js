@@ -3,7 +3,7 @@ const {getOperation, getLabelFromValue, minify} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const _ = require ('lodash');
 const cache = require('memory-cache');
-const { PROGRAM_YEAR_STATUS_CODES } = require('../util/constants');
+const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { ProgramYearMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const log = require('./logger');
@@ -38,10 +38,26 @@ const organizationType = [
   }
 ];
 
+const fundingModelType = [
+  {
+    id: 100000000,
+    description: 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.',
+  },
+  {
+    id: 100000001,
+    description: 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.',
+  },
+  {
+    id: 100000002,
+    description: 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding.',
+  },
+];
+
 function parseProgramYear(value) {
   let programYears = {
     current: undefined,
     future: undefined,
+    previous: undefined,
     list: []
   };
   value.forEach(item => {
@@ -55,8 +71,22 @@ function parseProgramYear(value) {
     }
     programYears.list.push(p);
   });
+  programYears.previous = programYears.list.find(p => p.programYearId == programYears.current.previousYearId);
   programYears.list.sort((a,b) => { return b.order - a.order; } );
   return programYears;
+}
+
+async function getLicenseCategory() {
+  let resData = lookupCache.get('licenseCategory');
+  if (!resData) {
+    resData = {};
+    let licenseCategory = await getOperation('ccof_license_categories');
+    licenseCategory = licenseCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_license_categoryid', 'ccof_providertype', 'ccof_name', 'ccof_categorynumber']); });
+    resData.groupLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.GROUP).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    resData.familiyLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.FAMILY).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    lookupCache.put('licenseCategory', resData, 60 * 60 * 1000);
+  }
+  return resData;
 }
 
 async function getLookupInfo(req, res) {
@@ -74,19 +104,23 @@ async function getLookupInfo(req, res) {
     programYear = parseProgramYear(programYear.value);
 
     let childCareCategory = await getOperation('ccof_childcare_categories');
-    childCareCategory = childCareCategory.value;
-    childCareCategory = childCareCategory.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']); });
-  
+    childCareCategory = childCareCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']); });
+
+    let licenseCategory = await getLicenseCategory();
     resData = {
       'programYear': programYear,
       'childCareCategory': childCareCategory,
-      'organizationType': organizationType
+      'organizationType': organizationType,
+      'fundingModelType': fundingModelType,
+      'groupLicenseCategory': licenseCategory.groupLicenseCategory,
+      'familiyLicenseCategory': licenseCategory.familiyLicenseCategory
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }
-  log.info('lookupData is: ', minify(resData));
+  //log.info('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
 module.exports = {
-  getLookupInfo
+  getLookupInfo,
+  getLicenseCategory
 };

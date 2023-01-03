@@ -4,18 +4,17 @@
       <v-row justify="center">
         <div
           class="pa-10 text-h5"
-          v-text="'Child Care Operating Fund Program - 2022/23 Program Confirmation Form'" />
+          v-text="`Child Care Operating Fund Program - ${futureYearLabel} Program Confirmation Form`" />
       </v-row >
-
       <v-row justify="space-around">
         <v-card class="cc-top-level-card justify-center" width="800">
-            <v-card-text> Organization Mailing Address
+            <v-card-text>
                 Do your current license and service details match the information found in
                 Schedule A of your most recent Funding Agreement?
             </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="radioGroup" >
+                <v-radio-group row v-model="fundingGroup" >
                   <v-radio
                     label="Yes"
                     value="true"/>
@@ -25,19 +24,72 @@
                 </v-radio-group>
               </v-col>                
             </v-row>
+            <v-row>
+              <v-card width="100%" class="mx-3" v-if="fundingGroup == 'false'">
+                <v-row>
+                  <v-col class="py-0">
+                    <v-card-title class="py-1 noticeAlert">
+                      <span style="float:left">
+                    <v-icon
+                      x-large
+                      class="py-1 px-3 noticeAlertIcon">
+                      mdi-alert-octagon
+                    </v-icon>
+                    </span>
+                      Do not continue.
+                    </v-card-title>
+                  </v-col>
+                </v-row>
+                <v-card-text>
+                  Submit the Change Notification Form:<br>
+                  <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf">
+                  https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf
+                  </a><br><br>
+                  available on the program website:<br>
+                  <a href="https://www2.gov.bc.ca/gov/content?id=F226747EC2954742B2B09BA90824D8F4">
+                  https://www2.gov.bc.ca/gov/content?id=F226747EC2954742B2B09BA90824D8F4
+                  </a>
+                </v-card-text>
+              </v-card>
+            </v-row>
         </v-card>
       </v-row>
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large>Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
+        <v-card class="cc-top-level-card justify-center" width="800">
+            <v-card-text>
+                Has your banking information changed?
+            </v-card-text>
+            <v-row>
+              <v-col class="d-flex justify-center">
+                <v-radio-group row v-model="bankingGroup" >
+                  <v-radio
+                    label="Yes"
+                    value="true"/>
+                  <v-radio
+                    label="No"
+                    value="false"/>
+                </v-radio-group>
+              </v-col>                
+            </v-row>
+            <v-card-text v-if="bankingGroup == 'true'">
+              Update your banking information:
+              <br><a href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf">
+              https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a>
+              <br><br>For any questions, call the program at 1-888-338-6622 (option 2)
+            </v-card-text>
+        </v-card>
+      </v-row>
+
+      <v-row justify="space-around">
+        <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'true')">Next</v-btn>
       </v-row>
     </v-container>
   </v-form>
 </template>
 <script>
 
-import { mapGetters, mapState} from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 
@@ -47,38 +99,23 @@ export default {
       rules,
       processing: false,
       isValidForm: true,
-      radioGroup: undefined,
+      fundingGroup: undefined,
+      bankingGroup: undefined,
     };
   },  
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList']),
-    currentYearTwoDigit() {
-      return this.currentYear - 2000;
-    },
-    nextYearTwoDigit() {
-      return this.currentYear - 1999;
-    },
-    filteredList() {
-      if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.navBarList;
-      }
-      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
-    },
-    getApplicationStatus(){
-      return this.userInfo.applicationStatus === null;
-    },
-    
+    ...mapGetters('app', ['futureYearLabel']),
   },
   methods: {
-
-    clicked (){
-      console.log('clicked');
-      return '';
-
+    ...mapActions('organization', ['renewApplication']),
+    async next (){
+      this.processing = true;
+      await this.renewApplication();
+      this.processing = false;
+      this.$router.push(PATHS.group.licenseUpload);
     },
-    goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); //TODO: change this, from CCOF page
+    back() {
+      this.$router.push(PATHS.home);
     },
     
   },
