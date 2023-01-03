@@ -47,6 +47,7 @@ import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFee
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
 import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
+import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 Vue.prototype.moment = moment;
 
@@ -279,6 +280,16 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: PATHS.supportingDocumentUpload,
+      name: 'Supporting Document Upload',
+      component: SupportingDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
+        requiresAuth: true,
+        showNavBar: true
       }
     },
     {

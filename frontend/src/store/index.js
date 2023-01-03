@@ -5,6 +5,7 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/ccof/organization';
 import licenseUpload from '@/store/modules/licenseUpload.js';
+import supportingDocumentUpload from '@/store/modules/supportingDocumentUpload';
 import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
 import facility from '@/store/modules/ccof/group/facility.js';
 
@@ -31,5 +32,6 @@ export default new Vuex.Store({
     groupFunding,
     ccfriApp,
     eceweApp,
+    supportingDocumentUpload
   }
 });

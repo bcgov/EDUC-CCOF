@@ -10,12 +10,15 @@ export default {
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
     isOrganizationComplete: false,
-
+    ccofLicenseUploadComplete:false,
+    ccofApplicationComplete: false,
+    ccofConfirmationEnabled: false,
     //Notification Details
     ccfriOptInComplete: false,       //jb
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+    supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
     programYearList: [],
@@ -99,15 +102,12 @@ export default {
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
     },
-    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
-      state.ccofApplicationComplete = ccofApplicationComplete;
-    },
-    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
-      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
-    },
     setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
       state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
-    }
+    },
+    setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
+      state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
+    },
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
