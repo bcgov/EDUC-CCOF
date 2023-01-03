@@ -23,8 +23,8 @@
               </v-list-item-icon>
               <router-link :to="item.link"  :target="_self" class="router">
               <v-list-item-content class="py-0">
-                <v-list-item-title v-if="item.isActive" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
-                <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
+                <v-list-item-title v-if="item.isActive" class="menuItem text-wrap"><strong>{{item.title}}</strong></v-list-item-title>
+                <v-list-item-title v-else class="menuItem text-wrap">{{item.title}}</v-list-item-title>
               </v-list-item-content>
             </router-link>
         </v-list-item>
@@ -119,7 +119,7 @@ export default {
       }
     },
     ccofConfirmationEnabled() {
-      if (this.navBarList?.length > 0 
+      if (this.navBarList?.length > 0
         && this.navBarList[this.navBarList.length - 1].isFacilityComplete
         && this.navBarList[this.navBarList.length - 1].isCCOFComplete) {
         return true;
@@ -189,6 +189,14 @@ export default {
 
       this.items.push(this.getCCFRINavigation());
       this.items.push(this.getECEWENavigation());
+      this.items.push({
+        title: 'Supporting Document',
+        link:{ name: 'Supporting Document Upload' },
+        isAccessible:true,
+        icon:'mdi-checkbox-blank-circle-outline',
+        isActive: 'Supporting Documents Upload' === this.$route.name,
+        expanded:false,
+      });
       this.items.push(
         {
           title: 'Summary',
@@ -197,6 +205,7 @@ export default {
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           expanded: false,
         });
+
 
       // this.hasAnyItems = this.items.filter(obj => obj.isAccessible).length > 0;
     },
@@ -224,7 +233,7 @@ export default {
         },
 
       );
-      if (this.navBarList?.length > 0) { 
+      if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item, index) => {
           if (item.ccfriOptInStatus == 1){
             items.push(
@@ -232,7 +241,7 @@ export default {
                 title: 'Parent Fees '+ (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
-                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
                 isAccessible: true,
                 icon: 'mdi-checkbox-blank-circle-outline', //replace
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
@@ -324,7 +333,7 @@ export default {
           link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
           icon: this.getCheckbox(this.ccofApplicationComplete),
-          isActive: 'Application Confirmation' === this.$route.name
+          isActive: 'License Upload' === this.$route.name
         }
       );
 
