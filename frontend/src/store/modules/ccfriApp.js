@@ -1,6 +1,16 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
+function getProgramYear(selectedGuid, programYearList){
+  const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
+
+  if(!programYear){
+    console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
+  }
+
+  return programYear;
+}
+
 
 export default {
   namespaced: true,
@@ -60,23 +70,30 @@ export default {
       }
     },
     async decorateWithCareTypes({commit, state, rootState}, facilityId) {
+      const  ccofProgramYearId = rootState.auth.userInfo.ccofProgramYearId;
+      const programYearList = rootState.app.programYearList.list;
+
       try {
         let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
         console.log('reponse is is: ', response); //?
         let careTypes = [];
 
+        const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
+        //maybe add error checking here? - undefined means we didn't find a valid program year 
+
         console.log('resp:', response);
 
         if (!state.CCFRIFacilityModel.prevYearFeesCorrect){ //if current year fees are correct (ExistingFacilityFees.vue -> Yes), don't display those cards to the user. First time CCFRI will always show this
           response.data.forEach(item => {
-            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+            
+            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => { 
               return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == rootState.app.programYearList.current.programYearId);
+              searchItem.programYearId == ccofProgramYearId);
             });
             if (!found) {
               careTypes.push( {
-                programYear: rootState.app.programYearList.current.name,
-                programYearId: rootState.app.programYearList.current.programYearId,
+                programYear: currProgramYear.name,
+                programYearId: currProgramYear.programYearId,
                 current: 1, //jb - we found a valid liscence for this child care cat - but it doesn't exist on the CCFRI form yet 
                 ...item
               });
@@ -88,11 +105,11 @@ export default {
           response.data.forEach(item => {
             let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
               return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == rootState.app.programYearList.current.programYearId);
+              searchItem.programYearId == rootState.app.programYearList.future.programYearId); //need a special function to find a future year
             });
             if (!found) {
               careTypes.push( {
-                programYear: rootState.app.programYearList.future.name,
+                programYear: rootState.app.programYearList.future.name, //we need one more GUID into the future for this to work?
                 programYearId: rootState.app.programYearList.future.programYearId,
                 current: 1, //jb - we found a valid liscence for this child care cat - but it doesn't exist on the CCFRI form yet 
                 ...item
@@ -103,14 +120,17 @@ export default {
         
         if (!rootState.app.isRenewal){ //only display previous year fees if it's the first time CCFRI application
           response.data.forEach(item => {
+            const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
+            //check for undefined here! 
+
             let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
               return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == rootState.app.programYearList.previous.programYearId);
+              searchItem.programYearId == prevProgramYear.programYearId);
             });
             if (!found) {
               careTypes.push( {
-                programYear: rootState.app.programYearList.previous.name,
-                programYearId: rootState.app.programYearList.previous.programYearId,
+                programYear: prevProgramYear.name,
+                programYearId: prevProgramYear.programYearId,
                 current: 1,
                 ...item
               });

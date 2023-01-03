@@ -191,20 +191,21 @@ export default {
       console.log(this.prevFees);
       //this.$router.push(PATHS.ccfriHome);
     },
-    async setFees (){
+    async setFees (areFeesCorrect){
       await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-      this.CCFRIFacilityModel.prevYearFeesCorrect = true;
+      this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
       //grab the previous years fees and save it to the store - so then AddNewFees will have this data ready to go 
     },
     next() {
       console.log(this.nextFacility);
 
       if (this.model.q1== 'No'){
+        this.setFees(false);
         this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       }
       else if (this.model.q1== 'Yes') {
         console.log('add new fees but only current year cards!');
-        this.setFees();
+        this.setFees(true);
         this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       }
       else if (this.nextFacility){
