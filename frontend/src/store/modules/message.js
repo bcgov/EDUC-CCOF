@@ -26,7 +26,7 @@ export default {
       let result = false;
       if (getters.hasUnreadMessage) {
         state.allMessages.forEach(message => {
-          if ((message.subject.substring(0,15).toLowerCase() == 'action required') && (message.isRead == false))
+          if ((message.subject.substring(0,15).toLowerCase() == 'action required') && (!message.isRead))
             result = true;
         });
       }
@@ -74,7 +74,6 @@ export default {
           let response = await ApiService.apiAxios.get(ApiRoutes.MESSAGE + '/organization/' + organizationId);
           commit('setAllMessages', response.data);
           commit('updateUnreadMessagesCount');
-          // console.log('getAllmessges Vuex: ' + JSON.stringify(response.data[0]));
         } catch (error) {
           console.log(`Failed to get Organization messages - ${error}`);
           throw error;
@@ -98,8 +97,7 @@ export default {
           let payload = {
             'lastopenedtime': (new Date()).toISOString(),
           };
-          await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);
-          // console.log('Update message ID ' + messageId + ' - response: ' + response.data.lastopenedtime);          
+          await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);    
         } catch (error) {
           console.log(`Failed to update existing Message - ${error}`);
           throw error;

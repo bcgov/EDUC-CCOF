@@ -134,8 +134,10 @@ export default {
     
     async getAllMessagesVuex() {
       try {
-        const organizationId = this.userInfo.organizationId;
-        await this.getAllMessages(organizationId);
+        if (!this.allMessages) {
+          const organizationId = this.userInfo.organizationId;
+          await this.getAllMessages(organizationId);
+        }
       } catch (error) {
         console.info(error);
       }
