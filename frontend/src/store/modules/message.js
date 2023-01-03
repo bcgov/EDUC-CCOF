@@ -8,6 +8,7 @@ export default {
     allMessages: null,
     unreadMessageCount: 0,
     hasUnreadActionRequiredMessage: false,
+    hasUnreadMessage: false,
     hasBroadcastingMessage: false,
   },
   getters: {
@@ -18,11 +19,18 @@ export default {
       else
         return '0';
     },
-    hasUnreadActionRequiredMessage(state) {
-      if (state.unreadMessageCount > 0)
-        return true;
-      else
-        return false;
+    hasUnreadMessage(state) {
+      return (state.unreadMessageCount > 0);
+    },
+    hasUnreadActionRequiredMessage(state, getters) {
+      let result = false;
+      if (getters.hasUnreadMessage) {
+        state.allMessages.forEach(message => {
+          if ((message.subject.substring(0,15).toLowerCase() == 'action required') && (message.isRead == false))
+            result = true;
+        });
+      }
+      return result;
     },
     hasBroadcastingMessage() {
       return false;
@@ -31,6 +39,7 @@ export default {
   mutations: {
     setAllMessages: (state, allMessages) => { state.allMessages = allMessages; },
     setUnreadMessageCount: (state, unreadMessageCount) => { state.unreadMessageCount = unreadMessageCount; },
+    setHasUnreadMessage: (state, hasUnreadMessage) => { state.hasUnreadMessage = hasUnreadMessage; },
     setHasUnreadActionRequiredMessage: (state, hasUnreadActionRequiredMessage) => { state.hasUnreadActionRequiredMessage = hasUnreadActionRequiredMessage; },
     setHasBroadcastingMessage: (state, hasBroadcastingMessage) => { state.hasBroadcastingMessage = hasBroadcastingMessage; },
 

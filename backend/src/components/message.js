@@ -28,6 +28,7 @@ async function getAllMessages(req, res) {
     let operation = 'emails?$select=activityid,createdon,description,lastopenedtime ,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' + req.params.organizationId + ' and statecode eq 1)';
     log.info('operation: ', operation);
     let operationResponse = await getOperation(operation);
+    operationResponse.value.sort(sortByPropertyDesc('createdon'));
     let allMessages = [];
     operationResponse.value.forEach(item => {
       let message = mapMessageObjectForFront(item);
@@ -37,7 +38,6 @@ async function getAllMessages(req, res) {
         message['isRead'] = false;
       allMessages.push(message);
     });
-    allMessages.sort(sortByPropertyDesc('dateReceived'));
     return res.status(HttpStatus.OK).json(allMessages);
   } catch (e) {
     log.error('failed with error', e);
@@ -48,7 +48,6 @@ async function getAllMessages(req, res) {
 async function updateMessageLastOpenedTime(req, res) {
   try {
     let response = await patchOperationWithObjectId('emails', req.params.messageId, req.body);
-    // log.info('updateMessage: Response is: ', minify(response));
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );

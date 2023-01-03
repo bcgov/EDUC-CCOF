@@ -29,13 +29,6 @@
                     Unread
                   </p>
                 </template>
-                <!--
-                <template v-slot:item.actionRequired="{item}">
-                  <v-icon aria-hidden="false" size="30" color="#ffcc00" v-if="item.actionRequired">
-                    mdi-alert
-                  </v-icon>
-                </template> -->
-
               </v-data-table>
             </v-card>
           </v-col>
@@ -62,6 +55,7 @@
               </v-card-title>
               <v-divider></v-divider>
               <v-card-text  v-html="this.message.messageContent">
+                
               </v-card-text>
             </v-card>
           </v-col>
@@ -96,7 +90,6 @@ export default {
           align: 'start',
           value: 'isRead'
         },
-        // { text: 'Action Required', value: 'actionRequired' },
         { text: 'Subjects', value: 'subject' },
         { text: 'Date Received', value: 'dateReceived' }
       ],

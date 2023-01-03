@@ -1,37 +1,14 @@
 <template>
   <v-container fluid style="padding:0">
-
-    <!-- <v-toolbar 
-      dark
-      color="#006699"
-      dense
-      style="padding-top:0%; box-shadow: none"
-    >
-      <v-container>
-        <v-badge
-            color="red"
-            content="100+"
-            bottom
-            right
-            overlap
-            class="float-right"
-          >
-            <v-icon aria-hidden="false" size="30" @click="messageScreen()">
-                mdi-email-outline
-          </v-icon>
-          </v-badge>
-        
-      </v-container>  
-    </v-toolbar> -->
-
     <v-toolbar 
       dense
       color="yellow lighten-4"
       justify="center"
-      v-if="hasUnreadActionRequiredMessage"
+      v-if="hasUnreadMessage"
     >
       <v-toolbar-title class="flex text-center" style="color: black">
-        <h3>Action Required: New Messages</h3>
+        <h3 v-if="hasUnreadActionRequiredMessage">Action required: new message(s)</h3>
+        <h3 v-else>New message(s)</h3>
       </v-toolbar-title >
     </v-toolbar> 
 
@@ -47,7 +24,6 @@
         </h4>
       </v-toolbar-title>
     </v-toolbar>
-
   </v-container>
 </template>
 
@@ -58,7 +34,7 @@ import { mapGetters } from 'vuex';
 export default {
   name: 'MessagesToolbar',
   computed: {
-    ...mapGetters('message', ['hasUnreadActionRequiredMessage','hasBroadcastingMessage']),
+    ...mapGetters('message', ['hasUnreadMessage','hasBroadcastingMessage','hasUnreadActionRequiredMessage']),
   },
   methods: {
     messageScreen() {
