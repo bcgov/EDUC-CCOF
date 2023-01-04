@@ -8,15 +8,6 @@
         class="pa-10"
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
-        <v-btn
-        @click="goToCCFRI()">
-        CCFRI 
-        </v-btn>
-        <v-btn
-        @click="goToRFI()">
-        GO TO RFI
-        </v-btn>
-        
     </v-row >
     
      <!-- Application Approved screens starts here -->
