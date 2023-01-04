@@ -17,6 +17,7 @@ import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
+import MessagesPage from '@/components/MessagesPage';
 
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
@@ -51,6 +52,7 @@ import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFee
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
 import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
+import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 Vue.prototype.moment = moment;
 
@@ -285,6 +287,16 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.supportingDocumentUpload,
+      name: 'Supporting Document Upload',
+      component: SupportingDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
+        requiresAuth: true,
+        showNavBar: true
+      }
+    },
+    {
       path: PATHS.summaryDeclaration,
       name: 'SummaryDeclaration',
       component: SummaryDeclaration,
@@ -437,6 +449,15 @@ const router = new VueRouter({
       component: Impersonate,
       meta: {
         pageTitle: 'Impersonate a BCeID User',
+        requiresAuth: true
+      }
+    },
+    {
+      path: PATHS.messagesPage,
+      name: 'messagesPage',
+      component: MessagesPage,
+      meta: {
+        pageTitle: 'Messages Page',
         requiresAuth: true
       }
     },

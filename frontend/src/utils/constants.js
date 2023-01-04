@@ -29,10 +29,12 @@ export const ApiRoutes = Object.freeze({
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
+  MESSAGE: baseRoot + '/messages',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
-  APPLICATION_RFI: baseRoot + '/application/ccfri'
+  APPLICATION_RFI: baseRoot + '/application/ccfri',
+  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument'
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -43,7 +45,8 @@ export const PAGE_TITLES = Object.freeze({
   ORGANIZATION_SELECT: 'Organizations',
   CCRFI_APPLICATION: 'CCRFI Application Form',
   ECEWE_APPLICATION: 'ECE-WE Application',
-  SUMMARY_DECLARATION: 'Summary and Declaration'
+  SUMMARY_DECLARATION: 'Summary and Declaration',
+  SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload'
 });
 
 export const PATHS = {
@@ -76,6 +79,9 @@ export const PATHS = {
   eceweDocUpload: '/ecewe-document-upload',
   eceweEligibility: '/ecewe-eligibility',
   eceweFacilities: '/ecewe-facilities',
+  summaryDeclaration:  '/summary-declaration',
+  messagesPage: '/messages',
+  supportingDocumentUpload: '/supporting-document-upload',
   summaryDeclaration:  '/summary-declaration'
 };
 

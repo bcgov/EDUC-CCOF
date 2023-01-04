@@ -1,6 +1,5 @@
 import ApiService from '@/common/apiService';
 
-
 export default {
   namespaced: true,
   state: {
@@ -20,6 +19,7 @@ export default {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+    supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
     programYearList: [],
@@ -114,7 +114,10 @@ export default {
     },
     setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
       state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
-    }
+    },
+    setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
+      state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
+    },
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,

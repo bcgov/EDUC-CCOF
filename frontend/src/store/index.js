@@ -5,6 +5,7 @@ import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/ccof/organization';
 import licenseUpload from '@/store/modules/licenseUpload.js';
+import supportingDocumentUpload from '@/store/modules/supportingDocumentUpload';
 import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
 import facility from '@/store/modules/ccof/group/facility.js';
 
@@ -14,6 +15,7 @@ import familyOrganization from '@/store/modules/ccof/family/familyOrganizationSt
 import ccfriApp from '@/store/modules/ccfriApp.js';
 import rfiApp from '@/store/modules/rfiApp.js';
 import eceweApp from '@/store/modules/eceweApp.js';
+import message from '@/store/modules/message.js';
 
 
 Vue.use(Vuex);
@@ -33,5 +35,7 @@ export default new Vuex.Store({
     ccfriApp,
     eceweApp,
     rfiApp,
+    message,
+    supportingDocumentUpload
   }
 });
