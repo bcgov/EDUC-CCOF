@@ -39,14 +39,15 @@
               </div>
               <div class="px-md-12 px-7">
                 <br>
-                <p class="text-h6 text--primary">
+                <!-- <p class="text-h6 text--primary">
                   Are your parent fees
                   
-                </p>
+                </p> -->
                 <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
                 <v-radio-group
                 :rules = "rules"
                   v-model="item.feeFrequency"
+                  label="Are your parent fees"
                 >
                   <v-radio
                     label="Daily"
@@ -157,6 +158,7 @@
             <v-radio-group
               required
               v-model="model.closureFees"
+              label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
             >
               <v-radio
                 label="Yes"
@@ -231,12 +233,12 @@
                     label="Did parents pay for this closure?"
                   >
                     <v-radio
-                      :off-icon="obj.feesPaidWhileClosed == 1 ? '$radioOn' : '$radioOff'"
+                      :off-icon="obj.feesPaidWhileClosed == 1 ? '$radioOn' :  '$radioOff' "
                       label="Yes"
                       value= 1
                     ></v-radio>
                     <v-radio
-                    :off-icon="obj.feesPaidWhileClosed == 0 ? '$radioOn' : '$radioOff'"
+                    :off-icon="obj.feesPaidWhileClosed === 0 ? '$radioOn' : obj.g "
                       label="No"
                       value= 0
                     ></v-radio>
@@ -246,15 +248,16 @@
                 <span class="white--text"> . </span>
                 <v-divider></v-divider>
               </v-row> <!-- end v for-->
-              
+              <br><br>
                 
-                <div class="form-group">
-                  <!-- v-if =" !model.closureReason || !model.datePicker|| !model.closedFeesPaid" disabled -->
+                <v-container>
+                  <v-row>
                 <v-btn @click="addRow()"  
                    class="my-5" dark color='#003366'
                    
                    >ADD NEW CLOSURE</v-btn>
-                </div>
+                  </v-row>
+                </v-container>
                 <br> 
 
             </v-row>
@@ -415,10 +418,10 @@ export default {
         try {
           
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          await this.decorateWithCareTypes(this.currentFacility.facilityId); //add logic in this function to check if isRenewel flag set
+          await this.decorateWithCareTypes(this.currentFacility.facilityId); 
 
           //so the card will display as open if dates already exist
-          if (this.CCFRIFacilityModel.dates){
+          if (this.CCFRIFacilityModel.dates.length > 0){
             this.model.closureFees = 'Yes';
           }
           this.loading = false;
@@ -450,7 +453,7 @@ export default {
       //console.log(this.navBarList);
       this.$router.back();  
     },
-    next() {
+    async next() {
       //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
       console.log(this.nextFacility);
 
@@ -468,7 +471,7 @@ export default {
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
     
-      this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
+      //await this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
       //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     async save () {
@@ -490,8 +493,8 @@ export default {
 
       //for each child care type - send a request. 
       //index will also match the order of how the cards are displayed. 
-      this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { // FOR EACH the date groups?
-        if (item.feeFrequency) {
+      this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
+        if (item.feeFrequency || this.CCFRIFacilityModel.ccfriApplicationNotes ||  this.CCFRIFacilityModel.dates) {
         
           if(item.deleteMe){
             console.log('deteeeee');

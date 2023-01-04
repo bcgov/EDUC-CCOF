@@ -94,7 +94,6 @@
             </v-card-text>
           </v-card>
 
-          {{model.q1 }}
 
           <v-row justify="space-around">
           <v-btn color="info" outlined x-large @click="previous()">
