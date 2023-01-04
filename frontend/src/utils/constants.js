@@ -29,6 +29,7 @@ export const ApiRoutes = Object.freeze({
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
+  MESSAGE: baseRoot + '/messages',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
@@ -77,6 +78,8 @@ export const PATHS = {
   eceweDocUpload: '/ecewe-document-upload',
   eceweEligibility: '/ecewe-eligibility',
   eceweFacilities: '/ecewe-facilities',
+  summaryDeclaration:  '/summary-declaration',
+  messagesPage: '/messages',
   supportingDocumentUpload: '/supporting-document-upload',
   summaryDeclaration:  '/summary-declaration'
 };

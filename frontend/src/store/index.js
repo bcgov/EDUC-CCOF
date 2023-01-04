@@ -14,6 +14,7 @@ import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStor
 import familyOrganization from '@/store/modules/ccof/family/familyOrganizationStore';
 import ccfriApp from '@/store/modules/ccfriApp.js';
 import eceweApp from '@/store/modules/eceweApp.js';
+import message from '@/store/modules/message.js';
 
 
 Vue.use(Vuex);
@@ -32,6 +33,7 @@ export default new Vuex.Store({
     groupFunding,
     ccfriApp,
     eceweApp,
+    message,
     supportingDocumentUpload
   }
 });
