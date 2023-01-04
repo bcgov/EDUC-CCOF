@@ -3,8 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { upsertParentFees, upsertCCFRIApplication, updateCCFRIApplication, renewCCOFApplication} = require('../components/application');
-const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication , getCCFRIApplication} = require('../components/application');
+const { upsertParentFees, getRFIApplication, updateCCFRIApplication, renewCCOFApplication} = require('../components/application');
+const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication , getCCFRIApplication, createRFIApplication, updateRFIApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
@@ -52,6 +52,25 @@ router.get('/ccfri/:ccfriId', passport.authenticate('jwt', {session: false}),isV
     validationResult(req).throw();
     return getCCFRIApplication(req, res);
   });
+
+router.get('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getRFIApplication(req, res);
+  });
+
+router.post('/ccfriId/:ccfriId/rfi', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return createRFIApplication(req, res);
+  });
+
+router.put('/rfi/:', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('rfipfiid', 'URL param: [rfipfiid] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return updateRFIApplication(req, res);
+  });
+
 
 router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
   //validationResult(req).throw();

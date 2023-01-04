@@ -29,7 +29,9 @@ const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const applicationRouter = require('./routes/application');
 const fundingRouter = require('./routes/funding');
+const messageRouter = require('./routes/message');
 const licenseUploadRouter = require('./routes/licenseUpload');
+const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -167,8 +169,9 @@ apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 apiRouter.use('/application', applicationRouter);
 apiRouter.use('/group/funding', fundingRouter);
+apiRouter.use('/messages', messageRouter);
 apiRouter.use('/licenseUpload', licenseUploadRouter);
-
+apiRouter.use('/supportingDocument', supportingDocumentUploadRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

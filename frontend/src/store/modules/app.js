@@ -1,6 +1,5 @@
 import ApiService from '@/common/apiService';
 
-
 export default {
   namespaced: true,
   state: {
@@ -14,11 +13,13 @@ export default {
     ccofLicenseUploadComplete:false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
+    rfiList: [],
     //Notification Details
     ccfriOptInComplete: false,       //jb
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+    supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
     programYearList: [],
@@ -95,6 +96,10 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
     },
+    setRfiList: (state, rfiList) => {
+      state.rfiList = rfiList;
+    },
+
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
@@ -109,7 +114,10 @@ export default {
     },
     setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
       state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
-    }
+    },
+    setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
+      state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
+    },
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,

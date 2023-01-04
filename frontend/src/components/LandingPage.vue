@@ -1,23 +1,15 @@
 <template>
-  <v-container>
-    <div v-if ="userInfo.unreadMessages">
-      <MessagesToolbar></MessagesToolbar>
-    </div>
+  <v-container fluid style="padding:0">
+
+    <MessagesToolbar></MessagesToolbar>
+
     <v-row justify="center">
       <div
         class="pa-10"
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
-        <v-btn
-        @click="goToCCFRI()">
-        CCFRI 
-        </v-btn>
-        <v-btn
-        @click="goToRFI()">
-        GO TO RFI
-        </v-btn>
-        
     </v-row >
+    
      <!-- Application Approved screens starts here -->
     <v-container 
     class="px-10"
@@ -103,7 +95,7 @@
 </template>
 <script>
 
-import { mapGetters, mapState, mapMutations} from 'vuex';
+import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
@@ -116,10 +108,10 @@ export default {
     return {
       input: '',
       PATHS: PATHS,
-      results : {},
-      
+      results : {}
     };
   },
+
   created () {
     //Used for constants
     // this.CCOF_STATUS_COMPLETE = 'Completed';
@@ -133,6 +125,7 @@ export default {
     this.RENEW_STATUS_COMPLETE = 'COMPLETE';
     this.RENEW_STATUS_CONTINUE = 'CONTINUE';
 
+    this.getAllMessagesVuex();
   },  
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -228,6 +221,7 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
+    ...mapActions('message', ['getAllMessages']),
     clicked (){
       console.log('clicked');
       return '';
@@ -261,12 +255,21 @@ export default {
     goToCCFRI() {
       this.$router.push(PATHS.ccfriHome); 
     },   
+    async getAllMessagesVuex() {
+      try {
+        const organizationId = this.userInfo.organizationId;
+        await this.getAllMessages(organizationId);
+      } catch (error) {
+        console.info(error);
+      }
+    },
   },
   ccofStatusLabel() {
     if (this.applicationType === 'RENEW') {
       return 'Compelete';
     }
   },
+    
   components: { SmallCard, MessagesToolbar}
 };
 </script>

@@ -48,6 +48,29 @@ const CCFRIFacilityMappings = [
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
 
+const RFIApplicationMappings = [
+  { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'changeInHours'}, // "is there anything else about your change in hours",
+  { back: 'ccof_rfipfiid', front: 'rfiId'}, // "df27e229-0b88-ed11-81ac-000d3af48db8",
+  { back: 'ccof_feeincreasedduetoaincreasedconnection', front: 'feeIncrease' }, // 1 or 0
+  { back: 'ccof_appliedforanyothersources', front: 'otherSources' }, // 1 or 0
+  { back: 'ccof_howwillyourfeeincreasecontributetotheover', front: 'contributionOverall'}, // "how will your fee increase contribute to the overall?",
+  { back: 'ccof_feeincreasedduetoaincreaseinhoursdays', front: 'increaseDueToHours' }, // 1 or 0
+  { back: 'ccof_describewhetherparentsoutofpocketmonthlyc', front: 'outOfPocket'}, // "describe whether parents out of pocket monthly",
+  { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'anythingElse'}, // "is there anything else about your expenses",
+  { back: 'ccof_meetalloftheabovecriteria', front: 'meetCriteria' }, // 1 or 0
+  { back: 'statuscode', front: 'status' }, // 1 or 0
+  { back: 'ccof_feeincreasedduetoanexceptionalcircumstance', front: 'exceptionalCircumstances'}, // 0,
+  { back: 'ccof_pleaseexplainwhyyouhaveincurredorwillincu', front: 'xxx1'}, // "Please explain why you have incurred or will incur",
+  { back: 'ccof_feeincreasedduetoawageincrease', front: 'feeIncreaseDueToWage' }, // 1 or 0
+  { back: 'ccof_name', front: 'xxx3'}, // "RFI-22000025",
+  { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'xxx4'}, // "please describe how the majority of children you provide",
+  { back: '_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue', front: 'xxx5'}, // "ID-22000522",
+  { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId'}, // "1d261039-0e7c-ed11-81ad-000d3af4f277",
+  { back: 'ccof_increasedparentfeesbefore', front: 'xxx6' }, // 1 or 0
+  { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'circumstanceOccurWithin6Month'}, // null,
+];
+
+
 const CCFRIClosureDateMappings = [
   { back: 'ccof_startdate', front: 'startDate' },
   { back: 'ccof_enddate', front: 'endDate' },
@@ -211,6 +234,16 @@ const ProgramYearMappings = [
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
 ];
 
+const MessageMappings = [
+  { back: 'activityid', front: 'messageId' },
+  { back: 'createdon', front: 'dateReceived' },
+  { back: 'description', front: 'messageContent' },
+  { back: 'lastopenedtime', front: 'lastOpenedTime' },
+  { back: 'subject', front: 'subject' },
+  { back: 'regardingobjectid_account_email.accountid', front: 'organizationId' },
+  { back: 'regardingobjectid_account_email.name', front: 'organizationName' },
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -223,7 +256,9 @@ module.exports = {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
+  MessageMappings,
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
+  RFIApplicationMappings,
 };
