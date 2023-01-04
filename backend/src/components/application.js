@@ -1,13 +1,12 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings } = require('../util/mapping/Mappings');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
-const { loadFiles } = require('../config/index');
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
@@ -29,6 +28,47 @@ async function renewCCOFApplication(req, res) {
   }  
 }
 
+async function getRFIApplication(req, res) {
+  let query  = `ccof_rfipfis?$filter=(statuscode eq 1) and (_ccof_applicationccfri_value eq ${req.params.ccfriId})`;
+  try {
+    const response = await getOperation(query);
+    console.log('response: ', minify(response.value));
+    console.log('response length: ', response.value.length);
+    if (response.value.length == 1) {
+      return res.status(HttpStatus.OK).json(new MappableObjectForFront(response.value[0], RFIApplicationMappings));  
+    } else {
+      return res.status(HttpStatus.NOT_FOUND).json({message: 'No data'});
+    }
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
+
+async function updateRFIApplication(req, res) {
+  try {
+    const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
+    let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', req.params.rfipfiid, friApplication);
+    friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
+    return res.status(HttpStatus.OK).json(friApplicationResponse);
+  } catch (e) {
+    log.error('updateRFIApplication error:', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function createRFIApplication(req, res) {
+  try {
+    const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
+    friApplication['ccof_applicationccfri@odata.bind'] = `/contacts(ccof_applicationccfris='${req.params.ccfriId}')`;
+    log.verbose('createRFIApplication payload:', friApplication);
+    const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
+    return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
+  } catch (e) {
+    log.error('createRFIApplication error:', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
 
 
 //creates or updates CCFRI application. 
@@ -242,6 +282,7 @@ async function getECEWEApplication(req, res) {
   }
 }
 
+
 async function updateECEWEApplication(req, res) {
   let application = req.body;
   application = new MappableObjectForBack(application, ECEWEApplicationMappings);
@@ -298,6 +339,8 @@ module.exports = {
   getECEWEApplication,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
-  renewCCOFApplication
-  //getCCFRIApplication
+  renewCCOFApplication,
+  getRFIApplication,
+  createRFIApplication,
+  updateRFIApplication,
 };

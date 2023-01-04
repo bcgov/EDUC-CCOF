@@ -33,6 +33,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
+  APPLICATION_RFI: baseRoot + '/application/ccfri',
   SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument'
 });
 
@@ -54,7 +55,7 @@ export const PATHS = {
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
   addNewFees: '/ccfriApplication/group/add-new-fees',
   currentFees: '/ccfriApplication/group/current-fees',
-  ccfriRequestMoreInfo: '/ccfri-application/request-info',
+  ccfriRequestMoreInfo: '/ccfri-application/request-info/landing',
   WageIncrease: '/ccfri-application/request-info/wage-increase',
   ServiceExpansion: '/ccfri-application/request-info/service-expansion',
   IndigenousServiceExpansion: '/ccfri-application/request-info/indigenous-service-expansion',
@@ -87,6 +88,7 @@ export const PATHS = {
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
+  RFI: 'RFI',
   ECEWE: 'ECE-WE'
 };
 

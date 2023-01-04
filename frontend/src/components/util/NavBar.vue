@@ -101,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
     ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -186,8 +186,11 @@ export default {
       } else {
         this.items.push(this.getCCOFNavigation());
       }
-
       this.items.push(this.getCCFRINavigation());
+      if (this.rfiList?.length > 0) {
+        console.log('hi');
+        this.items.push(this.getRFINavigation());
+      }
       this.items.push(this.getECEWENavigation());
       this.items.push({
         title: 'Supporting Document',
@@ -259,9 +262,47 @@ export default {
         items: items
       };
       return retval;
-
-
     },
+    getRFINavigation(){
+      let items = [];
+      items.push(
+        {
+          title: 'Opt in / Opt out',
+          link: { name: 'ccfri-home'},
+          isAccessible: true,
+          icon: this.getCheckbox(this.ccfriOptInComplete),
+          isActive: 'ccfri-home' === this.$route.name
+        },
+
+      );
+      if (this.navBarList?.length > 0) { 
+        this.navBarList?.forEach((item, index) => {
+          if (item.ccfriOptInStatus == 1){
+            items.push(
+              {
+                title: 'Parent Fees '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                isAccessible: true,
+                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
+                // function: this.loadFacility(x.id)
+              },
+            );
+          }
+        });
+      }
+      let retval =   {
+        title: NAV_BAR_GROUPS.RFI,
+        isAccessible: true,
+        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        expanded: this.isExpanded(NAV_BAR_GROUPS.RFI),
+        items: items
+      };
+      return retval;
+    },
+
     getCCOFNavigation() {
       let items = [];
       items.push(

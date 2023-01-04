@@ -391,7 +391,7 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList', 'isRenewal']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes']),
     ...mapState('organization', ['applicationId']),
 
@@ -433,8 +433,8 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes']),  
-    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),  
-   
+    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),
+    ...mapMutations('app', ['setRfiList']),
     addRow () {
       this.CCFRIFacilityModel.dates.push( {
         datePicker1: undefined,
@@ -465,7 +465,15 @@ export default {
       }
       else {
         console.log('going to ece-we!');
-        this.$router.push({path : `${PATHS.eceweEligibility}`});
+        this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
+        if (this.rfiList?.length > 0) {
+          this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
+        } else {
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
+        //         
+
+        
       }
     
       this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
