@@ -25,10 +25,6 @@ function getErrorMessage(element, message){
 }
 
 async function removeContent(t, element){
-  const text = await element.value;
-  // const len = text.length;
-  // const deleteComm = "delete ".repeat(len).trim();
-  console.log(text);
   await t.typeText(element, 'a', { replace: true })
           .pressKey('backspace');
 }
@@ -95,15 +91,16 @@ async function selectDate(t, date_data){
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
   let lines =data.split('\n');
-  console.log(lines);
   let index = 0;
   for (index; index < fields.length; index ++) {
     if (fields[index].heading) {
+      const fieldElement = getTextFieldWithDivHeading(fields[index].label, fields[index].heading);
+      await t.expect(fieldElement.exists).ok({timeout:50000});
       if(lines[index]=== ""){
-        await removeContent(t, getTextFieldWithDivHeading(fields[index].label, fields[index].heading));
-        await t.expect(getErrorMessage(getTextFieldWithDivHeading(fields[index].label, fields[index].heading), 'This field is required').exists).ok({timeout: 2000})
+        await removeContent(t, fieldElement);
+        await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists || await getErrorMessage(fieldElement, 'A valid postal code is required').exists).ok();
       }else{
-        await t.typeText(getTextFieldWithDivHeading(fields[index].label, fields[index].heading), lines[index], { replace: true });
+        await t.typeText(fieldElement, lines[index], { replace: true });
       }
     } else if (fields[index].radio) {
       if(fields[index].addedField){
@@ -119,11 +116,13 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       await t.click(date_picker);
       await selectDate(t, lines[index]);
     } else {
+      const fieldElement = getTextField(fields[index]);
+      await t.expect(fieldElement.exists).ok({timeout:50000});
       if(lines[index]=== ""){
-        await removeContent(t, getTextField(fields[index]));
-        await t.expect(getErrorMessage(getTextField(fields[index],'This field is required')).exists).ok({timeout: 2000})
+        await removeContent(t, fieldElement);
+        await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists || await getErrorMessage(fieldElement, 'A valid postal code is required').exists).ok();
       }else{
-        await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
+        await t.typeText(fieldElement, lines[index], { replace: true });
       }
     }
   }

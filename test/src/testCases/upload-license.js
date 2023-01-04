@@ -18,7 +18,7 @@ fixture `Facility Tests`
     await t.setTestSpeed(1);
   });
 
-test('Update Organization', async t => {
+test('Upload License', async t => {
   await login.bceIdLogin(t);
   await t
     .click(landing.continueButton)
