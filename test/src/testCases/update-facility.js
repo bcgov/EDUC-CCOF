@@ -20,7 +20,7 @@ fixture `Facility Tests`
     await t.setTestSpeed(1);
   });
 
-test('Update Organization', async t => {
+test('Update Facility', async t => {
   await login.bceIdLogin(t);
   await t
     .click(landing.continueButton)
