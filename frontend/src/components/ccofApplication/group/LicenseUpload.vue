@@ -1,5 +1,5 @@
 <template>
-  <Spinner v-if="isLoading"></Spinner>
+  <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table: table-heading, table-thead, table-tbody, table-tfoot,card: image, card-heading"></v-skeleton-loader>
   <v-form v-else ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
@@ -51,6 +51,7 @@
         <v-btn color="secondary" :disabled="nextButtonDisabled" outlined x-large @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
+
     </v-container>
   </v-form>
 </template>
@@ -63,11 +64,9 @@ import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import {deepCloneObject} from '@/utils/common';
-import Spinner from '@/components/common/Spinner';
 
 
 export default {
-  components: {Spinner},
   mixins: [alertMixin],
   props: {},
   computed: {
