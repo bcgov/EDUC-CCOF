@@ -1,5 +1,3 @@
-import log from 'npmlog';
-
 const { getTextField, mapFieldsFromFile, getButton } = require('../utils/selectors');
 
 class PageFunding {
@@ -10,32 +8,25 @@ class PageFunding {
       'Maximum of weeks per year you provide child care',
       { radio: 'Are there months when ALL of the programs at this facility are closed for the entire month?'},
       { select: 'If YES, check all the applicable months:'},
-      { time:'Facility hours of operation From'},
-      { time:'Facility hours of operation To'},
+      'Facility hours of operation From',
+      'Facility hours of operation To',
       'Maximum Licensed Capacity',
       'Maximum Number for Group Child Care (under 36 months)',
-      'Maximum Number for Group Child Care (30 months to School Age)',
+      'Maximum Number for Group Child Care (36 months to School Age)',
       'Maximum Number for Preschool',
-      'Maximum Number for Group Child Care (School Age / School age care on School Grounds)',
-      'Maximum Multi-Age Child Care',
+      'Maximum Number for Group Child Care (School Age/ School Age care on School Grounds)',
       'Monday',
       'Tuesday',
       'Wednesday',
       'Thursday',
       'Friday',
-      { radio: 'Is the facility located on school property?'},
+      'Saturday',
+      'Sunday',
+      { radio: 'Is the facility located on school Property?'},
       { select: 'Please indicate each service that your facility offers'},
       { radio: 'Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?'},
       'Maximum number of days per week you offer extended hours of child care?',
       'Maximum number of weeks per year you offer extended hours of child care?',
-      { heading:'4 hours or less extended child care', label:'Group Child Care (under 36 months)'},
-      { heading:'4 hours or less extended child care', label:'Group Child Care (36 months to School Age)'},
-      { heading:'4 hours or less extended child care', label:'Group Child Care (School Age / School age care on School Grounds)'},
-      { heading:'4 hours or less extended child care', label:'Multi-Age Care'},
-      { heading:'More than 4 extended child care', label:'Group Child Care (under 36 months)'},
-      { heading:'More than 4 extended child care', label:'Group Child Care (36 months to School Age)'},
-      { heading:'More than 4 extended child care', label:'Group Child Care (School Age/ School age care on School Grounds)'},
-      { heading:'More than 4 extended child care', label:'Multi-Age Care'},
     ];
 
     this.backButton = getButton('Back');
@@ -48,37 +39,6 @@ class PageFunding {
   }
   async loadFieldsFromFile(t, fileName) {
     await mapFieldsFromFile(t, this.fieldNames, fileName);
-  }
-  async clickSaveButton(t) {
-    await t.click(this.saveButton).wait(3000);
-    log.info('Save button clicked');
-    await t.expect(alert.success.exists).ok();
-    log.info('Save Successful clicked');
-  }
-
-  async clickBackButton(t) {
-    await t.click(this.backButton);
-    log.info('Back button clicked');
-  }
-
-  async clickNextButton(t) {
-    await t.click(this.nextButton);
-    log.info('Next button clicked');
-  }
-
-  async clickSaveAndNextButton(t) {
-    this.clickSaveButton(t);
-    this.clickNextButton(t);
-  }
-
-  async nextButtonIsDisabled(t) {
-    await t.expect(this.nextButton.hasAttribute('disabled')).ok();
-    log.info('Next button is disabled');
-  }
-
-  async nextButtonIsEnabled(t) {
-    await t.expect(this.nextButton.hasAttribute('disabled')).notOk();
-    log.info('Next button is enabled');
   }
 }
 
