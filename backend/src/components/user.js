@@ -103,7 +103,6 @@ async function getUserInfo(req, res) {
 async function getUserProfile(businessGuid, userName) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}&userName=${userName}`;
-    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}&userName=''`;
     log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
