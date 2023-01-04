@@ -20,6 +20,10 @@ function getRadioOption(labelName, selectedName) {
   return Selector('label').withText(labelName).nextSibling().find('label').withText(selectedName);
 }
 
+function getSelectOption(labelName, selectedName) {
+  return Selector('label').withText(labelName).nextSibling().find('label').withText(selectedName);
+}
+
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
   let lines =data.split('\n').filter(Boolean);
@@ -28,8 +32,20 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
     if (fields[index].heading) {
       await t.typeText(getTextFieldWithDivHeading(fields[index].label, fields[index].heading), lines[index], { replace: true });
     } else if (fields[index].radio) {
+      
       await t.click(getRadioOption(fields[index].radio, lines[index]));
+    
+    } else if (fields[index].select) {
+    
+      let n = 0;
+      let options = lines[index].split(",");
+
+      for (n; n < options.length; n++){
+        await t.click(getSelectOption(fields[index].select, options[n]))
+      }
+
     } else {
+
       await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
     }
   }
