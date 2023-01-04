@@ -82,7 +82,6 @@ export const PATHS = {
   summaryDeclaration:  '/summary-declaration',
   messagesPage: '/messages',
   supportingDocumentUpload: '/supporting-document-upload',
-  summaryDeclaration:  '/summary-declaration'
 };
 
 export const NAV_BAR_GROUPS = {

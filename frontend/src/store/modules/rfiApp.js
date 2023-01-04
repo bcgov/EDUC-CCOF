@@ -45,7 +45,7 @@ export default {
         }
       }
     },    
-    async saveOrganization({ state, commit, rootState }) {
+    async saveRfi({ state, commit, rootState }) {
 
       checkSession();
       const payload = getChanges(state.organizationModel, state.loadedModel);
@@ -83,39 +83,5 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState }) {
-      checkSession();
-
-      let payload = {
-        providerType: state.organizationProviderType,
-        programYearId: rootState.app.programYearList.future.programYearId,
-        organizationId: state.organizationId,
-      };
-      console.log('renewApplication, payload', payload);
-      try {
-        const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
-        commit('setApplicationId', response.data?.applicationId);
-        return response;
-      } catch (error) {
-        console.log(`Failed to renew Application - ${error}`);
-        throw error;
-      }
-    },
-
-    async loadOrganization({ commit }, organizationId) {
-      checkSession();
-
-      try {
-        let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
-        commit('setOrganizationModel', response.data);
-        commit('setLoadedModel', response.data);
-        commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
-        console.log('response.data?.isOrganizationComplete', response.data?.isOrganizationComplete);
-      } catch (error) {
-        console.log(`Failed to get Organization - ${error}`);
-        throw error;
-      }
-      
-    }
   },
 };
