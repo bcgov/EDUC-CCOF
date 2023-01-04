@@ -226,7 +226,21 @@ export default {
       );
       if (this.navBarList?.length > 0) { 
         this.navBarList?.forEach((item, index) => {
-          if (item.ccfriOptInStatus == 1){
+          if (item.ccfriOptInStatus == 1 && this.isRenewal){
+            items.push(
+              {
+                title: 'Parent Fees '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                isAccessible: true,
+                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
+                // function: this.loadFacility(x.id)
+              },
+            );
+          }
+          else if (item.ccfriOptInStatus == 1){
             items.push(
               {
                 title: 'Parent Fees '+ (index + 1),

@@ -450,24 +450,23 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     previous() {
-      //console.log(this.navBarList);
       this.$router.back();  
     },
     async next() {
       //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
-      console.log(this.nextFacility);
-
+      
       if (this.nextFacility && this.isRenewal){
-        console.log('going to next fac EXISTING FEES page');
-        //check here if renew - then send them to appropriate screen 
+        //console.log('going to next fac EXISTING FEES page');
+        this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
+        //check here if renew - then send them to appropriate screen currentFees
       }
       else if (this.nextFacility ){
-        console.log('going to next fac NEW fees page');
+        //console.log('going to next fac NEW fees page');
         //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
         this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
       }
       else {
-        console.log('going to ece-we!');
+        //console.log('going to ece-we!');
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
     
@@ -496,9 +495,6 @@ export default {
       this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
         if (item.feeFrequency || this.CCFRIFacilityModel.ccfriApplicationNotes ||  this.CCFRIFacilityModel.dates) {
         
-          if(item.deleteMe){
-            console.log('deteeeee');
-          }
           payload[index] = {
             parentFeeGUID : item.parentFeeGUID,
             deleteMe: item.deleteMe,

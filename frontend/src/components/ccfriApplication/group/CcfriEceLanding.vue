@@ -130,7 +130,6 @@ export default {
     ...mapMutations('app', ['setCcfriOptInComplete', 'refreshNavBar']), 
     ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
-      console.log(this.showOptStatus);
       this.$set(this.showOptStatus, index, true);
     },
     toggleAll(){
@@ -202,12 +201,12 @@ export default {
           ccfriApplicationId: this.navBarList[i].ccfriApplicationId
         });
 
-        console.log(payload);
+       
       }//end for loop
 
       try {
         const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-        console.log(response);
+       
         response.data.forEach(item => {
           if (item.ccfriApplicationId) {
             this.navBarList.find(facility => {
