@@ -43,6 +43,11 @@ export default {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
       }
     },
+    // addModelToStore: (state, {ccfriId, model} ) => {
+    //   if (ccfriId) {
+    //     state.modelStore[ccfriId] = model;  
+    //   }
+    // }   
   },
 
   actions: {

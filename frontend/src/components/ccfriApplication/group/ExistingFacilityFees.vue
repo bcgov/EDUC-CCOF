@@ -16,7 +16,7 @@
                 {{currentFacility.facilityName}}
               </p>
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{CCFRIFacilityModel.childCareTypes[0].programYear}} are: 
+                Our Records show this facilites' fees for {{CCFRIFacilityModel.childCareTypes[0].programYear}} are as follows: 
               </p>
               <br>
               <v-simple-table>
