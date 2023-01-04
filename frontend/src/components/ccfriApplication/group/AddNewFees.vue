@@ -388,7 +388,7 @@ export default {
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
     
-    //this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //addModel - 
+    //this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //jb took this out to stop an error.. I don't think we need it?
     next();
   },
   computed: {
