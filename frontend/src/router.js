@@ -176,6 +176,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.family.fundAmount + '/:urlGuid',
+      name: 'FamilyFunding GUID',
+      component: FamilyFunding,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.group.facInfo,
       name: 'Facility Information',
       component: FacilityInformation,
