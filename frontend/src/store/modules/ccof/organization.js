@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { getChanges } from '@/utils/validation';
+import { isEqual } from 'lodash';
 
 export default {
   namespaced: true,
@@ -24,27 +24,30 @@ export default {
     setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
     setOrganizationProviderType: (state, organizationProviderType) => { state.organizationProviderType = organizationProviderType; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
-    setOrganizationModel: (state, model) => { state.organizationModel = model; },
-    setLoadedModel: (state, model) => { state.loadedModel = model; },
+    setOrganizationModel(state, model) { state.organizationModel = model; },
+    setLoadedModel(state, model) { state.loadedModel = model; },
     setIsOrganizationComplete: (state, value) => { state.isOrganizationComplete = value; }
   },
   actions: {
     async saveOrganization({ state, commit, rootState }) {
 
       checkSession();
-      const payload = getChanges(state.organizationModel, state.loadedModel);
-      if (!payload) {
+
+      if (isEqual({ ...state.organizationModel, providerType: null }, { ...state.loadedModel, providerType: null })) {
         console.info('no model changes');
-        return; //No changes. so return from function
+        return;
       }
-      
+
+      const payload = { ...state.organizationModel };
+
       console.log('saveOrganization, payload', payload);
-      commit('setLoadedModel', state.organizationModel);
 
       if (state.organizationId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
+          commit('setOrganizationModel', response.data);
+          commit('setLoadedModel', response.data);
           commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
@@ -56,6 +59,8 @@ export default {
         payload.programYearId = rootState.app.programYearList.current.programYearId;
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
+          commit('setOrganizationModel', response.data);
+          commit('setLoadedModel', response.data);
           commit('setOrganizationId', response.data?.organizationId);
           commit('setApplicationId', response.data?.applicationId);
           commit('setApplicationStatus', response.data?.applicationStatus);
@@ -101,7 +106,7 @@ export default {
         console.log(`Failed to get Organization - ${error}`);
         throw error;
       }
-      
+
     }
   },
 };

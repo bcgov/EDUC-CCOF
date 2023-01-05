@@ -1,8 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
-import { isEmpty } from 'lodash';
 import { checkSession } from '@/utils/session';
-import { getChanges } from '@/utils/validation';
+import { isEmpty, isEqual } from 'lodash';
 
 export default {
   namespaced: true,
@@ -41,10 +40,8 @@ export default {
     },
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
-    setFacilityModel: (state, facilityModel) => {
-      state.facilityModel = facilityModel;
-      state.loadedModel = facilityModel;
-    },
+    setFacilityModel(state, facilityModel) { state.facilityModel = facilityModel; },
+    setLoadedModel(state, model) { state.loadedModel = model; },
     // setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     // setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
@@ -61,17 +58,18 @@ export default {
   },
   actions: {
     async saveFacility({ state, commit, rootState }) {
+
+      checkSession();
+
+      if (isEqual(state.facilityModel, state.loadedModel)) {
+        console.info('no model changes');
+        return;
+      }
+
       let organizationId = rootState.organization.organizationId;
       if (!organizationId) {
         console.log('unable to save facility because you are not associated to an organization');
         throw 'unable to save facility because you are not associated to an organization';
-      }
-
-      checkSession();
-
-      if (!getChanges(state.facilityModel, state.loadedModel)) {
-        console.info('no model changes');
-        return;
       }
 
       let payload = { ...state.facilityModel, organizationId, applicationId: rootState.organization.applicationId };
@@ -81,6 +79,7 @@ export default {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
 
           commit('setFacilityModel', response.data);
+          commit('setLoadedModel', response.data);
           commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: response.data });
           return response;
         } catch (error) {
@@ -111,6 +110,7 @@ export default {
       if (facilityModel) {
         console.log('found facility for guid: ', facilityId);
         commit('setFacilityModel', facilityModel);
+        commit('setLoadedModel', facilityModel);
       } else {
 
         checkSession();
@@ -119,6 +119,7 @@ export default {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
           commit('addFacilityToStore', { facilityId: facilityId, facilityModel: response.data });
           commit('setFacilityModel', response.data);
+          commit('setLoadedModel', response.data);
           return response;
 
         } catch (e) {
@@ -131,6 +132,7 @@ export default {
     newFacility({ commit }) {
       commit('setFacilityId', null);
       commit('setFacilityModel', {});
+      commit('setLoadedModel', {});
     }
   },
 };

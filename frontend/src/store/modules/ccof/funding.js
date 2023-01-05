@@ -1,8 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { isEmpty } from 'lodash';
-import { getChanges } from '@/utils/validation';
+import { isEmpty, isEqual } from 'lodash';
 
 export default {
   namespaced: true,
@@ -12,11 +11,12 @@ export default {
     fundingModel: {},
     loadedModel: {},
     modelStore: {},
-
   },
   mutations: {
     setFundingModel(state, value) {
       state.fundingModel = value;
+    },
+    setLoadedModel(state, value) {
       state.loadedModel = value;
     },
     setIsValidForm(state, value) {
@@ -43,8 +43,10 @@ export default {
   },
   actions: {
     async saveFunding({ state, commit }) {
-      console.log('store model', state.model);
-      if (!getChanges(state.fundingModel, state.loadedModel)) {
+
+      checkSession();
+
+      if (isEqual(state.fundingModel, state.loadedModel)) {
         console.info('no model changes');
         return;
       }
@@ -75,6 +77,7 @@ export default {
 
       let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + state.ccofBaseFundingId, payload);
       commit('setFundingModel', response.data);
+      commit('setLoadedModel', response.data);
       commit('addModelToStore', { fundingId: state.ccofBaseFundingId, model: response.data });
       return response;
 
@@ -85,6 +88,7 @@ export default {
       if (model) {
         console.log('found model for guid: ', fundingId);
         commit('setFundingModel', model);
+        commit('setLoadedModel', model);
       } else {
         checkSession();
 
@@ -93,6 +97,7 @@ export default {
           let model = response.data;
           console.log('response', model);
           commit('setFundingModel', model);
+          commit('setLoadedModel', model);
           commit('addModelToStore', { fundingId, model });
 
         } catch (error) {
