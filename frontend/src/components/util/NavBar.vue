@@ -191,7 +191,6 @@ export default {
       }
       this.items.push(this.getCCFRINavigation());
       if (this.rfiList?.length > 0) {
-        console.log('hi');
         this.items.push(this.getRFINavigation());
       }
       this.items.push(this.getECEWENavigation());
@@ -422,15 +421,6 @@ export default {
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           isActive: 'ECEWE Facilities' === this.$route.name
-        },
-      );
-      items.push(
-        {
-          title: 'Supporting Documents',
-          link: { name: 'ECEWE Document Upload'},
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
-          isActive: 'ECEWE Document Upload' === this.$route.name
         },
       );
       let retval =   {
