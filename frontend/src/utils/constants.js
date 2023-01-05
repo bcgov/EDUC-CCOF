@@ -29,9 +29,14 @@ export const ApiRoutes = Object.freeze({
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
+  MESSAGE: baseRoot + '/messages',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
-  APPLICATION_RENEW: baseRoot + '/application/renew-ccof'
+  APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
+  APPLICATION_RFI: baseRoot + '/application/ccfri',
+  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument',
+  APPLICATION_DECLARATION: baseRoot + '/application/declaration',
+  APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -42,7 +47,8 @@ export const PAGE_TITLES = Object.freeze({
   ORGANIZATION_SELECT: 'Organizations',
   CCRFI_APPLICATION: 'CCRFI Application Form',
   ECEWE_APPLICATION: 'ECE-WE Application',
-  SUMMARY_DECLARATION: 'Summary and Declaration'
+  SUMMARY_DECLARATION: 'Summary and Declaration',
+  SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload'
 });
 
 export const PATHS = {
@@ -51,7 +57,7 @@ export const PATHS = {
   ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
   addNewFees: '/ccfriApplication/group/add-new-fees',
   currentFees: '/ccfriApplication/group/current-fees',
-  ccfriRequestMoreInfo: '/ccfri-application/request-info',
+  ccfriRequestMoreInfo: '/ccfri-application/request-info/landing',
   WageIncrease: '/ccfri-application/request-info/wage-increase',
   ServiceExpansion: '/ccfri-application/request-info/service-expansion',
   IndigenousServiceExpansion: '/ccfri-application/request-info/indigenous-service-expansion',
@@ -75,12 +81,15 @@ export const PATHS = {
   eceweDocUpload: '/ecewe-document-upload',
   eceweEligibility: '/ecewe-eligibility',
   eceweFacilities: '/ecewe-facilities',
-  summaryDeclaration:  '/summary-declaration'
+  summaryDeclaration:  '/summary-declaration',
+  messagesPage: '/messages',
+  supportingDocumentUpload: '/supporting-document-upload',
 };
 
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
+  RFI: 'RFI',
   ECEWE: 'ECE-WE'
 };
 
@@ -102,4 +111,5 @@ export const CCFRI_Categories = [
   'Family Before & After School (Kindergarten only)'
 ];
 
+export const RENEWAL_BEFORE_AFTER_DATE = '02-21'; //i.e. Feb 21st of each program year.
 

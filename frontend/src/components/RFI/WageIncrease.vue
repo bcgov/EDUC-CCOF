@@ -39,24 +39,23 @@
           <br>
           <div class="px-md-12 px-7">
             <br>
-            <p>Is your fee increase due to a wage increase for Direct Care Staff?</p>
             <v-radio-group
               required
               row
-              v-model="model.q1"
-              label=""
+              v-model.number="model.feeIncreaseDueToWage"
+              label="Is your fee increase due to a wage increase for Direct Care Staff?"
             >
               <v-radio
                 label="Yes"
-                value="Yes"
+                :value="1"
               ></v-radio>
               <v-radio
                 label="No"
-                value="No"
+                :value="0"
               ></v-radio>
             </v-radio-group>
 
-            <div v-if="model.q1 == 'Yes'">
+            <div v-if="model.feeIncreaseDueToWage == 1">
               <br>
               <p>Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?</p>
               <v-radio-group
@@ -371,7 +370,7 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-
+import { mapActions, mapState } from 'vuex';
 
 let wageList = [
   {
@@ -408,9 +407,30 @@ export default {
     next();
   },
   computed: {
-    
+    ...mapState('rfiApp', ['rfiModel']),
   },
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        let ccfriId = this.$route.params.urlGuid;
+        console.log('watched');
+        this.loadRfi(ccfriId);
+      },
+      immediate: true,
+      deep: true
+    },
+    rfiModel: {
+      handler() {
+        this.model = { ...this.rfiModel };
+        this.$refs.form?.resetValidation();
+      },
+      immediate: true,
+      deep: true
+    }
+  },  
+
   methods : {
+    ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     addRow () {
       this.wageList.push( {
         staffRole: '',

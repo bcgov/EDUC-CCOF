@@ -6,10 +6,9 @@ const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
-const { UserProfileFacilityMappings, OrganizationFacilityMappings, UserProfileOrganizationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
-
 
 
 async function getUserInfo(req, res) {
@@ -20,8 +19,9 @@ async function getUserInfo(req, res) {
       message: 'No session data'
     });
   }
-  let isIdir = isIdirUser(req);
-  let userName = req.params?.userName;
+  const isIdir = isIdirUser(req);
+  const queryUserName = req.params?.queryUserName;
+  const userName = getUserName(req);
 
   // if is idir user (ministry user), make sure they are a user in dynamics
   if (isIdir) {
@@ -37,33 +37,22 @@ async function getUserInfo(req, res) {
   }
   
   let resData = {
-    displayName: (userName)? req.session.passport.user._json.display_name + '-' + userName : req.session.passport.user._json.display_name,
-    userName: getUserName(req),
+    displayName: (queryUserName)? req.session.passport.user._json.display_name + '-' + queryUserName : req.session.passport.user._json.display_name,
+    userName: userName,
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
     serverTime: new Date(),
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
     unreadMessages: false, 
   };
-  let userGuid = undefined;
+  let userResponse = undefined;
   if (isIdir) {
-    if (userName) {
+    if (queryUserName) {
       try {
-        let profileData = await getOperation(`contacts?$select=ccof_userid,firstname,lastname&$filter=ccof_username eq '${userName}'`);
-        if (profileData.value?.length > 0) {
-          //found something.
-          userGuid = profileData.value[0].ccof_userid;
-          if (!userGuid) {
-            //found the account but no user guid associated
-            return res.status(HttpStatus.CONFLICT).json({
-              message: 'User found but no User Guid associated'
-            });
-          }
-        } else {
-          //didn't find that user
-          return res.status(HttpStatus.NOT_FOUND).json({
-            message: 'No user found with that BCeID UserName'
-          });
+        log.info(`Ministry user [${userName}] is impersonating with username: [${queryUserName}].`);
+        userResponse = await getUserProfile('\'\'', queryUserName);
+        if (userResponse === null) { 
+          return res.status(HttpStatus.NOT_FOUND).json({message: 'No user found with that BCeID UserName'});
         }
       } catch (e) {
         log.error('getUserProfile Error', e.response ? e.response.status : e.message);
@@ -75,11 +64,11 @@ async function getUserInfo(req, res) {
     }
   } else {
     //Not an idir user, so just get the guid from the header
-    userGuid = getUserGuid(req);
+    const userGuid = getUserGuid(req);
+    log.verbose('User Guid is: ', userGuid);
+    userResponse = await getUserProfile(userGuid, userName );
   }
-  log.verbose('User Guid is: ', userGuid);
-  const userResponse = await getUserProfile(userGuid);
-
+  
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:',minify(userResponse));
   }
@@ -88,29 +77,33 @@ async function getUserInfo(req, res) {
     creatUser(req);
     return res.status(HttpStatus.OK).json(resData);
   }
-  if (userResponse[0] === undefined){
+  if (userResponse === {}){
     // If no data back, then no associated Organization/Facilities, return empty orgination data
     return res.status(HttpStatus.OK).json(resData);
   }
 
-  //Organization is not normalized, grab organization info from the first element
-  let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
-  
-  organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
-  organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
-  organization.applicationType = getLabelFromValue(organization.applicationType, CCOF_APPLICATION_TYPES);
-  
-  resData.facilityList = await parseFacilityData(userResponse);
+  let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
+
+  let application = new MappableObjectForFront(userResponse.application, UserProfileApplicationMappings).data;
+  application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
+  application.applicationStatus = getLabelFromValue(application.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
+  application.applicationType = getLabelFromValue(application.applicationType, CCOF_APPLICATION_TYPES);
+  application.ccofProgramYearId = userResponse.application?.ccof_ProgramYear?.ccof_program_yearid;
+  application.ccofProgramYearName = userResponse.application?.ccof_ProgramYear?.ccof_name;
+
+
+  resData.facilityList = parseFacilityData(userResponse);
   let results = {
     ...resData,
-    ...organization
+    ...organization,
+    ...application
   };
   return res.status(HttpStatus.OK).json(results);
 }
 
-async function getUserProfile(businessGuid) {
+async function getUserProfile(businessGuid, userName) {
   try {
-    const url = config.get('dynamicsApi:apiEndpoint') + `/api/UserProfile?userId=${businessGuid}&userName=''`;
+    const url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userId=${businessGuid}&userName=${userName}`;
     log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
@@ -120,45 +113,31 @@ async function getUserProfile(businessGuid) {
       if (e.response?.data?.startsWith('User not found')) {
         return null;
       }
-      return [];
+      return {};
     }
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }
 
-async function getFacilityMapFromOrganization(userResponse) {
-  let query  = `accounts?$select=name,accountnumber,ccof_facilitystatus,accountid&$expand=parentaccountid($select=accountid)&$filter=(ccof_facilitystatus ne 100000009) and (parentaccountid/accountid eq ${userResponse[0]['Organization.accountid']})`;
-  const response = await getOperation(query);
-  let map = new Map(response.value.map((m) => [m['accountid'], new MappableObjectForFront(m, OrganizationFacilityMappings).data]));
+function parseFacilityData(userResponse) {
+  let facilityMap  = new Map(userResponse.facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
-  return map;
-}
-async function parseFacilityData(userResponse) {
-  let facilityMap  = new Map(userResponse.map((m) => [m['CCOF.ccof_facility'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
-
-  if (facilityMap?.size == 1 && userResponse[0]['Application.ccof_applicationtype'] == CCOF_APPLICATION_TYPES.RENEW) { //&& facilityMap.keys().next() &&
-    log.verbose('RENEW: grabbing facilities from opertaions API');
-    facilityMap = await getFacilityMapFromOrganization(userResponse);
-  }
-  facilityMap.forEach((value, key, map) => {
-    let ccfriInfo = undefined;
-    let eceweInfo = undefined;
-
-    userResponse.forEach(facility => {
-      if (facility['CCFRI.ccof_facility'] === key) {
-        ccfriInfo = new MappableObjectForFront(facility, UserProfileCCFRIMappings).data;
-      }
-      if (facility['ECEWE.ccof_facility'] === key) {
-        eceweInfo = new MappableObjectForFront(facility, UserProfileECEWEMappings).data;
-      }
+  if (userResponse.application) {
+    facilityMap.forEach((value, key, map) => {
+      let ccfriInfo = userResponse.application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
+      ccfriInfo = new MappableObjectForFront(ccfriInfo, UserProfileCCFRIMappings).data;
+      let eceweInfo = userResponse.application.ccof_ccof_application_ccof_applicationecewe_application?.find(item => item['_ccof_facility_value'] === key);
+      eceweInfo = new MappableObjectForFront(eceweInfo, UserProfileECEWEMappings).data;
+      let baseFunding = userResponse.application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
+      baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
+      map.set(key, {
+        ...value,
+        ...ccfriInfo,
+        ...eceweInfo,
+        ...baseFunding});        
     });
-    map.set(key, {
-      ...value,
-      ...ccfriInfo,
-      ...eceweInfo});        
-  });
-
+  }
   let facilityList = [];
   facilityMap.forEach((facility) => {
     if (!_.isEmpty(facility)) {
@@ -216,11 +195,9 @@ async function creatUser(req) {
     postOperation('contacts', payload);
   } catch (e) {
     log.error('Error when creating user: ', e);
-    throw e;
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'Error while creating a new BCeID User'}, e);
   }
 }
-
-
 
 module.exports = {
   getUserInfo,

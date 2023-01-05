@@ -17,6 +17,7 @@ import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
+import MessagesPage from '@/components/MessagesPage';
 
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
@@ -51,6 +52,7 @@ import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFee
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
 import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
+import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 Vue.prototype.moment = moment;
 
@@ -307,8 +309,18 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.supportingDocumentUpload,
+      name: 'Supporting Document Upload',
+      component: SupportingDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
+        requiresAuth: true,
+        showNavBar: true
+      }
+    },
+    {
       path: PATHS.summaryDeclaration,
-      name: 'SummaryDeclaration',
+      name: 'Summary and Declaration',
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
@@ -350,24 +362,24 @@ const router = new VueRouter({
     },
 
     {
-      path: PATHS.ccfriRequestMoreInfo,
+      path: PATHS.ccfriRequestMoreInfo + '/:urlGuid',
       name: 'ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        navBarGroup: NAV_BAR_GROUPS.RFI,
         requiresAuth: true,
       }
     },
     {
-      path: PATHS.WageIncrease,
+      path: PATHS.WageIncrease + '/:urlGuid',
       name: 'ccfri-wage-increase',
       component: WageIncrease,
       meta: {
         pageTitle: 'CCFRI Wage Increase',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        navBarGroup: NAV_BAR_GROUPS.RFI,
         requiresAuth: true,
       }
     },
@@ -459,6 +471,15 @@ const router = new VueRouter({
       component: Impersonate,
       meta: {
         pageTitle: 'Impersonate a BCeID User',
+        requiresAuth: true
+      }
+    },
+    {
+      path: PATHS.messagesPage,
+      name: 'messagesPage',
+      component: MessagesPage,
+      meta: {
+        pageTitle: 'Messages Page',
         requiresAuth: true
       }
     },

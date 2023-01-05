@@ -30,47 +30,43 @@
             </li>
           </ul>
           <br>
-          <p>Is your fee increase due to an exceptional circumstance?</p>
           <v-radio-group
             required
             row
-            v-model="model.q1"
-            label=""
+            v-model.number="model.exceptionalCircumstances"
+            label="Is your fee increase due to an exceptional circumstance?"
           >
             <v-radio
               label="Yes"
-              value="Yes"
+              :value="1"
             ></v-radio>
             <v-radio
               label="No"
-              value="No"
+              :value="0"
             ></v-radio>
           </v-radio-group>
           <br>
-          <div v-if="model.q1 === 'Yes'">
-            <p>Does the exceptional circumstance occur within 6 months of the fee increase?</p>
+          <div v-if="model.exceptionalCircumstances == 1">
             <v-radio-group
               required
               row
-              v-model="model.q2"
-              label=""
+              v-model.number="model.circumstanceOccurWithin6Month"
+              label="Does the exceptional circumstance occur within 6 months of the fee increase?"
             >
               <v-radio
                 label="Yes"
-                value="Yes"
+                :value="1"
               ></v-radio>
               <v-radio
                 label="No"
-                value="No"
+                :value="0"
               ></v-radio>
             </v-radio-group>
           </div>
         </div>
         </v-card-text>
       </v-card>
-
-      <div v-if="model.q1 === 'Yes' && model.q2 === 'Yes' ">
-
+      <div v-if="model.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1 ">
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
@@ -340,7 +336,7 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-
+import { mapActions, mapState } from 'vuex';
 let q1 = '';
 let q2 = '';
 let q3 = '';
@@ -372,6 +368,7 @@ export default {
   data() {
     return {
       model,
+      test: 1,
       input : '',
       expenseList,
       fundingList,
@@ -395,11 +392,31 @@ export default {
     next();
   },
   computed: {
-    
+    ...mapState('rfiApp', ['rfiModel']),
   },
+  watch: {
+    '$route.params.urlGuid': {
+      handler() {
+        let ccfriId = this.$route.params.urlGuid;
+        this.loadRfi(ccfriId);
+      },
+      immediate: true,
+      deep: true
+    },
+    rfiModel: {
+      handler() {
+        this.model = { ...this.rfiModel };
+        this.$refs.form?.resetValidation();
+      },
+      immediate: true,
+      deep: true
+    }
+  },  
   methods : {
+    ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
+
     next(){
-      this.$router.push(PATHS.WageIncrease);
+      this.$router.push(PATHS.WageIncrease + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
 
       // if (this.model.q1 === 'Yes'){
       //   this.$router.push(PATHS.addNewFees);

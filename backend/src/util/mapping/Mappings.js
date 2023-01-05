@@ -48,6 +48,29 @@ const CCFRIFacilityMappings = [
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
 
+const RFIApplicationMappings = [
+  { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'changeInHours'}, // "is there anything else about your change in hours",
+  { back: 'ccof_rfipfiid', front: 'rfiId'}, // "df27e229-0b88-ed11-81ac-000d3af48db8",
+  { back: 'ccof_feeincreasedduetoaincreasedconnection', front: 'feeIncrease' }, // 1 or 0
+  { back: 'ccof_appliedforanyothersources', front: 'otherSources' }, // 1 or 0
+  { back: 'ccof_howwillyourfeeincreasecontributetotheover', front: 'contributionOverall'}, // "how will your fee increase contribute to the overall?",
+  { back: 'ccof_feeincreasedduetoaincreaseinhoursdays', front: 'increaseDueToHours' }, // 1 or 0
+  { back: 'ccof_describewhetherparentsoutofpocketmonthlyc', front: 'outOfPocket'}, // "describe whether parents out of pocket monthly",
+  { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'anythingElse'}, // "is there anything else about your expenses",
+  { back: 'ccof_meetalloftheabovecriteria', front: 'meetCriteria' }, // 1 or 0
+  { back: 'statuscode', front: 'status' }, // 1 or 0
+  { back: 'ccof_feeincreasedduetoanexceptionalcircumstance', front: 'exceptionalCircumstances'}, // 0,
+  { back: 'ccof_pleaseexplainwhyyouhaveincurredorwillincu', front: 'xxx1'}, // "Please explain why you have incurred or will incur",
+  { back: 'ccof_feeincreasedduetoawageincrease', front: 'feeIncreaseDueToWage' }, // 1 or 0
+  { back: 'ccof_name', front: 'xxx3'}, // "RFI-22000025",
+  { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'xxx4'}, // "please describe how the majority of children you provide",
+  { back: '_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue', front: 'xxx5'}, // "ID-22000522",
+  { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId'}, // "1d261039-0e7c-ed11-81ad-000d3af4f277",
+  { back: 'ccof_increasedparentfeesbefore', front: 'xxx6' }, // 1 or 0
+  { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'circumstanceOccurWithin6Month'}, // null,
+];
+
+
 const CCFRIClosureDateMappings = [
   { back: 'ccof_startdate', front: 'startDate' },
   { back: 'ccof_enddate', front: 'endDate' },
@@ -144,33 +167,37 @@ const ECEWEFacilityMappings = [
 ];
 
 const UserProfileOrganizationMappings = [
-  { back: 'Organization.name', front: 'organizationName' },
-  { back: 'Organization.accountid', front: 'organizationId' },
-  { back: 'Organization.ccof_formcomplete', front: 'isOrganizationComplete' },
-  { back: 'Application.ccof_applicationid', front: 'applicationId' },
-  { back: 'Application.statuscode', front: 'applicationStatus' },
-  { back: 'Application.ccof_providertype', front: 'organizationProviderType' }, // group or family
-  { back: 'Application.ccof_applicationtype', front: 'applicationType' },
-  { back: 'Application.ccof_programyear', front: 'ccofProgramYearId' },
+  { back: 'organization_name', front: 'organizationName' },
+  { back: 'organization_accountid', front: 'organizationId' },
+  { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' }
+];
 
-
-  
-  // Unneeded mappings, can be added in later if we want them
-  // { back: 'Application.ccof_name', front: 'ccofApplicationName' },
-  // { back: 'Organization.accountnumber', front: 'organizationAccountNumber' },
+const UserProfileApplicationMappings = [ //application
+  { back: 'ccof_applicationid', front: 'applicationId' },
+  { back: 'statuscode', front: 'applicationStatus' },
+  { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
+  { back: 'ccof_applicationtype', front: 'applicationType' },
+  { back: 'ccof_licensecomplete', front: 'licenseUploadComplete' },
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
+  { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
+  { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
+  { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' }
 ];
 
 const UserProfileFacilityMappings = [
-  { back: 'CCOF.ccof_facility', front: 'facilityId' },
-  { back: 'CCOF.Facility.name', front: 'facilityName' },
-  { back: 'CCOF.Facility.accountnumber', front: 'facilityAccountNumber' },
-  { back: 'CCOF.Facility.ccof_formcomplete', front: 'isFacilityComplete' },
-  { back: 'CCOF.Facility.ccof_facilitylicencenumber', front: 'licenseNumber'},
+  { back: 'accountid', front: 'facilityId' },
+  { back: 'name', front: 'facilityName' },
+  { back: 'accountnumber', front: 'facilityAccountNumber' },
+  { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+  // { back: '---CCOF.Facility.ccof_facilitylicencenumber', front: 'licenseNumber'},//TODO: map License Number
+];
+const UserProfileBaseFundingMappings = [
   //base funding
-  { back: 'CCOF.ccof_application_basefundingid', front: 'ccofBaseFundingId' },
-  { back: 'CCOF.statuscode', front: 'ccofBaseFundingStatus' },
-  { back: 'CCOF.ccof_formcomplete', front: 'isCCOFComplete' },
-  { back: 'CCOF.ccof_name', front: 'ccofApplicationName'},
+  { back: 'ccof_application_basefundingid', front: 'ccofBaseFundingId' },
+  { back: 'statuscode', front: 'ccofBaseFundingStatus' },
+  { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
+  // { back: '---CCOF.ccof_name', front: 'ccofApplicationName'},
 ];
 
 const OrganizationFacilityMappings = [
@@ -183,21 +210,21 @@ const OrganizationFacilityMappings = [
 
 
 const UserProfileCCFRIMappings = [
-  { back: 'CCFRI.statuscode', front: 'ccfriStatus' },
-  { back: 'CCFRI.ccof_ccfrioptin', front: 'ccfriOptInStatus' },
-  { back: 'CCFRI.ccof_applicationccfriid', front: 'ccfriApplicationId' },
-  { back: 'CCFRI.ccof_facility', front: 'ccfriFacilityId' },
-  { back: 'CCFRI.ccof_formcomplete', front: 'isCCFRIComplete' },
-  { back: 'CCFRI.ccof_name', front: 'ccfriApplicationName'},
+  { back: 'statuscode', front: 'ccfriStatus' },
+  { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
+  { back: 'ccof_applicationccfriid', front: 'ccfriApplicationId' },
+  { back: '_ccof_facility_value', front: 'ccfriFacilityId' },
+  { back: 'ccof_formcomplete', front: 'isCCFRIComplete' },
+  { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
+  { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
+  { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'},
 ];
 
 const UserProfileECEWEMappings = [
-  { back: 'ECEWE.statuscode', front: 'eceweStatus' },
-  { back: 'ECEWE.ccof_optintoecewe', front: 'eceweOptInStatus' },
-  { back: 'ECEWE.ccof_applicationeceweid', front: 'eceweApplicationId' },
-  { back: 'ECEWE.ccof_facility', front: 'eceweFacilityId' },
-  { back: 'ECEWE.ccof_formcomplete', front: 'isECEWEComplete' },
-  { back: 'ECEWE.ccof_name', front: 'eceweApplicationName'},
+  { back: 'statuscode', front: 'eceweStatus' },
+  { back: 'ccof_optintoecewe', front: 'eceweOptInStatus' },
+  { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
+  { back: '_ccof_facility_value', front: 'eceweFacilityId' },
 ];
 
 const ProgramYearMappings = [
@@ -211,6 +238,23 @@ const ProgramYearMappings = [
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
 ];
 
+const MessageMappings = [
+  { back: 'activityid', front: 'messageId' },
+  { back: 'createdon', front: 'dateReceived' },
+  { back: 'description', front: 'messageContent' },
+  { back: 'lastopenedtime', front: 'lastOpenedTime' },
+  { back: 'subject', front: 'subject' },
+  { back: 'regardingobjectid_account_email.accountid', front: 'organizationId' },
+  { back: 'regardingobjectid_account_email.name', front: 'organizationName' },
+];
+
+const DeclarationMappings = [
+  { back: 'ccof_consent', front: 'agreeConsentCertify' },
+  { back: 'ccof_submittedby', front: 'orgContactName' },
+  { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
+  { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -219,11 +263,16 @@ module.exports = {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   UserProfileFacilityMappings,
+  UserProfileBaseFundingMappings,
   UserProfileOrganizationMappings,
+  UserProfileApplicationMappings,
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   ProgramYearMappings,
+  MessageMappings,
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
+  RFIApplicationMappings,
+  DeclarationMappings
 };
