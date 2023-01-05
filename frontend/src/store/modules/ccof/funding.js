@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEmpty } from 'lodash';
-
+import { getChanges } from '@/utils/validation';
 
 export default {
   namespaced: true,
@@ -10,12 +10,14 @@ export default {
     isValidForm: undefined,
     ccofBaseFundingId: undefined,
     fundingModel: {},
+    loadedModel: {},
     modelStore: {},
 
   },
   mutations: {
     setFundingModel(state, value) {
       state.fundingModel = value;
+      state.loadedModel = value;
     },
     setIsValidForm(state, value) {
       state.isValidForm = value;
@@ -26,15 +28,15 @@ export default {
     setModelStore(state, value) {
       state.modelStore = value;
     },
-    addModelToStore: (state, {fundingId, model} ) => {
+    addModelToStore: (state, { fundingId, model }) => {
       if (fundingId) {
-        state.modelStore[fundingId] = model;  
+        state.modelStore[fundingId] = model;
       }
-    }    
+    }
   },
   getters: {
     isNewFundingStarted: state => !isEmpty(state.fundingModel),
-    getModelById: (state) => (fundingId) => { 
+    getModelById: (state) => (fundingId) => {
       return state.modelStore[fundingId];
     },
 
@@ -42,6 +44,11 @@ export default {
   actions: {
     async saveFunding({ state, commit }) {
       console.log('store model', state.model);
+      if (!getChanges(state.fundingModel, state.loadedModel)) {
+        console.info('no model changes');
+        return;
+      }
+
       let payload = { ...state.fundingModel };
 
       let deleteFields = [];

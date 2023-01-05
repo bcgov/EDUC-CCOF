@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { isEmpty } from 'lodash';
 import { checkSession } from '@/utils/session';
-
+import { getChanges } from '@/utils/validation';
 
 export default {
   namespaced: true,
@@ -18,10 +18,11 @@ export default {
     // ccfriId: {},//jb
     // ccfriStore :{},
     isValidForm: false,
+    loadedModel: {}
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
-    getFacilityById: (state) => (facilityId) => { 
+    getFacilityById: (state) => (facilityId) => {
       return state.facilityStore[facilityId];
     },
     // getCCFRIById: (state) => (ccfriId) => { 
@@ -29,8 +30,8 @@ export default {
     // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
 
-    getModel: state => {return state.model;}
-  },  
+    getModel: state => { return state.model; }
+  },
   mutations: {
     model(state, value) {
       state.model = value;
@@ -40,18 +41,21 @@ export default {
     },
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
-    setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
+    setFacilityModel: (state, facilityModel) => {
+      state.facilityModel = facilityModel;
+      state.loadedModel = facilityModel;
+    },
     // setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     // setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
-    addFacilityToStore: (state, {facilityId, facilityModel} ) => {
+    addFacilityToStore: (state, { facilityId, facilityModel }) => {
       if (facilityId) {
-        state.facilityStore[facilityId] = facilityModel;  
+        state.facilityStore[facilityId] = facilityModel;
       }
     },
     // addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
     //   if (ccfriId) {
-    //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
+    //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;
     //   }
     // }
   },
@@ -62,17 +66,22 @@ export default {
         console.log('unable to save facility because you are not associated to an organization');
         throw 'unable to save facility because you are not associated to an organization';
       }
-      
+
       checkSession();
 
-      let payload = { ...state.facilityModel, organizationId,  applicationId:rootState.organization.applicationId};
+      if (!getChanges(state.facilityModel, state.loadedModel)) {
+        console.info('no model changes');
+        return;
+      }
+
+      let payload = { ...state.facilityModel, organizationId, applicationId: rootState.organization.applicationId };
       if (state.facilityId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
 
           commit('setFacilityModel', response.data);
-          commit('addFacilityToStore', {facilityId: state.facilityId, facilityModel: response.data});
+          commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: response.data });
           return response;
         } catch (error) {
           console.log(`Failed to update existing Facility - ${error}`);
@@ -96,30 +105,30 @@ export default {
         }
       }
     },
-    async loadFacility({getters, commit}, facilityId) {
+    async loadFacility({ getters, commit }, facilityId) {
       commit('setFacilityId', facilityId);
       let facilityModel = getters.getFacilityById(facilityId);
       if (facilityModel) {
         console.log('found facility for guid: ', facilityId);
         commit('setFacilityModel', facilityModel);
       } else {
-        
+
         checkSession();
-        
+
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
-          commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});
+          commit('addFacilityToStore', { facilityId: facilityId, facilityModel: response.data });
           commit('setFacilityModel', response.data);
           return response;
 
-        } catch(e) {
+        } catch (e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
           throw e;
         }
       }
     },
 
-    newFacility({commit}) {
+    newFacility({ commit }) {
       commit('setFacilityId', null);
       commit('setFacilityModel', {});
     }
