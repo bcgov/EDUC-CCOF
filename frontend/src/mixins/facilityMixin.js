@@ -27,7 +27,7 @@ export default {
     },
     facilityModel: {
       handler() {
-        this.model = JSON.parse(JSON.stringify(this.facilityModel));
+        this.model = { ...this.facilityModel };
         this.$refs.form?.resetValidation();
       },
       immediate: true,
