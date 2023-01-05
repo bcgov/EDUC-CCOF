@@ -49,12 +49,11 @@
 
 <script>
 
-import alertMixin from '@/mixins/alertMixin';
 import facilityMixin from '@/mixins/facilityMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [alertMixin, facilityMixin],
+  mixins: [facilityMixin],
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY

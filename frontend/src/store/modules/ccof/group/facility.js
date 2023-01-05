@@ -64,7 +64,7 @@ export default {
       }
       
       checkSession();
-      
+
       let payload = { ...state.facilityModel, organizationId,  applicationId:rootState.organization.applicationId};
       if (state.facilityId) {
         // has an orgaization ID, so update the data
@@ -103,10 +103,9 @@ export default {
         console.log('found facility for guid: ', facilityId);
         commit('setFacilityModel', facilityModel);
       } else {
-        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-          console.log('unable to load facility because you are not logged in');
-          throw 'unable to  load facility because you are not logged in';
-        }
+        
+        checkSession();
+        
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
           commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});

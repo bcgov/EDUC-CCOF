@@ -1,8 +1,10 @@
 import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
+  mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
