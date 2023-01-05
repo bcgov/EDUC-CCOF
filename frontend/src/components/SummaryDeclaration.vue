@@ -20,9 +20,9 @@
                 <v-skeleton-loader v-if="isProcessing" :loading="isProcessing" type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="isNewApplication">
+                <div v-show="!this.isRenewal && this.applicationStatus != 'SUBMIT'">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate. I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
                     <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
@@ -41,11 +41,11 @@
                     amount received under the child care grant.
                   </p>
                 </div>
-                <div v-show="this.model.declarationAStatus == 1">
+                <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
                   <p>I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
-                <div v-show="this.model.declarationBStatus == 1">
+                <div v-show="this.model.declarationBStatus == 1 && this.isRenewal">
                   <p>I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
                   <p>By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby confirm that I have carefully read this Form and the corresponding terms and conditions of the Child Care Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:</p>
@@ -77,13 +77,13 @@
                 </div>
               </v-col>
             </v-row>
-             <v-row>
+             <v-row v-if="!isProcessing">
               <v-col cols="12" class="pl-6 pt-0 pb-0">
-                 <v-checkbox class="pt-0" v-if="isNewApplication" v-model="model.agreeConsentCertify" :disabled="this.isSubmitted" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
+                 <v-checkbox class="pt-0" v-if="this.applicationStatus != 'SUBMITTED'" v-model="model.agreeConsentCertify" :disabled="this.isSubmitted" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
                 <v-checkbox class="pt-0" v-if="this.model.declarationAStatus == 1 || this.model.declarationBStatus == 1" v-model="model.agreeConsentCertify" :disabled="this.isSubmitted" :value="1" label="I agree, concent, and certify"></v-checkbox>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="!isProcessing">
               <v-col class="pt-0">
                 <v-text-field
                   v-if="!isProcessing"
@@ -112,13 +112,6 @@
                 <v-card-title class="white--text">Submission Complete</v-card-title>
               </v-col>
               <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
-                <!--v-btn icon>
-                  <v-icon large
-                    color="white"
-                    @click="dialog=false">
-                    mdi-close
-                  </v-icon>
-                </v-btn-->
               </v-col>
             </v-row>
             <v-row>
@@ -139,9 +132,8 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
-import {RENEWAL_BEFORE_AFTER_DATE} from '@/utils/constants';
 
 let model = {};
 
@@ -149,12 +141,12 @@ export default {
 mixins: [alertMixin],
 computed: {
   ...mapGetters('auth', ['userInfo']),
-  ...mapGetters('app', ['futureYearLabel']),
+  ...mapState('app', ['isRenewal', 'programYearList']),
+  ...mapState('organization', ['applicationStatus']),
 },
 data() {
   return {
     model,
-    isNewApplication: false,
     isValidForm: false,
     isSubmitted: false,
     isProcessing: true,
@@ -202,24 +194,26 @@ methods: {
   }
 },
 mounted() {
-  // Establish the server time
-  const serverTime = new Date(this.userInfo.serverTime);
-  const futureYear1 = this.futureYearLabel.toString().substring(0,4);
-  // Establish the renewal before and after dates for comparision with server time.
-  const futureYear2 = parseInt(futureYear1)+1;
-  const renewingBeforeDate = new Date(RENEWAL_BEFORE_AFTER_DATE+'-'+futureYear1);
-  const renewingAfterDate = new Date(RENEWAL_BEFORE_AFTER_DATE+'-'+futureYear2);
-
   this.loadData().then(() => {
     this.model = this.$store.state.summaryDeclaration.model ?? model;
-    if (this.model.agreeConsentCertify == null && this.model.orgContactName == null) {
-      // New application.
-      this.isNewApplication = true;
-    } else {
-      // Renewal of application, compare dates to determine if renewal is for a declaration status a or b.
-      if (serverTime < renewingBeforeDate) {
+    if (this.isRenewal) {
+      // Establish the server time
+      const serverTime = new Date(this.userInfo.serverTime);
+
+      // Determine declaration b start date
+      let declarationBStart;
+      this.programYearList.list.find(item => {
+        if (item.programYearId == this.userInfo.ccofProgramYearId) {
+          declarationBStart = new Date(item.declarationbStart);
+        }
+      });
+      // Determine:
+      //   - which user declaration text version (status a or b) will display
+      //   - which declaration status (a or b) will be saved on submit.
+      // saved as part of submission.
+      if (serverTime < declarationBStart) {
         this.model.declarationAStatus = 1;
-      } else if (serverTime > renewingAfterDate) {
+      } else {
         this.model.declarationBStatus = 1;
       }
     }

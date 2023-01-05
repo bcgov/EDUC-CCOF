@@ -254,6 +254,7 @@ const DeclarationMappings = [
   { back: 'ccof_submittedby', front: 'orgContactName' },
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
+  { back: 'statuscode', front: 'applicationStatus' },
 ];
 
 module.exports = {

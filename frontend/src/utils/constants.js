@@ -111,5 +111,4 @@ export const CCFRI_Categories = [
   'Family Before & After School (Kindergarten only)'
 ];
 
-export const RENEWAL_BEFORE_AFTER_DATE = '02-21'; //i.e. Feb 21st of each program year.
 
