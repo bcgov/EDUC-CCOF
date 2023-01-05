@@ -5,11 +5,13 @@
   <v-navigation-drawer
           v-model="drawer"
           app
-          absolute
+          floating
+          clipped
           :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px` "
           width=200
-          height="calc(100vh - 136px)"
-          :permanent="$vuetify.breakpoint.mdAndUp"
+          height="calc(100vh - ${$vuetify.application.footer}px)"
+          :mini-variant="$vuetify.breakpoint.mdAndDown"
+          permanent
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
     <v-list>
@@ -37,6 +39,7 @@
                 append-icon=""
                 :value = "item.expanded"
                 @click="setActive(item)"
+                v-bind:disabled=true
 
         >
           <template v-slot:activator>
@@ -74,6 +77,8 @@
     class="pl-4 pr-8 justify-start" :class="{'pl-16': $vuetify.breakpoint.mdAndUp}" clipped-left>
     <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
       <v-icon v-if="!drawer">$menu</v-icon>
+      <v-icon v-else>$close</v-icon>
+      <p class="ma-0 pl-4 pr-2 hidden-sm-and-down">Menu</p>
     </v-app-bar-nav-icon>
     <v-toolbar-title id="navTitle" class="nav-title " :class="{'ml-4': $vuetify.breakpoint.mdAndUp, 'pl-1': $vuetify.breakpoint.smAndDown}">{{ title }}</v-toolbar-title>
     <v-spacer></v-spacer>
@@ -275,7 +280,7 @@ export default {
         },
 
       );
-      if (this.navBarList?.length > 0) { 
+      if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item, index) => {
           if (item.ccfriOptInStatus == 1){
             items.push(
@@ -283,7 +288,7 @@ export default {
                 title: 'Parent Fees '+ (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
-                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
                 isAccessible: true,
                 icon: 'mdi-checkbox-blank-circle-outline', //replace
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
