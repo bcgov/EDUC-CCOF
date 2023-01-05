@@ -244,6 +244,13 @@ const MessageMappings = [
   { back: 'regardingobjectid_account_email.name', front: 'organizationName' },
 ];
 
+const DeclarationMappings = [
+  { back: 'ccof_consent', front: 'agreeConsentCertify' },
+  { back: 'ccof_submittedby', front: 'orgContactName' },
+  { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
+  { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -261,4 +268,5 @@ module.exports = {
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
   RFIApplicationMappings,
+  DeclarationMappings
 };

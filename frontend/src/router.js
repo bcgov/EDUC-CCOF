@@ -298,7 +298,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.summaryDeclaration,
-      name: 'SummaryDeclaration',
+      name: 'Summary and Declaration',
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,

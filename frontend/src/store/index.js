@@ -16,7 +16,7 @@ import ccfriApp from '@/store/modules/ccfriApp.js';
 import rfiApp from '@/store/modules/rfiApp.js';
 import eceweApp from '@/store/modules/eceweApp.js';
 import message from '@/store/modules/message.js';
-
+import summaryDeclaration from '@/store/modules/summaryDeclaration.js';
 
 Vue.use(Vuex);
 
@@ -36,6 +36,7 @@ export default new Vuex.Store({
     eceweApp,
     rfiApp,
     message,
-    supportingDocumentUpload
+    supportingDocumentUpload,
+    summaryDeclaration
   }
 });

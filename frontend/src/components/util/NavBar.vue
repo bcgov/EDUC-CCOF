@@ -202,8 +202,8 @@ export default {
       });
       this.items.push(
         {
-          title: 'Summary',
-          link: { name: 'landing-page' },
+          title: 'Summary and Declaration',
+          link: { name: 'Summary and Declaration' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
           expanded: false,
