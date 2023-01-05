@@ -62,9 +62,7 @@
 
             <v-row>
               <v-col>
-                <label>Has this facility or you as the applicant ever received funding
-                  under the Child Care Operating Funding Program?</label>
-                <v-radio-group row v-model="model.hasReceivedFunding" :rules="rules.notRequired">
+                <v-radio-group v-model="model.hasReceivedFunding" :rules="rules.notRequired" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
                   <v-radio label="No" value="no"></v-radio>
                   <v-radio label="Yes" value="yes"></v-radio>
                   <v-radio label="Yes, as facility" value="yesFacility"></v-radio>

@@ -15,8 +15,7 @@
 
             <v-row>
               <v-col>
-                <label>Are there months when ALL of the programs at this facility are closed for the entire month?</label>
-                <v-radio-group row v-model="model.hasClosedMonth">
+                <v-radio-group row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -167,8 +166,7 @@
 
             <v-row>
               <v-col>
-                <label>Is the facility located on school property?</label>
-                <v-radio-group row v-model="model.isSchoolProperty">
+                <v-radio-group row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -205,8 +203,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <label>Do you <strong>regularly offer</strong> extended daily hours of child care <strong>(before 6 am, after 7pm or overnight)</strong>?</label>
-                <v-radio-group row v-model="model.isExtendedHours">
+                <v-radio-group row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
