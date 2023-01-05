@@ -33,11 +33,12 @@ export default {
 
       checkSession();
       const payload = getChanges(state.organizationModel, state.loadedModel);
-      console.log('saveOrganization, payload', payload);
       if (!payload) {
         console.info('no model changes');
         return; //No changes. so return from function
       }
+      
+      console.log('saveOrganization, payload', payload);
       commit('setLoadedModel', state.organizationModel);
 
       if (state.organizationId) {
