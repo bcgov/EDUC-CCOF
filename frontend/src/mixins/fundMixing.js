@@ -7,7 +7,7 @@ import alertMixin from '@/mixins/alertMixin';
 export default {
   mixins: [alertMixin],
   computed: {
-    ...mapState('groupFunding', ['fundingModel'])
+    ...mapState('funding', ['fundingModel'])
   },
   data() {
     return {
@@ -17,8 +17,8 @@ export default {
     };
   },
   methods: {
-    ...mapActions('groupFunding', ['saveFunding', 'loadFunding', 'fundingId']),
-    ...mapMutations('groupFunding', ['setFundingModel', 'addModelToStore']),
+    ...mapActions('funding', ['saveFunding', 'loadFunding', 'fundingId']),
+    ...mapMutations('funding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
     
     previous() {
