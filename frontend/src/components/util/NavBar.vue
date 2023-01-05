@@ -5,13 +5,11 @@
   <v-navigation-drawer
           v-model="drawer"
           app
-          floating
-          clipped
+          absolute
           :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px` "
           width=200
           height="calc(100vh - ${$vuetify.application.footer}px)"
-          :mini-variant="$vuetify.breakpoint.mdAndDown"
-          permanent
+          :permanent="$vuetify.breakpoint.mdAndUp"
           :temporary="!$vuetify.breakpoint.mdAndUp"
 >
     <v-list>
