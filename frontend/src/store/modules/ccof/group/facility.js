@@ -1,6 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
-import {isEmpty} from 'lodash';
+import { isEmpty } from 'lodash';
+import { checkSession } from '@/utils/session';
 
 
 export default {
@@ -61,10 +62,9 @@ export default {
         console.log('unable to save facility because you are not associated to an organization');
         throw 'unable to save facility because you are not associated to an organization';
       }
-      if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-        console.log('unable to save because you are not logged in');
-        throw 'unable to save because you are not logged in';
-      }
+      
+      checkSession();
+      
       let payload = { ...state.facilityModel, organizationId,  applicationId:rootState.organization.applicationId};
       if (state.facilityId) {
         // has an orgaization ID, so update the data
