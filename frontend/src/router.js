@@ -154,6 +154,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.family.eligibility + '/:urlGuid',
+      name: 'Eligibility GUID',
+      component: Eligibility,
+      meta: {
+        pageTitle: 'Information to Determine Eligibility',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.family.fundAmount,
       name: 'FamilyFunding',
       component: FamilyFunding,
