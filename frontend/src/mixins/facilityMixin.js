@@ -78,7 +78,7 @@ export default {
       this.setFacilityModel(this.model);
       try {
         await this.saveFacility();
-        this.setSuccessAlert('Success! Facility information has been saved.');
+        this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
