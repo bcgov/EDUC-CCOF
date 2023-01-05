@@ -39,8 +39,6 @@
                 append-icon=""
                 :value = "item.expanded"
                 @click="setActive(item)"
-                v-bind:disabled=true
-
         >
           <template v-slot:activator>
             <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
