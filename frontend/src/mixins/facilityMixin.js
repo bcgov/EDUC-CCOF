@@ -1,4 +1,4 @@
-import { PATHS } from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
 
@@ -46,29 +46,31 @@ export default {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
     ...mapMutations('app', ['setNavBarFacilityComplete']),
+    isGroup() { 
+      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
     previous() {
       let navBar = this.$store.getters['app/getNextPrevByFacilityId'](this.$route.params.urlGuid);
       if (navBar?.ccofBaseFundingId) {
-        this.$router.push(PATHS.group.fundAmount + '/' + navBar.ccofBaseFundingId);
+        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
       } else {
-        this.$router.push(PATHS.group.orgInfo);
+        this.$router.push(`${this.isGroup() ? PATHS.group.orgInfo : PATHS.family.orgInfo}`);
       }
-
     },
     next() {
       // await this.save();
       let navBar = this.$store.getters['app/getNavByFacilityId'](this.$route.params.urlGuid);
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
-        this.$router.push(PATHS.group.fundAmount + '/' + navBar.ccofBaseFundingId);
+        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
       } else {
-        this.$router.push(PATHS.group.fundAmount);
+        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
       }
     },
     async saveClicked() {
       await this.save();
       if (!this.$route.params.urlGuid) {
-        this.$router.push(PATHS.group.facInfo + '/' + this.facilityId);
+        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
       }
     },
     async save() {

@@ -1,4 +1,4 @@
-import { PATHS } from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
@@ -50,11 +50,14 @@ export default {
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
+    isGroup() { 
+      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
     next() {
       if (this.navBarList && this.navBarList.length > 0) {
-        this.$router.push(PATHS.group.facInfo + '/' + this.navBarList[0].facilityId);
+        this.$router.push(`${this.isGroup ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.navBarList[0].facilityId}`);
       } else {
-        this.$router.push(PATHS.group.facInfo);
+        this.$router.push(`${this.isGroup ? PATHS.group.facInfo : PATHS.family.eligibility}`);
       }
     },
     async save() {
