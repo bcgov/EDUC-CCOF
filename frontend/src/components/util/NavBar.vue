@@ -104,7 +104,7 @@ export default {
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
-    ...mapGetters('groupFunding', ['isNewFundingStarted']),
+    ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
     navRefresh() {
       return this.pageTitle + this.$route.params.urlGuid;
@@ -120,7 +120,7 @@ export default {
       }
     },
     ccofConfirmationEnabled() {
-      return (this.isLicenseUploadComplete !== null);
+      return (this.isLicenseUploadComplete != null);
     }
 
   },
@@ -386,7 +386,7 @@ export default {
           title: 'Add Facility',
           link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
-          icon: this.getCheckbox(this.isLicenseUploadComplete !== null),
+          icon: this.getCheckbox(this.isLicenseUploadComplete != null),
           isActive: 'Application Confirmation' === this.$route.name
         }
       );
