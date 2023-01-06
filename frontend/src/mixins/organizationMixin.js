@@ -55,9 +55,9 @@ export default {
     },
     next() {
       if (this.navBarList && this.navBarList.length > 0) {
-        this.$router.push(`${this.isGroup ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.navBarList[0].facilityId}`);
+        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.navBarList[0].facilityId}`);
       } else {
-        this.$router.push(`${this.isGroup ? PATHS.group.facInfo : PATHS.family.eligibility}`);
+        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}`);
       }
     },
     async save() {
