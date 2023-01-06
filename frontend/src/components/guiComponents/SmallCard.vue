@@ -1,6 +1,6 @@
 <template>
     <v-col class="col-lg-3 col-12 d-flex flex-column ">
-    <v-card elevation="4" class="pa-4 mx-auto rounded-lg smCardHeight flex d-flex flex-column" :disabled= disable 
+    <v-card elevation="4" class="pa-1 mx-auto rounded-lg smCardHeight flex d-flex flex-column" :disabled= disable 
         rounded
         tiled
         width = "100%"
@@ -8,9 +8,11 @@
         :ripple="false">
         <v-card-text>
             <p class="text-h6 text--primary"> {{title}}</p>
-            <br>
-            <slot></slot>
+            <slot name="content"></slot>
         </v-card-text>
+        <v-card-actions class="mt-auto pb-4 pl-4 text-truncate">
+          <slot name="button"></slot>
+        </v-card-actions>
     </v-card>
     </v-col>
 </template>
