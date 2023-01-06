@@ -74,7 +74,7 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState }) {
+    async renewApplication({ commit, state, rootState, dispatch  }) {
       checkSession();
 
       let payload = {
@@ -85,13 +85,18 @@ export default {
       console.log('renewApplication, payload', payload);
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
-        commit('setApplicationId', response.data?.applicationId);
-        commit('setApplicationStatus', 'DRAFT');
-        commit('setApplicationType', 'RENEW');
-        commit('app/setIsLicenseUploadComplete', null, { root: true });
-        commit('app/setIsRenewal', true, { root: true });
-        let facilityList  = rootState.app.navBarList.map(({facilityId, facilityName, licenseNumber}) => ({facilityId, facilityName, licenseNumber}));
-        commit('app/bulkAddToNavNBar', facilityList, { root: true });
+        commit('auth/setIsUserInfoLoaded', false, { root: true });
+        commit('organization/setIsStarted', false, { root: true });
+        commit('eceweApp/setIsStarted', false, { root: true });
+        dispatch('auth/getUserInfo');
+  
+        // commit('setApplicationId', response.data?.applicationId);
+        // commit('setApplicationStatus', 'DRAFT');
+        // commit('setApplicationType', 'RENEW');
+        // commit('app/setIsLicenseUploadComplete', null, { root: true });
+        // commit('app/setIsRenewal', true, { root: true });
+        // let facilityList  = rootState.app.navBarList.map(({facilityId, facilityName, licenseNumber}) => ({facilityId, facilityName, licenseNumber}));
+        // commit('app/bulkAddToNavNBar', facilityList, { root: true });
 
         return response;
       } catch (error) {
