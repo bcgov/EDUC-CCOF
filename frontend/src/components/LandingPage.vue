@@ -9,11 +9,15 @@
         :class="'text-h4'"
         v-text="'What would you like to do?'" />
     </v-row >
+
+    
     
      <!-- Application Approved screens starts here -->
     <v-container 
+    
     class="px-10"
     >
+    <v-btn @click="goToRFI()"> RFI</v-btn>
       <v-row class="" align="stretch" justify="space-around" > 
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
           <SmallCard title="Apply for Child Care Operating Funding (CCOF)" :disable="(ccofStatus === CCOF_STATUS_COMPLETE)">
@@ -250,7 +254,7 @@ export default {
       }
     } ,
     goToRFI(){
-      this.$router.push(PATHS.ccfriRequestMoreInfo);
+      this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
     },
     goToCCFRI() {
       this.$router.push(PATHS.ccfriHome); 
