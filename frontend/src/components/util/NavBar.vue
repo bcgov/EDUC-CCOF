@@ -102,9 +102,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
-    ...mapGetters('funding', ['isNewFundingStarted']),
+    ...mapGetters('groupFunding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
     navRefresh() {
       return this.pageTitle + this.$route.params.urlGuid;
@@ -120,13 +120,7 @@ export default {
       }
     },
     ccofConfirmationEnabled() {
-      if (this.navBarList?.length > 0
-        && this.navBarList[this.navBarList.length - 1].isFacilityComplete
-        && this.navBarList[this.navBarList.length - 1].isCCOFComplete) {
-        return true;
-      } else {
-        return false;
-      }
+      return (this.isLicenseUploadComplete !== null);
     }
 
   },
@@ -181,7 +175,7 @@ export default {
             title: 'License Upload',
             link: { name: 'License Upload'},
             isAccessible: true,
-            icon: this.getCheckbox(this.ccofApplicationComplete),
+            icon: this.getCheckbox(this.isLicenseUploadComplete),
             isActive: 'License Upload' === this.$route.name
           });
       } else {
@@ -202,7 +196,7 @@ export default {
       });
       this.items.push(
         {
-          title: 'Declaration',
+          title: 'Summary and Declaration',
           link: { name: 'Summary and Declaration' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
@@ -378,24 +372,29 @@ export default {
           title: 'Add Facility',
           link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
-          icon: this.getCheckbox(this.ccofApplicationComplete),
+          icon: this.getCheckbox(this.isLicenseUploadComplete !== null),
           isActive: 'Application Confirmation' === this.$route.name
         }
       );
       items.push(
         {
           title: 'License Upload',
-          link: { name: 'Application Confirmation'},
+          link: { name: 'License Upload'},
           isAccessible: this.ccofConfirmationEnabled,
-          icon: this.getCheckbox(this.ccofApplicationComplete),
+          icon: this.getCheckbox(this.isLicenseUploadComplete),
           isActive: 'License Upload' === this.$route.name
         }
       );
-
+      let isCCOFComplete = true;
+      items.forEach(item => { 
+        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
+          isCCOFComplete = false;
+        }
+      });
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: this.getCheckbox(this.ccofApplicationComplete),
+        icon: this.getCheckbox(isCCOFComplete),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items
       };

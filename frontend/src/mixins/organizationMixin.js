@@ -46,7 +46,9 @@ export default {
     this.setIsOrganizationComplete(this.isValidForm);
     this.setIsStarted(true);
     this.setOrganizationModel(this.model);
+    this.processing = true;
     await this.saveOrganization();
+    this.processing = false;
     next();
   },
   methods: {

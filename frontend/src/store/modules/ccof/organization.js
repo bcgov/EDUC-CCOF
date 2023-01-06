@@ -86,6 +86,13 @@ export default {
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
         commit('setApplicationId', response.data?.applicationId);
+        commit('setApplicationStatus', 'DRAFT');
+        commit('setApplicationType', 'RENEW');
+        commit('app/setIsLicenseUploadComplete', null, { root: true });
+        commit('app/setIsRenewal', true, { root: true });
+        let facilityList  = rootState.app.navBarList.map(({facilityId, facilityName, licenseNumber}) => ({facilityId, facilityName, licenseNumber}));
+        commit('app/bulkAddToNavNBar', facilityList, { root: true });
+
         return response;
       } catch (error) {
         console.log(`Failed to renew Application - ${error}`);

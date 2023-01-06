@@ -129,6 +129,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList']),
+    ...mapState('organization', ['applicationId']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
@@ -163,16 +164,16 @@ export default {
       return this.$router.push(PATHS.eceweEligibility);
     },
     next() {
-      this.$router.push(PATHS.eceweDocUpload);
+      this.$router.push(PATHS.supportingDocumentUpload);
     },
     async loadData() {
       if (this.isStarted) {
         return;
       }
-      if (this.userInfo.applicationId) {
+      if (this.applicationId) {
         this.processing = true;
         try {
-          await this.loadECEWE(this.userInfo.applicationId);
+          await this.loadECEWE(this.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
