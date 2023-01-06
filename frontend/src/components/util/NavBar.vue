@@ -104,7 +104,7 @@ export default {
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'ccofApplicationComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
     ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
-    ...mapGetters('groupFunding', ['isNewFundingStarted']),
+    ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
     navRefresh() {
       return this.pageTitle + this.$route.params.urlGuid;

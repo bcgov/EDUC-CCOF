@@ -1,8 +1,10 @@
-import { PATHS } from '@/utils/constants';
+import alertMixin from '@/mixins/alertMixin';
+import { ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapState, mapActions, mapMutations } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default {
+  mixins: [alertMixin],
   computed: {
     ...mapState('app', ['organizationTypeList', 'navBarList']),
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
@@ -19,8 +21,6 @@ export default {
     };
   },
   async mounted() {
-    console.log('this.userInfo', this.userInfo);
-    console.log('this.providerType', this.providerType);
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {
@@ -52,11 +52,14 @@ export default {
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
+    isGroup() { 
+      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
     next() {
       if (this.navBarList && this.navBarList.length > 0) {
-        this.$router.push(PATHS.group.facInfo + '/' + this.navBarList[0].facilityId);
+        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.navBarList[0].facilityId}`);
       } else {
-        this.$router.push(PATHS.group.facInfo);
+        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}`);
       }
     },
     async save() {

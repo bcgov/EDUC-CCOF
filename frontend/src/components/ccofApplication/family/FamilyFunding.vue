@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="model.isCCOFComplete">
     <v-container>
       <v-row justify="space-around">
 
@@ -7,8 +7,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <label>Liscence type</label>
-                <v-radio-group row v-model="model.licenseType">
+                <v-radio-group v-model="model.licenseType" label="Liscence type">
                   <v-radio label="Family child care" value="familyChildCare" />
                   <v-radio label="In-Home Multi-Age Child Care" value="inHomeCare" />
                   <v-radio label="Multi-Age Care" value="multuAge" />
@@ -25,15 +24,13 @@
                 <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxDaysPerWeek" label="Maximum number of days per week you provide child care" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxDaysPerYear" label="Maximum of weeks per year you provide child care" />
+                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxWeeksPerYear" label="Maximum of weeks per year you provide child care" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col>
-                <label>Are there months when ALL of the programs at this facility are
-                  closed for the entire month?</label>
-                <v-radio-group row v-model="model.hasClosedMonth">
+                <v-radio-group row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -48,43 +45,43 @@
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="1" label="Jan" />
+                <v-checkbox v-model="model.closedIn1" label="Jan" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="2" label="Feb" />
+                <v-checkbox v-model="model.closedIn2" label="Feb" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="3" label="Mar" />
+                <v-checkbox v-model="model.closedIn3" label="Mar" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="4" label="Apr" />
+                <v-checkbox v-model="model.closedIn4" label="Apr" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="5" label="May" />
+                <v-checkbox v-model="model.closedIn5" label="May" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="6" label="Jun" />
+                <v-checkbox v-model="model.closedIn6" label="Jun" />
               </v-col>
             </v-row>
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="7" label="Jul" />
+                <v-checkbox v-model="model.closedIn7" label="Jul" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="8" label="Aug" />
+                <v-checkbox v-model="model.closedIn8" label="Aug" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="9" label="Sep" />
+                <v-checkbox v-model="model.closedIn9" label="Sep" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="10" label="Oct" />
+                <v-checkbox v-model="model.closedIn10" label="Oct" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="11" label="Nov" />
+                <v-checkbox v-model="model.closedIn11" label="Nov" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedMonths" value="12" label="Dec" />
+                <v-checkbox v-model="model.closedIn12" label="Dec" />
               </v-col>
             </v-row>
 
@@ -118,7 +115,7 @@
                 <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxCapacity" label="Maximum licensed capacity" />
+                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxLicensesCapacity" label="Maximum licensed capacity" />
                 <label>(as indicated on your Community care and assisted Living Act License)</label>
               </v-col>
             </v-row>
@@ -129,8 +126,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <label>Do you <strong>regularly offer</strong> extended daily hours of child care <strong>(before 6 am, after 7pm or overnight)</strong>?</label>
-                <v-radio-group row v-model="model.isExtendedHours">
+                <v-radio-group row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -151,7 +147,7 @@
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field type="number" outlined required :rules="model.isExtendedHours === 'yes' ? rules.required : []" v-model.number="model.maxDaysPerYearExtended" label="Maximum number of weeks per year you offer extended hours of child care?" />
+                <v-text-field type="number" outlined required :rules="model.isExtendedHours === 'yes' ? rules.required : []" v-model.number="model.maxWeeksPerYearExtended" label="Maximum number of weeks per year you offer extended hours of child care?" />
               </v-col>
             </v-row>
 
@@ -161,10 +157,9 @@
       </v-row>
 
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large @click="previous()">
-          Back</v-btn>
-        <v-btn color="secondary" outlined x-large :disabled="!isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="save()">Save</v-btn>
+        <v-btn color="info" outlined x-large @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :disabled="!model.isCCOFComplete" @click="next()">Next</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
 
     </v-container>
@@ -173,59 +168,16 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
-import rules from '@/utils/rules';
-import formatTime from '@/utils/formatTime';
-import { mapActions } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-
-let model = { closedMonths: [] };
+import fundMixing from '@/mixins/fundMixing';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [alertMixin],
-  props: {
-  },
-  computed: {
-  },
+  mixins: [fundMixing],
   data() {
     return {
-      model,
-      isValidForm: undefined,
-      rules
+      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY
     };
-  },
-  methods: {
-    ...mapActions('familyFunding', ['saveFamilyFunding']),
-    previous() {
-      this.$router.push(PATHS.family.fundAmount);
-    },
-    next() {
-      this.$router.push(PATHS.group.confirmation);
-    },
-    allowedStep: m => m % 5 === 0,
-    formatTime,
-    async save() {
-      this.processing = true;
-      this.saveModel();
-
-      try {
-        await this.saveFamilyFunding();
-        this.setSuccessAlert('Success! Funding information has been saved.');
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
-      this.processing = false;
-    },
-    saveModel() {
-      this.$store.commit('familyFunding/model', this.model);
-    }
-  },
-  mounted() {
-    this.model = this.$store.state.familyFunding.model ?? model;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.saveModel();
-    next();
   }
 };
+
 </script>
