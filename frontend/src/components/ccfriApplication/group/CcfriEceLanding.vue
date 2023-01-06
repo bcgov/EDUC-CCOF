@@ -117,6 +117,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
+    ...mapState('organization', ['applicationId']),
   },
   beforeMount: function() {
     try {
@@ -195,7 +196,7 @@ export default {
         this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
 
         payload.push( {
-          applicationID : this.userInfo.applicationId, //CCOF BASE application ID
+          applicationID : this.applicationId, //CCOF BASE application ID
           facilityID : this.navBarList[i].facilityId, 
           optInResponse: this.ccfriOptInOrOut[i],
           ccfriApplicationId: this.navBarList[i].ccfriApplicationId

@@ -82,7 +82,7 @@
 
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'true')">Next</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'false')">Next</v-btn>
       </v-row>
     </v-container>
   </v-form>

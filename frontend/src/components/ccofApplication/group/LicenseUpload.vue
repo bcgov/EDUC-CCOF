@@ -164,10 +164,10 @@ export default {
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
         }
-        await this.createTable();
         if (!this.nextButtonDisabled && !this.isLicenseUploadComplete) {
           await this.updateLicenseCompleteStatus(true);
         }
+        await this.createTable();
         this.setSuccessAlert('Changes Successfully Saved');
       } catch (e) {
         console.log(e);
