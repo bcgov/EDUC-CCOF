@@ -10,7 +10,7 @@
             <p class="text-h6 text--primary"> {{title}}</p>
             <slot name="content"></slot>
         </v-card-text>
-        <v-card-actions class="mt-auto pb-4 pl-4 text-truncate">
+        <v-card-actions class="mt-auto pb-4 pl-4">
           <slot name="button"></slot>
         </v-card-actions>
     </v-card>
