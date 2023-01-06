@@ -156,8 +156,30 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.family.eligibility + '/:urlGuid',
+      name: 'Eligibility GUID',
+      component: Eligibility,
+      meta: {
+        pageTitle: 'Information to Determine Eligibility',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.family.fundAmount,
       name: 'FamilyFunding',
+      component: FamilyFunding,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.family.fundAmount + '/:urlGuid',
+      name: 'FamilyFunding GUID',
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
@@ -298,7 +320,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.summaryDeclaration,
-      name: 'SummaryDeclaration',
+      name: 'Summary and Declaration',
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,

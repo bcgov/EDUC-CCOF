@@ -79,8 +79,7 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <label>Type of Orgnization</label>
-                <v-radio-group v-model="model.organizationType" :rules="rules.required">
+                <v-radio-group v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
                   <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                 </v-radio-group>
               </v-col>
@@ -103,12 +102,11 @@
 
 <script>
 
-import alertMixin from '@/mixins/alertMixin';
 import organizationMixin from '@/mixins/organizationMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [alertMixin, organizationMixin],
+  mixins: [organizationMixin],
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY

@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
 const { upsertParentFees, getRFIApplication, updateCCFRIApplication, renewCCOFApplication} = require('../components/application');
-const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication , getCCFRIApplication, createRFIApplication, updateRFIApplication} = require('../components/application');
+const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, createRFIApplication, updateRFIApplication, getDeclaration, submitApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
@@ -103,6 +103,17 @@ router.patch('/ecewe/:applicationId', passport.authenticate('jwt', {session: fal
 router.post('/ecewe/facilities/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
   param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
   return updateECEWEFacilityApplication(req, res);
+});
+
+/* Get the user declaration for a given application id. */
+router.get('/declaration/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, (req, res) => {
+  return getDeclaration(req, res);
+});
+
+/* Update Declaration for an CCOF/CCFRI/ECEWE application given an application id.  */
+router.patch('/declaration/submit/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
+  return submitApplication(req, res);
 });
 
 module.exports = router;

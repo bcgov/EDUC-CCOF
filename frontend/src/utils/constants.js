@@ -34,7 +34,9 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
   APPLICATION_RFI: baseRoot + '/application/ccfri',
-  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument'
+  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument',
+  APPLICATION_DECLARATION: baseRoot + '/application/declaration',
+  APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
 });
 
 export const PAGE_TITLES = Object.freeze({

@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { getChanges } from '@/utils/validation';
+import { isEqual } from 'lodash';
 
 export default {
   namespaced: true,
@@ -24,25 +24,30 @@ export default {
     setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
     setOrganizationProviderType: (state, organizationProviderType) => { state.organizationProviderType = organizationProviderType; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
-    setOrganizationModel: (state, model) => { state.organizationModel = model; },
-    setLoadedModel: (state, model) => { state.loadedModel = model; },
+    setOrganizationModel(state, model) { state.organizationModel = model; },
+    setLoadedModel(state, model) { state.loadedModel = model; },
     setIsOrganizationComplete: (state, value) => { state.isOrganizationComplete = value; }
   },
   actions: {
     async saveOrganization({ state, commit, rootState }) {
 
       checkSession();
-      const payload = getChanges(state.organizationModel, state.loadedModel);
-      console.log('saveOrganization, payload', payload);
-      if (!payload) {
-        return; //No changes. so return from function
+
+      if (isEqual({ ...state.organizationModel, providerType: null }, { ...state.loadedModel, providerType: null })) {
+        console.info('no model changes');
+        return;
       }
-      commit('setLoadedModel', state.organizationModel);
+
+      const payload = { ...state.organizationModel };
+
+      console.log('saveOrganization, payload', payload);
 
       if (state.organizationId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
+          commit('setOrganizationModel', response.data);
+          commit('setLoadedModel', response.data);
           commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
@@ -54,6 +59,8 @@ export default {
         payload.programYearId = rootState.app.programYearList.current.programYearId;
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
+          commit('setOrganizationModel', response.data);
+          commit('setLoadedModel', response.data);
           commit('setOrganizationId', response.data?.organizationId);
           commit('setApplicationId', response.data?.applicationId);
           commit('setApplicationStatus', response.data?.applicationStatus);
@@ -79,6 +86,13 @@ export default {
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
         commit('setApplicationId', response.data?.applicationId);
+        commit('setApplicationStatus', 'DRAFT');
+        commit('setApplicationType', 'RENEW');
+        commit('app/setIsLicenseUploadComplete', null, { root: true });
+        commit('app/setIsRenewal', true, { root: true });
+        let facilityList  = rootState.app.navBarList.map(({facilityId, facilityName, licenseNumber}) => ({facilityId, facilityName, licenseNumber}));
+        commit('app/bulkAddToNavNBar', facilityList, { root: true });
+
         return response;
       } catch (error) {
         console.log(`Failed to renew Application - ${error}`);
@@ -99,7 +113,7 @@ export default {
         console.log(`Failed to get Organization - ${error}`);
         throw error;
       }
-      
+
     }
   },
 };

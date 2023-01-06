@@ -15,8 +15,7 @@
 
             <v-row>
               <v-col>
-                <label>Are there months when ALL of the programs at this facility are closed for the entire month?</label>
-                <v-radio-group row v-model="model.hasClosedMonth">
+                <v-radio-group row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -123,7 +122,7 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxGroupChildCareSchool" label="Maximum Number for Group Child Care (School Age/ School age care on School Grounds)" />
+                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxGroupChildCareSchool" label="Maximum Number for Group Child Care (School Age / School age care on School Grounds)" />
               </v-col>
             </v-row>
             <v-row>
@@ -167,8 +166,7 @@
 
             <v-row>
               <v-col>
-                <label>Is the facility located on school property?</label>
-                <v-radio-group row v-model="model.isSchoolProperty">
+                <v-radio-group row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -205,8 +203,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <label>Do you <strong>regularly offer</strong> extended daily hours of child care <strong>(before 6 am, after 7pm or overnight)</strong>?</label>
-                <v-radio-group row v-model="model.isExtendedHours">
+                <v-radio-group row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -270,8 +267,7 @@
       </v-row>
 
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large @click="previous()">
-          Back</v-btn>
+        <v-btn color="info" outlined x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large :disabled="!model.isCCOFComplete" @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
       </v-row>
@@ -288,82 +284,16 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
-import rules from '@/utils/rules';
-import formatTime from '@/utils/formatTime';
-import { mapActions, mapState, mapMutations } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
+import fundMixing from '@/mixins/fundMixing';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [alertMixin],
-  computed: {
-    ...mapState('groupFunding', ['fundingModel'])
-  },
+  mixins: [fundMixing],
   data() {
     return {
-      processing: false,
-      model: {},
-      rules
+      providerType: ORGANIZATION_PROVIDER_TYPES.GROUP
     };
-  },
-  methods: {
-    ...mapActions('groupFunding', ['saveFunding', 'loadFunding', 'fundingId']),
-    ...mapMutations('groupFunding', ['setFundingModel', 'addModelToStore']),
-    ...mapMutations('app', ['setNavBarFundingComplete']),
-    
-    previous() {
-      let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
-      this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
-    },
-    next() {
-      let navBar = this.$store.getters['app/getNextNavByFundingId'](this.$route.params.urlGuid);
-      if (navBar?.facilityId) {
-        this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
-      } else {
-        this.$router.push(PATHS.group.confirmation);
-      }
-
-    },
-    async save() {
-      this.processing = true;
-      this.setFundingModel(this.model);
-
-      try {
-        await this.saveFunding();
-        this.setSuccessAlert('Success! Funding information has been saved.');
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
-      this.processing = false;
-    },
-    allowedStep: m => m % 5 === 0,
-    formatTime
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
-    this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
-
-    next();
-  },
-  watch: {
-    '$route.params.urlGuid': {
-      handler() {
-        let ccofBaseFundingId = this.$route.params.urlGuid;
-        if (ccofBaseFundingId) {
-          this.loadFunding(ccofBaseFundingId);
-        }
-      },
-      immediate: true,
-      deep: true
-    },
-    fundingModel: {
-      handler() {
-        this.model = { ...this.fundingModel };
-        this.$refs.form?.resetValidation();
-      },
-      immediate: true,
-      deep: true
-    }
   }
 };
+
 </script>
