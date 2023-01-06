@@ -225,21 +225,35 @@ export default {
           title: 'Opt in / Opt out',
           link: { name: 'ccfri-home'},
           isAccessible: true,
-          icon: this.getCheckbox(this.ccfriOptInComplete),
+          icon: this.getCheckbox(this.isCCFRIOptInComplete()),
           isActive: 'ccfri-home' === this.$route.name
         },
 
       );
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item, index) => {
-          if (item.ccfriOptInStatus == 1){
+          if (item.ccfriOptInStatus == 1 && this.isRenewal){ //this was down in RFI nav? But I moved it back here to make my nav work as I expect?
+            items.push(
+              {
+                title: 'Parent Fees '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
+                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
+                // function: this.loadFacility(x.id)
+              },
+            );
+          }
+          else if (item.ccfriOptInStatus == 1){
             items.push(
               {
                 title: 'Parent Fees '+ (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
                 link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
-                isAccessible: true,
+                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
                 icon: 'mdi-checkbox-blank-circle-outline', //replace
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
                 // function: this.loadFacility(x.id)
@@ -271,14 +285,14 @@ export default {
       );
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item, index) => {
-          if (item.ccfriOptInStatus == 1 && this.isRenewal){
+          if (item.ccfriOptInStatus == 1 && this.isRenewal){  //this is here? but I also moved it to CCFRI nav.. im not sure why it's here - jb
             items.push(
               {
                 title: 'Parent Fees '+ (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
                 link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
-                isAccessible: true,
+                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
                 icon: 'mdi-checkbox-blank-circle-outline', //replace
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
                 // function: this.loadFacility(x.id)
@@ -431,6 +445,16 @@ export default {
     },
     stripWhitespace(title) {
       return title.replace(/\s+/g, '');
+    },
+    isCCFRIOptInComplete(){
+      return !this.userInfo.facilityList.some(fac => {
+        if (fac.ccfriOptInStatus || fac.ccfriOptInStatus == 0) {
+          //console.log('status exists');
+        }
+        else {
+          return true;
+        }
+      });
     }
   }
 };
