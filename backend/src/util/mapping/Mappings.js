@@ -158,6 +158,8 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' },
   { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
+  { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
+  { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
 ];
 
 const ECEWEFacilityMappings = [

@@ -10,6 +10,7 @@ export default {
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
     isOrganizationComplete: false,
+    isLicenseUploadComplete: null,
     ccofLicenseUploadComplete:false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
@@ -108,6 +109,9 @@ export default {
     },
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;
+    },
+    setIsLicenseUploadComplete: (state, isLicenseUploadComplete) => {
+      state.isLicenseUploadComplete = isLicenseUploadComplete;
     },
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;

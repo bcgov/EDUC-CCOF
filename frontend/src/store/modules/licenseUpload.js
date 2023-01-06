@@ -47,7 +47,16 @@ export default {
         console.error(error);
         throw error;
       }
+    },
+    async updateLicenseCompleteStatus({commit, rootState}, status) {
+      try {
+        commit('app/setIsLicenseUploadComplete', status, { root: true });
+        console.log('updating isLicenseUploadComplet to be: ', status);
+        await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + rootState.auth.userInfo.applicationId, { isLicenseUploadComplete: status });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     }
-
   },
 };

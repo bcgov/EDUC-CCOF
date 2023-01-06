@@ -1,51 +1,52 @@
 <template>
-  <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table: table-heading, table-thead, table-tbody, table-tfoot,card: image, card-heading"></v-skeleton-loader>
-  <v-form v-else ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
-      <v-row justify="space-around">
-        <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center"><h3>License Upload</h3></v-card-title>
-          <v-data-table
-            :headers="headers"
-            :items="licenseUploadData"
-            class="elevation-1"
-            hide-default-header
-            hide-default-footer
-          >
-            <template v-slot:header="{ props: { headers } }">
-              <thead>
-              <tr>
-                <th v-bind:key="h.value" :id="h.value" v-for="h in headers" :class="h.class">
-                  <span>{{ h.text }}</span>
-                </th>
-              </tr>
-              </thead>
-            </template>
-            <template v-slot:item.document="{ item }">
-              <div v-if="item.document?.annotationid">
-                <span> {{ item.document?.filename }} </span>
-                <v-btn icon @click="deleteFile(item)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </div>
-              <v-file-input v-else
-                            color="#003366"
-                            :rules="fileRules"
-                            prepend-icon="mdi-file-upload"
-                            class="pt-0"
-                            :id="item.facilityId"
-                            :accept="fileAccept"
-                            :disabled="false"
-                            placeholder="Select your file"
-                            :error-messages="fileInputError"
-                            @change="selectFile"
-                            @click="uploadLicenseClicked($event)"
-              ></v-file-input>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-row>
-
+      <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@3"></v-skeleton-loader>
+      <span v-else>
+        <v-row justify="space-around">
+          <v-card class="cc-top-level-card" width="1200">
+            <v-card-title class="justify-center"><h3>License Upload</h3></v-card-title>
+            <v-data-table
+              :headers="headers"
+              :items="licenseUploadData"
+              class="elevation-1"
+              hide-default-header
+              hide-default-footer
+            >
+              <template v-slot:header="{ props: { headers } }">
+                <thead>
+                <tr>
+                  <th v-bind:key="h.value" :id="h.value" v-for="h in headers" :class="h.class">
+                    <span>{{ h.text }}</span>
+                  </th>
+                </tr>
+                </thead>
+              </template>
+              <template v-slot:item.document="{ item }">
+                <div v-if="item.document?.annotationid">
+                  <span> {{ item.document?.filename }} </span>
+                  <v-btn icon @click="deleteFile(item)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </div>
+                <v-file-input v-else
+                              color="#003366"
+                              :rules="fileRules"
+                              prepend-icon="mdi-file-upload"
+                              class="pt-0"
+                              :id="item.facilityId"
+                              :accept="fileAccept"
+                              :disabled="false"
+                              placeholder="Select your file"
+                              :error-messages="fileInputError"
+                              @change="selectFile"
+                              @click="uploadLicenseClicked($event)"
+                ></v-file-input>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-row>
+      </span>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" :disabled="nextButtonDisabled" outlined x-large @click="next()">Next</v-btn>
@@ -71,7 +72,7 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
     ...mapState('organization', ['applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
@@ -133,7 +134,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
+    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
     ...mapMutations('app', ['setCcofLicenseUploadComplete']),
     previous() {
       this.$router.push(PATHS.group.confirmation);
@@ -164,8 +165,12 @@ export default {
           await this.processLicenseFilesSave();
         }
         await this.createTable();
+        if (!this.nextButtonDisabled && !this.isLicenseUploadComplete) {
+          await this.updateLicenseCompleteStatus(true);
+        }
         this.setSuccessAlert('Changes Successfully Saved');
       } catch (e) {
+        console.log(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.processing = false;

@@ -9,9 +9,13 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
   },
-  beforeRouteLeave(_to, _from, next) {
+  async beforeRouteLeave(_to, _from, next) {
     this.setNavBarFacilityComplete({ facilityId: this.$route.params.urlGuid, complete: this.model.isFacilityComplete });
     this.addFacilityToStore({ facilityId: this.$route.params.urlGuid, facilityModel: this.model });
+    this.setFacilityModel(this.model);
+    this.processing = true;
+    await this.saveFacility();
+    this.processing = false;
     next();
   },
   watch: {
