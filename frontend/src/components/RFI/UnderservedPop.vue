@@ -28,21 +28,21 @@
           <v-radio-group
             required
             row
-            v-model="model.q1"
-            label=""
+            v-model="model.underservedPop"
+            label="Does this Facility meet all the above criteria?"
           >
             <v-radio
               label="Yes"
-              value="Yes"
+              :value = 1
             ></v-radio>
             <v-radio
               label="No"
-              value="No"
+              :value = 0
             ></v-radio>
           </v-radio-group>
           <br>
 
-          <div v-if="model.q1 === 'Yes'">
+          <div v-if="model.underservedPop == 1">
 
           <p class="text-h6 text--primary py-5 my-0">
             Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)
