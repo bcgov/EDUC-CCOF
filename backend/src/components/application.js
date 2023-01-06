@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 'use strict';
 const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
@@ -335,7 +335,7 @@ async function updateECEWEFacilityApplication(req, res) {
 /* Get the user declaration for a given application id. */
 async function getDeclaration(req, res) {
   try {
-    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus';
+    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
     let declaration = await getOperation(operation);
     declaration = new MappableObjectForFront(declaration, DeclarationMappings);
     return res.status(HttpStatus.OK).json(declaration);
@@ -347,8 +347,8 @@ async function getDeclaration(req, res) {
 
 /* Submit CCOF/CCFRI/ECEWE application */
 async function submitApplication(req, res) {
-  // todo APPLICATION_STATUS_CODES
   let declaration = new MappableObjectForBack(req.body, DeclarationMappings);
+  declaration.data.statuscode = APPLICATION_STATUS_CODES.SUBMITTED;
   declaration = declaration.toJSON();
   try {
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, declaration);

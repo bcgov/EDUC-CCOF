@@ -30,15 +30,15 @@ export default {
         throw error;
       }
     },
-    async updateDeclaration({ state, rootState, commit }) {
+    async updateDeclaration({ state, rootState }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to SUBMIT because you are not logged in');
         throw 'unable to SUBMIT application because you are not logged in';
       }
       let payload = { agreeConsentCertify:state.model.agreeConsentCertify,
-                      orgContactName:state.model.orgContactName,
-                      declarationAStatus:state.model?.declarationAStatus,
-                      declarationBStatus:state.model?.declarationBStatus };
+        orgContactName:state.model.orgContactName,
+        declarationAStatus:state.model?.declarationAStatus,
+        declarationBStatus:state.model?.declarationBStatus };
       try {
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.auth.userInfo.applicationId, payload);
         return response;

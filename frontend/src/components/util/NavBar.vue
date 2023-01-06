@@ -202,7 +202,7 @@ export default {
       });
       this.items.push(
         {
-          title: 'Summary and Declaration',
+          title: 'Declaration',
           link: { name: 'Summary and Declaration' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
