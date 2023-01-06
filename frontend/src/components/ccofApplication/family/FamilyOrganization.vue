@@ -102,12 +102,11 @@
 
 <script>
 
-import alertMixin from '@/mixins/alertMixin';
 import organizationMixin from '@/mixins/organizationMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [alertMixin, organizationMixin],
+  mixins: [organizationMixin],
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY
