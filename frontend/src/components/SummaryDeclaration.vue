@@ -2,7 +2,7 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h5">Summary and Declaration</span>
+        <span class="text-h4">Declaration</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
@@ -22,7 +22,7 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="!this.isRenewal && this.applicationStatus != 'SUBMIT'">
+                <div v-show="!this.isRenewal">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate. I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
                     <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
@@ -79,8 +79,8 @@
             </v-row>
              <v-row v-if="!isProcessing">
               <v-col cols="12" class="pl-6 pt-0 pb-0">
-                 <v-checkbox class="pt-0" v-if="this.applicationStatus != 'SUBMITTED'" v-model="model.agreeConsentCertify" :disabled="this.isSubmitted" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
-                <v-checkbox class="pt-0" v-if="this.model.declarationAStatus == 1 || this.model.declarationBStatus == 1" v-model="model.agreeConsentCertify" :disabled="this.isSubmitted" :value="1" label="I agree, concent, and certify"></v-checkbox>
+                 <v-checkbox class="pt-0" v-if="!isRenewal" v-model="model.agreeConsentCertify" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
+                <v-checkbox class="pt-0" v-else-if="isRenewal" v-model="model.agreeConsentCertify" :value="1" label="I agree, concent, and certify"></v-checkbox>
               </v-col>
             </v-row>
             <v-row v-if="!isProcessing">
@@ -89,7 +89,6 @@
                   v-if="!isProcessing"
                   outlined
                   v-model="model.orgContactName"
-                  :disabled="this.isSubmitted"
                   label="Organization Contact Name/Digital signature (wording to be provided)."
                 />
               </v-col>
@@ -99,7 +98,7 @@
       </v-row>
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn v-if="!this.isSubmitted" color="primary" outlined x-large @click="submit()" :disabled="!isPageComplete()">Submit</v-btn>
+        <v-btn color="primary" outlined x-large @click="submit()" :disabled="!isPageComplete()">Submit</v-btn>
       </v-row>
       <v-dialog
         v-model="dialog"
@@ -120,7 +119,7 @@
             <v-row>
               <v-col cols="12" style="text-align: center;">
                 <p class="pt-4">Your submission has been received. We will contact you if we require further information. Return to your dashboard.</p>
-                <p><a href="/">Return to your dashboard</a></p>
+                <p><router-link :to="landingPage">Return to your dashboard</router-link></p>
               </v-col>
             </v-row>
           </v-container>
@@ -138,91 +137,84 @@ import alertMixin from '@/mixins/alertMixin';
 let model = {};
 
 export default {
-mixins: [alertMixin],
-computed: {
-  ...mapGetters('auth', ['userInfo']),
-  ...mapState('app', ['isRenewal', 'programYearList']),
-  ...mapState('organization', ['applicationStatus']),
-},
-data() {
-  return {
-    model,
-    isValidForm: false,
-    isSubmitted: false,
-    isProcessing: true,
-    dialog: false
-  };
-},
-methods: {
-  ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration']),
-  isPageComplete(){
-    if (this.model.agreeConsentCertify && this.model.orgContactName) {
-      this.isValidForm = true;
-    } else {
-      this.isValidForm = false;
-    }
-    return this.isValidForm;
+  mixins: [alertMixin],
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['isRenewal', 'programYearList']),
+    ...mapState('organization', ['applicationStatus']),
   },
-  async loadData() {
-    if (this.userInfo.applicationId) {
-      this.isProcessing = true;
-      try {
-        await this.loadDeclaration(this.userInfo.applicationId);
-      } catch (error) {
-        console.log('Error loading application Declaration.', error);
-        this.setFailureAlert('Error loading application Declaration.');
-      }
-      this.isProcessing = false;
-    }
+  data() {
+    return {
+      model,
+      isValidForm: false,
+      isProcessing: true,
+      dialog: false,
+      landingPage: PATHS.home
+    };
   },
-  async submit() {
-    try {
-      this.saveModel();
-      await this.updateDeclaration();
-      this.isSubmitted = true;
-      this.dialog = true;
-      this.setSuccessAlert('Success! Appcliation has been submitted.');
-    } catch (error) {
-      this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.'+error);
-    }
-  },
-  saveModel() {
-    this.$store.commit('summaryDeclaration/model', this.model);
-  },
-  previous() {
-    return this.$router.go(-1);
-  }
-},
-mounted() {
-  this.loadData().then(() => {
-    this.model = this.$store.state.summaryDeclaration.model ?? model;
-    if (this.isRenewal) {
-      // Establish the server time
-      const serverTime = new Date(this.userInfo.serverTime);
-
-      // Determine declaration b start date
-      let declarationBStart;
-      this.programYearList.list.find(item => {
-        if (item.programYearId == this.userInfo.ccofProgramYearId) {
-          declarationBStart = new Date(item.declarationbStart);
-        }
-      });
-      // Determine:
-      //   - which user declaration text version (status a or b) will display
-      //   - which declaration status (a or b) will be saved on submit.
-      // saved as part of submission.
-      if (serverTime < declarationBStart) {
-        this.model.declarationAStatus = 1;
+  methods: {
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration']),
+    isPageComplete(){
+      if (this.model.agreeConsentCertify && this.model.orgContactName) {
+        this.isValidForm = true;
       } else {
-        this.model.declarationBStatus = 1;
+        this.isValidForm = false;
       }
+      return this.isValidForm;
+    },
+    async loadData() {
+      if (this.userInfo.applicationId) {
+        this.isProcessing = true;
+        try {
+          await this.loadDeclaration(this.userInfo.applicationId);
+        } catch (error) {
+          console.log('Error loading application Declaration.', error);
+          this.setFailureAlert('Error loading application Declaration.');
+        }
+        this.isProcessing = false;
+      }
+    },
+    async submit() {
+      try {
+        this.$store.commit('summaryDeclaration/model', this.model);
+        await this.updateDeclaration();
+        this.dialog = true;
+        this.setSuccessAlert('Success! Appcliation has been submitted.');
+      } catch (error) {
+        this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.'+error);
+      }
+    },
+    previous() {
+      return this.$router.push(PATHS.supportingDocumentUpload);
     }
-  });
+  },
+  mounted() {
+    this.loadData().then(() => {
+      this.model = this.$store.state.summaryDeclaration.model ?? model;
+      if (this.isRenewal) {
+      // Establish the server time
+        const serverTime = new Date(this.userInfo.serverTime);
 
-},
-beforeRouteLeave(_to, _from) {
-  this.saveModel();
-}
+        // Determine declaration b start date
+        let declarationBStart;
+        this.programYearList.list.find(item => {
+          if (item.programYearId == this.userInfo.ccofProgramYearId) {
+            declarationBStart = new Date(item.declarationbStart);
+          }
+        });
+        // Determine:
+        //   - which user declaration text version (status a or b) will display
+        //   - which declaration status (a or b) will be saved on submit.
+        // saved as part of submission.
+        if (serverTime < declarationBStart) {
+          this.model.declarationAStatus = 1;
+        } else {
+          this.model.declarationBStatus = 1;
+        }
+      }
+    });
+
+  },
 };
 </script>
 
