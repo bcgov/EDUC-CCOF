@@ -18,7 +18,7 @@
         <br>
         <p class="text-h6 text--primary px-5 py-0 my-0">
             As outlined in the <a href="#" >Funding Guidelines</a>, exceptional circumstances are expenses that are:
-          </p>
+        </p>
         <div class="px-md-12 px-7">
           <br>
           <ul>
@@ -64,7 +64,7 @@
             </v-radio-group>
           </div>
         </div>
-        </v-card-text>
+      </v-card-text>
       </v-card>
       <div v-if="model.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1 ">
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
@@ -221,14 +221,14 @@
                   v-model="model.q3"
                   label=""
                 >
-                  <v-radio
-                    label="Yes"
-                    value="Yes"
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    value="No"
-                  ></v-radio>
+                <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
                 </v-radio-group>
 
                 <div  v-if="model.q3 === 'Yes'">
@@ -399,75 +399,75 @@
 
             <div v-if="model.feeIncreaseDueToWage == 1">
               <br>
-              <p>Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?</p>
+              
               <v-radio-group
                 required
                 row
                 v-model="model.increaseInWriting"
-                label=""
+                label="Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?"
               >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  value="No"
-                ></v-radio>
+              <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
               </v-radio-group>
 
               <br>
-              <p>Is the wage increase stipulated in a collective bargaining agreement for unionized staff at the facility?</p>
+              
               <v-radio-group
                 required
                 row
                 v-model="model.isBargainingAgreement"
-                label=""
+                label="Is the wage increase stipulated in a collective bargaining agreement for unionized staff at the facility?"
               >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  value="No"
-                ></v-radio>
+              <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
               </v-radio-group>
 
               <br>
-              <p>Has the facility's current wage(s) resulted in loss of Direct Care Staff or an inability to hire sufficient Direct Care Staff?</p>
+              
               <v-radio-group
                 required
                 row
                 v-model="model.lossOfCareStaff"
-                label=""
+                label="Has the facility's current wage(s) resulted in loss of Direct Care Staff or an inability to hire sufficient Direct Care Staff?"
               >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  value="No"
-                ></v-radio>
+              <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
               </v-radio-group>
               
               <br>
-              <p>Is this creating immediate health and safety concerns for the facility under the requirements of the Child Care Licensing Regulation (CCLR)?</p>
+              
               <v-radio-group
                 required
                 row
                 v-model="model.healthAndSafetyConcerns"
-                label=""
+                label="Is this creating immediate health and safety concerns for the facility under the requirements of the Child Care Licensing Regulation (CCLR)?"
               >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  value="No"
-                ></v-radio>
+              <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
               </v-radio-group>
             </div>
           </div>
@@ -742,14 +742,14 @@
             v-model="model.feeIncreaseExtendedHours"
             label=""
           >
-            <v-radio
-              label="Yes"
-              :value= '1'
-            ></v-radio>
-            <v-radio
-              label="No"
-              :value="0"
-            ></v-radio>
+          <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
           </v-radio-group>
           <br>
         </div>
@@ -1041,8 +1041,7 @@
         <br>
         
         <div class="px-md-12 px-7">
-          <br>
-          <p>Is your fee increase due to an increased connection to Indigenous community, culture, or language in an Indigenous Facility or Organization?</p>
+          
           <br>
           <p>As outlined in the <a href = "#" >Funding Guidelines</a>, this may include expenses associated with, but not limited to:</p>
           <ul>
@@ -1058,14 +1057,14 @@
             
           >
           <br>
-            <v-radio
-              label="Yes"
-              :value= 1
-            ></v-radio>
-            <v-radio
-              label="No"
-              :value= 2
-            ></v-radio>
+          <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
           </v-radio-group>
           <br>
         </div>
@@ -1232,14 +1231,14 @@
             v-model="model.underservedPop"
             label="Does this Facility meet all the above criteria?"
           >
-            <v-radio
-              label="Yes"
-              :value = 1
-            ></v-radio>
-            <v-radio
-              label="No"
-              :value = 0
-            ></v-radio>
+          <v-radio
+                label="Yes"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="No"
+                :value="0"
+              ></v-radio>
           </v-radio-group>
           <br>
 
@@ -1433,11 +1432,9 @@ export default {
       this.$router.back();  
     },
     save(){
-      console.log(this.model);
+     
     },
     addObjToList (obj, list) {
-      console.log(list);
-      console.log(this.expenseList);
       list.push(Object.assign({}, obj));
     },
     removeObjFromList (index, list) {

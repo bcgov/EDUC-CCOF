@@ -44,52 +44,33 @@
 
           <div v-if="model.underservedPop == 1">
 
-          <p class="text-h6 text--primary py-5 my-0">
-            Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)
-          </p>
-      
-          <div class="">
             <br>
             <v-textarea
               outlined
               name="input-7-4"
-              label="Describe here"
-              v-model="model.notes"
+              label="Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)"
+              placeholder="Describe here"
+              v-model="model.underservedChildCareTypes"
             ></v-textarea>
-          </div>
+        
+            <br>
+            <v-textarea
+              outlined
+              name="input-7-4"
+              label="How will your fee increase contribute to the overall sustainability of the organization/facility?"
+              placeholder="Describe here"
+              v-model="model.orgsustainability"
+            ></v-textarea>
 
           <br>
-          <p class="text-h6 text--primary py-5 my-0">
-            How will your fee increase contribute to the overall sustainability of the organization/facility?
-          </p>
-      
-          <div class="">
-            <br>
             <v-textarea
               outlined
               name="input-7-4"
-              label="Describe here"
-              v-model="model.notes2"
+              label=" Describe whether parents out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?"
+              placeholder="Describe here"
+              v-model="model.outOfPocketFees"
             ></v-textarea>
-          </div>
-
-          <br>
-          <p class="text-h6 text--primary py-5 my-0">
-            Describe whether parents out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?
-          </p>
-      
-          <div class="">
-            <br>
-            <v-textarea
-              outlined
-              name="input-7-4"
-              label="Describe here"
-              v-model="model.notes3"
-            ></v-textarea>
-          </div>
-
-
-
+         
         </div>
 
         </div>
