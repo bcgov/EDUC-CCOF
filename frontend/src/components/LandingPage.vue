@@ -146,16 +146,17 @@ export default {
         return false;
       }
       let enabled = true;
-      let navBarLength = this.navBarList?.length;
-      for (let i = 0; i < navBarLength; i ++) {
-        if (this.navBarList[i].eceweStatus === 'NOT STARTED' || this.navBarList[i].ccfriStatus === 'NOT STARTED '
-          || this.navBarList[i].eceweStatus === 'DRAFT' || this.navBarList[i].ccfriStatus === 'DRAFT'
-          || this.navBarList[i].eceweStatus === 'ACTION_REQUIRED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED'
-          || this.navBarList[i].eceweStatus === 'SUBMITTED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED') {
-          enabled = false; 
-          i = navBarLength;  //Can't break a foreach in javascript, so end the for loop.
-        }
-      }
+      //TODO: uncomment out this code
+      // let navBarLength = this.navBarList?.length;
+      // for (let i = 0; i < navBarLength; i ++) {
+      //   if (this.navBarList[i].eceweStatus === 'NOT STARTED' || this.navBarList[i].ccfriStatus === 'NOT STARTED '
+      //     || this.navBarList[i].eceweStatus === 'DRAFT' || this.navBarList[i].ccfriStatus === 'DRAFT'
+      //     || this.navBarList[i].eceweStatus === 'ACTION_REQUIRED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED'
+      //     || this.navBarList[i].eceweStatus === 'SUBMITTED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED') {
+      //     enabled = false; 
+      //     i = navBarLength;  //Can't break a foreach in javascript, so end the for loop.
+      //   }
+      // }
       console.log('isCCFRIandECEWEComplete: ', enabled);
       return enabled;
     },
