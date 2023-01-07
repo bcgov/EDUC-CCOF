@@ -190,7 +190,7 @@ const UserProfileFacilityMappings = [
   { back: 'name', front: 'facilityName' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
-  // { back: '---CCOF.Facility.ccof_facilitylicencenumber', front: 'licenseNumber'},//TODO: map License Number
+  { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
 ];
 const UserProfileBaseFundingMappings = [
   //base funding

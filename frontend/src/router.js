@@ -42,7 +42,6 @@ import ApplicationConfirmation from '@/components/ccofApplication/group/Applicat
 
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities';
-import EceweDocumentUpload from '@/components/eceweApplication/EceweDocumentUpload';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -268,17 +267,6 @@ const router = new VueRouter({
       path: PATHS.eceweFacilities,
       name: 'ECEWE Facilities',
       component: EceweFacilities,
-      meta: {
-        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
-      }
-    },
-    {
-      path: PATHS.eceweDocUpload,
-      name: 'ECEWE Document Upload',
-      component: EceweDocumentUpload,
       meta: {
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
