@@ -6,12 +6,9 @@ import app from '@/store/modules/app.js';
 import organization from '@/store/modules/ccof/organization';
 import licenseUpload from '@/store/modules/licenseUpload.js';
 import supportingDocumentUpload from '@/store/modules/supportingDocumentUpload';
-import groupFunding from '@/store/modules/ccof/group/groupFundingStore';
-import facility from '@/store/modules/ccof/group/facility.js';
+import funding from '@/store/modules/ccof/funding';
+import facility from '@/store/modules/ccof/facility';
 
-import familyFunding from '@/store/modules/ccof/family/familyFundingStore';
-import familyEligibility from '@/store/modules/ccof/family/familyEligibilityStore';
-import familyOrganization from '@/store/modules/ccof/family/familyOrganizationStore';
 import ccfriApp from '@/store/modules/ccfriApp.js';
 import rfiApp from '@/store/modules/rfiApp.js';
 import eceweApp from '@/store/modules/eceweApp.js';
@@ -27,11 +24,8 @@ export default new Vuex.Store({
     app,
     organization,
     facility,
-    familyFunding,
-    familyEligibility,
-    familyOrganization,
     licenseUpload,
-    groupFunding,
+    funding,
     ccfriApp,
     eceweApp,
     rfiApp,

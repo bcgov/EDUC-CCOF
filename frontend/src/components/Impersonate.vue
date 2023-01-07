@@ -56,12 +56,13 @@ export default {
   },
   methods: {
     ...mapMutations('auth', ['setIsUserInfoLoaded', 'setImpersonateId']),
-    ...mapMutations('organization', ['setIsStarted']),
     ...mapActions('auth', ['getUserInfo']),
     async setBCeID() {
       this.processing = true;
       this.setIsUserInfoLoaded(false);
-      this.setIsStarted(false);
+      this.$store.commit('organization/setIsStarted', false);
+      this.$store.commit('eceweApp/setIsStarted', false);
+
       this.setImpersonateId(this.businessBCeId);
       try {
         await this.getUserInfo();

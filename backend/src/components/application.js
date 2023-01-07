@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 'use strict';
 const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
@@ -118,9 +118,7 @@ async function upsertParentFees(req, res) {
   body.forEach(async(feeGroup) => {
 
     if (feeGroup.deleteMe){
-      log.info('DELETEEEEEEEEEEEEEEEEEEEEEEEE this cat! : ');
-      log.info('DELETEEEEEEEEEEEEEEEEEEEEEEEE this cat! : ', feeGroup.parentFeeGUID);
-
+      
       try {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
         log.info('delete feeGroup res:', response);
@@ -182,16 +180,15 @@ async function upsertParentFees(req, res) {
 
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
   //so body[0].notes will always exist 
-  if (body[0].notes){
+  if (body[0].notes || body[0].ccof_formcomplete){
 
     let payload = {
-      "ccof_informationccfri" : body[0].notes
+      "ccof_informationccfri" : body[0].notes,
+      "ccof_formcomplete" : body[0].ccof_formcomplete
     };
-
-    
     try {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-      //log.info('notesRes', response);
+      log.info('notesRes', response);
       //return res.status(HttpStatus.CREATED).json(response);
     } catch (e) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
@@ -335,7 +332,7 @@ async function updateECEWEFacilityApplication(req, res) {
 /* Get the user declaration for a given application id. */
 async function getDeclaration(req, res) {
   try {
-    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus';
+    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
     let declaration = await getOperation(operation);
     declaration = new MappableObjectForFront(declaration, DeclarationMappings);
     return res.status(HttpStatus.OK).json(declaration);
@@ -347,8 +344,8 @@ async function getDeclaration(req, res) {
 
 /* Submit CCOF/CCFRI/ECEWE application */
 async function submitApplication(req, res) {
-  // todo APPLICATION_STATUS_CODES
   let declaration = new MappableObjectForBack(req.body, DeclarationMappings);
+  declaration.data.statuscode = APPLICATION_STATUS_CODES.SUBMITTED;
   declaration = declaration.toJSON();
   try {
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, declaration);

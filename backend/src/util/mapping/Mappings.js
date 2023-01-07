@@ -44,6 +44,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
   { back: 'ccof_informationccfri', front: 'ccfriApplicationNotes'},
   { back: '_ccof_previousccfri_value', front: 'previousCcfriId' },
+  { back: 'ccof_formcomplete', front: 'ccof_formcomplete' },
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
@@ -158,6 +159,8 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' },
   { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_ccof_application_ccof_applicationecewe_application', front: 'facilities' },
+  { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
+  { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
 ];
 
 const ECEWEFacilityMappings = [
@@ -177,7 +180,8 @@ const UserProfileApplicationMappings = [ //application
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
   { back: 'ccof_applicationtype', front: 'applicationType' },
-  { back: 'ccof_licensecomplete', front: 'licenseUploadComplete' },
+  { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
+  { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
   { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
@@ -253,6 +257,7 @@ const DeclarationMappings = [
   { back: 'ccof_submittedby', front: 'orgContactName' },
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
+  { back: 'statuscode', front: 'applicationStatus' },
 ];
 
 module.exports = {

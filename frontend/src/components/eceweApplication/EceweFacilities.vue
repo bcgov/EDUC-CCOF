@@ -171,6 +171,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
+    ...mapState('organization', ['applicationId']),
     fundingModel: {
       get() { return this.$store.state.eceweApp.fundingModel; },
       set(value) { this.$store.commit('eceweApp/setFundingModel', value); }
@@ -212,10 +213,10 @@ export default {
       if (this.isStarted) {
         return;
       }
-      if (this.userInfo.applicationId) {
+      if (this.applicationId) {
         this.isLoading = true;
         try {
-          await this.loadECEWE(this.userInfo.applicationId);
+          await this.loadECEWE(this.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');

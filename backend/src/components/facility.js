@@ -5,27 +5,10 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { FacilityMappings, CCFRIFacilityMappings, CCFRIClosureDateMappings } = require('../util/mapping/Mappings');
+const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
-
-function hasChildCareCategory(item) {
-  return (
-    item.ccof_apr ||
-    item.ccof_aug ||
-    item.ccof_dec ||
-    item.ccof_feb ||
-    item.ccof_jan ||
-    item.ccof_jul ||
-    item.ccof_jun ||
-    item.ccof_mar ||
-    item.ccof_may ||
-    item.ccof_nov ||
-    item.ccof_oct ||
-    item.ccof_sep
-  );
-}
 
 function buildNewFacilityPayload(req) {
   let facility = req.body;
@@ -68,6 +51,10 @@ function mapFacilityObjectForFront(data) {
   if (data.ccof_facilitystartdate) {
     let year = data.ccof_facilitystartdate.split('-')[0];
     data.ccof_facilitystartdate = year;
+  }
+
+  if (data.ccof_licensestartdate) { 
+    data.ccof_licensestartdate = data.ccof_licensestartdate.split('T')[0];
   }
 
   let obj = new MappableObjectForFront(data, FacilityMappings).toJSON(); 

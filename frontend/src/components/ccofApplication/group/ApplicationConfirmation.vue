@@ -40,16 +40,17 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapActions } from 'vuex';
 
 export default {
   props: {
   },
   computed: {
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
   },
   methods: {
-    ...mapMutations('app', ['setCcofApplicationComplete', 'setCcofConfirmationEnabled']),
+    ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
+    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     previous() {
       let navItem = this.navBarList[this.navBarList.length - 1];
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
@@ -57,8 +58,10 @@ export default {
     addAnotherFacility() {
       this.$router.push(PATHS.group.facInfo);
     },
-    next() {
-      this.setCcofApplicationComplete(true);
+    async next() {
+      if (this.isLicenseUploadComplete == null) {
+        await this.updateLicenseCompleteStatus(false);
+      }
       this.$router.push(PATHS.group.licenseUpload);
     }
   },

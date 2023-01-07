@@ -27,13 +27,13 @@ export default {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; }
   },
   actions: {
-    async loadECEWE({ commit, rootState }) {
+    async loadECEWE({ commit }, applicationId) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to load ECEWE Application because you are not logged in');
         throw new Error('unable to load ECEWE Application because you are not logged in');
       }
       try {
-        let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + rootState.auth.userInfo.applicationId)).data;
+        let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + applicationId)).data;
         commitToState(commit, payload);
       } catch (error) {
         console.log(`Failed to get ECEWE Application - ${error}`);
@@ -70,7 +70,7 @@ export default {
         // remove attributes we are not updating before sending payload.
         delete payload.facilities;
         // Save ECEWE parent record.
-        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + rootState.auth.userInfo.applicationId, payload);
+        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + rootState.organization.applicationId, payload);
 
         // If parent ECEWE save was successfull and ECEWE facilties have been flagged for update, issue update on ECEWE facilties as their
         // previous optinout responses are no longer applicable.
@@ -91,7 +91,7 @@ export default {
       let facilitiesForBackend = state.facilities;
       let payload = JSON.parse(JSON.stringify(facilitiesForBackend));
       try {
-        let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + rootState.auth.userInfo.applicationId, payload);
+        let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + rootState.organization.applicationId, payload);
         commit('setFacilities', response.data.facilities);
         return response;
       } catch (error) {
@@ -105,7 +105,7 @@ export default {
         // Create the ECEWE facility payload from the narBarList.
         state.facilities = new Array(navBarList.length).fill({});
         for (let i = 0; i < navBarList.length; i++) {
-          state.facilities[i] = {applicationid: rootState.auth.userInfo.applicationId, facilityId: navBarList[i].facilityId, optInOrOut: null, statuscode: 1, update: true};
+          state.facilities[i] = {applicationid: rootState.organization.applicationId, facilityId: navBarList[i].facilityId, optInOrOut: null, statuscode: 1, update: true};
         }
       } else {
         // A payload already exists, recreate to include any new facilities which could have been added to navBarList

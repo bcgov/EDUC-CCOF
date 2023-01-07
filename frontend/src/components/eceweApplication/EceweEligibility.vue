@@ -87,16 +87,8 @@
                 Select the applicable funding model:
               </v-col>
             </v-row>
-            <v-radio-group
-                v-model="fundingModel"
-                row>
-            <v-row justify="center">
-              <v-col class="pt-2">
-                <v-radio
-                  :label="this.fundingModelTypeList[0].description"
-                  :value="this.fundingModelTypeList[0].id"
-                  ></v-radio>
-              </v-col>
+            <v-row justify="center" class="pa-4">
+              Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
             </v-row>
             <v-card v-if="fundingModel == this.fundingModelTypeList[0].id" width="100%">
               <v-row>
@@ -118,11 +110,18 @@
               </v-row>
             </v-card>
             <v-row>
-              <v-col class="pt-7">
-                <v-radio
-                  :label="this.fundingModelTypeList[1].description"
-                  :value="this.fundingModelTypeList[1].id"
-                ></v-radio>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeInfo">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  color="#D40D19"
+                  class="py-1 px-3 noticeInfoIcon">
+                  mdi-information
+                </v-icon>
+                </span>
+                  Please confirm
+                </v-card-title>
               </v-col>
             </v-row>
             <v-card v-if="fundingModel == this.fundingModelTypeList[1].id" width="100%">
@@ -200,7 +199,6 @@
 </template>
   
 <script>
-  
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -217,6 +215,8 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
+    ...mapState('organization', ['applicationId']),
+    
     enableButtons() {
       return (this.belongsToUnion === 1 && this.fundingModel === this.fundingModelTypeList[2].id && this.confirmation === 1)
             ||(this.belongsToUnion === 1 && this.fundingModel != this.fundingModelTypeList[2].id)
@@ -292,10 +292,10 @@ export default {
       if (this.isStarted) {
         return;
       }
-      if (this.userInfo.applicationId) {
+      if (this.applicationId) {
         this.isLoading = true;
         try {
-          await this.loadECEWE(this.userInfo.applicationId);
+          await this.loadECEWE(this.applicationId);
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
