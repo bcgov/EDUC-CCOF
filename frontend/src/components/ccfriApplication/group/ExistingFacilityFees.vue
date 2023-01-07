@@ -173,6 +173,8 @@ export default {
 
           await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
 
+          this.feeList = [];
+
           //only display last years child care fees
           const prevYearGuid = this.getPrevYearGuid;
           this.CCFRIFacilityModel.childCareTypes.forEach(item => { 

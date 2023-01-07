@@ -265,7 +265,7 @@ export default {
       let retval =   {
         title: NAV_BAR_GROUPS.CCFRI,
         isAccessible: true,
-        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        icon: this.getCheckbox(this.isCcfriComplete), //replace
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
         items: items
       };
@@ -455,7 +455,12 @@ export default {
           return true;
         }
       });
-    }
+    },
+    isCcfriComplete(){
+      return this.userInfo.facilityList.every(fac => {
+        fac.ccfriOptInStatus == 1;
+      });
+    },
   }
 };
 </script>

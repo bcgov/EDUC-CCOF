@@ -159,7 +159,6 @@ export default {
       
       let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
 
-      console.log(firstOptInFacility);
 
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){

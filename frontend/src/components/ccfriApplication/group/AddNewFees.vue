@@ -475,12 +475,12 @@ export default {
       }
       else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
         
-        this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-        if (this.rfiList?.length > 0) {
-          this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-        } else {
+        // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
+        // if (this.rfiList?.length > 0) {
+        //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
+        // } else {
           this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
+        //}
         //         
 
         
@@ -490,8 +490,6 @@ export default {
       //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     isFormComplete(){
-      console.log(this.isValidForm);
-
       if (this.model.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
         return true;
       }
