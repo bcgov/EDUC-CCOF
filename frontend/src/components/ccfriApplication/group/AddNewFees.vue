@@ -159,6 +159,7 @@
               required
               v-model="model.closureFees"
               label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
+              :rules = "rules"
             >
               <v-radio
                 label="Yes"
@@ -454,9 +455,15 @@ export default {
       this.$router.back();  
     },
     async next() {
-      //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
+
+      this.save();
       
-      if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
+      if (!this.nextFacility){
+        console.log('going to ece-we!');
+        this.$router.push({path : `${PATHS.eceweEligibility}`});
+      }
+       
+      else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
         console.log('going to next fac EXISTING FEES page');
         this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
         //check here if renew - then send them to appropriate screen currentFees
@@ -466,8 +473,8 @@ export default {
         //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
         this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
       }
-      else {
-        console.log('going to ece-we!');
+      else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
+        
         this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
         if (this.rfiList?.length > 0) {
           this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
@@ -498,7 +505,9 @@ export default {
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      
+      let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
+
+      currentFacility.isCCFRIComplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
 
       this.CCFRIFacilityModel.dates.forEach ((item, index) => {
         //checks if blank - don't send over incomplete closure dates

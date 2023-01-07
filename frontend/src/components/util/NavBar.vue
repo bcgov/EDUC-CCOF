@@ -240,7 +240,7 @@ export default {
                 id: item.facilityId,
                 link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
                 isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                icon: this.getCheckbox(item.isCCFRIComplete),  
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
                 // function: this.loadFacility(x.id)
               },
@@ -254,7 +254,7 @@ export default {
                 id: item.facilityId,
                 link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
                 isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                icon: 'mdi-checkbox-blank-circle-outline', //replace
+                icon:  this.getCheckbox(item.isCCFRIComplete),
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
                 // function: this.loadFacility(x.id)
               },
