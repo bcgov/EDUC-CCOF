@@ -159,6 +159,7 @@
               required
               v-model="model.closureFees"
               label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
+              :rules = "rules"
             >
               <v-radio
                 label="Yes"
@@ -231,6 +232,7 @@
                     row
                     v-model="obj.feesPaidWhileClosed"
                     label="Did parents pay for this closure?"
+                    :rules="rules"
                   >
                     <v-radio
                       :off-icon="obj.feesPaidWhileClosed == 1 ? '$radioOn' :  '$radioOff' "
@@ -296,7 +298,7 @@
         <v-btn color="info" outlined x-large @click="previous()">
           Back</v-btn>
           <!--!isValidForm-->
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled=" false">Next</v-btn>
+        <v-btn color="secondary" outlined x-large @click="next()" :disabled="isFormComplete()">Next</v-btn>
         <v-btn color="primary" outlined x-large @click="save()">
           Save</v-btn>
       </v-row>
@@ -453,26 +455,32 @@ export default {
       this.$router.back();  
     },
     async next() {
-      //TODO: Logic will need to exist here to eval if we should go to the RFI screens also
+
+      this.save();
       
-      if (this.nextFacility && this.isRenewal){
-        //console.log('going to next fac EXISTING FEES page');
+      if (!this.nextFacility){
+        console.log('going to ece-we!');
+        this.$router.push({path : `${PATHS.eceweEligibility}`});
+      }
+       
+      else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
+        console.log('going to next fac EXISTING FEES page');
         this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
         //check here if renew - then send them to appropriate screen currentFees
       }
-      else if (this.nextFacility ){
+      else if (this.nextFacility.ccfriOptInStatus == 1 ){
         //console.log('going to next fac NEW fees page');
         //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
         this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
       }
-      else {
-        console.log('going to ece-we!');
-        this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-        if (this.rfiList?.length > 0) {
-          this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-        } else {
+      else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
+        
+        // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
+        // if (this.rfiList?.length > 0) {
+        //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
+        // } else {
           this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
+        //}
         //         
 
         
@@ -480,6 +488,12 @@ export default {
     
       //await this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
       //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
+    },
+    isFormComplete(){
+      if (this.model.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
+        return true;
+      }
+      return !this.isValidForm; //false makes button clickable, true disables button
     },
     async save () {
       this.processing = true;
@@ -489,7 +503,9 @@ export default {
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      
+      let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
+
+      currentFacility.isCCFRIComplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
 
       this.CCFRIFacilityModel.dates.forEach ((item, index) => {
         //checks if blank - don't send over incomplete closure dates
@@ -531,6 +547,7 @@ export default {
       }); // end FOR EACH
 
       payload[0].facilityClosureDates = this.CCFRIFacilityModel.dates;
+      payload[0].ccof_formcomplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
       
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);

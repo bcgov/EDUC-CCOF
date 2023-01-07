@@ -148,26 +148,20 @@ export default {
     next() {
       this.save(false);
       
-      let firstOptInFacility = -1; 
-      //check opt in status in NavBarList
-      for (let i = 0; i < this.navBarList.length; i++) {
-        if (this.navBarList[i].ccfriOptInStatus == 1){
-          firstOptInFacility = i;
-          break;
-        }
-      }
-      this.setCcfriOptInComplete(true);
-      //if firstOptInFacility == -1, go to ECEWE screen! 
-      if (firstOptInFacility == -1) {
+      let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
+
+      //if all facilites are opt OUT, go to ECE WE
+      if(!firstOptInFacility){
         this.$router.push({path : `${PATHS.eceweEligibility}`});
-      } else {
-        //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
-        if (this.isRenewal){
-          this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
-        }
-        else {
-          this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
-        }
+      }
+
+      //if CCFRI is being renewed, go to page that displays fees
+      else if (this.isRenewal){
+        this.$router.push({path : `${PATHS.currentFees}/${firstOptInFacility.ccfriApplicationId}`});
+      }
+      // else go directly to addNewFees page
+      else { 
+        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
     },
        

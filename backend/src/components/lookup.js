@@ -41,7 +41,7 @@ const organizationType = [
 const fundingModelType = [
   {
     id: 100000000,
-    description: 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.',
+    description: 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.',
   },
   {
     id: 100000001,

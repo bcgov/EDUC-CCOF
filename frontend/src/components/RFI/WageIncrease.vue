@@ -61,7 +61,7 @@
               <v-radio-group
                 required
                 row
-                v-model="model.q2"
+                v-model="model.increaseInWriting"
                 label=""
               >
                 <v-radio
@@ -79,7 +79,7 @@
               <v-radio-group
                 required
                 row
-                v-model="model.q3"
+                v-model="model.isBargainingAgreement"
                 label=""
               >
                 <v-radio
@@ -97,7 +97,7 @@
               <v-radio-group
                 required
                 row
-                v-model="model.q4"
+                v-model="model.lossOfCareStaff"
                 label=""
               >
                 <v-radio
@@ -115,7 +115,7 @@
               <v-radio-group
                 required
                 row
-                v-model="model.q5"
+                v-model="model.healthAndSafetyConcerns"
                 label=""
               >
                 <v-radio
@@ -132,7 +132,7 @@
         </v-card-text>
       </v-card>
 
-      <div v-if="model.q1 == 'Yes'">
+      <div v-if="model.feeIncreaseDueToWage == 1">
 
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
@@ -259,7 +259,7 @@
               </v-row> <!-- end v for-->
                 
                 <div class="form-group">
-                  <v-btn id="funding" @click="addRow()"   class="my-5" dark color='#003366'>Add Funding</v-btn>
+                  <v-btn id="funding"  @click="addObjToList(wageObj, wageList)"   class="my-5" dark color='#003366'>Add Funding</v-btn>
                 </div>
                 <br>
               

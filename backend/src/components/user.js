@@ -116,7 +116,7 @@ async function getUserProfile(businessGuid, userName) {
       return {};
     }
     log.error('getUserProfile Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw e;
   }
 }
 
