@@ -111,7 +111,7 @@
 
 <script>
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions} from 'vuex';
+import { mapState, mapActions} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 let model = { x: [],  };

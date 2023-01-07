@@ -8,6 +8,11 @@ const { MappableObjectForFront, MappableObjectForBack } = require('../util/mappi
 const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
 
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
   try {
@@ -97,6 +102,7 @@ async function updateCCFRIApplication(req, res) {
           ccof_ccfrioptin: facility.optInResponse,
         });
       }
+      await sleep(100); //slow down the hits to dynamics.
       //log.info('res data:' , response);
     })); //end for each
   } catch (e) {

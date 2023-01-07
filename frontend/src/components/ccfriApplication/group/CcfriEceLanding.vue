@@ -19,16 +19,15 @@
             tiled
             exact tile
             :ripple="false"
-            v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
+            v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
             <v-card-text>
               <v-row>
-                <v-col cols="" class="col-12 col-md-8">
-                  <p class="text--primary"> Facility ID: {{facilityId}}</p>
+                <v-col cols="" class="col-12 col-md-7">
                   <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
-                  <!-- <p class="text--primary"> Licence : 123456789</p>  add back in when license number is in userProfile-->
+                  <p class="text--primary"> License: {{licenseNumber}}</p>                  
                   <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
                 </v-col>
-                <v-col cols="" class="d-flex align-center col-12 col-md-4"
+                <v-col cols="" class="d-flex align-center col-12 col-md-5"
                   v-if="!showOptStatus[index]"
                 >
                   
@@ -42,7 +41,7 @@
                     UPDATE
                   </v-btn>
                 </v-col>
-                <v-col v-else cols="" class="d-flex align-center col-12 col-md-4  "
+                <v-col v-else cols="" class="d-flex align-center col-12 col-md-5"
                 >
                   <v-row>
                     <v-radio-group
@@ -76,7 +75,7 @@
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
           <v-btn color="secondary" outlined x-large @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-          <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
+          <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">
             Save</v-btn>
         </v-row>
 
@@ -86,7 +85,7 @@
 <script>
 
 
-import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
@@ -101,7 +100,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      input : '',
+      originalFacilityList: [],
       model,
       //textInput,
       showOptStatus : '',
@@ -115,21 +114,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
     ...mapState('organization', ['applicationId']),
   },
   beforeMount: function() {
-    try {
-      this.getUserInfo();
-    }catch (e){
-      console.log(e);
-    }
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'refreshNavBar']), 
-    ...mapActions('auth', ['getUserInfo']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
@@ -154,36 +146,32 @@ export default {
       return this.isValidForm;
     },
     next() {
-      this.save();
+      this.save(false);
       
-      //check if new opt in status was selected -- because I am forcing a save rn we don't need this top part
       let firstOptInFacility = -1; 
-      
       //check opt in status in NavBarList
-      if (firstOptInFacility === -1){
-        for (let i = 0; i < this.navBarList.length; i++) {
-          
-          if (this.navBarList[i].ccfriOptInStatus == 1){
-            firstOptInFacility = i;
-            break;
-          }
+      for (let i = 0; i < this.navBarList.length; i++) {
+        if (this.navBarList[i].ccfriOptInStatus == 1){
+          firstOptInFacility = i;
+          break;
         }
       }
-
-      //if firstOptInFacility == -1, go to ECEWE screen! 
-
       this.setCcfriOptInComplete(true);
-      //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
-      if (this.isRenewal){
-        this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
+      //if firstOptInFacility == -1, go to ECEWE screen! 
+      if (firstOptInFacility == -1) {
+        this.$router.push({path : `${PATHS.eceweEligibility}`});
+      } else {
+        //if CCFRI is being renewed, go to page that displays fees else go directly to addNewFees page
+        if (this.isRenewal){
+          this.$router.push({path : `${PATHS.currentFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
+        }
+        else {
+          this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
+        }
       }
-      else {
-        this.$router.push({path : `${PATHS.addNewFees}/${this.navBarList[firstOptInFacility].ccfriApplicationId}`});
-      }
-
     },
        
-    async save () {
+    async save(withAlert) {
       this.processing = true;
       let payload = [];
 
@@ -193,37 +181,42 @@ export default {
         if (!ccfriOptInOrOut[i]){
           continue;
         }
-        this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
-
-        payload.push( {
-          applicationID : this.applicationId, //CCOF BASE application ID
-          facilityID : this.navBarList[i].facilityId, 
-          optInResponse: this.ccfriOptInOrOut[i],
-          ccfriApplicationId: this.navBarList[i].ccfriApplicationId
-        });
-
-       
+        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
+          this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          payload.push( {
+            applicationID : this.applicationId, //CCOF BASE application ID
+            facilityID : this.navBarList[i].facilityId, 
+            optInResponse: this.ccfriOptInOrOut[i],
+            ccfriApplicationId: this.navBarList[i].ccfriApplicationId
+          });
+        }
       }//end for loop
-
-      try {
-        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-       
-        response.data.forEach(item => {
-          if (item.ccfriApplicationId) {
-            this.navBarList.find(facility => {
-              if (facility.facilityId == item.facilityId) {
-                facility.ccfriApplicationId = item.ccfriApplicationId;
-              }
-            });
+      if (payload.length > 0) {
+        try {
+          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        
+          response.data.forEach(item => {
+            if (item.ccfriApplicationId) {
+              this.navBarList.find(facility => {
+                if (facility.facilityId == item.facilityId) {
+                  facility.ccfriApplicationId = item.ccfriApplicationId;
+                }
+              });
+            }
+          });
+          this.refreshNavBar();
+          if (withAlert) {
+            this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
           }
-        });
-        this.refreshNavBar();
-        this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
-      } catch (error) {
-        console.info(error);
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        } catch (error) {
+          console.info(error);
+          if (withAlert) {
+            this.setFailureAlert('An error occurred while saving. Please try again later.');
+          }
+        }
+        this.processing = false;
+
       }
-      this.processing = false;
     },
     
   },

@@ -17,9 +17,7 @@ export default {
   namespaced: true,
   state: {
     isValidForm: undefined,
-    model: [
-      
-    ],
+    model: [],
     CCFRIFacilityModel : {},
     ccfriId: {},
     ccfriStore :{},
@@ -30,12 +28,8 @@ export default {
     },
   },
   mutations: {
-    model(state, value) {
-      state.model = value;
-    },
-    isValidForm(state, value) {
-      state.isValidForm = value;
-    },
+    model(state, value) { state.model = value;},
+    isValidForm(state, value) { state.isValidForm = value; },
     setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
