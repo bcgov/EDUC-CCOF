@@ -15,8 +15,9 @@
               <p class="text-h5 text--primary text-center">
                 {{currentFacility.facilityName}}
               </p>
+              <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{CCFRIFacilityModel.childCareTypes[0].programYear}} are as follows: 
+                Our Records show this facilites' fees for {{feeList[0].programYear}} are as follows: 
               </p>
               <br>
               <v-simple-table>
@@ -25,7 +26,7 @@
                     <th  scope="col" class="text-left">
                       Date
                     </th>
-                    <th  v-for="(item , index)  in CCFRIFacilityModel.childCareTypes"
+                    <th  v-for="(item , index)  in feeList"
                     :key="index"
                      class="text-center"
                      scope="col">
@@ -36,25 +37,25 @@
                 <tbody>
                   <tr>
                     <td >January </td>
-                    <td v-for="(item , index) in CCFRIFacilityModel.childCareTypes"
+                    <td v-for="(item , index) in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeJan }}</td>
                   </tr>
                   <tr>
                     <td >February </td>
-                    <td v-for="(item , index) in CCFRIFacilityModel.childCareTypes"
+                    <td v-for="(item , index) in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeFeb }}</td>
                   </tr>
                   <tr>
                     <td >March </td>
-                    <td v-for="(item , index)  in CCFRIFacilityModel.childCareTypes"
+                    <td v-for="(item , index)  in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeMar }}</td>
                   </tr>
                   <tr>
                     <td >April </td>
-                    <td v-for="(item , index)  in CCFRIFacilityModel.childCareTypes"
+                    <td v-for="(item , index)  in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeApr }}</td>
                   </tr>
@@ -110,6 +111,8 @@
 </template>
 
 <script>
+
+//userInfo.ccofProgramYearId;
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -126,15 +129,6 @@ export default {
       model,
       isValidForm : false,
       feeList : [
-        // {
-        //   childCareCategory: 'PreSchool',
-        //   childCareCategoryId: 123,
-        //   programYear: '21/22 FY',
-        //   approvedFeeJan: 100,
-        //   approvedFeeFeb: 100,
-        //   approvedFeeMar: 100,
-        //   approvedFeeApr: 100,
-        // }//above obj is a placeholder until I iron out pulling prev year fees
       ],
       rules: [
         (v) => !!v  || 'Required.',
@@ -142,7 +136,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['navBarList']),
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
     
@@ -158,6 +153,13 @@ export default {
     },
     nextFacility(){
       return this.navBarList[this.findIndexOfFacility + 1];
+    },
+    getPrevYearGuid(){
+      const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
+      console.log(programYear);
+
+      return programYear.previousYearId;
+      //let currentYearGuid = //;
     }
     
   },
@@ -171,7 +173,19 @@ export default {
 
           await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
 
-         
+          this.feeList = [];
+
+          //only display last years child care fees
+          const prevYearGuid = this.getPrevYearGuid;
+          this.CCFRIFacilityModel.childCareTypes.forEach(item => { 
+            if (item.programYearId == prevYearGuid ){
+              this.feeList.push(item);
+            }
+          });
+
+          console.log(this.feeList);
+
+
           //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
         } catch (error) {
@@ -198,12 +212,11 @@ export default {
 
       if (this.model.q1== 'No'){
         this.setFees(false);
-        this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       }
       else if (this.model.q1== 'Yes') {
         this.setFees(true);
-        this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       }
+      this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       
       //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       

@@ -16,7 +16,7 @@ export default {
     ccofConfirmationEnabled: false,
     rfiList: [],
     //Notification Details
-    ccfriOptInComplete: false,       //jb
+    
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -104,9 +104,9 @@ export default {
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
-    setCcfriOptInComplete: (state, ccfriOptInComplete) => {
-      state.ccfriOptInComplete = ccfriOptInComplete;
-    },
+    // setCcfriOptInComplete: (state, ccfriOptInComplete) => {
+    //   state.ccfriOptInComplete = ccfriOptInComplete;
+    // },
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },

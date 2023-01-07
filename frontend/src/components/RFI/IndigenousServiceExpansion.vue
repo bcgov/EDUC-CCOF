@@ -28,14 +28,15 @@
             <li>Language or culture resources for use in the child care program</li>
           </ul>
           <v-radio-group
+            label = "Is your fee increase due to an increased connection to Indigenous community, culture, or language in an Indigenous Facility or Organization?"
             required
             row
-            v-model="model.q1"
-            label=""
+            v-model="model.IndigenousConnection"
+            
           >
             <v-radio
               label="Yes"
-              value="Yes"
+              :value="Yes"
             ></v-radio>
             <v-radio
               label="No"
@@ -47,7 +48,7 @@
         </v-card-text>
       </v-card>
 
-      <div v-if="model.q1 === 'Yes'">
+      <div v-if="model.IndigenousConnection == 1 ">
 
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -68,13 +69,13 @@
             <br>
             
             <div class="px-md-12 px-7">
-              <v-row  v-for="(expense, index) in expenseList" :key="index">
+              <v-row  v-for="(expense, index) in IndigenousExpenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                       large
                       color="blue darken-4"
                       class="mt-md-4"
-                      @click="removeExpense(index)"
+                      @click="removeObjFromList(index, IndigenousExpenseList)" 
                       > mdi-close
                     </v-icon>
                 </v-col>
@@ -124,7 +125,7 @@
               </v-row> <!-- end v for-->
             
               <div class="form-group">
-                <v-btn id="login-button" @click="addExpense"   class="my-5" dark color='#003366'>Add Expense</v-btn>
+                <v-btn id="login-button" @click="addObjToList(IndigenousExpansionObj, IndigenousExpenseList)" class="my-5" dark color='#003366'>Add Expense</v-btn>
               </div>
               <br>
               
@@ -170,7 +171,7 @@
         </v-card>
 
        
-        
+      
       </div> <!--end show if yes / yes selected-->
 
       <v-row justify="space-around">
