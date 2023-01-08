@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import auth from '@/store/modules/auth.js';
-import edx from '@/store/modules/edx.js';
 import app from '@/store/modules/app.js';
 import organization from '@/store/modules/ccof/organization';
 import licenseUpload from '@/store/modules/licenseUpload.js';
@@ -10,6 +9,8 @@ import funding from '@/store/modules/ccof/funding';
 import facility from '@/store/modules/ccof/facility';
 
 import ccfriApp from '@/store/modules/ccfriApp.js';
+import application from '@/store/modules/application.js';
+
 import rfiApp from '@/store/modules/rfiApp.js';
 import eceweApp from '@/store/modules/eceweApp.js';
 import message from '@/store/modules/message.js';
@@ -20,8 +21,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   modules: {
     auth,
-    edx,
     app,
+    application,
     organization,
     facility,
     licenseUpload,

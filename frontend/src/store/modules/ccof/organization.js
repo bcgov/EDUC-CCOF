@@ -74,7 +74,7 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState, dispatch  }) {
+    async renewApplication({ commit, state, rootState  }) {
       checkSession();
 
       let payload = {
@@ -88,7 +88,7 @@ export default {
         commit('auth/setIsUserInfoLoaded', false, { root: true });
         commit('organization/setIsStarted', false, { root: true });
         commit('eceweApp/setIsStarted', false, { root: true });
-        dispatch('auth/getUserInfo');
+        // dispatch('auth/getUserInfo', null, { root: true });
   
         // commit('setApplicationId', response.data?.applicationId);
         // commit('setApplicationStatus', 'DRAFT');

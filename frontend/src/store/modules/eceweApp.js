@@ -10,7 +10,8 @@ export default {
     facilities: [],
     confirmation: null,
     isValidForm: false,
-    isStarted: false
+    isStarted: false,
+    fundingModelTypes: null,
   },
   getters: {
     isEceweComplete: state => state.isValidForm,
@@ -19,6 +20,7 @@ export default {
     setOptInECEWE: (state, optInECEWE) => { state.optInECEWE = optInECEWE; },
     setBelongsToUnion: (state, belongsToUnion) => { state.belongsToUnion = belongsToUnion; },
     setFundingModel: (state, fundingModel) => { state.fundingModel = fundingModel; },
+    setFundingModelTypes: (state, fundingModelTypes) => { state.fundingModelTypes = fundingModelTypes; },
     setFacilities: (state, facilities) => { state.facilities = facilities; },
     setConfirmation: (state, confirmation) => { state.confirmation = confirmation; },
     setIsValidForm: (state, isValidForm) => { state.isValidForm = isValidForm; },
@@ -28,10 +30,9 @@ export default {
     async loadECEWE({ commit }, applicationId) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to load ECEWE Application because you are not logged in');
-        throw 'unable to load ECEWE Application because you are not logged in';
+        throw new Error('unable to load ECEWE Application because you are not logged in');
       }
       try {
-        console.log('about to call = '+ApiRoutes.APPLICATION_ECEWE + '/' + applicationId);
         let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + applicationId)).data;
         commitToState(commit, payload);
       } catch (error) {
@@ -42,12 +43,19 @@ export default {
     async saveECEWE({ state, rootState, dispatch }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
-        throw 'unable to save ecewe application because you are not logged in';
+        throw new Error('unable to save ecewe application because you are not logged in');
       }
-
       try {
-        // Flag if user is opting out of ECEWE and has previously saved ECEWE facilities with
-        // opt-in/out values. We will check this flag after saving the parent ECEWE record below.
+        // Ensure the state of ECEWE questions is accurate.
+        const updatedState = {
+          belongsToUnion: (state.optInECEWE==0)?null:state.belongsToUnion,
+          fundingModel: (state.belongsToUnion==0 || state.belongsToUnion == null)?null:state.fundingModel,
+          confirmation: (state.belongsToUnion==0 || state.belongsToUnion == null)?null:state.confirmation,
+        };
+        Object.assign(state, updatedState);
+
+        // Flag if user is opting out of ECEWE, but has previously saved ECEWE facilities with
+        // opt-in/out values. We will check this flag after saving the parent ECEWE record below. 
         let updateFacilities = false;
         if (state.facilities != null || state.facilities?.length > 0) {
           state.facilities.find(facility => {
@@ -58,6 +66,7 @@ export default {
           });
         }
         let payload = JSON.parse(JSON.stringify(state));
+        
         // remove attributes we are not updating before sending payload.
         delete payload.facilities;
         // Save ECEWE parent record.
@@ -77,11 +86,10 @@ export default {
     async saveECEWEFacilities({ state, rootState, commit }) {
       if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         console.log('unable to save because you are not logged in');
-        throw 'unable to save ecewe facility application because you are not logged in';
+        throw new Error('unable to save ecewe facility application because you are not logged in');
       }
       let facilitiesForBackend = state.facilities;
       let payload = JSON.parse(JSON.stringify(facilitiesForBackend));
-      // has an application ID, so update the data
       try {
         let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + rootState.organization.applicationId, payload);
         commit('setFacilities', response.data.facilities);
@@ -94,19 +102,21 @@ export default {
     /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
     initECEWEFacilities({ state, rootState }, navBarList) {
       if (state.facilities?.length == 0 || state.facilities == null) {
+        // Create the ECEWE facility payload from the narBarList.
         state.facilities = new Array(navBarList.length).fill({});
         for (let i = 0; i < navBarList.length; i++) {
-          state.facilities[i] = {applicationid: rootState.organization.applicationId, facilityId: navBarList[i].facilityId, optInOrOut: null, statuscode: 1};
+          state.facilities[i] = {applicationid: rootState.organization.applicationId, facilityId: navBarList[i].facilityId, optInOrOut: null, statuscode: 1, update: true};
         }
-        state.facilities = state.facilities.map(obj => ({ ...obj, update: true }));
       } else {
+        // A payload already exists, recreate to include any new facilities which could have been added to navBarList
+        // since last creation.
         let tempFacilities = new Array(navBarList.length).fill({});
         for (let j = 0; j < navBarList.length; j++) {
           tempFacilities[j] = {facilityId: navBarList[j].facilityId,
             eceweApplicationId: getEceweApplicationId(navBarList[j].facilityId),
             optInOrOut: getOptInOrOut(navBarList[j].facilityId),
             statuscode: getStatuscode(navBarList[j].facilityId),
-            update: getUpdate(navBarList[j].facilityId)};
+            update: false};
         }
         state.facilities = tempFacilities;
       }
@@ -116,18 +126,18 @@ export default {
       }
       
       function getOptInOrOut(facilityId) {
-        const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
-        return (index >= 0)?state.facilities[index].optInOrOut:null;
+        if (state.fundingModel == state.fundingModelTypes[0].id) {
+          return 0;
+        } else {
+          const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
+          return (index >= 0)?state.facilities[index].optInOrOut:null;
+  
+        }
       }
       
       function getStatuscode(facilityId) {
         const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
         return (index >= 0)?state.facilities[index].statuscode:null;
-      }
-      
-      function getUpdate(facilityId) {
-        const index = state.facilities.map(facilty => facilty.facilityId).indexOf(facilityId);
-        return (index >= 0)?(state.facilities[index].optInOrOut !=null?false:true):true;
       }
     }
   },

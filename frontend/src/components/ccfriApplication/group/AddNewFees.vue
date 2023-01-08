@@ -395,7 +395,6 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['lookupInfo']),
-    ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes']),
     ...mapState('organization', ['applicationId']),

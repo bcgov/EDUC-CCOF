@@ -114,10 +114,8 @@
 
 //userInfo.ccofProgramYearId;
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions} from 'vuex';
+import { mapState, mapActions, mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
-
-let model = { x: [],  };
 
 export default {
   mixins: [alertMixin],
@@ -126,7 +124,7 @@ export default {
       prevFees: {},
       input : '',
       loading: true,
-      model,
+      model: {},
       isValidForm : false,
       feeList : [
       ],

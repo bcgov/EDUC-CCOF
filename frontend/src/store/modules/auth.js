@@ -129,6 +129,7 @@ export default {
         
         
       commit('setUserInfo', userInfoRes.data);
+      commit('application/setFromUserInfo', userInfoRes.data, { root: true });
       commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
       commit('app/setIsOrganizationComplete', userInfoRes.data.isOrganizationComplete, { root: true });
       commit('app/setIsLicenseUploadComplete', userInfoRes.data.isLicenseUploadComplete, { root: true });

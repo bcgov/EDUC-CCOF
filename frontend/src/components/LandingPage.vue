@@ -229,7 +229,8 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel', 'programYearList']),
     ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('organization', ['applicationType', 'applicationStatus', 'organizationProviderType']),
+    ...mapState('organization', ['organizationProviderType', 'organizationId']),
+    ...mapState('application', ['applicationType', 'applicationStatus', 'programYearId']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;
@@ -272,7 +273,7 @@ export default {
         } else if (this.applicationStatus === 'SUBMITTED') {
           let isEnabled = (this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
-            && this.userInfo.ccofProgramYearId == this.programYearList?.current?.programYearId);
+            && this.programYearId == this.programYearList?.current?.programYearId);
           console.log('isRenewEnabled2: ', isEnabled);
           return isEnabled;
         }
@@ -283,7 +284,7 @@ export default {
         } else if (this.applicationStatus === 'SUBMITTED') {
           let isEnabled = (this.isCCFRIandECEWEComplete
           && this.isWithinRenewDate
-          && this.userInfo.ccofProgramYearId == this.programYearList?.current?.programYearId);
+          && this.programYearId == this.programYearList?.current?.programYearId);
           console.log('isRenewEnabled4: ', isEnabled);
           return isEnabled;
         }
@@ -363,8 +364,7 @@ export default {
     },   
     async getAllMessagesVuex() {
       try {
-        const organizationId = this.userInfo.organizationId;
-        await this.getAllMessages(organizationId);
+        await this.getAllMessages(this.organizationId);
       } catch (error) {
         console.info(error);
       }
