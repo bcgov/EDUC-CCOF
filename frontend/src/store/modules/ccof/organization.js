@@ -74,7 +74,7 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState, dispatch  }) {
+    async renewApplication({ commit, state, rootState  }) {
       checkSession();
 
       let payload = {

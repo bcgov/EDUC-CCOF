@@ -395,7 +395,6 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['lookupInfo']),
-    ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes']),
     ...mapState('organization', ['applicationId']),
@@ -479,7 +478,7 @@ export default {
         // if (this.rfiList?.length > 0) {
         //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
         // } else {
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        this.$router.push({path : `${PATHS.eceweEligibility}`});
         //}
         //         
 
