@@ -473,20 +473,14 @@ export default {
         this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
       }
       else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
-        
+        //RFI logic ?
         // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
         // if (this.rfiList?.length > 0) {
         //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
         // } else {
         this.$router.push({path : `${PATHS.eceweEligibility}`});
-        //}
-        //         
-
         
       }
-    
-      //await this.save(); //-- right now because of the refresh this is out- depending how we go forward maybe put back in 
-      //this.$router.push(PATHS.ccfriRequestMoreInfo); //TODO: add logic for when page is done / to go to this page 
     },
     isFormComplete(){
       if (this.model.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
@@ -496,14 +490,21 @@ export default {
     },
     async save () {
       this.processing = true;
-      let payload = [];
+      let payload = [
+        {
+          ccfriApplicationGuid : this.currentFacility.ccfriApplicationId,
+          facilityClosureDates : this.CCFRIFacilityModel.dates,
+          ccof_formcomplete : !this.isFormComplete(), //have to flip this bool because it's used to enable/diable the next button
+          notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
+        }
+      ];
   
       // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
       // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
       // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
 
-      let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
 
+      let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
       currentFacility.isCCFRIComplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
 
       this.CCFRIFacilityModel.dates.forEach ((item, index) => {
@@ -513,10 +514,11 @@ export default {
         }
       });
 
+
       //for each child care type - send a request. 
       //index will also match the order of how the cards are displayed. 
       this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
-        if (item.feeFrequency || this.CCFRIFacilityModel.ccfriApplicationNotes ||  this.CCFRIFacilityModel.dates) {
+        if (item.feeFrequency) {
         
           payload[index] = {
             parentFeeGUID : item.parentFeeGUID,
@@ -524,7 +526,6 @@ export default {
             ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
             childCareCategory : item.childCareCategoryId,
             programYear : item.programYearId,
-            notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
             aprFee : item.approvedFeeApr,
             mayFee : item.approvedFeeMay,
             junFee : item.approvedFeeJun,
@@ -545,12 +546,16 @@ export default {
        
       }); // end FOR EACH
 
-      payload[0].facilityClosureDates = this.CCFRIFacilityModel.dates;
-      payload[0].ccof_formcomplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
-      
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
         this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+
+        //remove the facility to delete from the vuex store
+        // this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => {
+        //   if (item.deleteMe){
+        //     this.CCFRIFacilityModel.childCareTypes.splice(index, 1); 
+        //   }
+        // });
       } catch (error) {
         console.info(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');

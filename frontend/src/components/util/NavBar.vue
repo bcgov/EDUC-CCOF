@@ -458,7 +458,7 @@ export default {
     },
     isCcfriComplete(){
       return this.userInfo.facilityList.every(fac => {
-        fac.ccfriOptInStatus == 1;
+        return fac.ccfriOptInStatus == 1;
       });
     },
   }
