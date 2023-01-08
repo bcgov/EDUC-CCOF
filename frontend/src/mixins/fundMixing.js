@@ -7,7 +7,8 @@ import alertMixin from '@/mixins/alertMixin';
 export default {
   mixins: [alertMixin],
   computed: {
-    ...mapState('funding', ['fundingModel'])
+    ...mapState('funding', ['fundingModel']),
+    ...mapState('organization', ['organizationProviderType'])
   },
   data() {
     return {
@@ -26,11 +27,15 @@ export default {
       this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
     },
     next() {
-      let navBar = this.$store.getters['app/getNextNavByFundingId'](this.$route.params.urlGuid);
-      if (navBar?.facilityId) {
-        this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
+      if (this.organizationProviderType == 'FAMILY') {
+        this.$router.push(PATHS.group.licenseUpload);
       } else {
-        this.$router.push(PATHS.group.confirmation);
+        let navBar = this.$store.getters['app/getNextNavByFundingId'](this.$route.params.urlGuid);
+        if (navBar?.facilityId) {
+          this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
+        } else {
+          this.$router.push(PATHS.group.confirmation);
+        }
       }
 
     },

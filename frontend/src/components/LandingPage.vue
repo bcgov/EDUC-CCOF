@@ -17,7 +17,6 @@
     fluid
     class="px-10"
     >
-    <v-btn @click="goToCCFRI()"> CCFRI</v-btn>
       <v-row class="" align="stretch" justify="space-around" > 
         <!-- TODO: FIX THIS: Now that the buttons are aligning nice to the bottom of card, they sometimes overflow when shrinking the screensize.-->
         <SmallCard title="Child Care Operating Funding (CCOF) application" disable v-if="ccofStatus === CCOF_STATUS_APPROVED">
@@ -229,8 +228,8 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel', 'programYearList']),
     ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('organization', ['organizationProviderType', 'organizationId']),
-    ...mapState('application', ['applicationType', 'applicationStatus', 'programYearId']),
+    ...mapState('organization', ['organizationProviderType', 'organizationId', 'applicationStatus']),
+    ...mapState('application', ['applicationType', 'programYearId']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;

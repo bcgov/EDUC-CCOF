@@ -10,7 +10,6 @@ export default {
     applicationId: null,
     applicationStatus: null,
     applicationType: null,
-    organizationType: null,
     organizationProviderType: null,
     isOrganizationComplete: false,
     isStarted: false,

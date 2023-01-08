@@ -42,7 +42,7 @@ export default {
       try {
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.auth.userInfo.applicationId, payload);
         commit('organization/setApplicationStatus', 'SUBMITTED', { root: true });
-
+        commit('auth/setIsUserInfoLoaded', false, { root: true });
         return response;
       } catch (error) {
         console.log(`Failed to SUBMIT application - ${error}`);

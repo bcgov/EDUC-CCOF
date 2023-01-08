@@ -62,10 +62,16 @@ function choiceForFront(value) {
 async function updateFunding(req, res) {
   try {
     let fundId = req.params.fundId;
+    log.verbose('patch operation: ', `ccof_application_basefundings(${fundId})`);
+
     let facilityId = req.body.facilityId;
     delete req.body.facilityId;
-    log.verbose('patch operation: ', `ccof_application_basefundings(${fundId})`);
+
     await updateFacilityLicenseType(facilityId, req.body);
+    if (req.body.familyLicenseType) {
+      delete req.body.familyLicenseType;
+    }
+
     let payload = mapFundingObjectForBack(req.body);
     let response = await patchOperationWithObjectId('ccof_application_basefundings', fundId, payload);
     response = mapFundingObjectForFront(response);

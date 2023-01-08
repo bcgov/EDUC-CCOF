@@ -7,10 +7,10 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group v-model="model.licenseType" label="Liscence type">
-                  <v-radio label="Family child care" value="familyChildCare" />
-                  <v-radio label="In-Home Multi-Age Child Care" value="inHomeCare" />
-                  <v-radio label="Multi-Age Care" value="multuAge" />
+                <v-radio-group v-model="model.familyLicenseType" label="Liscence type">
+                  <v-radio label="Family child care" value="7" />
+                  <v-radio label="In-Home Multi-Age Child Care" value="6" />
+                  <v-radio label="Multi-Age Care" value="5" />
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -111,7 +111,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field type="number" outlined required :rules="rules.required" v-model.number="model.maxSpaces" label="Maximum number of child care spaces you offer" />
+                <v-text-field type="number" outlined v-model.number="model.maxSpaces" label="Maximum number of child care spaces you offer" />
                 <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
               </v-col>
               <v-col cols="12" md="6">
