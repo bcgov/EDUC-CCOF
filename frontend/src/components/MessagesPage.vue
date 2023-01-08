@@ -1,74 +1,68 @@
 <template>
-  <v-container fluid style="padding:0">
-    
-    <v-container id="messages" fluid style="padding:0" >
-      <template v-if="!allMessages">
-        <Spinner></Spinner>
-      </template>
-
-      <template v-else>
-        <v-row  style="margin:0"> 
-          <v-col id="messages-summary" fluid style="padding:0" :cols="4">
-            <v-card tile style="padding:0; border-right: 1px solid lightgrey" class="elevation-0" >
-              <v-data-table
-                :headers="headers"
-                :items="allMessages"
-                mobile-breakpoint="960"
-                fluid height="100vh"
-                fixed-header
-                :item-class="getMessageStyle"
-                disable-pagination hide-default-footer
-                @click:row="rowClickHandler"
-                item-key="messageId" single-select
-              >
-                <template v-slot:item.isRead="{item}">
-                  <p v-if="item.isRead">
-                    Read
-                  </p>
-                  <p v-else>
-                    Unread
-                  </p>
-                </template>
-              </v-data-table>
-            </v-card>
-          </v-col>
-
-          <v-col id="messages-content" fluid style="padding:0; height: 100vh;" :cols="8" v-if="this.message.sender">
-            <v-card
-                class="pa-4 overflow-auto elevation-0" fluid tile
-                style="height:100%;width:100%;"
+  <v-container id="messages" fluid class="pa-0 ma-0" height="100%">
+    <v-row class="ma-0" v-if="!allMessages">
+      <Spinner style="width: 100%"></Spinner>
+    </v-row>
+    <v-row fluid class="mx-4" v-else>
+      <v-row> 
+        <v-col id="messages-summary" fluid class="pa-0" :cols="4">
+          <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0" >
+            <v-data-table
+              :headers="headers"
+              :items="allMessages"
+              mobile-breakpoint="960"
+              fluid :height="fitScreenHeight()"
+              fixed-header
+              :item-class="getMessageStyle"
+              disable-pagination hide-default-footer
+              @click:row="rowClickHandler"
+              item-key="messageId" single-select
             >
-              <v-card-title style="padding:0;">
-                <template>
-                  <v-col :cols="8">
-                    {{this.message.sender}}
-                  </v-col>
-                  <v-col align="right" :cols="4">
-                    {{this.message.dateReceived}}
-                  </v-col>
-                </template>
-                <template>
-                  <v-col>
-                    <strong>{{this.message.subject}}</strong>
-                  </v-col>
-                </template>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text  v-html="this.message.messageContent">
-                
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </template>
-      <v-divider></v-divider>
-      <v-row justify="center">
-        <v-btn id="back-button" color="info" outlined x-large @click="goToHomePage()" style="margin:2%">
-          Back
-        </v-btn>
+              <template v-slot:item.isRead="{item}">
+                <p v-if="item.isRead">
+                  Read
+                </p>
+                <p v-else>
+                  Unread
+                </p>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-col>
+        <v-col id="messages-content" fluid class="pa-0" :cols="8" v-if="this.message.sender">
+          <v-card
+              class="pa-4 overflow-auto elevation-0" fluid tile
+              :height="fitScreenHeight()"
+          >
+            <v-card-title class="pa-0">
+              <template>
+                <v-col :cols="8">
+                  {{this.message.sender}}
+                </v-col>
+                <v-col align="right" :cols="4">
+                  {{this.message.dateReceived}}
+                </v-col>
+              </template>
+              <template>
+                <v-col>
+                  <strong>{{this.message.subject}}</strong>
+                </v-col>
+              </template>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text  v-html="this.message.messageContent">
+            </v-card-text>
+          </v-card>
+        </v-col>
       </v-row>
-    </v-container>
-  </v-container>  
+    </v-row>
+    <v-divider></v-divider>
+    <v-row justify="center" class="pa-3">
+      <v-btn id="back-button" color="info" outlined v-bind="buttonSize" @click="goToHomePage()">
+        Back
+      </v-btn>
+    </v-row>
+  </v-container>
 </template>
 
 
@@ -109,6 +103,10 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('message', ['allMessages']),
+    buttonSize () {      
+      const size = {xs:'large',sm:'large',md:'large',lg:'x-large',xl:'x-large'}[this.$vuetify.breakpoint.name];
+      return size ? { [size]: true } : {}
+    }
   },
   methods: {
     
@@ -141,7 +139,18 @@ export default {
       } catch (error) {
         console.info(error);
       }
-    },    
+    },
+
+    fitScreenHeight() {
+      switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '67vh'
+          case 'sm': return '82vh'
+          case 'md': return '75vh'
+          case 'lg': return '70vh'
+          case 'xl': return '78vh'
+          default: return '70vh'
+        }
+    }    
   },
 
   components: { Spinner }
@@ -149,6 +158,9 @@ export default {
 </script>
 
 <style>
+  html { 
+    overflow-y: auto;
+  }
   .read {
     font-weight: normal;
   }
