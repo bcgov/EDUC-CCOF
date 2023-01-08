@@ -176,12 +176,12 @@ async function deleteOperationWithObjectId(operation, objectId) {
 async function deleteOperation(operation) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
-    //log.info('delete Data Url', url);
+    log.info('delete Data Url', url);
     const response = await axios.delete(url, getHttpHeader());
-    //logResponse('getOperation', response);
     return response.data;
   } catch (e) {
     log.error('deleteOperation Error', e.response ? e.response.status : e.message);
+    log.info(e);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
   }
 }

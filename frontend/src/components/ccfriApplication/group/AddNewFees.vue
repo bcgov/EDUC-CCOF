@@ -550,6 +550,13 @@ export default {
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
         this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+
+        //remove the facility to delete from the vuex store
+        // this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => {
+        //   if (item.deleteMe){
+        //     this.CCFRIFacilityModel.childCareTypes.splice(index, 1); 
+        //   }
+        // });
       } catch (error) {
         console.info(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
