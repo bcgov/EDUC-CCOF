@@ -196,15 +196,16 @@ export default {
         link:{ name: 'Supporting Document Upload' },
         isAccessible:true,
         icon:'mdi-checkbox-blank-circle-outline',
-        isActive: 'Supporting Documents Upload' === this.$route.name,
+        isActive: 'Supporting Document Upload' === this.$route.name,
         expanded:false,
       });
       this.items.push(
         {
-          title: 'Summary and Declaration',
+          title: 'Declaration',
           link: { name: 'Summary and Declaration' },
           isAccessible: true,
           icon: 'mdi-checkbox-blank-circle-outline', //replace
+          isActive: 'Summary and Declaration' === this.$route.name,
           expanded: false,
         });
 

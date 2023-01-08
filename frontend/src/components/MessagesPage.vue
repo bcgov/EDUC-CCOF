@@ -105,7 +105,7 @@ export default {
     ...mapGetters('message', ['allMessages']),
     buttonSize () {      
       const size = {xs:'large',sm:'large',md:'large',lg:'x-large',xl:'x-large'}[this.$vuetify.breakpoint.name];
-      return size ? { [size]: true } : {}
+      return size ? { [size]: true } : {};
     }
   },
   methods: {
@@ -143,13 +143,13 @@ export default {
 
     fitScreenHeight() {
       switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return '67vh'
-          case 'sm': return '82vh'
-          case 'md': return '75vh'
-          case 'lg': return '70vh'
-          case 'xl': return '78vh'
-          default: return '70vh'
-        }
+      case 'xs': return '67vh';
+      case 'sm': return '82vh';
+      case 'md': return '75vh';
+      case 'lg': return '70vh';
+      case 'xl': return '78vh';
+      default: return '70vh';
+      }
     }    
   },
 
