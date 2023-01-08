@@ -18,10 +18,8 @@ export default {
   actions: {
     // eslint-disable-next-line no-unused-vars
     async saveLicenseFiles({state},payload) {
-      console.log('save license file called');
       try {
         let response = await ApiService.apiAxios.post(ApiRoutes.LICENSE_UPLOAD, payload);
-        console.log('save license file called1');
         return response;
       } catch (error) {
         console.error(error);

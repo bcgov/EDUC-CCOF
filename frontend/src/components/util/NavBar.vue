@@ -103,7 +103,8 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
-    ...mapGetters('facility', ['isFacilityComplete', 'isNewFacilityStarted']),
+    ...mapState('organization', ['organizationProviderType']),
+    ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
     navRefresh() {
@@ -179,7 +180,11 @@ export default {
             isActive: 'License Upload' === this.$route.name
           });
       } else {
-        this.items.push(this.getCCOFNavigation());
+        if (this.organizationProviderType == 'FAMILY') {
+          this.items.push(this.getCCOFFamilyNavigation());
+        } else {
+          this.items.push(this.getCCOFNavigation());
+        }
       }
       this.items.push(this.getCCFRINavigation());
       if (this.rfiList?.length > 0) {
@@ -320,6 +325,84 @@ export default {
         isAccessible: true,
         icon: 'mdi-checkbox-blank-circle-outline', //replace
         expanded: this.isExpanded(NAV_BAR_GROUPS.RFI),
+        items: items
+      };
+      return retval;
+    },
+
+
+    getCCOFFamilyNavigation() {
+      let items = [];
+      items.push(
+        {
+          title: 'Family Provider',
+          link: { name: 'Family Organization Information' },
+          isAccessible: true,
+          icon: this.getCheckbox(this.isOrganizationComplete),
+          isActive: 'Family Organization Information' === this.$route.name
+        }
+      );
+      if (this.navBarList?.length > 0) {
+        items.push(
+          {
+            title: 'Eligibility ',
+            subTitle: this.navBarList[0].facilityName,
+            id: this.navBarList[0].facilityId,
+            link: { name: 'Eligibility GUID', params: {urlGuid: this.navBarList[0].facilityId}},
+            isAccessible: true,
+            icon: this.getCheckbox(this.navBarList[0].isFacilityComplete),
+            isActive: 'Eligibility GUID' === this.$route.name && this.$route.params.urlGuid === this.navBarList[0].facilityId
+          },
+          {
+            title: 'Funding ',
+            subTitle: this.navBarList[0].facilityName,
+            link: { name: 'FamilyFunding GUID' , params: {urlGuid: this.navBarList[0].ccofBaseFundingId}},
+            isAccessible: true,
+            icon: this.getCheckbox(this.navBarList[0].isCCOFComplete),
+            isActive: 'FamilyFunding GUID' === this.$route.name && this.$route.params.urlGuid === this.navBarList[0].ccofBaseFundingId
+          },
+        );
+      } else {
+        //No new facilities, setup a blank template
+        items.push(
+          {
+            title: 'Eligibility',
+            id: null,
+            link: { name: 'Eligibility'},
+            isAccessible: this.isNewFacilityStarted,
+            icon: this.getCheckbox(false),
+            isActive: 'Eligibility' === this.$route.name && this.$route.params.urlGuid == null
+            // function: this.loadFacility(x.id)
+          },
+          {
+            title: 'Funding',
+            link: { name: 'FamilyFunding'},
+            isAccessible: this.isNewFundingStarted,
+            icon: this.getCheckbox(false),
+            isActive: 'FamilyFunding' === this.$route.name
+          },
+        );
+      }
+      items.push(
+        {
+          title: 'License Upload',
+          link: { name: 'License Upload'},
+          isAccessible: this.ccofConfirmationEnabled,
+          icon: this.getCheckbox(this.isLicenseUploadComplete),
+          isActive: 'License Upload' === this.$route.name
+        }
+      );
+      let isCCOFComplete = true;
+      items.forEach(item => { 
+        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
+          isCCOFComplete = false;
+        }
+      });
+      let retval =   {
+        title: NAV_BAR_GROUPS.CCOF,
+        isAccessible: true,
+        icon: this.getCheckbox(isCCOFComplete),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items
       };
       return retval;

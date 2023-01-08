@@ -140,7 +140,6 @@ export default {
       this.$router.push(PATHS.group.confirmation);
     },
     next() {
-      this.setCcofLicenseUploadComplete(true);
       this.$router.push(PATHS.ccfriHome);
     },
     deleteFile(item) {
@@ -164,9 +163,8 @@ export default {
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
         }
-        if (!this.nextButtonDisabled && !this.isLicenseUploadComplete) {
-          await this.updateLicenseCompleteStatus(true);
-        }
+        await this.updateLicenseCompleteStatus(!this.nextButtonDisabled);
+        this.setCcofLicenseUploadComplete(!this.nextButtonDisabled);
         await this.createTable();
         this.setSuccessAlert('Changes Successfully Saved');
       } catch (e) {

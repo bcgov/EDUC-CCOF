@@ -5,6 +5,11 @@
         <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
+              <v-col cols="12" md="12">
+                <v-text-field outlined required v-model="model.facilityName" :rules="rules.required" label="Facility Name" />
+              </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="12" md="6">
                 <v-text-field outlined required v-model="model.licenseNumber" :rules="rules.required" label="Facility Licence Number" />
               </v-col>
@@ -17,7 +22,6 @@
                 </v-menu>
               </v-col>
             </v-row>
-
             <v-row>
               <v-col>
                 <v-radio-group row v-model="model.hasReceivedFunding" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">

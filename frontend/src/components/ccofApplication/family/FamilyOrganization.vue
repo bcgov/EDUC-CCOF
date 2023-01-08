@@ -8,10 +8,6 @@
               <v-col>
                 <v-text-field outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
               </v-col>
-
-              <v-col>
-                <v-text-field outlined required v-model="model.facilityName" :rules="rules.required" label="Facility Name" />
-              </v-col>
             </v-row>
 
             <v-divider></v-divider>
@@ -20,7 +16,7 @@
 
             <v-row>
               <v-col>
-                <v-text-field outlined required v-model="model.nameOfCareProvider" :rules="rules.required" label="Name of Care Provider (if registered company)" />
+                <v-text-field outlined required v-model="model.contactName" label="Name of Care Provider (if registered company)" />
               </v-col>
               <v-col>
                 <v-text-field outlined required v-model="model.address1" :rules="rules.required" label="Mailing Address" />
