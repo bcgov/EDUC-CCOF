@@ -129,7 +129,7 @@ async function upsertParentFees(req, res) {
       }
     }
 
-    else{
+    else if (feeGroup.feeFrequency){
 
       let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
       let programYear = `/ccof_program_years(${feeGroup.programYear})`;
