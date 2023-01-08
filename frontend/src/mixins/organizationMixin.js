@@ -45,7 +45,7 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     this.setIsOrganizationComplete(this.isValidForm);
     this.setIsStarted(true);
-    this.setOrganizationModel(this.model);
+    this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
     this.processing = true;
     await this.saveOrganization();
     this.processing = false;
@@ -68,7 +68,7 @@ export default {
       this.processing = true;
       try {
         this.setIsOrganizationComplete(this.isValidForm);
-        this.setOrganizationModel({ ...this.model, providerType: this.providerType, isOrganizationComplete: this.isValidForm });
+        this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
         await this.saveOrganization();
         this.setSuccessAlert('Success! Organization information has been saved.');
       } catch (error) {

@@ -1,5 +1,5 @@
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
 
@@ -38,7 +38,7 @@ export default {
       }
 
       const payload = { ...state.organizationModel };
-
+      payload.providerType = state.organizationProviderType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY;
       console.log('saveOrganization, payload', payload);
 
       if (state.organizationId) {
