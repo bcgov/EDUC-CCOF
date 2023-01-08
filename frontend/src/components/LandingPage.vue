@@ -46,7 +46,7 @@
             </v-row>
           </template>
           <template #button>
-            <v-row v-if="ccofStatus === CCOF_STATUS_NEW" class="" align="top">
+            <v-row v-if="ccofStatus === CCOF_STATUS_NEW" class="" align="start">
               <v-col :cols="12">
                 <p>
                   For more information, visit the government website:
