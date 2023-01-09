@@ -85,14 +85,19 @@ async function getUserInfo(req, res) {
     return res.status(HttpStatus.OK).json(resData);
   }
 
+  resData.facilityList = await parseFacilityData(userResponse);
+
   //Organization is not normalized, grab organization info from the first element
   let organization = new MappableObjectForFront(userResponse[0], UserProfileOrganizationMappings).data;
   
   organization.applicationStatus = getLabelFromValue(organization.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
+  if (organization.applicationStatus === 'SUBMITTED' && isAllCCOFBaseFundingApproved(resData.facilityList)) {
+    organization.applicationStatus = 'APPROVED';
+  }
+
   organization.organizationProviderType = getLabelFromValue(organization.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
   organization.applicationType = getLabelFromValue(organization.applicationType, CCOF_APPLICATION_TYPES);
   
-  resData.facilityList = await parseFacilityData(userResponse);
   let results = {
     ...resData,
     ...organization
@@ -212,7 +217,15 @@ async function creatUser(req) {
   }
 }
 
-
+function isAllCCOFBaseFundingApproved(facilityList) {
+  let result = true;
+  facilityList.forEach((facility) => {
+    if (!_.isEmpty(facility) && facility.ccofBaseFundingStatus != 'APPROVED') {
+      result = false;
+    }
+  });
+  return result;
+}
 
 module.exports = {
   getUserInfo,
