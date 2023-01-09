@@ -29,7 +29,7 @@
                 <h3>
                   {{item.infoTitle}}
                 </h3>
-                <v-card color="#B3E5FF" class="px-2 mt-1" v-if="ccofStatus === CCOF_STATUS_NEW">
+                <v-card color="#B3E5FF" class="px-2 mt-1" v-if="ccofStatus === CCOF_STATUS_COMPLETE">
                   <v-row align="center">
                     <v-col :cols="12" lg="2" align="center" class="pr-0">
                       <v-icon color="black" aria-hidden="false" size="40">
@@ -44,7 +44,7 @@
             </v-row>
           </template>
           <template #button>
-            <v-row v-if="ccofStatus === CCOF_STATUS_NEW" class="" align="top">
+            <v-row v-if="ccofStatus === CCOF_STATUS_COMPLETE" class="" align="top">
               <v-col :cols="12">
                 <p>
                   For more information, visit the government website:
