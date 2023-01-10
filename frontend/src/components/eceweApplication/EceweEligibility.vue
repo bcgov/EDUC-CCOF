@@ -20,7 +20,7 @@
               <v-radio-group
                 v-model="optInECEWE">
                 <template v-slot:label>
-                  <span class="radio-label" style="align-content: center;">For the 2022/23 funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
+                  <span class="radio-label" style="align-content: center;">For the {{programYearLabel}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
                 </template>
                 <div class="flex-center pt-2">
                   <v-radio
@@ -218,6 +218,7 @@ export default {
     ...mapState('eceweApp', ['isStarted']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
+    ...mapState('application', ['programYearLabel']),
 
     enableButtons() {
       return (this.belongsToUnion === 1 && this.fundingModel === this.fundingModelTypeList[2].id && this.confirmation === 1)
