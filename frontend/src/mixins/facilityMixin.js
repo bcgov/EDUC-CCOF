@@ -8,7 +8,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
-    isLocked() { return false; }
+    isLocked() { return true; }
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);

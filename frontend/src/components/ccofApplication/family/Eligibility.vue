@@ -14,12 +14,14 @@
                 <v-text-field :readonly="isLocked" outlined required v-model="model.licenseNumber" :rules="rules.required" label="Facility Licence Number" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-menu v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                <v-menu v-if="!isLocked" v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field readonly outlined required v-model="model.licenseEffectiveDate" :rules="rules.notRequired" label="Effective Date of Current Licence" v-bind="attrs" v-on="on" />
                   </template>
                   <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false" />
                 </v-menu>
+
+                <v-text-field v-if="isLocked" readonly outlined v-model="model.licenseEffectiveDate" label="Effective Date of Current Licence" />
               </v-col>
             </v-row>
             <v-row>
