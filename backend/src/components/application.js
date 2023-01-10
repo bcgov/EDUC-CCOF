@@ -216,9 +216,9 @@ async function upsertParentFees(req, res) {
     }
   }
   if (hasError) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(theResponse);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
   } else {
-    return res.status(HttpStatus.OK).json(theResponse);
+    return res.status(HttpStatus.OK).json();
   }
   
 }

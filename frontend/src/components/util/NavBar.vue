@@ -271,7 +271,7 @@ export default {
       let retval =   {
         title: NAV_BAR_GROUPS.CCFRI,
         isAccessible: true,
-        icon: this.getCheckbox(this.isCcfriComplete), //replace
+        icon: this.getCheckbox(this.isCcfriComplete()), //replace
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
         items: items
       };
@@ -541,9 +541,12 @@ export default {
       });
     },
     isCcfriComplete(){
-      return this.userInfo.facilityList.every(fac => {
-        return fac.ccfriOptInStatus == 1;
+      let q = this.userInfo.facilityList.every(fac => {
+        return fac.ccfriOptInStatus == 0 || fac.isCCFRIComplete;
       });
+
+      console.log('is all CCFRI complete? :' , q);
+      return q;
     },
   }
 };

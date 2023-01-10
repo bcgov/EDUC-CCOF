@@ -10,7 +10,7 @@
         v-text="'What would you like to do?'" />
     </v-row >
 
-    
+    <v-btn @click="goToRFI()">RFI</v-btn>
     
      <!-- Application Approved screens starts here -->
     <v-container 

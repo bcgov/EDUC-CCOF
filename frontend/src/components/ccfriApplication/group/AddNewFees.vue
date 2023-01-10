@@ -155,6 +155,7 @@
           </div>
           <div class="px-md-12 px-7">
             <br>
+            
             <v-radio-group
               required
               v-model="model.closureFees"
@@ -210,6 +211,7 @@
                   </template>
                     <v-date-picker 
                       clearable 
+                      :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate" 
                       @input="calendarMenu2 = false">
                     </v-date-picker>
@@ -295,11 +297,11 @@
 
       
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large @click="previous()">
+        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
           <!--!isValidForm-->
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="isFormComplete()">Next</v-btn>
-        <v-btn color="primary" outlined x-large @click="save()">
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="isFormComplete()">Next</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
           Save</v-btn>
       </v-row>
 
@@ -437,7 +439,7 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes']),  
-    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore']),
+    ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes']),
     ...mapMutations('app', ['setRfiList']),
     addRow () {
       this.CCFRIFacilityModel.dates.push( {
@@ -489,21 +491,18 @@ export default {
       return !this.isValidForm; //false makes button clickable, true disables button
     },
     async save () {
+      console.log('dates in save :' , this.CCFRIFacilityModel.dates);
       this.processing = true;
-      let payload = [
+      let payload = [];
+      let firstObj = 
         {
           ccfriApplicationGuid : this.currentFacility.ccfriApplicationId,
           facilityClosureDates : this.CCFRIFacilityModel.dates,
           ccof_formcomplete : !this.isFormComplete(), //have to flip this bool because it's used to enable/diable the next button
           notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
-        }
-      ];
+        };
   
-      // feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' STATUS CODES 
-      // ((item.ccof_frequency == '100000001') ? 'Weekly' : 
-      // ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
-
-
+      
       let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
       currentFacility.isCCFRIComplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
 
@@ -546,16 +545,17 @@ export default {
        
       }); // end FOR EACH
 
+      let obj = Object.assign(firstObj, payload[0]);
+
+      payload[0] = obj;
+
       try {
         this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
         this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
 
         //remove the facility to delete from the vuex store
-        // this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => {
-        //   if (item.deleteMe){
-        //     this.CCFRIFacilityModel.childCareTypes.splice(index, 1); 
-        //   }
-        // });
+        this.deleteChildCareTypes();
+
       } catch (error) {
         console.info(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
