@@ -223,7 +223,7 @@ export default {
   },  
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['futureYearLabel', 'programYearList']),
+    ...mapGetters('app', ['futureYearLabel']),
     ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'applicationStatus']),
     ...mapState('application', ['applicationType', 'programYearId']),
@@ -311,6 +311,8 @@ export default {
       if (this.applicationType === 'RENEW') {
         if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
+        } else if (this.programYearId == this.programYearList.current?.programYearId) {
+          return this.RENEW_STATUS_NEW;
         } else {
           return this.RENEW_STATUS_COMPLETE;
         }
