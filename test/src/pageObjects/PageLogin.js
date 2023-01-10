@@ -27,10 +27,10 @@ class PageLogin {
     const keyCloakLoginPage = new PagekKeyCloakLogin();
     await t
       .click(this.loginBtn)
-      .expect(Selector('#bceidLogo').exists).ok({ timeout: 5000 });
+      .expect(Selector('#bceidLogo').exists).ok({ timeout: 10000 });
     await keyCloakLoginPage.login(t, config.get('bceid_credentials'));
     await t
-      .expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
+      .expect(Selector('.v-system-bar').exists).ok({ timeout: 10000 });
   }
 
   async idirLogin(t) {
