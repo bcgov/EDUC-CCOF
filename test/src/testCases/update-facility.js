@@ -2,6 +2,7 @@ import PageLogin from '../pageObjects/PageLogin';
 import PageLanding from '../pageObjects/PageLanding';
 import PageFacility from '../pageObjects/PageFacility';
 import PageOrganization from '../pageObjects/PageOrganization';
+import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
 import { Selector } from 'testcafe';
@@ -11,7 +12,7 @@ const login = new PageLogin();
 const landing = new PageLanding();
 const facility = new PageFacility();
 const organization = new PageOrganization();
-
+const alert = new PageAlert();
 
 fixture `Facility Tests`
   .page(`${config.get('url')}/login`)
@@ -30,5 +31,6 @@ test('Update Facility', async t => {
   await t.expect(facility.nextButton.hasAttribute('disabled')).notOk(); // This will fail if the next button is disable
   await t.takeScreenshot({fullPage: true});
   await t.click(facility.saveButton);
+  await t.expect(alert.success.exists).ok();
   await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
 });
