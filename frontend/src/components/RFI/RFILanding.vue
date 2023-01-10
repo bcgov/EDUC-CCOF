@@ -5,7 +5,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
       >
@@ -71,12 +71,12 @@
           min-height="230"
           rounded
           tiled
-          exact 
+          exact
           tile
           :ripple="false"
-          
+
         >
-      
+
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
@@ -95,7 +95,7 @@
                 class="mr-5"
                 > mdi-information
               </v-icon>
-              <strong>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</strong> 
+              <strong>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</strong>
             </v-banner>
 
 
@@ -121,7 +121,7 @@
 
                 <v-col class="col-md-2 col-12 ">
                   <h3>Expense amount</h3>
-                </v-col> 
+                </v-col>
 
               </v-row>
 
@@ -136,7 +136,7 @@
                     </v-icon>
                 </v-col>
                 <v-col class="col-md-3 col-12 ">
-                  
+
                   <v-text-field
                     class = ""
                     v-model="expense.description"
@@ -154,8 +154,8 @@
                       </v-text-field>
                     </template>
                       <v-date-picker
-                        clearable 
-                        v-model="expense.date" 
+                        clearable
+                        v-model="expense.date"
                         @input="calendarMenu[index] = false">
                       </v-date-picker>
                   </v-menu>
@@ -179,7 +179,7 @@
                 <v-divider></v-divider>
 
               </v-row> <!-- end v for-->
-            
+
               <div class="form-group">
                 <v-btn id="" @click="addObjToList(expenseObj, expenseList)"   class="my-5" dark color='#003366'>Add Expense</v-btn>
               </div>
@@ -195,16 +195,16 @@
             </div>
 
           </v-card-text>
-        </v-card> 
+        </v-card>
 
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
-          exact 
+          exact
           tile
           :ripple="false"
-          
+
         >
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
@@ -250,7 +250,7 @@
 
                     <v-col class="col-md-2 col-12 ">
                       <h3>Status of Application</h3>
-                    </v-col> 
+                    </v-col>
 
                     <v-col class="col-md-2 col-12 ">
                       <h3> Amount Received</h3>
@@ -259,7 +259,7 @@
                     <v-col class="col-md-2 col-12 ">
                       <h3> Expense(s)</h3>
                     </v-col>
-                  
+
                 </v-row>
 
                   <v-row  v-for="(fundInfo, index) in fundingList" :key="index">
@@ -290,8 +290,8 @@
                           </v-text-field>
                         </template>
                           <v-date-picker
-                            clearable 
-                            v-model="fundInfo.date" 
+                            clearable
+                            v-model="fundInfo.date"
                             @input="fundingCalendar[index] = false">
                           </v-date-picker>
                       </v-menu>
@@ -327,17 +327,17 @@
                     <v-divider></v-divider>
 
                   </v-row> <!-- end v for-->
-                
-            
+
+
                   <div class="form-group">
                     <v-btn id="funding" @click="addObjToList(fundingObj, fundingList)"   class="my-5" dark color='#003366'>Add Funding</v-btn>
                   </div>
                   <br>
-                  
+
                 </div>
             </div>
           </v-card-text>
-        </v-card> 
+        </v-card>
 
       </div> <!--end show if yes / yes selected-->
 
@@ -347,7 +347,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
       >
@@ -370,14 +370,14 @@
               class="mr-5"
               > mdi-information
             </v-icon>
-            <strong>Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required to apply for ECE-WE prior to being approved for a fee increase under this policy. </strong> 
+            <strong>Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required to apply for ECE-WE prior to being approved for a fee increase under this policy. </strong>
           </v-banner>
           <br>
-          
+
           <p class="text-h6 text--primary px-5 py-0 my-0">
             As defined in the <a href="#" > Funding Guidelines,</a> Direct Care Staff are staff employed on either a full-time, part-time, or casual basis, providing direct care to children at a facility for 50% or more of their working time.
           </p>
-          
+
           <br>
           <div class="px-md-12 px-7">
             <br>
@@ -399,7 +399,7 @@
 
             <div v-if="model.feeIncreaseDueToWage == 1">
               <br>
-              
+
               <v-radio-group
                 required
                 row
@@ -417,7 +417,7 @@
               </v-radio-group>
 
               <br>
-              
+
               <v-radio-group
                 required
                 row
@@ -435,7 +435,7 @@
               </v-radio-group>
 
               <br>
-              
+
               <v-radio-group
                 required
                 row
@@ -451,9 +451,9 @@
                 :value="0"
               ></v-radio>
               </v-radio-group>
-              
+
               <br>
-              
+
               <v-radio-group
                 required
                 row
@@ -480,7 +480,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
         >
@@ -504,7 +504,7 @@
                 class="mr-5"
                 > mdi-information
               </v-icon>
-              <strong>Note: If two or more staff have the same information for each column, they can be included in one row. </strong> 
+              <strong>Note: If two or more staff have the same information for each column, they can be included in one row. </strong>
             </v-banner>
 
             <div class="px-md-12 px-7">
@@ -524,7 +524,7 @@
                   <h3> Wage before increase</h3>
                   <br>
                   <p>(not including ECE-WE)</p>
-                </v-col> 
+                </v-col>
 
                 <v-col class="col-md-2 col-12 ">
                   <h3> Wage after increase</h3>
@@ -557,7 +557,7 @@
 
                 <v-col class="col-md-1 col-12">
                   <v-text-field
-                    type="number" 
+                    type="number"
                     class = ""
                     v-model.number="obj.staffNumber"
                     label="Number of Staff Recieving Wage Increase"
@@ -566,7 +566,7 @@
                     :rules="rules"
                   ></v-text-field>
                 </v-col>
-            
+
                 <v-col class="col-md-2 col-12 ">
                   <v-text-field
                     class = ""
@@ -603,27 +603,27 @@
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <v-text-field type="number" 
-                    outlined :rules="rules" 
+                  <v-text-field type="number"
+                    outlined :rules="rules"
                     v-model.number="obj.averageHours"
                     label="Average hours per week at this facility"
-                    
+
                     />
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
                   <v-menu  v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-text-field 
-                      :rules="rules" 
-                      outlined v-model="obj.wageDate" 
-                      label="Date of Wage Increase" 
+                      <v-text-field
+                      :rules="rules"
+                      outlined v-model="obj.wageDate"
+                      label="Date of Wage Increase"
                       readonly v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
                       <v-date-picker
-                        clearable 
-                        v-model="obj.wageDate" 
+                        clearable
+                        v-model="obj.wageDate"
                         @input="wageCalendar[index] = false">
                       </v-date-picker>
                   </v-menu>
@@ -633,12 +633,12 @@
                 <v-divider></v-divider>
 
               </v-row> <!-- end v for-->
-                
+
                 <div class="form-group">
                   <v-btn id="funding"  @click="addObjToList(wageObj, wageList)"   class="my-5" dark color='#003366'>Add Funding</v-btn>
                 </div>
                 <br>
-              
+
             </div>
           </v-card-text>
         </v-card>
@@ -647,7 +647,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
         >
@@ -659,7 +659,7 @@
             </div>
             <br>
             <div class="px-md-12 px-7">
-              
+
               <br>
               <v-textarea
               label=" When did your facility's recruitment and retention challenges begin? "
@@ -707,7 +707,7 @@
                 outlined
                 v-model=" model.textbox6"
               ></v-textarea>
-              
+
             </div>
             </v-card-text>
         </v-card>
@@ -721,7 +721,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
       >
@@ -732,7 +732,7 @@
           </p>
         </div>
         <br>
-        
+
         <div class="px-md-12 px-7">
           <br>
           <p>Is your fee increase due to an increase in hours/days of operation in order to provide care during expanded, extended (defined as after 7 pm and before 6 am and/or overnight), and/or non-traditional hours?</p>
@@ -758,17 +758,17 @@
 
       <div v-if="model.feeIncreaseExtendedHours == 1">
 
-        
+
         <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
-          exact 
+          exact
           tile
           :ripple="false"
-          
+
         >
-      
+
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
@@ -776,7 +776,7 @@
               </p>
             </div>
             <br>
-            
+
             <div class="px-md-12 px-7">
 
               <v-row class="hidden-sm-and-down">
@@ -823,7 +823,7 @@
                     </v-icon>
                 </v-col>
                 <v-col class="col-md-1 col-12 ml-md-n8">
-                  
+
                   <v-menu
                     ref="menufrom"
                     v-model="obj.menufrom"
@@ -855,7 +855,7 @@
                 </v-col>
 
                 <v-col class="col-md-1 col-12 ">
-                  
+
                   <v-menu
                     ref="menuto"
                     v-model="obj.menuto"
@@ -888,7 +888,7 @@
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  
+
                   <v-menu
                     ref="newmenufrom"
                     v-model="obj.newmenufrom"
@@ -920,7 +920,7 @@
                 </v-col>
 
                 <v-col class="col-md-1 col-12 ">
-                  
+
                   <v-menu
                     ref="newmenuto"
                     v-model="obj.newmenuto"
@@ -952,7 +952,7 @@
                   </v-menu>
                 </v-col>
 
-              
+
                 <v-col class="col-md-2 col-12">
                   <v-menu  v-model="expansionCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -960,8 +960,8 @@
                       </v-text-field>
                     </template>
                       <v-date-picker
-                        clearable 
-                        v-model="obj.date" 
+                        clearable
+                        v-model="obj.date"
                         @input="expansionCalendarMenu[index] = false">
                       </v-date-picker>
                   </v-menu>
@@ -991,7 +991,7 @@
                 <v-divider></v-divider>
               </v-row>
               </v-row> <!-- end v for-->
-            
+
               <div class="form-group">
                 <v-btn  @click="addObjToList(expansionObj, expansionList)"  class="my-5" dark color='#003366'>Add Expense</v-btn>
               </div>
@@ -1005,7 +1005,7 @@
                   placeholder="Describe here"
                   v-model="model.notes"
                 ></v-textarea>
-      
+
               <br>
               <br>
                 <v-textarea
@@ -1017,7 +1017,7 @@
                 ></v-textarea>
               </div>
            </v-card-text>
-        </v-card> 
+        </v-card>
 
       </div>
 
@@ -1028,7 +1028,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
       >
@@ -1039,9 +1039,9 @@
           </p>
         </div>
         <br>
-        
+
         <div class="px-md-12 px-7">
-          
+
           <br>
           <p>As outlined in the <a href = "#" >Funding Guidelines</a>, this may include expenses associated with, but not limited to:</p>
           <ul>
@@ -1054,7 +1054,7 @@
             required
             row
             v-model="model.IndigenousConnection"
-            
+
           >
           <br>
           <v-radio
@@ -1077,12 +1077,12 @@
           min-height="230"
           rounded
           tiled
-          exact 
+          exact
           tile
           :ripple="false"
-          
+
         >
-      
+
           <v-card-text class="pa-0" >
             <div class="pa-2 pa-md-4 ma-0 backG">
               <p class="text-h5 text--primary px-5 py-0 my-0">
@@ -1090,7 +1090,7 @@
               </p>
             </div>
             <br>
-            
+
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
 
@@ -1112,7 +1112,7 @@
 
                 <v-col class="col-md-2 col-12 ">
                   <h3>Expense amount</h3>
-                </v-col> 
+                </v-col>
 
                 </v-row>
               <v-row  v-for="(expense, index) in IndigenousExpenseList" :key="index">
@@ -1121,12 +1121,12 @@
                       large
                       color="blue darken-4"
                       class="mt-md-4"
-                      @click="removeObjFromList(index, IndigenousExpenseList)" 
+                      @click="removeObjFromList(index, IndigenousExpenseList)"
                       > mdi-close
                     </v-icon>
                 </v-col>
                 <v-col class="col-md-3 col-12 ">
-                  
+
                   <v-text-field
                     class = ""
                     v-model="expense.description"
@@ -1144,8 +1144,8 @@
                       </v-text-field>
                     </template>
                       <v-date-picker
-                        clearable 
-                        v-model="expense.date" 
+                        clearable
+                        v-model="expense.date"
                         @input="calendarMenu[index] = false">
                       </v-date-picker>
                   </v-menu>
@@ -1169,16 +1169,16 @@
                 <v-divider></v-divider>
 
               </v-row> <!-- end v for-->
-            
+
               <div class="form-group">
                 <v-btn id="login-button" @click="addObjToList(expenseObj, IndigenousExpenseList)" class="my-5" dark color='#003366'>Add Expense</v-btn>
               </div>
               <br>
-              
+
               <p class="text-h6 text--primary py-5 my-0">
-                
+
               </p>
-              
+
               <div class="">
                 <br>
                 <v-textarea
@@ -1191,10 +1191,10 @@
               </div>
             </div>
 
-            
+
           </v-card-text>
         </v-card>
-      
+
       </div> <!--end show if yes / yes selected-->
 
 
@@ -1205,7 +1205,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
       >
@@ -1216,7 +1216,7 @@
           </p>
         </div>
         <br>
-        
+
         <div class="px-md-12 px-7">
           <br>
           <p>To be considered under this policy, the Facility must meet all of the following criteria as outlined in the <a href = "#" >Funding Guidelines</a>.</p>
@@ -1252,7 +1252,7 @@
               placeholder="Describe here"
               v-model="model.underservedChildCareTypes"
             ></v-textarea>
-        
+
             <br>
             <v-textarea
               outlined
@@ -1270,7 +1270,7 @@
               placeholder="Describe here"
               v-model="model.outOfPocketFees"
             ></v-textarea>
-         
+
         </div>
 
         </div>
@@ -1283,7 +1283,7 @@
                 Back</v-btn>
                 <!--add form logic here to disable/enable button-->
               <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
-              <v-btn color="primary" outlined x-large @click="save()">
+              <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
                 Save</v-btn>
             </v-row>
 
@@ -1293,14 +1293,14 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapActions, mapState } from 'vuex';
+import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 let q1 = '';
 let q2 = '';
 let q3 = '';
-let datePicker= null; 
+let datePicker= null;
 
 
- 
+
 
 let expenseList = [];
 
@@ -1378,29 +1378,30 @@ export default {
       rules: [
         (v) => !!v  || 'Required.',
       ],
-     
+      processing: false,
+
     };
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
 
-    
 
-    //load the screen with at least one row in the form 
+
+    //load the screen with at least one row in the form
     this.addObjToList(this.fundingObj, this.fundingList);
     this.addObjToList(this.expenseObj, expenseList);
     this.addObjToList(this.wageObj, wageList);
     this.addObjToList(this.expansionObj, expansionList);
     this.addObjToList(this.expenseObj, IndigenousExpenseList);
-    
+
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
+    this.$store.commit('rfiApp/setRfiModel', this.model);
     //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
-    ...mapState('rfiApp', ['rfiModel']),
+    ...mapState('rfiApp', ['rfiModel','loadedModel']),
   },
   watch: {
     '$route.params.urlGuid': {
@@ -1419,20 +1420,26 @@ export default {
       immediate: true,
       deep: true
     }
-  },  
+  },
   methods : {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
-
+    ...mapMutations('rfiApp',['setRfiModel']),
     next(){
       this.$router.push(PATHS.WageIncrease + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
 
       // put logic here to go to next facility / ece we etc
     },
     previous() {
-      this.$router.back();  
+      this.$router.back();
     },
     save(){
-     
+      console.info('Save clicked');
+      this.processing = true;
+      this.setRfiModel(this.model);
+      let ccfriId = this.$route.params.urlGuid;
+      this.saveRfi(ccfriId);
+      this.processing = false;
+
     },
     addObjToList (obj, list) {
       list.push(Object.assign({}, obj));

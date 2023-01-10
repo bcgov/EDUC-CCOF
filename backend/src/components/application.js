@@ -30,7 +30,7 @@ async function renewCCOFApplication(req, res) {
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }  
+  }
 }
 
 async function getRFIApplication(req, res) {
@@ -40,7 +40,7 @@ async function getRFIApplication(req, res) {
     console.log('response: ', minify(response.value));
     console.log('response length: ', response.value.length);
     if (response.value.length == 1) {
-      return res.status(HttpStatus.OK).json(new MappableObjectForFront(response.value[0], RFIApplicationMappings));  
+      return res.status(HttpStatus.OK).json(new MappableObjectForFront(response.value[0], RFIApplicationMappings));
     } else {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'No data'});
     }
@@ -53,6 +53,9 @@ async function getRFIApplication(req, res) {
 async function updateRFIApplication(req, res) {
   try {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
+    delete friApplication['_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue'];
+    delete friApplication._ccof_applicationccfri_value;
+    delete friApplication.ccof_rfipfiid;
     let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', req.params.rfipfiid, friApplication);
     friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
     return res.status(HttpStatus.OK).json(friApplicationResponse);
@@ -66,7 +69,7 @@ async function createRFIApplication(req, res) {
   try {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
     friApplication['ccof_applicationccfri@odata.bind'] = `/contacts(ccof_applicationccfris='${req.params.ccfriId}')`;
-    log.verbose('createRFIApplication payload:', friApplication);
+    log.info('createRFIApplication payload:', friApplication);
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
     return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
   } catch (e) {
@@ -76,12 +79,12 @@ async function createRFIApplication(req, res) {
 }
 
 
-//creates or updates CCFRI application. 
+//creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
   let retVal= [];
   try {
-    await Promise.all(body.map(async(facility) => { 
+    await Promise.all(body.map(async(facility) => {
       let payload = {
         'ccof_ccfrioptin' : facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
@@ -114,7 +117,7 @@ async function updateCCFRIApplication(req, res) {
 }
 
 
-/* child care and program year GUIDs are looked up in AddNewFees.vue */ 
+/* child care and program year GUIDs are looked up in AddNewFees.vue */
 
 async function upsertParentFees(req, res) {
   let body = req.body;
@@ -148,11 +151,11 @@ async function upsertParentFees(req, res) {
 
       let payload = {
         "ccof_frequency": feeGroup.feeFrequency,
-        "ccof_ChildcareCategory@odata.bind": childCareCategory, 
-        "ccof_ProgramYear@odata.bind": programYear, 
+        "ccof_ChildcareCategory@odata.bind": childCareCategory,
+        "ccof_ProgramYear@odata.bind": programYear,
       };
 
-      Object.assign(payload, 
+      Object.assign(payload,
         {
           "ccof_apr": feeGroup.aprFee,
           "ccof_may": feeGroup.mayFee,
@@ -178,12 +181,12 @@ async function upsertParentFees(req, res) {
         theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
         hasError = true;
       }
-    } 
+    }
   }); //end forEach
 
 
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
-  //so body[0].notes will always exist 
+  //so body[0].notes will always exist
   if (body[0].notes || body[0].ccof_formcomplete){
 
     let payload = {
@@ -218,7 +221,7 @@ async function upsertParentFees(req, res) {
   } else {
     return res.status(HttpStatus.OK).json();
   }
-  
+
 }
 
 async function postClosureDates(dates, ccfriApplicationGuid, res){
@@ -226,9 +229,9 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
 
   //delete all the old closure dates from the application - otherwise we will get duplicates when we save
   let dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
- 
+
   //don't bother trying to delete if there are no dates saved
-  if (dynamicsClosureDates.length > 0){  
+  if (dynamicsClosureDates.length > 0){
     try{
       await Promise.all(dynamicsClosureDates.map(async (date) => {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
@@ -325,7 +328,7 @@ async function updateECEWEFacilityApplication(req, res) {
   let response;
   Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
   let eceweApplicationId;
-  
+
   try {
     for (let key in forBackFacilities) {
       // add join attributes for application and facility
