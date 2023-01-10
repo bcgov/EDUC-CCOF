@@ -4,7 +4,7 @@ const path = require('path');
 
 
 function getButton(buttonName) {
-  return Selector('button', {timeout: 10000}).child('span').withExactText(buttonName).parent();
+  return Selector('button', {timeout: 10000}).child('span').withText(buttonName).parent();
 }
 
 function getTextField(labelName) {
@@ -17,7 +17,7 @@ function getTextFieldWithDivHeading(labelName, heading) {
 
 function getRadioOption(labelName, selectedName) {
   // return Selector('div.v-input--radio-group__input').find('label').withText(labelName).prevSibling().child('input');
-  return Selector('label').withExactText(labelName).nextSibling().find('label').withExactText(selectedName);
+  return Selector('legend').withExactText(labelName).nextSibling().find('label').withExactText(selectedName);
 }
 
 function getErrorMessage(element, message){
@@ -90,7 +90,7 @@ async function selectDate(t, date_data){
 
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
-  let lines =data.split('\n');
+  let lines = data.split('\n');
   let index = 0;
   for (index; index < fields.length; index ++) {
     if (fields[index].heading) {
@@ -137,7 +137,9 @@ const selectors = {
   getTextField,
   getTextFieldWithDivHeading,
   mapFieldsFromFile,
-  getRadioOption
+  getRadioOption,
+  getErrorMessage,
+  removeContent
 };
 
 module.exports = selectors;
