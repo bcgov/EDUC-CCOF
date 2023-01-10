@@ -1,12 +1,13 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
+
           <v-container>
             <v-row>
               <v-col>
-                <v-text-field :readonly="isLocked" outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
+                <v-text-field :readonly="isLocked" outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)"/>
               </v-col>
             </v-row>
 

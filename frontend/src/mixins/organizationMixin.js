@@ -17,6 +17,7 @@ export default {
       rules,
       model: {},
       processing: false,
+      loading: true,
       isValidForm: true,
       businessId: this.businessId
     };
@@ -41,6 +42,7 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
+      this.loading = false;
       this.setIsOrganizationComplete(this.isValidForm);
       this.setIsStarted(true);
     }
