@@ -45,43 +45,43 @@
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox v-model="model.closedIn1" label="Jan" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn1" label="Jan" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn2" label="Feb" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn2" label="Feb" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn3" label="Mar" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn3" label="Mar" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn4" label="Apr" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn4" label="Apr" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn5" label="May" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn5" label="May" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn6" label="Jun" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn6" label="Jun" />
               </v-col>
             </v-row>
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox v-model="model.closedIn7" label="Jul" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn7" label="Jul" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn8" label="Aug" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn8" label="Aug" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn9" label="Sep" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn9" label="Sep" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn10" label="Oct" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn10" label="Oct" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn11" label="Nov" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn11" label="Nov" />
               </v-col>
               <v-col>
-                <v-checkbox v-model="model.closedIn12" label="Dec" />
+                <v-checkbox :readonly="isLocked" v-model="model.closedIn12" label="Dec" />
               </v-col>
             </v-row>
 
