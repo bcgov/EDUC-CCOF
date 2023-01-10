@@ -75,7 +75,7 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-radio-group v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
+                <v-radio-group :readonly="!isLocked" v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
                   <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                 </v-radio-group>
               </v-col>

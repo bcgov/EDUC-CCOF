@@ -7,7 +7,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group v-model="model.familyLicenseType" label="Liscence type">
+                <v-radio-group :readonly="!isLocked" v-model="model.familyLicenseType" label="Liscence type">
                   <v-radio label="Family child care" value="7" />
                   <v-radio label="In-Home Multi-Age Child Care" value="6" />
                   <v-radio label="Multi-Age Care" value="5" />
@@ -30,7 +30,7 @@
 
             <v-row>
               <v-col>
-                <v-radio-group row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
+                <v-radio-group :readonly="!isLocked" row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -126,7 +126,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
+                <v-radio-group :readonly="!isLocked" row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
