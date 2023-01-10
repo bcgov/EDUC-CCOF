@@ -10,7 +10,7 @@ export default {
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
-    isLocked() { return true; }
+    isLocked() { return false; }
   },
   data() {
     return {

@@ -8,49 +8,49 @@
             <v-container>
               <v-row>
                 <v-col>
-                  <v-text-field outlined required v-model="model.facilityName" :rules="rules.required" label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.facilityName" :rules="rules.required" label="Facility Name (as it appears on the Community Care Assisted Living Act licence)" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.yearBeganOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.yearBeganOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.facilityAddress" :rules="rules.required" label="Facility Street Address" />
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.city" :rules="rules.required" label="City/Town" />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.postalCode" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.facilityAddress" :rules="rules.required" label="Facility Street Address" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.contactName" :rules="rules.required" label="Facility Contact Name" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.city" :rules="rules.required" label="City/Town" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.position" :rules="rules.required" label="Position" />
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.postalCode" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field outlined required v-model="model.licenseNumber" :rules="rules.required" label="Facility Licence Number" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.contactName" :rules="rules.required" label="Facility Contact Name" />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.position" :rules="rules.required" label="Position" />
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.licenseNumber" :rules="rules.required" label="Facility Licence Number" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-menu v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
@@ -74,7 +74,7 @@
 
               <v-row v-show="model.hasReceivedFunding === 'yesFacility'">
                 <v-col>
-                  <v-text-field outlined required v-model="model.fundingFacility" :rules="model.hasReceivedFunding === 'yesFacility' ? rules.notRequired : []" label="Facility Name" />
+                  <v-text-field :readonly="!isLocked" outlined required v-model="model.fundingFacility" :rules="model.hasReceivedFunding === 'yesFacility' ? rules.notRequired : []" label="Facility Name" />
                 </v-col>
               </v-row>
 
