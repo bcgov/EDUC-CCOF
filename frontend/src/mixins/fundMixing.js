@@ -9,6 +9,7 @@ export default {
   computed: {
     ...mapState('funding', ['fundingModel']),
     ...mapState('organization', ['organizationProviderType']),
+    isLocked() { return false; }
   },
   data() {
     return {

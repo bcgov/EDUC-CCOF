@@ -8,7 +8,7 @@
             <v-container>
               <v-row>
                 <v-col>
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
                 </v-col>
               </v-row>
 
@@ -18,16 +18,16 @@
 
               <v-row>
                 <v-col>
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.address1" :rules="rules.required" label="Mailing Address" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.address1" :rules="rules.required" label="Mailing Address" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.city1" :rules="rules.required" label="City/Town" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.city1" :rules="rules.required" label="City/Town" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.postalCode1" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.postalCode1" :rules="[...rules.required, ...rules.postalCode]" label="Postal Code" />
                 </v-col>
               </v-row>
 
@@ -37,16 +37,16 @@
 
               <v-row>
                 <v-col>
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.address2" label="Street Address" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.address2" label="Street Address" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.city2" label="City/Town" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.city2" label="City/Town" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.postalCode2" :rules="rules.postalCode" label="Postal Code" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.postalCode2" :rules="rules.postalCode" label="Postal Code" />
                 </v-col>
               </v-row>
 
@@ -54,16 +54,16 @@
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.contactName" :rules="rules.required" label="Organization Contact Name" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.contactName" :rules="rules.required" label="Organization Contact Name" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.position" :rules="rules.required" label="Position" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.position" :rules="rules.required" label="Position" />
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field readonly outlined required v-model="businessId" label="Business BCeID" />
@@ -74,10 +74,10 @@
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required v-model="model.email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
+                  <v-text-field :readonly="isLocked" outlined required v-model="model.email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field :readonly="!isLocked" outlined required :rules="rules.required" v-model="model.incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                  <v-text-field :readonly="isLocked" outlined required :rules="rules.required" v-model="model.incNumber" type="number" label="Incorporation Number (as it appears in BC Corporate Registry)" />
                 </v-col>
               </v-row>
 
@@ -85,7 +85,7 @@
 
               <v-row>
                 <v-col>
-                  <v-radio-group :readonly="!isLocked" v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
+                  <v-radio-group :readonly="isLocked" v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
                     <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                   </v-radio-group>
                 </v-col>
