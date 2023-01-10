@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="model.isCCOFComplete">
+  <v-form ref="form" v-model="model.isCCOFComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">

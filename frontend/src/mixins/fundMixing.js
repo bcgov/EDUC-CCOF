@@ -14,6 +14,7 @@ export default {
   data() {
     return {
       processing: false,
+      loading: true,
       model: {},
       rules
     };
@@ -66,10 +67,11 @@ export default {
   },
   watch: {
     '$route.params.urlGuid': {
-      handler() {
+      async handler() {
         let ccofBaseFundingId = this.$route.params.urlGuid;
         if (ccofBaseFundingId) {
-          this.loadFunding(ccofBaseFundingId);
+          await this.loadFunding(ccofBaseFundingId);
+          this.loading = false;
         }
       },
       immediate: true,

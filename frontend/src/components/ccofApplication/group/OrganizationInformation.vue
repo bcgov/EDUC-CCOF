@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <v-skeleton-loader v-if="processing" :loading="processing" type="text@8"></v-skeleton-loader>
       <span v-else>
