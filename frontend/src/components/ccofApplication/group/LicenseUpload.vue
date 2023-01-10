@@ -48,8 +48,8 @@
         </v-row>
       </span>
       <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="nextButtonDisabled" outlined x-large @click="next()">Next</v-btn>
+        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" :loading="processing" :disabled="nextButtonDisabled" outlined x-large @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
 
@@ -92,6 +92,10 @@ export default {
     ];
 
     await this.createTable();
+  },
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save();
+    next();
   },
   data() {
     return {

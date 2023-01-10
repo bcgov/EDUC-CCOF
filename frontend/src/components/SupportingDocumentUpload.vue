@@ -87,8 +87,8 @@
       </v-row>
 
       <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
       </v-row>
 
@@ -136,6 +136,12 @@ export default {
     await this.mapDocumentTypes();
     await this.createTable();
 
+  },
+  async beforeRouteLeave(_to, _from, next) {
+    if(this.isValidForm){
+      await this.save();
+    }
+    next();
   },
   data() {
     return {
