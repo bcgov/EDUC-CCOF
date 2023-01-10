@@ -23,7 +23,7 @@ export default {
         throw 'unable to load Declaration because you are not logged in';
       }
       try {
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.auth.userInfo.applicationId)).data;
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.organization.applicationId)).data;
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
@@ -40,7 +40,7 @@ export default {
         declarationAStatus:state.model?.declarationAStatus,
         declarationBStatus:state.model?.declarationBStatus };
       try {
-        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.auth.userInfo.applicationId, payload);
+        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.organization.applicationId, payload);
         commit('organization/setApplicationStatus', 'SUBMITTED', { root: true });
         commit('auth/setIsUserInfoLoaded', false, { root: true });
         return response;

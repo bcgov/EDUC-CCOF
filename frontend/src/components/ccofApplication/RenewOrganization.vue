@@ -56,27 +56,45 @@
       </v-row>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card justify-center" width="800">
-            <v-card-text>
-                Has your banking information changed?
-            </v-card-text>
-            <v-row>
-              <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="bankingGroup" >
-                  <v-radio
-                    label="Yes"
-                    value="true"/>
-                  <v-radio
-                    label="No"
-                    value="false"/>
-                </v-radio-group>
-              </v-col>                
-            </v-row>
-            <v-card-text v-if="bankingGroup == 'true'">
-              Update your banking information:
-              <br><a href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf">
-              https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a>
-              <br><br>For any questions, call the program at 1-888-338-6622 (option 2)
-            </v-card-text>
+          <v-card-text>
+              Has your banking information changed?
+          </v-card-text>
+          <v-row>
+            <v-col class="d-flex justify-center">
+              <v-radio-group row v-model="bankingGroup" >
+                <v-radio
+                  label="Yes"
+                  value="true"/>
+                <v-radio
+                  label="No"
+                  value="false"/>
+              </v-radio-group>
+            </v-col>                
+          </v-row>
+          <v-row>
+            <v-card width="100%" class="mx-3" v-if="bankingGroup == 'true'">
+              <v-row>
+                <v-col class="py-0">
+                  <v-card-title class="py-1 noticeAlert">
+                    <span style="float:left">
+                  <v-icon
+                    x-large
+                    class="py-1 px-3 noticeAlertIcon">
+                    mdi-alert-octagon
+                  </v-icon>
+                  </span>
+                    Do not continue.
+                  </v-card-title>
+                </v-col>
+              </v-row>
+              <v-card-text>
+                Update your banking information:
+                <br><a href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf">
+                https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a>
+                <br><br>For any questions, call the program at 1-888-338-6622 (option 2)
+              </v-card-text>
+            </v-card>
+          </v-row>
         </v-card>
       </v-row>
 

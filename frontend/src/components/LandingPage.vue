@@ -64,9 +64,6 @@
               <v-col :cols="12" class="py-0">
                 <v-btn dark color='#003366' @click="continueApplication()">Continue Application</v-btn>
               </v-col>             
-              <v-col :cols="12" class="pb-0">
-                <a href="#" class="text-decoration-underline">Withdraw application</a>
-              </v-col>             
             </v-row>    
             <v-row v-else>
               <v-col :cols="12">

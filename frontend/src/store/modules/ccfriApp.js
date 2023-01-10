@@ -67,7 +67,7 @@ export default {
       }
     },
     async decorateWithCareTypes({commit, state, rootState}, facilityId) {
-      const  ccofProgramYearId = rootState.auth.userInfo.ccofProgramYearId;
+      const  ccofProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
 
       try {

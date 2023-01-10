@@ -73,14 +73,13 @@ export default {
       }
 
       let payload = { ...state.facilityModel, organizationId, applicationId: rootState.organization.applicationId };
+      commit('setLoadedModel', state.facilityModel);
+
       if (state.facilityId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
-
-          commit('setFacilityModel', response.data);
-          commit('setLoadedModel', response.data);
-          commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: response.data });
+          commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: state.facilityModel });
           return response;
         } catch (error) {
           console.log(`Failed to update existing Facility - ${error}`);
@@ -95,8 +94,11 @@ export default {
             facilityName: state.facilityModel.facilityName,
             facilityId: state.facilityId,
             ccofBaseFundingId: response.data?.ccofBaseFundingId,
-            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus
+            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+            licenseNumber: state.facilityModel.licenseNumber,
           }, { root: true });
+          commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
+
           return response;
         } catch (error) {
           console.log(`Failed to save new Facility - ${error}`);

@@ -21,9 +21,11 @@ export default {
     };
   },
   async mounted() {
+    console.log('org mounted called');
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {
+      console.log('org mounted called2');
       this.model = { ...this.organizationModel };
       return;
     }
@@ -43,12 +45,7 @@ export default {
     }
   },
   async beforeRouteLeave(_to, _from, next) {
-    this.setIsOrganizationComplete(this.isValidForm);
-    this.setIsStarted(true);
-    this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
-    this.processing = true;
-    await this.saveOrganization();
-    this.processing = false;
+    await this.save(false);
     next();
   },
   methods: {
@@ -64,13 +61,16 @@ export default {
         this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}`);
       }
     },
-    async save() {
+    async save(showNotification) {
       this.processing = true;
+      this.setIsStarted(true);
       try {
         this.setIsOrganizationComplete(this.isValidForm);
         this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
         await this.saveOrganization();
-        this.setSuccessAlert('Success! Organization information has been saved.');
+        if (showNotification) {
+          this.setSuccessAlert('Success! Organization information has been saved.');
+        }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
