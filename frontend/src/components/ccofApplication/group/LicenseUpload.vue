@@ -72,8 +72,8 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
-    ...mapState('organization', ['applicationId']),
+    ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
+    ...mapState('organization', ['applicationId', 'organizationProviderType']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
     nextButtonDisabled() {
@@ -137,7 +137,19 @@ export default {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
     ...mapMutations('app', ['setCcofLicenseUploadComplete']),
     previous() {
-      this.$router.push(PATHS.group.confirmation);
+      if (this.isRenewal) {
+        this.$router.push(PATHS.home);
+      } else {
+        if (this.organizationProviderType == 'FAMILY') {
+          let navBar = this.navBarList[0]; 
+          if (navBar?.ccofBaseFundingId) {
+            this.$router.push(`${PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
+          }
+        } else {
+          this.$router.push(PATHS.group.confirmation);
+        }
+
+      }
     },
     next() {
       this.$router.push(PATHS.ccfriHome);
@@ -163,9 +175,9 @@ export default {
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
         }
+        await this.createTable();
         await this.updateLicenseCompleteStatus(!this.nextButtonDisabled);
         this.setCcofLicenseUploadComplete(!this.nextButtonDisabled);
-        await this.createTable();
         this.setSuccessAlert('Changes Successfully Saved');
       } catch (e) {
         console.log(e);

@@ -96,9 +96,9 @@
         </v-row>
       </span>
       <v-row justify="space-around">
-        <v-btn color="info" outlined x-large>Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="save()">Save</v-btn>
+        <v-btn color="info" outlined x-large :loading="processing">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
+        <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>

@@ -52,6 +52,7 @@ export default {
       }
 
       let payload = { ...state.fundingModel };
+      commit('setLoadedModel', state.fundingModel);
 
       let deleteFields = [];
       if (payload.hasClosedMonth !== 'yes') {
@@ -74,11 +75,7 @@ export default {
       deleteFields.forEach(field => delete payload[field]);
 
       console.log('save group funding', payload);
-
       let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + state.ccofBaseFundingId, payload);
-      commit('setFundingModel', response.data);
-      commit('setLoadedModel', response.data);
-      commit('addModelToStore', { fundingId: state.ccofBaseFundingId, model: response.data });
       return response;
 
     },
