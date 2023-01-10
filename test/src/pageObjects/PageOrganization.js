@@ -1,4 +1,4 @@
-import log from 'npmlog';
+const { getTextField, mapFieldsFromFile, getButton, getTextFieldWithDivHeading, removeContent, getErrorMessage } = require('../utils/selectors');
 
 const { getTextField, mapFieldsFromFile, getButton } = require('../utils/selectors');
 
@@ -34,36 +34,30 @@ class PageOrganization {
     await mapFieldsFromFile(t, this.fieldNames, fileName);
   }
 
-  async clickSaveButton(t) {
-    await t.click(this.saveButton).wait(3000);
-    log.info('Save button clicked');
-    await t.expect(alert.success.exists).ok();
-    log.info('Save Successful clicked');
+  async validateAllInput(t){
+    let i = 0;
+    for(i; i < this.fieldNames.length; i++){
+      let fieldElement = null;
+      if(this.fieldNames[i].radio){
+        continue;
+      }else if(this.fieldNames[i].heading){
+        if(this.fieldNames[i].heading.toLowerCase().includes("optional")){
+          continue;
+        }
+        fieldElement = getTextFieldWithDivHeading(this.fieldNames[i].label, this.fieldNames[i].heading);
+      }else{
+        fieldElement = getTextField(this.fieldNames[i])
+      }
+      await removeContent(t, fieldElement);
+      await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists).ok();
+    }
   }
 
-  async clickBackButton(t) {
-    await t.click(this.backButton);
-    log.info('Back button clicked');
-  }
-
-  async clickNextButton(t) {
-    await t.click(this.nextButton);
-    log.info('Next button clicked');
-  }
-
-  async clickSaveAndNextButton(t) {
-    this.clickSaveButton(t);
-    this.clickNextButton(t);
-  }
-
-  async nextButtonIsDisabled(t) {
-    await t.expect(this.nextButton.hasAttribute('disabled')).ok();
-    log.info('Next button is disabled');
-  }
-
-  async nextButtonIsEnabled(t) {
-    await t.expect(this.nextButton.hasAttribute('disabled')).notOk();
-    log.info('Next button is enabled');
+  async validateOneInput(t, fieldLabel, value, message){
+    const fieldElement = getTextField(fieldLabel);
+    await removeContent(t, fieldElement);
+    await t.typeText(fieldElement, value, { replace: true });
+    await t.expect(await getErrorMessage(fieldElement, message).exists).ok();
   }
 }
 export default PageOrganization;
