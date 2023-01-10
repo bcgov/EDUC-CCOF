@@ -9,7 +9,7 @@ const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 
 
-router.post('/renew-ccof', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
+router.post('/renew-ccof', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => {
   //validationResult(req).throw();
   //console.log(req.bpdy);
   return renewCCOFApplication(req, res);
@@ -35,9 +35,9 @@ router.post('/renew-ccof', passport.authenticate('jwt', {session: false}),isVali
 
 
 /* CREATE a NEW CCFRI application */
-//post does not work rn, so leaving this commented out - JB 
+//post does not work rn, so leaving this commented out - JB
 
-// router.post('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], (req, res) => { 
+// router.post('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [], (req, res) => {
 //   //validationResult(req).throw();
 //   return createCCFRIApplication(req, res);
 // });
@@ -59,29 +59,29 @@ router.get('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', {session: false})
     return getRFIApplication(req, res);
   });
 
-router.post('/ccfriId/:ccfriId/rfi', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+router.post('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return createRFIApplication(req, res);
   });
 
-router.put('/rfi/:', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+router.put('/ccfri/rfi/:rfipfiid', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('rfipfiid', 'URL param: [rfipfiid] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return updateRFIApplication(req, res);
   });
 
 
-router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
+router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => {
   //validationResult(req).throw();
   //console.log(req.bpdy);
   return updateCCFRIApplication(req, res);
 });
 
-/* CREATE or UPDATE parent fees for a specified age group and year. 
-  age group and year are defined in the payload   
+/* CREATE or UPDATE parent fees for a specified age group and year.
+  age group and year are defined in the payload
 */
-router.patch('/parentfee', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => { 
+router.patch('/parentfee', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => {
   //validationResult(req).throw();
   //console.log(req.bpdy);
   return upsertParentFees(req, res);
@@ -95,13 +95,13 @@ router.get('/ecewe/:applicationId', passport.authenticate('jwt', {session: false
 
 /* Update an ECEWE applciation for an application id. */
 router.patch('/ecewe/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
   return updateECEWEApplication(req, res);
 });
 
 /* Update an ECEWE facility applciation for an ecewe application id. */
 router.post('/ecewe/facilities/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
   return updateECEWEFacilityApplication(req, res);
 });
 
@@ -112,7 +112,7 @@ router.get('/declaration/:applicationId', passport.authenticate('jwt', {session:
 
 /* Update Declaration for an CCOF/CCFRI/ECEWE application given an application id.  */
 router.patch('/declaration/submit/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => { 
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
   return submitApplication(req, res);
 });
 
