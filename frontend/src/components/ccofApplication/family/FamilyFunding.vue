@@ -89,7 +89,7 @@
               <v-col cols="12" md="6">
                 <v-menu ref="menu1" v-model="model.menu1" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursFrom" transition="scale-transition" offset-y max-width="290px" min-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required :rules="rules.required" v-model="model.hoursFrom12hr" label="Facility hours of operation From" readonly v-bind="attrs" v-on="on" />
+                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursFrom12hr" label="Facility hours of operation From" v-bind="attrs" v-on="on" />
                   </template>
                   <v-time-picker v-if="model.menu1" v-model="model.hoursFrom" full-width @click:minute="$refs.menu1.save(model.hoursFrom); model.hoursFrom12hr = formatTime(model.hoursFrom)" :allowed-minutes="allowedStep" />
                 </v-menu>
@@ -98,7 +98,7 @@
               <v-col cols="12" md="6">
                 <v-menu ref="menu2" v-model="model.menu2" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursTo" transition="scale-transition" offset-y max-width="290px" min-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required :rules="rules.required" v-model="model.hoursTo12hr" label="Facility hours of operation To" readonly v-bind="attrs" v-on="on" />
+                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursTo12hr" label="Facility hours of operation To" v-bind="attrs" v-on="on" />
                   </template>
                   <v-time-picker v-if="model.menu2" v-model="model.hoursTo" full-width @click:minute="$refs.menu2.save(model.hoursTo); model.hoursTo12hr = formatTime(model.hoursTo)" :allowed-minutes="allowedStep" />
                 </v-menu>

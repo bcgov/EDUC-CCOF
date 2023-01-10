@@ -67,7 +67,7 @@
                 <v-text-field outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field outlined required v-model="businessId" readonly label="Business BCeID" />
+                <v-text-field readonly outlined required v-model="businessId" label="Business BCeID" />
               </v-col>
             </v-row>
 

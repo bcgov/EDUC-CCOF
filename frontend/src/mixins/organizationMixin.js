@@ -10,6 +10,7 @@ export default {
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
+    isLocked() { return true; }
   },
   data() {
     return {
@@ -51,7 +52,7 @@ export default {
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     next() {

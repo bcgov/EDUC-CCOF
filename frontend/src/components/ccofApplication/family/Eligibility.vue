@@ -16,7 +16,7 @@
               <v-col cols="12" md="6">
                 <v-menu v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field outlined required v-model="model.licenseEffectiveDate" :rules="rules.notRequired" label="Effective Date of Current Licence" readonly v-bind="attrs" v-on="on" />
+                    <v-text-field readonly outlined required v-model="model.licenseEffectiveDate" :rules="rules.notRequired" label="Effective Date of Current Licence" v-bind="attrs" v-on="on" />
                   </template>
                   <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false" />
                 </v-menu>
@@ -42,8 +42,8 @@
       </v-row>
 
       <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large :loading="processing"  @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="processing"  @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
+        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
