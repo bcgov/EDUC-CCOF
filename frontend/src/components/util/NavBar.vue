@@ -541,12 +541,9 @@ export default {
       });
     },
     isCcfriComplete(){
-      let q = this.userInfo.facilityList.every(fac => {
+      return this.navBarList.every(fac => {
         return fac.ccfriOptInStatus == 0 || fac.isCCFRIComplete;
       });
-
-      console.log('is all CCFRI complete? :' , q);
-      return q;
     },
   }
 };
