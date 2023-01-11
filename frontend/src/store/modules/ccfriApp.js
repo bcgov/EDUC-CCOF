@@ -1,5 +1,6 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
+import { isEmpty, isEqual, cloneDeep } from 'lodash';
 
 function getProgramYear(selectedGuid, programYearList){
   const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
@@ -18,6 +19,7 @@ export default {
   state: {
     isValidForm: undefined,
     model: [],
+    loadedModel: {},
     CCFRIFacilityModel : {},
     ccfriId: {},
     ccfriStore :{},
@@ -30,18 +32,21 @@ export default {
   mutations: {
     model(state, value) { state.model = value;},
     isValidForm(state, value) { state.isValidForm = value; },
-    setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
+    setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //
+    setLoadedModel: (state, loadedModel) => { state.loadedModel = loadedModel; }, //
     setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
       if (ccfriId) {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
       }
     },
-    // addModelToStore: (state, {ccfriId, model} ) => {
-    //   if (ccfriId) {
-    //     state.modelStore[ccfriId] = model;  
-    //   }
-    // }   
+    deleteChildCareTypes(state) {
+      state.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => {
+        if (item.deleteMe){
+          state.CCFRIFacilityModel.childCareTypes.splice(index, 1); 
+        }
+      });
+    }
   },
 
   actions: {
@@ -50,6 +55,7 @@ export default {
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
+        commit('setLoadedModel', _.cloneDeep(CCFRIFacilityModel)); //copy the data from the ccfri facility model into a new object - otherwsie loadedModel will change also when user modifes the page
       } else {
         if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
           console.log('unable to load facility because you are not logged in');
@@ -58,7 +64,8 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       
-          commit('setCCFRIFacilityModel', response.data);
+          commit('setCCFRIFacilityModel', Object.assign({}, response.data));
+          commit('setLoadedModel', _.cloneDeep(response.data));
          
         } catch(e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
@@ -149,6 +156,7 @@ export default {
         
         state.CCFRIFacilityModel.childCareTypes.push(...careTypes);
         commit('setCCFRIFacilityModel', state.CCFRIFacilityModel);
+        commit('setLoadedModel', _.cloneDeep(state.CCFRIFacilityModel));
       } catch (e) {
         console.log('error', e);
       }
