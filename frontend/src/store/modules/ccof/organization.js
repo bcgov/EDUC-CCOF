@@ -40,14 +40,14 @@ export default {
       const payload = { ...state.organizationModel };
       payload.providerType = state.organizationProviderType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY;
       console.log('saveOrganization, payload', payload);
+      //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
+      commit('setLoadedModel', { ...state.organizationModel });
+      commit('app/setIsOrganizationComplete', state.isOrganizationComplete, { root: true });
 
       if (state.organizationId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + state.organizationId, payload);
-          commit('setOrganizationModel', response.data);
-          commit('setLoadedModel', response.data);
-          commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
@@ -55,17 +55,18 @@ export default {
         }
       } else {
         // else create a new application and set the program year
-        payload.programYearId = rootState.app.programYearList.current.programYearId;
+        let programYear = rootState.app.programYearList.current;
+        payload.programYearId = programYear.programYearId;
+        commit('application/setProgramYearId', programYear.programYearId, { root: true });
+        commit('application/setProgramYearLabel', programYear.name, { root: true });
+    
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
-          commit('setOrganizationModel', response.data);
-          commit('setLoadedModel', response.data);
           commit('setOrganizationId', response.data?.organizationId);
           commit('setApplicationId', response.data?.applicationId);
           commit('setApplicationStatus', response.data?.applicationStatus);
           commit('setApplicationType', response.data?.applicationType);
           commit('setOrganizationProviderType', response.data?.organizationProviderType);
-          commit('setIsOrganizationComplete', response.data?.isOrganizationComplete);
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
@@ -73,7 +74,7 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState  }) {
+    async renewApplication({ commit, state, rootState, dispatch  }) {
       checkSession();
 
       let payload = {
@@ -84,10 +85,10 @@ export default {
       console.log('renewApplication, payload', payload);
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
-        commit('auth/setIsUserInfoLoaded', false, { root: true });
         commit('organization/setIsStarted', false, { root: true });
         commit('eceweApp/setIsStarted', false, { root: true });
-        // dispatch('auth/getUserInfo', null, { root: true });
+        commit('auth/setIsUserInfoLoaded', false, { root: true });
+        await dispatch('auth/getUserInfo', null, { root: true });
   
         // commit('setApplicationId', response.data?.applicationId);
         // commit('setApplicationStatus', 'DRAFT');

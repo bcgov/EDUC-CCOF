@@ -10,12 +10,7 @@ export default {
     ...mapState('app', ['navBarList']),
   },
   async beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFacilityComplete({ facilityId: this.$route.params.urlGuid, complete: this.model.isFacilityComplete });
-    this.addFacilityToStore({ facilityId: this.$route.params.urlGuid, facilityModel: this.model });
-    this.setFacilityModel(this.model);
-    this.processing = true;
-    await this.saveFacility();
-    this.processing = false;
+    await this.save(false);
     next();
   },
   watch: {
@@ -63,9 +58,12 @@ export default {
         this.$router.push(`${this.isGroup() ? PATHS.group.orgInfo : PATHS.family.orgInfo}`);
       }
     },
-    next() {
+    async next() {
       // await this.save();
-      let navBar = this.$store.getters['app/getNavByFacilityId'](this.$route.params.urlGuid);
+      if (!this.$route.params.urlGuid) { //we won't have the funding guid until we save, so save first.
+        await this.save(false);
+      }
+      let navBar = this.$store.getters['app/getNavByFacilityId'](this.facilityId);
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
         this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
@@ -74,20 +72,24 @@ export default {
       }
     },
     async saveClicked() {
-      await this.save();
-      if (!this.$route.params.urlGuid) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
-      }
+      await this.save(true);
     },
-    async save() {
+    async save(isSave) {
+      console.log('calling save facility');
+      this.setFacilityModel({ ...this.model });
       this.processing = true;
-      this.setFacilityModel(this.model);
       try {
         await this.saveFacility();
-        this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
+        if (isSave) {
+          this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
+        }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      if (!this.$route.params.urlGuid && isSave) {
+        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
+      }
+      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });      
       this.processing = false;
     },
 

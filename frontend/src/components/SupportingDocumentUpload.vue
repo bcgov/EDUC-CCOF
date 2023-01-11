@@ -345,10 +345,6 @@ export default {
       docType.name = 'Other';
       docType.docName = 'OTHER';
       this.documentTypes.push(docType);
-      const docType1 = {};
-      docType1.name = 'Passport';
-      docType1.docName = 'PASS';
-      this.documentTypes.push(docType1);
     }
 
 

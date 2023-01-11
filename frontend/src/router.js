@@ -323,7 +323,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Home',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {
