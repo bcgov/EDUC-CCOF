@@ -91,12 +91,12 @@
 
 
           <v-row justify="space-around">
-          <v-btn color="info" outlined x-large @click="previous()">
+          <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
-            Save</v-btn>
+          <v-btn color="secondary" outlined x-large  :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
+          <!-- <v-btn color="primary" outlined x-large :loading="processing" @click="updateCCFRI()">
+            Save</v-btn> -->
         </v-row>
       </v-form>
   </v-container>
@@ -114,6 +114,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      processing: false,
       prevFees: {},
       input : '',
       loading: true,

@@ -37,11 +37,16 @@ export default {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
       }
     },
-    // addModelToStore: (state, {ccfriId, model} ) => {
-    //   if (ccfriId) {
-    //     state.modelStore[ccfriId] = model;  
-    //   }
-    // }   
+    deleteChildCareTypes(state) {
+      // var index = state.CCFRIFacilityModel.childCareTypes.findIndex(fac => c.id == car.id);
+      // state.cars.splice(index, 1);
+
+      state.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => {
+        if (item.deleteMe){
+          state.CCFRIFacilityModel.childCareTypes.splice(index, 1); 
+        }
+      });
+    }
   },
 
   actions: {
