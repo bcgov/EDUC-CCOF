@@ -300,15 +300,12 @@
           </div>
         </v-card-text>
       </v-card>
-
-      {{ isValidForm }}
-      
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
           <!--!isValidForm-->
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="isFormComplete()">Next</v-btn>
-        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save()">
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="isFormComplete()==false">Next</v-btn>
+        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true)">
           Save</v-btn>
       </v-row>
 
@@ -320,7 +317,7 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import { isEmpty, isEqual, cloneDeep } from 'lodash';
+import { isEqual, cloneDeep } from 'lodash';
 
 
 let closureFees = '';
@@ -391,7 +388,7 @@ export default {
         (v) => !!v  || 'Required.',
       ],
       dateRules: [
-        v => (typeof v === 'number') || 'Required. boo',
+        v => (typeof v === 'number') || 'Required.',
       ],
       
       
@@ -405,7 +402,8 @@ export default {
   },
   beforeRouteLeave(_to, _from, next) {
     this.$store.commit('ccfriApp/model', this.model);
-    
+    this.save(false);
+
     //this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //jb took this out to stop an error.. I don't think we need it?
     next();
   },
@@ -482,13 +480,10 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     previous() {
-      //this.$router.back();
-      this.hasModelChanged();  
+      //TODO: may go back to another addfee's page.
+      this.$router.push(PATHS.ccfriHome);
     },
     async next() {
-
-      this.save();
-      
       if (!this.nextFacility){
         console.log('going to ece-we!');
         this.$router.push({path : `${PATHS.eceweEligibility}`});
@@ -516,9 +511,9 @@ export default {
     },
     isFormComplete(){
       if (this.model.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
-        return true;
+        return false;
       }
-      return !this.isValidForm; //false makes button clickable, true disables button
+      return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){
       console.log('model:', this.loadedModel);
@@ -534,7 +529,7 @@ export default {
       }
       return true;
     },
-    async save () {
+    async save(showMessage) {
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged()){
         console.log('dates in save :' , this.CCFRIFacilityModel.dates);
@@ -544,13 +539,13 @@ export default {
           {
             ccfriApplicationGuid : this.currentFacility.ccfriApplicationId,
             facilityClosureDates : this.CCFRIFacilityModel.dates,
-            ccof_formcomplete : !this.isFormComplete(), //have to flip this bool because it's used to enable/diable the next button
+            ccof_formcomplete : this.isFormComplete(), //have to flip this bool because it's used to enable/diable the next button
             notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
           };
     
         
         let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
-        currentFacility.isCCFRIComplete = !this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
+        currentFacility.isCCFRIComplete = this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
 
         this.CCFRIFacilityModel.dates.forEach ((item, index) => {
           //checks if blank - don't send over incomplete closure dates
@@ -596,13 +591,13 @@ export default {
         payload[0] = obj;
 
         try {
-          this.setLoadedModel( _.cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes 
-          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-
+          this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes 
+          await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          if (showMessage) {
+            this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+          }
           //remove the facility to delete from the vuex store
           this.deleteChildCareTypes();
-
         } catch (error) {
           console.info(error);
           this.setFailureAlert('An error occurred while saving. Please try again later.');

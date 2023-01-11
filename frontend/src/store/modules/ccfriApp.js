@@ -50,21 +50,6 @@ export default {
   },
 
   actions: {
-    
-    hasModelChanged({state}){
-      console.log('model:', state.loadedModel);
-      console.log('ccfriStore:', state.CCFRIFacilityModel);
-      //if 
-
-      if (isEqual(state.CCFRIFacilityModel, state.loadedModel)) {
-        console.info('no model changes');
-        state.CCFRIFacilityModel.hasChanaged = false;
-      }
-      else{
-        console.info('change in the model!');
-      }
-      state.CCFRIFacilityModel.hasChanaged = true;
-    },
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
