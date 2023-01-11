@@ -25,7 +25,7 @@ function getRadioOption(labelName, selectedName) {
 }
 
 function getSelectOption(labelName, selectedName) {
-  return Selector('label').withText(labelName).nextSibling().find('label').withText(selectedName);
+  return Selector('label').withText(labelName).parent().parent().nextSibling().find('label').withText(selectedName).prevSibling();
 }
 
 async function mapFieldsFromFile(t, fields, fileName, callback) {
@@ -51,7 +51,7 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       let options = lines[index].split(",");
 
       for (n; n < options.length; n++){
-        await t.click(getSelectOption(fields[index].select, options[n]))
+        await t.click(getSelectOption(fields[index].select, options[n]));
       }
 
     } else {
@@ -59,7 +59,7 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
     }
   }
-
+    
   if (typeof callback == 'function') {
     console.log('calling callback');
     callback(index, lines);
