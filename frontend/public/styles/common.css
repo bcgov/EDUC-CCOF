@@ -53,3 +53,28 @@ input[type=number] {
   background-color:#C1DCF6;
   border:1px solid #313132;
 }
+
+.ccof-skeleton-loader input {
+  width: 100%;
+  display: block;
+  background: linear-gradient(90deg,hsla(0,0%,100%,0),hsla(0,0%,100%,.3),hsla(0,0%,100%,0));
+  background-color: rgba(0,0,0,.12);
+  background-repeat: repeat-y;
+  background-size: 50px 500px;
+  background-position: 0 0;
+  animation: bone 1.5s infinite;
+  border-radius: 1em;
+}
+
+.ccof-skeleton-loader fieldset, 
+.ccof-skeleton-loader label,
+.ccof-skeleton-loader .v-card__subtitle,
+.ccof-skeleton-loader .v-input--radio-group {
+  visibility: hidden;
+}
+
+@keyframes bone {
+  to {
+    background-position: 100% 0;
+  }
+}
