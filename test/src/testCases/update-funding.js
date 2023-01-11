@@ -1,4 +1,3 @@
-import PageImpersonate from '../pageObjects/PageImpersonate';
 import PageLogin from '../pageObjects/PageLogin';
 import PageLanding from '../pageObjects/PageLanding';
 import PageOrganization from '../pageObjects/PageOrganization';
@@ -14,7 +13,6 @@ const organization = new PageOrganization();
 const alert = new PageAlert();
 
 
-
 fixture `Organization Tests`
   .page(`${config.get('url')}/login`)
   .beforeEach(async t => {
@@ -23,8 +21,6 @@ fixture `Organization Tests`
   });
 
 test('Update Organization - Completed info', async t => {
-  // await login.idirLogin(t);
-  // await impersonate.loadUser(t, config.get('bceid_credentials').username);
   await login.bceIdLogin(t);
   
   if(await landing.continueButton.exists){
@@ -42,16 +38,13 @@ test('Update Organization - Completed info', async t => {
   await organization.loadFieldsFromFile(t, 'organization-completed.txt');
   await t.takeScreenshot({fullPage: true});
   await t.expect(organization.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(organization.saveButton).wait(2000);
+  await t.click(organization.saveButton).wait(3000);
   await t.expect(alert.success.exists).ok();
   await t.click(organization.nextButton);
-  //Have to test something or the test will fail.
   await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
 });
 
 test('Update Organization - Incompleted info', async t => {
-  // await login.idirLogin(t);
-  // await impersonate.loadUser(t, config.get('bceid_credentials').username);
   await login.bceIdLogin(t);
 
   if(await landing.continueButton.exists){
@@ -70,7 +63,5 @@ test('Update Organization - Incompleted info', async t => {
   await t.expect(organization.nextButton.hasAttribute('disabled')).ok();
   await t.click(organization.saveButton).wait(2000);
   await t.expect(alert.success.exists).ok();
-  await t.click(organization.nextButton);
-  //Have to test something or the test will fail.
   await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
 });
