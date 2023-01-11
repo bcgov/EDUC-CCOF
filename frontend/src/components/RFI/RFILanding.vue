@@ -190,7 +190,7 @@
                   outlined
                   name="input-7-4"
                   label="Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above."
-                  v-model="model.notes"
+                  v-model="model.expenseInformationNote"
                 ></v-textarea>
             </div>
 
@@ -1003,7 +1003,7 @@
                   outlined
                   name="input-7-4"
                   placeholder="Describe here"
-                  v-model="model.notes"
+                  v-model="model.serviceExpansionDetailsNote"
                 ></v-textarea>
 
               <br>
@@ -1186,7 +1186,7 @@
                   outlined
                   name="input-7-4"
                   placeholder="Describe here"
-                  v-model="model.notes"
+                  v-model="model.iCEIDetailsNote"
                 ></v-textarea>
               </div>
             </div>

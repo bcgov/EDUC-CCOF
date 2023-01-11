@@ -57,12 +57,13 @@ const RFIApplicationMappings = [
   { back: 'ccof_howwillyourfeeincreasecontributetotheover', front: 'orgsustainability'}, // "how will your fee increase contribute to the overall?",
   { back: 'ccof_feeincreasedduetoaincreaseinhoursdays', front: 'feeIncreaseExtendedHours' }, // 1 or 0
   { back: 'ccof_describewhetherparentsoutofpocketmonthlyc', front: 'outOfPocketFees'}, // "describe whether parents out of pocket monthly",
-  { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'textbox6'}, // "is there anything else about your expenses",
+
   { back: 'ccof_meetalloftheabovecriteria', front: 'underservedPop' }, // 1 or 0
   { back: 'statuscode', front: 'status' }, // 1 or 0
   { back: 'ccof_feeincreasedduetoanexceptionalcircumstance', front: 'exceptionalCircumstances'}, // 0,
-  { back: 'ccof_pleaseexplainwhyyouhaveincurredorwillincu', front: 'notes'}, // "Please explain why you have incurred or will incur",
-
+  { back: 'ccof_expenseinformation_reasonforincreasedfinancial', front: 'expenseInformationNote'}, // "Please explain why you have incurred or will incur",
+  { back: 'ccof_serviceexpansiondetails_reasonforincreasedfin', front: 'serviceExpansionDetailsNote'},
+  { back: 'ccof_indigenouscommunityexpense_reasonforincreased', front: 'iCEIDetailsNote'},
   { back: 'ccof_name', front: 'xxx3'}, // "RFI-22000025",
   { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'underservedChildCareTypes'}, // "please describe how the majority of children you provide",
   { back: '_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue', front: 'xxx5'}, // "ID-22000522",
@@ -76,6 +77,13 @@ const RFIApplicationMappings = [
   {back:'ccof_wageincreaestipulatedincollectivebargaining', front: 'isBargainingAgreement'}, //Is the wage increase stipulated in a collective bargaining agreement for unionized staff at the facility?
   {back:'ccof_facilitycurrentwagesresultedinlossofdcs', front: 'lossOfCareStaff'},//Has the facility's current wage(s) resulted in loss of Direct Care Staff or an inability to hire sufficient Direct Care Staff?
   {back:'ccof_creatingimmediatehealthandsafetyconcerns', front: 'healthAndSafetyConcerns'},//Is this creating immediate health and safety concerns for the facility under the requirements of the Child Care Licensing Regulation (CCLR)?
+
+  { back: 'ccof_facilitysrecruitmentandretentionchallenges', front: 'textbox1'},
+  { back: 'ccof_howmanydirectcarestaffhaveleftyourfacility', front: 'textbox2'},
+  { back: 'ccof_whathaveyoudonetotrytorecruitstaff', front: 'textbox3'},
+  { back: 'ccof_adjustyourhoursdaysofoperation', front: 'textbox4'},
+  { back: 'ccof_facilityunabletofillspaces', front: 'textbox5'},
+  { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'textbox6'}, // "is there anything else about your expenses",
 ];
 
 
