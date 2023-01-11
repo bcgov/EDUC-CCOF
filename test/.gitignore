@@ -14,7 +14,6 @@ screenshots
 local*.json*
 .env
 .env.development
-data
 # Editor directories and files
 .idea
 .vscode
