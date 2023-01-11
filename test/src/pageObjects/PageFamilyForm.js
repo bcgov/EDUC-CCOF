@@ -16,7 +16,7 @@ class PageFamilyForm {
       'E-mail Address of Signing Authority',
       'Business Phone',
       'Incorporation Number (as it appears in BC Corporate Registry)',
-      { radio: 'Type of Organization'}
+      { radio: 'Type of Orgnization'} 
     ];
 
     this.backButton = getButton('Back');

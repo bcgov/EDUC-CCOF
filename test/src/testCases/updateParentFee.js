@@ -7,7 +7,10 @@ const config = require('../utils/configLoader');
 import { Selector } from 'testcafe';
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5b97173 (Added CCFRI and Family)
 const login = new PageLogin();
 const landing = new PageLanding();
 const parentFee = new PageParentFee();
@@ -26,6 +29,7 @@ test('Update Parent Fee Test', async t => {
     .click(landing.continueButton)
     .wait(2000);
   await t.click(parentFee.CCFRIButton);
+<<<<<<< HEAD
   await parentFee.chooseFacility(t, 'Facility Name1');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-1.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-2.txt');
@@ -37,6 +41,8 @@ test('Update Parent Fee Test', async t => {
   await t.click(parentFee.saveButton).wait(3000);
   await t.expect(alert.success.exists).ok();
   await t.click(parentFee.nextButton);
+=======
+>>>>>>> 5b97173 (Added CCFRI and Family)
   await parentFee.updateParentFeeFromFile(t, 'test2', 'facility-parentfee.txt')
 
   await t.expect(parentFee.nextButton.hasAttribute('disabled')).ok();
