@@ -8,6 +8,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
+    isLocked() { return false; }
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
@@ -15,13 +16,15 @@ export default {
   },
   watch: {
     '$route.params.urlGuid': {
-      handler() {
+      async handler() {
         let facilityId = this.$route.params.urlGuid;
         if (facilityId) {
-          this.loadFacility(facilityId);
+          await this.loadFacility(facilityId);
         } else {
-          this.newFacility();
+          await this.newFacility();
         }
+
+        this.loading = false;
       },
       immediate: true,
       deep: true
@@ -39,6 +42,7 @@ export default {
     return {
       rules,
       processing: false,
+      loading: true,
       model: {}
     };
   },
