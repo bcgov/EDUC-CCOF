@@ -11,7 +11,7 @@ const landing = new PageLanding();
 const upload = new PageUploadLicense();
 
 
-fixture `Facility Tests`
+fixture `Upload License Tests`
   .page(`${config.get('url')}/login`)
   .beforeEach(async t => {
     await t.maximizeWindow();
@@ -24,7 +24,7 @@ test('Upload License', async t => {
     .click(landing.continueButton)
     .wait(2000);
   await t.click(upload.licenseUploadButton);
-  await t.click(upload.noButton);
+  // await t.click(upload.noButton);
   await t.expect(upload.header.exists).ok({timeout: 5000});
   const facilities = Selector('input').withAttribute('placeholder', 'Select your file');
   const length = await facilities.count;
@@ -48,7 +48,7 @@ test('Delete License', async t => {
       .click(landing.continueButton)
       .wait(2000);
     await t.click(upload.licenseUploadButton);
-    await t.click(upload.noButton);
+    // await t.click(upload.noButton);
     await t.expect(upload.header.exists).ok({timeout: 5000});
     
     const length = await Selector('.mdi-delete').count;
