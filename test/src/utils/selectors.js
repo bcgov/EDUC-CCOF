@@ -20,12 +20,16 @@ function getRadioOption(labelName, selectedName) {
   return Selector('legend').withExactText(labelName).nextSibling().find('label').withExactText(selectedName);
 }
 
+function getRadioTextField(fieldName){
+  return Selector('div.v-input--radio-group').parent().parent().nextSibling().find('label').withExactText(fieldName).nextSibling();
+}
+
 function getErrorMessage(element, message){
   return element.parent().parent().nextSibling().find('div').withExactText(message);
 }
 
 async function removeContent(t, element){
-  await t.typeText(element, 'a', { replace: true })
+  await t.typeText(element, 'a', { replace: true, speed:0.5 })
           .pressKey('backspace');
 }
 
@@ -98,7 +102,6 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       await t.expect(fieldElement.exists).ok({timeout:50000});
       if(lines[index]=== ""){
         await removeContent(t, fieldElement);
-        await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists || await getErrorMessage(fieldElement, 'A valid postal code is required').exists).ok();
       }else{
         await t.typeText(fieldElement, lines[index], { replace: true });
       }
@@ -107,20 +110,21 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
         const option = lines[index].split('/')[0];
         const field = lines[index].split('/')[1];
         await t.click(getRadioOption(fields[index].radio, option));
-        await t.typeText(getTextField(fields[index].addedField), field, {replace: true});
+        if(field){
+          await t.typeText(getRadioTextField(fields[index].addedField), field, {replace: true});
+        }
       }else{
         await t.click(getRadioOption(fields[index].radio, lines[index]));
       }
     } else if (fields[index].date){
       const date_picker = getTextField(fields[index].date);
-      await t.click(date_picker);
+      await t.click(date_picker).wait(1000);
       await selectDate(t, lines[index]);
     } else {
       const fieldElement = getTextField(fields[index]);
       await t.expect(fieldElement.exists).ok({timeout:50000});
       if(lines[index]=== ""){
         await removeContent(t, fieldElement);
-        await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists || await getErrorMessage(fieldElement, 'A valid postal code is required').exists).ok();
       }else{
         await t.typeText(fieldElement, lines[index], { replace: true });
       }

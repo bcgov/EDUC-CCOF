@@ -6,7 +6,7 @@ class PageOrganization {
 
   constructor() {
     this.licenseUploadButton = Selector('div', {timeout: 10000}).withExactText('License Upload'); //license upload from nav bar
-    this.noButton = getButton('No');
+    // this.noButton = getButton('No');
     this.backButton = getButton('Back');
     this.nextButton = getButton('Next');
     this.saveButton = getButton('Save');
