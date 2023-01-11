@@ -20,6 +20,7 @@ function getRadioOption(labelName, selectedName) {
   return Selector('legend').withExactText(labelName).nextSibling().find('label').withExactText(selectedName);
 }
 
+
 function getRadioTextField(fieldName){
   return Selector('div.v-input--radio-group').parent().parent().nextSibling().find('label').withExactText(fieldName).nextSibling();
 }
@@ -92,6 +93,12 @@ async function selectDate(t, date_data){
   await t.click(day_option);
 } 
 
+
+function getSelectOption(labelName, selectedName) {
+  return Selector('label').withText(labelName).nextSibling().find('label').withText(selectedName);
+}
+
+
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
   let lines = data.split('\n');
@@ -120,6 +127,13 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       const date_picker = getTextField(fields[index].date);
       await t.click(date_picker).wait(1000);
       await selectDate(t, lines[index]);
+    } else if (fields[index].select) {
+      let n = 0;
+      let options = lines[index].split(",");
+
+      for (n; n < options.length; n++){
+        await t.click(getSelectOption(fields[index].select, options[n]))
+      }
     } else {
       const fieldElement = getTextField(fields[index]);
       await t.expect(fieldElement.exists).ok({timeout:50000});
@@ -129,7 +143,7 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
         await t.typeText(fieldElement, lines[index], { replace: true });
       }
     }
-  }
+    
   if (typeof callback == 'function') {
     console.log('calling callback');
     callback(index, lines);
