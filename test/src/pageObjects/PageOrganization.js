@@ -1,5 +1,3 @@
-const { getTextField, mapFieldsFromFile, getButton, getTextFieldWithDivHeading, removeContent, getErrorMessage } = require('../utils/selectors');
-
 const { getTextField, mapFieldsFromFile, getButton } = require('../utils/selectors');
 
 class PageOrganization {
@@ -32,32 +30,6 @@ class PageOrganization {
 
   async loadFieldsFromFile(t, fileName) {
     await mapFieldsFromFile(t, this.fieldNames, fileName);
-  }
-
-  async validateAllInput(t){
-    let i = 0;
-    for(i; i < this.fieldNames.length; i++){
-      let fieldElement = null;
-      if(this.fieldNames[i].radio){
-        continue;
-      }else if(this.fieldNames[i].heading){
-        if(this.fieldNames[i].heading.toLowerCase().includes("optional")){
-          continue;
-        }
-        fieldElement = getTextFieldWithDivHeading(this.fieldNames[i].label, this.fieldNames[i].heading);
-      }else{
-        fieldElement = getTextField(this.fieldNames[i])
-      }
-      await removeContent(t, fieldElement);
-      await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists).ok();
-    }
-  }
-
-  async validateOneInput(t, fieldLabel, value, message){
-    const fieldElement = getTextField(fieldLabel);
-    await removeContent(t, fieldElement);
-    await t.typeText(fieldElement, value, { replace: true });
-    await t.expect(await getErrorMessage(fieldElement, message).exists).ok();
   }
 }
 export default PageOrganization;
