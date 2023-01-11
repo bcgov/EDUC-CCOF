@@ -37,6 +37,7 @@
                   :showOptStatus = "showOptStatus[index]"
                   dark color='#003366' 
                   :rules = "rules"
+                  :disabled="isReadOnly"
                   > 
                     UPDATE
                   </v-btn>
@@ -85,7 +86,7 @@
 <script>
 
 
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapGetters } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
@@ -100,6 +101,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      isUnlocked: false,
       originalFacilityList: [],
       model,
       //textInput,
@@ -116,6 +118,25 @@ export default {
   computed: {
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
     ...mapState('organization', ['applicationId']),
+
+    isReadOnly(){
+      //if submitted, lock er up. If unlock CCFRI - unlock
+      //flip the bool: if user can edit we want disabled to be false
+      console.log(this.navBarList[0].unlockCcfri);
+      // if (!this.navBarList[index].unlockCcfri){
+      //   //return false;
+      // }
+      // else if (this.navBarList[index].unlockCcfri){
+      //   return false;
+      // }
+      // //console.log();
+      // else if (this.applicationStatus === 'SUBMITTED'){
+      //   return true; 
+      // }
+
+      return false;
+      //return !this.isUnlocked; 
+    },
   },
   beforeMount: function() {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
