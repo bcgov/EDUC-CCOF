@@ -443,9 +443,9 @@ export default {
       async handler() {
         try {
           
-          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+          await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.decorateWithCareTypes(this.currentFacility.facilityId); 
-
+          this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
           //so the card will display as open if dates already exist
           if (this.CCFRIFacilityModel.dates.length > 0){
             this.model.closureFees = 'Yes';
@@ -461,7 +461,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', ]),  
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent' ]),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('app', ['setRfiList']),
     addRow () {
@@ -481,7 +481,7 @@ export default {
     },
     async next() {
       if (!this.nextFacility){
-        console.log('going to ece-we!');
+        this.getCcfriOver3percent();
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
        
@@ -502,7 +502,6 @@ export default {
         //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
         // } else {
         this.$router.push({path : `${PATHS.eceweEligibility}`});
-        
       }
     },
     isFormComplete(){
