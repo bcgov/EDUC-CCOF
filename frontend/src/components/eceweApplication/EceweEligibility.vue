@@ -312,7 +312,7 @@ export default {
         if (this.model.fundingModel === this.fundingModelTypeList[0].id) {
           if (!this.allFacilitiesOptedOut()) {
             this.initECEWEFacilities(this.navBarList);
-            await this.saveECEWEFacilities();
+            await this.saveECEWEFacilities(showConfirmation);
           }
         } else if (optOutFacilities) {
           // If opting out of ecewe, ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
@@ -322,7 +322,7 @@ export default {
             }
             return facility;
           });
-          await this.saveECEWEFacilities(false);
+          await this.saveECEWEFacilities(showConfirmation);
         }
         this.isProcessing = false;
         if (showConfirmation) {
