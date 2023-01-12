@@ -5,7 +5,10 @@ const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings } = require('../util/mapping/Mappings');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings,
+  ServiceExpansionDetailsMappings, DCSWageIncreaseMappings,
+  IndigenousCommunityExpenseInformationMappings, OtherFundingProgramMappings
+} = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
 
 
@@ -34,13 +37,19 @@ async function renewCCOFApplication(req, res) {
 }
 
 async function getRFIApplication(req, res) {
-  let query  = `ccof_rfipfis?$filter=(statuscode eq 1) and (_ccof_applicationccfri_value eq ${req.params.ccfriId})`;
+  let query  = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi`;
   try {
     const response = await getOperation(query);
     console.log('response: ', minify(response.value));
     console.log('response length: ', response.value.length);
-    if (response.value.length == 1) {
-      return res.status(HttpStatus.OK).json(new MappableObjectForFront(response.value[0], RFIApplicationMappings));
+    if (response.value.length === 1) {
+      let rfiApplication = new MappableObjectForFront(response.value[0], RFIApplicationMappings);
+      rfiApplication.data['expansionList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi?.map(el=> new MappableObjectForFront(el,ServiceExpansionDetailsMappings).data);
+      rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map(el=> new MappableObjectForFront(el,DCSWageIncreaseMappings).data);
+      rfiApplication.data['IndigenousExpenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> new MappableObjectForFront(el,IndigenousCommunityExpenseInformationMappings).data);
+      rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> new MappableObjectForFront(el,OtherFundingProgramMappings).data);
+      console.info(rfiApplication);
+      return res.status(HttpStatus.OK).json(rfiApplication);
     } else {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'No data'});
     }
@@ -56,6 +65,14 @@ async function updateRFIApplication(req, res) {
     delete friApplication['_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue'];
     delete friApplication._ccof_applicationccfri_value;
     delete friApplication.ccof_rfipfiid;
+    delete friApplication.ccof_name;
+
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
+    friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
+    friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.IndigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousCommunityExpenseInformationMappings).data);
+
+
     let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', req.params.rfipfiid, friApplication);
     friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
     return res.status(HttpStatus.OK).json(friApplicationResponse);
@@ -68,7 +85,17 @@ async function updateRFIApplication(req, res) {
 async function createRFIApplication(req, res) {
   try {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
-    friApplication['ccof_applicationccfri@odata.bind'] = `/contacts(ccof_applicationccfris='${req.params.ccfriId}')`;
+    delete friApplication['_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue'];
+    delete friApplication._ccof_applicationccfri_value;
+    delete friApplication.ccof_rfipfiid;
+
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
+    friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
+    friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.IndigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousCommunityExpenseInformationMappings).data);
+
+
+    friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris('${req.params.ccfriId}')`;
     log.info('createRFIApplication payload:', friApplication);
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
     return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
@@ -234,7 +261,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
   if (dynamicsClosureDates.length > 0){
     try{
       await Promise.all(dynamicsClosureDates.map(async (date) => {
-        let response = await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
+        await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
         //log.info(response);
       }));
     }catch (e){

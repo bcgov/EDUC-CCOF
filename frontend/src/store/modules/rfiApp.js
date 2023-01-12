@@ -2,6 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import {isEqual} from 'lodash';
+import {deepCloneObject} from '@/utils/common';
 
 export default {
   namespaced: true,
@@ -30,15 +31,17 @@ export default {
       let rfiModel = getters.getByCcfriId(ccfriId);
       if (rfiModel) {
         console.log('found rfimodel for ccfriId: ', ccfriId);
+        console.log('found rfimodel for  ', rfiModel);
         commit('setRfiModel', rfiModel);
-        commit('setLoadedModel', rfiModel);
+        commit('setLoadedModel', deepCloneObject(rfiModel));
       } else {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + ccfriId + '/rfi');
+          console.info(response);
           commit('addRfiToStore', {ccfriId: ccfriId, model: response.data});
           commit('setRfiModel', response.data);
-          commit('setLoadedModel', response.data);
+          commit('setLoadedModel', deepCloneObject(response.data));
         } catch(e) {
           console.log(`Failed to get existing RFI with error - ${e}`);
           throw e;

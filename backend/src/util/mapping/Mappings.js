@@ -84,6 +84,42 @@ const RFIApplicationMappings = [
   { back: 'ccof_adjustyourhoursdaysofoperation', front: 'textbox4'},
   { back: 'ccof_facilityunabletofillspaces', front: 'textbox5'},
   { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'textbox6'}, // "is there anything else about your expenses",
+
+
+];
+
+const ServiceExpansionDetailsMappings = [//ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi.
+  { back: 'ccof_facilitysprevioushoursofoperationto', front: 'timeto'},
+  { back: 'ccof_facilitysprevioushoursofoperation', front: 'timefrom'},
+  { back: 'ccof_facilitysnewhoursofoperation', front: 'newtimeto'},
+  { back: 'ccof_facilitysnewhoursofoperationto', front: 'newtimefrom'},
+  { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
+  { back: 'ccof_dateofchange', front: 'date'},
+  { back: 'ccof_amountofexpense_base', front: 'expense'},
+];
+
+const DCSWageIncreaseMappings = [ //ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail
+  { back: 'ccof_numberofstaff', front: 'staffNumber'},
+  { back: 'ccof_dcsrole', front: 'staffRole'},
+  { back: 'ccof_wagebeforeincrease', front: 'wageBeforeIncrease'},
+  { back: 'ccof_wageafterincrease', front: 'wageAfterIncrease'},
+  { back: 'ccof_averagehoursperweek', front: 'averageHours'},
+  { back: 'ccof_wageincreasedate', front: 'wageDate'},
+];
+
+const IndigenousCommunityExpenseInformationMappings = [
+  { back: 'ccof_expensedescription', front: 'description'},
+  { back: 'ccof_dateofexpense', front: 'date'},
+  { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
+  { back: 'ccof_expenseamount', front: 'expense'},
+];
+
+const OtherFundingProgramMappings = [
+  { back: 'ccof_name', front: 'fundingProgram'},
+  { back: 'ccof_applicationdate', front: 'date'},
+  { back: 'statuscode', front: 'status'},
+  { back: 'ccof_amountreceived_base', front: 'amount'},
+  { back: 'ccof_expense_base', front: 'expenses'},
 ];
 
 
@@ -294,5 +330,9 @@ module.exports = {
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
   RFIApplicationMappings,
-  DeclarationMappings
+  DeclarationMappings,
+  ServiceExpansionDetailsMappings,
+  DCSWageIncreaseMappings,
+  IndigenousCommunityExpenseInformationMappings,
+  OtherFundingProgramMappings
 };
