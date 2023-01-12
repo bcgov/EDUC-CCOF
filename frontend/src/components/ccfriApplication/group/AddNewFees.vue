@@ -17,9 +17,9 @@
       </p>
 
       
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
-
-      <div v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+      
+      <div v-else v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
         <v-card  v-if = "!item.deleteMe"
         
         
@@ -140,7 +140,9 @@
         </v-card>
       </div>
 
-      <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"><br><br></v-skeleton-loader>
+      <v-card  v-else elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
         rounded
         tiled
@@ -156,13 +158,13 @@
           </div>
           <div class="px-md-12 px-7">
             <br>
-            
             <v-radio-group
               required
               :disabled="isReadOnly"
-              v-model="model.closureFees"
+              v-model="closureFees"
               label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
               :rules = "rules"
+               
             >
               <v-radio
                 label="Yes"
@@ -174,7 +176,7 @@
               ></v-radio>
             </v-radio-group>
 
-            <v-row v-if = "model.closureFees === 'Yes'">
+            <v-row v-if = "closureFees == 'Yes'">
 
 
               <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
@@ -234,13 +236,13 @@
                 </v-col>
 
                 <v-col class="col-md-2 col-12 mt-n10">
-                  {{ obj.feesPaidWhileClosed }}
                   <v-radio-group
                     :disabled="isReadOnly"
                     row
                     v-model="obj.feesPaidWhileClosed"
                     label="Did parents pay for this closure?"
                     :rules="dateRules"
+                    
                   >
                     <v-radio
                       label="Yes"
@@ -273,8 +275,9 @@
           </div>
         </v-card-text>
       </v-card>
-
-      <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+      <v-card v-else elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
         rounded
         tiled
@@ -300,8 +303,6 @@
           </div>
         </v-card-text>
       </v-card>
-
-      {{ isValidForm }}
       
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
@@ -323,65 +324,19 @@ import alertMixin from '@/mixins/alertMixin';
 import { isEmpty, isEqual, cloneDeep } from 'lodash';
 
 
-let closureFees = '';
-let isFixedFee= {};
-let jan = {};
-let feb = {};
-let mar = {};
-let apr = {};
-let may = {};
-let jun = {};
-let jul = {};
-let aug = {};
-let sep = {};
-let oct = {};
-let nov = {};
-let dec = {};
-let childCareTypes = {};   
-let model = { x: [],
-  closureFees,
-  isFixedFee,
-  jan,
-  feb,
-  mar,
-  apr,
-  may,
-  jun,
-  jul,
-  aug,
-  sep,
-  oct,
-  nov,
-  dec,
-  childCareTypes
-};
-
-
-
 export default {
 
   mixins: [alertMixin],
   data() {
     return {
+      closureFees : 'No',
       isUnlocked: true,
       loading: true,
       processing: false,
-      model,
+      
       facilityProgramYears: [],
       isValidForm : false,
-      jan,
-      feb,
-      mar,
-      apr,
-      may,
-      jun,
-      jul,
-      aug,
-      sep,
-      oct,
-      nov,
-      dec,
-      childCareTypes,
+     
       feeRules: [
         (v) => !!v  || 'Required.',
         (v) => v > 0  || 'Input a positve number',
@@ -398,8 +353,18 @@ export default {
     };
   },
   mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
-    this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store
+    //this.model = this.$store.state.ccfriApp.model ?? model;
+    //this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store ithink we can take it out
+    //console.log(this.model);
+    //so the card will display as open if dates already exist
+    // if(this.CCFRIFacilityModel.dates){
+    console.log(this.CCFRIFacilityModel);
+      
+    //   console.log(this.CCFRIFacilityModel);
+    // if (this.getClosureDateLength > 0){
+    //   this.model.closureFees = 'Yes';
+    // }
+    //}
 
     //this.$store.commit('ccfriApp/model', {...this.CCFRIFacilityModel} ); //to see if page has changed? 
   },
@@ -414,6 +379,7 @@ export default {
     ...mapState('application', ['applicationStatus']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
+    ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapState('organization', ['applicationId']),
 
     findIndexOfFacility(){
@@ -429,18 +395,13 @@ export default {
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      //flip the bool: if user can edit we want disabled to be false
-
       if (this.currentFacility.unlockCcfri){
         return false;
       }
-      //console.log();
       else if (this.applicationStatus === 'SUBMITTED'){
         return true; 
       }
-
       return false;
-      //return !this.isUnlocked; 
     },
   },
   watch: {
@@ -450,12 +411,13 @@ export default {
         try {
           
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          await this.decorateWithCareTypes(this.currentFacility.facilityId); 
-
-          //so the card will display as open if dates already exist
-          if (this.CCFRIFacilityModel.dates.length > 0){
-            this.model.closureFees = 'Yes';
+          await this.decorateWithCareTypes(this.currentFacility.facilityId);
+          
+          console.log('run');
+          if (this.getClosureDateLength > 0){
+            this.closureFees = 'Yes';
           }
+        
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -475,15 +437,14 @@ export default {
         datePicker1: undefined,
         datePicker2: undefined,
         closureReason : '',
-        feesPaidWhileClosed: '',
+        feesPaidWhileClosed: undefined,
       });
     },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     previous() {
-      //this.$router.back();
-      this.hasModelChanged();  
+      this.$router.back();
     },
     async next() {
 
@@ -515,7 +476,7 @@ export default {
       }
     },
     isFormComplete(){
-      if (this.model.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
+      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
         return true;
       }
       return !this.isValidForm; //false makes button clickable, true disables button
@@ -535,6 +496,7 @@ export default {
       return true;
     },
     async save () {
+      console.log(this.model);
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged()){
         console.log('dates in save :' , this.CCFRIFacilityModel.dates);
@@ -596,8 +558,9 @@ export default {
         payload[0] = obj;
 
         try {
-          this.setLoadedModel( _.cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes 
-          this.applicationStatus = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          console.log(payload[0]);
+          this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes 
+          await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
           this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
 
           //remove the facility to delete from the vuex store

@@ -3,6 +3,8 @@
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image"> <br><br></v-skeleton-loader>
 
       <v-card v-else elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
@@ -65,8 +67,8 @@
             </v-card-text>
         </v-card>
 
-
-        <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+        <div v-if="loading" :loading="loading"></div>
+        <v-card v-else elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
@@ -101,7 +103,7 @@
           <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large  :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
+          <v-btn color="secondary" outlined x-large  :loading="processing" @click="next()" :disabled="!isFormValidAndLoaded()">Next</v-btn>
           <!-- <v-btn color="primary" outlined x-large :loading="processing" @click="updateCCFRI()">
             Save</v-btn> -->
         </v-row>
@@ -167,6 +169,7 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
+          this.loading = true;
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
 
@@ -205,6 +208,11 @@ export default {
       await this.loadCCFRIFacility(this.$route.params.urlGuid); 
       this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
       //grab the previous years fees and save it to the store - so then AddNewFees will have this data ready to go 
+    },
+    isFormValidAndLoaded(){
+      //we need this to disable button while the page is loading
+      return this.isValidForm && this.loading == false;
+       
     },
     next() {
       this.loading = true;

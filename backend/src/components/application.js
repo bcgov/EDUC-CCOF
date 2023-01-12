@@ -262,9 +262,11 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
         //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
       }
 
-      return res.status(HttpStatus.CREATED).json(retVal);
+      
 
     }));
+
+    return res.status(HttpStatus.CREATED).json(retVal);
   
   } catch (e){
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );

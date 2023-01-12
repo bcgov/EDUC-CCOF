@@ -28,6 +28,9 @@ export default {
     getCCFRIById: (state) => (ccfriId) => { 
       return state.ccfriStore[ccfriId];
     },
+    getClosureDateLength: (state) => {
+      return state.CCFRIFacilityModel.dates.length;
+    }
   },
   mutations: {
     model(state, value) { state.model = value;},
@@ -51,20 +54,6 @@ export default {
 
   actions: {
     
-    hasModelChanged({state}){
-      console.log('model:', state.loadedModel);
-      console.log('ccfriStore:', state.CCFRIFacilityModel);
-      //if 
-
-      if (isEqual(state.CCFRIFacilityModel, state.loadedModel)) {
-        console.info('no model changes');
-        state.CCFRIFacilityModel.hasChanaged = false;
-      }
-      else{
-        console.info('change in the model!');
-      }
-      state.CCFRIFacilityModel.hasChanaged = true;
-    },
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
@@ -79,7 +68,7 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       
-          commit('setCCFRIFacilityModel', Object.assign({}, response.data));
+          commit('setCCFRIFacilityModel', response.data);
           commit('setLoadedModel', _.cloneDeep(response.data));
          
         } catch(e) {
