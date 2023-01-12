@@ -505,7 +505,7 @@ export default {
           title: 'Eligibility',
           link: { name: 'ECEWE Eligibility'},
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.eceweEligibilityComplete),
           isActive: 'ECEWE Eligibility' === this.$route.name
         },
       );
@@ -514,7 +514,7 @@ export default {
           title: 'Facility',
           link: { name: 'ECEWE Facilities'},
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.eceweFacilitiesComplete),
           isActive: 'ECEWE Facilities' === this.$route.name
         },
       );

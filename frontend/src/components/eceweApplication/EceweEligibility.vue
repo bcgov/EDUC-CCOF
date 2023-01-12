@@ -18,7 +18,7 @@
             </v-row>
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
-                v-model="optInECEWE">
+                v-model="model.optInECEWE">
                 <template v-slot:label>
                   <span class="radio-label" style="align-content: center;">For the {{programYearLabel}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
                 </template>
@@ -39,7 +39,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="(optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(this.model.optInECEWE == 1) || isLoading" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -50,7 +50,7 @@
             </v-row>
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
-                v-model="belongsToUnion">
+                v-model="model.belongsToUnion">
                 <template v-slot:label>
                   <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
                 </template>
@@ -70,7 +70,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="(belongsToUnion == 1 && optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -88,17 +88,17 @@
               </v-col>
             </v-row>
             <v-radio-group
-                v-model="fundingModel"
+                v-model="model.fundingModel"
                 row>
             <v-row justify="center">
               <v-col class="pt-2">
                 <v-radio
-                  :label="this.fundingModelTypeList[0].description"
-                  :value="this.fundingModelTypeList[0].id"
+                  :label="fundingModelTypeList[0].description"
+                  :value="fundingModelTypeList[0].id"
                   ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="fundingModel == this.fundingModelTypeList[0].id" width="100%">
+            <v-card v-if="model.fundingModel == fundingModelTypeList[0].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeAlert">
@@ -120,12 +120,12 @@
             <v-row>
               <v-col class="pt-7">
                 <v-radio
-                  :label="this.fundingModelTypeList[1].description"
-                  :value="this.fundingModelTypeList[1].id"
+                  :label="fundingModelTypeList[1].description"
+                  :value="fundingModelTypeList[1].id"
                 ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="fundingModel == this.fundingModelTypeList[1].id" width="100%">
+            <v-card v-if="model.fundingModel == fundingModelTypeList[1].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeWarning">
@@ -147,12 +147,12 @@
             <v-row>
               <v-col class="pt-7">
                 <v-radio
-                  :label="this.fundingModelTypeList[2].description"
-                  :value="this.fundingModelTypeList[2].id"
+                  :label="fundingModelTypeList[2].description"
+                  :value="fundingModelTypeList[2].id"
                 ></v-radio>
               </v-col>
             </v-row>
-            <v-card v-if="fundingModel === this.fundingModelTypeList[2].id" width="100%">
+            <v-card v-if="model.fundingModel === fundingModelTypeList[2].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeInfo">
@@ -172,7 +172,7 @@
                 <v-col class="pl-6 d-flex py-0">
                   <v-checkbox
                     class="pa-0"
-                    v-model="confirmation"
+                    v-model="model.confirmation"
                     :value="1"
                     label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
                     >
@@ -186,7 +186,7 @@
         </v-card>
       </v-row>
       <v-row v-if="!isLoading" justify="space-around" class="mt-10">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
         <v-btn :disabled="!enableButtons" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
@@ -209,76 +209,63 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('eceweApp', ['isStarted']),
+    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
     ...mapState('application', ['programYearLabel']),
-
-    enableButtons() {
-      return (this.belongsToUnion === 1 && this.fundingModel === this.fundingModelTypeList[2].id && this.confirmation === 1)
-            ||(this.belongsToUnion === 1 && this.fundingModel != this.fundingModelTypeList[2].id)
-            ||this.belongsToUnion === 0
-            || this.optInECEWE === 0;
-    },
-    optInECEWE: {
-      get() { return this.$store.state.eceweApp.optInECEWE; },
-      set(value) { this.$store.commit('eceweApp/setOptInECEWE', value); }
-    },
-    belongsToUnion: {
-      get() { return this.$store.state.eceweApp.belongsToUnion; },
-      set(value) { this.$store.commit('eceweApp/setBelongsToUnion', value); }
-    },
-    fundingModel: {
-      get() { return this.$store.state.eceweApp.fundingModel; },
-      set(value) { this.$store.commit('eceweApp/setFundingModel', value); }
-    },
-    fundingModelTypes: {
-      get() { return this.$store.state.eceweApp.fundingModelTypes; },
-      set(value) { this.$store.commit('eceweApp/setFundingModelTypes', value); }
-    },
-    confirmation: {
-      get() { return this.$store.state.eceweApp.confirmation; },
-      set(value) { this.$store.commit('eceweApp/setConfirmation', value); }
-    },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
-    isValidForm: { 
-      get () { return this.$store.state.organization.isValidForm; }, 
-      set (value) { this.$store.commit('organization/setIsValidForm', value); }
-    }
+    enableButtons() {
+      return (this.model.belongsToUnion === 1 && this.model.fundingModel === this.fundingModelTypeList[2].id && this.model.confirmation === 1)
+            ||(this.model.belongsToUnion === 1 && this.model.fundingModel != this.fundingModelTypeList[2].id)
+            ||this.model.belongsToUnion === 0
+            || this.model.optInECEWE === 0;
+    },
   },
   mounted() {
-    this.fundingModelTypes = this.fundingModelTypeList;
-    this.loadData();
+    this.isLoading = true;
+    this.setFundingModelTypes({...this.fundingModelTypeList});
+    this.setApplicationId(this.applicationId);
+    this.loadData().then(() => {
+      this.initECEWEFacilities(this.navBarList);
+      this.model = {...this.eceweModel};
+      this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
+      this.setEceweFacilitiesComplete(this.eceweFacilitiesComplete);
+      let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+      this.setLoadedFacilities(copyFacilities);
+    });
+    this.isLoading = false;
+  },
+  async beforeRouteLeave(_to, _from, next) {
+    try {
+      this.setIsStarted(true);
+      this.saveECEWEApplication(false).then(() => {
+        next();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities']),
-    ...mapMutations('eceweApp', ['setIsStarted']),
+    ...mapMutations('app', ['setEceweEligibilityComplete', 'setEceweFacilitiesComplete']),
+    ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
     previous() {
       this.$router.push(PATHS.ccfriHome);
     },
     async next() {
-      if (this.optInECEWE == 0) {
+      if (this.model.optInECEWE == 0) {
         this.$router.push(PATHS.supportingDocumentUpload);
       } else {
-        this.isProcessing = true;
-        // If fundingMoel question 1, we need to deterimine if factilities are all opted out or not. If
-        // not, we want to set all to opted out and save.
-        if (this.fundingModel === this.fundingModelTypeList[0].id) {
-          if (!this.allFacilitiesOptedOut()) {
-            this.initECEWEFacilities(this.navBarList);
-            this.saveECEWEFacilities();
-          }
-        }
-        this.isProcessing = false;
         this.$router.push(PATHS.eceweFacilities);
       }
     },
@@ -291,6 +278,12 @@ export default {
       }
       return true;
     },
+    updateQuestions() {
+      this.model.belongsToUnion = (this.model.optInECEWE==0)?null:this.model.belongsToUnion;
+      this.model.fundingModel = (this.model.belongsToUnion==0 || this.model.belongsToUnion == null)?null:this.model.fundingModel;
+      this.model.confirmation = (this.model.fundingModel == this.fundingModelTypeList[2].id)?1:null;
+    },
+    
     async loadData() {
       if (this.isStarted) {
         return;
@@ -307,12 +300,34 @@ export default {
         this.isLoading = false;
       }
     },
-    async saveECEWEApplication() {
+    async saveECEWEApplication(showConfirmation) {
       try {
         this.isProcessing = true;
+        this.updateQuestions();
+        this.setEceweModel(this.model);
         await this.saveECEWE();
+        this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
+        const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut == 1);
+        // If funding model is option 1, opt out all facilities and save.
+        if (this.model.fundingModel === this.fundingModelTypeList[0].id) {
+          if (!this.allFacilitiesOptedOut()) {
+            this.initECEWEFacilities(this.navBarList);
+            await this.saveECEWEFacilities();
+          }
+        } else if (optOutFacilities) {
+          // If opting out of ecewe, ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
+          this.facilities = this.facilities.map(facility => {
+            if (facility.eceweApplicationId != null && facility.optInOrOut != null) {
+              facility.optInOrOut = 0;
+            }
+            return facility;
+          });
+          await this.saveECEWEFacilities(false);
+        }
         this.isProcessing = false;
-        this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+        if (showConfirmation) {
+          this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+        }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
       }

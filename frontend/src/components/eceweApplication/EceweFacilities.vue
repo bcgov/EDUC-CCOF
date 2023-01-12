@@ -35,7 +35,7 @@
       <v-card elevation="4" class="col-9 pa-0">
         <v-row>
           <v-col class="py-0">
-            <v-card-title v-if="fundingModel == this.fundingModelTypeList[0].id && !isLoading" class="py-1 noticeInfo">
+            <v-card-title v-if="model.fundingModel == this.fundingModelTypeList[0].id && !isLoading" class="py-1 noticeInfo">
               <span style="float:left">
                 <v-icon
                   x-large
@@ -64,7 +64,7 @@
         </v-row>
         <v-row justify="center" class="pa-2">
           <v-col>
-          <span v-if="fundingModel == this.fundingModelTypeList[0].id && !isLoading">These facilities are not eligible for ECE-WE and have been automatically opted out.</span>
+          <span v-if="model.fundingModel == this.fundingModelTypeList[0].id && !isLoading">These facilities are not eligible for ECE-WE and have been automatically opted out.</span>
           <span v-else-if="!isLoading">In order to continue, you must opt-in at least one facility to ECE-WE.</span>
           <v-skeleton-loader v-else :loading="true" type="text"></v-skeleton-loader>
         </v-col>
@@ -76,7 +76,7 @@
         <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
           <v-row>
             <v-col cols="12" class="d-flex">
-              <span v-if="!isLoading">{{facility.eceweApplicationName}}</span>
+              <span v-if="!isLoading">{{facility.facilityAccountNumber}}</span>
               <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
             </v-col>
           </v-row>
@@ -85,16 +85,16 @@
               <span v-if="!isLoading">{{facility.facilityName}}</span>
               <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
             </v-col>
-            <v-col v-if="!facilities?.[index]?.update" cols="4" class="flex-column text-center">
+            <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
               <span v-if="!isLoading">
-                Status: Opt {{facilities?.[index]?.optInOrOut == 1?'in':'out'}}
+                Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
               </span>
               <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
             </v-col>
-            <v-col v-else-if="facilities?.[index]?.update" cols="3" class="d-flex justify-center align-center pt-0">
+            <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
               <v-radio-group
                 v-if="!isLoading"
-                v-model="facilities[index].optInOrOut"
+                v-model="uiFacilities[index].optInOrOut"
                 class="pt-0 my-0"
                 row>
                 <v-radio
@@ -117,13 +117,13 @@
             </v-col>        
             <v-col cols="3">
               <v-btn
-                v-if="!facilities?.[index]?.update && !isLoading"
-                @click="facilities[index].update=(facilities[index].update==false)?true:false;"
+                v-if="(!uiFacilities?.[index].update && !isLoading) && (model.fundingModel != fundingModelTypeList[0].id)"
+                @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
                 color="#003366"
                 dark> 
                   Update
               </v-btn>
-              <v-skeleton-loader v-else-if="!facilities?.[index]?.update && isLoading" :loading="true" type="button"></v-skeleton-loader>
+              <v-skeleton-loader v-else-if="!uiFacilities[index].update && isLoading" :loading="true" type="button"></v-skeleton-loader>
             </v-col>
           </v-row>
           <v-row>
@@ -139,7 +139,7 @@
     </div>
     <v-row><v-col></v-col></v-row>
     <v-row v-if="!isLoading" justify="space-around">
-      <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+      <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
       <v-btn color="secondary" :loading="isProcessing" :disabled="!enableNextBtn" outlined x-large @click="next()">Next</v-btn>
       <v-btn color="primary" :loading="isProcessing" :disabled="!enableSaveBtn" outlined x-large @click="saveFacilities()">Save</v-btn>
     </v-row>
@@ -161,46 +161,50 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      uiFacilities: [],
+      model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
       enableNextBtn: true,
       enableSaveBtn: true,
-      row: '',
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapState('eceweApp', ['eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
-    fundingModel: {
-      get() { return this.$store.state.eceweApp.fundingModel; },
-      set(value) { this.$store.commit('eceweApp/setFundingModel', value); }
-    },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
   },
   beforeMount() {
-    if (!this.isStarted) {
-      this.loadData().then(() => {
-        this.initECEWEFacilities(this.navBarList);
-      });
-    }
+    this.isLoading = true;
+    let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+    copyFacilities.forEach(element => element.update = element.optInOrOut == null);
+    this.uiFacilities = copyFacilities;
+    this.setLoadedFacilities([...this.facilities]);
+    this.model = {...this.eceweModel};
     this.enableButtons();
+    this.isLoading = false;
   },
-  mounted() {},
+  async beforeRouteLeave(_to, _from, next) {
+    this.saveFacilities(false);
+    next();
+  },
   methods: {
-    ...mapMutations('app', ['refreshNavBar']),
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
+    ...mapMutations('app', ['refreshNavBar', 'setEceweFacilityComplete']),
+    ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities']),
     enableButtons() {
-      if (this.fundingModel == this.fundingModelTypeList[0].id) {
+      if (this.model.fundingModel == this.fundingModelTypeList[0].id) {
         this.enableSaveBtn = false;
         this.enableNextBtn = true;
       }
     },
     toggleRadio(index) {
-      this.facilities[index].update = (this.facilities?.[index].update===true)?false:true;
+      this.uiFacilities[index].update = (this.uiFacilities[index].update==true)?false:true;
     },
     previous() {
       return this.$router.push(PATHS.eceweEligibility);
@@ -216,7 +220,7 @@ export default {
       if (this.applicationId) {
         this.isLoading = true;
         try {
-          await this.loadECEWE(this.applicationId);
+          await this.loadECEWE();
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
@@ -224,18 +228,16 @@ export default {
       }
       this.isLoading = false;
     },
-    async saveFacilities() {
+    async saveFacilities(showConfirmation) {
       this.isProcessing = true;
       try {
-        let response = await this.saveECEWEFacilities();
-        for (let item of response.data.facilities) {
-          this.navBarList.find(facility => {
-            if (facility.facilityId == item.facilityId) {
-              facility.eceweApplicationId = item.eceweApplicationId;
-            }
-          });
+        let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
+        uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
+        this.setFacilities(uiFacilitiesCopy);
+        await this.saveECEWEFacilities();
+        if (showConfirmation) {
+          this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
         }
-        this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE facility applications. Please try again later.'+error);
       }
