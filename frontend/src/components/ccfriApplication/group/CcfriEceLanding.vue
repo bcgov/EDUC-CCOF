@@ -229,9 +229,8 @@ export default {
             this.setFailureAlert('An error occurred while saving. Please try again later.');
           }
         }
-        this.processing = false;
-
       }
+      this.processing = false;
     },
     
   },

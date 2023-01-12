@@ -126,8 +126,9 @@ async function upsertParentFees(req, res) {
   //for each object.
   body.forEach(async(feeGroup) => {
 
-    //getting a weird error regarding feeGroup.deleteMe is null - trying this out to fix it
     if (feeGroup.deleteMe){
+      log.info(feeGroup);
+      log.info('WHAT IS THE DELETE DATA LOOK LIKE?');
       try {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
         log.info('delete feeGroup res:', response);
@@ -171,7 +172,7 @@ async function upsertParentFees(req, res) {
       let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
         let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-        //log.info('feeResponse', response);
+        log.info('feeResponseeeeeeeeeeeeeeeeeeeeee', response);
         theResponse.push( res.status(HttpStatus.CREATED).json(response));
       } catch (e) {
         //log.info(e);
