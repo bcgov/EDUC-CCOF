@@ -1456,10 +1456,21 @@ export default {
     rfiModel: {
       handler() {
         this.model = {...this.rfiModel};
-        this.expansionList = this.model.expansionList;
-        this.wageList=this.model.wageList;
-        this.IndigenousExpenseList = this.model.IndigenousExpenseList;
-        this.fundingList = this.model.fundingList;
+        if(this.model.expansionList){
+          this.expansionList = this.model.expansionList;
+        }
+        if(this.model.wageList){
+          this.wageList=this.model.wageList;
+        }
+        if(this.model.IndigenousExpenseList){
+          this.IndigenousExpenseList = this.model.IndigenousExpenseList;
+        }
+        if(this.model.fundingList){
+          this.fundingList = this.model.fundingList;
+        }
+        if(this.model.expenseList){
+          this.expenseList = this.model.expenseList;
+        }
         console.info('handlera');
         console.info(this.model);
         this.$refs.form?.resetValidation();
@@ -1492,7 +1503,7 @@ export default {
       list.push(Object.assign({}, obj));
     },
     removeObjFromList(index, list) {
-      if (index == 0) {
+      if (index == -1) {
         return;
       }
       list.splice(index, 1);

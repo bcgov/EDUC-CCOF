@@ -48,7 +48,6 @@ async function getRFIApplication(req, res) {
       rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map(el=> new MappableObjectForFront(el,DCSWageIncreaseMappings).data);
       rfiApplication.data['IndigenousExpenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> new MappableObjectForFront(el,IndigenousCommunityExpenseInformationMappings).data);
       rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> new MappableObjectForFront(el,OtherFundingProgramMappings).data);
-      console.info(rfiApplication);
       return res.status(HttpStatus.OK).json(rfiApplication);
     } else {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'No data'});
@@ -71,7 +70,6 @@ async function updateRFIApplication(req, res) {
     friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
     friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
     friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.IndigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousCommunityExpenseInformationMappings).data);
-
 
     let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', req.params.rfipfiid, friApplication);
     friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
