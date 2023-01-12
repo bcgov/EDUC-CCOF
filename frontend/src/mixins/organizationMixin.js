@@ -10,12 +10,14 @@ export default {
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
+    isLocked() { return false; }
   },
   data() {
     return {
       rules,
       model: {},
       processing: false,
+      loading: true,
       isValidForm: true,
       businessId: this.businessId
     };
@@ -40,6 +42,7 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
+      this.loading = false;
       this.setIsOrganizationComplete(this.isValidForm);
       this.setIsStarted(true);
     }
@@ -51,7 +54,7 @@ export default {
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     next() {

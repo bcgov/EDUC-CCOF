@@ -10,9 +10,6 @@
         v-text="'What would you like to do?'" />
     </v-row >
 
-    
-    
-     <!-- Application Approved screens starts here -->
     <v-container 
     fluid
     class="px-10"
