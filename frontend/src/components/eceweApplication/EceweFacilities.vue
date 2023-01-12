@@ -235,7 +235,7 @@ export default {
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
         this.setFacilities(uiFacilitiesCopy);
         await this.saveECEWEFacilities();
-        if (showConfirmation) {
+        if (showConfirmation || showConfirmation == null) {
           this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
         }
       } catch (error) {

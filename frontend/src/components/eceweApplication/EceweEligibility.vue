@@ -236,12 +236,12 @@ export default {
     this.setFundingModelTypes({...this.fundingModelTypeList});
     this.setApplicationId(this.applicationId);
     this.loadData().then(() => {
-      this.initECEWEFacilities(this.navBarList);
       this.model = {...this.eceweModel};
       this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
       this.setEceweFacilitiesComplete(this.eceweFacilitiesComplete);
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
+      this.initECEWEFacilities(this.navBarList);
     });
     this.isLoading = false;
   },
@@ -291,7 +291,7 @@ export default {
       if (this.applicationId) {
         this.isLoading = true;
         try {
-          await this.loadECEWE(this.applicationId);
+          await this.loadECEWE();
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
@@ -300,38 +300,37 @@ export default {
         this.isLoading = false;
       }
     },
-    async saveECEWEApplication(showConfirmation) {
+    optOutFacilities() {
+      this.facilities = this.facilities.map(facility => {
+        if (facility.eceweApplicationId != null && facility.optInOrOut != null) {
+          facility.optInOrOut = 0;
+        }
+        return facility;
+      });
+    },
+    async saveECEWEApplication(showConfirmation = true) {
+      this.isProcessing = true;
       try {
-        this.isProcessing = true;
         this.updateQuestions();
         this.setEceweModel(this.model);
         await this.saveECEWE();
         this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
-        const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut == 1);
-        // If funding model is option 1, opt out all facilities and save.
-        if (this.model.fundingModel === this.fundingModelTypeList[0].id) {
-          if (!this.allFacilitiesOptedOut()) {
-            this.initECEWEFacilities(this.navBarList);
+        const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut === 1);
+        // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
+        // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
+        if (this.model.fundingModel === this.fundingModelTypeList[0].id || optOutFacilities) {
+            this.optOutFacilities();
             await this.saveECEWEFacilities(showConfirmation);
-          }
-        } else if (optOutFacilities) {
-          // If opting out of ecewe, ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
-          this.facilities = this.facilities.map(facility => {
-            if (facility.eceweApplicationId != null && facility.optInOrOut != null) {
-              facility.optInOrOut = 0;
-            }
-            return facility;
-          });
-          await this.saveECEWEFacilities(showConfirmation);
         }
-        this.isProcessing = false;
         if (showConfirmation) {
-          this.setSuccessAlert('Success! ECEWE appcliation has been saved.');
+          this.setSuccessAlert('Success! ECEWE application has been saved.');
         }
       } catch (error) {
-        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.'+error);
+        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later. Error: ' + error);
+      } finally {
+        this.isProcessing = false;
       }
-    },
+    }
   }
 };
 </script>
