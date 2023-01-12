@@ -37,10 +37,6 @@ export default {
         commit('setFacilities', payload.facilities);
         commit('setEceweEligibilityComplete', payload.optInECEWE !== null);
         commit('setEceweFacilitiesComplete', payload.facilities ? payload.facilities.every(facility => facility.optInOrOut != null) : false);
-        console.info('ECEWEApp.loadECEWE.state.facilities = ');
-        console.info(JSON.parse(JSON.stringify(state.facilities)));
-        console.info('ECEWEApp.loadECEWE.state.eceweModel.facilities = ');
-        console.info(JSON.parse(JSON.stringify(state.eceweModel.facilities)));
       } catch (error) {
         console.info(`Failed to get ECEWE Application - ${error}`);
         throw error;
@@ -49,22 +45,13 @@ export default {
     async saveECEWE({ state, commit }) {
       checkSession();
       try {
-        console.info('ECEWEApp.saveECEWE.state.eceweModel = ');
-        console.info(JSON.parse(JSON.stringify(state.eceweModel)));
-        console.info('ECEWEApp.saveECEWE.state.loadedModel = ');
-        console.info(JSON.parse(JSON.stringify(state.loadedModel)));
         if (isEqual(state.eceweModel, state.loadedModel)) {
-          console.info('ECEWEApp.saveECEWE: no model changes (NOT saving).');
           return;
-        } else {
-          console.info('ECEWEApp.saveECEWE: model changes (SAVING).');
         }
-        let payload = { ...state.eceweModel };
-        payload = JSON.parse(JSON.stringify(payload));
+        let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
-        // Save ECEWE parent record.
-        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
         commit('setLoadedModel', {...state.eceweModel});
+        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
         commit('setEceweEligibilityComplete', payload.optInECEWE != null);
         return response;
       } catch (error) {
@@ -73,22 +60,16 @@ export default {
       }
     },
     async saveECEWEFacilities({ state, commit }) {
-      checkSession();
-      console.info('ECEWEApp.saveECEWEFacilities.state.loadedFacilities = ');
-      console.info(JSON.parse(JSON.stringify(state.loadedFacilities)));
-      console.info('ECEWEApp.saveECEWEFacilities.state.facilities = ');
-      console.info(JSON.parse(JSON.stringify(state.facilities)));
       if (isEqual(state.loadedFacilities, state.facilities)) {
-        console.info('ECEWEApp.saveECEWEFacilities: no model changes (NOT saving).');
         return;
-      } else {
-        console.info('ECEWEApp.saveECEWEFacilities: model changes (SAVING).');
       }      
+      checkSession();
       let payload = JSON.parse(JSON.stringify(state.facilities));
       try {
+        // TODO test if deep copy is needed or not....
+        commit('setLoadedFacilities', {...state.facilities});
         let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
         commit('setFacilities', response.data.facilities);
-        commit('setLoadedFacilities', response.data.facilities);
         commit('setEceweFacilitiesComplete', response.data.facilities ? response.data.facilities.every(facility => facility.optInOrOut != null) : false);
         return response;
       } catch (error) {
@@ -99,10 +80,6 @@ export default {
     /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
     initECEWEFacilities({ state, commit }, navBarList) {
       let facilityPayload;
-      console.info('ECEWEApp.initECEWEFacilities.state.eceweModel.facilities = ');
-      console.info(JSON.parse(JSON.stringify(state.eceweModel.facilities)));
-      console.info('ECEWEApp.initECEWEFacilities.state.facilities = ');
-      console.info(JSON.parse(JSON.stringify(state.facilities)));
       if (state.facilities?.length == 0) {
         // No facilities payload, create from the narBarList.
         facilityPayload = navBarList.map(facility => ({

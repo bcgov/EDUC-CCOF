@@ -102,7 +102,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),

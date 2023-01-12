@@ -71,18 +71,18 @@
         </v-row>
       </v-card>
     </v-row>
-    <div v-for="(facility, index) in this.navBarList" :key="(index)">
+    <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
       <v-row justify="center" class="pa-4">
         <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
           <v-row>
             <v-col cols="12" class="d-flex">
-              <span v-if="!isLoading">{{facility.facilityAccountNumber}}</span>
+              <span v-if="!isLoading">{{navBarList[index].facilityAccountNumber}}</span>
               <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="5" class="flex-column">
-              <span v-if="!isLoading">{{facility.facilityName}}</span>
+              <span v-if="!isLoading">{{navBarList[index].facilityName}}</span>
               <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
             </v-col>
             <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
@@ -115,7 +115,7 @@
               <v-skeleton-loader :loading="true" type="avatar"></v-skeleton-loader>
               <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
             </div>
-            </v-col>        
+            </v-col>
             <v-col cols="3">
               <v-btn
                 v-if="(!uiFacilities?.[index].update && !isLoading) && (model.fundingModel != fundingModelTypeList[0].id)"
@@ -131,7 +131,7 @@
           <v-row>
             <v-col cols="12">
               <span v-if="!isLoading">
-                License #: {{facility.licenseNumber}}
+                License #: {{navBarList[index].licenseNumber}}
               </span>
                <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
             </v-col>
@@ -163,7 +163,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      uiFacilities: [],
+      uiFacilities: {},
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
@@ -173,7 +173,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('eceweApp', ['eceweModel']),
+    ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
     ...mapState('application', ['applicationStatus', 'unlockEcewe']),
@@ -182,31 +182,34 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
-      if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      } else if (this.unlockEcewe) {
+      if (this.eceweUnlock){
         return false;
       }
+      else if (this.applicationStatus === 'SUBMITTED'){
+        return true; 
+      }
+      return false;
     }
   },
-  beforeMount() {
-    this.isLoading = true;
+  async beforeMount() {
+    this.setFundingModelTypes({...this.fundingModelTypeList});
+    this.setApplicationId(this.applicationId);
+    await this.loadData();
     let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
     copyFacilities.forEach(element => element.update = element.optInOrOut == null);
     this.uiFacilities = copyFacilities;
     this.setLoadedFacilities([...this.facilities]);
     this.model = {...this.eceweModel};
     this.enableButtons();
-    this.isLoading = false;
   },
   async beforeRouteLeave(_to, _from, next) {
-    this.saveFacilities(false);
+    await this.saveFacilities(false);
     next();
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
     ...mapMutations('app', ['refreshNavBar', 'setEceweFacilityComplete']),
-    ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities']),
+    ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
     enableButtons() {
       if (this.model.fundingModel == this.fundingModelTypeList[0].id) {
         this.enableSaveBtn = false;
@@ -223,7 +226,6 @@ export default {
       this.$router.push(PATHS.supportingDocumentUpload);
     },
     async loadData() {
-      this.isLoading = true;
       if (this.isStarted) {
         return;
       }
@@ -235,8 +237,8 @@ export default {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async saveFacilities(showConfirmation) {
       this.isProcessing = true;

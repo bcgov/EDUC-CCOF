@@ -235,36 +235,34 @@ export default {
             || this.model.optInECEWE === 0;
     },
     isReadOnly() {
-      if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      } else if (this.unlockEcewe) {
+      if (this.eceweUnlock) {
         return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true; 
       }
+      return false;
     }
   },
-  mounted() {
-    this.isLoading = true;
-    this.setFundingModelTypes({...this.fundingModelTypeList});
-    this.setApplicationId(this.applicationId);
-    this.loadData().then(() => {
+  async mounted() {
+    try {
+      this.setFundingModelTypes({...this.fundingModelTypeList});
+      this.setApplicationId(this.applicationId);
+      await this.loadData();
+      this.setIsStarted(true);
       this.model = {...this.eceweModel};
       this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
       this.setEceweFacilitiesComplete(this.eceweFacilitiesComplete);
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
       this.initECEWEFacilities(this.navBarList);
-    });
-    this.isLoading = false;
+    } catch(error) {
+      console.log (error);
+    }
   },
   async beforeRouteLeave(_to, _from, next) {
-    try {
-      this.setIsStarted(true);
-      this.saveECEWEApplication(false).then(() => {
-        next();
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    this.setIsStarted(true);
+    await this.saveECEWEApplication(false);
+    next();
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities']),
@@ -294,7 +292,6 @@ export default {
       this.model.fundingModel = (this.model.belongsToUnion==0 || this.model.belongsToUnion == null)?null:this.model.fundingModel;
       this.model.confirmation = (this.model.fundingModel == this.fundingModelTypeList[2].id)?1:null;
     },
-    
     async loadData() {
       if (this.isStarted) {
         return;
@@ -308,8 +305,8 @@ export default {
           this.setFailureAlert('Error loading ECEWE application.');
         }
         this.setIsStarted(true);
-        this.isLoading = false;
       }
+      this.isLoading = false;
     },
     optOutFacilities() {
       this.facilities = this.facilities.map(facility => {
@@ -337,7 +334,7 @@ export default {
           this.setSuccessAlert('Success! ECEWE application has been saved.');
         }
       } catch (error) {
-        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later. Error: ' + error);
+        this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.');
       } finally {
         this.isProcessing = false;
       }
