@@ -18,7 +18,8 @@
             </v-row>
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
-                v-model="model.optInECEWE">
+                v-model="model.optInECEWE"
+                :disabled="isReadOnly">
                 <template v-slot:label>
                   <span class="radio-label" style="align-content: center;">For the {{programYearLabel}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
                 </template>
@@ -50,7 +51,8 @@
             </v-row>
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
-                v-model="model.belongsToUnion">
+                v-model="model.belongsToUnion"
+                :disabled="isReadOnly">
                 <template v-slot:label>
                   <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
                 </template>
@@ -89,7 +91,8 @@
             </v-row>
             <v-radio-group
                 v-model="model.fundingModel"
-                row>
+                row
+                :disabled="isReadOnly">
             <v-row justify="center">
               <v-col class="pt-2">
                 <v-radio
@@ -175,7 +178,7 @@
                     v-model="model.confirmation"
                     :value="1"
                     label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
-                    >
+                    :disabled="isReadOnly">
                   </v-checkbox>
                 </v-col>
               </v-row>
@@ -188,7 +191,7 @@
       <v-row v-if="!isLoading" justify="space-around" class="mt-10">
         <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
+        <v-btn :disabled="!enableButtons || isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
       <v-row v-else justify="space-around" class="pt-6">
         <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
@@ -209,6 +212,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      isUnlocked: true,
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
@@ -219,7 +223,7 @@ export default {
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
-    ...mapState('application', ['programYearLabel']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
@@ -230,6 +234,13 @@ export default {
             ||this.model.belongsToUnion === 0
             || this.model.optInECEWE === 0;
     },
+    isReadOnly() {
+      if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      } else if (this.unlockEcewe) {
+        return false;
+      }
+    }
   },
   mounted() {
     this.isLoading = true;

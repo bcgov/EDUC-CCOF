@@ -96,7 +96,8 @@
                 v-if="!isLoading"
                 v-model="uiFacilities[index].optInOrOut"
                 class="pt-0 my-0"
-                row>
+                row
+                :disabled="isReadOnly">
                 <v-radio
                   @click="toggleRadio(index)"
                   label="Opt-In"
@@ -120,7 +121,8 @@
                 v-if="(!uiFacilities?.[index].update && !isLoading) && (model.fundingModel != fundingModelTypeList[0].id)"
                 @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
                 color="#003366"
-                dark> 
+                dark
+                :disabled="isReadOnly"> 
                   Update
               </v-btn>
               <v-skeleton-loader v-else-if="!uiFacilities[index].update && isLoading" :loading="true" type="button"></v-skeleton-loader>
@@ -141,7 +143,7 @@
     <v-row v-if="!isLoading" justify="space-around">
       <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
       <v-btn color="secondary" :loading="isProcessing" :disabled="!enableNextBtn" outlined x-large @click="next()">Next</v-btn>
-      <v-btn color="primary" :loading="isProcessing" :disabled="!enableSaveBtn" outlined x-large @click="saveFacilities()">Save</v-btn>
+      <v-btn color="primary" :loading="isProcessing" :disabled="!enableSaveBtn || isReadOnly" outlined x-large @click="saveFacilities()">Save</v-btn>
     </v-row>
     <v-row v-else justify="space-around" class="mt-10">
       <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
@@ -174,10 +176,18 @@ export default {
     ...mapState('eceweApp', ['eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
+    ...mapState('application', ['applicationStatus', 'unlockEcewe']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
+    isReadOnly() {
+      if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      } else if (this.unlockEcewe) {
+        return false;
+      }
+    }
   },
   beforeMount() {
     this.isLoading = true;
