@@ -42,7 +42,6 @@ import ApplicationConfirmation from '@/components/ccofApplication/group/Applicat
 
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities';
-import EceweDocumentUpload from '@/components/eceweApplication/EceweDocumentUpload';
 
 import SearchFacility from '@/components/FacilitySearch';
 import CcfriEstimator from '@/components/CcfriEstimator';
@@ -156,8 +155,30 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.family.eligibility + '/:urlGuid',
+      name: 'Eligibility GUID',
+      component: Eligibility,
+      meta: {
+        pageTitle: 'Information to Determine Eligibility',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.family.fundAmount,
       name: 'FamilyFunding',
+      component: FamilyFunding,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.family.fundAmount + '/:urlGuid',
+      name: 'FamilyFunding GUID',
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
@@ -276,17 +297,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.eceweDocUpload,
-      name: 'ECEWE Document Upload',
-      component: EceweDocumentUpload,
-      meta: {
-        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
-      }
-    },
-    {
       path: PATHS.supportingDocumentUpload,
       name: 'Supporting Document Upload',
       component: SupportingDocumentUpload,
@@ -298,7 +308,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.summaryDeclaration,
-      name: 'SummaryDeclaration',
+      name: 'Summary and Declaration',
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
@@ -313,7 +323,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Home',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
       }
     },
     {

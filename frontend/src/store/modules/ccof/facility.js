@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
-import {isEmpty} from 'lodash';
-
+import { checkSession } from '@/utils/session';
+import { isEmpty, isEqual } from 'lodash';
 
 export default {
   namespaced: true,
@@ -17,10 +17,11 @@ export default {
     // ccfriId: {},//jb
     // ccfriStore :{},
     isValidForm: false,
+    loadedModel: {}
   },
   getters: {
     isCurrentFacilityComplete: state => state.isValidForm,
-    getFacilityById: (state) => (facilityId) => { 
+    getFacilityById: (state) => (facilityId) => {
       return state.facilityStore[facilityId];
     },
     // getCCFRIById: (state) => (ccfriId) => { 
@@ -28,8 +29,8 @@ export default {
     // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
 
-    getModel: state => {return state.model;}
-  },  
+    getModel: state => { return state.model; }
+  },
   mutations: {
     model(state, value) {
       state.model = value;
@@ -39,40 +40,46 @@ export default {
     },
     // setFacilityList: (state, facilityList) => { state.facilityList = facilityList; },
     // addToFacilityList: (state, payload) => { state.facilityList.push (payload); },
-    setFacilityModel: (state, facilityModel) => { state.facilityModel = facilityModel; },
+    setFacilityModel(state, facilityModel) { state.facilityModel = facilityModel; },
+    setLoadedModel(state, model) { state.loadedModel = model; },
     // setCCFRIFacilityModel: (state, CCFRIFacilityModel) => { state.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId: (state, facilityId) => { state.facilityId = facilityId; },
     // setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
-    addFacilityToStore: (state, {facilityId, facilityModel} ) => {
+    addFacilityToStore: (state, { facilityId, facilityModel }) => {
       if (facilityId) {
-        state.facilityStore[facilityId] = facilityModel;  
+        state.facilityStore[facilityId] = facilityModel;
       }
     },
     // addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
     //   if (ccfriId) {
-    //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
+    //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;
     //   }
     // }
   },
   actions: {
     async saveFacility({ state, commit, rootState }) {
+
+      checkSession();
+
+      if (isEqual(state.facilityModel, state.loadedModel)) {
+        console.info('no model changes');
+        return;
+      }
+
       let organizationId = rootState.organization.organizationId;
       if (!organizationId) {
         console.log('unable to save facility because you are not associated to an organization');
         throw 'unable to save facility because you are not associated to an organization';
       }
-      if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-        console.log('unable to save because you are not logged in');
-        throw 'unable to save because you are not logged in';
-      }
-      let payload = { ...state.facilityModel, organizationId,  applicationId:rootState.organization.applicationId};
+
+      let payload = { ...state.facilityModel, organizationId, applicationId: rootState.organization.applicationId };
+      commit('setLoadedModel', state.facilityModel);
+
       if (state.facilityId) {
         // has an orgaization ID, so update the data
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
-
-          commit('setFacilityModel', response.data);
-          commit('addFacilityToStore', {facilityId: state.facilityId, facilityModel: response.data});
+          commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: state.facilityModel });
           return response;
         } catch (error) {
           console.log(`Failed to update existing Facility - ${error}`);
@@ -87,8 +94,11 @@ export default {
             facilityName: state.facilityModel.facilityName,
             facilityId: state.facilityId,
             ccofBaseFundingId: response.data?.ccofBaseFundingId,
-            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus
+            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+            licenseNumber: state.facilityModel.licenseNumber,
           }, { root: true });
+          commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
+
           return response;
         } catch (error) {
           console.log(`Failed to save new Facility - ${error}`);
@@ -96,33 +106,35 @@ export default {
         }
       }
     },
-    async loadFacility({getters, commit}, facilityId) {
+    async loadFacility({ getters, commit }, facilityId) {
       commit('setFacilityId', facilityId);
       let facilityModel = getters.getFacilityById(facilityId);
       if (facilityModel) {
         console.log('found facility for guid: ', facilityId);
         commit('setFacilityModel', facilityModel);
+        commit('setLoadedModel', facilityModel);
       } else {
-        if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
-          console.log('unable to load facility because you are not logged in');
-          throw 'unable to  load facility because you are not logged in';
-        }
+
+        checkSession();
+
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
-          commit('addFacilityToStore', {facilityId: facilityId, facilityModel: response.data});
+          commit('addFacilityToStore', { facilityId: facilityId, facilityModel: response.data });
           commit('setFacilityModel', response.data);
+          commit('setLoadedModel', response.data);
           return response;
 
-        } catch(e) {
+        } catch (e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
           throw e;
         }
       }
     },
 
-    newFacility({commit}) {
+    newFacility({ commit }) {
       commit('setFacilityId', null);
       commit('setFacilityModel', {});
+      commit('setLoadedModel', {});
     }
   },
 };

@@ -41,7 +41,7 @@ const organizationType = [
 const fundingModelType = [
   {
     id: 100000000,
-    description: 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.',
+    description: 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.',
   },
   {
     id: 100000001,
@@ -83,7 +83,7 @@ async function getLicenseCategory() {
     let licenseCategory = await getOperation('ccof_license_categories');
     licenseCategory = licenseCategory.value.filter(item => item.statuscode ==1).map(item => { return _.pick(item, ['ccof_license_categoryid', 'ccof_providertype', 'ccof_name', 'ccof_categorynumber']); });
     resData.groupLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.GROUP).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
-    resData.familiyLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.FAMILY).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
+    resData.familyLicenseCategory = licenseCategory.filter( item => item.ccof_providertype == ORGANIZATION_PROVIDER_TYPES.FAMILY).sort((a,b) => { return a.ccof_categorynumber - b.ccof_categorynumber; } );
     lookupCache.put('licenseCategory', resData, 60 * 60 * 1000);
   }
   return resData;
@@ -113,7 +113,7 @@ async function getLookupInfo(req, res) {
       'organizationType': organizationType,
       'fundingModelType': fundingModelType,
       'groupLicenseCategory': licenseCategory.groupLicenseCategory,
-      'familiyLicenseCategory': licenseCategory.familiyLicenseCategory
+      'familyLicenseCategory': licenseCategory.familyLicenseCategory
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }

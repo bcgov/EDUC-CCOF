@@ -1,8 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { isEmpty } from 'lodash';
-
+import { isEmpty, isEqual } from 'lodash';
 
 export default {
   namespaced: true,
@@ -10,12 +9,15 @@ export default {
     isValidForm: undefined,
     ccofBaseFundingId: undefined,
     fundingModel: {},
+    loadedModel: {},
     modelStore: {},
-
   },
   mutations: {
     setFundingModel(state, value) {
       state.fundingModel = value;
+    },
+    setLoadedModel(state, value) {
+      state.loadedModel = value;
     },
     setIsValidForm(state, value) {
       state.isValidForm = value;
@@ -26,23 +28,31 @@ export default {
     setModelStore(state, value) {
       state.modelStore = value;
     },
-    addModelToStore: (state, {fundingId, model} ) => {
+    addModelToStore: (state, { fundingId, model }) => {
       if (fundingId) {
-        state.modelStore[fundingId] = model;  
+        state.modelStore[fundingId] = model;
       }
-    }    
+    }
   },
   getters: {
     isNewFundingStarted: state => !isEmpty(state.fundingModel),
-    getModelById: (state) => (fundingId) => { 
+    getModelById: (state) => (fundingId) => {
       return state.modelStore[fundingId];
     },
 
   },
   actions: {
     async saveFunding({ state, commit }) {
-      console.log('store model', state.model);
+
+      checkSession();
+
+      if (isEqual(state.fundingModel, state.loadedModel)) {
+        console.info('no model changes');
+        return;
+      }
+
       let payload = { ...state.fundingModel };
+      commit('setLoadedModel', state.fundingModel);
 
       let deleteFields = [];
       if (payload.hasClosedMonth !== 'yes') {
@@ -65,10 +75,7 @@ export default {
       deleteFields.forEach(field => delete payload[field]);
 
       console.log('save group funding', payload);
-
       let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + state.ccofBaseFundingId, payload);
-      commit('setFundingModel', response.data);
-      commit('addModelToStore', { fundingId: state.ccofBaseFundingId, model: response.data });
       return response;
 
     },
@@ -78,6 +85,7 @@ export default {
       if (model) {
         console.log('found model for guid: ', fundingId);
         commit('setFundingModel', model);
+        commit('setLoadedModel', model);
       } else {
         checkSession();
 
@@ -86,6 +94,7 @@ export default {
           let model = response.data;
           console.log('response', model);
           commit('setFundingModel', model);
+          commit('setLoadedModel', model);
           commit('addModelToStore', { fundingId, model });
 
         } catch (error) {

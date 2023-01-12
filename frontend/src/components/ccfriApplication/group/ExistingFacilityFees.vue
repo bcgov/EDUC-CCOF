@@ -2,8 +2,9 @@
   <v-container>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
-      <!-- <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader> -->
-      <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
+
+      <v-card v-else elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
@@ -14,8 +15,9 @@
               <p class="text-h5 text--primary text-center">
                 {{currentFacility.facilityName}}
               </p>
+              <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{CCFRIFacilityModel.childCareTypes[0].programYear}} are: 
+                Our Records show this facilites' fees for {{feeList[0].programYear}} are as follows: 
               </p>
               <br>
               <v-simple-table>
@@ -24,8 +26,8 @@
                     <th  scope="col" class="text-left">
                       Date
                     </th>
-                    <th  v-for="item in CCFRIFacilityModel.childCareTypes"
-                    :key="item.childCareCategoryId"
+                    <th  v-for="(item , index)  in feeList"
+                    :key="index"
                      class="text-center"
                      scope="col">
                       {{item.childCareCategory}}
@@ -35,29 +37,22 @@
                 <tbody>
                   <tr>
                     <td >January </td>
-                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
-                    :key="item.childCareCategoryId"
+                    <td v-for="(item , index) in feeList"
+                    :key="index"
                      class="text-center">${{ item.approvedFeeJan }}</td>
                   </tr>
                   <tr>
                     <td >February </td>
-                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
-                    :key="item.childCareCategoryId"
+                    <td v-for="(item , index) in feeList"
+                    :key="index"
                      class="text-center">${{ item.approvedFeeFeb }}</td>
                   </tr>
                   <tr>
                     <td >March </td>
-                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
-                    :key="item.childCareCategoryId"
+                    <td v-for="(item , index)  in feeList"
+                    :key="index"
                      class="text-center">${{ item.approvedFeeMar }}</td>
                   </tr>
-                  <tr>
-                    <td >April </td>
-                    <td v-for="item in CCFRIFacilityModel.childCareTypes"
-                    :key="item.childCareCategoryId"
-                     class="text-center">${{ item.approvedFeeApr }}</td>
-                  </tr>
-                  
                 </tbody>
               </v-simple-table>
             </v-card-text>
@@ -94,15 +89,14 @@
             </v-card-text>
           </v-card>
 
-          {{model.q1 }}
 
           <v-row justify="space-around">
-          <v-btn color="info" outlined x-large @click="previous()">
+          <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="!isValidForm">Next</v-btn>
-          <v-btn color="primary" outlined x-large @click="updateCCFRI()">
-            Save</v-btn>
+          <v-btn color="secondary" outlined x-large  :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
+          <!-- <v-btn color="primary" outlined x-large :loading="processing" @click="updateCCFRI()">
+            Save</v-btn> -->
         </v-row>
       </v-form>
   </v-container>
@@ -110,31 +104,23 @@
 </template>
 
 <script>
-import { PATHS } from '@/utils/constants';
-import { mapGetters, mapState, mapActions} from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
 
-let model = { x: [],  };
+//userInfo.ccofProgramYearId;
+import { PATHS } from '@/utils/constants';
+import { mapState, mapActions, mapGetters} from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   mixins: [alertMixin],
   data() {
     return {
+      processing: false,
       prevFees: {},
       input : '',
       loading: true,
-      model,
+      model: {},
       isValidForm : false,
       feeList : [
-        // {
-        //   childCareCategory: 'PreSchool',
-        //   childCareCategoryId: 123,
-        //   programYear: '21/22 FY',
-        //   approvedFeeJan: 100,
-        //   approvedFeeFeb: 100,
-        //   approvedFeeMar: 100,
-        //   approvedFeeApr: 100,
-        // }//above obj is a placeholder until I iron out pulling prev year fees
       ],
       rules: [
         (v) => !!v  || 'Required.',
@@ -142,7 +128,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['navBarList']),
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
     
@@ -158,6 +145,13 @@ export default {
     },
     nextFacility(){
       return this.navBarList[this.findIndexOfFacility + 1];
+    },
+    getPrevYearGuid(){
+      const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
+      console.log(programYear);
+
+      return programYear.previousYearId;
+      //let currentYearGuid = //;
     }
     
   },
@@ -165,19 +159,35 @@ export default {
     //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
       async handler() {
-        console.log('ccfriFacilityGuid', this.$route.params.urlGuid);
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
 
           await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
 
-         
+          this.feeList = [];
+
+          //only display last years child care fees
+          const prevYearGuid = this.getPrevYearGuid;
+          this.CCFRIFacilityModel.childCareTypes.forEach(item => { 
+            if (item.programYearId == prevYearGuid ){
+              this.feeList.push(item);
+            }
+          });
+
+          console.log(this.feeList);
+
+
           //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
         } catch (error) {
           console.log(error);
-          this.setFailureAlert('An error occured while getting.');
+          if (this.CCFRIFacilityModel.previousCcfriId) {
+            this.setFailureAlert('An error occured while getting.');
+          } else {
+            this.setFailureAlert('The server was busy.  Please wait 10 seconds and refresh this screen.');
+          }
+          
         }
       },
       immediate: true,
@@ -187,36 +197,26 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
     previous(){
-      //console.log(this.feeList);
-      console.log(this.prevFees);
-      //this.$router.push(PATHS.ccfriHome);
+      this.$router.back(); 
     },
-    async setFees (){
+    async setFees (areFeesCorrect){
       await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-      this.CCFRIFacilityModel.prevYearFeesCorrect = true;
+      this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
       //grab the previous years fees and save it to the store - so then AddNewFees will have this data ready to go 
     },
     next() {
-      console.log(this.nextFacility);
+      this.loading = true;
 
       if (this.model.q1== 'No'){
-        this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
+        this.setFees(false);
       }
       else if (this.model.q1== 'Yes') {
-        console.log('add new fees but only current year cards!');
-        this.setFees();
-        this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
+        this.setFees(true);
       }
-      else if (this.nextFacility){
-        //TODO: this needs to check if opt in exists
-        console.log('going to next fac');
-      }
-      else {
-        console.log('going to ece-we!');
-        this.$router.push({path : `${PATHS.eceweEligibility}/${this.applicationId}`});
-      }
+      this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
+      
       //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-      //this.$router.push(PATHS.addNewFees); //TODO: change this, from CCOF page
+      
     },
   },
 };

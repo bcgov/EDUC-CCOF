@@ -18,10 +18,8 @@ export default {
   actions: {
     // eslint-disable-next-line no-unused-vars
     async saveLicenseFiles({state},payload) {
-      console.log('save license file called');
       try {
         let response = await ApiService.apiAxios.post(ApiRoutes.LICENSE_UPLOAD, payload);
-        console.log('save license file called1');
         return response;
       } catch (error) {
         console.error(error);
@@ -47,7 +45,16 @@ export default {
         console.error(error);
         throw error;
       }
+    },
+    async updateLicenseCompleteStatus({commit, rootState}, status) {
+      try {
+        commit('app/setIsLicenseUploadComplete', status, { root: true });
+        console.log('updating isLicenseUploadComplet to be: ', status);
+        await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + rootState.organization.applicationId, { isLicenseUploadComplete: status });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     }
-
   },
 };

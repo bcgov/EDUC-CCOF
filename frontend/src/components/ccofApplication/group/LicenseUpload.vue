@@ -1,56 +1,58 @@
 <template>
-  <Spinner v-if="isLoading"></Spinner>
-  <v-form v-else ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
-      <v-row justify="space-around">
-        <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center"><h3>License Upload</h3></v-card-title>
-          <v-data-table
-            :headers="headers"
-            :items="licenseUploadData"
-            class="elevation-1"
-            hide-default-header
-            hide-default-footer
-          >
-            <template v-slot:header="{ props: { headers } }">
-              <thead>
-              <tr>
-                <th v-bind:key="h.value" :id="h.value" v-for="h in headers" :class="h.class">
-                  <span>{{ h.text }}</span>
-                </th>
-              </tr>
-              </thead>
-            </template>
-            <template v-slot:item.document="{ item }">
-              <div v-if="item.document?.annotationid">
-                <span> {{ item.document?.filename }} </span>
-                <v-btn icon @click="deleteFile(item)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </div>
-              <v-file-input v-else
-                            color="#003366"
-                            :rules="fileRules"
-                            prepend-icon="mdi-file-upload"
-                            class="pt-0"
-                            :id="item.facilityId"
-                            :accept="fileAccept"
-                            :disabled="false"
-                            placeholder="Select your file"
-                            :error-messages="fileInputError"
-                            @change="selectFile"
-                            @click="uploadLicenseClicked($event)"
-              ></v-file-input>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-row>
-
+      <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@3"></v-skeleton-loader>
+      <span v-else>
+        <v-row justify="space-around">
+          <v-card class="cc-top-level-card" width="1200">
+            <v-card-title class="justify-center"><h3>License Upload</h3></v-card-title>
+            <v-data-table
+              :headers="headers"
+              :items="licenseUploadData"
+              class="elevation-1"
+              hide-default-header
+              hide-default-footer
+            >
+              <template v-slot:header="{ props: { headers } }">
+                <thead>
+                <tr>
+                  <th v-bind:key="h.value" :id="h.value" v-for="h in headers" :class="h.class">
+                    <span>{{ h.text }}</span>
+                  </th>
+                </tr>
+                </thead>
+              </template>
+              <template v-slot:item.document="{ item }">
+                <div v-if="item.document?.annotationid">
+                  <span> {{ item.document?.filename }} </span>
+                  <v-btn icon @click="deleteFile(item)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </div>
+                <v-file-input v-else
+                              color="#003366"
+                              :rules="fileRules"
+                              prepend-icon="mdi-file-upload"
+                              class="pt-0"
+                              :id="item.facilityId"
+                              :accept="fileAccept"
+                              :disabled="false"
+                              placeholder="Select your file"
+                              :error-messages="fileInputError"
+                              @change="selectFile"
+                              @click="uploadLicenseClicked($event)"
+                ></v-file-input>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-row>
+      </span>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn color="secondary" :disabled="nextButtonDisabled" outlined x-large @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
+
     </v-container>
   </v-form>
 </template>
@@ -63,17 +65,15 @@ import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import {deepCloneObject} from '@/utils/common';
-import Spinner from '@/components/common/Spinner';
 
 
 export default {
-  components: {Spinner},
   mixins: [alertMixin],
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('organization', ['applicationId']),
+    ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
+    ...mapState('organization', ['applicationId', 'organizationProviderType']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
     nextButtonDisabled() {
@@ -134,13 +134,24 @@ export default {
   },
 
   methods: {
-    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
+    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
     ...mapMutations('app', ['setCcofLicenseUploadComplete']),
     previous() {
-      this.$router.push(PATHS.group.confirmation);
+      if (this.isRenewal) {
+        this.$router.push(PATHS.home);
+      } else {
+        if (this.organizationProviderType == 'FAMILY') {
+          let navBar = this.navBarList[0]; 
+          if (navBar?.ccofBaseFundingId) {
+            this.$router.push(`${PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
+          }
+        } else {
+          this.$router.push(PATHS.group.confirmation);
+        }
+
+      }
     },
     next() {
-      this.setCcofLicenseUploadComplete(true);
       this.$router.push(PATHS.ccfriHome);
     },
     deleteFile(item) {
@@ -165,8 +176,11 @@ export default {
           await this.processLicenseFilesSave();
         }
         await this.createTable();
+        await this.updateLicenseCompleteStatus(!this.nextButtonDisabled);
+        this.setCcofLicenseUploadComplete(!this.nextButtonDisabled);
         this.setSuccessAlert('Changes Successfully Saved');
       } catch (e) {
+        console.log(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.processing = false;

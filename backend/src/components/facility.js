@@ -5,27 +5,10 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { FacilityMappings, CCFRIFacilityMappings, CCFRIClosureDateMappings } = require('../util/mapping/Mappings');
+const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
-
-function hasChildCareCategory(item) {
-  return (
-    item.ccof_apr ||
-    item.ccof_aug ||
-    item.ccof_dec ||
-    item.ccof_feb ||
-    item.ccof_jan ||
-    item.ccof_jul ||
-    item.ccof_jun ||
-    item.ccof_mar ||
-    item.ccof_may ||
-    item.ccof_nov ||
-    item.ccof_oct ||
-    item.ccof_sep
-  );
-}
 
 function buildNewFacilityPayload(req) {
   let facility = req.body;
@@ -51,15 +34,16 @@ function mapFacilityObjectForBack(data) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
 
-  if (data.hasReceivedFunding === 'no') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 0;
-  } else if (data.hasReceivedFunding === 'yes') { 
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 1;
-  } else if (data.hasReceivedFunding === 'yesFacility') { 
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 2;
-  } else if (data.hasReceivedFunding) {
-    console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
-  }
+  //TODO: ccof_everreceivedfundingundertheccofprogram causes dynamics to 400
+  // if (data.hasReceivedFunding === 'no') {
+  //   facilityForBack.ccof_everreceivedfundingundertheccofprogram = 0;
+  // } else if (data.hasReceivedFunding === 'yes') { 
+  //   facilityForBack.ccof_everreceivedfundingundertheccofprogram = 1;
+  // } else if (data.hasReceivedFunding === 'yesFacility') { 
+  //   facilityForBack.ccof_everreceivedfundingundertheccofprogram = 2;
+  // } else if (data.hasReceivedFunding) {
+  //   console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
+  // }
 
   return facilityForBack;
 }
@@ -70,17 +54,22 @@ function mapFacilityObjectForFront(data) {
     data.ccof_facilitystartdate = year;
   }
 
+  if (data.ccof_licensestartdate) { 
+    data.ccof_licensestartdate = data.ccof_licensestartdate.split('T')[0];
+  }
+
   let obj = new MappableObjectForFront(data, FacilityMappings).toJSON(); 
 
-  if (data.ccof_everreceivedfundingundertheccofprogram === 0) {
-    obj.hasReceivedFunding = 'no';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram === 1) {
-    obj.hasReceivedFunding = 'yes';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram === 2) {
-    obj.hasReceivedFunding = 'yesFacility';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
-    console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
-  }
+  //TODO: map this if it is returned from dynamics
+  // if (data.ccof_everreceivedfundingundertheccofprogram === 0) {
+  //   obj.hasReceivedFunding = 'no';
+  // } else if (data.ccof_everreceivedfundingundertheccofprogram === 1) {
+  //   obj.hasReceivedFunding = 'yes';
+  // } else if (data.ccof_everreceivedfundingundertheccofprogram === 2) {
+  //   obj.hasReceivedFunding = 'yesFacility';
+  // } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
+  //   console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
+  // }
 
   return obj;
 }
@@ -118,7 +107,7 @@ async function getLicenseCategories(req, res){
         childCareCategoryId: item['CareType.ccof_childcare_categoryid'],
         // childCareCategoryName: item['CareType.ccof_name'],
         // licenseCategoryName: item['License.ccof_name'],
-        childCareCategory: item['CareType.ccof_name'], //TODO figure out display name
+        childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['CareType.ccof_name']),
       });
     });
     return res.status(HttpStatus.OK).json(Array.from(map.values()));
@@ -222,23 +211,28 @@ async function updateFacilityLicenseType(facilityId, data) {
   // Load the license categories from Lookup
   let categories = await getLicenseCategory();
   let groupLicenseCategory = categories.groupLicenseCategory;
+
   console.log('GroupLicenseCategory list: ', groupLicenseCategory);
   // Figure out new License categories from data form
   let newLicenseCategories = [];
-  if (data.maxGroupChildCareUnder36 > 0) {
-    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid);
-  }
-  if (data.maxGroupChildCare36 > 0) {
-    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 2).ccof_license_categoryid);
-  }
-  if (data.maxGroupChildCareMultiAge > 0) {
-    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3).ccof_license_categoryid);
-  }
-  if (data.maxGroupChildCareSchool > 0) {
-    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 7).ccof_license_categoryid);
-  }
-  if (data.maxPreschool > 0) {
-    newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 8).ccof_license_categoryid);
+  if (data.familyLicenseType) {
+    newLicenseCategories.push(categories.familyLicenseCategory.find(item => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
+  } else {
+    if (data.maxGroupChildCareUnder36 > 0) {
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 1).ccof_license_categoryid);
+    }
+    if (data.maxGroupChildCare36 > 0) {
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 2).ccof_license_categoryid);
+    }
+    if (data.maxGroupChildCareMultiAge > 0) {
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3).ccof_license_categoryid);
+    }
+    if (data.maxGroupChildCareSchool > 0) {
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 7).ccof_license_categoryid);
+    }
+    if (data.maxPreschool > 0) {
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 8).ccof_license_categoryid);
+    }
   }
 
   // Find the current License Categories associated with this facility

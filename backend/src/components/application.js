@@ -1,12 +1,17 @@
 /* eslint-disable quotes */
 'use strict';
 const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings } = require('../util/mapping/Mappings');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
@@ -97,6 +102,7 @@ async function updateCCFRIApplication(req, res) {
           ccof_ccfrioptin: facility.optInResponse,
         });
       }
+      await sleep(100); //slow down the hits to dynamics.
       //log.info('res data:' , response);
     })); //end for each
   } catch (e) {
@@ -113,25 +119,26 @@ async function updateCCFRIApplication(req, res) {
 async function upsertParentFees(req, res) {
   let body = req.body;
 
+  log.info(body);
+  let hasError = false;
+  let theResponse = [];
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async(feeGroup) => {
 
+    //getting a weird error regarding feeGroup.deleteMe is null - trying this out to fix it
     if (feeGroup.deleteMe){
-      log.info('DELETEEEEEEEEEEEEEEEEEEEEEEEE this cat! : ');
-      log.info('DELETEEEEEEEEEEEEEEEEEEEEEEEE this cat! : ', feeGroup.parentFeeGUID);
-
       try {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
         log.info('delete feeGroup res:', response);
-        return res.status(HttpStatus.OK).json(response);
+        theResponse.push(res.status(HttpStatus.OK).json(response));
       } catch (e) {
         //log.info(e);
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+        theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       }
     }
 
-    else{
+    else if (feeGroup.feeFrequency ){
 
       let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
       let programYear = `/ccof_program_years(${feeGroup.programYear})`;
@@ -161,40 +168,35 @@ async function upsertParentFees(req, res) {
           "ccof_mar": feeGroup.marFee,
         }
       );
-      
-
-      //log.info(payload);
       let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
-
-      //log.info("SUPER URL:" , url);
       try {
         let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
         //log.info('feeResponse', response);
-        return res.status(HttpStatus.CREATED).json(response);
+        theResponse.push( res.status(HttpStatus.CREATED).json(response));
       } catch (e) {
         //log.info(e);
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+        theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+        hasError = true;
       }
     } 
-
   }); //end forEach
 
 
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
   //so body[0].notes will always exist 
-  if (body[0].notes){
+  if (body[0].notes || body[0].ccof_formcomplete){
 
     let payload = {
-      "ccof_informationccfri" : body[0].notes
+      "ccof_informationccfri" : body[0].notes,
+      "ccof_formcomplete" : body[0].ccof_formcomplete
     };
-
-    
     try {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-      //log.info('notesRes', response);
-      //return res.status(HttpStatus.CREATED).json(response);
+      log.info('notesRes', response);
+      theResponse.push(res.status(HttpStatus.CREATED).json(response));
     } catch (e) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+      theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+      hasError = true;
     }
   }
 
@@ -205,12 +207,18 @@ async function upsertParentFees(req, res) {
     try {
       let response = await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
       //log.info('datesRes', response);
-      return res.status(HttpStatus.CREATED).json(response);
+      theResponse.push(res.status(HttpStatus.CREATED).json(response));
     } catch (e) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+      theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+      hasError = true;
     }
   }
-
+  if (hasError) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+  } else {
+    return res.status(HttpStatus.OK).json();
+  }
+  
 }
 
 async function postClosureDates(dates, ccfriApplicationGuid, res){
@@ -228,7 +236,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
       }));
     }catch (e){
       log.info(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+      //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
   }
 
@@ -282,7 +290,6 @@ async function getECEWEApplication(req, res) {
   }
 }
 
-
 async function updateECEWEApplication(req, res) {
   let application = req.body;
   application = new MappableObjectForBack(application, ECEWEApplicationMappings);
@@ -333,6 +340,32 @@ async function updateECEWEFacilityApplication(req, res) {
   }
 }
 
+/* Get the user declaration for a given application id. */
+async function getDeclaration(req, res) {
+  try {
+    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
+    let declaration = await getOperation(operation);
+    declaration = new MappableObjectForFront(declaration, DeclarationMappings);
+    return res.status(HttpStatus.OK).json(declaration);
+  } catch (e) {
+    log.error('An error occurred while getting Declaration', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+/* Submit CCOF/CCFRI/ECEWE application */
+async function submitApplication(req, res) {
+  let declaration = new MappableObjectForBack(req.body, DeclarationMappings);
+  declaration.data.statuscode = APPLICATION_STATUS_CODES.SUBMITTED;
+  declaration = declaration.toJSON();
+  try {
+    let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, declaration);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -343,4 +376,6 @@ module.exports = {
   getRFIApplication,
   createRFIApplication,
   updateRFIApplication,
+  getDeclaration,
+  submitApplication
 };

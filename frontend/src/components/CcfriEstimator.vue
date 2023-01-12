@@ -1313,9 +1313,12 @@ export default {
     },
     /* Set the current month value for the month select slider.. this will show the current month centered in the component. */
     setDefaultForMonthPicker() {
-      const currentMonth = new Date().getMonth() + 1;
+      let currentMonth = new Date().getMonth() - 3; //slider starts with index 0 being april, so offset by -3
+      if (currentMonth < 0) {
+        currentMonth = currentMonth + 12; //account for negative values
+      }
       for (let i in this.children) {
-        this.children[i].selectedMonthIndex = this.children[i].selectedMonthIndex != null ? this.children[i].selectedMonthIndex : currentMonth-4;
+        this.children[i].selectedMonthIndex = this.children[i].selectedMonthIndex != null ? this.children[i].selectedMonthIndex : currentMonth;
       }
     },
     decimalExists: function(n) {

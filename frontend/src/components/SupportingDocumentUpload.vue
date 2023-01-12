@@ -1,5 +1,5 @@
 <template>
-  <Spinner v-if="isLoading"/>
+  <v-skeleton-loader max-height="375px" v-if="isLoading" :loading="isLoading" type="table-tbody, table-tfoot"></v-skeleton-loader>
   <v-form v-else ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
@@ -91,6 +91,7 @@
         <v-btn color="secondary" outlined x-large @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
       </v-row>
+
     </v-container>
   </v-form>
 </template>
@@ -103,12 +104,10 @@ import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import {deepCloneObject} from '@/utils/common';
-import Spinner from '@/components/common/Spinner';
 
 export default {
   mixins: [alertMixin],
   components: {
-    Spinner,
   },
   props: {},
 
@@ -120,7 +119,7 @@ export default {
 
     isSaveDisabled(){
       const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
-      return this.isValidForm && (newFilesAdded.length > 0);
+      return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
     }
   },
 
@@ -340,10 +339,6 @@ export default {
       docType.name = 'Other';
       docType.docName = 'OTHER';
       this.documentTypes.push(docType);
-      const docType1 = {};
-      docType1.name = 'Passport';
-      docType1.docName = 'PASS';
-      this.documentTypes.push(docType1);
     }
 
 
