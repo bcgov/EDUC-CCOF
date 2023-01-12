@@ -55,10 +55,6 @@
                     value="Daily"
                   ></v-radio>
                   <v-radio
-                    label="Weekly"
-                    value="Weekly"
-                  ></v-radio>
-                  <v-radio
                     label="Monthly"
                     value="Monthly"
                   ></v-radio>

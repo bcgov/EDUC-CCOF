@@ -1,4 +1,4 @@
-import { PATHS } from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
 import { mapActions, mapState, mapMutations } from 'vuex';
@@ -8,11 +8,13 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState('funding', ['fundingModel']),
-    ...mapState('organization', ['organizationProviderType'])
+    ...mapState('organization', ['organizationProviderType']),
+    isLocked() { return false; }
   },
   data() {
     return {
       processing: false,
+      loading: true,
       model: {},
       rules
     };
@@ -21,10 +23,12 @@ export default {
     ...mapActions('funding', ['saveFunding', 'loadFunding', 'fundingId']),
     ...mapMutations('funding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
-    
+    isGroup() { 
+      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },    
     previous() {
       let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
-      this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
+      this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${navBar.facilityId}`);
     },
     next() {
       if (this.organizationProviderType == 'FAMILY') {
@@ -39,13 +43,16 @@ export default {
       }
 
     },
-    async save() {
+    async save(isSave) {
       this.processing = true;
-      this.setFundingModel(this.model);
-
+      this.setFundingModel({ ...this.model});
+      this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
+      this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
       try {
         await this.saveFunding();
-        this.setSuccessAlert('Success! Funding information has been saved.');
+        if (isSave) {
+          this.setSuccessAlert('Success! Funding information has been saved.');
+        }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
@@ -54,18 +61,17 @@ export default {
     allowedStep: m => m % 5 === 0,
     formatTime
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
-    this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
-
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save(false);
     next();
   },
   watch: {
     '$route.params.urlGuid': {
-      handler() {
+      async handler() {
         let ccofBaseFundingId = this.$route.params.urlGuid;
         if (ccofBaseFundingId) {
-          this.loadFunding(ccofBaseFundingId);
+          await this.loadFunding(ccofBaseFundingId);
+          this.loading = false;
         }
       },
       immediate: true,

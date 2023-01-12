@@ -55,13 +55,6 @@
                     :key="index"
                      class="text-center">${{ item.approvedFeeMar }}</td>
                   </tr>
-                  <tr>
-                    <td >April </td>
-                    <td v-for="(item , index)  in feeList"
-                    :key="index"
-                     class="text-center">${{ item.approvedFeeApr }}</td>
-                  </tr>
-                  
                 </tbody>
               </v-simple-table>
             </v-card-text>
@@ -192,7 +185,12 @@ export default {
           this.loading = false;
         } catch (error) {
           console.log(error);
-          this.setFailureAlert('An error occured while getting.');
+          if (this.CCFRIFacilityModel.previousCcfriId) {
+            this.setFailureAlert('An error occured while getting.');
+          } else {
+            this.setFailureAlert('The server was busy.  Please wait 10 seconds and refresh this screen.');
+          }
+          
         }
       },
       immediate: true,

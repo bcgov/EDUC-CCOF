@@ -10,20 +10,24 @@ export default {
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
+    isLocked() { return false; }
   },
   data() {
     return {
       rules,
       model: {},
       processing: false,
+      loading: true,
       isValidForm: true,
       businessId: this.businessId
     };
   },
   async mounted() {
+    console.log('org mounted called');
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {
+      console.log('org mounted called2');
       this.model = { ...this.organizationModel };
       return;
     }
@@ -38,23 +42,19 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
+      this.loading = false;
       this.setIsOrganizationComplete(this.isValidForm);
       this.setIsStarted(true);
     }
   },
   async beforeRouteLeave(_to, _from, next) {
-    this.setIsOrganizationComplete(this.isValidForm);
-    this.setIsStarted(true);
-    this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
-    this.processing = true;
-    await this.saveOrganization();
-    this.processing = false;
+    await this.save(false);
     next();
   },
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     next() {
@@ -64,13 +64,16 @@ export default {
         this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}`);
       }
     },
-    async save() {
+    async save(showNotification) {
       this.processing = true;
+      this.setIsStarted(true);
       try {
         this.setIsOrganizationComplete(this.isValidForm);
         this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
         await this.saveOrganization();
-        this.setSuccessAlert('Success! Organization information has been saved.');
+        if (showNotification) {
+          this.setSuccessAlert('Success! Organization information has been saved.');
+        }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }

@@ -142,12 +142,13 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['isRenewal', 'programYearList']),
     ...mapState('organization', ['applicationStatus']),
+    ...mapState('application', ['programYearId']),
   },
   data() {
     return {
       model,
       isValidForm: false,
-      isProcessing: true,
+      isProcessing: false,
       dialog: false,
       landingPage: PATHS.home
     };
@@ -163,23 +164,20 @@ export default {
       return this.isValidForm;
     },
     async loadData() {
-      if (this.userInfo.applicationId) {
-        this.isProcessing = true;
-        try {
-          await this.loadDeclaration(this.userInfo.applicationId);
-        } catch (error) {
-          console.log('Error loading application Declaration.', error);
-          this.setFailureAlert('Error loading application Declaration.');
-        }
-        this.isProcessing = false;
+      this.isProcessing = true;
+      try {
+        await this.loadDeclaration();
+      } catch (error) {
+        console.log('Error loading application Declaration.', error);
+        this.setFailureAlert('Error loading application Declaration.');
       }
+      this.isProcessing = false;
     },
     async submit() {
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
         await this.updateDeclaration();
         this.dialog = true;
-        this.setSuccessAlert('Success! Appcliation has been submitted.');
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.'+error);
       }
@@ -198,7 +196,7 @@ export default {
         // Determine declaration b start date
         let declarationBStart;
         this.programYearList.list.find(item => {
-          if (item.programYearId == this.userInfo.ccofProgramYearId) {
+          if (item.programYearId == this.programYearId) {
             declarationBStart = new Date(item.declarationbStart);
           }
         });
