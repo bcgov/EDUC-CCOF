@@ -2,7 +2,9 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h4">Declaration</span>
+        <span class="text-h4">Declaration
+          <span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span>
+        </span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
@@ -142,7 +144,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['programYearList']),
     ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['isRenewal', 'programYearId']),
+    ...mapState('application', ['isRenewal', 'programYearId', 'programYearLabel']),
   },
   data() {
     return {
