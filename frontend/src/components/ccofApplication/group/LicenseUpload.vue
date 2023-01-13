@@ -1,12 +1,11 @@
 <template>
   <v-form ref="form" v-model="isValidForm">
     <v-container>
-      <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@3"></v-skeleton-loader>
-      <span v-else>
+      <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
             <v-card-title class="justify-center"><h3>License Upload</h3></v-card-title>
-            <v-data-table
+            <v-data-table v-if="!isLoading"
               :headers="headers"
               :items="licenseUploadData"
               class="elevation-1"
@@ -44,15 +43,23 @@
                 ></v-file-input>
               </template>
             </v-data-table>
-          </v-card>
+            <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+              <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+              <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
+            </v-card>
+            </v-card>
         </v-row>
       </span>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="nextButtonDisabled" outlined x-large @click="next()">Next</v-btn>
+      <v-row v-if="!isLoading" justify="space-around">
+        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="processing" outlined x-large @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
-
+      <v-row v-else justify="space-around" class="pt-6">
+        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+      </v-row>
     </v-container>
   </v-form>
 </template>
@@ -96,9 +103,9 @@ export default {
   data() {
     return {
       isLoading: false,
+      isProcessing: false,
       licenseUploadData: [],
       rules,
-      processing: false,
       model: {},
       tempFacilityId: null,
       isValidForm: undefined,
@@ -169,7 +176,7 @@ export default {
       await this.save();
     },
     async save() {
-      this.processing = true;
+      this.isProcessing = true;
       try {
         await this.processLicenseFileDelete();
         if (this.fileMap.size > 0) {
@@ -183,7 +190,7 @@ export default {
         console.log(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
-        this.processing = false;
+        this.isProcessing = false;
       }
     },
     async processLicenseFilesSave() {
