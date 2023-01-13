@@ -24,7 +24,7 @@ test('Update Parent Fee Test', async t => {
     .click(landing.continueButton)
     .wait(2000);
   await t.click(parentFee.CCFRIButton);
-  await parentFee.chooseFacility(t, 'test2');
+  await parentFee.chooseFacility(t, 'Facility Name1');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-1.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-2.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-3.txt');

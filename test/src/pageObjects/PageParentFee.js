@@ -29,9 +29,8 @@ class PageCCFRIOpt {
     await t.expect(header.exists).ok();
     await t.click(header.parent().nextSibling().find('label').withExactText(feeFrequency));
     await t.expect(header.parent().nextSibling().find('label').withText(`Enter your highest full-time ${feeFrequency} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.`).exists).ok();
-    
-    let i = 4;
-    for(i; i < lines.length; i++){
+  
+    for(let i = 4; i < lines.length; i++){
       const month = lines[i].split(":")[0].trim();
       const fee = lines[i].split(":")[1].trim();
       await t.typeText(header.parent().nextSibling().find('label').withExactText(month).nextSibling().nextSibling(), fee, {replace: true});
@@ -43,9 +42,9 @@ class PageCCFRIOpt {
     let lines = data.split('\n');
     const option = lines[0].trim().toString();
     await t.click(getRadioOption('Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?', option));
-    let i = 1;
+    
     if(option === 'Yes'){
-      for( i; i < lines.length; i+=4){
+      for(let i = 1; i < lines.length; i+=4){
         await t.click(getButton('ADD NEW CLOSURE'));
         const index = Math.floor(i /4);
         const startDate = getTextField('Select Start Date (YYYY-MM-DD)').nth(index);
