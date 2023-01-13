@@ -1,0 +1,13 @@
+Yes
+2023-06-1
+2023-06-5
+Summer closure
+Yes
+2023-12-1
+2023-12-31
+Christmas closure
+No
+2023-11-11
+2023-10-31
+Bug closure
+Yes

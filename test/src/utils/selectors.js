@@ -78,18 +78,18 @@ function convertToMonth(date_month){
 }
 
 async function selectDate(t, date_data){
-  const date_arr = date_data.split('-');
+  const date_arr = date_data.trim().split('-');
   const date_year = date_arr[0];
   const date_month = date_arr[1];
   const date_day = date_arr[2]; 
 
-  const year_title = Selector('div.v-date-picker-title__year');
+  const year_title = Selector('div.v-date-picker-title__year').filterVisible();
   await t.click(year_title);
-  const year_option = Selector('ul.v-date-picker-years').find('li').withText(date_year);
+  const year_option = Selector('ul.v-date-picker-years').find('li').withText(date_year).filterVisible();
   await t.click(year_option);
-  const month_option = Selector('div.v-date-picker-table--month').find('div').withText(convertToMonth(date_month));
+  const month_option = Selector('div.v-date-picker-table--month').find('div').withText(convertToMonth(date_month)).filterVisible();
   await t.click(month_option);
-  const day_option = Selector('div.v-date-picker-table--date').find('div').withText(date_day.replace(/^0+/, '')); //remove the leading zero
+  const day_option = Selector('div.v-date-picker-table--date').find('div').withText(date_day.replace(/^0+/, '')).filterVisible(); //remove the leading zero
   await t.click(day_option);
 } 
 
@@ -158,7 +158,8 @@ const selectors = {
   mapFieldsFromFile,
   getRadioOption,
   getErrorMessage,
-  removeContent
+  removeContent,
+  selectDate
 };
 
 module.exports = selectors;

@@ -4,7 +4,6 @@ import PageParentFee from '../pageObjects/PageParentFee';
 import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
-import { Selector } from 'testcafe';
 
 
 const login = new PageLogin();
@@ -25,8 +24,17 @@ test('Update Parent Fee Test', async t => {
     .click(landing.continueButton)
     .wait(2000);
   await t.click(parentFee.CCFRIButton);
-  await parentFee.updateParentFeeFromFile(t, 'test2', 'facility-parentfee.txt')
+  await parentFee.chooseFacility(t, 'test2');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-1.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-2.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-3.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-4.txt');
+  await parentFee.updateClosure(t, 'facility-parentfee-closure.txt');
+  await parentFee.updateInformation(t, 'facility-parentfee-information.txt');
+  await t.expect(parentFee.nextButton.hasAttribute('disabled')).notOk();
+  await t.click(parentFee.saveButton).wait(3000);
+  await t.expect(alert.success.exists).ok();
+  await t.click(parentFee.nextButton);
 
-  await t.expect(parentFee.nextButton.hasAttribute('disabled')).ok();
 });
 
