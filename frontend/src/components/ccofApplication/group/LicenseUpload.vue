@@ -4,7 +4,7 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center"><h3>License Upload</h3></v-card-title>
+            <v-card-title class="justify-center"><h3>License Upload<span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span></h3></v-card-title>
             <v-data-table v-if="!isLoading"
               :headers="headers"
               :items="licenseUploadData"
@@ -50,15 +50,10 @@
             </v-card>
         </v-row>
       </span>
-      <v-row v-if="!isLoading" justify="space-around">
-        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="processing" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
-      </v-row>
-      <v-row v-else justify="space-around" class="pt-6">
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+      <v-row justify="space-around">
+        <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="isProcessing" outlined x-large @click="next()">Next</v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -80,6 +75,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
+    ...mapState('application', ['isRenewal', 'programYearLabel']),
     ...mapState('organization', ['applicationId', 'organizationProviderType']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 

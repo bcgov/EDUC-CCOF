@@ -3,7 +3,7 @@
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center"><h3>Supporting Document Upload</h3></v-card-title>
+          <v-card-title class="justify-center"><h3>Supporting Document Upload<span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span></h3></v-card-title>
           <v-data-table v-if="!isLoading"
             :headers="headers"
             :items="uploadedDocuments"
@@ -88,17 +88,11 @@
           </v-card>
         </v-card>
       </v-row>
-      <v-row v-if="!isLoading" justify="space-around">
+      <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large :loading="isProcessing" @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
       </v-row>
-      <v-row v-else justify="space-around" class="pt-6">
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-    </v-row>
-
     </v-container>
   </v-form>
 </template>
@@ -121,6 +115,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
+    ...mapState('application', ['isRenewal', 'programYearLabel']),
     ...mapState('organization', ['applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
 
