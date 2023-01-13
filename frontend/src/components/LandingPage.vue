@@ -5,8 +5,7 @@
 
     <v-row justify="center" no-gutters>
       <div
-        class="pb-12 text-h4"
-        align="center"
+        class="pb-12 text-h4 text-center"
         v-text="'What would you like to do?'" />
     </v-row >
 
