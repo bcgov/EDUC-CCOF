@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { upsertParentFees, getRFIApplication, updateCCFRIApplication, renewCCOFApplication} = require('../components/application');
+const { upsertParentFees, getRFIApplication, updateCCFRIApplication, renewCCOFApplication, getRFIMedian} = require('../components/application');
 const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, createRFIApplication, updateRFIApplication, getDeclaration, submitApplication} = require('../components/application');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
@@ -69,6 +69,12 @@ router.put('/ccfri/rfi/:rfipfiid', passport.authenticate('jwt', {session: false}
   [param('rfipfiid', 'URL param: [rfipfiid] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return updateRFIApplication(req, res);
+  });
+
+router.get('/ccfri/:ccfriId/median', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getRFIMedian(req, res);
   });
 
 

@@ -1,6 +1,6 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
-import { isEmpty, isEqual, cloneDeep } from 'lodash';
+import { checkSession } from '@/utils/session';
 
 function getProgramYear(selectedGuid, programYearList){
   const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
@@ -13,21 +13,102 @@ function getProgramYear(selectedGuid, programYearList){
   return programYear;
 }
 
+function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters) {
+  if (currentRFI.prevYearFeesCorrect) {
+    let previousRFI = getters.getCCFRIById(currentRFI.previousCcfriId);
+    console.log('previous childcare type: ', previousRFI.childCareTypes);
+    console.log('categoryId: ', careType.childCareCategoryId);
+    console.log('previousProgramYearId: ', previousProgramYearId);
+    
+    return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
+  } else {
+    return currentRFI.childCareTypes.find(item => { return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
+  }
+}
+
+function compareChildCareFees(currentFees, previousFees) {
+  let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 20;
+  let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 20;
+  console.log('currentFeeFrequency', currentFeeFrequency);
+  console.log('previousFeeFrequency', previousFeeFrequency);
+  let currentSum = 0;
+  currentSum += currentFees.approvedFeeJan * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeFeb * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeMar * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeApr * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeMay * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeJun * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeJul * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeAug * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeSep * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeOct * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeNov * currentFeeFrequency;
+  currentSum += currentFees.approvedFeeDec * currentFeeFrequency;
+  console.log(`currentSum for [${currentFees.childCareCategory}] is: [${currentSum}]`);
+  let previousSum = 0;
+  previousSum += previousFees.approvedFeeJan * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeFeb * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeMar * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeApr * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeMay * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeJun * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeJul * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeAug * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeSep * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeOct * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeNov * previousFeeFrequency;
+  previousSum += previousFees.approvedFeeDec * previousFeeFrequency;
+  console.log(`previousSum for [${previousFees.childCareCategory}] is: [${previousSum}]`);
+  return (currentSum - previousSum) / 12;
+}
 
 export default {
   namespaced: true,
   state: {
     isValidForm: undefined,
-    model: [],
     loadedModel: {},
     CCFRIFacilityModel : {},
     ccfriId: {},
     ccfriStore :{},
+    ccfriMedianStore: {},
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => { 
       return state.ccfriStore[ccfriId];
     },
+    getCCFRIMedianById: (state) => (ccfriId) => { 
+      return state.ccfriMedianStore[ccfriId];
+    },
+    getCcfriOver3percent(state, getters, rootState) {
+      let over3percentFacilities = [];
+      console.log('rootstate: ', rootState);
+      const currentProgramYearId = rootState.application.programYearId;
+      const programYearList = rootState.app.programYearList.list;
+      const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
+      const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
+      const previousProgramYearId = previousProgramYear.programYearId;
+
+      
+      console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
+      const threePercentMedian = getters.getCCFRIMedianById(state.ccfriId);
+      state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
+        .forEach(careType => {
+          let previousCareType = getPreviousCareType(state.CCFRIFacilityModel, careType, previousProgramYearId, getters);
+          console.log('previousCare Type: ', previousCareType);
+          if (previousCareType) {
+            let difference = compareChildCareFees(careType, previousCareType);
+            let allowedDifference = threePercentMedian[careType.childCareCategory];
+            console.log('difference', difference);
+            console.log('allowedDifference', allowedDifference);
+            if (difference > allowedDifference) {
+              over3percentFacilities.push(careType.childCareCategory);
+            }
+          }
+        });
+      console.log('over array', over3percentFacilities);
+      return over3percentFacilities;   
+    },
+
   },
   mutations: {
     model(state, value) { state.model = value;},
@@ -40,6 +121,10 @@ export default {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;  
       }
     },
+    addCCFRIMedianToStore: (state, {ccfriId, ccfriMedian} ) => {
+      state.ccfriMedianStore[ccfriId] = ccfriMedian;  
+    },
+
     deleteChildCareTypes(state) {
       state.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => {
         if (item.deleteMe){
@@ -50,6 +135,20 @@ export default {
   },
 
   actions: {
+    async loadCCFisCCRIMedian({state, getters, commit}) {
+      let ccfriMedian = getters.getCCFRIMedianById(state.ccfriId); 
+      if (!ccfriMedian) {
+        checkSession();
+        try {
+          let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
+          commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});                       
+        } catch(e) {
+          console.log(`Failed to get CCFRI Median - ${e}`);
+          throw e;
+        }
+      }
+    },
+
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
