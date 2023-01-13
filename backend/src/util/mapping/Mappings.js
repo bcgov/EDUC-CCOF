@@ -114,6 +114,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maxnoofweeksperyearyouprovidechildcare', front: 'maxWeeksPerYear' },
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom12hr' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo12hr' },
+  { back: 'ccof_maximumnumberofchildcarespacesyouoffer', front: 'maxSpaces' },
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
