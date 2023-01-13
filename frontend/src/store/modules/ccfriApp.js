@@ -105,8 +105,14 @@ export default {
             });
           }
         });
+
+        //if the user manually refreshes AddNewFees page - assume that previous years fees are correct. (same as hitting yes on Existing Fees Page)
+        //may take this out later 
+        if (state.CCFRIFacilityModel.prevYearFeesCorrect === undefined){
+          state.CCFRIFacilityModel.prevYearFeesCorrect = true;
+        }
         
-        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ //only display previous year fees if it's the first time CCFRI application  -- OR fees are incorrect?
+        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
           response.data.forEach(item => {
             const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
             //check for undefined here! 

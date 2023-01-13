@@ -1,5 +1,13 @@
 <template>
   <v-container>
+
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+    </div>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
@@ -132,6 +140,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'programYearList']),
+    ...mapState('application', ['programYearLabel']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
     ...mapState('organization', ['applicationId']),
     
@@ -142,6 +151,9 @@ export default {
       
       return activeFac;
     },
+    // currentYearTitle(){
+    //   return this.programYearList.current.name.substring(0, 7);
+    // },
     currentFacility(){
       return this.navBarList[this.findIndexOfFacility];
     },

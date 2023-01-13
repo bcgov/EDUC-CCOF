@@ -119,15 +119,13 @@ async function updateCCFRIApplication(req, res) {
 async function upsertParentFees(req, res) {
   let body = req.body;
 
-  log.info(body);
+  //log.info(body);
   let hasError = false;
   let theResponse = [];
+
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async(feeGroup) => {
-    // log.info(feeGroup);
-    // log.info('WHAT IS THE DELETE DATA LOOK LIKE?');
-
     if (feeGroup.deleteMe){
       
       try {
@@ -136,6 +134,8 @@ async function upsertParentFees(req, res) {
         theResponse.push(res.status(HttpStatus.OK).json(response));
       } catch (e) {
         //log.info(e);
+        hasError = true;
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
         //theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       }
     }
@@ -172,9 +172,7 @@ async function upsertParentFees(req, res) {
       );
       let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
-        log.info(payload);
         let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-        log.info('feeResponseee', response);
         theResponse.push( res.status(HttpStatus.CREATED).json(response));
       } catch (e) {
         //log.info(e);
@@ -198,8 +196,6 @@ async function upsertParentFees(req, res) {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
       log.info('notesRes', response);
       theResponse.push(res.status(HttpStatus.CREATED).json(response));
-      log.info(theResponse);
-      log.info('THE RESPONSE IS: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
     } catch (e) {
       theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       hasError = true;
@@ -219,10 +215,12 @@ async function upsertParentFees(req, res) {
       hasError = true;
     }
   }
+
+
+
   if (hasError) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
   } else {
-    
     return res.status(HttpStatus.OK).json();
   }
 
@@ -262,9 +260,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
         "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
       };
 
-      
       let response = await postOperation('ccof_application_ccfri_closures', payload);
-      log.info('feeResponse', response);
       retVal.push(response);
       
     }));
@@ -272,7 +268,6 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
     return retVal;
   
   } catch (e){
-    log.info('I BROKE TRYING TO SAVE NEW DATES');
     log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }

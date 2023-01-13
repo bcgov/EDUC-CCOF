@@ -3,12 +3,15 @@
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
-      <!-- <v-btn color="info" outlined x-large  @click="save()">
-            UPDATE FEES</v-btn> -->
-
-      <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
-
-      <p class="text-h6 text-center"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+    </div>
+    <br><br>
+      <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -331,14 +334,16 @@ export default {
       isUnlocked: true,
       loading: true,
       processing: false,
-      
       facilityProgramYears: [],
       isValidForm : false,
      
       feeRules: [
-        (v) => !!v  || 'Required.',
-        (v) => v > 0  || 'Input a positve number',
+        (v) => (v == '' || v == ' ') || 'Required.',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
+        (v) => v >= 0  || 'Input a positve number',
+        
+        
+        
       ],
       rules: [
         (v) => !!v  || 'Required.',
@@ -355,13 +360,16 @@ export default {
     next();
   },
   computed: {
+    ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapGetters('app', ['lookupInfo']),
-    ...mapState('application', ['applicationStatus']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList', 'programYearList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapState('organization', ['applicationId']),
 
+    currentYearTitle(){
+      return this.programYearList.current.name.substring(0, 7);
+    },
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
@@ -396,11 +404,13 @@ export default {
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
+
         
           this.loading = false;
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
+          window.location.reload();
         }
       },
       immediate: true,
@@ -460,10 +470,14 @@ export default {
       }
     },
     isFormComplete(){
-      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
+      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0 && this.isValidForm){
+        this.currentFacility.isCCFRIComplete = true; 
         return true;
       }
+
+      this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm; //false makes button clickable, true disables button
+      
     },
     hasModelChanged(){
       console.log('model:', this.loadedModel);
@@ -496,7 +510,7 @@ export default {
     
         
         let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
-        currentFacility.isCCFRIComplete = this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
+        currentFacility.isCCFRIComplete = this.isFormComplete(); 
 
         this.CCFRIFacilityModel.dates.forEach ((item, index) => {
           //checks if blank - don't send over incomplete closure dates
@@ -543,15 +557,21 @@ export default {
 
         try {
           this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes 
-          await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          console.log('the res is:' , res);
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           }
+          
           //remove the facility to delete from the vuex store
           this.deleteChildCareTypes();
         } catch (error) {
           console.info(error);
-          this.setFailureAlert('An error occurred while saving. Please try again later.');
+          this.setFailureAlert('An error occurred while saving. Please refresh and save again.');
+
+          //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
+          //and life will be good :) 
+          window.location.reload(true);
         }
         this.processing = false;
       }

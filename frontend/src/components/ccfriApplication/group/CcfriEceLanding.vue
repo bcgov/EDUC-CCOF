@@ -1,10 +1,23 @@
 <template>
     <v-container>
         
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Confirm CCFRI participation for each facility.</span>
+      </div>
+      
       <v-btn
-        class = "my-10 mx-14 justify-end"
+        class = "mx-0 justify-end"
         @click="toggleAll()"
-        dark color='#003366' 
+        dark color='#003366'
+        :disabled="applicationStatus === 'SUBMITTED'" 
         > 
         Opt-in All Facilities
       </v-btn>
@@ -37,7 +50,7 @@
                   :showOptStatus = "showOptStatus[index]"
                   dark color='#003366' 
                   :rules = "rules"
-                  :disabled="isReadOnly"
+                  :disabled="applicationStatus === 'SUBMITTED'"
                   > 
                     UPDATE
                   </v-btn>
@@ -116,7 +129,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
+    ...mapState('application', ['applicationStatus',  'programYearLabel']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('organization', ['applicationId']),
 
     isReadOnly(){
@@ -137,6 +151,9 @@ export default {
       return false;
       //return !this.isUnlocked; 
     },
+    // currentYearTitle(){
+    //   return this.programYearList.current.name.substring(0, 7);
+    // },
   },
   beforeMount: function() {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
