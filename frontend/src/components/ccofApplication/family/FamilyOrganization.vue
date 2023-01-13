@@ -39,16 +39,16 @@
 
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" outlined required v-model="model.address2" label="Street Address" />
+                <v-text-field :disabled="isLocked" outlined v-model="model.address2" label="Street Address" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required v-model="model.city2" label="City/Town" />
+                <v-text-field :disabled="isLocked" outlined v-model="model.city2" label="City/Town" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required v-model="model.postalCode2" :rules="rules.postalCode" label="Postal Code" />
+                <v-text-field :disabled="isLocked" outlined v-model="model.postalCode2" :rules="rules.postalCode" label="Postal Code" />
               </v-col>
             </v-row>
 
