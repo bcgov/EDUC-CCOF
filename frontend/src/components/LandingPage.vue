@@ -17,14 +17,14 @@
               <h4 class="text--primary">
                 {{item.infoTitle}}
               </h4>
-              <v-card color="#B3E5FF" class="mt-1" v-if="ccofStatus === CCOF_STATUS_NEW">
+              <v-card color="#B3E5FF" class="mt-1 py-2" v-if="ccofStatus === CCOF_STATUS_NEW">
                 <v-row align="center" no-gutters class="pa-1">
-                  <v-col :cols="12" lg="2" align="center">
+                  <v-col :cols="12" lg="1" align="center">
                     <v-icon color="black" aria-hidden="false" size="40">
                       mdi-information
                     </v-icon>
                   </v-col>
-                  <v-col :cols="12" lg="10" v-html="item.infoText" class="px-2">
+                  <v-col :cols="12" lg="11" v-html="item.infoText" class="pa-2">
                   </v-col>
                 </v-row>
               </v-card>
@@ -112,7 +112,7 @@
       </SmallCard>
     </v-row>
 
-    <v-card class="rounded-lg elevation-0 pa-6 mt-8" outlined>
+    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
       <v-row v-if="navBarList?.length > 2" no-gutters>
         <v-col class="col-12 col-md-6 px-4 mt-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
@@ -128,11 +128,10 @@
           </v-text-field>
         </v-col>
       </v-row>
-
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
           v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus}) in filteredList" :key="facilityId">
-          <v-card class="elevation-4 pa-4 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
+          <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
               <!-- <p class="text-h5 text--primary">
                 Facility {{index +1}}
@@ -159,7 +158,7 @@
                 <strong v-else> {{eceweStatus}} </strong>
               </p>
             </v-card-text>
-            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(facilityId)">
+            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(facilityId) || isNMFUnlock(facilityId) || isRFIUnlock(facilityId)">
               <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredRoute()">Update This Facility</v-btn>
             </v-row>
           </v-card>
@@ -324,10 +323,32 @@ export default {
     },
     isApplicationUnlock() {
       return ((this.unlockBaseFunding && (this.applicationType === 'NEW')) 
-        || this.unlockDeclaration || this.unlockEcewe || this.unlockLicenseUpload || this.unlockSupportingDocuments);
+        || this.unlockDeclaration || this.unlockEcewe || this.unlockLicenseUpload || this.unlockSupportingDocuments
+        || (this.unlockCCFRIList.length > 0 || this.unlockNMFList.length > 0 || this.unlockRFIList.length > 0));
     },
     unlockCCFRIList() {
-      return this.navBarList.filter((fac) => fac.unlockCcfri);
+      let unlockList = [];
+      this.navBarList.forEach((facility) => {
+        if (facility.unlockCcfri)
+          unlockList.push(facility.facilityId);
+      });
+      return unlockList;
+    },
+    unlockNMFList() {
+      let unlockList = [];
+      this.navBarList.forEach((facility) => {
+        if (facility.unlockNmf)
+          unlockList.push(facility.facilityId);
+      });
+      return unlockList;
+    },
+    unlockRFIList() {
+      let unlockList = [];
+      this.navBarList.forEach((facility) => {
+        if (facility.unlockRfi)
+          unlockList.push(facility.facilityId);
+      });
+      return unlockList;
     },
   },
   methods: {
@@ -405,6 +426,13 @@ export default {
         this.goToSupportingDocumentUpload();
       else if (this.unlockDeclaration)
         this.goToSummaryDeclaration();
+      // TO-DO: Update with the correct route for CCFRI/RFI/NMF
+      else if (this.unlockCCFRIList)
+        this.goToCCOFOrganizationInfo();
+      else if (this.unlockNMFList)
+        this.goToCCOFOrganizationInfo();
+      else if (this.unlockRFIList)
+        this.goToCCOFOrganizationInfo();
     },
     buttonColor(isDisabled) {
       return isDisabled ? '#909090' : '#003366';
@@ -432,8 +460,14 @@ export default {
       return false;
     },
     isCCFRIUnlock(facilityId) {
-      return (this.unlockCCFRIList.includes(facilityId));
-    }   
+      return this.unlockCCFRIList.includes(facilityId);
+    },
+    isNMFUnlock(facilityId) {
+      return this.unlockNMFList.includes(facilityId);
+    },  
+    isRFIUnlock(facilityId) {
+      return this.unlockRFIList.includes(facilityId);
+    },
   },
   
   components: { SmallCard, MessagesToolbar}
