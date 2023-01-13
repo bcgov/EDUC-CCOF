@@ -76,7 +76,7 @@ async function createRFIApplication(req, res) {
 }
 
 
-//creates or updates CCFRI application. 
+//creates CCFRI application. 
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
   let retVal= [];
@@ -136,7 +136,7 @@ async function upsertParentFees(req, res) {
         theResponse.push(res.status(HttpStatus.OK).json(response));
       } catch (e) {
         //log.info(e);
-        theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+        //theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       }
     }
 
@@ -173,7 +173,6 @@ async function upsertParentFees(req, res) {
       let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
         log.info(payload);
-        log.info('PAY LOAAAAAAAAAAAAAD');
         let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
         log.info('feeResponseee', response);
         theResponse.push( res.status(HttpStatus.CREATED).json(response));

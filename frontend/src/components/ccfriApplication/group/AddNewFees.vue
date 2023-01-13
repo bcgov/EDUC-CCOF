@@ -216,7 +216,7 @@
                       :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate" 
                       @input="calendarMenu2 = false"
-                      :rules="test"
+                      :rules="rules"
                       >
                       
                     </v-date-picker>
@@ -411,6 +411,7 @@ export default {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', ]),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('app', ['setRfiList']),
+
     addRow () {
       this.CCFRIFacilityModel.dates.push( {
         datePicker1: undefined,
@@ -505,7 +506,7 @@ export default {
         });
 
 
-        //for each child care type - send a request. 
+        //for each child care type - prepare an object for the payload 
         //index will also match the order of how the cards are displayed. 
         this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
           if (item.feeFrequency) {
