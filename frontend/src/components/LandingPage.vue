@@ -221,7 +221,7 @@ export default {
     ...mapGetters('app', ['futureYearLabel']),
     ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'applicationStatus']),
-    ...mapState('application', ['applicationType', 'programYearId', 'unlockBaseFunding', 
+    ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
@@ -293,9 +293,10 @@ export default {
         case 'DRAFT':
           return this.CCOF_STATUS_CONTINUE;
         case 'SUBMITTED':
-          return this.isApplicationUnlock ? this.CCOF_STATUS_ACTION_REQUIRED : this.CCOF_STATUS_COMPLETE;
-        case 'APPROVED':
-          return this.isApplicationUnlock ? this.CCOF_STATUS_ACTION_REQUIRED : this.CCOF_STATUS_APPROVED;
+          if (this.isApplicationUnlock)
+            return this.CCOF_STATUS_ACTION_REQUIRED;
+          else
+            return (this.ccofApplicationStatus === 'ACTIVE') ? this.CCOF_STATUS_APPROVED : this.CCOF_STATUS_COMPLETE;
         default:
           return this.CCOF_STATUS_NEW;
         }
@@ -312,7 +313,7 @@ export default {
           return this.RENEW_STATUS_NEW;
         } else if (this.isApplicationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
-        } else if (this.applicationStatus === 'APPROVED') {
+        } else if (this.applicationStatus === 'SUBMITTED' && this.ccofApplicationStatus === 'ACTIVE') {
           return this.RENEW_STATUS_APPROVED;
         } else {
           return this.RENEW_STATUS_COMPLETE;
