@@ -9,14 +9,15 @@ export default {
   computed: {
     ...mapState('funding', ['fundingModel']),
     ...mapState('organization', ['organizationProviderType']),
-    isLocked() { return false; }
+    ...mapState('auth', ['userInfo']),
   },
   data() {
     return {
       processing: false,
       loading: true,
       model: {},
-      rules
+      rules,
+      isLocked: true
     };
   },
   methods: {
@@ -81,6 +82,7 @@ export default {
       handler() {
         this.model = { ...this.fundingModel };
         this.$refs.form?.resetValidation();
+        this.isLocked = !this.userInfo.unlockBaseFunding;
       },
       immediate: true,
       deep: true
