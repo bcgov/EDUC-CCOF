@@ -186,7 +186,8 @@ const UserProfileApplicationMappings = [ //application
   { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
   { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
-  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' }
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'ccof_ccofstatus', front: 'ccofStatus' },
 ];
 
 const UserProfileFacilityMappings = [

@@ -1,102 +1,121 @@
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-12">
 
     <MessagesToolbar></MessagesToolbar>
 
     <v-row justify="center" no-gutters>
       <div
-        class="pa-6 text-h4"
+        class="pb-12 text-h4"
+        align="center"
         v-text="'What would you like to do?'" />
     </v-row >
 
-    <v-container fluid>
-      <v-row class="" align="stretch" justify="space-around"> 
-        <SmallCard :class="smallCardLayout('CCOF')" title="Child Care Operating Funding (CCOF) application" disable v-if="ccofStatus === CCOF_STATUS_APPROVED">
-          <template #button>
-            <span class="text-h5 text--primary">Status: Approved</span>
-          </template>
-        </SmallCard>
-        <SmallCard :class="smallCardLayout('CCOF')" title="Apply for Child Care Operating Funding (CCOF) including:" :disable="!isCCOFEnabled" v-else>
-          <template #content>
-            <v-row>
-              <v-container v-for="item in ccofInfoText" :key="item.infoTitle" fluid>
-                <h4 class="text--primary">
-                  {{item.infoTitle}}
-                </h4>
-                <v-card color="#B3E5FF" class="mt-1" v-if="ccofStatus === CCOF_STATUS_NEW">
-                  <v-row align="center" no-gutters class="pa-1">
-                    <v-col :cols="12" lg="2" align="center">
-                      <v-icon color="black" aria-hidden="false" size="40">
-                        mdi-information
-                      </v-icon>
-                    </v-col>
-                    <v-col :cols="12" lg="10" v-html="item.infoText" class="px-2">
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-container>
-            </v-row>
-          </template>
-          <template #button>
-            <v-row v-if="ccofStatus === CCOF_STATUS_NEW" no-gutters>
-              <v-col :cols="12">
-                <p>
-                  For more information, visit the government website:
-                  <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
-                </p>
-              </v-col>
-              <v-col :cols="12">
-                <v-btn dark class="dashboardButton" @click="newApplication()">Start Application</v-btn>
-              </v-col>             
-            </v-row>
-            <v-row v-else-if="ccofStatus === CCOF_STATUS_CONTINUE" no-gutters>
-              <v-col :cols="12">
-                <p class="text-h5 text--primary">Status: Incomplete</p>
-              </v-col>             
-              <v-col :cols="12" class="pb-2">
-                <v-btn dark class="dashboardButton" @click="continueApplication()">Continue Application</v-btn>
-              </v-col>             
-            </v-row>    
-            <v-row v-else-if="ccofStatus === CCOF_STATUS_ACTION_REQUIRED" no-gutters>
-              <v-col :cols="12">
-                <v-btn dark class="dashboardButton" @click="actionRequiredRoute()">Action Required</v-btn>
-              </v-col>                     
-            </v-row>
-            <v-row v-else no-gutters>
-              <v-col :cols="12">
-                <span class="text-h5 text--primary">Status: Submitted</span>
-              </v-col>                     
-            </v-row>
-          </template>
-        </SmallCard>
+    <v-row class="" align="stretch" justify="space-around"> 
+      <SmallCard :class="smallCardLayout('CCOF')" :title="CCOFCardTitle">
+        <template #content>
+          <v-row v-if="!isCCOFApproved()">
+            <v-container v-for="item in ccofInfoText" :key="item.infoTitle" fluid>
+              <h4 class="text--primary">
+                {{item.infoTitle}}
+              </h4>
+              <v-card color="#B3E5FF" class="mt-1" v-if="ccofStatus === CCOF_STATUS_NEW">
+                <v-row align="center" no-gutters class="pa-1">
+                  <v-col :cols="12" lg="2" align="center">
+                    <v-icon color="black" aria-hidden="false" size="40">
+                      mdi-information
+                    </v-icon>
+                  </v-col>
+                  <v-col :cols="12" lg="10" v-html="item.infoText" class="px-2">
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-container>
+          </v-row>
+        </template>
+        <template #button>
+          <v-row v-if="ccofStatus === CCOF_STATUS_NEW" no-gutters>
+            <v-col :cols="12">
+              <p>
+                For more information, visit the government website:
+                <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
+              </p>
+            </v-col>
+            <v-col :cols="12">
+              <v-btn dark class="blueButton" @click="newApplication()">Start Application</v-btn>
+            </v-col>             
+          </v-row>
+          <v-row v-else-if="ccofStatus === CCOF_STATUS_CONTINUE" no-gutters>
+            <v-col :cols="12">
+              <p class="text-h5">Status: Incomplete</p>
+            </v-col>             
+            <v-col :cols="12" class="pb-2">
+              <v-btn dark class="blueButton" @click="continueApplication()">Continue Application</v-btn>
+            </v-col>             
+          </v-row>    
+          <v-row v-else-if="ccofStatus === CCOF_STATUS_ACTION_REQUIRED" no-gutters>
+            <v-col :cols="12">
+              <v-btn dark class="blueButton" @click="actionRequiredRoute()">Action Required</v-btn>
+            </v-col>                     
+          </v-row>
+          <v-row v-else-if="isCCOFApproved()" no-gutters>
+            <v-col :cols="12">
+              <span class="text-h5">Status: Approved</span>
+            </v-col>
+            <v-col :cols="12">
+              <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="!isRenewEnabled">View Application</v-btn>
+            </v-col> 
+          </v-row>
+          <v-row v-else no-gutters>
+            <v-col :cols="12">
+              <span class="text-h5">Status: Submitted</span>
+            </v-col>
+            <v-col :cols="12">
+              <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')">View Application</v-btn>
+            </v-col>                     
+          </v-row>
+        </template>
+      </SmallCard>
 
-        <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
-          <template #button>
-            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my funding</v-btn>
-            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
-            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredRoute()">Action Required</v-btn>
-            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else >Complete</v-btn>
-          </template>
-        </SmallCard>
+      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
+        <template #button>
+          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my funding</v-btn>
+          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
+          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredRoute()">Action Required</v-btn>
+          <v-row v-else-if="ccofRenewStatus === RENEW_STATUS_APPROVED" no-gutters>
+            <v-col :cols="12">
+              <span class="text-h5">Status: Approved</span>
+            </v-col>
+            <v-col :cols="12">
+              <v-btn dark class="blueButton mt-4" @click="viewApplication('RENEW')">View Application</v-btn>
+            </v-col>                     
+          </v-row>
+          <v-row v-else no-gutters>
+            <v-col :cols="12">
+              <span class="text-h5">Status: Submitted</span>
+            </v-col>
+            <v-col :cols="12">
+              <v-btn dark class="blueButton mt-4" @click="viewApplication('RENEW')">View Application</v-btn>
+            </v-col>                     
+          </v-row>
+        </template>
+      </SmallCard>
 
-        <SmallCard :class="smallCardLayout('OTHERS')" title="Make a change to my information, parent fees, or funding agreement" class="col-lg-2" :disable="isCCOFEnabled">
-          <template #button>
-            <v-btn href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding" dark :color='buttonColor(isCCOFEnabled)'>Make a change</v-btn>
-          </template>
-        </SmallCard>
+      <SmallCard :class="smallCardLayout('OTHERS')" title="Make a change to my information, parent fees, or funding agreement" class="col-lg-2" :disable="!isCCOFApproved()">
+        <template #button>
+          <v-btn href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/report-changes" :color='buttonColor(!isCCOFApproved())' dark>Report Changes</v-btn>
+        </template>
+      </SmallCard>
 
-        <SmallCard :class="smallCardLayout('OTHERS')" title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable="isCCOFEnabled">
-          <template #button>
-            <v-btn :color='buttonColor(isCCOFEnabled)' dark>Submit reports</v-btn>
-          </template>
-        </SmallCard>
-      </v-row>
+      <SmallCard :class="smallCardLayout('SUBMIT_REPORTS')" title="Submit Enrolment Reports or monthly ECE-WE reports to receive payment" :disable="!isCCOFApproved()">
+        <template #button>
+          <v-btn href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx" :color='buttonColor(!isCCOFApproved())' dark>Submit Monthly Reports</v-btn>
+        </template>
+      </SmallCard>
+    </v-row>
 
-      <br>
-
-    <v-card class="rounded-lg elevation-0 pa-6 mt-1" outlined>
-      <v-row v-if="navBarList?.length > 2">
-        <v-col class="col-12 col-md-6 px-6">
+    <v-card class="rounded-lg elevation-0 pa-6 mt-8" outlined>
+      <v-row v-if="navBarList?.length > 2" no-gutters>
+        <v-col class="col-12 col-md-6 px-4 mt-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API 
             Filter by Facility Name, status, or licence: "
@@ -141,30 +160,14 @@
                 <strong v-else> {{eceweStatus}} </strong>
               </p>
             </v-card-text>
-            <v-col align="center" v-if="ccfriOptInStatus === 0 || eceweOptInStatus === 0">
-              <v-btn class="optinButton text-truncate my-4" dark v-if="ccfriOptInStatus === 0" @click="goToCCFRI()">
-                <span class="text-wrap">
-                  OPT IN
-                  <br/>
-                  Child Care Fee Reduction Initiative (CCFRI)
-                </span>
-              </v-btn>          
-              <v-btn class="optinButton text-truncate my-4" dark v-if="eceweOptInStatus === 0" @click="goToECEWE()">
-                <span class="text-wrap">
-                  OPT IN
-                  <br/>
-                  Early Childhood Educator Wage Enhancement (ECE-WE)
-                </span>
-              </v-btn>
-            </v-col>
+            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(facilityId)">
+              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredRoute()">Update This Facility</v-btn>
+            </v-row>
           </v-card>
         </v-col>
       </v-row>
-    </v-card>
-  
+    </v-card>   
   </v-container>
-</v-container>
-  
 </template>
 <script>
 
@@ -195,17 +198,14 @@ export default {
           infoTitle: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
           infoText: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
         },
-      ]
+      ],
+      CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:'
     };
   },
 
   created () {
-    //Used for constants
-    // this.CCOF_STATUS_COMPLETE = 'Completed';
-    // this.CCOF_STATUS_NEW = 'Start Application';
-    // this.CCOF_STATUS_CONTINUE = 'Continue Application';
-    this.CCOF_STATUS_COMPLETE = 'COMPLETE';
     this.CCOF_STATUS_NEW = 'NEW';
+    this.CCOF_STATUS_COMPLETE = 'COMPLETE';
     this.CCOF_STATUS_CONTINUE = 'CONTINUE';
     this.CCOF_STATUS_APPROVED = 'APPROVED';
     this.CCOF_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
@@ -213,6 +213,7 @@ export default {
     this.RENEW_STATUS_NEW = 'NEW';
     this.RENEW_STATUS_COMPLETE = 'COMPLETE';
     this.RENEW_STATUS_CONTINUE = 'CONTINUE';
+    this.RENEW_STATUS_APPROVED = 'APPROVED';
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
 
     this.getAllMessagesVuex();
@@ -259,21 +260,22 @@ export default {
       return isEnabled;
     },
     isRenewEnabled() {
-      if (this.applicationType === 'RENEW') {
-        if (this.applicationStatus === 'DRAFT') {
-          console.log('isRenewEnabled1: ', true);
-          return true;
-        } else if (this.applicationStatus === 'SUBMITTED') {
-          let isEnabled = (this.isCCFRIandECEWEComplete && this.isWithinRenewDate 
-          && this.programYearId == this.programYearList?.current?.programYearId) || this.isApplicationUnlock;
-          console.log('isRenewEnabled2: ', isEnabled);
-          return isEnabled;
-        }
-      } else if (this.applicationType === 'NEW') {
+      // if (this.applicationType === 'RENEW') {
+      //   if (this.applicationStatus === 'DRAFT') {
+      //     console.log('isRenewEnabled1: ', true);
+      //     return true;
+      //   } else if (this.applicationStatus === 'SUBMITTED') {
+      //     let isEnabled = (this.isCCFRIandECEWEComplete && this.isWithinRenewDate 
+      //     && this.programYearId == this.programYearList?.current?.programYearId) || this.isApplicationUnlock;
+      //     console.log('isRenewEnabled2: ', isEnabled);
+      //     return isEnabled;
+      //   }
+      // } else 
+      if (this.applicationType === 'NEW') {
         if (this.applicationStatus === 'DRAFT') {
           console.log('isRenewEnabled3: ', false);
           return false;
-        } else if (this.applicationStatus === 'SUBMITTED') {
+        } else if (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') {
           let isEnabled = (this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
             && this.programYearId == this.programYearList?.current?.programYearId
@@ -282,7 +284,7 @@ export default {
           return isEnabled;
         }
       }
-      return false;
+      return (this.applicationType === 'RENEW');
     },
     ccofStatus() {
       if (!this.applicationType) {
@@ -294,18 +296,14 @@ export default {
           return this.CCOF_STATUS_CONTINUE;
         case 'SUBMITTED':
           return this.isApplicationUnlock ? this.CCOF_STATUS_ACTION_REQUIRED : this.CCOF_STATUS_COMPLETE;
-          // return this.CCOF_STATUS_SUBMITTED;
         case 'APPROVED':
-          return this.CCOF_STATUS_APPROVED;
+          return this.isApplicationUnlock ? this.CCOF_STATUS_ACTION_REQUIRED : this.CCOF_STATUS_APPROVED;
         default:
           return this.CCOF_STATUS_NEW;
         }
       } else {
         return this.CCOF_STATUS_APPROVED;
       }
-    },
-    isApplicationUnlock() {
-      return (this.unlockBaseFunding || this.unlockDeclaration || this.unlockEcewe || this.unlockLicenseUpload || this.unlockSupportingDocuments);
     },
     ccofRenewStatus() {
       if (this.applicationType === 'RENEW') {
@@ -316,6 +314,8 @@ export default {
           return this.RENEW_STATUS_NEW;
         } else if (this.isApplicationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
+        } else if (this.applicationStatus === 'APPROVED') {
+          return this.RENEW_STATUS_APPROVED;
         } else {
           return this.RENEW_STATUS_COMPLETE;
         }
@@ -323,28 +323,24 @@ export default {
         return this.RENEW_STATUS_NEW;
       }
     },
-    isCCOFEnabled() {
-      if ((this.applicationType === 'NEW') && (this.ccofStatus != this.CCOF_STATUS_COMPLETE && this.ccofStatus != this.CCOF_STATUS_APPROVED)) {
-        return true;
-      }
-      return false;
-    }
+    isApplicationUnlock() {
+      return ((this.unlockBaseFunding && (this.applicationType === 'NEW')) 
+        || this.unlockDeclaration || this.unlockEcewe || this.unlockLicenseUpload || this.unlockSupportingDocuments);
+    },
+    unlockCCFRIList() {
+      return this.navBarList.filter((fac) => fac.unlockCcfri);
+    },
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
-    clicked (){
-      console.log('clicked');
-      return '';
-    },
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(PATHS.group.renewOrganization);
     },
     continueRenewal() {
-      this.$router.push(PATHS.group.licenseUpload);
+      this.goToLicenseUpload();
     },
-
     newApplication() {
       this.setIsRenewal(false);
       this.$router.push(PATHS.selectApplicationType);
@@ -363,6 +359,13 @@ export default {
     goToRFI(){
       this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
     },
+    goToCCOFOrganizationInfo() {
+      if (this.organizationProviderType === 'GROUP') {
+        this.$router.push(PATHS.group.orgInfo);
+      } else if (this.organizationProviderType === 'FAMILY') {
+        this.$router.push(PATHS.family.orgInfo);
+      }
+    },
     goToLicenseUpload() {
       this.$router.push(PATHS.group.licenseUpload);
     },
@@ -377,7 +380,14 @@ export default {
     },
     goToSummaryDeclaration() {
       this.$router.push(PATHS.summaryDeclaration);
-    },   
+    },
+    viewApplication(type) {
+      if (type === 'NEW') {
+        this.goToCCOFOrganizationInfo();
+      } else {
+        this.goToLicenseUpload();
+      }
+    },
     async getAllMessagesVuex() {
       try {
         await this.getAllMessages(this.organizationId);
@@ -388,8 +398,8 @@ export default {
     actionRequiredRoute() {
       if (this.unlockLicenseUpload) 
         this.goToLicenseUpload();
-      else if (this.unlockBaseFunding) 
-        this.goToCCFRI();
+      else if (this.unlockBaseFunding && (this.applicationType === 'NEW')) 
+        this.goToCCOFOrganizationInfo();
       else if (this.unlockEcewe) 
         this.goToECEWE();
       else if (this.unlockSupportingDocuments)
@@ -404,15 +414,27 @@ export default {
       if (this.ccofStatus === this.CCOF_STATUS_NEW) {
         switch (card) {
         case 'CCOF':
-          return 'col-lg-6 col-xl-5';
+          return 'col-lg-5';
         case 'RENEW':
           return 'col-lg-2 col-xl-3';
+        case 'SUBMIT_REPORTS':
+          return 'col-lg-3 col-xl-2';
         default:
           return 'col-lg-2';
         }
       }
       return 'col-lg-3';
-    },   
+    },
+    isCCOFApproved() {
+      if ((this.applicationType === 'RENEW') || (this.ccofStatus === this.CCOF_STATUS_APPROVED)) {
+        this.CCOFCardTitle = 'Child Care Operating Funding (CCOF) application';
+        return true;
+      }
+      return false;
+    },
+    isCCFRIUnlock(facilityId) {
+      return (this.unlockCCFRIList.includes(facilityId));
+    }   
   },
   
   components: { SmallCard, MessagesToolbar}
@@ -420,16 +442,10 @@ export default {
 </script>
 
 <style scoped>
-
 .blueBorder{
   border-top: 5px solid #003366 !important;
 }
-.dashboardButton {
+.blueButton {
   background-color: #003366 !important;
-}
-.optinButton {
-  background-color: #003366 !important;
-  min-height: 60px;
-  width: 80%;
 }
 </style>
