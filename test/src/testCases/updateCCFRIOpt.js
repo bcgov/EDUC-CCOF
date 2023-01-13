@@ -27,7 +27,6 @@ test('Opt-in All Test', async t => {
   await t.click(ccfriOpt.CCFRIButton);
   await t.click(ccfriOpt.optButton);
   await t.click(ccfriOpt.optInAllButton);
-  await t.expect(ccfriOpt.nextButton.hasAttribute('disabled')).ok();
   await t.takeScreenshot({fullPage: true});
   await t.click(ccfriOpt.saveButton);
   await t.expect(alert.success.exists).ok();

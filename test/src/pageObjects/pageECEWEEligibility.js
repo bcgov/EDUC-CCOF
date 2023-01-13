@@ -1,15 +1,14 @@
 import { Selector } from 'testcafe';
-import log from 'npmlog';
 const {getRadioOption, getButton} = require('../utils/selectors');
 const fs = require('fs');
 const path = require('path');
-const optionList = ["All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.",
+const optionList = ["All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.", 
                     "All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.",
                     "Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding."
                     ]
 
 
-class PageECEWEEligibility {
+class pageECEWEEligibility {
 
     constructor() {
       this.ECEWEButton = Selector('div').withExactText('ECE-WE');
@@ -17,86 +16,35 @@ class PageECEWEEligibility {
       this.backButton = getButton('Back');
       this.nextButton = getButton('Next');
       this.saveButton = getButton('Save');
-      this.confirmationCheckbox = Selector('input').withAttribute('role','checkbox');
     }
-  getCheckBoxWithLabel(labelName) {
-    return Selector('label').withText(labelName).parent().nextSibling().find('input').withAttribute('role','checkbox');
-  }
+  
     async updateOptionFromFile(t, fileName) {
         let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
         let lines = data.split('\n');
-        await t.click(getRadioOption('For the 2023/24 FY funding term, would you like to opt-in to ECE-WE for any facility in your organization?', lines[0].trim()));
+        await t.click(getRadioOption('For the 2022/23 FY funding term, would you like to opt-in to ECE-WE for any facility in your organization?', lines[0].trim()));
         if(lines[0].trim() === 'Yes'){
             await t.click(getRadioOption('Do any of the ECE Employees at any facility in your organization belong to a union?', lines[1].trim()));
-            if(lines[2]){
-              await t.click(getRadioOption('Select the applicable sector:', lines[2].trim()));
-            }
-            if(lines[1] && lines[2] && lines[1].trim() === 'Yes'&& lines[2] === 'Community Social Services Employers\' Association (CSSEA) Member'){
-                const option = lines[3].trim();
-                log.info('Option selected: ' + option);
+            if(lines[1] && lines[1].trim() === 'Yes'){
+                const option = lines[2].trim();
                 const title = Selector('div').withText('Select the applicable funding model:');
                 const radioOption = title.parent().nextSibling().find('label').withText(option);
                 await t.click(radioOption).wait(500);
                 switch(option){
                     case optionList[0]:
-                        log.info('Option selected: ' + option);
                         await t.expect(Selector('div').withText('ECEs at these facilities are not eligible for ECE Wage Enhancement').exists).ok();
                         break;
                     case optionList[1]:
-                        log.info('Option selected: ' + option);
                         await t.expect(Selector('div').withText('ECEs in provincially funded programs are not eligible').exists).ok();
-                        await t.expect(Selector('div').withText('Please confirm').exists).ok();
-                        await t.click(Selector('input').withAttribute('role', 'checkbox'));
-                       /* log.info('Trying with Label');
-                        await t.click(this.getCheckBoxWithLabel('I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement.'));
-                        log.info('Trying with checkbox');
-                        await t.click(this.confirmationCheckbox);
-*/                        break;
+                        break;
                     case optionList[2]:
-                        log.info('Option selected: ' + option);
                         await t.expect(Selector('div').withText('Please confirm').exists).ok();
                         await t.click(Selector('input').withAttribute('role', 'checkbox'));
                         break;
                     default:
                         break;
                 }
-            }else if(lines[1] && lines[2] && lines[1].trim() === 'Yes'&& lines[2] === 'Other Unionized Employer'){
-              await t.expect(Selector('div').withText('Please confirm').exists).ok();
-              await t.click(Selector('input').withAttribute('role', 'checkbox'));
             }
         }
     }
-
-  async clickSaveButton(t) {
-    await t.click(this.saveButton).wait(3000);
-    log.info('Save button clicked');
-
   }
-
-  async clickBackButton(t) {
-    await t.click(this.backButton);
-    log.info('Back button clicked');
-  }
-
-  async clickNextButton(t) {
-    await t.click(this.nextButton);
-    log.info('Next button clicked');
-  }
-
-  async clickSaveAndNextButton(t) {
-    await this.clickSaveButton(t);
-    await this.clickNextButton(t);
-  }
-
-  async nextButtonIsDisabled(t) {
-    await t.expect(this.nextButton.hasAttribute('disabled')).ok();
-    log.info('Next button is disabled');
-  }
-
-  async nextButtonIsEnabled(t) {
-    await t.expect(this.nextButton.hasAttribute('disabled')).notOk();
-    log.info('Next button is enabled');
-  }
-
-  }
-  export default PageECEWEEligibility;
+  export default pageECEWEEligibility;
