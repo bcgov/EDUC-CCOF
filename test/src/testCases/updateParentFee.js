@@ -4,10 +4,8 @@ import PageParentFee from '../pageObjects/PageParentFee';
 import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
-<<<<<<< HEAD
-=======
 import { Selector } from 'testcafe';
->>>>>>> b6a82c2 (Added CCFRI and Family)
+
 
 
 const login = new PageLogin();
@@ -28,8 +26,9 @@ test('Update Parent Fee Test', async t => {
     .click(landing.continueButton)
     .wait(2000);
   await t.click(parentFee.CCFRIButton);
-<<<<<<< HEAD
+
   await parentFee.chooseFacility(t, 'Facility Name1');
+  await parentFee.chooseFacility(t, 'test2');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-1.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-2.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-3.txt');
@@ -40,11 +39,8 @@ test('Update Parent Fee Test', async t => {
   await t.click(parentFee.saveButton).wait(3000);
   await t.expect(alert.success.exists).ok();
   await t.click(parentFee.nextButton);
-
-=======
   await parentFee.updateParentFeeFromFile(t, 'test2', 'facility-parentfee.txt')
 
   await t.expect(parentFee.nextButton.hasAttribute('disabled')).ok();
->>>>>>> b6a82c2 (Added CCFRI and Family)
 });
 
