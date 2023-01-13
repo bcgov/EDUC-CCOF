@@ -30,6 +30,8 @@ export default {
     if (this.isStarted) {
       console.log('org mounted called2');
       this.model = { ...this.organizationModel };
+      this.processing = false;
+      this.loading = false;
       return;
     }
 
