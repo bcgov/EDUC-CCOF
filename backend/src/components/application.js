@@ -125,10 +125,11 @@ async function upsertParentFees(req, res) {
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async(feeGroup) => {
+    // log.info(feeGroup);
+    // log.info('WHAT IS THE DELETE DATA LOOK LIKE?');
 
     if (feeGroup.deleteMe){
-      log.info(feeGroup);
-      log.info('WHAT IS THE DELETE DATA LOOK LIKE?');
+      
       try {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
         log.info('delete feeGroup res:', response);
@@ -171,8 +172,10 @@ async function upsertParentFees(req, res) {
       );
       let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
+        log.info(payload);
+        log.info('PAY LOAAAAAAAAAAAAAD');
         let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-        log.info('feeResponseeeeeeeeeeeeeeeeeeeeee', response);
+        log.info('feeResponseee', response);
         theResponse.push( res.status(HttpStatus.CREATED).json(response));
       } catch (e) {
         //log.info(e);
@@ -185,6 +188,7 @@ async function upsertParentFees(req, res) {
 
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
   //so body[0].notes will always exist 
+  
   if (body[0].notes || body[0].ccof_formcomplete){
 
     let payload = {
@@ -195,6 +199,8 @@ async function upsertParentFees(req, res) {
       let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
       log.info('notesRes', response);
       theResponse.push(res.status(HttpStatus.CREATED).json(response));
+      log.info(theResponse);
+      log.info('THE RESPONSE IS: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
     } catch (e) {
       theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       hasError = true;
@@ -217,8 +223,11 @@ async function upsertParentFees(req, res) {
   if (hasError) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
   } else {
+    
     return res.status(HttpStatus.OK).json();
   }
+
+  
   
 }
 
@@ -236,6 +245,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
         //log.info(response);
       }));
     }catch (e){
+      log.info('something broke when deleting existing closure dates.');
       log.info(e);
       //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
@@ -253,29 +263,20 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
         "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
       };
 
-      try {
-        let response = await postOperation('ccof_application_ccfri_closures', payload);
-        log.info('feeResponse', response);
-        retVal.push(response);
-        //return res.status(HttpStatus.CREATED).json(response);
-      } catch (e) {
-        log.info(e);
-        //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-      }
-
       
-
+      let response = await postOperation('ccof_application_ccfri_closures', payload);
+      log.info('feeResponse', response);
+      retVal.push(response);
+      
     }));
 
-    return res.status(HttpStatus.CREATED).json(retVal);
+    return retVal;
   
   } catch (e){
+    log.info('I BROKE TRYING TO SAVE NEW DATES');
+    log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-
   }
-  
-
-
 }
 
 async function getECEWEApplication(req, res) {

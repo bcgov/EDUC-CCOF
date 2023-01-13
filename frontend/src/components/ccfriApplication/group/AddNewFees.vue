@@ -215,7 +215,10 @@
                       clearable 
                       :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate" 
-                      @input="calendarMenu2 = false">
+                      @input="calendarMenu2 = false"
+                      :rules="test"
+                      >
+                      
                     </v-date-picker>
                  </v-menu>
                 </v-col>
@@ -347,27 +350,8 @@ export default {
       
     };
   },
-  mounted() {
-    //this.model = this.$store.state.ccfriApp.model ?? model;
-    //this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store ithink we can take it out
-    //console.log(this.model);
-    //so the card will display as open if dates already exist
-    // if(this.CCFRIFacilityModel.dates){
-    console.log(this.CCFRIFacilityModel);
-      
-    //   console.log(this.CCFRIFacilityModel);
-    // if (this.getClosureDateLength > 0){
-    //   this.model.closureFees = 'Yes';
-    // }
-    //}
-
-    //this.$store.commit('ccfriApp/model', {...this.CCFRIFacilityModel} ); //to see if page has changed? 
-  },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
     this.save(false);
-
-    //this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //jb took this out to stop an error.. I don't think we need it?
     next();
   },
   computed: {

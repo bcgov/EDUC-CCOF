@@ -125,9 +125,7 @@ async function getFacilityChildCareTypes(req, res){
     let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)';
     log.info('operation: ', operation);
     let ccfriData = await getOperation(operation);
-    log.info('dataaaaaa', ccfriData);
-
-
+   
     let childCareTypes = [];
     // let currentProgramYear;
     ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
