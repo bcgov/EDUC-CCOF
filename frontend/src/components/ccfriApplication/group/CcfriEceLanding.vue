@@ -50,7 +50,7 @@
                   :showOptStatus = "showOptStatus[index]"
                   dark color='#003366' 
                   :rules = "rules"
-                  :disabled="applicationStatus === 'SUBMITTED'"
+                  :disabled="isReadOnly"
                   > 
                     UPDATE
                   </v-btn>
@@ -134,26 +134,10 @@ export default {
     ...mapState('organization', ['applicationId']),
 
     isReadOnly(){
-      //if submitted, lock er up. If unlock CCFRI - unlock
-      //flip the bool: if user can edit we want disabled to be false
-      console.log(this.navBarList[0].unlockCcfri);
-      // if (!this.navBarList[index].unlockCcfri){
-      //   //return false;
-      // }
-      // else if (this.navBarList[index].unlockCcfri){
-      //   return false;
-      // }
-      // //console.log();
-      // else if (this.applicationStatus === 'SUBMITTED'){
-      //   return true; 
-      // }
-
-      return false;
-      //return !this.isUnlocked; 
+      //more logic to come here post MVP
+      return (this.applicationStatus === 'SUBMITTED');
     },
-    // currentYearTitle(){
-    //   return this.programYearList.current.name.substring(0, 7);
-    // },
+
   },
   beforeMount: function() {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
@@ -192,7 +176,10 @@ export default {
       if(!firstOptInFacility){
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
-
+      //if application locked, send to add new fees
+      else if (this.isReadOnly) { 
+        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+      }
       //if CCFRI is being renewed, go to page that displays fees
       else if (this.isRenewal){
         this.$router.push({path : `${PATHS.currentFees}/${firstOptInFacility.ccfriApplicationId}`});
