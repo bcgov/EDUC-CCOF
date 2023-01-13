@@ -78,24 +78,18 @@
           <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
             <v-row>
               <v-col cols="12" class="d-flex">
-                <span v-if="!isLoading">{{navBarList[index].facilityAccountNumber}}</span>
-                <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
+                <span>{{navBarList[index].facilityAccountNumber}}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="5" class="flex-column">
-                <span v-if="!isLoading">{{navBarList[index].facilityName}}</span>
-                <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
+                <span>{{navBarList[index].facilityName}}</span>
               </v-col>
               <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                <span v-if="!isLoading">
                   Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
-                </span>
-                <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
               </v-col>
               <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
                 <v-radio-group
-                  v-if="!isLoading"
                   v-model="uiFacilities[index].optInOrOut"
                   class="pt-0 my-0"
                   row
@@ -111,12 +105,6 @@
                     :value="0">
                   </v-radio>
                 </v-radio-group>
-                <div v-else style="float:left;display:flex">
-                  <v-skeleton-loader :loading="true" type="avatar"></v-skeleton-loader>
-                  <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
-                  <v-skeleton-loader :loading="true" type="avatar"></v-skeleton-loader>
-                  <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
-                </div>
               </v-col>
               <v-col cols="3">
                 <v-btn
@@ -127,15 +115,11 @@
                   :disabled="isReadOnly"> 
                     Update
                 </v-btn>
-                <v-skeleton-loader v-else-if="!uiFacilities[index].update && isLoading" :loading="true" type="button"></v-skeleton-loader>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <span v-if="!isLoading">
                   License #: {{navBarList[index].licenseNumber}}
-                </span>
-                <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
               </v-col>
             </v-row>
           </v-card>
