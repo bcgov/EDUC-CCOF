@@ -2,8 +2,7 @@ const { getTextField, getTextFieldWithDivHeading, removeContent, getErrorMessage
 
 
 async function validateAllInput(t, fieldNames){
-    let i = 0;
-    for(i; i < fieldNames.length; i++){
+    for(let i = 0; i < fieldNames.length; i++){
       let fieldElement = null;
       if(fieldNames[i].radio){
         continue;
