@@ -7,7 +7,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group :disabled="isLocked" v-model="model.familyLicenseType" label="Liscence type">
+                <v-radio-group :disabled="isLocked" v-model="model.familyLicenseType" label="License type">
                   <v-radio label="Family child care" value="7" />
                   <v-radio label="In-Home Multi-Age Child Care" value="6" />
                   <v-radio label="Multi-Age Care" value="5" />
