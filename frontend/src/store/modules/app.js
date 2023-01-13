@@ -97,10 +97,11 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
     },
-    setRfiList: (state, rfiList) => {
-      state.rfiList = rfiList;
+    addToRfiList: (state, ccfriId) => {
+      if (state.rfiListmyarr.indexOf(ccfriId) < 0) {
+        state.rfiList.push(ccfriId);
+      }
     },
-
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },

@@ -1,7 +1,6 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { isEmpty } from 'lodash';
 
 function getProgramYear(selectedGuid, programYearList){
   const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
@@ -67,7 +66,6 @@ export default {
   namespaced: true,
   state: {
     isValidForm: undefined,
-    model: [],
     loadedModel: {},
     CCFRIFacilityModel : {},
     ccfriId: {},
@@ -80,6 +78,35 @@ export default {
     },
     getCCFRIMedianById: (state) => (ccfriId) => { 
       return state.ccfriMedianStore[ccfriId];
+    },
+    getCcfriOver3percent(state, getters, rootState) {
+      let over3percentFacilities = [];
+      console.log('rootstate: ', rootState);
+      const currentProgramYearId = rootState.application.programYearId;
+      const programYearList = rootState.app.programYearList.list;
+      const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
+      const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
+      const previousProgramYearId = previousProgramYear.programYearId;
+
+      
+      console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
+      const threePercentMedian = getters.getCCFRIMedianById(state.ccfriId);
+      state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
+        .forEach(careType => {
+          let previousCareType = getPreviousCareType(state.CCFRIFacilityModel, careType, previousProgramYearId, getters);
+          console.log('previousCare Type: ', previousCareType);
+          if (previousCareType) {
+            let difference = compareChildCareFees(careType, previousCareType);
+            let allowedDifference = threePercentMedian[careType.childCareCategory];
+            console.log('difference', difference);
+            console.log('allowedDifference', allowedDifference);
+            if (difference > allowedDifference) {
+              over3percentFacilities.push(careType.childCareCategory);
+            }
+          }
+        });
+      console.log('over array', over3percentFacilities);
+      return over3percentFacilities;   
     },
 
   },
@@ -120,40 +147,6 @@ export default {
           throw e;
         }
       }
-    },
-
-    getCcfriOver3percent({state, rootState, getters }) {
-      let over3percentFacilities = [];
-      Object.entries(state.ccfriMedianStore).forEach(([key, value]) => {
-        console.log('key is: ', key);
-        const currentProgramYearId = rootState.application.programYearId;
-        const programYearList = rootState.app.programYearList.list;
-        const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
-        const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
-        const previousProgramYearId = previousProgramYear.programYearId;
-
-        let currentRFI = getters.getCCFRIById(key);
-        console.log('getCcfriOver3percent.currentRFI: ', currentRFI);
-
-        currentRFI.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
-          .forEach(careType => {
-            let previousCareType = getPreviousCareType(currentRFI, careType, previousProgramYearId, getters);
-            console.log('previousCare Type: ', previousCareType);
-            if (previousCareType) {
-              let difference = compareChildCareFees(careType, previousCareType);
-              let allowedDifference = value[careType.childCareCategory];
-              console.log('difference', difference);
-              console.log('allowedDifference', allowedDifference);
-              if (difference > allowedDifference) {
-                over3percentFacilities.push({
-                  facilityId: currentRFI.facilityId,
-                  childCareCategory: careType.childCareCategory,
-                  childCareCategoryId: careType.childCareCategoryId,
-                });
-              }
-            }
-          });
-      });
     },
 
     async loadCCFRIFacility({getters, commit}, ccfriId) {
