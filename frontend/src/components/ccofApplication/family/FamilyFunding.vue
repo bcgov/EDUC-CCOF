@@ -115,7 +115,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" outlined v-model.number="model.maxSpaces" label="Maximum number of child care spaces you offer" />
+                <v-text-field :disabled="isLocked" type="number" outlined required :rules="rules.required" v-model.number="model.maxSpaces" label="Maximum number of child care spaces you offer" />
                 <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
               </v-col>
               <v-col cols="12" md="6">
