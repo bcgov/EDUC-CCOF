@@ -119,7 +119,7 @@
                 </v-col>
               </v-row>
               <v-row justify="center" class="pa-2">
-                Government’s Low-Wage Redress Funding supports ECE wage ajustments
+                Government’s Low-Wage Redress Funding supports ECE wage adjustments
               </v-row>
             </v-card>
             <v-row>
