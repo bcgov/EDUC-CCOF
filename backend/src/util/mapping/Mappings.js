@@ -66,7 +66,6 @@ const RFIApplicationMappings = [
   { back: 'ccof_indigenouscommunityexpense_reasonforincreased', front: 'iCEIDetailsNote'},
   { back: 'ccof_name', front: 'xxx3'}, // "RFI-22000025",
   { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'underservedChildCareTypes'}, // "please describe how the majority of children you provide",
-  { back: '_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue', front: 'xxx5'}, // "ID-22000522",
   { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId'}, // "1d261039-0e7c-ed11-81ad-000d3af4f277",
   { back: 'ccof_increasedparentfeesbefore', front: 'xxx6' }, // 1 or 0
   { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'circumstanceOccurWithin6Month'}, // null,
@@ -117,9 +116,9 @@ const IndigenousCommunityExpenseInformationMappings = [
 const OtherFundingProgramMappings = [
   { back: 'ccof_name', front: 'fundingProgram'},
   { back: 'ccof_applicationdate', front: 'date'},
-  { back: 'statuscode', front: 'status'},
-  { back: 'ccof_amountreceived_base', front: 'amount'},
-  { back: 'ccof_expense_base', front: 'expenses'},
+  { back: 'ccof_statusofapplication', front: 'status'},
+  { back: 'ccof_amountreceived', front: 'amount'},
+  { back: 'ccof_expense', front: 'expenses'},
 ];
 
 

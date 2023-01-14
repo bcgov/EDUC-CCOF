@@ -3,8 +3,9 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { upsertParentFees, getRFIApplication, updateCCFRIApplication, renewCCOFApplication, getRFIMedian} = require('../components/application');
-const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, createRFIApplication, updateRFIApplication, getDeclaration, submitApplication} = require('../components/application');
+const { upsertParentFees, updateCCFRIApplication, renewCCOFApplication } = require('../components/application');
+const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication} = require('../components/application');
+const { getRFIMedian, getRFIApplication, createRFIApplication, updateRFIApplication} = require('../components/rfiApplication');
 const { param, validationResult, checkSchema} = require('express-validator');
 const { log } = require('../components/logger');
 

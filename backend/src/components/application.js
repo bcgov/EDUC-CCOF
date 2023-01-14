@@ -1,20 +1,14 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep} = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings,
-  ServiceExpansionDetailsMappings, DCSWageIncreaseMappings,
-  IndigenousCommunityExpenseInformationMappings, OtherFundingProgramMappings
-} = require('../util/mapping/Mappings');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, DeclarationMappings} = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
 
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
@@ -33,73 +27,6 @@ async function renewCCOFApplication(req, res) {
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function getRFIApplication(req, res) {
-  let query  = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi`;
-  try {
-    const response = await getOperation(query);
-    console.log('response: ', minify(response.value));
-    console.log('response length: ', response.value.length);
-    if (response.value.length === 1) {
-      let rfiApplication = new MappableObjectForFront(response.value[0], RFIApplicationMappings);
-      rfiApplication.data['expansionList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi?.map(el=> new MappableObjectForFront(el,ServiceExpansionDetailsMappings).data);
-      rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map(el=> new MappableObjectForFront(el,DCSWageIncreaseMappings).data);
-      rfiApplication.data['IndigenousExpenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> new MappableObjectForFront(el,IndigenousCommunityExpenseInformationMappings).data);
-      rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> new MappableObjectForFront(el,OtherFundingProgramMappings).data);
-      return res.status(HttpStatus.OK).json(rfiApplication);
-    } else {
-      return res.status(HttpStatus.NOT_FOUND).json({message: 'No data'});
-    }
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
-}
-
-async function updateRFIApplication(req, res) {
-  try {
-    const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
-    delete friApplication['_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue'];
-    delete friApplication._ccof_applicationccfri_value;
-    delete friApplication.ccof_rfipfiid;
-    delete friApplication.ccof_name;
-
-    friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
-    friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
-    friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
-    friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.IndigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousCommunityExpenseInformationMappings).data);
-
-    let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', req.params.rfipfiid, friApplication);
-    friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
-    return res.status(HttpStatus.OK).json(friApplicationResponse);
-  } catch (e) {
-    log.error('updateRFIApplication error:', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function createRFIApplication(req, res) {
-  try {
-    const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
-    delete friApplication['_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue'];
-    delete friApplication._ccof_applicationccfri_value;
-    delete friApplication.ccof_rfipfiid;
-
-    friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
-    friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
-    friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
-    friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.IndigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousCommunityExpenseInformationMappings).data);
-
-
-    friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris('${req.params.ccfriId}')`;
-    log.info('createRFIApplication payload:', friApplication);
-    const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
-    return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
-  } catch (e) {
-    log.error('createRFIApplication error:', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
 
@@ -293,30 +220,6 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
   }
 }
 
-async function getRFIMedian(req, res) {
-  try {
-    let operation = `ccof_applicationccfris?$select=_ccof_region3pctmedian_value,_ccof_region_value&$expand=ccof_Region3PctMedian($select=ccof_3percentageof0to18,ccof_3percentageof18to36,ccof_3percentageof3ytok,ccof_3percentageofoosctok,ccof_3percentageofoosctog,ccof_3percentageofpre,ccof_0to18months,ccof_18to36months,ccof_3yearstokindergarten,ccof_outofschoolcarekindergarten,ccof_outofschoolcaregrade1,ccof_preschool),ccof_Region($select=ccof_name,ccof_regionnumber)&$filter=(ccof_applicationccfriid eq ${req.params.ccfriId}) and (ccof_Region3PctMedian/ccof_median_fee_sdaid ne null) and (ccof_Region/ccof_fee_regionid ne null)`
-    let rfiMedian = await getOperation(operation);
-    rfiMedian = rfiMedian.value;
-    let medians = {};
-    if (rfiMedian?.length > 0) {
-      medians['0 to 18 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof0to18;
-      medians['18 to 36 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof18to36;
-      medians['3 Years to Kindergarten'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof3ytok;
-      medians['Out of School Care - Kindergarten'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofoosctok;
-      medians['Out of School Care - Grade 1+'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofoosctog;
-      medians['Preschool'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofpre;
-    } else if (rfiMedian?.length > 1) {
-      log.error('Expected 1 set of RFI Medians got more: ', rfiMedian);
-    }
-    log.verbose('Median data: ', minify(medians));
-    return res.status(HttpStatus.OK).json(medians);
-  } catch (e) {
-    log.error('An error occurred while getting getRFIMedian', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
 
 async function getECEWEApplication(req, res) {
   try {
@@ -416,10 +319,6 @@ module.exports = {
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   renewCCOFApplication,
-  getRFIApplication,
-  createRFIApplication,
-  updateRFIApplication,
   getDeclaration,
   submitApplication,
-  getRFIMedian,
 };

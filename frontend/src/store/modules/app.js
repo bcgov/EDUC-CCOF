@@ -14,7 +14,7 @@ export default {
     ccofLicenseUploadComplete:false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
-    rfiList: [],
+    rfiStore: {},
     //Notification Details
     
     alertNotificationText: '',
@@ -99,10 +99,8 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
     },
-    addToRfiList: (state, ccfriId) => {
-      if (state.rfiListmyarr.indexOf(ccfriId) < 0) {
-        state.rfiList.push(ccfriId);
-      }
+    addToRfiStore: (state, {ccfriId, rfi}) => {
+      state.rfiStore[ccfriId] = rfi;
     },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;

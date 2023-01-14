@@ -317,14 +317,20 @@
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <v-text-field type="number" outlined :rules="rules" v-model.number="fundInfo.amount" prefix="$"/>
+                  <v-text-field
+                  outlined
+                  :rules="rules"
+                  label="Amount Received"
+                  v-model.number="fundInfo.amount"
+                  prefix="$"/>
                 </v-col>
 
                 <v-col class="col-md-2 col-12 ">
                   <v-text-field
                     class=""
-                    v-model="fundInfo.expenses"
-                    label="Expense(s)"
+                    prefix="$"
+                    v-model.number="fundInfo.expenses"
+                    label="Expense"
                     outlined
                     clearable
                     :rules="rules"
@@ -775,8 +781,6 @@
     </v-card>
 
     <div v-if="model.feeIncreaseExtendedHours == 1">
-
-
       <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
               rounded
@@ -784,9 +788,7 @@
               exact
               tile
               :ripple="false"
-
       >
-
         <v-card-text class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
             <p class="text-h5 text--primary px-5 py-0 my-0">
@@ -794,34 +796,27 @@
             </p>
           </div>
           <br>
-
           <div class="px-md-12 px-7">
-
             <v-row class="hidden-sm-and-down">
               <v-col class="col-md-1 col-12 mx-0">
                 <!--here for spacing-->
               </v-col>
-
               <v-col class="col-md-2 col-12 ">
                 <h3> Facility's previous hours of operation</h3>
                 <br>
                 <p>(e.g. 9:00 am - 4:00 pm)</p>
               </v-col>
-
               <v-col class="col-md-2 col-12 ">
                 <h3> Facility's new hours of operation</h3>
                 <br>
                 <p>(e.g. 6:00 am - 5:00 pm)</p>
               </v-col>
-
               <v-col class="col-md-2 col-12 ">
                 <h3> Date of Change</h3>
               </v-col>
-
               <v-col class="col-md-2 col-12 ">
                 <h3> Amount of Expense</h3>
               </v-col>
-
               <v-col class="col-md-2 col-12 ">
                 <h3> Payment frequency </h3>
               </v-col>
@@ -1329,6 +1324,7 @@
 
 import {PATHS} from '@/utils/constants';
 import {mapActions, mapMutations, mapState} from 'vuex';
+import {deepCloneObject} from '@/utils/common';
 
 let q1 = '';
 let q2 = '';
@@ -1448,6 +1444,7 @@ export default {
     '$route.params.urlGuid': {
       handler() {
         let ccfriId = this.$route.params.urlGuid;
+        console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
         this.loadRfi(ccfriId);
       },
       immediate: true,
@@ -1457,19 +1454,19 @@ export default {
       handler() {
         this.model = {...this.rfiModel};
         if(this.model.expansionList){
-          this.expansionList = this.model.expansionList;
+          this.expansionList = deepCloneObject(this.rfiModel.expansionList);
         }
         if(this.model.wageList){
-          this.wageList=this.model.wageList;
+          this.wageList = deepCloneObject(this.rfiModel.wageList);
         }
         if(this.model.IndigenousExpenseList){
-          this.IndigenousExpenseList = this.model.IndigenousExpenseList;
+          this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
         }
         if(this.model.fundingList){
-          this.fundingList = this.model.fundingList;
+          this.fundingList = deepCloneObject(this.rfiModel.fundingList);
         }
         if(this.model.expenseList){
-          this.expenseList = this.model.expenseList;
+          this.expenseList = deepCloneObject(this.rfiModel.expenseList);
         }
         console.info('handlera');
         console.info(this.model);
@@ -1491,6 +1488,7 @@ export default {
       this.$router.back();
     },
     save() {
+      //TODO work on setting the lists
       console.info('Save clicked');
       this.processing = true;
       this.setRfiModel(this.model);

@@ -492,7 +492,7 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('app', ['addToRfiList']),
+    ...mapMutations('app', ['addToRfiStore']),
     addRow () {
       this.CCFRIFacilityModel.dates.push( {
         datePicker1: undefined,
@@ -508,7 +508,8 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.addToRfiList(this.$route.params.urlGuid);
+      this.addToRfiStore({ ccfriId: this.$route.params.urlGuid, rfi: { facilityName: this.currentFacility.facilityName, isComplete: false }});
+      this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
     },
     previous() {
       //TODO: may go back to another addfee's page.
