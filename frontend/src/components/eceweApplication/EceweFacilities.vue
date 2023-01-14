@@ -207,6 +207,7 @@ export default {
     this.setFundingModelTypes({...this.fundingModelTypeList});
     this.setApplicationId(this.applicationId);
     await this.loadData();
+    this.initECEWEFacilities(this.navBarList);
     let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
     copyFacilities.forEach(element => element.update = element.optInOrOut == null);
     this.uiFacilities = copyFacilities;
