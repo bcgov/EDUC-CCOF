@@ -142,7 +142,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['programYearList']),
     ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['isRenewal', 'programYearId']),
+    ...mapState('application', ['isRenewal', 'programYearId', 'unlockBaseFunding', 'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
   },
   data() {
     return {
@@ -150,7 +150,9 @@ export default {
       isValidForm: false,
       isProcessing: false,
       dialog: false,
-      landingPage: PATHS.home
+      landingPage: PATHS.home,
+      reLockPayload: {},
+
     };
   },
   methods: {
@@ -176,42 +178,51 @@ export default {
     async submit() {
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration();
+        await this.updateDeclaration(this.createRelockPayload());
         this.dialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.'+error);
       }
     },
+    createRelockPayload() {
+      this.reLockPayload = {unlockBaseFunding: this.unlockBaseFunding, unlockDeclaration: this.unlockDeclaration, unlockEcewe: this.unlockEcewe,
+                            unlockLicenseUpload: this.unlockLicenseUpload, unlockSupportingDocuments: this.unlockSupportingDocuments};
+      // Create payload with only unlock propteries set to 1.
+      this.reLockPayload = Object.fromEntries(Object.entries(this.reLockPayload).filter(([_, v]) => v == 1));
+      // Update payload unlock properties from 1 to 0.
+      Object.keys(this.reLockPayload).forEach(key => {
+        this.reLockPayload[key] = '0';
+      });
+      return this.reLockPayload;
+    },
     previous() {
       return this.$router.push(PATHS.supportingDocumentUpload);
     }
   },
-  mounted() {
-    this.loadData().then(() => {
-      this.model = this.$store.state.summaryDeclaration.model ?? model;
-      if (this.isRenewal) {
+  async mounted() {
+    await this.loadData();
+    this.model = this.$store.state.summaryDeclaration.model ?? model;
+    if (this.isRenewal) {
       // Establish the server time
-        const serverTime = new Date(this.userInfo.serverTime);
+      const serverTime = new Date(this.userInfo.serverTime);
 
-        // Determine declaration b start date
-        let declarationBStart;
-        this.programYearList.list.find(item => {
-          if (item.programYearId == this.programYearId) {
-            declarationBStart = new Date(item.declarationbStart);
-          }
-        });
-        // Determine:
-        //   - which user declaration text version (status a or b) will display
-        //   - which declaration status (a or b) will be saved on submit.
-        // saved as part of submission.
-        if (serverTime < declarationBStart) {
-          this.model.declarationAStatus = 1;
-        } else {
-          this.model.declarationBStatus = 1;
+      // Determine declaration b start date
+      let declarationBStart;
+      this.programYearList.list.find(item => {
+        if (item.programYearId == this.programYearId) {
+          declarationBStart = new Date(item.declarationbStart);
         }
+      });
+      // Determine:
+      //   - which user declaration text version (status a or b) will display
+      //   - which declaration status (a or b) will be saved on submit.
+      // saved as part of submission.
+      if (serverTime < declarationBStart) {
+        this.model.declarationAStatus = 1;
+      } else {
+        this.model.declarationBStatus = 1;
       }
-    });
-
+    }
   },
 };
 </script>
