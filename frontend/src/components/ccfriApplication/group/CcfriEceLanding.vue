@@ -154,8 +154,8 @@ export default {
       });
     },
     previous() {
-      //this.isPageComplete();
-      this.$router.back();
+      this.$router.push({path : `${PATHS.home}`});
+      //this.$router.back();
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
