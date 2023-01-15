@@ -3,7 +3,7 @@
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center"><h3>Supporting Document Upload<span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span></h3></v-card-title>
+          <v-card-title class="justify-center"><h3>Supporting Document Upload - {{this.programYearLabel}} Program Confirmation Form</h3></v-card-title>
           <v-data-table v-if="!isLoading"
             :headers="headers"
             :items="uploadedDocuments"
@@ -17,6 +17,7 @@
                   <v-btn
                     color="primary"
                     class="ml-2 white--text v-skeleton-loader-small-button"
+                    :disabled="isReadOnly"
                     @click="addNew">
                     <v-icon dark>mdi-plus</v-icon>
                     Add
@@ -76,6 +77,7 @@
             <template v-slot:item.actions="{ item }">
               <v-icon
                 small
+                v-if="!isReadOnly"
                 @click="deleteItem(item)"
               >
                 mdi-delete
@@ -91,7 +93,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large :loading="isProcessing" @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isSaveDisabled || isReadOnly" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -115,10 +117,17 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
-    ...mapState('application', ['isRenewal', 'programYearLabel']),
-    ...mapState('organization', ['applicationId']),
+    ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments']),
+    ...mapState('organization', ['applicationId', 'applicationStatus']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-
+    isReadOnly() {
+      if (this.unlockSupportingDocuments) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true; 
+      }
+      return false;
+    },
     isSaveDisabled(){
       const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
       return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);

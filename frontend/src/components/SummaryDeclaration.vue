@@ -143,7 +143,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['isRenewal', 'programYearId', 'unlockBaseFunding', 'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
+    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
     isReadOnly() {
       if (this.unlockDeclaration) {
         return false;
