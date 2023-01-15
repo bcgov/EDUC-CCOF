@@ -50,6 +50,12 @@ async function getRFIMedian(req, res) {
   }
 }
 
+function formatDate(data, columnName) {
+  if (data[columnName]) {
+    data[columnName] = data[columnName].split('T')[0];
+  }
+  return data;
+}
 
 
 async function getRFIApplication(req, res) {
@@ -60,10 +66,10 @@ async function getRFIApplication(req, res) {
     console.log('response length: ', response.value.length);
     if (response.value.length > 0) {
       let rfiApplication = new MappableObjectForFront(response.value[0], RFIApplicationMappings);
-      rfiApplication.data['expansionList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi?.map(el=> new MappableObjectForFront(el,ServiceExpansionDetailsMappings).data);
-      rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map(el=> new MappableObjectForFront(el,DCSWageIncreaseMappings).data);
-      rfiApplication.data['expenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> new MappableObjectForFront(el,ExpenseInformationMappings).data);
-      rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> new MappableObjectForFront(el,OtherFundingProgramMappings).data);
+      rfiApplication.data['expansionList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi?.map(el=> formatDate(new MappableObjectForFront(el,ServiceExpansionDetailsMappings).data, 'date'));
+      rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map(el=> formatDate(new MappableObjectForFront(el,DCSWageIncreaseMappings).data,'wageDate'));
+      rfiApplication.data['expenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> formatDate(new MappableObjectForFront(el,ExpenseInformationMappings).data, 'date'));
+      rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> formatDate(new MappableObjectForFront(el,OtherFundingProgramMappings).data, 'date'));
       return res.status(HttpStatus.OK).json(rfiApplication);
     } else {
       return res.status(HttpStatus.OK).json({});
