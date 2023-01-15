@@ -406,7 +406,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.NMF,
+      path: PATHS.NMF + '/:urlGuid',
       name: 'new-facilities',
       component: NMF,
       meta: {
