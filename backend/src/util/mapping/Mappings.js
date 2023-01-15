@@ -265,6 +265,7 @@ const DeclarationMappings = [
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
   { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
   { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'facilities', front: 'facilities'}
 ];
 
 module.exports = {
