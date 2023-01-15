@@ -71,6 +71,16 @@ const RFIApplicationMappings = [
   { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'circumstanceOccurWithin6Month'}, // null,
 ];
 
+const NMFApplicationMappings = [
+  { back: 'ccof_rfi_pfi_nmfid', front: 'nmfId' },
+  { back: 'ccof_supportneeds', front: 'supportNeeds' }, // 1 or 0
+  { back: 'ccof_supportneeds_comment', front: 'supportNeedsComments' }, // "Please describe any associated expenses."
+  { back: 'ccof_lowincome_families', front: 'lowIncomeFamilies' }, // 1 or 0
+  { back: 'ccof_lowincomefamilies_comments', front: 'lowIncomeFamiliesComments' }, // "Please describe the service(s) and associated expenses."
+  { back: 'ccof_remote_communities', front: 'remoteCommunities' }, // 1 or 0
+  { back: 'ccof_remotecommunities_comment', front: 'remoteCommunitiesComments' }, // "Please describe the service and associated expenses."
+  { back: 'ccof_othercomment', front: 'otherComments' }, // "Please tell us anything else you’d like us to know ..."
+];
 
 const CCFRIClosureDateMappings = [
   { back: 'ccof_startdate', front: 'startDate' },
@@ -281,5 +291,6 @@ module.exports = {
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
   RFIApplicationMappings,
+  NMFApplicationMappings,
   DeclarationMappings
 };

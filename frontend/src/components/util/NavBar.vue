@@ -266,6 +266,19 @@ export default {
               },
             );
           }
+          if (item.unlockNmf) { // TO-DO : check if currentFacility has Nmf form then enable for View Application
+            items.push(
+              {
+                title: 'New Facility '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
+                isAccessible: true,
+                icon:  this.getCheckbox(false), // TO-DO update checkbox
+                isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name)
+              },
+            );
+          }
         });
       }
       let retval =   {
