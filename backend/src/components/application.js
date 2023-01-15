@@ -5,9 +5,8 @@ const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings } = require('../util/mapping/Mappings');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings, UserProfileCCFRIMappings } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
-
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -377,13 +376,42 @@ async function getDeclaration(req, res) {
 async function submitApplication(req, res) {
   let declaration = new MappableObjectForBack(req.body, DeclarationMappings);
   declaration.data.statuscode = APPLICATION_STATUS_CODES.SUBMITTED;
+  let ccfriFacilitiesToLock = JSON.parse(JSON.stringify(declaration));
   declaration = declaration.toJSON();
   try {
+    delete declaration.facilities;
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, declaration);
+
+    // If CCRFI facilities exist on the payload we need to iterate
+    // each and call CCFRI endpoint to relock attributes.
+    if (checkKey('facilities', ccfriFacilitiesToLock)) {
+      let ccof_applicationccfriid;
+      for (let facility of ccfriFacilitiesToLock.facilities) {
+        facility = (new MappableObjectForBack(facility, UserProfileCCFRIMappings)).toJSON();
+        ccof_applicationccfriid = facility.ccof_applicationccfriid;
+        delete facility.ccof_applicationccfriid;
+        response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
+      }
+    }
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
+}
+
+/* Checks if object attrubte name exists in payload */
+function checkKey(key, obj) {
+  for (let name in obj) {
+    if (name === key) {
+      return true;
+    }
+    if (typeof obj[name] === 'object') {
+      if (checkKey(key, obj[name])) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 module.exports = {
