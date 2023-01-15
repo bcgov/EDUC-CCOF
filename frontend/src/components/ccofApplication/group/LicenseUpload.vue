@@ -96,6 +96,10 @@ export default {
 
     await this.createTable();
   },
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save();
+    next();
+  },
   data() {
     return {
       isLoading: false,

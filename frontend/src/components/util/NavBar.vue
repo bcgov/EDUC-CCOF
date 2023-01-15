@@ -86,6 +86,8 @@
 
 import { mapState, mapGetters } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
+import { isEmpty} from 'lodash';
+
 export default {
   name: 'navBar',
   props: {
@@ -102,8 +104,8 @@ export default {
     };
   },
   computed: {
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiStore', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('application', ['applicationStatus']),
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -188,7 +190,9 @@ export default {
         }
       }
       this.items.push(this.getCCFRINavigation());
-      if (this.rfiList?.length > 0) {
+      console.log('isRenew ', this.isRenewal);
+      console.log('!isEmpty(this.rfiStore) ', !isEmpty(this.rfiStore));
+      if (this.isRenewal && !isEmpty(this.rfiStore)) { //do the renew test so we don't have to do the lodash call
         this.items.push(this.getRFINavigation());
       }
       this.items.push(this.getECEWENavigation());
@@ -309,48 +313,19 @@ export default {
     },
     getRFINavigation(){
       let items = [];
-      items.push(
-        {
-          title: 'Opt in / Opt out',
-          link: { name: 'ccfri-home'},
-          isAccessible: true,
-          icon: this.getCheckbox(this.ccfriOptInComplete),
-          isActive: 'ccfri-home' === this.$route.name
-        },
-
-      );
-      if (this.navBarList?.length > 0) {
-        this.navBarList?.forEach((item, index) => {
-          if (item.ccfriOptInStatus == 1 && this.isRenewal){  //this is here? but I also moved it to CCFRI nav.. im not sure why it's here - jb
-            items.push(
-              {
-                title: 'Parent Fees '+ (index + 1),
-                subTitle: item.facilityName,
-                id: item.facilityId,
-                link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
-                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                icon: 'mdi-checkbox-blank-circle-outline', //replace
-                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
-                // function: this.loadFacility(x.id)
-              },
-            );
-          }
-          else if (item.ccfriOptInStatus == 1){
-            items.push(
-              {
-                title: 'Parent Fees '+ (index + 1),
-                subTitle: item.facilityName,
-                id: item.facilityId,
-                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
-                isAccessible: true,
-                icon: 'mdi-checkbox-blank-circle-outline', //replace
-                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
-                // function: this.loadFacility(x.id)
-              },
-            );
-          }
-        });
-      }
+      Object.keys(this.rfiStore).forEach(key => {
+        items.push(
+          {
+            title: 'Request for Information',
+            subTitle: this.rfiStore[key].facilityName,
+            id: this.rfiStore[key].ccfriId,
+            link: { name: 'ccfri-request-info', params: {urlGuid: key}}, 
+            isAccessible: true,
+            icon: this.getCheckbox(this.rfiStore[key].isComplete),  
+            isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === key,
+          },
+        );
+      });
       let retval =   {
         title: NAV_BAR_GROUPS.RFI,
         isAccessible: true,
