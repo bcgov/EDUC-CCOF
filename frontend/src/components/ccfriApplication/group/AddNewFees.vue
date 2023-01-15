@@ -3,12 +3,15 @@
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
-      <!-- <v-btn color="info" outlined x-large  @click="save()">
-            UPDATE FEES</v-btn> -->
-
-      <p class="text-h3 text-center"> Child Care Fee Reduction Initiative (CCFRI)</p> <br>
-
-      <p class="text-h6 text-center"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+    </div>
+    <br><br>
+      <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
@@ -17,9 +20,9 @@
       </p>
 
       
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
-
-      <div v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+      
+      <div v-else v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
         <v-card  v-if = "!item.deleteMe"
         
         
@@ -136,7 +139,9 @@
         </v-card>
       </div>
 
-      <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"><br><br></v-skeleton-loader>
+      <v-card  v-else elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
         rounded
         tiled
@@ -152,13 +157,13 @@
           </div>
           <div class="px-md-12 px-7">
             <br>
-            
             <v-radio-group
               required
               :disabled="isReadOnly"
-              v-model="model.closureFees"
+              v-model="closureFees"
               label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
               :rules = "rules"
+               
             >
               <v-radio
                 label="Yes"
@@ -170,7 +175,7 @@
               ></v-radio>
             </v-radio-group>
 
-            <v-row v-if = "model.closureFees === 'Yes'">
+            <v-row v-if = "closureFees == 'Yes'">
 
 
               <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
@@ -213,7 +218,10 @@
                       clearable 
                       :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate" 
-                      @input="calendarMenu2 = false">
+                      @input="calendarMenu2 = false"
+                      :rules="rules"
+                      >
+                      
                     </v-date-picker>
                  </v-menu>
                 </v-col>
@@ -230,13 +238,13 @@
                 </v-col>
 
                 <v-col class="col-md-2 col-12 mt-n10">
-                  {{ obj.feesPaidWhileClosed }}
                   <v-radio-group
                     :disabled="isReadOnly"
                     row
                     v-model="obj.feesPaidWhileClosed"
                     label="Did parents pay for this closure?"
                     :rules="dateRules"
+                    
                   >
                     <v-radio
                       label="Yes"
@@ -269,8 +277,9 @@
           </div>
         </v-card-text>
       </v-card>
-
-      <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+      <v-card v-else elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
         rounded
         tiled
@@ -296,6 +305,7 @@
           </div>
         </v-card-text>
       </v-card>
+      
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
@@ -344,72 +354,27 @@ import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import { isEqual, cloneDeep } from 'lodash';
 
-
-let closureFees = '';
-let isFixedFee= {};
-let jan = {};
-let feb = {};
-let mar = {};
-let apr = {};
-let may = {};
-let jun = {};
-let jul = {};
-let aug = {};
-let sep = {};
-let oct = {};
-let nov = {};
-let dec = {};
-let childCareTypes = {};   
-let model = { x: [],
-  closureFees,
-  isFixedFee,
-  jan,
-  feb,
-  mar,
-  apr,
-  may,
-  jun,
-  jul,
-  aug,
-  sep,
-  oct,
-  nov,
-  dec,
-  childCareTypes
-};
-
-
-
 export default {
 
   mixins: [alertMixin],
   data() {
     return {
+      closureFees : 'No',
       showRfiDialog: false,
       rfi3percentCategories: [],
       isUnlocked: true,
       loading: true,
       processing: false,
-      model,
       facilityProgramYears: [],
       isValidForm : false,
-      jan,
-      feb,
-      mar,
-      apr,
-      may,
-      jun,
-      jul,
-      aug,
-      sep,
-      oct,
-      nov,
-      dec,
-      childCareTypes,
+     
       feeRules: [
-        (v) => !!v  || 'Required.',
-        (v) => v > 0  || 'Input a positve number',
+        (v) => (v == '' || v == ' ') || 'Required.',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
+        (v) => v >= 0  || 'Input a positve number',
+        
+        
+        
       ],
       rules: [
         (v) => !!v  || 'Required.',
@@ -419,26 +384,23 @@ export default {
       ],
     };
   },
-  mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
-    this.childCareTypes = this.model.childCareTypes; //this was trying to get the numbers to load and go into the store
-
-    //this.$store.commit('ccfriApp/model', {...this.CCFRIFacilityModel} ); //to see if page has changed? 
-  },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
     this.save(false);
-
-    //this.addModelToStore({ ccfriId: this.$route.params.urlGuid, model: this.model }); //jb took this out to stop an error.. I don't think we need it?
     next();
   },
   computed: {
+    ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapGetters('app', ['lookupInfo']),
     ...mapGetters('ccfriApp', ['getCcfriOver3percent']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
+    ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapState('organization', ['applicationId']),
+
+    currentYearTitle(){
+      return this.programYearLabel;
+    },
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
@@ -452,18 +414,13 @@ export default {
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      //flip the bool: if user can edit we want disabled to be false
-
       if (this.currentFacility.unlockCcfri){
         return false;
       }
-      //console.log();
       else if (this.applicationStatus === 'SUBMITTED'){
         return true; 
       }
-
       return false;
-      //return !this.isUnlocked; 
     },
   },
   watch: {
@@ -471,18 +428,19 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
-          
-          await this.loadCCFRIFacility(this.$route.params.urlGuid);
-          await this.decorateWithCareTypes(this.currentFacility.facilityId); 
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+          await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
-          //so the card will display as open if dates already exist
-          if (this.CCFRIFacilityModel.dates.length > 0){
-            this.model.closureFees = 'Yes';
+          if (this.getClosureDateLength > 0){
+            this.closureFees = 'Yes';
           }
+
+        
           this.loading = false;
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
+          window.location.reload();
         }
       },
       immediate: true,
@@ -498,7 +456,13 @@ export default {
         datePicker1: undefined,
         datePicker2: undefined,
         closureReason : '',
-        feesPaidWhileClosed: '',
+        feesPaidWhileClosed: undefined,
+      });
+    },
+    hasDataToDelete(){
+      //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user. 
+      return this.CCFRIFacilityModel.childCareTypes.some(careType => {
+        return careType.deleteMe;
       });
     },
     closeDialog() {
@@ -545,10 +509,14 @@ export default {
       }
     },
     isFormComplete(){
-      if (this.model.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
-        return false;
+      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0 && this.isValidForm){
+        this.currentFacility.isCCFRIComplete = true; 
+        return true;
       }
+
+      this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm; //false makes button clickable, true disables button
+      
     },
     hasModelChanged(){
       console.log('model:', this.loadedModel);
@@ -565,8 +533,9 @@ export default {
       return true;
     },
     async save(showMessage) {
+      //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
-      if (this.hasModelChanged()){
+      if (this.hasModelChanged() || this.hasDataToDelete()){
         console.log('dates in save :' , this.CCFRIFacilityModel.dates);
         this.processing = true;
         let payload = [];
@@ -580,7 +549,7 @@ export default {
     
         
         let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
-        currentFacility.isCCFRIComplete = this.isFormComplete(); //have to flip this bool because it's used to enable/diable the next button
+        currentFacility.isCCFRIComplete = this.isFormComplete(); 
 
         this.CCFRIFacilityModel.dates.forEach ((item, index) => {
           //checks if blank - don't send over incomplete closure dates
@@ -590,7 +559,7 @@ export default {
         });
 
 
-        //for each child care type - send a request. 
+        //for each child care type - prepare an object for the payload 
         //index will also match the order of how the cards are displayed. 
         this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
           if (item.feeFrequency) {
@@ -627,15 +596,21 @@ export default {
 
         try {
           this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes 
-          await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          console.log('the res is:' , res);
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           }
+          
           //remove the facility to delete from the vuex store
           this.deleteChildCareTypes();
         } catch (error) {
           console.info(error);
-          this.setFailureAlert('An error occurred while saving. Please try again later.');
+          this.setFailureAlert('An error occurred while saving. Please refresh and save again.');
+
+          //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
+          //and life will be good :) 
+          window.location.reload(true);
         }
         this.processing = false;
       }

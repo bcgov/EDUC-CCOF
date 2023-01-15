@@ -270,6 +270,12 @@ const DeclarationMappings = [
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
+  { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
+  { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
+  { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'facilities', front: 'facilities'}
 ];
 
 module.exports = {
@@ -292,5 +298,5 @@ module.exports = {
   OrganizationFacilityMappings,
   RFIApplicationMappings,
   NMFApplicationMappings,
-  DeclarationMappings
+  DeclarationMappings,
 };
