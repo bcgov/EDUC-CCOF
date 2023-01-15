@@ -10,8 +10,6 @@
         v-text="'What would you like to do?'" />
     </v-row >
 
-    
-
     <v-container 
     fluid
     class="px-10"
