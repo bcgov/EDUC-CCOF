@@ -1,8 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center" class="pt-4">
-      <span class="text-h5 text-center">Early Childhood Educator-Wage Enhancement (ECE-WE)
-        <span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span></span>
+      <span class="text-h5 text-center">Early Childhood Educator-Wage Enhancement (ECE-WE) - {{this.programYearLabel}} Program Confirmation Form</span>
     </v-row>
     <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
       {{this.userInfo.organizationName}}
