@@ -1,8 +1,7 @@
 <template>
   <v-form ref="form" v-model="model.isFacilityComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
-      <v-skeleton-loader v-if="processing" :loading="processing" type="text@6"></v-skeleton-loader>
-      <span v-else>
+      <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
             <v-container>
@@ -85,8 +84,8 @@
         </v-row>
       </span>
       <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
+        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
         <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>

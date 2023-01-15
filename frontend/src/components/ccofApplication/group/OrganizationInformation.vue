@@ -1,8 +1,7 @@
 <template>
   <v-form ref="form" v-model="isValidForm" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
-      <v-skeleton-loader v-if="processing" :loading="processing" type="text@8"></v-skeleton-loader>
-      <span v-else>
+      <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
             <v-container>

@@ -10,14 +10,20 @@ export default {
     ...mapState('funding', ['fundingModel']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('auth', ['userInfo']),
+    ...mapState('application', ['unlockBaseFunding']),
+    isLocked() {
+      if (this.unlockBaseFunding) {
+        return false;
+      }
+      return (this.applicationStatus === 'SUBMITTED');
+    }
   },
   data() {
     return {
       processing: false,
-      loading: true,
+      loading: false,
       model: {},
       rules,
-      isLocked: true
     };
   },
   methods: {
@@ -82,7 +88,6 @@ export default {
       handler() {
         this.model = { ...this.fundingModel };
         this.$refs.form?.resetValidation();
-        this.isLocked = !this.userInfo.unlockBaseFunding;
       },
       immediate: true,
       deep: true
