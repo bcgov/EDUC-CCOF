@@ -102,8 +102,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList']),
     ...mapState('application', ['applicationStatus']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiList', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -522,7 +522,7 @@ export default {
           title: 'Eligibility',
           link: { name: 'ECEWE Eligibility'},
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.eceweEligibilityComplete),
           isActive: 'ECEWE Eligibility' === this.$route.name
         },
       );
@@ -531,7 +531,7 @@ export default {
           title: 'Facility',
           link: { name: 'ECEWE Facilities'},
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.eceweFacilitiesComplete),
           isActive: 'ECEWE Facilities' === this.$route.name
         },
       );

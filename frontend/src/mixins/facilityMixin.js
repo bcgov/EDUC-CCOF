@@ -8,7 +8,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
-    isLocked() { return false; }
+    ...mapState('auth', ['userInfo']),
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
@@ -33,6 +33,7 @@ export default {
       handler() {
         this.model = { ...this.facilityModel };
         this.$refs.form?.resetValidation();
+        this.isLocked = !this.userInfo.unlockBaseFunding;
       },
       immediate: true,
       deep: true
@@ -43,7 +44,8 @@ export default {
       rules,
       processing: false,
       loading: true,
-      model: {}
+      model: {},
+      isLocked: true
     };
   },
 

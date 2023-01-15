@@ -259,19 +259,41 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
         "ccof_comment": date.closureReason,
         "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
       };
-
       let response = await postOperation('ccof_application_ccfri_closures', payload);
       retVal.push(response);
       
     }));
-
     return retVal;
-  
   } catch (e){
     log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
+
+async function getRFIMedian(req, res) {
+  try {
+    let operation = `ccof_applicationccfris?$select=_ccof_region3pctmedian_value,_ccof_region_value&$expand=ccof_Region3PctMedian($select=ccof_3percentageof0to18,ccof_3percentageof18to36,ccof_3percentageof3ytok,ccof_3percentageofoosctok,ccof_3percentageofoosctog,ccof_3percentageofpre,ccof_0to18months,ccof_18to36months,ccof_3yearstokindergarten,ccof_outofschoolcarekindergarten,ccof_outofschoolcaregrade1,ccof_preschool),ccof_Region($select=ccof_name,ccof_regionnumber)&$filter=(ccof_applicationccfriid eq ${req.params.ccfriId}) and (ccof_Region3PctMedian/ccof_median_fee_sdaid ne null) and (ccof_Region/ccof_fee_regionid ne null)`
+    let rfiMedian = await getOperation(operation);
+    rfiMedian = rfiMedian.value;
+    let medians = {};
+    if (rfiMedian?.length > 0) {
+      medians['0 to 18 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof0to18;
+      medians['18 to 36 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof18to36;
+      medians['3 Years to Kindergarten'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof3ytok;
+      medians['Out of School Care - Kindergarten'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofoosctok;
+      medians['Out of School Care - Grade 1+'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofoosctog;
+      medians['Preschool'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofpre;
+    } else if (rfiMedian?.length > 1) {
+      log.error('Expected 1 set of RFI Medians got more: ', rfiMedian);
+    }
+    log.verbose('Median data: ', minify(medians));
+    return res.status(HttpStatus.OK).json(medians);
+  } catch (e) {
+    log.error('An error occurred while getting getRFIMedian', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 
 async function getECEWEApplication(req, res) {
   try {
@@ -375,5 +397,6 @@ module.exports = {
   createRFIApplication,
   updateRFIApplication,
   getDeclaration,
-  submitApplication
+  submitApplication,
+  getRFIMedian,
 };
