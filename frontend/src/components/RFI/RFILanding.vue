@@ -1,6 +1,16 @@
 <template>
   <v-container>
 
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ currentYearTitle }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+    </div>
+    <br><br>
+    <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name:  </p> <br>
+
     <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
         min-height="230"
         rounded
@@ -1401,6 +1411,11 @@ export default {
   },
   computed: {
     ...mapState('rfiApp', ['rfiModel']),
+    ...mapState('app', ['programYearList']),
+
+    currentYearTitle(){
+      return this.programYearList.current.name.substring(0, 7);
+    },
   },
   watch: {
     '$route.params.urlGuid': {

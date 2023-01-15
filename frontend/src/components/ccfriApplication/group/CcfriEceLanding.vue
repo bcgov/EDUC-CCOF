@@ -1,10 +1,23 @@
 <template>
     <v-container>
         
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+      <span class="text-h5">Confirm CCFRI participation for each facility.</span>
+      </div>
+      
       <v-btn
-        class = "my-10 mx-14 justify-end"
+        class = "mx-0 justify-end"
         @click="toggleAll()"
-        dark color='#003366' 
+        dark color='#003366'
+        :disabled="applicationStatus === 'SUBMITTED'" 
         > 
         Opt-in All Facilities
       </v-btn>
@@ -116,27 +129,15 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete']),
+    ...mapState('application', ['applicationStatus',  'programYearLabel']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('organization', ['applicationId']),
 
     isReadOnly(){
-      //if submitted, lock er up. If unlock CCFRI - unlock
-      //flip the bool: if user can edit we want disabled to be false
-      console.log(this.navBarList[0].unlockCcfri);
-      // if (!this.navBarList[index].unlockCcfri){
-      //   //return false;
-      // }
-      // else if (this.navBarList[index].unlockCcfri){
-      //   return false;
-      // }
-      // //console.log();
-      // else if (this.applicationStatus === 'SUBMITTED'){
-      //   return true; 
-      // }
-
-      return false;
-      //return !this.isUnlocked; 
+      //more logic to come here post MVP
+      return (this.applicationStatus === 'SUBMITTED');
     },
+
   },
   beforeMount: function() {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
@@ -175,7 +176,10 @@ export default {
       if(!firstOptInFacility){
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
-
+      //if application locked, send to add new fees
+      else if (this.isReadOnly) { 
+        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+      }
       //if CCFRI is being renewed, go to page that displays fees
       else if (this.isRenewal){
         this.$router.push({path : `${PATHS.currentFees}/${firstOptInFacility.ccfriApplicationId}`});
