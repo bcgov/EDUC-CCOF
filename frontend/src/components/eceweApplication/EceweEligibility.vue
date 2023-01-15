@@ -218,7 +218,7 @@ export default {
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'isRenewal']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
