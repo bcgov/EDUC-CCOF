@@ -99,7 +99,7 @@
 <script>
 
 
-import { mapState, mapMutations, mapGetters } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';

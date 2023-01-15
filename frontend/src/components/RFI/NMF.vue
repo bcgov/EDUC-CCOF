@@ -239,7 +239,7 @@ export default {
         let ccfriId = this.$route.params.urlGuid;
         await this.saveNmf(ccfriId);
         if (showNotification) {
-            this.setSuccessAlert('Success! New facility information has been saved.');
+          this.setSuccessAlert('Success! New facility information has been saved.');
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');

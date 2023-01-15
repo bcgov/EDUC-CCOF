@@ -205,9 +205,15 @@ export default {
       return applicationRelockPayload;
     },
     createRelockPayloadForApplication() {
-      let applicationRelockPayload = {unlockBaseFunding: this.unlockBaseFunding, unlockDeclaration: this.unlockDeclaration, unlockEcewe: this.unlockEcewe,
-                            unlockLicenseUpload: this.unlockLicenseUpload, unlockSupportingDocuments: this.unlockSupportingDocuments};
+      let applicationRelockPayload = {
+        unlockBaseFunding: this.unlockBaseFunding,
+        unlockDeclaration: this.unlockDeclaration,
+        unlockEcewe: this.unlockEcewe,
+        unlockLicenseUpload: this.unlockLicenseUpload,
+        unlockSupportingDocuments: this.unlockSupportingDocuments
+      };
       // Create payload with only unlock propteries set to 1.
+      // eslint-disable-next-line no-unused-vars
       applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == 1));
       // Update payload unlock properties from 1 to 0.
       Object.keys(applicationRelockPayload).forEach(key => {
@@ -221,6 +227,7 @@ export default {
         let applicationIdPayload = {ccfriApplicationId: facility.ccfriApplicationId};
         let unlockPayload = {unlockCcfri: facility.unlockCcfri, unlockNmf: facility.unlockNmf, unlockRfi: facility.unlockRfi};
         // Create payload with only unlock propteries set to 1.
+        // eslint-disable-next-line no-unused-vars
         unlockPayload = Object.fromEntries(Object.entries(unlockPayload).filter(([_, v]) => v == 1));
         // Update payload unlock properties from 1 to 0.
         Object.keys(unlockPayload).forEach(key => {
