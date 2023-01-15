@@ -90,7 +90,9 @@
               <v-textarea
                 outlined
                 name="input-7-4"
-                label="Describe here"
+                placeholder="Describe here"
+                label=" Please tell us anything else you'd like us to know about how your facility's business case supports setting fees higher than the   
+                  Affordability Benchmarks outlined in the 2023/24 Funding Guidelines. "
                 v-model="model.notes"
               ></v-textarea>
             </div>
@@ -103,30 +105,7 @@
       </v-card>
 
 
-        <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
-          min-height="230"
-          rounded
-          tiled
-          exact 
-          tile
-          :ripple="false"
-        >
-          <v-card-text class="pa-0" >
-            <div class="pa-2 pa-md-4 ma-0 backG">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Documentation Required
-              </p>
-            </div>
-            <br>
-            <div class="px-md-12 px-7">
-              Upload supporting documents (for example receipts, quotes, and/or budget/finance documents) here:
-              
-            </div>
-          </v-card-text>
-        </v-card>
-
-       
-        
+  
        <!--end show if yes / yes selected-->
 
 
