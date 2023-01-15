@@ -94,7 +94,7 @@ const ServiceExpansionDetailsMappings = [//ccof_ccof_rfipfi_ccof_rfipfiserviceex
   { back: 'ccof_facilitysnewhoursofoperationto', front: 'newtimefrom'},
   { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
   { back: 'ccof_dateofchange', front: 'date'},
-  { back: 'ccof_amountofexpense_base', front: 'expense'},
+  { back: 'ccof_amountofexpense', front: 'expense'},
 ];
 
 const DCSWageIncreaseMappings = [ //ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail
@@ -106,7 +106,7 @@ const DCSWageIncreaseMappings = [ //ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail
   { back: 'ccof_wageincreasedate', front: 'wageDate'},
 ];
 
-const IndigenousCommunityExpenseInformationMappings = [
+const ExpenseInformationMappings = [
   { back: 'ccof_expensedescription', front: 'description'},
   { back: 'ccof_dateofexpense', front: 'date'},
   { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
@@ -332,6 +332,6 @@ module.exports = {
   DeclarationMappings,
   ServiceExpansionDetailsMappings,
   DCSWageIncreaseMappings,
-  IndigenousCommunityExpenseInformationMappings,
+  ExpenseInformationMappings,
   OtherFundingProgramMappings
 };

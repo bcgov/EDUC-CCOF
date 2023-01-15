@@ -77,14 +77,12 @@
               :ripple="false"
 
       >
-
         <v-card-text class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
             <p class="text-h5 text--primary px-5 py-0 my-0">
               Expense Information
             </p>
           </div>
-
           <v-banner
             class="ma-4"
             color="blue lighten-4"
@@ -98,8 +96,6 @@
             </v-icon>
             <strong>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</strong>
           </v-banner>
-
-
           <div class="px-md-12 px-7">
 
             <v-row class="hidden-sm-and-down">
@@ -126,13 +122,13 @@
 
             </v-row>
 
-            <v-row v-for="(expense, index) in expenseList" :key="index">
+            <v-row v-for="(expense, index) in model.expenseList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
                   large
                   color="blue darken-4"
                   class="mt-md-4"
-                  @click="removeObjFromList(index, expenseList)"
+                  @click="removeObjFromList(index, model.expenseList)"
                 > mdi-close
                 </v-icon>
               </v-col>
@@ -184,7 +180,7 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="" @click="addObjToList(expenseObj, expenseList)" class="my-5" dark color='#003366'>Add
+              <v-btn id="" @click="addObjToList(expenseObj, model.expenseList)" class="my-5" dark color='#003366'>Add
                 Expense
               </v-btn>
             </div>
@@ -201,7 +197,8 @@
 
         </v-card-text>
       </v-card>
-
+    </div>
+    <div>
       <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
               rounded
@@ -268,13 +265,13 @@
 
               </v-row>
 
-              <v-row v-for="(fundInfo, index) in fundingList" :key="index">
+              <v-row v-for="(fundInfo, index) in model.fundingList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                     large
                     color="blue darken-4"
                     class="mt-md-4"
-                    @click="removeObjFromList(index, fundingList)"
+                    @click="removeObjFromList(index, model.fundingList)"
                   > mdi-close
                   </v-icon>
                 </v-col>
@@ -344,7 +341,7 @@
 
 
               <div class="form-group">
-                <v-btn id="funding" @click="addObjToList(fundingObj, fundingList)" class="my-5" dark color='#003366'>Add
+                <v-btn id="funding" @click="addObjToList(fundingObj, model.fundingList)" class="my-5" dark color='#003366'>Add
                   Funding
                 </v-btn>
               </div>
@@ -563,14 +560,14 @@
             <span class="white--text"> . </span>
             <v-divider></v-divider>
 
-            <v-row v-for="(obj, index) in wageList" :key="index">
+            <v-row v-for="(obj, index) in model.wageList" :key="index">
 
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
                   large
                   color="blue darken-4"
                   class="mt-md-4"
-                  @click="removeObjFromList(index, wageList)"
+                  @click="removeObjFromList(index, model.wageList)"
                 > mdi-close
                 </v-icon>
               </v-col>
@@ -656,7 +653,7 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="funding" @click="addObjToList(wageObj, wageList)" class="my-5" dark color='#003366'>Add
+              <v-btn id="funding" @click="addObjToList(wageObj, model.wageList)" class="my-5" dark color='#003366'>Add
                 Funding
               </v-btn>
             </div>
@@ -825,13 +822,13 @@
             <v-divider></v-divider>
 
 
-            <v-row v-for="(obj, index) in expansionList" :key="index">
+            <v-row v-for="(obj, index) in model.expansionList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
                   large
                   color="blue darken-4"
                   class="mt-md-4"
-                  @click="removeObjFromList(index, expansionList)"
+                  @click="removeObjFromList(index, model.expansionList)"
                 > mdi-close
                 </v-icon>
               </v-col>
@@ -1008,7 +1005,7 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn @click="addObjToList(expansionObj, expansionList)" class="my-5" dark color='#003366'>Add Expense
+              <v-btn @click="addObjToList(expansionObj, model.expansionList)" class="my-5" dark color='#003366'>Add Expansion Details
               </v-btn>
             </div>
 
@@ -1132,13 +1129,13 @@
               </v-col>
 
             </v-row>
-            <v-row v-for="(expense, index) in IndigenousExpenseList" :key="index">
+            <v-row v-for="(expense, index) in model.IndigenousExpenseList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
                   large
                   color="blue darken-4"
                   class="mt-md-4"
-                  @click="removeObjFromList(index, IndigenousExpenseList)"
+                  @click="removeObjFromList(index, model.IndigenousExpenseList)"
                 > mdi-close
                 </v-icon>
               </v-col>
@@ -1190,7 +1187,7 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="login-button" @click="addObjToList(indigenousExpenseObj, IndigenousExpenseList)" class="my-5"
+              <v-btn id="login-button" @click="addObjToList(expenseObj, model.expenseList)" class="my-5"
                      dark color='#003366'>Add Expense
               </v-btn>
             </div>
@@ -1307,12 +1304,10 @@
 
 
     <v-row justify="space-around">
-      <v-btn color="info" outlined x-large @click="previous()">
-        Back
-      </v-btn>
+      <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
-      <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
-      <v-btn color="primary" outlined x-large :loading="processing" @click="save()">
+      <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="false">Next</v-btn>
+      <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">
         Save
       </v-btn>
     </v-row>
@@ -1321,30 +1316,25 @@
 </template>
 
 <script>
-
+import alertMixin from '@/mixins/alertMixin';
 import {PATHS} from '@/utils/constants';
 import {mapActions, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
 
-let q1 = '';
-let q2 = '';
-let q3 = '';
-let datePicker = null;
+let model = {
+  expansionList: [],
+  wageList: [],
+  fundingList: [],
+  expenseList: [],
+  indigenousExpenseList: []
+};
 
 
-let expenseList = [];
 
-let fundingList = [];
-
-let wageList = [];
-
-let expansionList = [];
-
-let IndigenousExpenseList = [];
-
-let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,wageList};
+// let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
+  mixins: [alertMixin],
   name: 'CcfriRequestMoreInfo',
   data() {
     return {
@@ -1400,11 +1390,6 @@ export default {
       model,
       test: 1,
       input: '',
-      expenseList,
-      fundingList,
-      wageList,
-      expansionList,
-      IndigenousExpenseList,
       calendarMenu: [],
       expansionCalendarMenu: [],
       fundingCalendar: [],
@@ -1421,15 +1406,15 @@ export default {
   mounted() {
     console.info('mounted');
     //this.model = this.$store.state.ccfriApp.model ?? model;
-    console.info(this.model);
+    console.info('model is: ', this.model);
 
 
     //load the screen with at least one row in the form
-    this.addObjToList(this.fundingObj, this.fundingList);
-    this.addObjToList(this.expenseObj, expenseList);
-    this.addObjToList(this.wageObj, wageList);
-    this.addObjToList(this.expansionObj, expansionList);
-    this.addObjToList(this.indigenousExpenseObj, IndigenousExpenseList);
+    this.addObjToList(this.fundingObj, model.fundingList);
+    this.addObjToList(this.expenseObj, model.expenseList);
+    this.addObjToList(this.wageObj, model.wageList);
+    this.addObjToList(this.expansionObj, model.expansionList);
+    this.addObjToList(this.indigenousExpenseObj, model.indigenousExpenseList);
 
   },
   beforeRouteLeave(_to, _from, next) {
@@ -1452,22 +1437,22 @@ export default {
     },
     rfiModel: {
       handler() {
-        this.model = {...this.rfiModel};
-        if(this.model.expansionList){
-          this.expansionList = deepCloneObject(this.rfiModel.expansionList);
-        }
-        if(this.model.wageList){
-          this.wageList = deepCloneObject(this.rfiModel.wageList);
-        }
-        if(this.model.IndigenousExpenseList){
-          this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
-        }
-        if(this.model.fundingList){
-          this.fundingList = deepCloneObject(this.rfiModel.fundingList);
-        }
-        if(this.model.expenseList){
-          this.expenseList = deepCloneObject(this.rfiModel.expenseList);
-        }
+        this.model = deepCloneObject(this.rfiModel);
+        // if(this.model.expansionList){
+        //   this.expansionList = deepCloneObject(this.rfiModel.expansionList);
+        // }
+        // if(this.model.wageList){
+        //   this.wageList = deepCloneObject(this.rfiModel.wageList);
+        // }
+        // if(this.model.IndigenousExpenseList){
+        //   this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
+        // }
+        // if(this.model.fundingList){
+        //   this.fundingList = deepCloneObject(this.rfiModel.fundingList);
+        // }
+        // if(this.model.expenseList){
+        //   this.expenseList = deepCloneObject(this.rfiModel.expenseList);
+        // }
         console.info('handlera');
         console.info(this.model);
         this.$refs.form?.resetValidation();
@@ -1487,13 +1472,21 @@ export default {
     previous() {
       this.$router.back();
     },
-    save() {
-      //TODO work on setting the lists
-      console.info('Save clicked');
+    async save(showNotification) {
       this.processing = true;
-      this.setRfiModel(this.model);
+      this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
-      this.saveRfi(ccfriId);
+      try {
+        let friApplicationGuid = await this.saveRfi(ccfriId);
+        if (friApplicationGuid) {
+          this.model.rfiId = friApplicationGuid;
+        }
+        if (showNotification) {
+          this.setSuccessAlert('Success! Request for Information has been saved.');
+        }        
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      }
       this.processing = false;
 
     },

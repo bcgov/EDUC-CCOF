@@ -1,13 +1,19 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import {isEqual} from 'lodash';
+import {isEmpty} from 'lodash';
 import {deepCloneObject} from '@/utils/common';
 
 export default {
   namespaced: true,
   state: {
-    rfiModel: {},
+    rfiModel: {
+      expansionList: [],
+      wageList: [],
+      fundingList: [],
+      expenseList: [],
+      indigenousExpenseList: []
+    },
     loadedModel: {},
     rfiStore: {},
   },
@@ -39,9 +45,12 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + ccfriId + '/rfi');
           console.info(response);
-          commit('addRfiToStore', {ccfriId: ccfriId, model: response.data});
-          commit('setRfiModel', response.data);
-          commit('setLoadedModel', deepCloneObject(response.data));
+          if (!isEmpty(response.data)) {
+            commit('addRfiToStore', {ccfriId: ccfriId, model: response.data});
+            commit('setRfiModel', response.data);
+            commit('setLoadedModel', deepCloneObject(response.data));
+  
+          }
         } catch(e) {
           console.log(`Failed to get existing RFI with error - ${e}`);
           throw e;
@@ -62,8 +71,8 @@ export default {
       if (state.rfiModel?.rfiId) {
         // has a rfi ID, so update the data
         try {
-          let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_RFI + '/' + 'rfi/' + state.rfiModel?.rfiId, state.rfiModel);
-          return response;
+          await ApiService.apiAxios.put(ApiRoutes.APPLICATION_RFI + '/' + 'rfi/' + state.rfiModel?.rfiId, state.rfiModel);
+          return null;
         } catch (error) {
           console.log(`Failed to update existing RFI - ${error}`);
           throw error;
@@ -72,9 +81,9 @@ export default {
         // else create a new RFI
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RFI+ '/' + ccfriId + '/rfi', state.rfiModel);
-          state.rfiModel.rfiId = response.data;
+          state.rfiModel.rfiId = response.data?.friApplicationGuid;
           commit('addRfiToStore', {ccfriId: ccfriId, model: state.rfiModel});
-          return response;
+          return response.data?.friApplicationGuid;
         } catch (error) {
           console.log(`Failed to save new RFI - ${error}`);
           throw error;
