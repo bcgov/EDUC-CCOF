@@ -29,7 +29,10 @@ const APPLICATION_STATUS_CODES = Object.freeze({
   NEW: null,
   DRAFT: 1,
   SUBMITTED: 3,
-  WITHDRAWN: 4
+  WITHDRAWN: 4,
+  // Additional status codes not from Dynamics
+  APPROVED: 10,
+  ACTION_REQUIRED: 11
 });
 
 const CCOF_STATUS_CODES = Object.freeze({

@@ -28,3 +28,9 @@ export function deepCloneObject(objectToBeCloned) {
   return clone(objectToBeCloned);
 }
 
+export function convertHTMLToPlain(html){
+  if (html)
+    return html.replace(/<[^>]+>/g, '');
+  return '';
+}
+

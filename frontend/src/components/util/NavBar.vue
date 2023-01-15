@@ -105,6 +105,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiStore', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
+    ...mapState('application', ['applicationStatus']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -242,7 +243,23 @@ export default {
       );
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item, index) => {
-          if (item.ccfriOptInStatus == 1 && this.isRenewal){ //this was down in RFI nav? But I moved it back here to make my nav work as I expect?
+          //application is read only, send nav link to Add New FEE page
+          if (item.ccfriOptInStatus == 1 && this.applicationStatus==='SUBMITTED'){
+            items.push(
+              {
+                title: 'Parent Fees '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
+                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
+                icon:  this.getCheckbox(item.isCCFRIComplete),
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
+                // function: this.loadFacility(x.id)
+              },
+            );
+          }
+          //renew should send user to existing fee page to confirm if previous year fees are correct
+          else if (item.ccfriOptInStatus == 1 && this.isRenewal){
             items.push(
               {
                 title: 'Parent Fees '+ (index + 1),
@@ -267,6 +284,19 @@ export default {
                 icon:  this.getCheckbox(item.isCCFRIComplete),
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId
                 // function: this.loadFacility(x.id)
+              },
+            );
+          }
+          if (item.unlockNmf) { // TO-DO : check if currentFacility has Nmf form then enable for View Application
+            items.push(
+              {
+                title: 'New Facility '+ (index + 1),
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
+                isAccessible: true,
+                icon:  this.getCheckbox(false), // TO-DO update checkbox
+                isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name)
               },
             );
           }

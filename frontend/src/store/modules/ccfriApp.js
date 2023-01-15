@@ -76,6 +76,9 @@ export default {
     getCCFRIById: (state) => (ccfriId) => { 
       return state.ccfriStore[ccfriId];
     },
+    getClosureDateLength: (state) => {
+      return state.CCFRIFacilityModel.dates.length;
+    },
     getCCFRIMedianById: (state) => (ccfriId) => { 
       return state.ccfriMedianStore[ccfriId];
     },
@@ -107,8 +110,7 @@ export default {
         });
       console.log('over array', over3percentFacilities);
       return over3percentFacilities;   
-    },
-
+    }
   },
   mutations: {
     model(state, value) { state.model = value;},
@@ -148,7 +150,6 @@ export default {
         }
       }
     },
-
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
@@ -163,7 +164,7 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       
-          commit('setCCFRIFacilityModel', Object.assign({}, response.data));
+          commit('setCCFRIFacilityModel', response.data);
           commit('setLoadedModel', _.cloneDeep(response.data));
          
         } catch(e) {
@@ -200,8 +201,14 @@ export default {
             });
           }
         });
+
+        //if the user manually refreshes AddNewFees page - assume that previous years fees are correct. (same as hitting yes on Existing Fees Page)
+        //may take this out later 
+        if (state.CCFRIFacilityModel.prevYearFeesCorrect === undefined){
+          state.CCFRIFacilityModel.prevYearFeesCorrect = true;
+        }
         
-        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ //only display previous year fees if it's the first time CCFRI application  -- OR fees are incorrect?
+        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
           response.data.forEach(item => {
             const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
             //check for undefined here! 

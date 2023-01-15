@@ -1,11 +1,10 @@
 <template>
-  <v-skeleton-loader max-height="375px" v-if="isLoading" :loading="isLoading" type="table-tbody, table-tfoot"></v-skeleton-loader>
-  <v-form v-else ref="form" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center"><h3>Supporting Document Upload</h3></v-card-title>
-          <v-data-table
+          <v-card-title class="justify-center"><h3>Supporting Document Upload<span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span></h3></v-card-title>
+          <v-data-table v-if="!isLoading"
             :headers="headers"
             :items="uploadedDocuments"
             class="elevation-1"
@@ -17,7 +16,7 @@
                 <div class="d-flex">
                   <v-btn
                     color="primary"
-                    class="ml-2 white--text"
+                    class="ml-2 white--text v-skeleton-loader-small-button"
                     @click="addNew">
                     <v-icon dark>mdi-plus</v-icon>
                     Add
@@ -83,15 +82,17 @@
               </v-icon>
             </template>
           </v-data-table>
+          <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+            <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+            <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
+          </v-card>
         </v-card>
       </v-row>
-
       <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
+        <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="isProcessing" @click="next()">Next</v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled=!isSaveDisabled @click="saveClicked()">Save</v-btn>
       </v-row>
-
     </v-container>
   </v-form>
 </template>
@@ -114,6 +115,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
+    ...mapState('application', ['isRenewal', 'programYearLabel']),
     ...mapState('organization', ['applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
 
@@ -138,16 +140,14 @@ export default {
 
   },
   async beforeRouteLeave(_to, _from, next) {
-    if(this.isValidForm){
-      await this.save();
-    }
+    await this.save(false);
     next();
   },
   data() {
     return {
       isLoading: false,
+      isProcessing: false,
       rules,
-      processing: false,
       facilityNames: [],
       documentTypes: [],
       model: {},
@@ -214,8 +214,8 @@ export default {
     async saveClicked() {
       await this.save();
     },
-    async save() {
-      this.processing = true;
+    async save(showConfirmation = true) {
+      this.isProcessing = true;
       try {
         await this.processDocumentFileDelete();
         const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
@@ -223,11 +223,13 @@ export default {
           await this.processDocumentFilesSave(newFilesAdded);
         }
         await this.createTable();
-        this.setSuccessAlert('Changes Successfully Saved');
+        if (showConfirmation) {
+          this.setSuccessAlert('Changes Successfully Saved');
+        }
       } catch (e) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
-        this.processing = false;
+        this.isProcessing = false;
       }
     },
     async processDocumentFilesSave(newFilesAdded) {

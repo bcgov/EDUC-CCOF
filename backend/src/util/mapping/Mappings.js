@@ -121,6 +121,16 @@ const OtherFundingProgramMappings = [
   { back: 'ccof_expense', front: 'expenses'},
 ];
 
+const NMFApplicationMappings = [
+  { back: 'ccof_rfi_pfi_nmfid', front: 'nmfId' },
+  { back: 'ccof_supportneeds', front: 'supportNeeds' }, // 1 or 0
+  { back: 'ccof_supportneeds_comment', front: 'supportNeedsComments' }, // "Please describe any associated expenses."
+  { back: 'ccof_lowincome_families', front: 'lowIncomeFamilies' }, // 1 or 0
+  { back: 'ccof_lowincomefamilies_comments', front: 'lowIncomeFamiliesComments' }, // "Please describe the service(s) and associated expenses."
+  { back: 'ccof_remote_communities', front: 'remoteCommunities' }, // 1 or 0
+  { back: 'ccof_remotecommunities_comment', front: 'remoteCommunitiesComments' }, // "Please describe the service and associated expenses."
+  { back: 'ccof_othercomment', front: 'otherComments' }, // "Please tell us anything else you’d like us to know ..."
+];
 
 const CCFRIClosureDateMappings = [
   { back: 'ccof_startdate', front: 'startDate' },
@@ -164,6 +174,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maxnoofweeksperyearyouprovidechildcare', front: 'maxWeeksPerYear' },
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom12hr' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo12hr' },
+  { back: 'ccof_maximumnumberofchildcarespacesyouoffer', front: 'maxSpaces' },
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
@@ -236,7 +247,8 @@ const UserProfileApplicationMappings = [ //application
   { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
   { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
-  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' }
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'ccof_ccofstatus', front: 'ccofStatus' },
 ];
 
 const UserProfileFacilityMappings = [
@@ -308,6 +320,12 @@ const DeclarationMappings = [
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
+  { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
+  { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
+  { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'facilities', front: 'facilities'}
 ];
 
 module.exports = {
@@ -334,4 +352,5 @@ module.exports = {
   DCSWageIncreaseMappings,
   ExpenseInformationMappings,
   OtherFundingProgramMappings
+  NMFApplicationMappings,
 };

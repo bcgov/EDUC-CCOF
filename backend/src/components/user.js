@@ -90,7 +90,7 @@ async function getUserInfo(req, res) {
   application.applicationType = getLabelFromValue(application.applicationType, CCOF_APPLICATION_TYPES);
   application.ccofProgramYearId = userResponse.application?.ccof_ProgramYear?.ccof_program_yearid;
   application.ccofProgramYearName = userResponse.application?.ccof_ProgramYear?.ccof_name;
-
+  application.ccofApplicationStatus = getLabelFromValue(application.ccofStatus, CCOF_STATUS_CODES, 'NEW');
 
   resData.facilityList = parseFacilityData(userResponse);
   let results = {
