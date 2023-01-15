@@ -351,6 +351,6 @@ module.exports = {
   ServiceExpansionDetailsMappings,
   DCSWageIncreaseMappings,
   ExpenseInformationMappings,
-  OtherFundingProgramMappings
+  OtherFundingProgramMappings,
   NMFApplicationMappings,
 };
