@@ -33,7 +33,7 @@ const messageRouter = require('./routes/message');
 const licenseUploadRouter = require('./routes/licenseUpload');
 const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
 
-const nmfRouter = require('./routes/nmfApplication');
+// const nmfRouter = require('./routes/nmfApplication');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -175,7 +175,7 @@ apiRouter.use('/messages', messageRouter);
 apiRouter.use('/licenseUpload', licenseUploadRouter);
 apiRouter.use('/supportingDocument', supportingDocumentUploadRouter);
 
-apiRouter.use('/application', nmfRouter);
+// apiRouter.use('/application', nmfRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
