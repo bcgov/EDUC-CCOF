@@ -13,9 +13,9 @@
       <SmallCard :class="smallCardLayout('CCOF')" :title="CCOFCardTitle">
         <template #content>
           <v-row v-if="!isCCOFApproved()">
-            <v-container v-for="item in ccofInfoText" :key="item.infoTitle" fluid>
+            <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" fluid>
               <h4 class="text--primary">
-                {{item.infoTitle}}
+                {{item.title}}
               </h4>
               <v-card color="#B3E5FF" class="mt-1 py-2" v-if="ccofStatus === CCOF_STATUS_NEW">
                 <v-row align="center" no-gutters class="pa-1">
@@ -24,7 +24,7 @@
                       mdi-information
                     </v-icon>
                   </v-col>
-                  <v-col :cols="12" lg="11" v-html="item.infoText" class="pa-2">
+                  <v-col :cols="12" lg="11" v-html="item.body" class="pa-2">
                   </v-col>
                 </v-row>
               </v-card>
@@ -53,7 +53,7 @@
           </v-row>    
           <v-row v-else-if="ccofStatus === CCOF_STATUS_ACTION_REQUIRED" no-gutters>
             <v-col :cols="12">
-              <v-btn dark class="blueButton" @click="actionRequiredRoute()">Action Required</v-btn>
+              <v-btn dark class="blueButton" @click="actionRequiredOrganizationRoute()">Action Required</v-btn>
             </v-col>                     
           </v-row>
           <v-row v-else-if="isCCOFApproved()" no-gutters>
@@ -79,7 +79,7 @@
         <template #button>
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my funding</v-btn>
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
-          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredRoute()">Action Required</v-btn>
+          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Action Required</v-btn>
           <v-row v-else-if="ccofRenewStatus === RENEW_STATUS_APPROVED" no-gutters>
             <v-col :cols="12">
               <span class="text-h5">Status: Approved</span>
@@ -130,7 +130,7 @@
       </v-row>
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
-          v-for="({facilityName, facilityId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus}) in filteredList" :key="facilityId">
+          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus}) in filteredList" :key="facilityId">
           <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
               <!-- <p class="text-h5 text--primary">
@@ -158,8 +158,8 @@
                 <strong v-else> {{eceweStatus}} </strong>
               </p>
             </v-card-text>
-            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(facilityId) || isNMFUnlock(facilityId) || isRFIUnlock(facilityId)">
-              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredRoute()">Update This Facility</v-btn>
+            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(ccfriApplicationId) || isNMFUnlock(ccfriApplicationId) || isRFIUnlock(ccfriApplicationId)">
+              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(ccfriApplicationId)">Update This Facility</v-btn>
             </v-row>
           </v-card>
         </v-col>
@@ -183,18 +183,18 @@ export default {
       input: '',
       PATHS: PATHS,
       results : {},
-      ccofInfoText: [
+      ccofNewApplicationText: [
         {
-          infoTitle: 'CCOF Base Funding',
-          infoText: '<p>Child Care Operating Funding (CCOF) Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
+          title: 'CCOF Base Funding',
+          body: '<p>Child Care Operating Funding (CCOF) Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
         },
         {
-          infoTitle: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
-          infoText: 'CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
+          title: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
+          body: 'CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
         },
         {
-          infoTitle: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
-          infoText: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
+          title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
+          body: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
         },
       ],
       CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:'
@@ -264,7 +264,7 @@ export default {
       //     return true;
       //   } else if (this.applicationStatus === 'SUBMITTED') {
       //     let isEnabled = (this.isCCFRIandECEWEComplete && this.isWithinRenewDate 
-      //     && this.programYearId == this.programYearList?.current?.programYearId) || this.isApplicationUnlock;
+      //     && this.programYearId == this.programYearList?.current?.programYearId) || this.isOrganizationUnlock;
       //     console.log('isRenewEnabled2: ', isEnabled);
       //     return isEnabled;
       //   }
@@ -277,7 +277,7 @@ export default {
           let isEnabled = (this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
             && this.programYearId == this.programYearList?.current?.programYearId
-            && this.isApplicationUnlock);
+            && this.isOrganizationUnlock);
           console.log('isRenewEnabled4: ', isEnabled);
           return isEnabled;
         }
@@ -293,7 +293,7 @@ export default {
         case 'DRAFT':
           return this.CCOF_STATUS_CONTINUE;
         case 'SUBMITTED':
-          if (this.isApplicationUnlock)
+          if (this.isOrganizationUnlock)
             return this.CCOF_STATUS_ACTION_REQUIRED;
           else
             return (this.ccofApplicationStatus === 'ACTIVE') ? this.CCOF_STATUS_APPROVED : this.CCOF_STATUS_COMPLETE;
@@ -311,7 +311,7 @@ export default {
           return this.RENEW_STATUS_CONTINUE;
         } else if (this.programYearId == this.programYearList.current?.programYearId) {
           return this.RENEW_STATUS_NEW;
-        } else if (this.isApplicationUnlock) {
+        } else if (this.isOrganizationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
         } else if (this.applicationStatus === 'SUBMITTED' && this.ccofApplicationStatus === 'ACTIVE') {
           return this.RENEW_STATUS_APPROVED;
@@ -322,7 +322,7 @@ export default {
         return this.RENEW_STATUS_NEW;
       }
     },
-    isApplicationUnlock() {
+    isOrganizationUnlock() {
       return ((this.unlockBaseFunding && (this.applicationType === 'NEW')) 
         || this.unlockDeclaration || this.unlockEcewe || this.unlockLicenseUpload || this.unlockSupportingDocuments
         || (this.unlockCCFRIList.length > 0 || this.unlockNMFList.length > 0 || this.unlockRFIList.length > 0));
@@ -331,7 +331,7 @@ export default {
       let unlockList = [];
       this.navBarList.forEach((facility) => {
         if (facility.unlockCcfri)
-          unlockList.push(facility.facilityId);
+          unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
@@ -339,7 +339,7 @@ export default {
       let unlockList = [];
       this.navBarList.forEach((facility) => {
         if (facility.unlockNmf)
-          unlockList.push(facility.facilityId);
+          unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
@@ -347,7 +347,7 @@ export default {
       let unlockList = [];
       this.navBarList.forEach((facility) => {
         if (facility.unlockRfi)
-          unlockList.push(facility.facilityId);
+          unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
@@ -390,8 +390,23 @@ export default {
     goToLicenseUpload() {
       this.$router.push(PATHS.group.licenseUpload);
     },
-    goToCCFRI() {
-      this.$router.push(PATHS.ccfriHome); 
+    goToCCFRI(ccfriApplicationId) {
+      if (ccfriApplicationId)
+        this.$router.push(PATHS.currentFees + '/' + ccfriApplicationId);
+      else
+        this.$router.push(PATHS.currentFees + '/' + this.unlockCCFRIList[0]);
+    },
+    goToNMF(ccfriApplicationId) {
+      if (ccfriApplicationId)
+        this.$router.push(PATHS.NMF + '/' + ccfriApplicationId); 
+      else
+        this.$router.push(PATHS.NMF + '/' + this.unlockNMFList[0]);
+    },
+    goToRFI(ccfriApplicationId) {
+      if (ccfriApplicationId)
+        this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + ccfriApplicationId); 
+      else
+        this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + this.unlockRFIList[0]);
     },
     goToECEWE() {
       this.$router.push(PATHS.eceweEligibility);
@@ -416,7 +431,7 @@ export default {
         console.info(error);
       }
     },
-    actionRequiredRoute() {
+    actionRequiredOrganizationRoute() {
       if (this.unlockLicenseUpload) 
         this.goToLicenseUpload();
       else if (this.unlockBaseFunding && (this.applicationType === 'NEW')) 
@@ -428,12 +443,20 @@ export default {
       else if (this.unlockDeclaration)
         this.goToSummaryDeclaration();
       // TO-DO: Update with the correct route for CCFRI/RFI/NMF
-      else if (this.unlockCCFRIList)
-        this.goToCCOFOrganizationInfo();
-      else if (this.unlockNMFList)
-        this.goToCCOFOrganizationInfo();
-      else if (this.unlockRFIList)
-        this.goToCCOFOrganizationInfo();
+      else if (this.unlockCCFRIList.length > 0 )
+        this.goToCCFRI();
+      else if (this.unlockNMFList.length > 0 )
+        this.goToNMF();
+      else if (this.unlockRFIList.length > 0 )
+        this.goToRFI();
+    },
+    actionRequiredFacilityRoute(ccfriApplicationId) {
+      if (this.isCCFRIUnlock(ccfriApplicationId))
+        this.goToCCFRI(ccfriApplicationId);
+      else if (this.isNMFUnlock(ccfriApplicationId))
+        this.goToNMF(ccfriApplicationId);
+      else if (this.isRFIUnlock(ccfriApplicationId))
+        this.goToRFI(ccfriApplicationId);
     },
     buttonColor(isDisabled) {
       return isDisabled ? '#909090' : '#003366';
@@ -460,14 +483,14 @@ export default {
       }
       return false;
     },
-    isCCFRIUnlock(facilityId) {
-      return this.unlockCCFRIList.includes(facilityId);
+    isCCFRIUnlock(ccfriApplicationId) {
+      return (this.applicationStatus === 'SUBMITTED' && this.unlockCCFRIList.includes(ccfriApplicationId));
     },
-    isNMFUnlock(facilityId) {
-      return this.unlockNMFList.includes(facilityId);
+    isNMFUnlock(ccfriApplicationId) {
+      return (this.applicationStatus === 'SUBMITTED' && this.unlockNMFList.includes(ccfriApplicationId));
     },  
-    isRFIUnlock(facilityId) {
-      return this.unlockRFIList.includes(facilityId);
+    isRFIUnlock(ccfriApplicationId) {
+      return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
     },
   },
   
