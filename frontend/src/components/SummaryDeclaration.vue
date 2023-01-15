@@ -142,7 +142,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['programYearList']),
     ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['programYearId', 'programYearLabel']),
+    ...mapState('application', ['isRenewal', 'programYearId', 'programYearLabel']),
   },
   data() {
     return {
