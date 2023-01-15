@@ -3,6 +3,9 @@
     <v-row justify="center" class="mt-6">
       <h3>Request for Information</h3>
     </v-row>
+    <v-row justify="center" class="mt-6">
+      <h3>{{ currentFacility.facilityName }}</h3>
+    </v-row>
     <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
       <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
       <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
@@ -192,17 +195,13 @@ export default {
       return this.navBarList[this.findIndexOfFacility];
     },
     isReadOnly(){
-      if (this.currentFacility.unlockNmf){
-        return false;
-      }
-      return true;
+      return (!this.currentFacility.unlockNmf);
     },
   },
   watch: {
     '$route.params.urlGuid': {
       async handler() {
         let ccfriId = this.$route.params.urlGuid;
-        // let ccfriId = '0cb987ce-2792-ed11-aad0-0022486e1c2a';
         console.log('ccfriId = ',ccfriId);
         await this.loadNmf(ccfriId);
         this.isLoading = false;

@@ -377,9 +377,6 @@ export default {
         this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
       }
     },
-    goToRFI(){
-      this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-    },
     goToCCOFOrganizationInfo() {
       if (this.organizationProviderType === 'GROUP') {
         this.$router.push(PATHS.group.orgInfo);

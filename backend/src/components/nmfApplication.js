@@ -37,9 +37,10 @@ async function getNMFApplication(req, res) {
     if (response.value.length === 1) {
       let nmfApplication = mapNMFApplicationObjectForFront(response.value[0]);
       return res.status(HttpStatus.OK).json(nmfApplication);
-    } else {
+    } else if (response.value.length === 0) {
       return res.status(HttpStatus.OK).json({});
-    //   return res.status(HttpStatus.NOT_FOUND).json({message: 'There is 0 or more than 1 NMF application'});
+    } else {
+      return res.status(HttpStatus.NOT_FOUND).json({message: 'There is more than 1 NMF application'});
     }
   } catch (e) {
     log.error(e);
