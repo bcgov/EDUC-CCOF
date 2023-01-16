@@ -17,7 +17,7 @@
                   <v-btn
                     color="primary"
                     class="ml-2 white--text v-skeleton-loader-small-button"
-                    :disabled="isReadOnly"
+                    :disabled="isLocked"
                     @click="addNew">
                     <v-icon dark>mdi-plus</v-icon>
                     Add
@@ -77,7 +77,7 @@
             <template v-slot:item.actions="{ item }">
               <v-icon
                 small
-                v-if="!isReadOnly"
+                v-if="!isLocked"
                 @click="deleteItem(item)"
               >
                 mdi-delete
@@ -93,7 +93,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
         <v-btn color="secondary" outlined x-large :loading="isProcessing" @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isSaveDisabled || isReadOnly" @click="saveClicked()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isSaveDisabled || isLocked" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -117,21 +117,22 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
-    ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments']),
-    ...mapState('organization', ['applicationId', 'applicationStatus']),
+    ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments','applicationStatus']),
+    ...mapState('organization', ['applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    isReadOnly() {
+    isLocked() {
       if (this.unlockSupportingDocuments) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
-        return true; 
+        return true;
       }
       return false;
     },
     isSaveDisabled(){
       const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
       return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
-    }
+    },
+
   },
 
   async mounted() {
@@ -149,7 +150,10 @@ export default {
 
   },
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if(!this.isLocked){
+      await this.save(false);
+    }
+
     next();
   },
   data() {
@@ -231,8 +235,9 @@ export default {
         if (newFilesAdded.length > 0) {
           await this.processDocumentFilesSave(newFilesAdded);
         }
-        await this.createTable();
+
         if (showConfirmation) {
+          await this.createTable();
           this.setSuccessAlert('Changes Successfully Saved');
         }
       } catch (e) {
@@ -252,7 +257,6 @@ export default {
         };
         payload.push(obj);
       }
-      console.info(payload);
       try {
         await this.saveUploadedDocuments(payload);
       } catch (error) {
@@ -261,7 +265,6 @@ export default {
     },
     async processDocumentFileDelete() {
       if (this.uploadedDocuments?.deletedItems?.length > 0) {
-        console.info(this.uploadedDocuments.deletedItems);
         await this.deleteDocuments(this.uploadedDocuments.deletedItems);
       }
     },
@@ -353,7 +356,7 @@ export default {
     async mapDocumentTypes() {
       //add API call in case data list is provided.
       const docType = {};
-      docType.name = 'Other';
+      docType.name = 'OTHER';
       docType.docName = 'OTHER';
       this.documentTypes.push(docType);
     }
