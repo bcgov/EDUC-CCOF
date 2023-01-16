@@ -11,7 +11,13 @@ const rules = {
   }],
   postalCode: [v => !v || /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(v) || 'A valid postal code is required'],
   YYYY: [v => v > 1900 && v < 2100 || 'A valid year is required'],
-  notRequired: [() => true]
+  notRequired: [() => true],
+  max(number) {
+    return v => !v || v <= number || 'Max exceeded';
+  },
+  min(number) {
+    return v => !v || v >= number || 'Min exceeded';
+  }
 };
 
 export default rules;
