@@ -148,8 +148,8 @@ export default {
           class: 'table-header'
         }
       ],
-      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic',
-      fileFormats: 'PDF, JPEG, JPG, HEIC and PNG',
+      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.pdf',
+      fileFormats: 'PDF, JPEG, JPG, HEIC, PDF, DOCX, DOC and PNG',
       fileInputError: [],
       fileMap: new Map(),
       fileRules: []
