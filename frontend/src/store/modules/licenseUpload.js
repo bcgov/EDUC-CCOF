@@ -20,7 +20,7 @@ export default {
     async saveLicenseFiles({state},payload) {
       try {
         let response = await ApiService.apiAxios.post(ApiRoutes.LICENSE_UPLOAD, payload);
-        return response;
+        return response.data;
       } catch (error) {
         console.error(error);
         throw error;
