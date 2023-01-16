@@ -140,9 +140,9 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['isRenewal', 'programYearList']),
+    ...mapState('app', ['programYearList']),
     ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['programYearId']),
+    ...mapState('application', ['isRenewal', 'programYearId']),
   },
   data() {
     return {

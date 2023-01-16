@@ -314,7 +314,36 @@
         <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true)">
           Save</v-btn>
       </v-row>
-
+      <v-dialog
+        v-model="showRfiDialog"
+        persistent
+        max-width="600px">
+        <v-card>
+          <v-container class="pt-0">
+            <v-row>
+              <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+                <v-card-title class="white--text">Request for Information</v-card-title>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="text-align: center;">
+                <p class="pt-4">Your application for exceeds the 3% median increase <br>for your area for the childcare categories:<br><br>
+                  <span v-for="item in rfi3percentCategories" :key="item">{{item}}</span>
+                </p>
+                <p>You will have to fill out a Request for Information(RFI) form.</p>
+                <p class="pt-4">You can continue to the RFI forms or press back to update your fees</p>
+                <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
+                <v-btn dark color="primary" @click="toRfi()">continue to RFI</v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-dialog>
     </v-container>
   </v-form>
 </template>
@@ -331,6 +360,8 @@ export default {
   data() {
     return {
       closureFees : 'No',
+      showRfiDialog: false,
+      rfi3percentCategories: [],
       isUnlocked: true,
       loading: true,
       processing: false,
@@ -348,8 +379,6 @@ export default {
       dateRules: [
         v => (typeof v === 'number') || 'Required.',
       ],
-      
-      
     };
   },
   beforeRouteLeave(_to, _from, next) {
@@ -359,13 +388,15 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapGetters('app', ['lookupInfo']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList', 'programYearList']),
+    ...mapGetters('ccfriApp', ['getCcfriOver3percent']),
+    ...mapState('application', ['applicationStatus', 'programYearLabel']),
+    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapState('organization', ['applicationId']),
 
     currentYearTitle(){
-      return this.programYearList.current.name.substring(0, 7);
+      return this.programYearLabel;
     },
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) =>{ 
@@ -394,10 +425,9 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
-          
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
-          
+          this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
@@ -414,10 +444,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', ]),  
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('app', ['setRfiList']),
-
+    ...mapMutations('app', ['addToRfiList']),
     addRow () {
       this.CCFRIFacilityModel.dates.push( {
         datePicker1: undefined,
@@ -432,8 +461,14 @@ export default {
         return careType.deleteMe;
       });
     },
+    closeDialog() {
+      this.showRfiDialog = false;
+    },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
+    },
+    toRfi() {
+      this.addToRfiList(this.$route.params.urlGuid);
     },
     previous() {
       if (this.isRenewal){
@@ -444,30 +479,34 @@ export default {
       }
       
     },
-    async next() {
-      if (!this.nextFacility){
-        console.log('going to ece-we!');
-        this.$router.push({path : `${PATHS.eceweEligibility}`});
-      }
-       
-      else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
-        console.log('going to next fac EXISTING FEES page');
-        this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
-        //check here if renew - then send them to appropriate screen currentFees
-      }
-      else if (this.nextFacility.ccfriOptInStatus == 1 ){
-        //console.log('going to next fac NEW fees page');
-        //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
-        this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
-      }
-      else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
-        //RFI logic ?
-        // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-        // if (this.rfiList?.length > 0) {
-        //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-        // } else {
-        this.$router.push({path : `${PATHS.eceweEligibility}`});
+    next() {
+      this.rfi3percentCategories = this.getCcfriOver3percent;
+      console.log('length ', this.rfi3percentCategories.length);
+      if (this.rfi3percentCategories.length > 0) {
+        this.showRfiDialog = true;
+      } else {
+        if (!this.nextFacility){
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
         
+        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
+          console.log('going to next fac EXISTING FEES page');
+          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
+          //check here if renew - then send them to appropriate screen currentFees
+        }
+        else if (this.nextFacility.ccfriOptInStatus == 1 ){
+          //console.log('going to next fac NEW fees page');
+          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
+          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
+        }
+        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
+          //RFI logic ?
+          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
+          // if (this.rfiList?.length > 0) {
+          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
+          // } else {
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
       }
     },
     isFormComplete(){

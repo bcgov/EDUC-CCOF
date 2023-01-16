@@ -20,6 +20,8 @@ export default {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+    eceweEligibilityComplete: false,
+    eceweFacilitiesComplete: false,
     supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
@@ -97,10 +99,11 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
     },
-    setRfiList: (state, rfiList) => {
-      state.rfiList = rfiList;
+    addToRfiList: (state, ccfriId) => {
+      if (state.rfiListmyarr.indexOf(ccfriId) < 0) {
+        state.rfiList.push(ccfriId);
+      }
     },
-
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
@@ -118,6 +121,12 @@ export default {
     },
     setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
       state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
+    },
+    setEceweEligibilityComplete: (state, eceweEligibilityComplete) => {
+      state.eceweEligibilityComplete = eceweEligibilityComplete;
+    },
+    setEceweFacilitiesComplete: (state, eceweFacilitiesComplete) => {
+      state.eceweFacilitiesComplete = eceweFacilitiesComplete;
     },
     setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
