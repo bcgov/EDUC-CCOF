@@ -276,8 +276,8 @@ export default {
         } else if (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') {
           let isEnabled = (this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
-            && this.programYearId == this.programYearList?.current?.programYearId
-            && this.isOrganizationUnlock);
+            && this.programYearId == this.programYearList?.current?.programYearId)
+            || this.isOrganizationUnlock;
           console.log('isRenewEnabled4: ', isEnabled);
           return isEnabled;
         }
