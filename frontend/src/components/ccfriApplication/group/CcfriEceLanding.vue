@@ -99,6 +99,7 @@
 <script>
 
 
+
 import { mapState, mapMutations, mapActions } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
@@ -156,8 +157,7 @@ export default {
     },
     async previous() {
       let path = await this.getPreviousPath();
-      this.$router.push(path);      
-
+      this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){

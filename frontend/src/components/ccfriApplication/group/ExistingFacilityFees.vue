@@ -212,7 +212,8 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
     previous(){
-      this.$router.back(); 
+      this.$router.push({path : `${PATHS.ccfriHome}`});
+      //this.$router.back(); 
     },
     async setFees (areFeesCorrect){
       await this.loadCCFRIFacility(this.$route.params.urlGuid); 
@@ -234,6 +235,7 @@ export default {
         this.setFees(true);
       }
       this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
+      
       
       //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
       
