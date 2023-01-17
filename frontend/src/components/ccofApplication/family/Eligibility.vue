@@ -16,7 +16,7 @@
               <v-col cols="12" md="6">
                 <v-menu v-if="!isLocked" v-model="model.calendarMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field readonly outlined required v-model="model.licenseEffectiveDate" :rules="rules.notRequired" label="Effective Date of Current Licence" v-bind="attrs" v-on="on" />
+                    <v-text-field readonly outlined required v-model="model.licenseEffectiveDate" :rules="rules.required" label="Effective Date of Current Licence" v-bind="attrs" v-on="on" />
                   </template>
                   <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false" />
                 </v-menu>

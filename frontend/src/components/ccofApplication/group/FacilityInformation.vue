@@ -65,7 +65,7 @@
 
               <v-row>
                 <v-col>
-                  <v-radio-group :disabled="isLocked" v-model="model.hasReceivedFunding" :rules="rules.notRequired" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
+                  <v-radio-group :disabled="isLocked" v-model="model.hasReceivedFunding" :rules="rules.required" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
                     <v-radio label="No" value="no"></v-radio>
                     <v-radio label="Yes" value="yes"></v-radio>
                     <v-radio label="Yes, as facility" value="yesFacility"></v-radio>
