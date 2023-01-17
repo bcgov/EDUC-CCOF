@@ -17,7 +17,8 @@ const rules = {
   },
   min(number) {
     return v => !v || v >= number || 'Min exceeded';
-  }
+  },
+  phone: v => /^\d{10}$/.test(v) || '10 digit phone number required'
 };
 
 export default rules;
