@@ -290,7 +290,7 @@ export default {
           if (item.unlockNmf) { // TO-DO : check if currentFacility has Nmf form then enable for View Application
             items.push(
               {
-                title: 'New Facility '+ (index + 1),
+                title: 'Parent Fee – RFI '+ (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
                 link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
