@@ -1,5 +1,5 @@
 const rules = {
-  email: [v => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'A valid email is required'], // https://emailregex.com/
+  email: [v => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'A valid email is required'], // https://emailregex.com/
   required: [function (v) {
     if (v === 0) {
       return true;
@@ -17,7 +17,8 @@ const rules = {
   },
   min(number) {
     return v => !v || v >= number || 'Min exceeded';
-  }
+  },
+  phone: v => /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v) || 'A valid phone number is required' // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
 };
 
 export default rules;
