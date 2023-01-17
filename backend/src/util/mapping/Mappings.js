@@ -284,6 +284,10 @@ const UserProfileCCFRIMappings = [
   { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'},
+  { back: 'ccof_has_nmf', front: 'hasNmf'},
+  { back: 'ccof_has_rfi', front: 'hasRfi'},
+  { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete'},
+  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'},
 ];
 
 const UserProfileECEWEMappings = [

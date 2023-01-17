@@ -193,7 +193,7 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
-      if (this.eceweUnlock){
+      if (this.unlockEcewe){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){

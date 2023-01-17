@@ -207,7 +207,6 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      isUnlocked: true,
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
@@ -230,7 +229,7 @@ export default {
             || this.model.optInECEWE === 0;
     },
     isReadOnly() {
-      if (this.eceweUnlock) {
+      if (this.unlockEcewe) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true; 

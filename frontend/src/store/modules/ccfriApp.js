@@ -26,41 +26,61 @@ function getPreviousCareType(currentRFI, careType, previousProgramYearId, getter
   }
 }
 
-function compareChildCareFees(currentFees, previousFees) {
-  let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 20;
-  let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 20;
-  console.log('currentFeeFrequency', currentFeeFrequency);
-  console.log('previousFeeFrequency', previousFeeFrequency);
-  let currentSum = 0;
-  currentSum += currentFees.approvedFeeJan * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeFeb * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeMar * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeApr * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeMay * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeJun * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeJul * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeAug * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeSep * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeOct * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeNov * currentFeeFrequency;
-  currentSum += currentFees.approvedFeeDec * currentFeeFrequency;
-  console.log(`currentSum for [${currentFees.childCareCategory}] is: [${currentSum}]`);
-  let previousSum = 0;
-  previousSum += previousFees.approvedFeeJan * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeFeb * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeMar * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeApr * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeMay * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeJun * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeJul * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeAug * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeSep * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeOct * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeNov * previousFeeFrequency;
-  previousSum += previousFees.approvedFeeDec * previousFeeFrequency;
-  console.log(`previousSum for [${previousFees.childCareCategory}] is: [${previousSum}]`);
-  return (currentSum - previousSum) / 12;
+function isOver3Percent(currentFees, previousFees, percentValue) {
+  let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 21;
+  let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 21;
+  if ((currentFees.approvedFeeJan * currentFeeFrequency) - (previousFees.approvedFeeJan * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeFeb * currentFeeFrequency) - (previousFees.approvedFeeFeb * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeMar * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeApr * currentFeeFrequency) - (previousFees.approvedFeeApr * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeMay * currentFeeFrequency) - (previousFees.approvedFeeMay * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeJun * currentFeeFrequency) - (previousFees.approvedFeeJun * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeJul * currentFeeFrequency) - (previousFees.approvedFeeJul * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeAug * currentFeeFrequency) - (previousFees.approvedFeeAug * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeSep * currentFeeFrequency) - (previousFees.approvedFeeSep * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeOct * currentFeeFrequency) - (previousFees.approvedFeeOct * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeNov * currentFeeFrequency) - (previousFees.approvedFeeNov * previousFeeFrequency) > percentValue) return true;
+  if ((currentFees.approvedFeeDec * currentFeeFrequency) - (previousFees.approvedFeeDec * previousFeeFrequency) > percentValue) return true;
+  
+  return false;
 }
+
+
+// function compareChildCareFees(currentFees, previousFees) {
+//   let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 20;
+//   let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 20;
+//   console.log('currentFeeFrequency', currentFeeFrequency);
+//   console.log('previousFeeFrequency', previousFeeFrequency);
+//   let currentSum = 0;
+//   currentSum += currentFees.approvedFeeJan * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeFeb * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeMar * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeApr * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeMay * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeJun * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeJul * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeAug * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeSep * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeOct * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeNov * currentFeeFrequency;
+//   currentSum += currentFees.approvedFeeDec * currentFeeFrequency;
+//   console.log(`currentSum for [${currentFees.childCareCategory}] is: [${currentSum}]`);
+//   let previousSum = 0;
+//   previousSum += previousFees.approvedFeeJan * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeFeb * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeMar * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeApr * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeMay * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeJun * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeJul * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeAug * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeSep * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeOct * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeNov * previousFeeFrequency;
+//   previousSum += previousFees.approvedFeeDec * previousFeeFrequency;
+//   console.log(`previousSum for [${previousFees.childCareCategory}] is: [${previousSum}]`);
+//   return (currentSum - previousSum) / 12;
+// }
 
 export default {
   namespaced: true,
@@ -82,35 +102,6 @@ export default {
     getCCFRIMedianById: (state) => (ccfriId) => { 
       return state.ccfriMedianStore[ccfriId];
     },
-    getCcfriOver3percent(state, getters, rootState) {
-      let over3percentFacilities = [];
-      console.log('rootstate: ', rootState);
-      const currentProgramYearId = rootState.application.programYearId;
-      const programYearList = rootState.app.programYearList.list;
-      const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
-      const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
-      const previousProgramYearId = previousProgramYear.programYearId;
-
-      
-      console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
-      const threePercentMedian = getters.getCCFRIMedianById(state.ccfriId);
-      state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
-        .forEach(careType => {
-          let previousCareType = getPreviousCareType(state.CCFRIFacilityModel, careType, previousProgramYearId, getters);
-          console.log('previousCare Type: ', previousCareType);
-          if (previousCareType) {
-            let difference = compareChildCareFees(careType, previousCareType);
-            let allowedDifference = threePercentMedian[careType.childCareCategory];
-            console.log('difference', difference);
-            console.log('allowedDifference', allowedDifference);
-            if (difference > allowedDifference) {
-              over3percentFacilities.push(careType.childCareCategory);
-            }
-          }
-        });
-      console.log('over array', over3percentFacilities);
-      return over3percentFacilities;   
-    }
   },
   mutations: {
     model(state, value) { state.model = value;},
@@ -137,6 +128,36 @@ export default {
   },
 
   actions: {
+    async getCcfriOver3percent({state, getters, rootState}) {
+      console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
+      let over3percentFacilities = [];
+      const currentProgramYearId = rootState.application.programYearId;
+      const programYearList = rootState.app.programYearList.list;
+      const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
+      const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
+      const previousProgramYearId = previousProgramYear.programYearId;
+
+      
+      console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
+      const threePercentMedian = getters.getCCFRIMedianById(state.ccfriId);
+      state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
+        .forEach(careType => {
+          let previousCareType = getPreviousCareType(state.CCFRIFacilityModel, careType, previousProgramYearId, getters);
+          console.log('previousCare Type: ', previousCareType);
+          if (previousCareType) {
+            // let difference = compareChildCareFees(careType, previousCareType);
+            let allowedDifference = threePercentMedian[careType.childCareCategory];
+            // console.log('difference', difference);
+            console.log('allowedDifference', allowedDifference);
+            if (isOver3Percent(careType, previousCareType, allowedDifference)) {
+              over3percentFacilities.push(careType.childCareCategory);
+            }
+          }
+        });
+      console.log('over array', over3percentFacilities);
+      return over3percentFacilities;   
+    },
+
     async loadCCFisCCRIMedian({state, getters, commit}) {
       let ccfriMedian = getters.getCCFRIMedianById(state.ccfriId); 
       if (!ccfriMedian) {
@@ -203,10 +224,10 @@ export default {
         });
 
         //if the user manually refreshes AddNewFees page - assume that previous years fees are correct. (same as hitting yes on Existing Fees Page)
-        //may take this out later 
-        if (state.CCFRIFacilityModel.prevYearFeesCorrect === undefined){
-          state.CCFRIFacilityModel.prevYearFeesCorrect = true;
-        }
+        //may take this out later - rlo commented this out
+        // if (state.CCFRIFacilityModel.prevYearFeesCorrect === undefined){
+        //   state.CCFRIFacilityModel.prevYearFeesCorrect = true;
+        // }
         
         if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
           response.data.forEach(item => {

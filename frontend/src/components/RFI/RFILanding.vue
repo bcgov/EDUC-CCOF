@@ -1316,7 +1316,7 @@
     <v-row justify="space-around">
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
-      <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="false">Next</v-btn>
+      <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="false">Next</v-btn>
       <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">
         Save
       </v-btn>
@@ -1427,17 +1427,31 @@ export default {
     this.addObjToList(this.indigenousExpenseObj, model.indigenousExpenseList);
 
   },
-  beforeRouteLeave(_to, _from, next) {
+  async beforeRouteLeave(_to, _from, next) {
     this.$store.commit('rfiApp/setRfiModel', this.model);
+    await this.save(false);
     //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
-    ...mapState('app', ['programYearList']),
+    ...mapState('app', ['programYearList', 'navBarList']),
     currentYearTitle(){
       return this.programYearList.current.name.substring(0, 7);
     },
+    findIndexOfFacility(){
+      return this.navBarList.findIndex((element) =>{ 
+        return element.ccfriApplicationId == this.$route.params.urlGuid;
+      });
+    },
+    currentFacility(){
+      return this.navBarList[this.findIndexOfFacility];
+    },
+    nextFacility(){
+      return this.navBarList[this.findIndexOfFacility + 1];
+    },
+
+
   },
   watch: {
     '$route.params.urlGuid': {
@@ -1478,10 +1492,33 @@ export default {
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    next() {
-      this.$router.push(PATHS.WageIncrease + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-
-      // put logic here to go to next facility / ece we etc
+    ...mapMutations('app', ['refreshNavBar']),
+    nextBtnClicked() {
+      if (this.currentFacility.hasNmf || this.currentFacility.unlockNmf) {
+        this.$router.push(PATHS.NMF + '/' + this.$route.params.urlGuid);
+      } else {
+        if (!this.nextFacility){
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
+        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
+          console.log('going to next fac EXISTING FEES page');
+          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
+          //check here if renew - then send them to appropriate screen currentFees
+        }
+        else if (this.nextFacility.ccfriOptInStatus == 1 ){
+          //console.log('going to next fac NEW fees page');
+          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
+          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
+        }
+        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
+          //RFI logic ?
+          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
+          // if (this.rfiList?.length > 0) {
+          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
+          // } else {
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
+      }
     },
     previous() {
       this.$router.back();

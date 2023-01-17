@@ -357,7 +357,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.RFI,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
       }
     },

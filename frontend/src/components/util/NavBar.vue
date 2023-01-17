@@ -86,7 +86,6 @@
 
 import { mapState, mapGetters } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
-import { isEmpty} from 'lodash';
 
 export default {
   name: 'navBar',
@@ -104,14 +103,14 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'rfiStore', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'navBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
     ...mapState('application', ['applicationStatus']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
     navRefresh() {
-      return this.pageTitle + this.$route.params.urlGuid;
+      return this.$route.name + this.$route.params.urlGuid;
     },
     navWidth () {
       switch (this.$vuetify.breakpoint.name) {
@@ -162,6 +161,46 @@ export default {
         this.items[index].active = true;
       }
     },
+    areChildrenComplete(list) {
+      let isComplete = true;
+      list.forEach(item => { 
+        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
+          isComplete = false;
+        }
+      });
+      return isComplete;
+    },
+    // setNavigationPath() {
+    //   let prev = undefined;
+    //   let curr = undefined;
+    //   this.items?.forEach( mainItem => {
+    //     if (mainItem.isActive) {
+    //       console.log('PREV: ' +prev?.name);
+    //       console.log('CURR: ' +mainItem.link?.name);
+    //       curr = mainItem.link;
+    //     } else {
+    //       if (curr) {
+    //         console.log('NEXT:' + mainItem.link?.name);
+    //         curr = undefined;
+    //       }
+    //     }
+    //     prev = mainItem.link;
+    //     mainItem.items?.forEach(subItem => {
+    //       if (subItem.isActive) {
+    //         console.log('PREV: '  + prev?.name);
+    //         console.log('CURR: '  + subItem.link?.name);
+    //         curr = subItem.link;
+    //       } else {
+    //         if (curr) {
+    //           console.log('NEXT:'  +  subItem.link?.name);
+    //           curr = undefined;
+    //         }
+    //       }
+    //       prev = subItem.link;
+
+    //     });
+    //   });
+    // },
     refreshNavBar(){
       console.log('refresh nav bar called');
       this.items = [];
@@ -190,11 +229,6 @@ export default {
         }
       }
       this.items.push(this.getCCFRINavigation());
-      console.log('isRenew ', this.isRenewal);
-      console.log('!isEmpty(this.rfiStore) ', !isEmpty(this.rfiStore));
-      if (this.isRenewal && !isEmpty(this.rfiStore)) { //do the renew test so we don't have to do the lodash call
-        this.items.push(this.getRFINavigation());
-      }
       this.items.push(this.getECEWENavigation());
       this.items.push({
         title: 'Supporting Document',
@@ -214,7 +248,7 @@ export default {
           expanded: false,
         });
 
-
+      // this.setNavigationPath();
       // this.hasAnyItems = this.items.filter(obj => obj.isAccessible).length > 0;
     },
     canBeAccessed(permission){
@@ -244,50 +278,51 @@ export default {
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item, index) => {
           //application is read only, send nav link to Add New FEE page
-          if (item.ccfriOptInStatus == 1 && this.applicationStatus==='SUBMITTED'){
+          if (item.ccfriOptInStatus == 1) { //only show if Opted In
+            if (this.isRenewal){
+              items.push(
+                {
+                  title: 'Parent Fees ' + (index + 1),
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                  isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
+                  icon: this.getCheckbox(item.isCCFRIComplete),  
+                  isActive: 'ccfri-current-fees-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId
+                  // function: this.loadFacility(x.id)
+                },
+              );
+            }
+            else {
+              items.push(
+                {
+                  title: 'Parent Fees '  + (index + 1),
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
+                  isAccessible: this.applicationStatus==='SUBMITTED' ? true: this.isCCFRIOptInComplete(),
+                  icon:  this.getCheckbox(item.isCCFRIComplete),
+                  isActive: 'ccfri-add-fees-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId
+                  // function: this.loadFacility(x.id)
+                },
+              );
+            }
+          }
+          if (item.hasRfi) {
             items.push(
               {
-                title: 'Parent Fees '+ (index + 1),
+                title: 'Request for Information ' + (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
-                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
-                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                icon:  this.getCheckbox(item.isCCFRIComplete),
-                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
-                // function: this.loadFacility(x.id)
+                link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}}, 
+                isAccessible: true,
+                icon: this.getCheckbox(item.isRfiComplete),  
+                isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
               },
             );
           }
           //renew should send user to existing fee page to confirm if previous year fees are correct
-          else if (item.ccfriOptInStatus == 1 && this.isRenewal){
-            items.push(
-              {
-                title: 'Parent Fees '+ (index + 1),
-                subTitle: item.facilityName,
-                id: item.facilityId,
-                link: { name: 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
-                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                icon: this.getCheckbox(item.isCCFRIComplete),  
-                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
-                // function: this.loadFacility(x.id)
-              },
-            );
-          }
-          else if (item.ccfriOptInStatus == 1){
-            items.push(
-              {
-                title: 'Parent Fees '+ (index + 1),
-                subTitle: item.facilityName,
-                id: item.facilityId,
-                link: { name: 'ccfri-add-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
-                isAccessible: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                icon:  this.getCheckbox(item.isCCFRIComplete),
-                isActive: this.$route.params.urlGuid === item.ccfriApplicationId
-                // function: this.loadFacility(x.id)
-              },
-            );
-          }
-          if (item.unlockNmf) { // TO-DO : check if currentFacility has Nmf form then enable for View Application
+          if (item.unlockNmf || item.hasNmf) {
             items.push(
               {
                 title: 'Parent Fee – RFI '+ (index + 1),
@@ -305,38 +340,12 @@ export default {
       let retval =   {
         title: NAV_BAR_GROUPS.CCFRI,
         isAccessible: true,
-        icon: this.getCheckbox(this.isCcfriComplete()), //replace
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
         items: items
       };
       return retval;
     },
-    getRFINavigation(){
-      let items = [];
-      Object.keys(this.rfiStore).forEach(key => {
-        items.push(
-          {
-            title: 'Request for Information',
-            subTitle: this.rfiStore[key].facilityName,
-            id: this.rfiStore[key].ccfriId,
-            link: { name: 'ccfri-request-info', params: {urlGuid: key}}, 
-            isAccessible: true,
-            icon: this.getCheckbox(this.rfiStore[key].isComplete),  
-            isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === key,
-          },
-        );
-      });
-      let retval =   {
-        title: NAV_BAR_GROUPS.RFI,
-        isAccessible: true,
-        icon: 'mdi-checkbox-blank-circle-outline', //replace
-        expanded: this.isExpanded(NAV_BAR_GROUPS.RFI),
-        items: items
-      };
-      return retval;
-    },
-
-
     getCCOFFamilyNavigation() {
       let items = [];
       items.push(
@@ -398,16 +407,10 @@ export default {
           isActive: 'License Upload' === this.$route.name
         }
       );
-      let isCCOFComplete = true;
-      items.forEach(item => { 
-        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
-          isCCOFComplete = false;
-        }
-      });
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: this.getCheckbox(isCCOFComplete),
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items
       };
@@ -488,16 +491,10 @@ export default {
           isActive: 'License Upload' === this.$route.name
         }
       );
-      let isCCOFComplete = true;
-      items.forEach(item => { 
-        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
-          isCCOFComplete = false;
-        }
-      });
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: this.getCheckbox(isCCOFComplete),
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items
       };
@@ -526,7 +523,7 @@ export default {
       let retval =   {
         title: NAV_BAR_GROUPS.ECEWE,
         isAccessible: true,
-        icon: 'mdi-checkbox-blank-circle-outline', //replace
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.ECEWE),
         items: items
       };
@@ -536,14 +533,18 @@ export default {
       return title.replace(/\s+/g, '');
     },
     isCCFRIOptInComplete(){
-      return !this.userInfo.facilityList.some(fac => {
-        if (fac.ccfriOptInStatus || fac.ccfriOptInStatus == 0) {
-          //console.log('status exists');
-        }
-        else {
-          return true;
+      if (!this.navBarList || !this.navBarList.length > 0) {
+        return false;
+      }
+      let complete = true;
+      this.navBarList.forEach( item => {
+        if (item.ccfriOptInStatus === 0 || item.ccfriOptInStatus === 1) {
+          // console.log('status exists');
+        } else {
+          complete = false;
         }
       });
+      return complete;
     },
     isCcfriComplete(){
       return this.navBarList.every(fac => {
