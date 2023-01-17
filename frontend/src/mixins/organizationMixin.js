@@ -1,7 +1,7 @@
 import alertMixin from '@/mixins/alertMixin';
 import { ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState, mapGetters } from 'vuex';
 
 export default {
   mixins: [alertMixin],
@@ -59,17 +59,19 @@ export default {
   },
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
-    next() {
-      if (this.navBarList && this.navBarList.length > 0) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.navBarList[0].facilityId}`);
-      } else {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}`);
-      }
+    async next() {
+      let path = await this.getNextPath();
+      this.$router.push(path);
     },
+    async back() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
+    },    
     async save(showNotification) {
       this.processing = true;
       this.setIsStarted(true);

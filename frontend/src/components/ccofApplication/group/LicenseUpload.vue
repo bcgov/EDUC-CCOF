@@ -158,24 +158,15 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
+    ...mapActions('navBar', ['getPreviousPath', 'getNextPath']),
     ...mapMutations('app', ['setCcofLicenseUploadComplete']),
-    previous() {
-      if (this.isRenewal) {
-        this.$router.push(PATHS.home);
-      } else {
-        if (this.organizationProviderType == 'FAMILY') {
-          let navBar = this.navBarList[0];
-          if (navBar?.ccofBaseFundingId) {
-            this.$router.push(`${PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
-          }
-        } else {
-          this.$router.push(PATHS.group.confirmation);
-        }
-
-      }
+    async previous() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);      
     },
-    next() {
-      this.$router.push(PATHS.ccfriHome);
+    async next() {
+      let path = await this.getNextPath();
+      this.$router.push(path);      
     },
     deleteFile(item) {
       this.licenseUploadData = this.licenseUploadData.map(element => {

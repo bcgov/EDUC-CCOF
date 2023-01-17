@@ -10,6 +10,7 @@ import facility from '@/store/modules/ccof/facility';
 
 import ccfriApp from '@/store/modules/ccfriApp.js';
 import application from '@/store/modules/application.js';
+import navBar from '@/store/modules/navBar.js';
 
 import rfiApp from '@/store/modules/rfiApp.js';
 import nmfApp from '@/store/modules/nmfApp.js';
@@ -34,6 +35,7 @@ export default new Vuex.Store({
     nmfApp,
     message,
     supportingDocumentUpload,
-    summaryDeclaration
+    summaryDeclaration,
+    navBar
   }
 });
