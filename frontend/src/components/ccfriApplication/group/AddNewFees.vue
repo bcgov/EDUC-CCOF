@@ -333,7 +333,7 @@
             <v-row>
               <v-col cols="12" style="text-align: center;">
                 <p class="pt-4">Your application for exceeds the 3% median increase <br>for your area for the childcare categories:<br><br>
-                  <span v-for="item in rfi3percentCategories" :key="item">{{item}}</span>
+                  <span v-for="item in rfi3percentCategories" :key="item">{{item}}<br></span>
                 </p>
                 <p>You will have to fill out a Request for Information(RFI) form.</p>
                 <p class="pt-4">You can continue to the RFI forms or press back to update your fees</p>
@@ -359,7 +359,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      closureFees : 'No',
+      closureFees : '',
       showRfiDialog: false,
       rfi3percentCategories: [],
       isUnlocked: true,
@@ -369,10 +369,11 @@ export default {
       isValidForm : false,
      
       feeRules: [
-        (v) => (v == '' || v == ' ' || typeof v === 'number') || 'Required.',
+        (v) => ( typeof v == 'number'|| v == '' || v == ' ') || 'Required.',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
         (v) => v >= 0  || 'Input a positve number',
       ],
+
       rules: [
         (v) => !!v  || 'Required.',
       ],
@@ -388,7 +389,6 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapGetters('app', ['lookupInfo']),
-    ...mapGetters('ccfriApp', ['getCcfriOver3percent']),
     ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
@@ -444,9 +444,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian']),  
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),  
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('app', ['addToRfiList']),
+    ...mapMutations('app', ['addToRfiNavBarStore']),
     addRow () {
       this.CCFRIFacilityModel.dates.push( {
         datePicker1: undefined,
@@ -462,13 +462,16 @@ export default {
       });
     },
     closeDialog() {
+      this.currentFacility.hasRfi = 0;
       this.showRfiDialog = false;
+
     },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.addToRfiList(this.$route.params.urlGuid);
+      this.currentFacility.hasRfi = 1;
+      this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
     },
     previous() {
       if (this.isRenewal){
@@ -479,16 +482,15 @@ export default {
       }
       
     },
-    next() {
-      this.rfi3percentCategories = this.getCcfriOver3percent;
-      console.log('length ', this.rfi3percentCategories.length);
+    async next() {
+      this.rfi3percentCategories = await this.getCcfriOver3percent();
+      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
       if (this.rfi3percentCategories.length > 0) {
         this.showRfiDialog = true;
       } else {
         if (!this.nextFacility){
           this.$router.push({path : `${PATHS.eceweEligibility}`});
         }
-        
         else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
           console.log('going to next fac EXISTING FEES page');
           this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
@@ -517,7 +519,6 @@ export default {
 
       this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm; //false makes button clickable, true disables button
-      
     },
     hasModelChanged(){
       console.log('model:', this.loadedModel);
