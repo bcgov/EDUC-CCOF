@@ -359,7 +359,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      closureFees : '',
+      closureFees : 'No',
       showRfiDialog: false,
       rfi3percentCategories: [],
       isUnlocked: true,
