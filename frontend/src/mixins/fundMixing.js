@@ -1,4 +1,4 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
 import { mapActions, mapState, mapMutations } from 'vuex';

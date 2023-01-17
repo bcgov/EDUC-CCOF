@@ -60,7 +60,6 @@
 </template>
 <script>
 
-import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';

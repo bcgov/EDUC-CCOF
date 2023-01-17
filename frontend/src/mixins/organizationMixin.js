@@ -1,7 +1,7 @@
 import alertMixin from '@/mixins/alertMixin';
-import { ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapActions, mapMutations, mapState, mapGetters } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default {
   mixins: [alertMixin],

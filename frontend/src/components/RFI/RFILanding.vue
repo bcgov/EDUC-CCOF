@@ -1327,7 +1327,6 @@
 
 <script>
 import alertMixin from '@/mixins/alertMixin';
-import {PATHS} from '@/utils/constants';
 import {mapActions, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
 
