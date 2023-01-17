@@ -28,27 +28,20 @@ export default {
   },
   methods: {
     ...mapActions('funding', ['saveFunding', 'loadFunding', 'fundingId']),
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('funding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
     isGroup() { 
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },    
-    previous() {
-      let navBar = this.$store.getters['app/getNavByFundingId'](this.$route.params.urlGuid);
-      this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${navBar.facilityId}`);
+    async previous() {
+      let previousPath = await this.getPreviousPath();
+      this.$router.push(previousPath);
     },
-    next() {
-      if (this.organizationProviderType == 'FAMILY') {
-        this.$router.push(PATHS.group.licenseUpload);
-      } else {
-        let navBar = this.$store.getters['app/getNextNavByFundingId'](this.$route.params.urlGuid);
-        if (navBar?.facilityId) {
-          this.$router.push(PATHS.group.facInfo + '/' + navBar.facilityId);
-        } else {
-          this.$router.push(PATHS.group.confirmation);
-        }
-      }
-
+    async next() {
+      let nextPath = await this.getNextPath();
+      console.log('next path: ', nextPath);
+      this.$router.push(nextPath);
     },
     async save(isSave) {
       this.processing = true;

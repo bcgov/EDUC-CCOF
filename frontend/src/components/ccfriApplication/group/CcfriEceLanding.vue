@@ -99,7 +99,7 @@
 <script>
 
 
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapActions } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
@@ -143,7 +143,8 @@ export default {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'refreshNavBar']), 
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']), 
+    ...mapActions('navBar', ['getPreviousPath']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
@@ -153,9 +154,10 @@ export default {
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
     },
-    previous() {
-      //this.isPageComplete();
-      this.$router.back();
+    async previous() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);      
+
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
@@ -223,7 +225,7 @@ export default {
               });
             }
           });
-          this.refreshNavBar();
+          this.forceNavBarRefresh();
           if (withAlert) {
             this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
           }

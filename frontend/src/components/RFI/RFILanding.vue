@@ -1491,37 +1491,16 @@ export default {
   },
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    ...mapMutations('app', ['refreshNavBar']),
-    nextBtnClicked() {
-      if (this.currentFacility.hasNmf || this.currentFacility.unlockNmf) {
-        this.$router.push(PATHS.NMF + '/' + this.$route.params.urlGuid);
-      } else {
-        if (!this.nextFacility){
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
-          console.log('going to next fac EXISTING FEES page');
-          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
-          //check here if renew - then send them to appropriate screen currentFees
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 ){
-          //console.log('going to next fac NEW fees page');
-          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
-          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
-        }
-        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
-          //RFI logic ?
-          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-          // if (this.rfiList?.length > 0) {
-          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-          // } else {
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-      }
+    ...mapMutations('app', ['forceNavBarRefresh']),
+    async nextBtnClicked() {
+      let path = await this.getNextPath();
+      this.$router.push(path);
     },
-    previous() {
-      this.$router.back();
+    async previous() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
     },
     async save(showNotification) {
       this.processing = true;
