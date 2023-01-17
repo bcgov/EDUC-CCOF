@@ -104,8 +104,8 @@ export default {
 
     this.fileRules = [
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
-      value => !value || !this.fileAccept.includes(value.type) || `File formats should be one of these ${this.fileFormats}.`,
+      value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
+      value => !value || !this.fileAccept.includes(value.type) || `Accepted file types are ${this.fileFormats}.`,
     ];
 
     await this.createTable();
@@ -148,8 +148,8 @@ export default {
           class: 'table-header'
         }
       ],
-      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.pdf',
-      fileFormats: 'PDF, JPEG, JPG, HEIC, PDF, DOCX, DOC and PNG',
+      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.xls,.xlsx',
+      fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
       fileInputError: [],
       fileMap: new Map(),
       fileRules: []
