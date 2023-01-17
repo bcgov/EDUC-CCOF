@@ -325,7 +325,7 @@ export default {
           if (item.unlockNmf || item.hasNmf) {
             items.push(
               {
-                title: 'New Facility '  + (index + 1),
+                title: 'Parent Fee – RFI '+ (index + 1),
                 subTitle: item.facilityName,
                 id: item.facilityId,
                 link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
