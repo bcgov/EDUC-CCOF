@@ -13,7 +13,7 @@
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :disabled="isLocked" outlined required v-model="model.yearBeganOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
+                  <v-text-field :disabled="isLocked" outlined required v-model="model.yearBeganOperation" :rules="[...rules.required, ...rules.YYYY]" label="Year Facility Began operation (YYYY)" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field :disabled="isLocked" outlined required v-model="model.facilityAddress" :rules="rules.required" label="Facility Street Address" />
@@ -40,7 +40,7 @@
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :disabled="isLocked" outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
+                  <v-text-field :disabled="isLocked" outlined required v-model="model.phone" :rules="[...rules.required, rules.phone]" label="Business Phone" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field :disabled="isLocked" outlined required v-model="model.email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
@@ -65,7 +65,7 @@
 
               <v-row>
                 <v-col>
-                  <v-radio-group :disabled="isLocked" v-model="model.hasReceivedFunding" :rules="rules.notRequired" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
+                  <v-radio-group :disabled="isLocked" v-model="model.hasReceivedFunding" :rules="rules.required" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
                     <v-radio label="No" value="no"></v-radio>
                     <v-radio label="Yes" value="yes"></v-radio>
                     <v-radio label="Yes, as facility" value="yesFacility"></v-radio>

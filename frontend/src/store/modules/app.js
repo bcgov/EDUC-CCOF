@@ -29,7 +29,7 @@ export default {
     organizationTypeList: [],
     fundingModelTypeList: [],
     lookupInfo: null,
-    navBarRefresh: 1,
+    forceNavBarRefresh: 1,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -48,8 +48,8 @@ export default {
     setAlertNotification: (state, alertNotification) => {
       state.alertNotification = alertNotification;
     },
-    refreshNavBar(state) {
-      state.navBarRefresh = state.navBarRefresh + 1;
+    forceNavBarRefresh(state) {
+      state.forceNavBarRefresh = state.forceNavBarRefresh + 1;
     },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
