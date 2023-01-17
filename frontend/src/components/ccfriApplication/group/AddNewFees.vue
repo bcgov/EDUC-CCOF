@@ -369,9 +369,9 @@ export default {
       isValidForm : false,
      
       feeRules: [
-        (v) => !!v || 'Required',
-        (v) => v <= 9999 || 'Max fee is $9999.00',
-        (v) => v >= 0 || 'Input a positve number'
+        (v) => ( typeof v == 'number'|| v == '' || v == ' ') || 'Required.',
+        (v)  => v <=  9999|| 'Max fee is $9999.00',
+        (v) => v >= 0  || 'Input a positve number',
       ],
 
       rules: [
@@ -431,12 +431,11 @@ export default {
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
-
-        
           this.loading = false;
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
+          //this solves for the edge case bug where fees that need to be deleted cannot be deleted because the GUID has not been loaded from dynamics 
           window.location.reload();
         }
       },
@@ -475,8 +474,13 @@ export default {
       this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
     },
     previous() {
-      //TODO: may go back to another addfee's page.
-      this.$router.push(PATHS.ccfriHome);
+      if (this.isRenewal){
+        this.$router.push({path : `${PATHS.currentFees}/${this.currentFacility.ccfriApplicationId}`});
+      }
+      else{
+        this.$router.push(PATHS.ccfriHome);
+      }
+      
     },
     async next() {
       this.rfi3percentCategories = await this.getCcfriOver3percent();
@@ -604,7 +608,7 @@ export default {
           this.deleteChildCareTypes();
         } catch (error) {
           console.info(error);
-          this.setFailureAlert('An error occurred while saving. Please refresh and save again.');
+          this.setFailureAlert('An error occurred while saving.');
 
           //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
           //and life will be good :) 
