@@ -1,5 +1,5 @@
 import alertMixin from '@/mixins/alertMixin';
-import { ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions, mapMutations, mapState } from 'vuex';
 
@@ -10,23 +10,26 @@ export default {
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
+    ...mapState('application', ['applicationStatus']),
+    isLocked() {
+      return (this.applicationStatus === 'SUBMITTED');
+    }
   },
   data() {
     return {
       rules,
       model: {},
       processing: false,
-      loading: true,
+      loading: false,
       isValidForm: true,
       businessId: this.businessId,
-      isLocked: true
+      
     };
   },
   async mounted() {
     console.log('org mounted called');
     this.businessId = this.userInfo.userName;
-    this.isLocked = !this.userInfo.unlockBaseFunding;
-
+  
     if (this.isStarted) {
       console.log('org mounted called2');
       this.model = { ...this.organizationModel };
@@ -36,7 +39,7 @@ export default {
     }
 
     if (this.organizationId) {
-      this.processing = true;
+      this.loading = true;
       try {
         await this.loadOrganization(this.organizationId);
         this.model = { ...this.organizationModel };
@@ -56,17 +59,19 @@ export default {
   },
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
-    next() {
-      if (this.navBarList && this.navBarList.length > 0) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.navBarList[0].facilityId}`);
-      } else {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}`);
-      }
+    async next() {
+      let path = await this.getNextPath();
+      this.$router.push(path);
     },
+    async back() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
+    },    
     async save(showNotification) {
       this.processing = true;
       this.setIsStarted(true);

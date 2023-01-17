@@ -357,7 +357,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'CCFRI Request More Info',
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.RFI,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
       }
     },
@@ -406,7 +406,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.NMF,
+      path: PATHS.NMF + '/:urlGuid',
       name: 'new-facilities',
       component: NMF,
       meta: {

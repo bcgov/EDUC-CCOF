@@ -23,7 +23,7 @@
                   />
               </v-col>
               <v-col cols=2>
-                <v-btn color="primary" outlined x-large :loading="processing" @click="setBCeID()">Search</v-btn>
+                <v-btn color="primary" outlined x-large :loading="processing" @click="setBCeID()" :disabled="!businessBCeId">Search</v-btn>
               </v-col>              
             </v-row>
           </v-container>

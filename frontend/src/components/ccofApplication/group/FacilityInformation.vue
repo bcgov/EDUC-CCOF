@@ -1,8 +1,7 @@
 <template>
   <v-form ref="form" v-model="model.isFacilityComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
-      <v-skeleton-loader v-if="processing" :loading="processing" type="text@6"></v-skeleton-loader>
-      <span v-else>
+      <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
             <v-container>
@@ -14,7 +13,7 @@
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :disabled="isLocked" outlined required v-model="model.yearBeganOperation" :rules="rules.required" label="Year Facility Began operation (YYYY)" />
+                  <v-text-field :disabled="isLocked" outlined required v-model="model.yearBeganOperation" :rules="[...rules.required, ...rules.YYYY]" label="Year Facility Began operation (YYYY)" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field :disabled="isLocked" outlined required v-model="model.facilityAddress" :rules="rules.required" label="Facility Street Address" />
@@ -41,7 +40,7 @@
 
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field :disabled="isLocked" outlined required v-model="model.phone" :rules="rules.required" label="Business Phone" />
+                  <v-text-field :disabled="isLocked" outlined required v-model="model.phone" :rules="[...rules.required, rules.phone]" label="Business Phone" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field :disabled="isLocked" outlined required v-model="model.email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
@@ -66,7 +65,7 @@
 
               <v-row>
                 <v-col>
-                  <v-radio-group :disabled="isLocked" v-model="model.hasReceivedFunding" :rules="rules.notRequired" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
+                  <v-radio-group :disabled="isLocked" v-model="model.hasReceivedFunding" :rules="rules.required" label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?">
                     <v-radio label="No" value="no"></v-radio>
                     <v-radio label="Yes" value="yes"></v-radio>
                     <v-radio label="Yes, as facility" value="yesFacility"></v-radio>
@@ -85,8 +84,8 @@
         </v-row>
       </span>
       <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
+        <v-btn color="info" outlined required x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
         <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>

@@ -67,7 +67,7 @@ export default {
       commit('setAapplicationId', userInfo.applicationId);
       commit('setApplicationStatus', userInfo.applicationStatus);
       commit('setApplicationType', userInfo.applicationType);
-      commit('setCof_applicationStatus', userInfo.ccofApplicationStatus);
+      commit('setCcofApplicationStatus', userInfo.ccofApplicationStatus);
       commit('setProgramYearId', userInfo.ccofProgramYearId);
       commit('setProgramYearLabel', userInfo.ccofProgramYearName);
       commit('setIsRenewal', (userInfo.applicationType === 'RENEW'));

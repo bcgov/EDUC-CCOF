@@ -2,7 +2,7 @@
   <v-form ref="form">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE)</span>
+        <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE) - {{this.programYearLabel}} Program Confirmation Form</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
@@ -117,7 +117,7 @@
                 </v-col>
               </v-row>
               <v-row justify="center" class="pa-2">
-                Government’s Low-Wage Redress Funding supports ECE wage ajustments
+                Government’s Low-Wage Redress Funding supports ECE wage adjustments
               </v-row>
             </v-card>
             <v-row>
@@ -188,16 +188,11 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="!isLoading" justify="space-around" class="mt-10">
+      <v-row justify="space-around" class="mt-10">
         <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
         <v-btn :disabled="!enableButtons || isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
-      <v-row v-else justify="space-around" class="pt-6">
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-        <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-    </v-row>
     </v-container>
   </v-form>
 </template>
@@ -212,7 +207,6 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      isUnlocked: true,
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
@@ -235,7 +229,7 @@ export default {
             || this.model.optInECEWE === 0;
     },
     isReadOnly() {
-      if (this.eceweUnlock) {
+      if (this.unlockEcewe) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true; 
@@ -327,8 +321,8 @@ export default {
         // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (this.model.fundingModel === this.fundingModelTypeList[0].id || optOutFacilities) {
-            this.optOutFacilities();
-            await this.saveECEWEFacilities(showConfirmation);
+          this.optOutFacilities();
+          await this.saveECEWEFacilities(showConfirmation);
         }
         if (showConfirmation) {
           this.setSuccessAlert('Success! ECEWE application has been saved.');

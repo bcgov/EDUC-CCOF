@@ -1,10 +1,10 @@
 const OrganizationMappings = [
   { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'name', front: 'legalName' },
-  { back: 'address1_name', front: 'address1' }, //Address 
+  { back: 'address1_name', front: 'address1' }, //Address
   { back: 'address1_city', front: 'city1' },
   { back: 'address1_postalcode', front: 'postalCode1' },
-  { back: 'address2_name', front: 'address2' }, //Mailing Address       
+  { back: 'address2_name', front: 'address2' }, //Mailing Address
   { back: 'address2_city', front: 'city2' },
   { back: 'address2_postalcode', front: 'postalCode2' },
   { back: 'address1_primarycontactname', front: 'contactName' },
@@ -12,7 +12,7 @@ const OrganizationMappings = [
   { back: 'telephone1', front: 'phone' },
   // { back: 'businessBCeID', front: 'businessId'},
   { back: 'emailaddress1', front: 'email' },
-  { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number    
+  { back: 'ccof_instructionnumber', front: 'incNumber' },//incorporation number
   { back: 'ccof_typeoforganization', front: 'organizationType' },
   // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
@@ -50,27 +50,87 @@ const CCFRIFacilityMappings = [
 ];
 
 const RFIApplicationMappings = [
-  { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'changeInHours'}, // "is there anything else about your change in hours",
+  { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'notes2'}, // "is there anything else about your change in hours",
   { back: 'ccof_rfipfiid', front: 'rfiId'}, // "df27e229-0b88-ed11-81ac-000d3af48db8",
-  { back: 'ccof_feeincreasedduetoaincreasedconnection', front: 'feeIncrease' }, // 1 or 0
-  { back: 'ccof_appliedforanyothersources', front: 'otherSources' }, // 1 or 0
-  { back: 'ccof_howwillyourfeeincreasecontributetotheover', front: 'contributionOverall'}, // "how will your fee increase contribute to the overall?",
-  { back: 'ccof_feeincreasedduetoaincreaseinhoursdays', front: 'increaseDueToHours' }, // 1 or 0
-  { back: 'ccof_describewhetherparentsoutofpocketmonthlyc', front: 'outOfPocket'}, // "describe whether parents out of pocket monthly",
-  { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'anythingElse'}, // "is there anything else about your expenses",
-  { back: 'ccof_meetalloftheabovecriteria', front: 'meetCriteria' }, // 1 or 0
+  { back: 'ccof_feeincreasedduetoaincreasedconnection', front: 'IndigenousConnection' }, // 1 or 0
+  { back: 'ccof_appliedforanyothersources', front: 'q3' }, // 1 or 0
+  { back: 'ccof_howwillyourfeeincreasecontributetotheover', front: 'orgsustainability'}, // "how will your fee increase contribute to the overall?",
+  { back: 'ccof_feeincreasedduetoaincreaseinhoursdays', front: 'feeIncreaseExtendedHours' }, // 1 or 0
+  { back: 'ccof_describewhetherparentsoutofpocketmonthlyc', front: 'outOfPocketFees'}, // "describe whether parents out of pocket monthly",
+
+  { back: 'ccof_meetalloftheabovecriteria', front: 'underservedPop' }, // 1 or 0
   { back: 'statuscode', front: 'status' }, // 1 or 0
   { back: 'ccof_feeincreasedduetoanexceptionalcircumstance', front: 'exceptionalCircumstances'}, // 0,
-  { back: 'ccof_pleaseexplainwhyyouhaveincurredorwillincu', front: 'xxx1'}, // "Please explain why you have incurred or will incur",
-  { back: 'ccof_feeincreasedduetoawageincrease', front: 'feeIncreaseDueToWage' }, // 1 or 0
+  { back: 'ccof_expenseinformation_reasonforincreasedfinancial', front: 'expenseInformationNote'}, // "Please explain why you have incurred or will incur",
+  { back: 'ccof_serviceexpansiondetails_reasonforincreasedfin', front: 'serviceExpansionDetailsNote'},
+  { back: 'ccof_indigenouscommunityexpense_reasonforincreased', front: 'iCEIDetailsNote'},
   { back: 'ccof_name', front: 'xxx3'}, // "RFI-22000025",
-  { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'xxx4'}, // "please describe how the majority of children you provide",
-  { back: '_ccof_applicationccfri_value@OData.Community.Display.V1.FormattedValue', front: 'xxx5'}, // "ID-22000522",
+  { back: 'ccof_pleasedescribehowthemajorityofchildrenyou', front: 'underservedChildCareTypes'}, // "please describe how the majority of children you provide",
   { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId'}, // "1d261039-0e7c-ed11-81ad-000d3af4f277",
   { back: 'ccof_increasedparentfeesbefore', front: 'xxx6' }, // 1 or 0
   { back: 'ccof_exceptionalcircumstanceoccurwithin6m', front: 'circumstanceOccurWithin6Month'}, // null,
+
+  //Direct Care Staff Wage Increase
+  { back: 'ccof_feeincreasedduetoawageincrease', front: 'feeIncreaseDueToWage' }, // 1 or 0,//Is your fee increase due to a wage increase for Direct Care Staff?
+  {back:'ccof_wageincreasecommittedinwriting', front: 'increaseInWriting'}, //Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?
+  {back:'ccof_wageincreaestipulatedincollectivebargaining', front: 'isBargainingAgreement'}, //Is the wage increase stipulated in a collective bargaining agreement for unionized staff at the facility?
+  {back:'ccof_facilitycurrentwagesresultedinlossofdcs', front: 'lossOfCareStaff'},//Has the facility's current wage(s) resulted in loss of Direct Care Staff or an inability to hire sufficient Direct Care Staff?
+  {back:'ccof_creatingimmediatehealthandsafetyconcerns', front: 'healthAndSafetyConcerns'},//Is this creating immediate health and safety concerns for the facility under the requirements of the Child Care Licensing Regulation (CCLR)?
+
+  { back: 'ccof_facilitysrecruitmentandretentionchallenges', front: 'textbox1'},
+  { back: 'ccof_howmanydirectcarestaffhaveleftyourfacility', front: 'textbox2'},
+  { back: 'ccof_whathaveyoudonetotrytorecruitstaff', front: 'textbox3'},
+  { back: 'ccof_adjustyourhoursdaysofoperation', front: 'textbox4'},
+  { back: 'ccof_facilityunabletofillspaces', front: 'textbox5'},
+  { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'textbox6'}, // "is there anything else about your expenses",
+
+
 ];
 
+const ServiceExpansionDetailsMappings = [//ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi.
+  { back: 'ccof_facilitysprevioushoursofoperationto', front: 'timeto'},
+  { back: 'ccof_facilitysprevioushoursofoperation', front: 'timefrom'},
+  { back: 'ccof_facilitysnewhoursofoperation', front: 'newtimeto'},
+  { back: 'ccof_facilitysnewhoursofoperationto', front: 'newtimefrom'},
+  { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
+  { back: 'ccof_dateofchange', front: 'date'},
+  { back: 'ccof_amountofexpense', front: 'expense'},
+];
+
+const DCSWageIncreaseMappings = [ //ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail
+  { back: 'ccof_numberofstaff', front: 'staffNumber'},
+  { back: 'ccof_dcsrole', front: 'staffRole'},
+  { back: 'ccof_wagebeforeincrease', front: 'wageBeforeIncrease'},
+  { back: 'ccof_wageafterincrease', front: 'wageAfterIncrease'},
+  { back: 'ccof_averagehoursperweek', front: 'averageHours'},
+  { back: 'ccof_wageincreasedate', front: 'wageDate'},
+];
+
+const ExpenseInformationMappings = [
+  { back: 'ccof_expensedescription', front: 'description'},
+  { back: 'ccof_dateofexpense', front: 'date'},
+  { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
+  { back: 'ccof_expenseamount', front: 'expense'},
+];
+
+const OtherFundingProgramMappings = [
+  { back: 'ccof_name', front: 'fundingProgram'},
+  { back: 'ccof_applicationdate', front: 'date'},
+  { back: 'ccof_statusofapplication', front: 'status'},
+  { back: 'ccof_amountreceived', front: 'amount'},
+  { back: 'ccof_expense', front: 'expenses'},
+];
+
+const NMFApplicationMappings = [
+  { back: 'ccof_rfi_pfi_nmfid', front: 'nmfId' },
+  { back: 'ccof_supportneeds', front: 'supportNeeds' }, // 1 or 0
+  { back: 'ccof_supportneeds_comment', front: 'supportNeedsComments' }, // "Please describe any associated expenses."
+  { back: 'ccof_lowincome_families', front: 'lowIncomeFamilies' }, // 1 or 0
+  { back: 'ccof_lowincomefamilies_comments', front: 'lowIncomeFamiliesComments' }, // "Please describe the service(s) and associated expenses."
+  { back: 'ccof_remote_communities', front: 'remoteCommunities' }, // 1 or 0
+  { back: 'ccof_remotecommunities_comment', front: 'remoteCommunitiesComments' }, // "Please describe the service and associated expenses."
+  { back: 'ccof_othercomment', front: 'otherComments' }, // "Please tell us anything else you’d like us to know ..."
+];
 
 const CCFRIClosureDateMappings = [
   { back: 'ccof_startdate', front: 'startDate' },
@@ -85,7 +145,7 @@ const CCOFApplicationMappings = [
   { back: 'ccof_applicationtype', front: 'applicationType' }, // 100000000 New Org
   { back: 'ccof_name', front: 'name' }, // APP-22000059
   { back: 'ccof_applicationid', front: 'applicationId' }, // guid
-  { back: '_ccof_organization_value', front: 'organizationId' }, //guid 
+  { back: '_ccof_organization_value', front: 'organizationId' }, //guid
   { back: 'ccof_familychildcare', front: 'isFamiliyChildCare' }, //false,
   { back: 'ccof_inhomemultiagechildcare', front: 'isHomeMultiAgeChildCare' }, //false,
   { back: '_ccof_programyear_value', front: 'programYearId' }, //guid
@@ -118,7 +178,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
-  
+
   { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
@@ -136,7 +196,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maxnoofdaysperweekextendedhoursoffered', front: 'maxDaysPerWeekExtended' },
   { back: 'ccof_maxnoofweeksperyearextendedhoursoffered', front: 'maxWeeksPerYearExtended' },
 
-  
+
   { back: 'ccof_under36months4hoursoflessextendedcc', front: 'groupChildCareUnder36Months4OrLess' },
   { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'groupChildCare36MonthsToSchoolAge4OrLess' },
   { back: 'ccof_schoolageonground4hoursoflessextendedcc', front: 'groupChildCareSchoolAge4OrLess' },
@@ -146,11 +206,11 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_30monthtoschoolagemorethan4hourextended', front: 'groupChildCare36MonthsToSchoolAge4OrMore' },
   { back: 'ccof_schoolageongroundmorethan4hrextendedcc', front: 'groupChildCareSchoolAge4OrMore' },
   { back: 'ccof_multiagechildcaremorethan4hourextendedcc', front: 'multiAgeCare4more' },
-  
+
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
   { back: '_ccof_facility_value', front: 'facilityId' },
-  
+
 ];
 
 const ECEWEApplicationMappings = [
@@ -224,6 +284,10 @@ const UserProfileCCFRIMappings = [
   { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'},
+  { back: 'ccof_has_nmf', front: 'hasNmf'},
+  { back: 'ccof_has_rfi', front: 'hasRfi'},
+  { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete'},
+  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'},
 ];
 
 const UserProfileECEWEMappings = [
@@ -260,6 +324,12 @@ const DeclarationMappings = [
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
+  { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
+  { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
+  { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'facilities', front: 'facilities'}
 ];
 
 module.exports = {
@@ -281,5 +351,10 @@ module.exports = {
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
   RFIApplicationMappings,
-  DeclarationMappings
+  DeclarationMappings,
+  ServiceExpansionDetailsMappings,
+  DCSWageIncreaseMappings,
+  ExpenseInformationMappings,
+  OtherFundingProgramMappings,
+  NMFApplicationMappings,
 };

@@ -13,6 +13,11 @@ const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
 const cache = require('memory-cache');
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 function getConstKey(constants, value) {
   if (value) {
     for (let key in constants) {
@@ -112,9 +117,9 @@ function getAccessToken(req) {
 }
 
 function logResponse(methodName, response) {
-  if (log.isSillyEnabled) {
-    log.info(`Status for ${methodName} :: is :: `, response.status);
-    log.info(`StatusText for ${methodName}  :: is :: `, response.statusText);
+  if (log.isVerboseEnabled) {
+    log.verbose(`Status for ${methodName} :: is :: `, response.status);
+    log.verbose(`StatusText for ${methodName}  :: is :: `, response.statusText);
     log.verbose(`Response for ${methodName}  :: is :: `, minify(response.data));
   }
 }
@@ -214,7 +219,11 @@ async function postOperation(operation, payload) {
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());
-    logResponse('postOperation', response);
+    if (log.isVerboseEnabled) {
+      log.verbose('Status for postOperation :: is :: ', response.status);
+      log.verbose('StatusText for postOperation  :: is :: ', response.statusText);
+      log.verbose('Response for postOperation  :: is :: ', response.data);
+    }
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
@@ -231,6 +240,7 @@ async function postApplicationDocument(payload) {
   try {
     const response = await axios.post(url, payload, getHttpHeader());
     logResponse('postApplicationDocument', response);
+    console.info(response.data);
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
@@ -524,6 +534,7 @@ const utils = {
   postApplicationDocument,
   getApplicationDocument,
   deleteDocument,
+  sleep,
 };
 
 module.exports = utils;

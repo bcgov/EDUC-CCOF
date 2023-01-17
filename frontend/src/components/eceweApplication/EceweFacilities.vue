@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center" class="pt-4">
-      <span class="text-h5 text-center">Early Childhood Educator-Wage Enhancement (ECE-WE)</span>
+      <span class="text-h5 text-center">Early Childhood Educator-Wage Enhancement (ECE-WE) - {{this.programYearLabel}} Program Confirmation Form</span>
     </v-row>
     <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
       {{this.userInfo.organizationName}}
@@ -71,84 +71,95 @@
         </v-row>
       </v-card>
     </v-row>
-    <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
-      <v-row justify="center" class="pa-4">
-        <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
-          <v-row>
-            <v-col cols="12" class="d-flex">
-              <span v-if="!isLoading">{{navBarList[index].facilityAccountNumber}}</span>
-              <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="5" class="flex-column">
-              <span v-if="!isLoading">{{navBarList[index].facilityName}}</span>
-              <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
-            </v-col>
-            <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-              <span v-if="!isLoading">
-                Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
-              </span>
-              <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
-            </v-col>
-            <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
-              <v-radio-group
-                v-if="!isLoading"
-                v-model="uiFacilities[index].optInOrOut"
-                class="pt-0 my-0"
-                row
-                :disabled="isReadOnly">
-                <v-radio
-                  @click="toggleRadio(index)"
-                  label="Opt-In"
-                  :value="1">
-                </v-radio>
-                <v-radio
-                  @click="toggleRadio(index)"
-                  label="Opt-Out"
-                  :value="0">
-                </v-radio>
-              </v-radio-group>
-              <div v-else style="float:left;display:flex">
-              <v-skeleton-loader :loading="true" type="avatar"></v-skeleton-loader>
-              <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
-              <v-skeleton-loader :loading="true" type="avatar"></v-skeleton-loader>
-              <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
-            </div>
-            </v-col>
-            <v-col cols="3">
-              <v-btn
-                v-if="(!uiFacilities?.[index].update && !isLoading) && (model.fundingModel != fundingModelTypeList[0].id)"
-                @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
-                color="#003366"
-                dark
-                :disabled="isReadOnly"> 
-                  Update
-              </v-btn>
-              <v-skeleton-loader v-else-if="!uiFacilities[index].update && isLoading" :loading="true" type="button"></v-skeleton-loader>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <span v-if="!isLoading">
-                License #: {{navBarList[index].licenseNumber}}
-              </span>
-               <v-skeleton-loader v-else :loading="true" type="table-cell"></v-skeleton-loader>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-row>
+    <div v-if="!isLoading">
+      <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
+        <v-row justify="center" class="pa-4">
+          <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
+            <v-row>
+              <v-col cols="12" class="d-flex">
+                <span>{{navBarList[index].facilityAccountNumber}}</span>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="5" class="flex-column">
+                <span>{{navBarList[index].facilityName}}</span>
+              </v-col>
+              <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
+                  Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
+              </v-col>
+              <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
+                <v-radio-group
+                  v-model="uiFacilities[index].optInOrOut"
+                  class="pt-0 my-0"
+                  row
+                  :disabled="isReadOnly">
+                  <v-radio
+                    @click="toggleRadio(index)"
+                    label="Opt-In"
+                    :value="1">
+                  </v-radio>
+                  <v-radio
+                    @click="toggleRadio(index)"
+                    label="Opt-Out"
+                    :value="0">
+                  </v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="3">
+                <v-btn
+                  v-if="(!uiFacilities?.[index].update && !isLoading) && (model.fundingModel != fundingModelTypeList[0].id)"
+                  @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
+                  color="#003366"
+                  dark
+                  :disabled="isReadOnly"> 
+                    Update
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                  License #: {{navBarList[index].licenseNumber}}
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-row>
+      </div>
+    </div>
+    <div v-if="isLoading">
+      <div v-for="index in 2" :key="index">
+        <v-row justify="center" class="pa-4">
+          <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
+            <v-row>
+              <v-col cols="12" class="d-flex pa-0">
+                <v-skeleton-loader :loading="true" type="table-cell" class="pa-0"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="5" class="flex-column pa-0">
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+              </v-col>
+              <v-col cols="4" class="d-flex justify-center align-center pt-0">
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+              </v-col>
+              <v-col cols="3" class="pa-0">
+                <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="pa-0">
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-row>
+      </div>
     </div>
     <v-row><v-col></v-col></v-row>
-    <v-row v-if="!isLoading" justify="space-around">
+    <v-row justify="space-around">
       <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
       <v-btn color="secondary" :loading="isProcessing" :disabled="!enableNextBtn" outlined x-large @click="next()">Next</v-btn>
       <v-btn color="primary" :loading="isProcessing" :disabled="!enableSaveBtn || isReadOnly" outlined x-large @click="saveFacilities()">Save</v-btn>
-    </v-row>
-    <v-row v-else justify="space-around" class="mt-10">
-      <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-      <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-      <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
     </v-row>
   </v-container>
 </template>
@@ -176,13 +187,13 @@ export default {
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('organization', ['applicationId']),
-    ...mapState('application', ['applicationStatus', 'unlockEcewe']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
-      if (this.eceweUnlock){
+      if (this.unlockEcewe){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){
@@ -195,6 +206,7 @@ export default {
     this.setFundingModelTypes({...this.fundingModelTypeList});
     this.setApplicationId(this.applicationId);
     await this.loadData();
+    this.initECEWEFacilities(this.navBarList);
     let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
     copyFacilities.forEach(element => element.update = element.optInOrOut == null);
     this.uiFacilities = copyFacilities;
@@ -208,7 +220,7 @@ export default {
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
-    ...mapMutations('app', ['refreshNavBar', 'setEceweFacilityComplete']),
+    ...mapMutations('app', ['setEceweFacilityComplete']),
     ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
     enableButtons() {
       if (this.model.fundingModel == this.fundingModelTypeList[0].id) {
@@ -244,7 +256,10 @@ export default {
       this.isProcessing = true;
       try {
         let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
+        console.log('uiFacilitiesCopy 1 ', uiFacilitiesCopy);
+        // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
+        console.log('uiFacilitiesCopy 2 ', uiFacilitiesCopy);
         this.setFacilities(uiFacilitiesCopy);
         await this.saveECEWEFacilities();
         if (showConfirmation || showConfirmation == null) {

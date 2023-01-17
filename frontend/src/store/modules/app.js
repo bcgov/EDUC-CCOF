@@ -14,9 +14,8 @@ export default {
     ccofLicenseUploadComplete:false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
-    rfiList: [],
+
     //Notification Details
-    
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
@@ -30,7 +29,7 @@ export default {
     organizationTypeList: [],
     fundingModelTypeList: [],
     lookupInfo: null,
-    navBarRefresh: 1,
+    forceNavBarRefresh: 1,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -49,8 +48,8 @@ export default {
     setAlertNotification: (state, alertNotification) => {
       state.alertNotification = alertNotification;
     },
-    refreshNavBar(state) {
-      state.navBarRefresh = state.navBarRefresh + 1;
+    forceNavBarRefresh(state) {
+      state.forceNavBarRefresh = state.forceNavBarRefresh + 1;
     },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
@@ -98,11 +97,6 @@ export default {
     },
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
-    },
-    addToRfiList: (state, ccfriId) => {
-      if (state.rfiListmyarr.indexOf(ccfriId) < 0) {
-        state.rfiList.push(ccfriId);
-      }
     },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;

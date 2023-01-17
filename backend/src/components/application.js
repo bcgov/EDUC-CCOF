@@ -1,17 +1,13 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep} = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, RFIApplicationMappings, DeclarationMappings } = require('../util/mapping/Mappings');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, DeclarationMappings, UserProfileCCFRIMappings } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
 
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
@@ -30,58 +26,16 @@ async function renewCCOFApplication(req, res) {
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }  
-}
-
-async function getRFIApplication(req, res) {
-  let query  = `ccof_rfipfis?$filter=(statuscode eq 1) and (_ccof_applicationccfri_value eq ${req.params.ccfriId})`;
-  try {
-    const response = await getOperation(query);
-    console.log('response: ', minify(response.value));
-    console.log('response length: ', response.value.length);
-    if (response.value.length == 1) {
-      return res.status(HttpStatus.OK).json(new MappableObjectForFront(response.value[0], RFIApplicationMappings));  
-    } else {
-      return res.status(HttpStatus.NOT_FOUND).json({message: 'No data'});
-    }
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
-}
-
-async function updateRFIApplication(req, res) {
-  try {
-    const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
-    let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', req.params.rfipfiid, friApplication);
-    friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
-    return res.status(HttpStatus.OK).json(friApplicationResponse);
-  } catch (e) {
-    log.error('updateRFIApplication error:', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function createRFIApplication(req, res) {
-  try {
-    const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
-    friApplication['ccof_applicationccfri@odata.bind'] = `/contacts(ccof_applicationccfris='${req.params.ccfriId}')`;
-    log.verbose('createRFIApplication payload:', friApplication);
-    const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
-    return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
-  } catch (e) {
-    log.error('createRFIApplication error:', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
 
 
-//creates CCFRI application. 
+//creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
   let retVal= [];
   try {
-    await Promise.all(body.map(async(facility) => { 
+    await Promise.all(body.map(async(facility) => {
       let payload = {
         'ccof_ccfrioptin' : facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
@@ -114,7 +68,7 @@ async function updateCCFRIApplication(req, res) {
 }
 
 
-/* child care and program year GUIDs are looked up in AddNewFees.vue */ 
+/* child care and program year GUIDs are looked up in AddNewFees.vue */
 
 async function upsertParentFees(req, res) {
   let body = req.body;
@@ -150,11 +104,11 @@ async function upsertParentFees(req, res) {
 
       let payload = {
         "ccof_frequency": feeGroup.feeFrequency,
-        "ccof_ChildcareCategory@odata.bind": childCareCategory, 
-        "ccof_ProgramYear@odata.bind": programYear, 
+        "ccof_ChildcareCategory@odata.bind": childCareCategory,
+        "ccof_ProgramYear@odata.bind": programYear,
       };
 
-      Object.assign(payload, 
+      Object.assign(payload,
         {
           "ccof_apr": feeGroup.aprFee,
           "ccof_may": feeGroup.mayFee,
@@ -179,7 +133,7 @@ async function upsertParentFees(req, res) {
         theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
         hasError = true;
       }
-    } 
+    }
   }); //end forEach
 
 
@@ -215,17 +169,11 @@ async function upsertParentFees(req, res) {
       hasError = true;
     }
   }
-
-
-
   if (hasError) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
   } else {
     return res.status(HttpStatus.OK).json();
   }
-
-  
-  
 }
 
 async function postClosureDates(dates, ccfriApplicationGuid, res){
@@ -233,12 +181,12 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
 
   //delete all the old closure dates from the application - otherwise we will get duplicates when we save
   let dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
- 
+
   //don't bother trying to delete if there are no dates saved
-  if (dynamicsClosureDates.length > 0){  
+  if (dynamicsClosureDates.length > 0){
     try{
       await Promise.all(dynamicsClosureDates.map(async (date) => {
-        let response = await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
+        await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
         //log.info(response);
       }));
     }catch (e){
@@ -267,30 +215,6 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
   } catch (e){
     log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
-}
-
-async function getRFIMedian(req, res) {
-  try {
-    let operation = `ccof_applicationccfris?$select=_ccof_region3pctmedian_value,_ccof_region_value&$expand=ccof_Region3PctMedian($select=ccof_3percentageof0to18,ccof_3percentageof18to36,ccof_3percentageof3ytok,ccof_3percentageofoosctok,ccof_3percentageofoosctog,ccof_3percentageofpre,ccof_0to18months,ccof_18to36months,ccof_3yearstokindergarten,ccof_outofschoolcarekindergarten,ccof_outofschoolcaregrade1,ccof_preschool),ccof_Region($select=ccof_name,ccof_regionnumber)&$filter=(ccof_applicationccfriid eq ${req.params.ccfriId}) and (ccof_Region3PctMedian/ccof_median_fee_sdaid ne null) and (ccof_Region/ccof_fee_regionid ne null)`
-    let rfiMedian = await getOperation(operation);
-    rfiMedian = rfiMedian.value;
-    let medians = {};
-    if (rfiMedian?.length > 0) {
-      medians['0 to 18 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof0to18;
-      medians['18 to 36 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof18to36;
-      medians['3 Years to Kindergarten'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof3ytok;
-      medians['Out of School Care - Kindergarten'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofoosctok;
-      medians['Out of School Care - Grade 1+'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofoosctog;
-      medians['Preschool'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageofpre;
-    } else if (rfiMedian?.length > 1) {
-      log.error('Expected 1 set of RFI Medians got more: ', rfiMedian);
-    }
-    log.verbose('Median data: ', minify(medians));
-    return res.status(HttpStatus.OK).json(medians);
-  } catch (e) {
-    log.error('An error occurred while getting getRFIMedian', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
@@ -330,7 +254,7 @@ async function updateECEWEFacilityApplication(req, res) {
   let response;
   Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
   let eceweApplicationId;
-  
+
   try {
     for (let key in forBackFacilities) {
       // add join attributes for application and facility
@@ -377,13 +301,42 @@ async function getDeclaration(req, res) {
 async function submitApplication(req, res) {
   let declaration = new MappableObjectForBack(req.body, DeclarationMappings);
   declaration.data.statuscode = APPLICATION_STATUS_CODES.SUBMITTED;
+  let ccfriFacilitiesToLock = JSON.parse(JSON.stringify(declaration));
   declaration = declaration.toJSON();
   try {
+    delete declaration.facilities;
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, declaration);
+
+    // If CCRFI facilities exist on the payload we need to iterate
+    // each and call CCFRI endpoint to relock attributes.
+    if (checkKey('facilities', ccfriFacilitiesToLock)) {
+      let ccof_applicationccfriid;
+      for (let facility of ccfriFacilitiesToLock.facilities) {
+        facility = (new MappableObjectForBack(facility, UserProfileCCFRIMappings)).toJSON();
+        ccof_applicationccfriid = facility.ccof_applicationccfriid;
+        delete facility.ccof_applicationccfriid;
+        response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
+      }
+    }
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
+}
+
+/* Checks if object attrubte name exists in payload */
+function checkKey(key, obj) {
+  for (let name in obj) {
+    if (name === key) {
+      return true;
+    }
+    if (typeof obj[name] === 'object') {
+      if (checkKey(key, obj[name])) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 module.exports = {
@@ -393,10 +346,6 @@ module.exports = {
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   renewCCOFApplication,
-  getRFIApplication,
-  createRFIApplication,
-  updateRFIApplication,
   getDeclaration,
   submitApplication,
-  getRFIMedian,
 };

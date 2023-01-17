@@ -2,7 +2,7 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h4">Declaration</span>
+        <span class="text-h4">Declaration - {{this.programYearLabel}} Program Confirmation Form</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
@@ -52,15 +52,15 @@
 
                   <ol type="a" style="padding-top:10px;">
                     <li>I am the authorized representative and signing authority of the Provider as named in the CCOF Agreement (the Provider);</li>
-                    <li>I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do hereby bind the Provider to the terms and   
-                      conditions of the Funding Agreement if the Province accepts this Form and enrolls the Provider in any or all of the Child Care Operating Funding 
+                    <li>I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do hereby bind the Provider to the terms and
+                      conditions of the Funding Agreement if the Province accepts this Form and enrolls the Provider in any or all of the Child Care Operating Funding
                       Program, the CCFRI, or the ECE Wage Enhancement;</li>
-                    <li>All information provided in the Form or otherwise in support of the Provider to receive funding under the Funding Agreement is true and 
-                      complete to the best of my knowledge and belief. I understand and acknowledge that providing false or misleading information either on the 
-                      Form or otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to comply with the Funding 
-                      Agreement could result in certain penalties or repayment obligations, or both, under any or all of the Child Care BC Act, any successor  
+                    <li>All information provided in the Form or otherwise in support of the Provider to receive funding under the Funding Agreement is true and
+                      complete to the best of my knowledge and belief. I understand and acknowledge that providing false or misleading information either on the
+                      Form or otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to comply with the Funding
+                      Agreement could result in certain penalties or repayment obligations, or both, under any or all of the Child Care BC Act, any successor
                       legislation, or the Funding Agreement;</li>
-                    <li>If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the Provider has taken all actions required 
+                    <li>If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the Provider has taken all actions required
                       under any collective agreement to which it is a party to ensure it is:</li>
                   </ol>
                   <v-row>
@@ -79,8 +79,8 @@
             </v-row>
              <v-row v-if="!isProcessing">
               <v-col cols="12" class="pl-6 pt-0 pb-0">
-                 <v-checkbox class="pt-0" v-if="!isRenewal" v-model="model.agreeConsentCertify" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
-                <v-checkbox class="pt-0" v-else-if="isRenewal" v-model="model.agreeConsentCertify" :value="1" label="I agree, concent, and certify"></v-checkbox>
+                 <v-checkbox class="pt-0" v-if="!isRenewal" v-model="model.agreeConsentCertify" :disabled="isReadOnly" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
+                <v-checkbox class="pt-0" v-else-if="isRenewal" v-model="model.agreeConsentCertify" :disabled="isReadOnly" :value="1" label="I agree, consent, and certify"></v-checkbox>
               </v-col>
             </v-row>
             <v-row v-if="!isProcessing">
@@ -89,6 +89,7 @@
                   v-if="!isProcessing"
                   outlined
                   v-model="model.orgContactName"
+                  :disabled="isReadOnly"
                   label="Organization Contact Name/Digital signature (wording to be provided)."
                 />
               </v-col>
@@ -97,8 +98,8 @@
         </v-card>
       </v-row>
       <v-row justify="space-around" class="mt-10">
-        <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="primary" outlined x-large @click="submit()" :disabled="!isPageComplete()">Submit</v-btn>
+        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
+        <v-btn color="primary" :loading="isProcessing" outlined x-large @click="submit()" :disabled="!isPageComplete() || isReadOnly">Submit</v-btn>
       </v-row>
       <v-dialog
         v-model="dialog"
@@ -139,18 +140,29 @@ let model = {};
 export default {
   mixins: [alertMixin],
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['programYearList']),
+    ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
+    ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['isRenewal', 'programYearId']),
+    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
+    isReadOnly() {
+      if (this.isMinistryUser) {
+        return true;
+      } else if (this.unlockDeclaration) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    }
   },
   data() {
     return {
       model,
       isValidForm: false,
+      isLoading: false,
       isProcessing: false,
       dialog: false,
-      landingPage: PATHS.home
+      landingPage: PATHS.home,
     };
   },
   methods: {
@@ -164,54 +176,99 @@ export default {
       return this.isValidForm;
     },
     async loadData() {
-      this.isProcessing = true;
+      this.isLoading = true;
       try {
         await this.loadDeclaration();
       } catch (error) {
         console.log('Error loading application Declaration.', error);
         this.setFailureAlert('Error loading application Declaration.');
+      } finally {
+        this.isLoading = false;
       }
-      this.isProcessing = false;
     },
     async submit() {
+      this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration();
+        await this.updateDeclaration(this.createRelockPayload());
         this.dialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.'+error);
+      } finally {
+        this.isProcessing = false;
       }
+    },
+    createRelockPayload() {
+      let applicationRelockPayload = this.createRelockPayloadForApplication();
+      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI();
+      if ((Object.keys(ccrfiRelockPayload).length > 0)) {
+        applicationRelockPayload['facilities'] = ccrfiRelockPayload;
+      }
+      return applicationRelockPayload;
+    },
+    createRelockPayloadForApplication() {
+      let applicationRelockPayload = {
+        unlockBaseFunding: this.unlockBaseFunding,
+        unlockDeclaration: this.unlockDeclaration,
+        unlockEcewe: this.unlockEcewe,
+        unlockLicenseUpload: this.unlockLicenseUpload,
+        unlockSupportingDocuments: this.unlockSupportingDocuments
+      };
+      // Create payload with only unlock propteries set to 1.
+      // eslint-disable-next-line no-unused-vars
+      applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == 1));
+      // Update payload unlock properties from 1 to 0.
+      Object.keys(applicationRelockPayload).forEach(key => {
+        applicationRelockPayload[key] = '0';
+      });
+      return applicationRelockPayload;
+    },
+    createRelockPayloadForCCFRI() {
+      let ccrfiRelockPayload = new Array(0);
+      for (const facility of this.navBarList) {
+        let applicationIdPayload = {ccfriApplicationId: facility.ccfriApplicationId};
+        let unlockPayload = {unlockCcfri: facility.unlockCcfri, unlockNmf: facility.unlockNmf, unlockRfi: facility.unlockRfi};
+        // Create payload with only unlock propteries set to 1.
+        // eslint-disable-next-line no-unused-vars
+        unlockPayload = Object.fromEntries(Object.entries(unlockPayload).filter(([_, v]) => v == 1));
+        // Update payload unlock properties from 1 to 0.
+        Object.keys(unlockPayload).forEach(key => {
+          unlockPayload[key] = '0';
+        });
+        if ((Object.keys(unlockPayload).length > 0)) {
+          ccrfiRelockPayload.push({...applicationIdPayload, ...unlockPayload});
+        }
+      }
+      return ccrfiRelockPayload;
     },
     previous() {
       return this.$router.push(PATHS.supportingDocumentUpload);
-    }
+    },
   },
-  mounted() {
-    this.loadData().then(() => {
-      this.model = this.$store.state.summaryDeclaration.model ?? model;
-      if (this.isRenewal) {
+  async mounted() {
+    await this.loadData();
+    this.model = this.$store.state.summaryDeclaration.model ?? model;
+    if (this.isRenewal) {
       // Establish the server time
-        const serverTime = new Date(this.userInfo.serverTime);
+      const serverTime = new Date(this.userInfo.serverTime);
 
-        // Determine declaration b start date
-        let declarationBStart;
-        this.programYearList.list.find(item => {
-          if (item.programYearId == this.programYearId) {
-            declarationBStart = new Date(item.declarationbStart);
-          }
-        });
-        // Determine:
-        //   - which user declaration text version (status a or b) will display
-        //   - which declaration status (a or b) will be saved on submit.
-        // saved as part of submission.
-        if (serverTime < declarationBStart) {
-          this.model.declarationAStatus = 1;
-        } else {
-          this.model.declarationBStatus = 1;
+      // Determine declaration b start date
+      let declarationBStart;
+      this.programYearList.list.find(item => {
+        if (item.programYearId == this.programYearId) {
+          declarationBStart = new Date(item.declarationbStart);
         }
+      });
+      // Determine:
+      //   - which user declaration text version (status a or b) will display
+      //   - which declaration status (a or b) will be saved on submit.
+      // saved as part of submission.
+      if (serverTime < declarationBStart) {
+        this.model.declarationAStatus = 1;
+      } else {
+        this.model.declarationBStatus = 1;
       }
-    });
-
+    }
   },
 };
 </script>
