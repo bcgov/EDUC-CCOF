@@ -131,7 +131,7 @@ export default {
   },
 
   async mounted() {
-    const maxSize = 2180000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
+    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
       v => !!v || 'This is required',

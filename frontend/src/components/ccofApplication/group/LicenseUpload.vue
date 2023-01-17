@@ -99,7 +99,7 @@ export default {
 
 
   async mounted() {
-    const maxSize = 2180000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
+    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
@@ -161,11 +161,11 @@ export default {
     ...mapMutations('app', ['setCcofLicenseUploadComplete']),
     async previous() {
       let path = await this.getPreviousPath();
-      this.$router.push(path);      
+      this.$router.push(path);
     },
     async next() {
       let path = await this.getNextPath();
-      this.$router.push(path);      
+      this.$router.push(path);
     },
     deleteFile(item) {
       this.licenseUploadData = this.licenseUploadData.map(element => {
