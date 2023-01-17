@@ -24,7 +24,7 @@
               <template v-slot:item.document="{ item }">
                 <div v-if="item.document?.annotationid">
                   <span> {{ item.document?.filename }} </span>
-                  <v-btn icon @click="deleteFile(item)">
+                  <v-btn v-if="!isLocked" icon @click="deleteFile(item)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </div>
@@ -53,12 +53,11 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
         <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="isProcessing" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" @click="saveClicked()">Save</v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="isLocked"  @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
 </template>
-
 <script>
 
 import {PATHS} from '@/utils/constants';
@@ -75,12 +74,27 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'programYearLabel']),
+    ...mapState('application', ['isRenewal', 'programYearLabel','applicationStatus','unlockSupportingDocuments']),
     ...mapState('organization', ['applicationId', 'organizationProviderType']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
+    isLocked() {
+      if (this.unlockSupportingDocuments) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
     nextButtonDisabled() {
-      return (this.navBarList?.length !== this.getUploadedLicenses.length);
+      let deletedFileCount = this.getDeletedFileCount();
+      if(deletedFileCount === 0){
+        return (this.navBarList?.length !== this.getUploadedLicenses.length);
+      }else{
+        let currentFileCount = this.getUploadedLicenses.length - deletedFileCount;
+        return (this.navBarList?.length !== currentFileCount);
+      }
+
     }
   },
 
@@ -97,7 +111,9 @@ export default {
     await this.createTable();
   },
   async beforeRouteLeave(_to, _from, next) {
-    await this.save();
+    if(!this.isLocked){
+      await this.save(false);
+    }
     next();
   },
   data() {
@@ -132,8 +148,8 @@ export default {
           class: 'table-header'
         }
       ],
-      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic',
-      fileFormats: 'PDF, JPEG, JPG, HEIC and PNG',
+      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.pdf',
+      fileFormats: 'PDF, JPEG, JPG, HEIC, PDF, DOCX, DOC and PNG',
       fileInputError: [],
       fileMap: new Map(),
       fileRules: []
@@ -148,7 +164,7 @@ export default {
         this.$router.push(PATHS.home);
       } else {
         if (this.organizationProviderType == 'FAMILY') {
-          let navBar = this.navBarList[0]; 
+          let navBar = this.navBarList[0];
           if (navBar?.ccofBaseFundingId) {
             this.$router.push(`${PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
           }
@@ -175,19 +191,22 @@ export default {
     async saveClicked() {
       await this.save();
     },
-    async save() {
+    async save(showConfirmation = true) {
       this.isProcessing = true;
       try {
         await this.processLicenseFileDelete();
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
         }
-        await this.createTable();
+
         await this.updateLicenseCompleteStatus(!this.nextButtonDisabled);
         this.setCcofLicenseUploadComplete(!this.nextButtonDisabled);
-        this.setSuccessAlert('Changes Successfully Saved');
+        if (showConfirmation) {
+          await this.createTable();
+          this.setSuccessAlert('Changes Successfully Saved');
+        }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.isProcessing = false;
@@ -267,6 +286,11 @@ export default {
         this.isLoading = false;
         this.fileMap?.clear();
       }
+    },
+
+    getDeletedFileCount(){
+      const deletedFiles = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid)).map(element => element.deletedDocument);
+      return deletedFiles.length;
     }
   }
 };

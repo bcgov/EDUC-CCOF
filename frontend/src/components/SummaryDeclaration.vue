@@ -52,15 +52,15 @@
 
                   <ol type="a" style="padding-top:10px;">
                     <li>I am the authorized representative and signing authority of the Provider as named in the CCOF Agreement (the Provider);</li>
-                    <li>I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do hereby bind the Provider to the terms and   
-                      conditions of the Funding Agreement if the Province accepts this Form and enrolls the Provider in any or all of the Child Care Operating Funding 
+                    <li>I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do hereby bind the Provider to the terms and
+                      conditions of the Funding Agreement if the Province accepts this Form and enrolls the Provider in any or all of the Child Care Operating Funding
                       Program, the CCFRI, or the ECE Wage Enhancement;</li>
-                    <li>All information provided in the Form or otherwise in support of the Provider to receive funding under the Funding Agreement is true and 
-                      complete to the best of my knowledge and belief. I understand and acknowledge that providing false or misleading information either on the 
-                      Form or otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to comply with the Funding 
-                      Agreement could result in certain penalties or repayment obligations, or both, under any or all of the Child Care BC Act, any successor  
+                    <li>All information provided in the Form or otherwise in support of the Provider to receive funding under the Funding Agreement is true and
+                      complete to the best of my knowledge and belief. I understand and acknowledge that providing false or misleading information either on the
+                      Form or otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to comply with the Funding
+                      Agreement could result in certain penalties or repayment obligations, or both, under any or all of the Child Care BC Act, any successor
                       legislation, or the Funding Agreement;</li>
-                    <li>If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the Provider has taken all actions required 
+                    <li>If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the Provider has taken all actions required
                       under any collective agreement to which it is a party to ensure it is:</li>
                   </ol>
                   <v-row>
@@ -80,7 +80,7 @@
              <v-row v-if="!isProcessing">
               <v-col cols="12" class="pl-6 pt-0 pb-0">
                  <v-checkbox class="pt-0" v-if="!isRenewal" v-model="model.agreeConsentCertify" :disabled="isReadOnly" :value="1" label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."></v-checkbox>
-                <v-checkbox class="pt-0" v-else-if="isRenewal" v-model="model.agreeConsentCertify" :disabled="isReadOnly" :value="1" label="I agree, concent, and certify"></v-checkbox>
+                <v-checkbox class="pt-0" v-else-if="isRenewal" v-model="model.agreeConsentCertify" :disabled="isReadOnly" :value="1" label="I agree, consent, and certify"></v-checkbox>
               </v-col>
             </v-row>
             <v-row v-if="!isProcessing">
@@ -148,7 +148,7 @@ export default {
       if (this.unlockDeclaration) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
-        return true; 
+        return true;
       }
       return false;
     }
