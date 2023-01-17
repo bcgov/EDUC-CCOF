@@ -220,7 +220,7 @@ export default {
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
-    ...mapMutations('app', ['refreshNavBar', 'setEceweFacilityComplete']),
+    ...mapMutations('app', ['setEceweFacilityComplete']),
     ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
     enableButtons() {
       if (this.model.fundingModel == this.fundingModelTypeList[0].id) {

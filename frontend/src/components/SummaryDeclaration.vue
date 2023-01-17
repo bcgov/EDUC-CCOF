@@ -140,12 +140,14 @@ let model = {};
 export default {
   mixins: [alertMixin],
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('organization', ['applicationStatus']),
     ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
     isReadOnly() {
-      if (this.unlockDeclaration) {
+      if (this.isMinistryUser) {
+        return true;
+      } else if (this.unlockDeclaration) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;

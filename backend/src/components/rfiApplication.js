@@ -95,6 +95,12 @@ async function updateRFIApplication(req, res) {
     let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', rfipfiid, friApplication);
     friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
 
+    // update isComplete status
+    const isRfiComplete = req.body.isRfiComplete;
+    if (isRfiComplete != null ) {
+      await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_rfi_form_complete: isRfiComplete});
+    }
+    
     //update funding
     await deleteChildTable(rfipfiid, 'ccof_rfi_pfi_other_fundings', 'ccof_rfi_pfi_other_fundingid');
     const fundingListPayload = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
@@ -147,7 +153,6 @@ async function createRFIApplication(req, res) {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
     delete friApplication._ccof_applicationccfri_value;
     delete friApplication.ccof_rfipfiid;
-
     friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
     friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
     friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
@@ -157,6 +162,9 @@ async function createRFIApplication(req, res) {
     friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
     log.info('createRFIApplication payload:', friApplication);
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
+    //set a flag in ccof_applicationccfri that an RFI exists for this application
+    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_has_rfi: true, ccof_rfi_form_complete: req.body.isRfiComplete});
+
     return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
   } catch (e) {
     log.error('createRFIApplication error:', e);
