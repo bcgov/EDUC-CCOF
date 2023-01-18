@@ -58,10 +58,16 @@ export default {
       }
 
       commit('setLoadedModel', deepCloneObject(state.nmfModel));
+      // commit('app/setIsNmfComplete', state.isNmfComplete, { root: true });
       if (state.nmfModel?.nmfId) {
         // has a nmf ID, so update the data
         try {
-          let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_NMF + '/' + 'nmf/' + state.nmfModel?.nmfId, state.nmfModel);
+          let payload = {
+            nmfModel: state.nmfModel,
+            ccfriId: ccfriId
+          };
+          let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_NMF + '/' + 'nmf/' + state.nmfModel?.nmfId, payload);
+          commit('addNmfToStore', {ccfriId: ccfriId, model: state.nmfModel});
           return response;
         } catch (error) {
           console.log(`Failed to update existing NMF - ${error}`);

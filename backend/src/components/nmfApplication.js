@@ -1,17 +1,10 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify} = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
+const { getOperation, postOperation, patchOperationWithObjectId, minify} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { NMFApplicationMappings } = require('../util/mapping/Mappings');
-const { getCCFRIClosureDates } = require('./facility');
-
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function mapNMFApplicationObjectForFront(data) {
   data.ccof_supportneeds = (data.ccof_supportneeds === 1) ? "Yes" : "No";
@@ -50,9 +43,17 @@ async function getNMFApplication(req, res) {
 
 async function updateNMFApplication(req, res) {
   try {
-    const nmfApplication = mapNMFApplicationObjectForBack(req.body);
+    const nmfApplication = mapNMFApplicationObjectForBack(req.body.nmfModel);
     const nmfpfiid = req.params.nmfpfiid;
+    
     delete nmfApplication.ccof_rfi_pfi_nmfid;
+
+    // update isComplete status
+    const isNmfComplete = req.body.nmfModel.isNmfComplete;
+    const ccfriId = req.body.ccfriId;
+    if (isNmfComplete != null ) {
+      await patchOperationWithObjectId('ccof_applicationccfris', ccfriId, {ccof_nmf_formcomplete: isNmfComplete});
+    }
 
     log.info('updateNMFApplication payload:', nmfApplication);
     let nmfApplicationResponse = await patchOperationWithObjectId('ccof_rfi_pfi_nmfs', nmfpfiid, nmfApplication);
@@ -66,8 +67,12 @@ async function updateNMFApplication(req, res) {
 
 async function createNMFApplication(req, res) {
   try {
-    const nmfApplication = mapNMFApplicationObjectForBack(req.body);
+    const nmfApplication = mapNMFApplicationObjectForBack(req.body.nmfModel);
     delete nmfApplication.ccof_rfi_pfi_nmfid;
+
+    //set a flag in ccof_applicationccfri that a NMF exists for this application
+    let isNmfComplete = req.body.nmfModel.isNmfComplete;
+    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_has_nmf: true, ccof_nmf_formcomplete: isNmfComplete});
 
     nmfApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
     log.info('createNMFApplication payload:', nmfApplication);
