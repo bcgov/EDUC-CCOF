@@ -183,7 +183,7 @@ export default {
           class: 'table-header'
         }
       ],
-      fileAccept: '.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.xls,.xlsx',
+      fileAccept: ['image/png','image/jpeg','image/jpg','.pdf','.png','.jpg','.jpeg','.heic','.doc','.docx','.xls','.xlsx'],
       fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
       fileInputError: [],
       fileMap: new Map(),
