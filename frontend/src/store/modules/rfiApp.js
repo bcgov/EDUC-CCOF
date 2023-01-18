@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import {isEmpty} from 'lodash';
+import {isEmpty, isEqual} from 'lodash';
 import {deepCloneObject} from '@/utils/common';
 
 export default {
@@ -60,18 +60,42 @@ export default {
     async saveRfi({ state, commit},ccfriId) {
 
       checkSession();
-      console.info(state.rfiModel);
-      console.info(state.loadedModel);
+      console.info('RFI MODEL' , state.rfiModel);
+      console.info('DAT MODEL' , state.loadedModel);
 
-      // if (isEqual({ ...state.rfiModel }, { ...state.loadedModel})) {
-      //   console.info('no model changes');
-      //   return;
+      if (isEqual({ ...state.rfiModel }, { ...state.loadedModel})) {
+        console.info('no model changes');
+        return;
+      }
+
+      let rfiPayloadModel  = deepCloneObject(state.rfiModel);
+
+      if (isEqual({ ...state.rfiModel.expansionList }, { ...state.loadedModel.expansionList})) {
+        rfiPayloadModel.expansionList = undefined;
+      }
+      if (isEqual({ ...state.rfiModel.wageList }, { ...state.loadedModel.wageList})) {
+        rfiPayloadModel.wageList = undefined;
+      }
+      if (isEqual({ ...state.rfiModel.fundingList }, { ...state.loadedModel.fundingList})) {
+        rfiPayloadModel.fundingList = undefined;
+      }
+      if (isEqual({ ...state.rfiModel.expenseList }, { ...state.loadedModel.expenseList})) {
+        rfiPayloadModel.expenseList = undefined;
+      }
+
+      //this list does not exist in dynamics yet
+      // if (isEqual({ ...state.rfiModel.indigenousExpenseList }, { ...state.loadedModel.indigenousExpenseList})) {
+      //   rfiPayloadModel.indigenousExpenseList = undefined;
+      //   console.info('no wageList changes');
       // }
+
+      
       commit('setLoadedModel', deepCloneObject(state.rfiModel));
+      
       if (state.rfiModel?.rfiId) {
         // has a rfi ID, so update the data
         try {
-          await ApiService.apiAxios.put(ApiRoutes.APPLICATION_RFI + '/' + 'rfi/' + state.rfiModel?.rfiId, state.rfiModel);
+          await ApiService.apiAxios.put(ApiRoutes.APPLICATION_RFI + '/' + 'rfi/' + state.rfiModel?.rfiId, rfiPayloadModel);
           return null;
         } catch (error) {
           console.log(`Failed to update existing RFI - ${error}`);
