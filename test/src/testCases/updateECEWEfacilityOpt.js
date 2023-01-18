@@ -24,11 +24,11 @@ test('Update ECE-WE Facility', async t => {
     .click(landing.continueButton)
     .wait(2000);
   await t.click(opt.ECEWEButton);
-  await t.click(opt.facilityButton);
-  // await opt.updateOptFromFile(t, 'ecewe-facility-opt.txt');
-  // await t.expect(opt.nextButton.hasAttribute('disabled')).notOk();
-  // await t.click(opt.saveButton).wait(3000);
-  // await t.expect(alert.success.exists).ok();
-  // await t.click(opt.nextButton);
+  await t.click(opt.facilityButton).wait(2000);
+  await opt.updateOptFromFile(t, 'ecewe-facility-opt.txt');
+  await t.expect(opt.nextButton.hasAttribute('disabled')).notOk();
+  await t.click(opt.saveButton).wait(3000);
+  await t.expect(alert.success.exists).ok();
+  await t.click(opt.nextButton);
 
 });
