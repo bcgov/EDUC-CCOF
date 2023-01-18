@@ -140,9 +140,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('application', ['programYearLabel']),
+    ...mapState('application', ['programYearLabel', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
-    ...mapState('organization', ['applicationId']),
     
     findIndexOfFacility(){
       let activeFac = this.navBarList.findIndex((element) =>{ 

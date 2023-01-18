@@ -19,8 +19,6 @@ export default {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
-    eceweEligibilityComplete: false,
-    eceweFacilitiesComplete: false,
     supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
@@ -115,12 +113,6 @@ export default {
     },
     setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
       state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
-    },
-    setEceweEligibilityComplete: (state, eceweEligibilityComplete) => {
-      state.eceweEligibilityComplete = eceweEligibilityComplete;
-    },
-    setEceweFacilitiesComplete: (state, eceweFacilitiesComplete) => {
-      state.eceweFacilitiesComplete = eceweFacilitiesComplete;
     },
     setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;

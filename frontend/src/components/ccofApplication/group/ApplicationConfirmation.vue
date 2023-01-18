@@ -59,9 +59,6 @@ export default {
       this.$router.push(PATHS.group.facInfo);
     },
     async next() {
-      if (this.isLicenseUploadComplete == null) {
-        await this.updateLicenseCompleteStatus(false);
-      }
       this.$router.push(PATHS.group.licenseUpload);
     }
   },
