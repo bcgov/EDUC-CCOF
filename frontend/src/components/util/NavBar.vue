@@ -344,7 +344,6 @@ export default {
               },
             );
           }
-          //renew should send user to existing fee page to confirm if previous year fees are correct
           if (item.unlockNmf || item.hasNmf) {
             items.push(
               {
@@ -353,7 +352,7 @@ export default {
                 id: item.facilityId,
                 link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
                 isAccessible: true,
-                icon:  this.getCheckbox(false), // TO-DO update checkbox
+                icon:  this.getCheckbox(item.isNmfComplete),
                 isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
                 position: positionIndex++,
                 navBarId: navBarId++
