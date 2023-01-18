@@ -54,7 +54,7 @@ export default {
         throw error;
       }
     },
-    async saveECEWEFacilities({ state, commit, rootState }) {
+    async saveECEWEFacilities({ state, commit }) {
       if (isEqual(state.loadedFacilities, state.facilities)) {
         return;
       }      
