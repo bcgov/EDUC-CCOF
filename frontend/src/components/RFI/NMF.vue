@@ -190,7 +190,8 @@ export default {
     };
   },
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if (!this.isReadOnly)
+      await this.save(false);
     next();
   },
   computed: {
