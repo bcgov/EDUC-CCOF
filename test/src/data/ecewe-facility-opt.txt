@@ -1,6 +1,4 @@
-<<<<<<< HEAD
+
 Opt-Out
 =======
-Opt-In
->>>>>>> 5d1df4d (ECEWE pages)
 Opt-In
