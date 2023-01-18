@@ -130,9 +130,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus',  'programYearLabel']),
+    ...mapState('application', ['applicationStatus',  'programYearLabel', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
-    ...mapState('organization', ['applicationId']),
 
     isReadOnly(){
       //more logic to come here post MVP

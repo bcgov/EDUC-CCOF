@@ -135,11 +135,7 @@ export default {
       commit('app/setIsLicenseUploadComplete', userInfoRes.data.isLicenseUploadComplete, { root: true });
       commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
-      commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
-      commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });
-      commit('organization/setApplicationType', userInfoRes.data.applicationType, { root: true });
       commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
-
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },

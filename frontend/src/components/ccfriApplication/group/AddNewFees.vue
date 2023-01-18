@@ -387,13 +387,11 @@ export default {
     next();
   },
   computed: {
-    ...mapState('application', ['applicationStatus', 'programYearLabel']),
     ...mapGetters('app', ['lookupInfo']),
-    ...mapState('application', ['applicationStatus', 'programYearLabel']),
+    ...mapState('application', ['applicationStatus', 'programYearLabel', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapState('organization', ['applicationId']),
 
     currentYearTitle(){
       return this.programYearLabel;

@@ -186,8 +186,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('organization', ['applicationId']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
@@ -207,10 +206,7 @@ export default {
     this.setApplicationId(this.applicationId);
     await this.loadData();
     this.initECEWEFacilities(this.navBarList);
-    let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
-    copyFacilities.forEach(element => element.update = element.optInOrOut == null);
-    this.uiFacilities = copyFacilities;
-    this.setLoadedFacilities([...this.facilities]);
+    this.setupUiFacilities();
     this.model = {...this.eceweModel};
     this.enableButtons();
   },
@@ -227,6 +223,12 @@ export default {
         this.enableSaveBtn = false;
         this.enableNextBtn = true;
       }
+    },
+    setupUiFacilities() {
+      let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+      copyFacilities.forEach(element => element.update = element.optInOrOut == null);
+      this.uiFacilities = copyFacilities;
+      this.setLoadedFacilities([...this.facilities]);
     },
     toggleRadio(index) {
       this.uiFacilities[index].update = (this.uiFacilities[index].update==true)?false:true;
@@ -261,7 +263,17 @@ export default {
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
         console.log('uiFacilitiesCopy 2 ', uiFacilitiesCopy);
         this.setFacilities(uiFacilitiesCopy);
-        await this.saveECEWEFacilities();
+        let response = await this.saveECEWEFacilities();
+        if (response?.data?.facilities) {
+          response.data.facilities?.forEach(el => {
+            let facility = this.navBarList.find(f => f.facilityId === el.facilityId);
+            if (facility) {
+              facility.eceweOptInStatus = el.optInOrOut;
+            }
+          });
+        }
+
+        this.setupUiFacilities();
         if (showConfirmation || showConfirmation == null) {
           this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
         }

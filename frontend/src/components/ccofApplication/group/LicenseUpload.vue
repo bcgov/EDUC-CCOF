@@ -73,8 +73,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'programYearLabel','applicationStatus','unlockSupportingDocuments']),
-    ...mapState('organization', ['applicationId', 'organizationProviderType']),
+    ...mapState('application', ['isRenewal', 'programYearLabel','applicationStatus','unlockSupportingDocuments', 'applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
     isLocked() {

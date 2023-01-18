@@ -72,7 +72,7 @@ export default {
         throw 'unable to save facility because you are not associated to an organization';
       }
 
-      let payload = { ...state.facilityModel, organizationId, applicationId: rootState.organization.applicationId };
+      let payload = { ...state.facilityModel, organizationId, applicationId: rootState.application.applicationId };
       commit('setLoadedModel', state.facilityModel);
 
       if (state.facilityId) {

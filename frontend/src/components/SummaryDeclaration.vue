@@ -142,8 +142,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
-    ...mapState('organization', ['applicationStatus']),
-    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
+    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;

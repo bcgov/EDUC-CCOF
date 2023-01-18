@@ -190,7 +190,7 @@
       </v-row>
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
+        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Save and continue</v-btn>
         <v-btn :disabled="!enableButtons || isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
     </v-container>
@@ -214,10 +214,9 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
+    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('organization', ['applicationId']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
@@ -244,8 +243,6 @@ export default {
       await this.loadData();
       this.setIsStarted(true);
       this.model = {...this.eceweModel};
-      this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
-      this.setEceweFacilitiesComplete(this.eceweFacilitiesComplete);
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
       this.initECEWEFacilities(this.navBarList);
@@ -260,8 +257,8 @@ export default {
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities']),
-    ...mapMutations('app', ['setEceweEligibilityComplete', 'setEceweFacilitiesComplete']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
+    ...mapMutations('application', ['setIsEceweComplete']),
     previous() {
       this.$router.push(PATHS.ccfriHome);
     },
@@ -315,8 +312,8 @@ export default {
       try {
         this.updateQuestions();
         this.setEceweModel(this.model);
-        await this.saveECEWE();
-        this.setEceweEligibilityComplete(this.eceweEligibilityComplete);
+        await this.saveECEWE(this.enableButtons);
+        this.setIsEceweComplete(this.enableButtons);
         const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut === 1);
         // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
