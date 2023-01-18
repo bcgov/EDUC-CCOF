@@ -61,9 +61,8 @@ test('Update Family Form - Incompleted info', async t => {
     await family.updateField(t, 'Mailing Address', '111 sutter street');
     await family.loadFieldsFromFile(t, 'family-incompleted.txt');
     await t.takeScreenshot({fullPage: true});
-    await t.expect(family.nextButton.hasAttribute('disabled')).notOk();
+    await t.expect(family.nextButton.hasAttribute('disabled')).ok();
     await t.click(family.saveButton).wait(2000);
     await t.expect(alert.success.exists).ok();
-    await t.click(family.nextButton);
     await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
   });
