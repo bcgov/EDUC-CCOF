@@ -87,8 +87,6 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
-      console.log('calling save facility, is Family ', !this.isGroup());
-      console.log('PRovider tyep ', this.providerType);
       if (!this.isGroup()) {// For Family, we will need to set the postal code from organization.
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);

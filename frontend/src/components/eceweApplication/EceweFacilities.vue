@@ -265,13 +265,12 @@ export default {
         this.setFacilities(uiFacilitiesCopy);
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
-        response.data.facilities?.forEach(el => {
-          let facility = this.navBarList.find(f => f.facilityId === el.facilityId);
-          if (facility) {
-            facility.eceweOptInStatus = el.optInOrOut;
-          }
-        });
-
+          response.data.facilities?.forEach(el => {
+            let facility = this.navBarList.find(f => f.facilityId === el.facilityId);
+            if (facility) {
+              facility.eceweOptInStatus = el.optInOrOut;
+            }
+          });
         }
 
         this.setupUiFacilities();
