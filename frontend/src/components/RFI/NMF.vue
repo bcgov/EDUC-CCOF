@@ -244,12 +244,16 @@ export default {
     previous() {
       this.$router.back();
     },
+    updateCurrentFacilityNMFCompleteStatus(){
+      this.navBarList[this.findIndexOfFacility].isNmfComplete = this.isValidForm;
+    },
     async save(showNotification) {
       this.isProcessing = true;
       try {
         this.setNmfModel({ ...this.model, isNmfComplete: this.isValidForm });
         let ccfriId = this.$route.params.urlGuid;
         await this.saveNmf(ccfriId);
+        this.updateCurrentFacilityNMFCompleteStatus();
         if (showNotification) {
           this.setSuccessAlert('Success! RFI information has been saved.');
         }
