@@ -1,3 +1,4 @@
+import { findSourceMap } from 'module';
 import { Selector } from 'testcafe';
 const {getButton} = require('../utils/selectors');
 const fs = require('fs');
@@ -18,12 +19,12 @@ class pageECEWEfacility {
         let lines = data.split('\n');
         const length = lines.length;
         for(let index = 0; index < length; index++){
-          if(await Selector('button').child('span').withText('Update').exists){
-            console.log("---------test---------");
-            await t.click(getButton('Update').nth(0)).wait(1000);
+          if(await getButton('Update').exists){
+            await t.click(Selector('button', {timeout: 10000}).child('span').withText('Update').nth(index).parent()).wait(1000);
+            await t.click(Selector('label').withText(lines[index].trim()).nth(0)).wait(1000);
+          }else{
+            await t.click(Selector('label').withText(lines[index].trim()).nth(index));
           }
-            console.log("---------test222222---------");
-            // await t.click(Selector('label').withText(lines[index].trim()).nth(index));
         }
       }
   }
