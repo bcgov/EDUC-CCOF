@@ -193,6 +193,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_afterkindergarten', front: 'afterKindergarten' },
   { back: 'ccof_afterschool', front: 'afterSchool' },
 
+  { back: 'ccof_maximumnumberofspacesyouofferextendedhours', front: 'maxCapacityExtended' },
   { back: 'ccof_maxnoofdaysperweekextendedhoursoffered', front: 'maxDaysPerWeekExtended' },
   { back: 'ccof_maxnoofweeksperyearextendedhoursoffered', front: 'maxWeeksPerYearExtended' },
 
