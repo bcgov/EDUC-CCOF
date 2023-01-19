@@ -21,7 +21,7 @@
               <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
-              <router-link :to="item.link"  :target="_self" class="router">
+              <router-link :is="item.isAccessible ? 'router-link' : 'span'" :to="item.link" :target="_self" class="router">
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="item.isActive" class="menuItem text-wrap"><strong>{{item.title}}</strong></v-list-item-title>
                 <v-list-item-title v-else class="menuItem text-wrap">{{item.title}}</v-list-item-title>
@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus', 'isEceweComplete']),
+    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -171,7 +171,7 @@ export default {
     },
     areChildrenComplete(list) {
       return list.every(item => {
-        return item.icon === 'mdi-check-circle' || item.icon === 'mdi-information';
+        return item.icon === 'mdi-check-circle' || item.icon === 'mdi-information' || item.icon === 'mdi-home';
       });
     },
     // setNavigationPath() {
@@ -252,11 +252,12 @@ export default {
         navBarId: navBarId++
 
       });
+      let declarationAccessible = (this.unlockDeclaration || this.areChildrenComplete(this.items));
       this.items.push(
         {
           title: 'Declaration',
           link: { name: 'Summary and Declaration' },
-          isAccessible: true,
+          isAccessible: declarationAccessible, //set this to true to unlock the declaration
           icon: this.getCheckbox(this.applicationStatus==='SUBMITTED'),
           isActive: 'Summary and Declaration' === this.$route.name,
           expanded: false,
