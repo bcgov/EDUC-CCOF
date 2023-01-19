@@ -483,7 +483,7 @@ export default {
     async next() {
       this.rfi3percentCategories = await this.getCcfriOver3percent();
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.rfi3percentCategories.length > 0) {
+      if (this.rfi3percentCategories.length > 0 && this.isRenewal) {
         this.showRfiDialog = true;
       } else {
         if (!this.nextFacility){
@@ -511,11 +511,8 @@ export default {
     },
     isFormComplete(){
       if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0 && this.isValidForm){
-        this.currentFacility.isCCFRIComplete = true; 
         return true;
       }
-
-      this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){

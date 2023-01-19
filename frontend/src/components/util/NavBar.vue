@@ -170,13 +170,9 @@ export default {
       }
     },
     areChildrenComplete(list) {
-      let isComplete = true;
-      list.forEach(item => { 
-        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
-          isComplete = false;
-        }
+      return list.every(item => {
+        return item.icon === 'mdi-check-circle' || item.icon === 'mdi-information';
       });
-      return isComplete;
     },
     // setNavigationPath() {
     //   let prev = undefined;
@@ -522,7 +518,7 @@ export default {
           title: 'Add Facility',
           link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
-          icon: this.getCheckbox(this.isLicenseUploadComplete != null),
+          icon: 'mdi-information',
           isActive: 'Application Confirmation' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
