@@ -1,4 +1,5 @@
 <template>
+  <v-form ref="isValidForm" v-model="isValidForm">
   <v-container>
 
     <div class="row pt-4 justify-center">
@@ -115,19 +116,19 @@
               </v-col>
 
               <v-col class="col-md-3 col-12 ">
-                <h3> Expense Description</h3>
+                <h3 class="text-center"> Expense Description</h3>
               </v-col>
 
               <v-col class="col-md-3 col-12 ">
-                <h3> Date of expense</h3>
+                <h3 class="text-center"> Date of expense</h3>
               </v-col>
 
               <v-col class="col-md-3 col-12 ">
-                <h3> Payment frequency details</h3>
+                <h3 class="text-center"> Payment frequency details</h3>
               </v-col>
 
               <v-col class="col-md-2 col-12 ">
-                <h3>Expense amount</h3>
+                <h3 class="text-center">Expense amount</h3>
               </v-col>
 
             </v-row>
@@ -197,6 +198,7 @@
             <br>
             <br>
             <v-textarea
+            :rules="rules"
               placeholder="Describe Here"
               outlined
               name="input-7-4"
@@ -254,23 +256,23 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12 ">
-                  <h3> Funding Program</h3>
+                  <h3 class="text-center"> Funding Program</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12 ">
-                  <h3> Application Date</h3>
+                  <h3 class="text-center"> Application Date</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12 ">
-                  <h3>Status of Application</h3>
+                  <h3 class="text-center">Status of Application</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12 ">
-                  <h3> Amount Received</h3>
+                  <h3 class="text-center"> Amount Received</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12 ">
-                  <h3> Expense(s)</h3>
+                  <h3 class="text-center"> Expense(s)</h3>
                 </v-col>
 
               </v-row>
@@ -530,41 +532,45 @@
               class="mr-5"
             > mdi-information
             </v-icon>
-            <strong>Note: If two or more staff have the same information for each column, they can be included in one
-              row. </strong>
+            <strong>Note: If two or more staff have the same information for each column, they can be included in one row. </strong>
           </v-banner>
 
-          <div class="px-md-12 px-7">
+          <div class="px-md-12 px-10">
 
             <v-row class="hidden-sm-and-down">
-              <v-col class="col-md-2 col-12 ">
-                <h3> Number of staff receiving wage increase</h3>
+              <v-col class="col-md-1 col-12 ">
+                <!-- <h3> Number of staff receiving wage increase</h3>
+                here for spacing! -->
               </v-col>
 
               <v-col class="col-md-2 col-12 ">
-                <h3> Direct Care staff role </h3>
+                <h3  class="text-center"> Number of staff receiving wage increase</h3>
+              </v-col>
+
+              <v-col class="col-md-2 col-12 ">
+                <h3  class="text-center"> Direct Care staff role </h3>
                 <br>
-                <p>(e.g. Responsible Adult, ECE, ECEA, etc)</p>
+                <p  class="text-center">(e.g. Responsible Adult, ECE, ECEA, etc)</p>
               </v-col>
 
               <v-col class="col-md-2 col-12 ">
-                <h3> Wage before increase</h3>
+                <h3  class="text-center"> Wage before increase</h3>
                 <br>
-                <p>(not including ECE-WE)</p>
+                <p  class="text-center">(not including ECE-WE)</p>
               </v-col>
 
               <v-col class="col-md-2 col-12 ">
-                <h3> Wage after increase</h3>
+                <h3  class="text-center"> Wage after increase</h3>
                 <br>
-                <p>(not including ECE-WE)</p>
+                <p class="text-center">(not including ECE-WE)</p>
               </v-col>
 
               <v-col class="col-md-2 col-12 ">
-                <h3> Average hours per week at this facility</h3>
+                <h3 class="text-center"> Average hours per week at this facility</h3>
               </v-col>
 
-              <v-col class="col-md-2 col-12 ">
-                <h3> Month and year of wage increase </h3>
+              <v-col class="col-md-1 col-12 ">
+                <h3 class="text-center"> Date</h3>
               </v-col>
             </v-row>
             <span class="white--text"> . </span>
@@ -582,7 +588,7 @@
                 </v-icon>
               </v-col>
 
-              <v-col class="col-md-1 col-12">
+              <v-col class="col-md-2 col-12">
                 <v-text-field
                   type="number"
                   class=""
@@ -638,14 +644,14 @@
                 />
               </v-col>
 
-              <v-col class="col-md-2 col-12">
+              <v-col class="col-md-1 col-12">
                 <v-menu v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       :rules="rules"
                       outlined v-model="obj.wageDate"
-                      label="Date of Wage Increase"
+                      label="Date of Increase"
                       readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
@@ -692,6 +698,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               label=" When did your facility's recruitment and retention challenges begin? "
               placeholder="Describe here"
               outlined
@@ -700,6 +707,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               label=" How many Direct Care Staff have left your facility due to wages? "
               placeholder="Describe here"
               outlined
@@ -708,6 +716,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               label=" What have you done to try to recruit staff? "
               placeholder="Describe here"
               outlined
@@ -716,6 +725,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               label=" Have you had to adjust your hours/days of operation?? "
               placeholder="Describe here"
               outlined
@@ -724,6 +734,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               label=" Is your facility unable to fill spaces due to insufficient staffing? "
               placeholder="Describe here"
               outlined
@@ -732,6 +743,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               label=" Is there anything else you would like us to know about the wage increase(s)? "
               placeholder="Describe here"
               outlined
@@ -809,23 +821,23 @@
                 <!--here for spacing-->
               </v-col>
               <v-col class="col-md-2 col-12 ">
-                <h3> Facility's previous hours of operation</h3>
+                <h3 class> Facility's previous hours of operation</h3>
                 <br>
                 <p>(e.g. 9:00 am - 4:00 pm)</p>
               </v-col>
               <v-col class="col-md-2 col-12 ">
-                <h3> Facility's new hours of operation</h3>
+                <h3 class> Facility's new hours of operation</h3>
                 <br>
                 <p>(e.g. 6:00 am - 5:00 pm)</p>
               </v-col>
               <v-col class="col-md-2 col-12 ">
-                <h3> Date of Change</h3>
+                <h3 class> Date of Change</h3>
               </v-col>
               <v-col class="col-md-2 col-12 ">
-                <h3> Amount of Expense</h3>
+                <h3 class> Amount of Expense</h3>
               </v-col>
               <v-col class="col-md-2 col-12 ">
-                <h3> Payment frequency </h3>
+                <h3 class> Payment frequency </h3>
               </v-col>
             </v-row>
             <span class="white--text"> . </span>
@@ -858,7 +870,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       v-model="obj.timefrom"
-                      label="Previous Open Time:"
+                      label="Open-Previous"
                       prepend-icon="mdi-clock-time-four-outline"
                       readonly
                       v-bind="attrs"
@@ -890,7 +902,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       v-model="obj.timeto"
-                      label="Previous Close Time:"
+                      label="Close-Previous"
                       prepend-icon="mdi-clock-time-four-outline"
                       readonly
                       v-bind="attrs"
@@ -923,7 +935,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       v-model="obj.newtimefrom"
-                      label="New Open Time:"
+                      label="Open-New"
                       prepend-icon="mdi-clock-time-four-outline"
                       readonly
                       v-bind="attrs"
@@ -955,7 +967,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       v-model="obj.newtimeto"
-                      label="New Close Time:"
+                      label="Close-New"
                       prepend-icon="mdi-clock-time-four-outline"
                       readonly
                       v-bind="attrs"
@@ -1022,6 +1034,7 @@
             <br>
             <br>
             <v-textarea
+            :rules="rules"
               label=" Please explain why you have incurred (or will incur) each expense you have listed above.(e.g. Wages, Utilities)"
               outlined
               name="input-7-4"
@@ -1032,6 +1045,7 @@
             <br>
             <br>
             <v-textarea
+            :rules="rules"
               placeholder="Describe here"
               outlined
               name="input-7-4"
@@ -1123,19 +1137,19 @@
               </v-col>
 
               <v-col class="col-md-3 col-12 ">
-                <h3> Expense Description</h3>
+                <h3 class="text-center"> Expense Description</h3>
               </v-col>
 
               <v-col class="col-md-3 col-12 ">
-                <h3> Date of expense</h3>
+                <h3 class="text-center"> Date of expense</h3>
               </v-col>
 
               <v-col class="col-md-3 col-12 ">
-                <h3> Payment frequency details</h3>
+                <h3 class="text-center"> Payment frequency details</h3>
               </v-col>
 
               <v-col class="col-md-2 col-12 ">
-                <h3>Expense amount</h3>
+                <h3 class="text-center">Expense amount</h3>
               </v-col>
 
             </v-row>
@@ -1211,6 +1225,7 @@
             <div class="">
               <br>
               <v-textarea
+              :rules="rules"
                 label="Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above."
                 outlined
                 name="input-7-4"
@@ -1282,6 +1297,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               outlined
               name="input-7-4"
               label="Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)"
@@ -1291,6 +1307,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               outlined
               name="input-7-4"
               label="How will your fee increase contribute to the overall sustainability of the organization/facility?"
@@ -1300,6 +1317,7 @@
 
             <br>
             <v-textarea
+            :rules="rules"
               outlined
               name="input-7-4"
               label=" Describe whether parents out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?"
@@ -1313,15 +1331,17 @@
       </v-card-text>
     </v-card>
 
+    {{ isValidForm }}
 
     <v-row justify="space-around">
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
-      <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="false">Next</v-btn>
+      <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="isFormComplete()==false">Next</v-btn>
       <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
     </v-row>
 
   </v-container>
+</v-form>
 </template>
 <script>
 import alertMixin from '@/mixins/alertMixin';
@@ -1347,6 +1367,7 @@ export default {
   name: 'CcfriRequestMoreInfo',
   data() {
     return {
+      isValidForm : false,
       expenseObj: {
         description: '',
         date: undefined,
@@ -1420,7 +1441,7 @@ export default {
 
     //load the screen with at least one row in the form
     this.addObjToList(this.fundingObj, model.fundingList);
-    this.addObjToList(this.expenseObj, model.expenseList);
+    this.addObjToList(this.expenseObj, this.model.expenseList);
     this.addObjToList(this.wageObj, model.wageList);
     this.addObjToList(this.expansionObj, model.expansionList);
     this.addObjToList(this.indigenousExpenseObj, model.indigenousExpenseList);
@@ -1491,6 +1512,34 @@ export default {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
     ...mapMutations('app', ['refreshNavBar']),
+    
+    isFormComplete(){
+      let done = true;
+
+      if (this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1 && this.model.expenseList.length == 0){
+        console.log('I should make the form false');
+        done = false;
+      }
+      if (this.model.q3 === 1 && this.model.fundingList.length == 0){
+        console.log('I should make the form false');
+        done = false;
+      }
+      if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0){
+        console.log('I should make the form false');
+        done = false;
+      }
+      if (this.model.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0){
+        console.log('I should make the form false');
+        done = false;
+      }
+      if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0){
+        console.log('I should make the form false');
+        done = false;
+      }
+      this.currentFacility.isRfiComplete = this.isValidForm && done;
+      //this.currentFacility.isCCFRIComplete = this.isValidForm;
+      return this.isValidForm && done; //false makes button clickable, true disables button
+    },
     nextBtnClicked() {
       if (this.currentFacility.hasNmf || this.currentFacility.unlockNmf) {
         this.$router.push(PATHS.NMF + '/' + this.$route.params.urlGuid);

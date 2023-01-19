@@ -80,12 +80,9 @@ export default {
       if (isEqual({ ...state.rfiModel.expenseList }, { ...state.loadedModel.expenseList})) {
         rfiPayloadModel.expenseList = undefined;
       }
-
-      //this list does not exist in dynamics yet
-      // if (isEqual({ ...state.rfiModel.indigenousExpenseList }, { ...state.loadedModel.indigenousExpenseList})) {
-      //   rfiPayloadModel.indigenousExpenseList = undefined;
-      //   console.info('no wageList changes');
-      // }
+      if (isEqual({ ...state.rfiModel.indigenousExpenseList }, { ...state.loadedModel.indigenousExpenseList})) {
+        rfiPayloadModel.indigenousExpenseList = undefined;
+      }
 
       
       commit('setLoadedModel', deepCloneObject(state.rfiModel));

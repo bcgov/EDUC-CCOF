@@ -71,8 +71,7 @@ async function getRFIApplication(req, res) {
       rfiApplication.data['expenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> formatDate(new MappableObjectForFront(el,ExpenseInformationMappings).data, 'date'));
       rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> formatDate(new MappableObjectForFront(el,OtherFundingProgramMappings).data, 'date'));
       rfiApplication.data['indigenousExpenseList'] = response.value[0].ccof_rfipfi_ccof_rfipfi_IndegenousService?.map(el=> formatDate(new MappableObjectForFront(el,IndigenousExpenseMappings).data, 'date'));
-      //rfiApplication.data['indigenousExpenseList'] = []; //TODO: this data doesn't exist yet in dynamics, implement it when it does
-
+      
       return res.status(HttpStatus.OK).json(rfiApplication);
     } else {
       return res.status(HttpStatus.OK).json({});
@@ -159,7 +158,7 @@ async function updateRFIApplication(req, res) {
       const indigenousExpensePayload = req.body.indigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousExpenseMappings).data);
       log.verbose('INDIGPayload payload', minify(indigenousExpensePayload));
       indigenousExpensePayload?.forEach(async payload => {
-        //payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        payload['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansionindigenouscommunities', payload);
         await sleep(100);
       });    
@@ -188,8 +187,6 @@ async function createRFIApplication(req, res) {
     friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
     log.info('createRFIApplication payload:', friApplication);
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
-    //set a flag in ccof_applicationccfri that an RFI exists for this application
-    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_has_rfi: true, ccof_rfi_form_complete: req.body.isRfiComplete});
     return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
   } catch (e) {
     log.error('createRFIApplication error:', e);
