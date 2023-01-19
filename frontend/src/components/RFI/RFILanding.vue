@@ -2,7 +2,7 @@
   <v-container>
 
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ currentYearTitle }} Program Confirmation Form</span>
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
       </div>
       <br>
       <div class="row pt-4 justify-center">
@@ -190,8 +190,8 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="" @click="addObjToList(expenseObj, model.expenseList)" class="my-5" dark color='#003366'>Add
-                Expense
+              <v-btn id="" @click="addObjToList(expenseObj, model.expenseList)" class="my-5" dark color='#003366'>
+                Add Expense
               </v-btn>
             </div>
             <br>
@@ -1139,13 +1139,13 @@
               </v-col>
 
             </v-row>
-            <v-row v-for="(expense, index) in model.IndigenousExpenseList" :key="index">
+            <v-row v-for="(indigExpense, index) in model.indigenousExpenseList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
                   large
                   color="blue darken-4"
                   class="mt-md-4"
-                  @click="removeObjFromList(index, model.IndigenousExpenseList)"
+                  @click="removeObjFromList(index, model.indigenousExpenseList)"
                 > mdi-close
                 </v-icon>
               </v-col>
@@ -1153,7 +1153,7 @@
 
                 <v-text-field
                   class=""
-                  v-model="expense.description"
+                  v-model="indigExpense.description"
                   label="Description"
                   outlined
                   clearable
@@ -1165,13 +1165,13 @@
                 <v-menu v-model="calendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules" outlined v-model="expense.date" label="Date of Expense (YYYY-MM-DD)"
+                    <v-text-field :rules="rules" outlined v-model="indigExpense.date" label="Date of Expense (YYYY-MM-DD)"
                                   readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
                   <v-date-picker
                     clearable
-                    v-model="expense.date"
+                    v-model="indigExpense.date"
                     @input="calendarMenu[index] = false">
                   </v-date-picker>
                 </v-menu>
@@ -1182,13 +1182,13 @@
                   :items="items"
                   label="Expense Frequency"
                   outlined
-                  v-model="expense.frequency"
+                  v-model="indigExpense.frequency"
                   :rules="rules"
                 ></v-select>
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules" v-model.number="expense.expense" prefix="$"/>
+                <v-text-field type="number" outlined :rules="rules" v-model.number="indigExpense.expense" prefix="$"/>
               </v-col>
 
               <span class="white--text"> . </span>
@@ -1197,7 +1197,8 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="login-button" @click="addObjToList(expenseObj, model.expenseList)" class="my-5"
+              
+              <v-btn id="indigEx"  @click="addObjToList(indigenousExpenseObj, model.indigenousExpenseList)" class="my-5"
                      dark color='#003366'>Add Expense
               </v-btn>
             </div>
@@ -1317,25 +1318,24 @@
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
       <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="false">Next</v-btn>
-      <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">
-        Save
-      </v-btn>
+      <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
     </v-row>
 
   </v-container>
 </template>
-
 <script>
 import alertMixin from '@/mixins/alertMixin';
+import {PATHS} from '@/utils/constants';
 import {mapActions, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
+import {isEqual} from 'lodash';
 
 let model = {
   expansionList: [],
   wageList: [],
   fundingList: [],
   expenseList: [],
-  indigenousExpenseList: []
+  indigenousExpenseList: [] //this one does not exist in dynamics yet
 };
 
 
@@ -1350,7 +1350,7 @@ export default {
       expenseObj: {
         description: '',
         date: undefined,
-        expense: 0,
+        expense: null,
         frequency: ''
       },
       indigenousExpenseObj: {
@@ -1364,7 +1364,7 @@ export default {
         date: undefined,
         status: '',
         amount: 0,
-        expenses: ''
+        expenses: 0
       },
       wageObj: {
         staffRole: '',
@@ -1435,9 +1435,8 @@ export default {
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList', 'navBarList']),
-    currentYearTitle(){
-      return this.programYearList.current.name.substring(0, 7);
-    },
+    ...mapState('application', ['programYearLabel']),
+    
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
@@ -1490,12 +1489,34 @@ export default {
   },
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    ...mapMutations('app', ['forceNavBarRefresh']),
-    async nextBtnClicked() {
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    ...mapMutations('app', ['refreshNavBar']),
+    nextBtnClicked() {
+      if (this.currentFacility.hasNmf || this.currentFacility.unlockNmf) {
+        this.$router.push(PATHS.NMF + '/' + this.$route.params.urlGuid);
+      } else {
+        if (!this.nextFacility){
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
+        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
+          console.log('going to next fac EXISTING FEES page');
+          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
+          //check here if renew - then send them to appropriate screen currentFees
+        }
+        else if (this.nextFacility.ccfriOptInStatus == 1 ){
+          //console.log('going to next fac NEW fees page');
+          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
+          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
+        }
+        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
+          //RFI logic ?
+          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
+          // if (this.rfiList?.length > 0) {
+          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
+          // } else {
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
+      }
     },
     async previous() {
       let path = await this.getPreviousPath();
@@ -1503,6 +1524,37 @@ export default {
     },
     async save(showNotification) {
       this.processing = true;
+
+      //checks if blank by comparing a default row for the list
+      //don't save blank rows 
+      for(let i = this.model.expenseList.length -1; i >=0; i--){
+        if (isEqual(this.model.expenseList[i], this.expenseObj)){
+          this.model.expenseList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.expansionList.length -1; i >=0; i--){
+        if (isEqual(this.model.expansionList[i], this.expansionObj)){
+          this.model.expansionList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.fundingList.length -1; i >=0; i--){
+        if (isEqual(this.model.fundingList[i], this.fundingObj)){
+          this.model.fundingList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.wageList.length -1; i >=0; i--){
+        if (isEqual(this.model.wageList[i], this.wageObj)){
+          console.log('blank found');
+          this.model.wageList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.indigenousExpenseList.length -1; i >=0; i--){
+        if (isEqual(this.model.indigenousExpenseList[i], this.indigenousExpenseObj)){
+          this.model.indigenousExpenseList.splice(i, 1);
+        }
+      }
+      
+
       this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
       try {

@@ -89,8 +89,7 @@
             Back</v-btn>
             <!--add form logic here to disable/enable button-->
           <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-          <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">
-            Save</v-btn>
+          <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
         </v-row>
 
     </v-container>
