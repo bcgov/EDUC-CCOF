@@ -84,23 +84,40 @@
               </v-col>
             </v-row>
             <div v-if="!isLoading">
-            <v-row justify="center" >
-              <v-col style="padding-bottom:0px;margin-bottom:0px;">
-                Select the applicable funding model:
-              </v-col>
-            </v-row>
-            <v-radio-group
-                v-model="model.fundingModel"
-                row
-                :disabled="isReadOnly">
-            <v-row justify="center">
-              <v-col class="pt-2">
-                <v-radio
-                  :label="fundingModelTypeList[0].description"
-                  :value="fundingModelTypeList[0].id"
-                  ></v-radio>
-              </v-col>
-            </v-row>
+              <v-row justify="center" >
+                <v-col style="padding-bottom:0px;margin-bottom:0px;">
+                  Select the applicable funding model:
+                </v-col>
+              </v-row>
+              <v-radio-group
+                  v-model="model.fundingModel"
+                  row
+                  :disabled="isReadOnly">
+                <v-row justify="center">
+                  <v-col class="pt-2">
+                    <v-radio
+                      :label="fundingModelTypeList[0].description"
+                      :value="fundingModelTypeList[0].id"></v-radio>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="pt-7">
+                    <v-radio
+                      :label="fundingModelTypeList[1].description"
+                      :value="fundingModelTypeList[1].id"
+                    ></v-radio>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="pt-7">
+                    <v-radio
+                      :label="fundingModelTypeList[2].description"
+                      :value="fundingModelTypeList[2].id"
+                    ></v-radio>
+                  </v-col>
+                </v-row>
+              </v-radio-group>
+            </div>
             <v-card v-if="model.fundingModel == fundingModelTypeList[0].id" width="100%">
               <v-row>
                 <v-col class="py-0">
@@ -120,42 +137,28 @@
                 Government’s Low-Wage Redress Funding supports ECE wage adjustments
               </v-row>
             </v-card>
-            <v-row>
-              <v-col class="pt-7">
-                <v-radio
-                  :label="fundingModelTypeList[1].description"
-                  :value="fundingModelTypeList[1].id"
-                ></v-radio>
-              </v-col>
-            </v-row>
-            <v-card v-if="model.fundingModel == fundingModelTypeList[1].id" width="100%">
-              <v-row>
-                <v-col class="py-0">
-                  <v-card-title class="py-0 noticeWarning">
-                    <span style="float:left">
-                  <v-icon
-                    x-large
-                    class="py-1 px-3 noticeWarningIcon">
-                    mdi-alert
-                  </v-icon>
-                  </span>
-                    ECEs in provincially funded programs are not eligible
-                  </v-card-title>
-                </v-col>
-              </v-row>
-              <v-row justify="center" class="pa-2">
-                Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
-              </v-row>
-            </v-card>
-            <v-row>
-              <v-col class="pt-7">
-                <v-radio
-                  :label="fundingModelTypeList[2].description"
-                  :value="fundingModelTypeList[2].id"
-                ></v-radio>
-              </v-col>
-            </v-row>
-            <v-card v-if="model.fundingModel === fundingModelTypeList[2].id" width="100%">
+            <div v-else-if="model.fundingModel == fundingModelTypeList[1].id">
+              <v-card width="100%" class="mb-4">
+                <v-row>
+                  <v-col class="py-0">
+                    <v-card-title class="py-0 noticeWarning">
+                      <span style="float:left">
+                    <v-icon
+                      x-large
+                      class="py-1 px-3 noticeWarningIcon">
+                      mdi-alert
+                    </v-icon>
+                    </span>
+                      ECEs in provincially funded programs are not eligible
+                    </v-card-title>
+                  </v-col>
+                </v-row>
+                <v-row justify="center" class="pa-2">
+                  Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
+                </v-row>
+              </v-card>
+            </div>            
+            <v-card v-if="model.fundingModel === fundingModelTypeList[1].id || model.fundingModel === fundingModelTypeList[2].id" width="100%">
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeInfo">
@@ -183,14 +186,12 @@
                 </v-col>
               </v-row>
             </v-card>
-            </v-radio-group>
-            </div>
           </v-container>
         </v-card>
       </v-row>
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Save and continue</v-btn>
+        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
         <v-btn :disabled="!enableButtons || isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
     </v-container>
@@ -222,8 +223,9 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     enableButtons() {
-      return (this.model.belongsToUnion === 1 && this.model.fundingModel === this.fundingModelTypeList[2].id && this.model.confirmation === 1)
-            ||(this.model.belongsToUnion === 1 && this.model.fundingModel != this.fundingModelTypeList[2].id)
+      return (this.model.belongsToUnion === 1 && this.model.fundingModel === this.fundingModelTypeList[1].id && this.model.confirmation === 1)
+            ||(this.model.belongsToUnion === 1 && this.model.fundingModel === this.fundingModelTypeList[2].id && this.model.confirmation === 1)
+            ||(this.model.belongsToUnion === 1 && (this.model.fundingModel === this.fundingModelTypeList[0].id || this.model.fundingModel === null))
             ||this.model.belongsToUnion === 0
             || this.model.optInECEWE === 0;
     },
@@ -278,10 +280,22 @@ export default {
       }
       return true;
     },
+    /* Questions values have a hierarchy, recalculate values incase values have changed. */
     updateQuestions() {
-      this.model.belongsToUnion = (this.model.optInECEWE==0)?null:this.model.belongsToUnion;
-      this.model.fundingModel = (this.model.belongsToUnion==0 || this.model.belongsToUnion == null)?null:this.model.fundingModel;
-      this.model.confirmation = (this.model.fundingModel == this.fundingModelTypeList[2].id)?1:null;
+      if (this.model.optInECEWE === 0) {
+        this.model.belongsToUnion = null;
+        this.model.fundingModel = null;
+        this.model.confirmation = null;
+      } else {
+        if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
+          this.model.fundingModel = null;
+          this.model.confirmation = null;
+        } else {
+          if (this.model.fundingModel === this.fundingModelTypeList[0].id) {
+            this.model.confirmation = null;
+          }
+        }
+      }
     },
     async loadData() {
       if (this.isStarted) {
@@ -301,7 +315,7 @@ export default {
     },
     optOutFacilities() {
       this.facilities = this.facilities.map(facility => {
-        if (facility.eceweApplicationId != null && facility.optInOrOut != null) {
+        if (facility.optInOrOut != 0) {
           facility.optInOrOut = 0;
         }
         return facility;
