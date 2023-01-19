@@ -91,7 +91,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="back()">Back</v-btn>
         <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="!isValidForm">Next</v-btn>
-        <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
+        <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="save(true)">Save and continue</v-btn>
       </v-row>
     </v-container>
   </v-form>
