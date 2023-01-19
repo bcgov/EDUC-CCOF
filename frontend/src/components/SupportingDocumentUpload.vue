@@ -101,7 +101,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import {deepCloneObject} from '@/utils/common';
+import { deepCloneObject, getFileExtension } from '@/utils/common';
 
 export default {
   mixins: [alertMixin],
@@ -136,7 +136,7 @@ export default {
       v => !!v || 'This is required',
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
       value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      value => !value || this.fileAccept.includes(this.getFileExtension(value.name)) || `Accepted file types are ${this.fileFormats}.`,
+      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)) || `Accepted file types are ${this.fileFormats}.`,
     ];
     await this.mapFacilityData();
     await this.createTable();
@@ -182,7 +182,8 @@ export default {
           class: 'table-header'
         }
       ],
-      fileAccept: ['pdf','png','jpg','jpeg','heic','doc','docx','xls','xlsx'],
+      fileAccept: ['image/png','image/jpeg','image/jpg','.pdf','.png','.jpg','.jpeg','.heic','.doc','.docx','.xls','.xlsx'],
+      fileExtensionAccept: ['pdf','png','jpg','jpeg','heic','doc','docx','xls','xlsx'],
       fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
       fileInputError: [],
       fileMap: new Map(),
@@ -337,12 +338,6 @@ export default {
         this.facilityNames.push(facility);
       }
     },
-
-    getFileExtension(fileName) {
-      if (fileName) 
-        return fileName.slice(fileName.lastIndexOf('.') + 1);
-      return '';
-    }
   }
 };
 </script>
