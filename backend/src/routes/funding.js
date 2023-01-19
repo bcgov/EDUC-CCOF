@@ -22,7 +22,7 @@ router.put('/:fundId', passport.authenticate('jwt', { session: false }), isValid
   return updateFunding(req, res);
 });
 
-router.get('/:fundId', [param('fundId', 'URL param: [fundId] is required').not().isEmpty()], (req, res) => {
+router.get('/:fundId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('fundId', 'URL param: [fundId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
   return getFunding(req, res);
 });
