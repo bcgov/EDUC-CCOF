@@ -190,7 +190,7 @@
       </v-row>
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Save and continue</v-btn>
+        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
         <v-btn :disabled="!enableButtons || isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
     </v-container>

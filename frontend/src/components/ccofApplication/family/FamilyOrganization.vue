@@ -77,7 +77,7 @@
             <v-row>
               <v-col cols="12" md="6">
                 <v-radio-group :disabled="isLocked" v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
-                  <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
+                  <v-radio v-for="item in this.filteredOrganizationList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6">
@@ -108,7 +108,13 @@ export default {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY
     };
+  },
+  computed: {
+    filteredOrganizationList() {
+      return this.organizationTypeList.filter((fac) => (fac.id == 100000002 || fac.id == 100000005));
+    }
   }
+
 };
 
 </script>

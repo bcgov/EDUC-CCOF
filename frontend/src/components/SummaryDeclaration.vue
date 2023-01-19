@@ -167,6 +167,7 @@ export default {
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration']),
+    ...mapActions('navBar', ['getPreviousPath']),
     isPageComplete(){
       if (this.model.agreeConsentCertify && this.model.orgContactName) {
         this.isValidForm = true;
@@ -241,8 +242,9 @@ export default {
       }
       return ccrfiRelockPayload;
     },
-    previous() {
-      return this.$router.push(PATHS.supportingDocumentUpload);
+    async previous() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
     },
   },
   async mounted() {

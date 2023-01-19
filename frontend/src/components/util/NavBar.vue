@@ -21,7 +21,7 @@
               <v-list-item-icon class="my-3 ml-0 mr-2" v-if="item.icon">
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
-              <router-link :to="item.link"  :target="_self" class="router">
+              <router-link :is="item.isAccessible ? 'router-link' : 'span'" :to="item.link" :target="_self" class="router">
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="item.isActive" class="menuItem text-wrap"><strong>{{item.title}}</strong></v-list-item-title>
                 <v-list-item-title v-else class="menuItem text-wrap">{{item.title}}</v-list-item-title>
@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus', 'isEceweComplete']),
+    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -170,13 +170,9 @@ export default {
       }
     },
     areChildrenComplete(list) {
-      let isComplete = true;
-      list.forEach(item => { 
-        if (item.icon === 'mdi-checkbox-blank-circle-outline') {
-          isComplete = false;
-        }
+      return list.every(item => {
+        return item.icon === 'mdi-check-circle' || item.icon === 'mdi-information' || item.icon === 'mdi-home';
       });
-      return isComplete;
     },
     // setNavigationPath() {
     //   let prev = undefined;
@@ -256,12 +252,13 @@ export default {
         navBarId: navBarId++
 
       });
+      let declarationAccessible = (this.unlockDeclaration || this.areChildrenComplete(this.items));
       this.items.push(
         {
           title: 'Declaration',
           link: { name: 'Summary and Declaration' },
-          isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          isAccessible: declarationAccessible, //set this to true to unlock the declaration
+          icon: this.getCheckbox(this.applicationStatus==='SUBMITTED'),
           isActive: 'Summary and Declaration' === this.$route.name,
           expanded: false,
           position: positionIndex++,
@@ -522,7 +519,7 @@ export default {
           title: 'Add Facility',
           link: { name: 'Application Confirmation'},
           isAccessible: this.ccofConfirmationEnabled,
-          icon: this.getCheckbox(this.isLicenseUploadComplete != null),
+          icon: 'mdi-information',
           isActive: 'Application Confirmation' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++

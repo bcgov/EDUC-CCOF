@@ -40,7 +40,7 @@ export default {
           payload = {...payload, ...reLockPayload};
         }
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.application.applicationId, payload);
-        commit('organization/setApplicationStatus', 'SUBMITTED', { root: true });
+        commit('application/setApplicationStatus', 'SUBMITTED', { root: true });
         commit('auth/setIsUserInfoLoaded', false, { root: true });
         return response;
       } catch (error) {

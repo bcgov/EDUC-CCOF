@@ -29,19 +29,28 @@ function getPreviousCareType(currentRFI, careType, previousProgramYearId, getter
 function isOver3Percent(currentFees, previousFees, percentValue) {
   let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 21;
   let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 21;
-  if ((currentFees.approvedFeeJan * currentFeeFrequency) - (previousFees.approvedFeeJan * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeFeb * currentFeeFrequency) - (previousFees.approvedFeeFeb * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeMar * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeApr * currentFeeFrequency) - (previousFees.approvedFeeApr * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeMay * currentFeeFrequency) - (previousFees.approvedFeeMay * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeJun * currentFeeFrequency) - (previousFees.approvedFeeJun * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeJul * currentFeeFrequency) - (previousFees.approvedFeeJul * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeAug * currentFeeFrequency) - (previousFees.approvedFeeAug * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeSep * currentFeeFrequency) - (previousFees.approvedFeeSep * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeOct * currentFeeFrequency) - (previousFees.approvedFeeOct * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeNov * currentFeeFrequency) - (previousFees.approvedFeeNov * previousFeeFrequency) > percentValue) return true;
-  if ((currentFees.approvedFeeDec * currentFeeFrequency) - (previousFees.approvedFeeDec * previousFeeFrequency) > percentValue) return true;
-  
+  if (previousFees.approvedFeeFeb == previousFees.approvedFeeMar) {
+    if ((currentFees.approvedFeeJan * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue ||
+        (currentFees.approvedFeeFeb * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue ||
+        (currentFees.approvedFeeMar * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue) {
+      console.log('Found RFI median condition for: previousFees.approvedFeeFeb == previousFees.approvedFeeMar');
+      return true;
+    }
+  } else if ((previousFees.approvedFeeFeb > previousFees.approvedFeeMar) && (previousFees.approvedFeeFeb == previousFees.approvedFeeJan)) {
+    if ((currentFees.approvedFeeJan * currentFeeFrequency) - (previousFees.approvedFeeFeb * previousFeeFrequency) > percentValue ||
+        (currentFees.approvedFeeFeb * currentFeeFrequency) - (previousFees.approvedFeeFeb * previousFeeFrequency) > percentValue ||
+        (currentFees.approvedFeeMar * currentFeeFrequency) - (previousFees.approvedFeeFeb * previousFeeFrequency) > percentValue) {
+      console.log('Found RFI median condition for: previousFees.approvedFeeFeb > previousFees.approvedFeeMar');
+      return true;
+    }
+  } else if (previousFees.approvedFeeFeb < previousFees.approvedFeeMar) {
+    if ((currentFees.approvedFeeJan * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue ||
+        (currentFees.approvedFeeFeb * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue ||
+        (currentFees.approvedFeeMar * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue) {
+      console.log('Found RFI median condition for: previousFees.approvedFeeFeb < previousFees.approvedFeeMar');          
+      return true;
+    }
+  }
   return false;
 }
 
@@ -136,22 +145,27 @@ export default {
       const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
-
-      
       console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       const threePercentMedian = getters.getCCFRIMedianById(state.ccfriId);
       state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
         .forEach(careType => {
+          console.log(`Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`);
           let previousCareType = getPreviousCareType(state.CCFRIFacilityModel, careType, previousProgramYearId, getters);
-          console.log('previousCare Type: ', previousCareType);
           if (previousCareType) {
+            console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
             // let difference = compareChildCareFees(careType, previousCareType);
             let allowedDifference = threePercentMedian[careType.childCareCategory];
             // console.log('difference', difference);
-            console.log('allowedDifference', allowedDifference);
-            if (isOver3Percent(careType, previousCareType, allowedDifference)) {
-              over3percentFacilities.push(careType.childCareCategory);
+            if (allowedDifference) {
+              console.log(`Testing RFI median difference using [${allowedDifference}] for [${careType.childCareCategory}]`);
+              if (isOver3Percent(careType, previousCareType, allowedDifference)) {
+                over3percentFacilities.push(careType.childCareCategory);
+              }
+            } else {
+              console.log(`Skipping RFI median testing for [${careType.childCareCategory}], no RFI Meidan found.`);
             }
+          } else {
+            console.log('No previous careType found, skipping ');
           }
         });
       console.log('over array', over3percentFacilities);

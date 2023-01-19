@@ -1176,7 +1176,7 @@
               </v-col>
 
               <v-col class="col-md-3 col-12">
-                <v-menu v-model="calendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
+                <v-menu v-model="indigenousCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field :rules="rules" outlined v-model="indigExpense.date" label="Date of Expense (YYYY-MM-DD)"
@@ -1186,7 +1186,7 @@
                   <v-date-picker
                     clearable
                     v-model="indigExpense.date"
-                    @input="calendarMenu[index] = false">
+                    @input="indigenousCalendarMenu[index] = false">
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -1422,6 +1422,7 @@ export default {
       input: '',
       calendarMenu: [],
       expansionCalendarMenu: [],
+      indigenousCalendarMenu: [],
       fundingCalendar: [],
       wageCalendar: [],
       // expense,

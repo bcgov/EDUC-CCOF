@@ -58,7 +58,7 @@
           </v-row>
           <v-row v-else-if="isCCOFApproved()" no-gutters>
             <v-col :cols="12">
-              <span class="text-h5">Status: Approved</span>
+              <span class="text-h5 blueText">Status: Approved</span>
             </v-col>
             <v-col :cols="12">
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="!isRenewEnabled">View Application</v-btn>
@@ -66,7 +66,7 @@
           </v-row>
           <v-row v-else no-gutters>
             <v-col :cols="12">
-              <span class="text-h5">Status: Submitted</span>
+              <span class="text-h5 blueText">Status: Submitted</span>
             </v-col>
             <v-col :cols="12">
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')">View Application</v-btn>
@@ -82,7 +82,7 @@
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
           <v-row v-else-if="ccofRenewStatus === RENEW_STATUS_APPROVED" no-gutters>
             <v-col :cols="12">
-              <span class="text-h5">Status: Approved</span>
+              <span class="text-h5 blueText">Status: Approved</span>
             </v-col>
             <v-col :cols="12">
               <v-btn dark class="blueButton mt-4" @click="viewApplication('RENEW')">View Application</v-btn>
@@ -90,7 +90,7 @@
           </v-row>
           <v-row v-else no-gutters>
             <v-col :cols="12">
-              <span class="text-h5">Status: Submitted</span>
+              <span class="text-h5 blueText">Status: Submitted</span>
             </v-col>
             <v-col :cols="12">
               <v-btn dark class="blueButton mt-4" @click="viewApplication('RENEW')">View Application</v-btn>
@@ -112,7 +112,17 @@
       </SmallCard>
     </v-row>
 
-    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
+    <v-card class="elevation-4 rounded-lg pa-1 mt-8 greyBorder" disabled v-if="navBarList?.length === 0">
+      <v-card-text>
+        <p class="text-h5 text--primary">
+          G-XXXXX-YYYYY Facility Name ABCDE-123456
+        </p>
+        <p>
+          Details of your facility will appear here once we have received your application.
+        </p>
+      </v-card-text>
+    </v-card>
+    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-else-if="navBarList?.length > 0">
       <v-row v-if="navBarList?.length > 2" no-gutters>
         <v-col class="col-12 col-md-6 px-4 mt-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
@@ -130,15 +140,17 @@
       </v-row>
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
-          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus}) in filteredList" :key="facilityId">
+          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredList" :key="facilityId">
           <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
-              <!-- <p class="text-h5 text--primary">
-                Facility {{index +1}}
-              </p> -->
-              <p class="text-h5 text--primary">
-                Facility Name:  {{facilityName}}
+              <p>
+                <span class="text-h5 text--primary" v-if="facilityAccountNumber">Facility ID: {{facilityAccountNumber}}, </span>
+                <span class="text-h5 text--primary" v-if="facilityName">Facility Name: {{facilityName}}, </span>
+                <span class="text-h5 text--primary" v-if="licenseNumber">Licence Number: {{licenseNumber}}</span>
               </p>
+              <!-- <p class="text-h5 text--primary">
+                Facility Name:  {{facilityName}}
+              </p> -->
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
                 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
@@ -146,13 +158,13 @@
                 Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
               </p>
               <br>
-              <p class="text--primary">
+              <p class="blueText">
                 Child Care Fee Reduction Initiative (CCFRI) Status:
                 <strong v-if="ccfriOptInStatus === 0"> OPTED OUT </strong> 
                 <strong v-else> {{ccfriStatus}} </strong> 
               </p>
               <br>
-              <p class="text--primary">
+              <p class="blueText">
                 Early Childhood Educator Wage Enhancement (ECE-WE) Status: 
                 <strong v-if="eceweOptInStatus === 0"> OPTED OUT </strong> 
                 <strong v-else> {{eceweStatus}} </strong>
@@ -499,7 +511,14 @@ export default {
 .blueBorder{
   border-top: 5px solid #003366 !important;
 }
+.greyBorder {
+  min-height: 230px;
+  border-top: 5px solid #909090 !important;
+}
 .blueButton {
   background-color: #003366 !important;
+}
+.blueText {
+  color: rgb(0, 52, 102) !important;
 }
 </style>

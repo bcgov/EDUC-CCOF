@@ -12,7 +12,7 @@
 
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image, image"></v-skeleton-loader>
       <br>
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image"> <br><br></v-skeleton-loader>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image" class="pb-6"> <br><br></v-skeleton-loader>
 
       <v-card v-else elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"

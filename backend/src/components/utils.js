@@ -7,11 +7,9 @@ const HttpStatus = require('http-status-codes');
 const lodash = require('lodash');
 const {ApiError} = require('./error');
 const jsonwebtoken = require('jsonwebtoken');
-const {v4: uuidv4} = require('uuid');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 let discovery = null;
-const cache = require('memory-cache');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -45,9 +43,6 @@ function getLabelFromValue(value, constants, defaultValue) {
   }
   return value;
 }
-
-//const {getUserInfo} = require('./user.js');
-let memCache = new cache.Cache();
 
 
 axios.interceptors.request.use((axiosRequestConfig) => {
@@ -121,54 +116,6 @@ function logResponse(methodName, response) {
     log.verbose(`Status for ${methodName} :: is :: `, response.status);
     log.verbose(`StatusText for ${methodName}  :: is :: `, response.statusText);
     log.verbose(`Response for ${methodName}  :: is :: `, minify(response.data));
-  }
-}
-
-
-async function forwardGetReq(req, res, url) {
-  try {
-    const accessToken = getAccessToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    const params = {
-      params: req.query
-    };
-
-    log.info('forwardGetReq Url', url);
-    const data = await getDataWithParams(accessToken, url, params, req.session?.correlationID);
-    return res.status(HttpStatus.OK).json(data);
-  } catch (e) {
-    log.error('forwardGetReq Error', e.stack);
-    return res.status(e.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Forward Get error'
-    });
-  }
-}
-
-async function getData(token, url, correlationID) {
-  try {
-    const getDataConfig = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        correlationID: correlationID || uuidv4()
-      }
-    };
-
-    log.info('get Data Url', url);
-    const response = await axios.get(url, getDataConfig);
-    log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('getData Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Get error'}, e);
   }
 }
 
@@ -310,114 +257,6 @@ function getHttpHeader() {
   return headers;
 }
 
-async function getDataWithParams(token, url, params, correlationID) {
-  try {
-    params.headers = {
-      Authorization: `Bearer ${token}`,
-      correlationID: correlationID || uuidv4()
-    };
-
-    //log.info('get Data Url', url);
-    const response = await axios.get(url, params);
-    log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('getDataWithParams Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Get error'}, e);
-  }
-}
-
-async function forwardPostReq(req, res, url) {
-  try {
-    const accessToken = getAccessToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No session data'
-      });
-    }
-
-    const data = await postData(accessToken, req.body, url, req.session?.correlationID);
-    return res.status(HttpStatus.OK).json(data);
-  } catch (e) {
-    log.error('forwardPostReq Error', e.stack);
-    return res.status(e.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Forward Post error'
-    });
-  }
-}
-
-async function postData(token, data, url, correlationID) {
-  try {
-    const postDataConfig = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        correlationID: correlationID || uuidv4()
-      },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
-    };
-
-    log.info('post Data Url', url);
-    log.verbose('post Data Req', minify(data));
-    data.createUser = 'EDX';
-    data.updateUser = 'EDX';
-    const response = await axios.post(url, data, postDataConfig);
-
-    log.info(`post Data Status for url ${url} :: is :: `, response.status);
-    log.info(`post Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`post Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('postData Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    let responseData;
-    if (e?.response?.data) {
-      responseData = e.response.data;
-    } else {
-      responseData = {message: `API POST error, on ${url}`};
-    }
-    throw new ApiError(status, responseData, e);
-
-  }
-}
-
-async function putData(token, data, url, correlationID) {
-  try {
-    const putDataConfig = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        correlationID: correlationID || uuidv4()
-      }
-    };
-
-    log.info('put Data Url', url);
-    log.verbose('put Data Req', data);
-    data.updateUser = 'EDX';
-    const response = await axios.put(url, data, putDataConfig);
-
-    log.info(`put Data Status for url ${url} :: is :: `, response.status);
-    log.info(`put Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`put Data Response for url ${url}  :: is :: `, minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('putData Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Put error'}, e);
-  }
-}
-
-const SecureExchangeStatuses = Object.freeze({
-  NEW: 'NEW',
-  INPROG: 'INPROG',
-  CLOSED: 'CLOSED'
-});
-
 function generateJWTToken(jwtid, subject, issuer, algorithm, payload) {
 
   const tokenTTL = config.get('email:tokenTTL'); // this should be in minutes
@@ -444,62 +283,6 @@ function errorResponse(res, msg, code) {
     code: code || HttpStatus.INTERNAL_SERVER_ERROR
   });
 }
-function getCodeTable(token, key, url, useCache = true) {
-  try {
-    let cacheContent = useCache && memCache.get(key);
-    if (cacheContent) {
-      return cacheContent;
-    } else {
-      const getDataConfig = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      };
-      log.info('get Data Url', url);
-
-      return axios.get(url, getDataConfig)
-        .then(response => {
-          useCache && memCache.put(key, response.data);
-          return response.data;
-        })
-        .catch(e => {
-          log.error(e, 'getCodeTable', 'Error during get on ' + url);
-          const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-          throw new ApiError(status, {message: 'API get error'}, e);
-        });
-    }
-  } catch (e) {
-    throw new Error(`getCodeTable error, ${e}`);
-  }
-}
-function getCodes(urlKey, cacheKey, extraPath, useCache = true) {
-  return async function getCodesHandler(req, res) {
-    try {
-      const token = getBackendToken(req);
-      if (!token) {
-        return unauthorizedError(res);
-      }
-      const url = config.get(urlKey);
-      const codes = await getCodeTable(token, cacheKey, extraPath ? `${url}${extraPath}` : url, useCache);
-
-      return res.status(HttpStatus.OK).json(codes);
-
-    } catch (e) {
-      log.error(e, 'getCodes', `Error occurred while attempting to GET ${cacheKey}.`);
-      return errorResponse(res);
-    }
-  };
-}
-
-function getBackendToken(req) {
-  const thisSession = req.session;
-  return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
-}
-function unauthorizedError(res) {
-  return res.status(HttpStatus.UNAUTHORIZED).json({
-    message: 'No access token'
-  });
-}
 
 const utils = {
   getOidcDiscovery,
@@ -509,22 +292,13 @@ const utils = {
   getUserGuid,
   isIdirUser,
   getUserName,
-  forwardGetReq,
-  getDataWithParams,
   getOperationWithObjectId,
   getOperation,
   postOperation,
   patchOperationWithObjectId,
-  getData,
-  forwardPostReq,
-  postData,
-  putData,
-  SecureExchangeStatuses,
   generateJWTToken,
   formatCommentTimestamp,
   errorResponse,
-  getCodes,
-  getCodeTable,
   minify,
   getHttpHeader,
   getConstKey,
