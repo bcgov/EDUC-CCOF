@@ -13,8 +13,6 @@ export default {
     eceweModel: null,
     loadedModel: null,
     fundingModelTypes: null,
-    eceweEligibilityComplete: false,
-    eceweFacilitiesComplete: false,
   },
   mutations: {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
@@ -24,8 +22,6 @@ export default {
     setFacilities: (state, facilities) => { state.facilities = facilities; },
     setLoadedFacilities: (state, loadedFacilities) => { state.loadedFacilities = loadedFacilities; },
     setFundingModelTypes: (state, fundingModelTypes) => { state.fundingModelTypes = fundingModelTypes; },
-    setEceweEligibilityComplete: (state, model) => { state.eceweEligibilityComplete = model; },
-    setEceweFacilitiesComplete: (state, model) => { state.eceweFacilitiesComplete = model; },    
   },
   actions: {
     async loadECEWE({state, commit}) {
@@ -35,24 +31,23 @@ export default {
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
         commit('setFacilities', payload.facilities);
-        commit('setEceweEligibilityComplete', payload.optInECEWE !== null);
-        commit('setEceweFacilitiesComplete', payload.facilities ? payload.facilities.every(facility => facility.optInOrOut != null) : false);
       } catch (error) {
         console.info(`Failed to get ECEWE Application - ${error}`);
         throw error;
       }
     },
-    async saveECEWE({ state, commit }) {
-      checkSession();
+    async saveECEWE({ state, commit }, isFormComplete) {
       try {
         if (isEqual(state.eceweModel, state.loadedModel)) {
           return;
         }
+        checkSession();
+        console.log('save ecewe: is form complete', isFormComplete);
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
+        payload.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
-        commit('setEceweEligibilityComplete', payload.optInECEWE != null);
         return response;
       } catch (error) {
         console.info(`Failed to update existing ECEWE application - ${error}`);
@@ -70,7 +65,6 @@ export default {
         commit('setLoadedFacilities', {...state.facilities});
         let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
         commit('setFacilities', response.data.facilities);
-        commit('setEceweFacilitiesComplete', response.data.facilities ? response.data.facilities.every(facility => facility.optInOrOut != null) : false);
         return response;
       } catch (error) {
         console.info(`Failed to update existing ECEWE facility application - ${error}`);

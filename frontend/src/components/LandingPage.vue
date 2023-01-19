@@ -53,7 +53,7 @@
           </v-row>    
           <v-row v-else-if="ccofStatus === CCOF_STATUS_ACTION_REQUIRED" no-gutters>
             <v-col :cols="12">
-              <v-btn dark class="blueButton" @click="actionRequiredOrganizationRoute()">Action Required</v-btn>
+              <v-btn dark class="blueButton" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
             </v-col>                     
           </v-row>
           <v-row v-else-if="isCCOFApproved()" no-gutters>
@@ -79,7 +79,7 @@
         <template #button>
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my funding</v-btn>
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
-          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Action Required</v-btn>
+          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
           <v-row v-else-if="ccofRenewStatus === RENEW_STATUS_APPROVED" no-gutters>
             <v-col :cols="12">
               <span class="text-h5">Status: Approved</span>
@@ -159,7 +159,7 @@
               </p>
             </v-card-text>
             <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(ccfriApplicationId) || isNMFUnlock(ccfriApplicationId) || isRFIUnlock(ccfriApplicationId)">
-              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(ccfriApplicationId)">Update This Facility</v-btn>
+              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(ccfriApplicationId)">Update your PCF</v-btn>
             </v-row>
           </v-card>
         </v-col>
@@ -220,9 +220,9 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel']),
     ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('organization', ['organizationProviderType', 'organizationId', 'applicationStatus']),
+    ...mapState('organization', ['organizationProviderType', 'organizationId']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;

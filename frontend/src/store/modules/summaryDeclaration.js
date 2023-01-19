@@ -22,7 +22,7 @@ export default {
     async loadDeclaration({ commit, rootState }) {
       checkSession();
       try {
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.organization.applicationId)).data;
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.application.applicationId)).data;
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
@@ -39,7 +39,7 @@ export default {
         if ((Object.keys(reLockPayload).length > 0)) {
           payload = {...payload, ...reLockPayload};
         }
-        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.organization.applicationId, payload);
+        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + rootState.application.applicationId, payload);
         commit('organization/setApplicationStatus', 'SUBMITTED', { root: true });
         commit('auth/setIsUserInfoLoaded', false, { root: true });
         return response;

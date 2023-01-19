@@ -2,6 +2,8 @@ import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
+import {isEmpty} from 'lodash';
+
 
 export default {
   mixins: [alertMixin],
@@ -10,6 +12,7 @@ export default {
     ...mapState('app', ['navBarList']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus']),
+    ...mapState('organization', ['organizationModel', 'organizationId']),
     isLocked() {
       return (this.applicationStatus === 'SUBMITTED');
     }
@@ -53,6 +56,7 @@ export default {
 
   methods: {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
+    ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
     ...mapMutations('app', ['setNavBarFacilityComplete']),
     isGroup() { 
@@ -83,7 +87,12 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
-      console.log('calling save facility');
+      if (!this.isGroup()) {// For Family, we will need to set the postal code from organization.
+        if (isEmpty(this.organizationModel)) {
+          await this.loadOrganization(this.organizationId);
+        }
+        this.model.postalCode1 = this.organizationModel.postalCode1;
+      }
       this.setFacilityModel({ ...this.model });
       this.processing = true;
       try {

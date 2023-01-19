@@ -87,8 +87,9 @@
 import { mapState, mapGetters, mapMutations } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
 
-var positionIndex = 0;
-var navBarId = 0;
+let positionIndex = 0;
+let navBarId = 0;
+let isCCOFGroupComplete = false;
 
 
 export default {
@@ -107,8 +108,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete', 'eceweEligibilityComplete', 'eceweFacilitiesComplete']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
+    ...mapState('application', ['applicationStatus', 'isEceweComplete']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -128,8 +129,7 @@ export default {
     },
     ccofConfirmationEnabled() {
       return (this.isLicenseUploadComplete != null);
-    }
-
+    },
   },
   watch:{
     navRefresh: {
@@ -212,6 +212,8 @@ export default {
     buildNavBar(){
       positionIndex = 0;
       navBarId = 0;
+      isCCOFGroupComplete = false;
+      
       this.items = [];
       this.items.push(
         {
@@ -247,7 +249,7 @@ export default {
         title: 'Supporting Document',
         link:{ name: 'Supporting Document Upload' },
         isAccessible:true,
-        icon:'mdi-checkbox-blank-circle-outline',
+        icon:'mdi-information',
         isActive: 'Supporting Document Upload' === this.$route.name,
         expanded:false,
         position: positionIndex++,
@@ -267,9 +269,6 @@ export default {
         });
       this.setNavBarItems(this.items);
     },
-    canBeAccessed(permission){
-      return this.userInfo?.activeInstitutePermissions?.filter(perm => perm === permission).length > 0;
-    },
     getCheckbox(isCompleted) {
       if (isCompleted) {
         return 'mdi-check-circle';
@@ -285,7 +284,7 @@ export default {
         {
           title: 'Opt in / Opt out',
           link: { name: 'ccfri-home'},
-          isAccessible: true,
+          isAccessible: this.isRenewal ? true : isCCOFGroupComplete,
           icon: this.getCheckbox(this.isCCFRIOptInComplete()),
           isActive: 'ccfri-home' === this.$route.name,
           position: positionIndex++,
@@ -344,7 +343,6 @@ export default {
               },
             );
           }
-          //renew should send user to existing fee page to confirm if previous year fees are correct
           if (item.unlockNmf || item.hasNmf) {
             items.push(
               {
@@ -353,7 +351,7 @@ export default {
                 id: item.facilityId,
                 link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
                 isAccessible: true,
-                icon:  this.getCheckbox(false), // TO-DO update checkbox
+                icon:  this.getCheckbox(item.isNmfComplete),
                 isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
                 position: positionIndex++,
                 navBarId: navBarId++
@@ -444,10 +442,11 @@ export default {
           navBarId: navBarId++
         }
       );
+      isCCOFGroupComplete = this.areChildrenComplete(items);
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: this.getCheckbox(this.areChildrenComplete(items)),
+        icon: this.getCheckbox(isCCOFGroupComplete),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items,
         navBarId: navBarId++
@@ -540,10 +539,11 @@ export default {
           navBarId: navBarId++
         }
       );
+      isCCOFGroupComplete = this.areChildrenComplete(items);
       let retval =   {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,
-        icon: this.getCheckbox(this.areChildrenComplete(items)),
+        icon: this.getCheckbox(isCCOFGroupComplete),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
         items: items,
         navBarId: navBarId++
@@ -556,8 +556,8 @@ export default {
         {
           title: 'Eligibility',
           link: { name: 'ECEWE Eligibility'},
-          isAccessible: true,
-          icon: this.getCheckbox(this.eceweEligibilityComplete),
+          isAccessible: this.isRenewal ? true :  isCCOFGroupComplete,
+          icon: this.getCheckbox(this.isEceweComplete),
           isActive: 'ECEWE Eligibility' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
@@ -567,8 +567,8 @@ export default {
         {
           title: 'Facility',
           link: { name: 'ECEWE Facilities'},
-          isAccessible: true,
-          icon: this.getCheckbox(this.eceweFacilitiesComplete),
+          isAccessible: this.isEceweComplete,
+          icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
           isActive: 'ECEWE Facilities' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
@@ -588,18 +588,10 @@ export default {
       return title.replace(/\s+/g, '');
     },
     isCCFRIOptInComplete(){
-      if (!this.navBarList || !this.navBarList.length > 0) {
-        return false;
-      }
-      let complete = true;
-      this.navBarList.forEach( item => {
-        if (item.ccfriOptInStatus == 0 || item.ccfriOptInStatus == 1) {
-          // console.log('status exists');
-        } else {
-          complete = false;
-        }
-      });
-      return complete;
+      return this.navBarList?.length > 0 ? this.navBarList.every(facility => (facility.ccfriOptInStatus == 1 || facility.ccfriOptInStatus == 0 )) : false;
+    },
+    isEceweFacilitiesComplete() {
+      return this.navBarList?.length > 0 ? this.navBarList.every(facility => facility.eceweOptInStatus != null) : false;
     },
     isCcfriComplete(){
       return this.navBarList.every(fac => {

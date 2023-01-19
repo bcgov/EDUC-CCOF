@@ -7,9 +7,6 @@ export default {
   namespaced: true,
   state: {
     organizationId: null,
-    applicationId: null,
-    applicationStatus: null,
-    applicationType: null,
     organizationProviderType: null,
     isOrganizationComplete: false,
     isStarted: false,
@@ -18,9 +15,6 @@ export default {
   },
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
-    setApplicationId: (state, applicationId) => { state.applicationId = applicationId; },
-    setApplicationType: (state, applicationType) => { state.applicationType = applicationType; },
-    setApplicationStatus: (state, applicationStatus) => { state.applicationStatus = applicationStatus; },
     setOrganizationProviderType: (state, organizationProviderType) => { state.organizationProviderType = organizationProviderType; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
     setOrganizationModel(state, model) { state.organizationModel = model; },
@@ -59,14 +53,14 @@ export default {
         payload.programYearId = programYear.programYearId;
         commit('application/setProgramYearId', programYear.programYearId, { root: true });
         commit('application/setProgramYearLabel', programYear.name, { root: true });
-    
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
           commit('setOrganizationId', response.data?.organizationId);
-          commit('setApplicationId', response.data?.applicationId);
-          commit('setApplicationStatus', response.data?.applicationStatus);
-          commit('setApplicationType', response.data?.applicationType);
           commit('setOrganizationProviderType', response.data?.organizationProviderType);
+          commit('application/setApplicationId', response.data?.applicationId, { root: true });
+          commit('application/setApplicationStatus', response.data?.applicationStatus, { root: true });
+          commit('application/setApplicationType', response.data?.applicationType, { root: true });
+
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
