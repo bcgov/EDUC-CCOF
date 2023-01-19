@@ -53,7 +53,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
         <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="isProcessing" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="isLocked"  @click="saveClicked()">Save and continue</v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="isLocked"  @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
