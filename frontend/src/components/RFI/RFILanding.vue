@@ -1162,7 +1162,7 @@
               </v-col>
 
               <v-col class="col-md-3 col-12">
-                <v-menu v-model="calendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
+                <v-menu v-model="indigenousCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field :rules="rules" outlined v-model="indigExpense.date" label="Date of Expense (YYYY-MM-DD)"
@@ -1172,7 +1172,7 @@
                   <v-date-picker
                     clearable
                     v-model="indigExpense.date"
-                    @input="calendarMenu[index] = false">
+                    @input="indigenousCalendarMenu[index] = false">
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -1401,6 +1401,7 @@ export default {
       input: '',
       calendarMenu: [],
       expansionCalendarMenu: [],
+      indigenousCalendarMenu: [],
       fundingCalendar: [],
       wageCalendar: [],
       // expense,
@@ -1490,33 +1491,10 @@ export default {
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    ...mapMutations('app', ['refreshNavBar']),
-    nextBtnClicked() {
-      if (this.currentFacility.hasNmf || this.currentFacility.unlockNmf) {
-        this.$router.push(PATHS.NMF + '/' + this.$route.params.urlGuid);
-      } else {
-        if (!this.nextFacility){
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
-          console.log('going to next fac EXISTING FEES page');
-          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
-          //check here if renew - then send them to appropriate screen currentFees
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 ){
-          //console.log('going to next fac NEW fees page');
-          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
-          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
-        }
-        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
-          //RFI logic ?
-          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-          // if (this.rfiList?.length > 0) {
-          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-          // } else {
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-      }
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
+    async nextBtnClicked() {
+      let path = await this.getNextPath();
+      this.$router.push(path);
     },
     async previous() {
       let path = await this.getPreviousPath();

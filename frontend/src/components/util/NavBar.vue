@@ -257,7 +257,7 @@ export default {
           title: 'Declaration',
           link: { name: 'Summary and Declaration' },
           isAccessible: true,
-          icon: 'mdi-checkbox-blank-circle-outline', //replace
+          icon: this.getCheckbox(this.applicationStatus==='SUBMITTED'),
           isActive: 'Summary and Declaration' === this.$route.name,
           expanded: false,
           position: positionIndex++,
