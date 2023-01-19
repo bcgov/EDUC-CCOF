@@ -52,7 +52,7 @@
       </span>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="isProcessing" outlined x-large @click="next()">Save and continue</v-btn>
+        <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="isProcessing" outlined x-large @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="isLocked"  @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
@@ -64,7 +64,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import {deepCloneObject} from '@/utils/common';
+import { deepCloneObject, getFileExtension } from '@/utils/common';
 
 
 export default {
@@ -103,7 +103,7 @@ export default {
     this.fileRules = [
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
       value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      value => !value || this.fileAccept.includes(value.type) ||  `Accepted file types are ${this.fileFormats}.`,
+      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)) ||  `Accepted file types are ${this.fileFormats}.`,
     ];
 
     await this.createTable();
@@ -147,6 +147,7 @@ export default {
         }
       ],
       fileAccept: ['image/png','image/jpeg','image/jpg','.pdf','.png','.jpg','.jpeg','.heic','.doc','.docx','.xls','.xlsx'],
+      fileExtensionAccept: ['pdf','png','jpg','jpeg','heic','doc','docx','xls','xlsx'],
       fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
       fileInputError: [],
       fileMap: new Map(),

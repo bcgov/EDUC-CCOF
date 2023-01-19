@@ -157,8 +157,8 @@
           Back
         </v-btn>
           <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="saveAndContinue()" :loading="isProcessing" :disabled="!isValidForm">
-          Save and continue
+        <v-btn color="secondary" outlined x-large @click="next()" :loading="isProcessing" :disabled="!isValidForm">
+          Next
         </v-btn>
         <v-btn color="primary" outlined x-large @click="save(true)" :disabled="isReadOnly" :loading="isProcessing"> 
           Save
@@ -190,7 +190,8 @@ export default {
     };
   },
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if (!this.isReadOnly)
+      await this.save(false);
     next();
   },
   computed: {
@@ -233,11 +234,6 @@ export default {
     ...mapActions('navBar', ['getNextPath']),
     ...mapActions('nmfApp', ['loadNmf', 'saveNmf']),
     async next(){
-      let path = await this.getNextPath();
-      this.$router.push(path);
-    },
-    async saveAndContinue(){
-      await this.save(true);
       let path = await this.getNextPath();
       this.$router.push(path);
     },
