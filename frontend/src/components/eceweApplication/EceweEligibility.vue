@@ -223,11 +223,10 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     enableButtons() {
-      return (this.model.belongsToUnion === 1 && this.model.fundingModel === this.fundingModelTypeList[1].id && this.model.confirmation === 1)
-            ||(this.model.belongsToUnion === 1 && this.model.fundingModel === this.fundingModelTypeList[2].id && this.model.confirmation === 1)
+      return (this.model.belongsToUnion === 1 && (this.model.fundingModel === this.fundingModelTypeList[1].id || this.model.fundingModel === this.fundingModelTypeList[2].id) && this.model.confirmation === 1)
             ||(this.model.belongsToUnion === 1 && (this.model.fundingModel === this.fundingModelTypeList[0].id || this.model.fundingModel === null))
             ||this.model.belongsToUnion === 0
-            || this.model.optInECEWE === 0;
+            ||this.model.optInECEWE === 0;
     },
     isReadOnly() {
       if (this.unlockEcewe) {
