@@ -187,7 +187,6 @@ async function postApplicationDocument(payload) {
   try {
     const response = await axios.post(url, payload, getHttpHeader());
     logResponse('postApplicationDocument', response);
-    console.info(response.data);
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);

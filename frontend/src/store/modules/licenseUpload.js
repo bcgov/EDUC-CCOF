@@ -38,9 +38,9 @@ export default {
     },
 
     // eslint-disable-next-line no-unused-vars
-    async deleteLicenseFiles({state},deletedFiles){
+    async deleteLicenseFiles({state},payload){
       try {
-        await ApiService.apiAxios.delete(ApiRoutes.LICENSE_UPLOAD, { data: deletedFiles} );
+        await ApiService.apiAxios.delete(ApiRoutes.LICENSE_UPLOAD, { data: payload} );
       } catch (error) {
         console.error(error);
         throw error;
