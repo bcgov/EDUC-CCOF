@@ -35,15 +35,15 @@ function mapFacilityObjectForBack(data) {
   }
 
   //TODO: ccof_everreceivedfundingundertheccofprogram causes dynamics to 400
-  // if (data.hasReceivedFunding === 'no') {
-  //   facilityForBack.ccof_everreceivedfundingundertheccofprogram = 0;
-  // } else if (data.hasReceivedFunding === 'yes') { 
-  //   facilityForBack.ccof_everreceivedfundingundertheccofprogram = 1;
-  // } else if (data.hasReceivedFunding === 'yesFacility') { 
-  //   facilityForBack.ccof_everreceivedfundingundertheccofprogram = 2;
-  // } else if (data.hasReceivedFunding) {
-  //   console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
-  // }
+  if (data.hasReceivedFunding === 'no') {
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
+  } else if (data.hasReceivedFunding === 'yes') { 
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
+  } else if (data.hasReceivedFunding === 'yesFacility') { 
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000002;
+  } else if (data.hasReceivedFunding) {
+    console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
+  }
 
   return facilityForBack;
 }
@@ -61,15 +61,18 @@ function mapFacilityObjectForFront(data) {
   let obj = new MappableObjectForFront(data, FacilityMappings).toJSON(); 
 
   //TODO: map this if it is returned from dynamics
-  // if (data.ccof_everreceivedfundingundertheccofprogram === 0) {
-  //   obj.hasReceivedFunding = 'no';
-  // } else if (data.ccof_everreceivedfundingundertheccofprogram === 1) {
-  //   obj.hasReceivedFunding = 'yes';
-  // } else if (data.ccof_everreceivedfundingundertheccofprogram === 2) {
-  //   obj.hasReceivedFunding = 'yesFacility';
-  // } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
-  //   console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
-  // }
+  if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
+    obj.hasReceivedFunding = 'no';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
+    obj.hasReceivedFunding = 'yes';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000002) {
+    obj.hasReceivedFunding = 'yesFacility';
+  } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
+    console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
+  }
+
+  console.log('RECEIVED', data);
+  console.log('CONVERTED', obj);
 
   return obj;
 }
@@ -81,7 +84,7 @@ function mapCCFRIObjectForFront(data) {
 
 async function getFacility(req, res) {
   try {
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete'; //+ getMappingString(FacilityMappings);
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
     
