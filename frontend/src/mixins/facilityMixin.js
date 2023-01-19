@@ -91,7 +91,7 @@ export default {
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
         }
-        this.model.postalCode1 = this.organizationModel.postalCode1;
+        this.model.postalCode = this.organizationModel.postalCode1;
       }
       this.setFacilityModel({ ...this.model });
       this.processing = true;
