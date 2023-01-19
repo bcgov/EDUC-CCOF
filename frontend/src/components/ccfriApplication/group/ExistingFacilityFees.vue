@@ -150,9 +150,6 @@ export default {
       
       return activeFac;
     },
-    // currentYearTitle(){
-    //   return this.programYearList.current.name.substring(0, 7);
-    // },
     currentFacility(){
       return this.navBarList[this.findIndexOfFacility];
     },

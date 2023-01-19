@@ -1436,9 +1436,7 @@ export default {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('application', ['programYearLabel']),
-    // currentYearTitle(){
-    //   return this.programYearList.current.name.substring(0, 7);
-    // },
+    
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
@@ -1520,10 +1518,9 @@ export default {
         }
       }
     },
-    previous() {
-      console.info('model is: ', this.model);
-      console.info('RFI model is: ', this.rfiModel);
-      //this.$router.back();
+    async previous() {
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
     },
     async save(showNotification) {
       this.processing = true;

@@ -18,7 +18,6 @@ async function deleteChildTable(rfipfiid, entityName, selectorName, filterName) 
     const resp = await getOperation(query);
     resp.value?.forEach(async el => {
       await deleteOperationWithObjectId(entityName, el[selectorName]);
-      log.info('the delete response is: ', );
       await sleep(100);
     });
   } catch (e) {
@@ -87,7 +86,7 @@ async function getRFIApplication(req, res) {
 async function updateRFIApplication(req, res) {
   try {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
-    log.info('RFI APPLICATION FULL IS: ', req.body);
+    //log.info('RFI APPLICATION FULL IS: ', req.body);
     const rfipfiid = req.params.rfipfiid;
     delete friApplication._ccof_applicationccfri_value;
     delete friApplication.ccof_rfipfiid;
@@ -100,8 +99,12 @@ async function updateRFIApplication(req, res) {
     let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', rfipfiid, friApplication);
     friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
 
-    //update funding
+    const isRfiComplete = req.body.isRfiComplete;
+    if (isRfiComplete != null ) {
+      await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_rfi_form_complete: isRfiComplete});
+    }
 
+    //update funding
     if (req.body.fundingList){
       await deleteChildTable(rfipfiid, 'ccof_rfi_pfi_other_fundings', 'ccof_rfi_pfi_other_fundingid');
       const fundingListPayload = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
