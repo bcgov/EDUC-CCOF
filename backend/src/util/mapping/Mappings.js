@@ -121,6 +121,13 @@ const OtherFundingProgramMappings = [
   { back: 'ccof_expense', front: 'expenses'},
 ];
 
+const IndigenousExpenseMappings = [
+  { back: 'ccof_expensedescription', front: 'description'},
+  { back: 'ccof_date', front: 'date'},
+  { back: 'ccof_paymentfrequency', front: 'frequency'},
+  { back: 'ccof_amount', front: 'expense'},
+];
+
 const NMFApplicationMappings = [
   { back: 'ccof_rfi_pfi_nmfid', front: 'nmfId' },
   { back: 'ccof_supportneeds', front: 'supportNeeds' }, // 1 or 0
@@ -357,4 +364,5 @@ module.exports = {
   ExpenseInformationMappings,
   OtherFundingProgramMappings,
   NMFApplicationMappings,
+  IndigenousExpenseMappings
 };

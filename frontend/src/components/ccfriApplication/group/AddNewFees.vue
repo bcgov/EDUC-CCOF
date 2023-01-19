@@ -311,8 +311,7 @@
           Back</v-btn>
           <!--!isValidForm-->
         <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="isFormComplete()==false">Next</v-btn>
-        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true)">
-          Save</v-btn>
+        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
       </v-row>
       <v-dialog
         v-model="showRfiDialog"
@@ -360,6 +359,12 @@ export default {
   data() {
     return {
       closureFees : 'No',
+      dateObj: {
+        datePicker1: undefined,
+        datePicker2: undefined,
+        closureReason : '',
+        feesPaidWhileClosed: undefined,
+      },
       showRfiDialog: false,
       rfi3percentCategories: [],
       isUnlocked: true,
@@ -448,12 +453,7 @@ export default {
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('app', ['addToRfiNavBarStore']),
     addRow () {
-      this.CCFRIFacilityModel.dates.push( {
-        datePicker1: undefined,
-        datePicker2: undefined,
-        closureReason : '',
-        feesPaidWhileClosed: undefined,
-      });
+      this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },
     hasDataToDelete(){
       //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user. 
@@ -553,12 +553,12 @@ export default {
         let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
         currentFacility.isCCFRIComplete = this.isFormComplete(); 
 
-        this.CCFRIFacilityModel.dates.forEach ((item, index) => {
-          //checks if blank - don't send over incomplete closure dates
-          if (!item.formattedStartDate && !item.closureReason){
-            this.CCFRIFacilityModel.dates.splice(index, 1);
+        //checks if blank - don't save empty rows
+        for(let i =  this.CCFRIFacilityModel.dates.length -1; i >=0; i--){
+          if (isEqual( this.CCFRIFacilityModel.dates[i], this.dateObj)){
+            this.CCFRIFacilityModel.dates.splice(i, 1);
           }
-        });
+        }
 
 
         //for each child care type - prepare an object for the payload 

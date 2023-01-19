@@ -36,8 +36,8 @@ export default {
     async loadRfi({getters, commit}, ccfriId) {
       let rfiModel = getters.getByCcfriId(ccfriId);
       if (rfiModel) {
-        console.log('found rfimodel for ccfriId: ', ccfriId);
-        console.log('found rfimodel for  ', rfiModel);
+        // console.log('found rfimodel for ccfriId: ', ccfriId);
+        // console.log('found rfimodel for  ', rfiModel);
         commit('setRfiModel', rfiModel);
         commit('setLoadedModel', deepCloneObject(rfiModel));
       } else {
@@ -60,8 +60,6 @@ export default {
     async saveRfi({ state, commit},ccfriId) {
 
       checkSession();
-      console.info('RFI MODEL' , state.rfiModel);
-      console.info('DAT MODEL' , state.loadedModel);
 
       if (isEqual({ ...state.rfiModel }, { ...state.loadedModel})) {
         console.info('no model changes');

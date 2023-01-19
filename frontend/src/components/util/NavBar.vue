@@ -593,7 +593,7 @@ export default {
       }
       let complete = true;
       this.navBarList.forEach( item => {
-        if (item.ccfriOptInStatus === 0 || item.ccfriOptInStatus === 1) {
+        if (item.ccfriOptInStatus == 0 || item.ccfriOptInStatus == 1) {
           // console.log('status exists');
         } else {
           complete = false;

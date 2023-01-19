@@ -1318,9 +1318,7 @@
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
       <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="false">Next</v-btn>
-      <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">
-        Save
-      </v-btn>
+      <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
     </v-row>
 
   </v-container>
@@ -1330,6 +1328,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {PATHS} from '@/utils/constants';
 import {mapActions, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
+import {isEqual} from 'lodash';
 
 let model = {
   expansionList: [],
@@ -1351,7 +1350,7 @@ export default {
       expenseObj: {
         description: '',
         date: undefined,
-        expense: 0,
+        expense: null,
         frequency: ''
       },
       indigenousExpenseObj: {
@@ -1365,7 +1364,7 @@ export default {
         date: undefined,
         status: '',
         amount: 0,
-        expenses: ''
+        expenses: 0
       },
       wageObj: {
         staffRole: '',
@@ -1528,6 +1527,37 @@ export default {
     },
     async save(showNotification) {
       this.processing = true;
+
+      //checks if blank by comparing a default row for the list
+      //don't save blank rows 
+      for(let i = this.model.expenseList.length -1; i >=0; i--){
+        if (isEqual(this.model.expenseList[i], this.expenseObj)){
+          this.model.expenseList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.expansionList.length -1; i >=0; i--){
+        if (isEqual(this.model.expansionList[i], this.expansionObj)){
+          this.model.expansionList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.fundingList.length -1; i >=0; i--){
+        if (isEqual(this.model.fundingList[i], this.fundingObj)){
+          this.model.fundingList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.wageList.length -1; i >=0; i--){
+        if (isEqual(this.model.wageList[i], this.wageObj)){
+          console.log('blank found');
+          this.model.wageList.splice(i, 1);
+        }
+      }
+      for(let i = this.model.indigenousExpenseList.length -1; i >=0; i--){
+        if (isEqual(this.model.indigenousExpenseList[i], this.indigenousExpenseObj)){
+          this.model.indigenousExpenseList.splice(i, 1);
+        }
+      }
+      
+
       this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
       try {
