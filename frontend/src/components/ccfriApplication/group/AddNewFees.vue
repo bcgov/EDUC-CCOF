@@ -441,7 +441,7 @@ export default {
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
-          this.pastCcfriGuid = this.$route.params.urlGuid;
+          //this.pastCcfriGuid = this.$route.params.urlGuid;
           this.loading = false;
         } catch (error) {
           console.log(error);
