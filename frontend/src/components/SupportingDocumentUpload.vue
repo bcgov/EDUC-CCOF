@@ -3,7 +3,21 @@
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center"><h3>Supporting Document Upload - {{this.programYearLabel}} Program Confirmation Form</h3></v-card-title>
+          <v-card-title class="justify-center">
+            <span class="text-h5">Child Care Operating Funding Program - {{this.programYearLabel}} Program Confirmation Form</span>
+          </v-card-title>
+          <h2 class="text-center">
+            Supporting Document Upload
+          </h2>
+          <v-row justify="center" class="text-h5 py-4" style="color:#003466;">
+            {{this.userInfo.organizationName}}
+          </v-row>
+          <v-row class="px-6 text-body-1">
+            Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE funding assessment.
+          </v-row>
+          <v-row class="pa-6 pt-2 text-body-2">
+            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.
+          </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
             :items="uploadedDocuments"
@@ -111,6 +125,7 @@ export default {
   props: {},
 
   computed: {
+    ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments','applicationStatus', 'applicationId']),
