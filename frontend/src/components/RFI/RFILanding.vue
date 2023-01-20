@@ -1458,20 +1458,6 @@ export default {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('application', ['programYearLabel']),
-    
-    findIndexOfFacility(){
-      return this.navBarList.findIndex((element) =>{ 
-        return element.ccfriApplicationId == this.$route.params.urlGuid;
-      });
-    },
-    currentFacility(){
-      return this.navBarList[this.findIndexOfFacility];
-    },
-    nextFacility(){
-      return this.navBarList[this.findIndexOfFacility + 1];
-    },
-
-
   },
   watch: {
     '$route.params.urlGuid': {
@@ -1513,7 +1499,7 @@ export default {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
     ...mapMutations('app', ['refreshNavBar']),
-    
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     isFormComplete(){
       let done = true;
 
@@ -1541,32 +1527,9 @@ export default {
       //this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm && done; //false makes button clickable, true disables button
     },
-    nextBtnClicked() {
-      if (this.currentFacility.hasNmf || this.currentFacility.unlockNmf) {
-        this.$router.push(PATHS.NMF + '/' + this.$route.params.urlGuid);
-      } else {
-        if (!this.nextFacility){
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
-          console.log('going to next fac EXISTING FEES page');
-          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
-          //check here if renew - then send them to appropriate screen currentFees
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 ){
-          //console.log('going to next fac NEW fees page');
-          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
-          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
-        }
-        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
-          //RFI logic ?
-          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-          // if (this.rfiList?.length > 0) {
-          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-          // } else {
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-      }
+    async nextBtnClicked() {
+      let path = await this.getNextPath();
+      this.$router.push(path);
     },
     async previous() {
       let path = await this.getPreviousPath();
