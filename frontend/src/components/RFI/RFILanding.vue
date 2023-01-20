@@ -197,7 +197,14 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field :disabled="isReadOnly" type="number" outlined :rules="rules.required" v-model.number="expense.expense" prefix="$"/>
+                <v-text-field :disabled="isReadOnly" 
+                type="number" 
+                outlined 
+                :rules="rules.required" 
+                v-model.number="expense.expense" 
+                prefix="$"
+                label = "Expense"
+                />
               </v-col>
 
               <span class="white--text"> . </span>
@@ -244,15 +251,14 @@
           </div>
           <br>
           <div class="px-md-12 px-7">
-            <p>Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
-              for any of the expenses you listed?</p>
             <v-radio-group
             :disabled="isReadOnly"
               required
               :rules="rules.required"
               row
               v-model="model.q3"
-              label=""
+              label="Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
+              for any of the expenses you listed?"
             >
               <v-radio
                 label="Yes"
@@ -337,7 +343,6 @@
                 <v-col class="col-md-2 col-12 ">
                   <v-text-field
                   :disabled="isReadOnly"
-                    class=""
                     v-model="fundInfo.status"
                     label="Status"
                     outlined
@@ -352,6 +357,7 @@
                   outlined
                   :rules="rules.required"
                   label="Amount Received"
+                  type="number"
                   v-model.number="fundInfo.amount"
                   prefix="$"/>
                 </v-col>
@@ -359,7 +365,7 @@
                 <v-col class="col-md-2 col-12 ">
                   <v-text-field
                   :disabled="isReadOnly"
-                    class=""
+                    type="number"
                     prefix="$"
                     v-model.number="fundInfo.expenses"
                     label="Expense"
@@ -651,7 +657,7 @@
                 <v-text-field
                 :disabled="isReadOnly"
                   prefix="$"
-                  class=""
+                  type="number"
                   v-model.number="obj.wageBeforeIncrease"
                   label="Wage before increase"
                   outlined
@@ -664,7 +670,7 @@
                 <v-text-field
                 :disabled="isReadOnly"
                   prefix="$"
-                  class=""
+                  type="number"
                   v-model.number="obj.wageAfterIncrease"
                   label="Wage After increase"
                   outlined
@@ -1073,7 +1079,8 @@
               <v-col class="col-md-2 col-12">
                 <v-text-field
                    :disabled="isReadOnly"
-                   type="number" outlined 
+                   type="number" 
+                   outlined 
                    :rules="rules.required" 
                    v-model.number="obj.expense" 
                    prefix="$"

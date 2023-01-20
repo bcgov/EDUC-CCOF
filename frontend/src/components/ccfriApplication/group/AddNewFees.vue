@@ -433,6 +433,7 @@ export default {
     //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
       async handler() {
+        
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
@@ -440,6 +441,7 @@ export default {
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
+          this.pastCcfriGuid = this.$route.params.urlGuid;
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -541,6 +543,7 @@ export default {
     async save(showMessage) {
       //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
+      console.log('guid to save:' , this.CCFRIFacilityModel.facilityId);
       if (this.hasModelChanged() || this.hasDataToDelete()){
         console.log('dates in save :' , this.CCFRIFacilityModel.dates);
         this.processing = true;
