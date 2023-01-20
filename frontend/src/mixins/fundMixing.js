@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       processing: false,
-      loading: false,
+      loading: true,
       model: {},
       rules,
     };
@@ -31,9 +31,9 @@ export default {
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('funding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
-    },    
+    },
     async previous() {
       let previousPath = await this.getPreviousPath();
       this.$router.push(previousPath);
@@ -45,7 +45,7 @@ export default {
     },
     async save(isSave) {
       this.processing = true;
-      this.setFundingModel({ ...this.model});
+      this.setFundingModel({ ...this.model });
       this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
       this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
       try {
@@ -71,8 +71,9 @@ export default {
         let ccofBaseFundingId = this.$route.params.urlGuid;
         if (ccofBaseFundingId) {
           await this.loadFunding(ccofBaseFundingId);
-          this.loading = false;
         }
+        
+        this.loading = false;
       },
       immediate: true,
       deep: true
