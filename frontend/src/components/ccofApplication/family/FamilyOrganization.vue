@@ -81,7 +81,7 @@
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required :rules="rules.required" v-model="model.incNumber" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                <v-text-field :disabled="isLocked" outlined :rules="validateIncorporationNumber(model.organizationType, model.incNumber)" v-model="model.incNumber" label="Incorporation Number (as it appears in BC Corporate Registry)" />
               </v-col>
             </v-row>
           </v-container>

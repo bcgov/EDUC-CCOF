@@ -1,6 +1,9 @@
 <template>
   <v-form ref="form" v-model="model.isFacilityComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
+      <v-row justify="center" class="pt-4, pb-4">
+        <span class="text-h5">Information to Determine Eligibility</span>
+      </v-row>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
           <v-container>

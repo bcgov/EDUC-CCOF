@@ -61,6 +61,15 @@ export default {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
+    validateIncorporationNumber(organizationTypeId, incorporationNumber) {
+      const selectedOrgType = this.organizationTypeList.find(obj => obj.id === organizationTypeId)?.name;
+      if (!incorporationNumber) {
+        if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
+          return ['This field is required'];
+        }
+      }
+      return [];
+    },
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
@@ -73,19 +82,21 @@ export default {
       this.$router.push(path);
     },    
     async save(showNotification) {
-      this.processing = true;
-      this.setIsStarted(true);
-      try {
-        this.setIsOrganizationComplete(this.isValidForm);
-        this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
-        await this.saveOrganization();
-        if (showNotification) {
-          this.setSuccessAlert('Success! Organization information has been saved.');
+      if (this.$refs.form.validate()) {
+        this.processing = true;
+        this.setIsStarted(true);
+        try {
+          this.setIsOrganizationComplete(this.isValidForm);
+          this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
+          await this.saveOrganization();
+          if (showNotification) {
+            this.setSuccessAlert('Success! Organization information has been saved.');
+          }
+        } catch (error) {
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
         }
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        this.processing = false;
       }
-      this.processing = false;
     }
   }
 };
