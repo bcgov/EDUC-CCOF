@@ -1,5 +1,4 @@
 <template>
-  <!--TODO: add in isValidForm ruleset-->
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
 
@@ -202,24 +201,34 @@
                     
                       clearable 
                       v-model="obj.formattedStartDate" 
-                      @input="calendarMenu1 = false">
+                      @input="obj.calendarMenu1 = false">
                       
                     </v-date-picker>
                  </v-menu>
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <v-menu  v-model="obj.calendarMenu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                  <v-menu  v-model="obj.calendarMenu2" 
+                  :close-on-content-click="false" 
+                  :nudge-right="40" transition="scale-transition" 
+                  offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :disabled="isReadOnly" outlined required v-model="obj.formattedEndDate"  label="Select End Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field :disabled="isReadOnly" 
+                    outlined 
+                    required 
+                    v-model="obj.formattedEndDate" 
+                     label="Select End Date (YYYY-MM-DD)" 
+                     readonly 
+                     :rules="rules"
+                     v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
                     <v-date-picker 
                       clearable 
                       :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate" 
-                      @input="calendarMenu2 = false"
-                      :rules="rules"
+                      @input="obj.calendarMenu2 = false"
+                      
                       >
                       
                     </v-date-picker>
@@ -398,9 +407,6 @@ export default {
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
 
-    currentYearTitle(){
-      return this.programYearLabel;
-    },
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) =>{ 
         return element.ccfriApplicationId == this.$route.params.urlGuid;
@@ -427,6 +433,7 @@ export default {
     //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
       async handler() {
+        
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
@@ -434,6 +441,7 @@ export default {
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
+          //this.pastCcfriGuid = this.$route.params.urlGuid;
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -513,6 +521,7 @@ export default {
       if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0 && this.isValidForm){
         return true;
       }
+
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){
@@ -532,6 +541,7 @@ export default {
     async save(showMessage) {
       //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
+      console.log('guid to save:' , this.CCFRIFacilityModel.facilityId);
       if (this.hasModelChanged() || this.hasDataToDelete()){
         console.log('dates in save :' , this.CCFRIFacilityModel.dates);
         this.processing = true;
