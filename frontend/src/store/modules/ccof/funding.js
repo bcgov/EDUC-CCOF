@@ -92,6 +92,10 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
           let model = response.data;
+          //V-Radio expects numbers to be strings
+          if (model.familyLicenseType) {
+            model.familyLicenseType = ''+ model.familyLicenseType;
+          }
           console.log('response', model);
           commit('setFundingModel', model);
           commit('setLoadedModel', model);

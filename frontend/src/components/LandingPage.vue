@@ -400,10 +400,11 @@ export default {
       this.$router.push(PATHS.group.licenseUpload);
     },
     goToCCFRI(ccfriApplicationId) {
+      let path = this.isRenewal? PATHS.currentFees : PATHS.addNewFees;
       if (ccfriApplicationId)
-        this.$router.push(PATHS.currentFees + '/' + ccfriApplicationId);
+        this.$router.push(path + '/' + ccfriApplicationId);
       else
-        this.$router.push(PATHS.currentFees + '/' + this.unlockCCFRIList[0]);
+        this.$router.push(path + '/' + this.unlockCCFRIList[0]);
     },
     goToNMF(ccfriApplicationId) {
       if (ccfriApplicationId)

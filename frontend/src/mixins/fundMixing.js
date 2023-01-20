@@ -9,8 +9,8 @@ export default {
   computed: {
     ...mapState('funding', ['fundingModel']),
     ...mapState('organization', ['organizationProviderType']),
-    ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['unlockBaseFunding']),
+    ...mapState('app', ['familyLicenseCategory']),
+    ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;

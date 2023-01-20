@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="isValidForm" v-model="isValidForm">
+  <v-form ref="form" value="false" v-model="isValidForm">
   <v-container>
 
     <div class="row pt-4 justify-center">
@@ -44,8 +44,9 @@
           <br>
           <v-radio-group
             required
+            :rules="rules.required"
             row
-            v-model.number="model.exceptionalCircumstances"
+            v-model="model.exceptionalCircumstances"
             label="Is your fee increase due to an exceptional circumstance?"
           >
             <v-radio
@@ -61,6 +62,7 @@
           <div v-if="model.exceptionalCircumstances == 1">
             <v-radio-group
               required
+              :rules="rules.required"
               row
               v-model.number="model.circumstanceOccurWithin6Month"
               label="Does the exceptional circumstance occur within 6 months of the fee increase?"
@@ -151,7 +153,6 @@
                   label="Description"
                   outlined
                   clearable
-                  :rules="rules"
                 ></v-text-field>
               </v-col>
 
@@ -159,7 +160,7 @@
                 <v-menu v-model="calendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules" outlined v-model="expense.date" label="Date of Expense (YYYY-MM-DD)"
+                    <v-text-field :rules="rules.required" outlined v-model="expense.date" label="Date of Expense (YYYY-MM-DD)"
                                   readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
@@ -177,12 +178,12 @@
                   label="Expense Frequency"
                   outlined
                   v-model="expense.frequency"
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-select>
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules" v-model.number="expense.expense" prefix="$"/>
+                <v-text-field type="number" outlined :rules="rules.required" v-model.number="expense.expense" prefix="$"/>
               </v-col>
 
               <span class="white--text"> . </span>
@@ -198,7 +199,7 @@
             <br>
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               placeholder="Describe Here"
               outlined
               name="input-7-4"
@@ -232,6 +233,7 @@
               for any of the expenses you listed?</p>
             <v-radio-group
               required
+              :rules="rules.required"
               row
               v-model="model.q3"
               label=""
@@ -294,7 +296,7 @@
                     label="Funding Program"
                     outlined
                     clearable
-                    :rules="rules"
+                    :rules="rules.required"
                   ></v-text-field>
                 </v-col>
 
@@ -302,7 +304,7 @@
                   <v-menu v-model="fundingCalendar[index]" :close-on-content-click="false" :nudge-right="40"
                           transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-text-field :rules="rules" outlined v-model="fundInfo.date" label="Date (YYYY-MM-DD)" readonly
+                      <v-text-field :rules="rules.required" outlined v-model="fundInfo.date" label="Date (YYYY-MM-DD)" readonly
                                     v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
@@ -321,14 +323,14 @@
                     label="Status"
                     outlined
                     clearable
-                    :rules="rules"
+                    :rules="rules.required"
                   ></v-text-field>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                   outlined
-                  :rules="rules"
+                  :rules="rules.required"
                   label="Amount Received"
                   v-model.number="fundInfo.amount"
                   prefix="$"/>
@@ -342,7 +344,7 @@
                     label="Expense"
                     outlined
                     clearable
-                    :rules="rules"
+                    :rules="rules.required"
                   ></v-text-field>
                 </v-col>
 
@@ -410,9 +412,10 @@
         <div class="px-md-12 px-7">
           <br>
           <v-radio-group
+            :rules="rules.required"
             required
             row
-            v-model.number="model.feeIncreaseDueToWage"
+            v-model="model.feeIncreaseDueToWage"
             label="Is your fee increase due to a wage increase for Direct Care Staff?"
           >
             <v-radio
@@ -429,6 +432,7 @@
             <br>
 
             <v-radio-group
+              :rules="rules.required"
               required
               row
               v-model="model.increaseInWriting"
@@ -447,6 +451,7 @@
             <br>
 
             <v-radio-group
+              :rules="rules.required"
               required
               row
               v-model="model.isBargainingAgreement"
@@ -465,6 +470,7 @@
             <br>
 
             <v-radio-group
+              :rules="rules.required"
               required
               row
               v-model="model.lossOfCareStaff"
@@ -483,6 +489,7 @@
             <br>
 
             <v-radio-group
+              :rules="rules.required"
               required
               row
               v-model="model.healthAndSafetyConcerns"
@@ -596,7 +603,7 @@
                   label="Number of Staff Recieving Wage Increase"
                   outlined
                   clearable
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-text-field>
               </v-col>
 
@@ -607,7 +614,7 @@
                   label="Direct Care Staff Role "
                   outlined
                   clearable
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-text-field>
               </v-col>
 
@@ -619,7 +626,7 @@
                   label="Wage before increase"
                   outlined
                   clearable
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-text-field>
               </v-col>
 
@@ -631,13 +638,13 @@
                   label="Wage After increase"
                   outlined
                   clearable
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-text-field>
               </v-col>
 
               <v-col class="col-md-2 col-12">
                 <v-text-field type="number"
-                              outlined :rules="rules"
+                              outlined :rules="rules.required"
                               v-model.number="obj.averageHours"
                               label="Average hours per week at this facility"
 
@@ -649,7 +656,7 @@
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      :rules="rules"
+                      :rules="rules.required"
                       outlined v-model="obj.wageDate"
                       label="Date of Increase"
                       readonly v-bind="attrs" v-on="on">
@@ -698,7 +705,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" When did your facility's recruitment and retention challenges begin? "
               placeholder="Describe here"
               outlined
@@ -707,7 +714,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" How many Direct Care Staff have left your facility due to wages? "
               placeholder="Describe here"
               outlined
@@ -716,7 +723,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" What have you done to try to recruit staff? "
               placeholder="Describe here"
               outlined
@@ -725,7 +732,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" Have you had to adjust your hours/days of operation?? "
               placeholder="Describe here"
               outlined
@@ -734,7 +741,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" Is your facility unable to fill spaces due to insufficient staffing? "
               placeholder="Describe here"
               outlined
@@ -743,7 +750,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" Is there anything else you would like us to know about the wage increase(s)? "
               placeholder="Describe here"
               outlined
@@ -780,6 +787,7 @@
             expanded, extended (defined as after 7 pm and before 6 am and/or overnight), and/or non-traditional
             hours?</p>
           <v-radio-group
+            :rules="rules.required"
             required
             row
             v-model="model.feeIncreaseExtendedHours"
@@ -989,7 +997,7 @@
                 <v-menu v-model="expansionCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules" outlined v-model="obj.date" label="Date of Change (YYYY-MM-DD)"
+                    <v-text-field :rules="rules.required" outlined v-model="obj.date" label="Date of Change (YYYY-MM-DD)"
                                   readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
@@ -1002,7 +1010,7 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules" v-model.number="obj.expense" prefix="$"/>
+                <v-text-field type="number" outlined :rules="rules.required" v-model.number="obj.expense" prefix="$"/>
               </v-col>
 
               <v-col class="col-md-2 col-12">
@@ -1011,7 +1019,7 @@
                   label="Payment Frequency"
                   outlined
                   v-model="obj.frequency"
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-select>
               </v-col>
 
@@ -1034,7 +1042,7 @@
             <br>
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               label=" Please explain why you have incurred (or will incur) each expense you have listed above.(e.g. Wages, Utilities)"
               outlined
               name="input-7-4"
@@ -1045,7 +1053,7 @@
             <br>
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               placeholder="Describe here"
               outlined
               name="input-7-4"
@@ -1090,6 +1098,7 @@
           <v-radio-group
             label="Is your fee increase due to an increased connection to Indigenous community, culture, or language in an Indigenous Facility or Organization?"
             required
+            :rules="rules.required"
             row
             v-model="model.IndigenousConnection"
 
@@ -1171,7 +1180,7 @@
                   label="Description"
                   outlined
                   clearable
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-text-field>
               </v-col>
 
@@ -1179,7 +1188,7 @@
                 <v-menu v-model="indigenousCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules" outlined v-model="indigExpense.date" label="Date of Expense (YYYY-MM-DD)"
+                    <v-text-field :rules="rules.required" outlined v-model="indigExpense.date" label="Date of Expense (YYYY-MM-DD)"
                                   readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
@@ -1197,12 +1206,12 @@
                   label="Expense Frequency"
                   outlined
                   v-model="indigExpense.frequency"
-                  :rules="rules"
+                  :rules="rules.required"
                 ></v-select>
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules" v-model.number="indigExpense.expense" prefix="$"/>
+                <v-text-field type="number" outlined :rules="rules.required" v-model.number="indigExpense.expense" prefix="$"/>
               </v-col>
 
               <span class="white--text"> . </span>
@@ -1225,7 +1234,7 @@
             <div class="">
               <br>
               <v-textarea
-              :rules="rules"
+              :rules="rules.required"
                 label="Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above."
                 outlined
                 name="input-7-4"
@@ -1278,6 +1287,7 @@
           </ul>
           <v-radio-group
             required
+            :rules="rules.required"
             row
             v-model="model.underservedPop"
             label="Does this Facility meet all the above criteria?"
@@ -1294,10 +1304,9 @@
           <br>
 
           <div v-if="model.underservedPop == 1">
-
             <br>
             <v-textarea
-            :rules="rules"
+              :rules="rules.required"
               outlined
               name="input-7-4"
               label="Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)"
@@ -1307,7 +1316,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               outlined
               name="input-7-4"
               label="How will your fee increase contribute to the overall sustainability of the organization/facility?"
@@ -1317,7 +1326,7 @@
 
             <br>
             <v-textarea
-            :rules="rules"
+            :rules="rules.required"
               outlined
               name="input-7-4"
               label=" Describe whether parents out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?"
@@ -1330,13 +1339,10 @@
         </div>
       </v-card-text>
     </v-card>
-
-    {{ isValidForm }}
-
     <v-row justify="space-around">
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
-      <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="isFormComplete()==false">Next</v-btn>
+      <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="isFormComplete==false">Next</v-btn>
       <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
     </v-row>
 
@@ -1345,10 +1351,10 @@
 </template>
 <script>
 import alertMixin from '@/mixins/alertMixin';
-import {PATHS} from '@/utils/constants';
 import {mapActions, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
 import {isEqual} from 'lodash';
+import rules from '@/utils/rules';
 
 let model = {
   expansionList: [],
@@ -1367,6 +1373,7 @@ export default {
   name: 'CcfriRequestMoreInfo',
   data() {
     return {
+      rules,
       isValidForm : false,
       expenseObj: {
         description: '',
@@ -1427,9 +1434,9 @@ export default {
       wageCalendar: [],
       // expense,
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
-      rules: [
-        (v) => !!v || 'Required.',
-      ],
+      // rules: [
+      //   (v) => !!v || 'Required.',
+      // ],
       processing: false,
 
     };
@@ -1441,23 +1448,46 @@ export default {
 
 
     //load the screen with at least one row in the form
-    this.addObjToList(this.fundingObj, model.fundingList);
+    this.addObjToList(this.fundingObj, this.model.fundingList);
     this.addObjToList(this.expenseObj, this.model.expenseList);
-    this.addObjToList(this.wageObj, model.wageList);
-    this.addObjToList(this.expansionObj, model.expansionList);
-    this.addObjToList(this.indigenousExpenseObj, model.indigenousExpenseList);
+    this.addObjToList(this.wageObj, this.model.wageList);
+    this.addObjToList(this.expansionObj, this.model.expansionList);
+    this.addObjToList(this.indigenousExpenseObj, this.model.indigenousExpenseList);
 
   },
   async beforeRouteLeave(_to, _from, next) {
     this.$store.commit('rfiApp/setRfiModel', this.model);
     await this.save(false);
-    //this.$store.commit('ccfriApp/ccfriOptInOrOut', this.ccfriOptInOrOut);
     next();
   },
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('application', ['programYearLabel']),
+    currentFacility(){
+      return this.navBarList.find(element => element.ccfriApplicationId == this.$route.params.urlGuid);
+    },
+    isFormComplete(){
+      let done = true;
+      if (this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1 && this.model.expenseList.length == 0){
+        done = false;
+      }
+      if (this.model.q3 === 1 && this.model.fundingList.length == 0){
+        done = false;
+      }
+      if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0){
+        done = false;
+      }
+      if (this.model.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0){
+        done = false;
+      }
+      if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0){
+        done = false;
+      }
+      // this.currentFacility.isRfiComplete = this.isValidForm && done;
+      //this.currentFacility.isCCFRIComplete = this.isValidForm;
+      return this.isValidForm && done; //false makes button clickable, true disables button
+    },
   },
   watch: {
     '$route.params.urlGuid': {
@@ -1500,33 +1530,6 @@ export default {
     ...mapMutations('rfiApp', ['setRfiModel']),
     ...mapMutations('app', ['refreshNavBar']),
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
-    isFormComplete(){
-      let done = true;
-
-      if (this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1 && this.model.expenseList.length == 0){
-        console.log('I should make the form false');
-        done = false;
-      }
-      if (this.model.q3 === 1 && this.model.fundingList.length == 0){
-        console.log('I should make the form false');
-        done = false;
-      }
-      if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0){
-        console.log('I should make the form false');
-        done = false;
-      }
-      if (this.model.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0){
-        console.log('I should make the form false');
-        done = false;
-      }
-      if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0){
-        console.log('I should make the form false');
-        done = false;
-      }
-      this.currentFacility.isRfiComplete = this.isValidForm && done;
-      //this.currentFacility.isCCFRIComplete = this.isValidForm;
-      return this.isValidForm && done; //false makes button clickable, true disables button
-    },
     async nextBtnClicked() {
       let path = await this.getNextPath();
       this.$router.push(path);
@@ -1570,8 +1573,9 @@ export default {
 
       this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
+      this.currentFacility.isRfiComplete = this.isFormComplete;
       try {
-        let friApplicationGuid = await this.saveRfi(ccfriId);
+        let friApplicationGuid = await this.saveRfi({ccfriId: ccfriId, isRfiComplete: this.isFormComplete});
         if (friApplicationGuid) {
           this.model.rfiId = friApplicationGuid;
         }

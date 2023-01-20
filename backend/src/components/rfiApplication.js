@@ -97,10 +97,10 @@ async function updateRFIApplication(req, res) {
 
     let friApplicationResponse = await patchOperationWithObjectId('ccof_rfipfis', rfipfiid, friApplication);
     friApplicationResponse = new MappableObjectForFront(friApplicationResponse, RFIApplicationMappings);
-
     const isRfiComplete = req.body.isRfiComplete;
+    const ccfriId = req.body.ccfriApplicationId;
     if (isRfiComplete != null ) {
-      await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_rfi_form_complete: isRfiComplete});
+      await patchOperationWithObjectId('ccof_applicationccfris', ccfriId, {ccof_rfi_formcomplete: isRfiComplete});
     }
 
     //update funding
@@ -189,8 +189,7 @@ async function createRFIApplication(req, res) {
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
 
     //set a flag in ccof_applicationccfri that an RFI exists for this application
-    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_has_rfi: true, ccof_rfi_form_complete: req.body.isRfiComplete});
-
+    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_has_rfi: true, ccof_rfi_formcomplete: req.body.isRfiComplete});
     return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
   } catch (e) {
     log.error('createRFIApplication error:', e);

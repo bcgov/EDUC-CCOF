@@ -10,8 +10,7 @@ export default {
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
     isOrganizationComplete: false,
-    isLicenseUploadComplete: null,
-    ccofLicenseUploadComplete:false,
+    isLicenseUploadComplete: false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
 
@@ -110,9 +109,6 @@ export default {
     },
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
-    },
-    setCcofLicenseUploadComplete:(state, ccofLicenseUploadComplete) => {
-      state.ccofLicenseUploadComplete = ccofLicenseUploadComplete;
     },
     setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
