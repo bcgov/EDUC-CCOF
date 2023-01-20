@@ -164,7 +164,7 @@ export default {
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
     ...mapActions('navBar', ['getPreviousPath', 'getNextPath']),
-    ...mapMutations('app', ['setCcofLicenseUploadComplete']),
+    ...mapMutations('app', ['setIsLicenseUploadComplete']),
     async previous() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
@@ -200,7 +200,7 @@ export default {
           this.fileMap.clear();// clear the map.
         }
 
-        this.setCcofLicenseUploadComplete(!this.nextButtonDisabled);
+        this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
         if (showConfirmation) {
           await this.createTable();
           this.setSuccessAlert('Changes Successfully Saved');

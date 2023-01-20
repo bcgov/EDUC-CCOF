@@ -34,7 +34,6 @@ function mapFacilityObjectForBack(data) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
 
-  //TODO: ccof_everreceivedfundingundertheccofprogram causes dynamics to 400
   if (data.hasReceivedFunding === 'no') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
   } else if (data.hasReceivedFunding === 'yes') { 

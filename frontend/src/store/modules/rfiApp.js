@@ -57,7 +57,7 @@ export default {
         }
       }
     },
-    async saveRfi({ state, commit},ccfriId) {
+    async saveRfi({ state, commit},{ccfriId, isRfiComplete}) {
 
       checkSession();
 
@@ -67,7 +67,10 @@ export default {
       }
 
       let rfiPayloadModel  = deepCloneObject(state.rfiModel);
-
+      rfiPayloadModel.isRfiComplete = isRfiComplete;
+      if (!rfiPayloadModel.ccfriApplicationId) {
+        rfiPayloadModel.ccfriApplicationId = ccfriId;
+      }
       if (isEqual({ ...state.rfiModel.expansionList }, { ...state.loadedModel.expansionList})) {
         rfiPayloadModel.expansionList = undefined;
       }
@@ -99,7 +102,7 @@ export default {
       } else {
         // else create a new RFI
         try {
-          let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RFI+ '/' + ccfriId + '/rfi', state.rfiModel);
+          let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RFI+ '/' + ccfriId + '/rfi', rfiPayloadModel);
           state.rfiModel.rfiId = response.data?.friApplicationGuid;
           commit('addRfiToStore', {ccfriId: ccfriId, model: state.rfiModel});
           return response.data?.friApplicationGuid;

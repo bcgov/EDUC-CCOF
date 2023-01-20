@@ -133,8 +133,13 @@ export default {
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
 
     isReadOnly(){
-      //more logic to come here post MVP
+      if (this.unlockedFacilities) {
+        return false;
+      }
       return (this.applicationStatus === 'SUBMITTED');
+    },
+    unlockedFacilities(){
+      return this.navBarList.some(facility => facility.unlockCcfri);
     },
 
   },

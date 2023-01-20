@@ -108,7 +108,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete','ccofLicenseUploadComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
@@ -244,7 +244,7 @@ export default {
       this.items.push({
         title: 'Supporting Document',
         link:{ name: 'Supporting Document Upload' },
-        isAccessible:true,
+        isAccessible:this.isRenewal ? true :  isCCOFGroupComplete,
         icon:'mdi-information',
         isActive: 'Supporting Document Upload' === this.$route.name,
         expanded:false,
@@ -252,13 +252,13 @@ export default {
         navBarId: navBarId++
 
       });
-      let declarationAccessible = (this.unlockDeclaration || this.areChildrenComplete(this.items));
+      let declarationAccessible = this.areChildrenComplete(this.items);
       this.items.push(
         {
           title: 'Declaration',
           link: { name: 'Summary and Declaration' },
           isAccessible: declarationAccessible, //set this to true to unlock the declaration
-          icon: this.getCheckbox(this.applicationStatus==='SUBMITTED'),
+          icon: this.getCheckbox(this.applicationStatus==='SUBMITTED' && !this.unlockDeclaration),
           isActive: 'Summary and Declaration' === this.$route.name,
           expanded: false,
           position: positionIndex++,
