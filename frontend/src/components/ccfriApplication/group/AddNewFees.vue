@@ -491,7 +491,7 @@ export default {
     async next() {
       this.rfi3percentCategories = await this.getCcfriOver3percent();
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.rfi3percentCategories.length > 0) {
+      if (this.rfi3percentCategories.length > 0 && this.isRenewal) {
         this.showRfiDialog = true;
       } else {
         if (!this.nextFacility){
