@@ -187,6 +187,10 @@ async function createRFIApplication(req, res) {
     friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
     log.info('createRFIApplication payload:', friApplication);
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
+
+    //set a flag in ccof_applicationccfri that an RFI exists for this application
+    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, {ccof_has_rfi: true, ccof_rfi_form_complete: req.body.isRfiComplete});
+
     return res.status(HttpStatus.CREATED).json({ friApplicationGuid: friApplicationGuid });
   } catch (e) {
     log.error('createRFIApplication error:', e);
