@@ -82,21 +82,19 @@ export default {
       this.$router.push(path);
     },    
     async save(showNotification) {
-      if (this.$refs.form.validate()) {
-        this.processing = true;
-        this.setIsStarted(true);
-        try {
-          this.setIsOrganizationComplete(this.isValidForm);
-          this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
-          await this.saveOrganization();
-          if (showNotification) {
-            this.setSuccessAlert('Success! Organization information has been saved.');
-          }
-        } catch (error) {
-          this.setFailureAlert('An error occurred while saving. Please try again later.');
+      this.processing = true;
+      this.setIsStarted(true);
+      try {
+        this.setIsOrganizationComplete(this.isValidForm);
+        this.setOrganizationModel({ ...this.model, isOrganizationComplete: this.isValidForm });
+        await this.saveOrganization();
+        if (showNotification) {
+          this.setSuccessAlert('Success! Organization information has been saved.');
         }
-        this.processing = false;
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+      this.processing = false;
     }
   }
 };
