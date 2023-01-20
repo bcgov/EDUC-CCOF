@@ -4,13 +4,13 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center"><h3>License Upload<span v-if="isRenewal"> - {{this.programYearLabel}} Program Confirmation Form</span></h3></v-card-title>
+            <v-card-title class="justify-center"><h3>License Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
             <v-data-table v-if="!isLoading"
-              :headers="headers"
-              :items="licenseUploadData"
-              class="elevation-1"
-              hide-default-header
-              hide-default-footer
+                          :headers="headers"
+                          :items="licenseUploadData"
+                          class="elevation-1"
+                          hide-default-header
+                          hide-default-footer
             >
               <template v-slot:header="{ props: { headers } }">
                 <thead>
@@ -33,6 +33,7 @@
                               :rules="fileRules"
                               prepend-icon="mdi-file-upload"
                               class="pt-0"
+                              @click:clear="deleteFile(item)"
                               :id="item.facilityId"
                               :accept="fileAccept"
                               :disabled="false"
@@ -52,8 +53,12 @@
       </span>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="nextButtonDisabled" :loading="isProcessing" outlined x-large @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="isLocked"  @click="saveClicked()">Save</v-btn>
+        <v-btn color="secondary" :disabled="!isValidForm || nextButtonDisabled" :loading="isProcessing" outlined x-large
+               @click="next()">Next
+        </v-btn>
+        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isValidForm || isLocked" @click="saveClicked()">
+          Save
+        </v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -64,7 +69,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import { deepCloneObject, getFileExtension } from '@/utils/common';
+import {deepCloneObject, getFileExtension} from '@/utils/common';
 
 
 export default {
@@ -73,11 +78,11 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'programYearLabel','applicationStatus','unlockSupportingDocuments', 'applicationId']),
+    ...mapState('application', ['isRenewal', 'programYearLabel', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
     isLocked() {
-      if (this.unlockSupportingDocuments) {
+      if (this.unlockLicenseUpload) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
@@ -86,14 +91,14 @@ export default {
     },
     nextButtonDisabled() {
       let deletedFileCount = this.getDeletedFileCount();
-      if(deletedFileCount === 0){
-        return (this.navBarList?.length !== this.getUploadedLicenses.length);
-      }else{
-        let currentFileCount = this.getUploadedLicenses.length - deletedFileCount;
+      console.info(`deletedFileCount is ${deletedFileCount}`);
+      if (deletedFileCount === 0) {
+        return (this.navBarList?.length !== (this.fileMap.size+this.getUploadedLicenses.length));
+      } else {
+        let currentFileCount = (this.getUploadedLicenses.length - deletedFileCount) + this.fileMap.size;
         return (this.navBarList?.length !== currentFileCount);
       }
-
-    }
+    },
   },
 
 
@@ -103,13 +108,13 @@ export default {
     this.fileRules = [
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
       value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)) ||  `Accepted file types are ${this.fileFormats}.`,
+      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)) || `Accepted file types are ${this.fileFormats}.`,
     ];
 
     await this.createTable();
   },
   async beforeRouteLeave(_to, _from, next) {
-    if(!this.isLocked){
+    if (!this.isLocked) {
       await this.save(false);
     }
     next();
@@ -122,7 +127,7 @@ export default {
       rules,
       model: {},
       tempFacilityId: null,
-      isValidForm: undefined,
+      isValidForm: false,
       currentrow: null,
       headers: [
         {
@@ -146,12 +151,13 @@ export default {
           class: 'table-header'
         }
       ],
-      fileAccept: ['image/png','image/jpeg','image/jpg','.pdf','.png','.jpg','.jpeg','.heic','.doc','.docx','.xls','.xlsx'],
-      fileExtensionAccept: ['pdf','png','jpg','jpeg','heic','doc','docx','xls','xlsx'],
+      fileAccept: ['image/png', 'image/jpeg', 'image/jpg', '.pdf', '.png', '.jpg', '.jpeg', '.heic', '.doc', '.docx', '.xls', '.xlsx'],
+      fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
       fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
       fileInputError: [],
-      fileMap: new Map(),
-      fileRules: []
+      fileMap: new Map(), // this is not reactive
+      fileRules: [],
+      fileAdded: false,
     };
   },
 
@@ -164,16 +170,20 @@ export default {
       this.$router.push(path);
     },
     async next() {
+      this.$refs.form.validate();
       let path = await this.getNextPath();
       this.$router.push(path);
     },
-    deleteFile(item) {
+    async deleteFile(item) {
       this.licenseUploadData = this.licenseUploadData.map(element => {
         if (element.facilityId === item.facilityId) {
-          element['deletedDocument'] = item.document;
+          if (item.document?.annotationid) {
+            element['deletedDocument'] = item.document;
+          }
           element['document'] = {};
           this.fileMap.delete(element.facilityId);
         }
+        this.$refs.form.validate();
         return element;
       });
 
@@ -187,9 +197,9 @@ export default {
         await this.processLicenseFileDelete();
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
+          this.fileMap.clear();// clear the map.
         }
 
-        await this.updateLicenseCompleteStatus(!this.nextButtonDisabled);
         this.setCcofLicenseUploadComplete(!this.nextButtonDisabled);
         if (showConfirmation) {
           await this.createTable();
@@ -203,7 +213,7 @@ export default {
       }
     },
     async processLicenseFilesSave() {
-      const payload = [];
+      const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
         const obj = {
@@ -212,8 +222,12 @@ export default {
           subject: 'Facility License',
           ...file
         };
-        payload.push(obj);
+        fileList.push(obj);
       }
+      const payload = {fileList,
+        isLicenseUploadComplete:!this.nextButtonDisabled,
+        applicationId: this.applicationId};
+
       try {
         await this.saveLicenseFiles(payload);
       } catch (error) {
@@ -223,13 +237,23 @@ export default {
     async processLicenseFileDelete() {
       const deletedFiles = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid)).map(element => element.deletedDocument);
       if (deletedFiles?.length > 0) {
-        await this.deleteLicenseFiles(deletedFiles);
+        const payload = {deletedFiles,
+          isLicenseUploadComplete:!this.nextButtonDisabled,
+          applicationId: this.applicationId};
+        await this.deleteLicenseFiles(payload);
       }
     },
     async selectFile(file) {
       if (file) {
         const doc = await this.readFile(file);
-        this.fileMap.set(this.currentrow, deepCloneObject(doc));
+        const map = new Map();
+        this.fileMap.forEach((value, key) => {
+          map.set(key, value);
+        });
+        map.set(this.currentrow, deepCloneObject(doc));
+        this.fileMap = map;
+        this.$refs.form.validate();
+        //this.fileMap.set(this.currentrow, deepCloneObject(doc));
       }
     },
     readFile(file) {
@@ -278,7 +302,7 @@ export default {
       }
     },
 
-    getDeletedFileCount(){
+    getDeletedFileCount() {
       const deletedFiles = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid)).map(element => element.deletedDocument);
       return deletedFiles.length;
     }

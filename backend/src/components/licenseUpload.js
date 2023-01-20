@@ -1,14 +1,18 @@
 'use strict';
-const {postApplicationDocument, getApplicationDocument, deleteDocument} = require('./utils');
+const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 
 
 async function saveLicenses(req, res) {
   try {
-    let licenses = req.body;
+
+    let licenses = req.body.fileList;
     for (let license of licenses) {
       await postApplicationDocument(license);
     }
+    const application ={};
+    application.ccof_licensecomplete = req.body.isLicenseUploadComplete;
+    await patchOperationWithObjectId('ccof_applications',req.body.applicationId, application);
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -39,10 +43,13 @@ async function getLicenseFiles(req, res) {
 
 async function deleteLicenseFiles(req, res) {
   try {
-    let deletedLicenses = req.body;
+    let deletedLicenses = req.body.deletedFiles;
     for (let license of deletedLicenses) {
       await deleteDocument(license.annotationid);
     }
+    const application ={};
+    application.ccof_licensecomplete = req.body.isLicenseUploadComplete;
+    await patchOperationWithObjectId('ccof_applications',req.body.applicationId, application);
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

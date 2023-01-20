@@ -53,6 +53,7 @@
               <v-file-input v-else
                             color="#003366"
                             :rules="fileRules"
+                            @click:clear="deleteItem(item)"
                             prepend-icon="mdi-file-upload"
                             :clearable="false"
                             class="pt-0"
@@ -87,7 +88,7 @@
       </v-row>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="isProcessing" @click="next()">Next</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="isProcessing" :disabled="!isValidForm" @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isSaveDisabled || isLocked" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
@@ -220,6 +221,7 @@ export default {
         const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
         if (newFilesAdded.length > 0) {
           await this.processDocumentFilesSave(newFilesAdded);
+          this.fileMap?.clear();
         }
 
         if (showConfirmation) {
