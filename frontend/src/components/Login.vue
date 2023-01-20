@@ -78,11 +78,17 @@
             <v-card-title class="gov-header">
               <h4 id="login_text">CCFRI Estimator</h4>
             </v-card-title>
-            <v-card-text id="login_descriptor">
-              Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. <br>
-              Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. <br>
-              Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  <br>
-              Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <v-card-text id="login_descriptor" class="pb-0">
+              <p>
+                The ministry has made enhancements to the 
+                <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
+                to help estimate additional child care fee savings that started on December 1, 2022.
+              </p>
+              <p>
+                Note: <br>
+                Child care providers with a CCFRI application in process, including open applications for a mid-term fee increase, 
+                will not appear in the search results. Check back as search results are updated regularly.
+              </p>
             </v-card-text>
             <v-spacer></v-spacer>
             <v-card-actions>
