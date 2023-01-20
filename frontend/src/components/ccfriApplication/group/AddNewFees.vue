@@ -519,11 +519,9 @@ export default {
     },
     isFormComplete(){
       if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0 && this.isValidForm){
-        this.currentFacility.isCCFRIComplete = true; 
         return true;
       }
 
-      this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){
