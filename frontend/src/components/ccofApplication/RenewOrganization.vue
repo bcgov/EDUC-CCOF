@@ -41,6 +41,7 @@
                   </v-col>
                 </v-row>
                 <v-card-text>
+                  Once these changes have been processed, you may complete your {{futureYearLabel}} Program Confirmation Form.<br><br>
                   Submit the Change Notification Form:<br>
                   <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf">
                   https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf
@@ -88,6 +89,7 @@
                 </v-col>
               </v-row>
               <v-card-text>
+                Once these changes have been processed, you may complete your {{futureYearLabel}} Program Confirmation Form.<br><br>
                 Update your banking information:
                 <br><a href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf">
                 https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a>

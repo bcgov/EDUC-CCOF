@@ -75,7 +75,7 @@
           </div>
         </template>
         <template #button>
-          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my funding</v-btn>
+          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement</v-btn>
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
           <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
           <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else>View Application</v-btn>
@@ -140,12 +140,6 @@
               <p class="text-h5 text--primary text-center" v-if="facilityAccountNumber">Facility ID: {{facilityAccountNumber}}</p>
               <p class="text-h5 text--primary text-center" v-if="facilityName">Facility Name: {{facilityName}}</p>
               <p class="text-h5 text--primary text-center" v-if="licenseNumber">Licence Number: {{licenseNumber}}</p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-              </p>
               <br>
               <p class="blueText">
                 Child Care Fee Reduction Initiative (CCFRI) Status:
@@ -371,6 +365,17 @@ export default {
         this.$router.push(PATHS.family.orgInfo);
       }
     },
+    goToCCOFFunding() {
+      let firstFacilityId = this.navBarList[0]?.facilityId;
+      let navBar = this.$store.getters['app/getNavByFacilityId'](firstFacilityId);
+      if (navBar?.ccofBaseFundingId) {
+        if (this.organizationProviderType === 'GROUP') {
+          this.$router.push(PATHS.group.fundAmount + '/' + navBar.ccofBaseFundingId);
+        } else if (this.organizationProviderType === 'FAMILY') {
+          this.$router.push(PATHS.family.fundAmount + '/' + navBar.ccofBaseFundingId);
+        }
+      }
+    },
     goToLicenseUpload() {
       this.$router.push(PATHS.group.licenseUpload);
     },
@@ -420,7 +425,7 @@ export default {
       if (this.unlockLicenseUpload) 
         this.goToLicenseUpload();
       else if (this.unlockBaseFunding && (this.applicationType === 'NEW')) 
-        this.goToCCOFOrganizationInfo();
+        this.goToCCOFFunding();
       else if (this.unlockEcewe) 
         this.goToECEWE();
       else if (this.unlockSupportingDocuments)

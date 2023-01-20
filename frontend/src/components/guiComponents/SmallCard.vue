@@ -1,7 +1,7 @@
 <template>
   <v-col class="col-12 flex d-flex flex-column">
     <v-card 
-      class="pa-1 elevation-4 rounded-lg flex d-flex flex-column" :class="isDisabled"
+      class="pa-0 elevation-4 rounded-lg flex d-flex flex-column" :class="isDisabled"
       :disabled=disable width="100%"
     >
       <v-card-text class="text--primary">

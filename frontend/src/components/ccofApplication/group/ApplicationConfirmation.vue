@@ -24,8 +24,8 @@
           </v-row>
 
           <v-row justify="center">
-            <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()">Yes</v-btn>
-            <v-btn color="secondary" outlined x-large style="margin: 2em;" @click="next()">No</v-btn>
+            <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()" :disabled="isLocked">Yes</v-btn>
+            <v-btn color="secondary" outlined x-large style="margin: 2em;" @click="next()" :disabled="isLocked">No</v-btn>
           </v-row>
         </v-container>
       </v-card>
@@ -47,6 +47,10 @@ export default {
   },
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
+    ...mapState('application', ['applicationStatus']),
+    isLocked() {
+      return (this.applicationStatus === 'SUBMITTED');
+    }
   },
   methods: {
     ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
