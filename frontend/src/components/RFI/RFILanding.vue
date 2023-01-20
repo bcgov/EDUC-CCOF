@@ -1,6 +1,13 @@
 <template>
   <v-form ref="form" value="false" v-model="isValidForm">
-  <v-container>
+    <v-container v-if="loading">
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+      <br>
+      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image , image" class="pb-6"> <br><br></v-skeleton-loader>
+    </v-container>
+  <v-container v-else>
 
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
@@ -10,7 +17,7 @@
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
     <br><br>
-    <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name:  </p> <br>
+    <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name: {{currentFacility.facilityName}}  </p> <br>
 
     <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
             min-height="230"
@@ -43,6 +50,7 @@
           </ul>
           <br>
           <v-radio-group
+            :disabled="isReadOnly"
             required
             :rules="rules.required"
             row
@@ -61,6 +69,7 @@
           <br>
           <div v-if="model.exceptionalCircumstances == 1">
             <v-radio-group
+            :disabled="isReadOnly"
               required
               :rules="rules.required"
               row
@@ -138,6 +147,7 @@
             <v-row v-for="(expense, index) in model.expenseList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
+                :disabled="isReadOnly"
                   large
                   color="blue darken-4"
                   class="mt-md-4"
@@ -148,6 +158,7 @@
               <v-col class="col-md-3 col-12 ">
 
                 <v-text-field
+                :disabled="isReadOnly"
                   class=""
                   v-model="expense.description"
                   label="Description"
@@ -160,11 +171,13 @@
                 <v-menu v-model="calendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules.required" outlined v-model="expense.date" label="Date of Expense (YYYY-MM-DD)"
+                    <v-text-field :disabled="isReadOnly"
+                    :rules="rules.required" outlined v-model="expense.date" label="Date of Expense (YYYY-MM-DD)"
                                   readonly v-bind="attrs" v-on="on">
                     </v-text-field>
                   </template>
                   <v-date-picker
+                  :disabled="isReadOnly"
                     clearable
                     v-model="expense.date"
                     @input="calendarMenu[index] = false">
@@ -174,6 +187,7 @@
 
               <v-col class="col-md-3 col-12">
                 <v-select
+                  :disabled="isReadOnly"
                   :items="items"
                   label="Expense Frequency"
                   outlined
@@ -183,7 +197,7 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules.required" v-model.number="expense.expense" prefix="$"/>
+                <v-text-field :disabled="isReadOnly" type="number" outlined :rules="rules.required" v-model.number="expense.expense" prefix="$"/>
               </v-col>
 
               <span class="white--text"> . </span>
@@ -192,13 +206,14 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="" @click="addObjToList(expenseObj, model.expenseList)" class="my-5" dark color='#003366'>
+              <v-btn id="" @click="addObjToList(expenseObj, model.expenseList)" :disabled="isReadOnly" class="my-5" dark color='#003366'>
                 Add Expense
               </v-btn>
             </div>
             <br>
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               placeholder="Describe Here"
               outlined
@@ -232,6 +247,7 @@
             <p>Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
               for any of the expenses you listed?</p>
             <v-radio-group
+            :disabled="isReadOnly"
               required
               :rules="rules.required"
               row
@@ -282,6 +298,7 @@
               <v-row v-for="(fundInfo, index) in model.fundingList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
+                    :disabled="isReadOnly"
                     large
                     color="blue darken-4"
                     class="mt-md-4"
@@ -291,6 +308,7 @@
                 </v-col>
                 <v-col class="col-md-3 col-12 ">
                   <v-text-field
+                  :disabled="isReadOnly"
                     class=""
                     v-model="fundInfo.fundingProgram"
                     label="Funding Program"
@@ -304,7 +322,7 @@
                   <v-menu v-model="fundingCalendar[index]" :close-on-content-click="false" :nudge-right="40"
                           transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-text-field :rules="rules.required" outlined v-model="fundInfo.date" label="Date (YYYY-MM-DD)" readonly
+                      <v-text-field :disabled="isReadOnly" :rules="rules.required" outlined v-model="fundInfo.date" label="Date (YYYY-MM-DD)" readonly
                                     v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
@@ -318,6 +336,7 @@
 
                 <v-col class="col-md-2 col-12 ">
                   <v-text-field
+                  :disabled="isReadOnly"
                     class=""
                     v-model="fundInfo.status"
                     label="Status"
@@ -329,6 +348,7 @@
 
                 <v-col class="col-md-2 col-12">
                   <v-text-field
+                  :disabled="isReadOnly"
                   outlined
                   :rules="rules.required"
                   label="Amount Received"
@@ -338,6 +358,7 @@
 
                 <v-col class="col-md-2 col-12 ">
                   <v-text-field
+                  :disabled="isReadOnly"
                     class=""
                     prefix="$"
                     v-model.number="fundInfo.expenses"
@@ -355,7 +376,7 @@
 
 
               <div class="form-group">
-                <v-btn id="funding" @click="addObjToList(fundingObj, model.fundingList)" class="my-5" dark color='#003366'>Add
+                <v-btn id="funding" :disabled="isReadOnly" @click="addObjToList(fundingObj, model.fundingList)" class="my-5" dark color='#003366'>Add
                   Funding
                 </v-btn>
               </div>
@@ -412,6 +433,7 @@
         <div class="px-md-12 px-7">
           <br>
           <v-radio-group
+          :disabled="isReadOnly"
             :rules="rules.required"
             required
             row
@@ -432,6 +454,7 @@
             <br>
 
             <v-radio-group
+            :disabled="isReadOnly"
               :rules="rules.required"
               required
               row
@@ -451,6 +474,7 @@
             <br>
 
             <v-radio-group
+            :disabled="isReadOnly"
               :rules="rules.required"
               required
               row
@@ -470,6 +494,7 @@
             <br>
 
             <v-radio-group
+            :disabled="isReadOnly"
               :rules="rules.required"
               required
               row
@@ -489,6 +514,7 @@
             <br>
 
             <v-radio-group
+            :disabled="isReadOnly"
               :rules="rules.required"
               required
               row
@@ -587,6 +613,7 @@
 
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
+                  :disabled="isReadOnly"
                   large
                   color="blue darken-4"
                   class="mt-md-4"
@@ -597,6 +624,7 @@
 
               <v-col class="col-md-2 col-12">
                 <v-text-field
+                :disabled="isReadOnly"
                   type="number"
                   class=""
                   v-model.number="obj.staffNumber"
@@ -609,6 +637,7 @@
 
               <v-col class="col-md-2 col-12 ">
                 <v-text-field
+                :disabled="isReadOnly"
                   class=""
                   v-model="obj.staffRole"
                   label="Direct Care Staff Role "
@@ -620,6 +649,7 @@
 
               <v-col class="col-md-2 col-12 ">
                 <v-text-field
+                :disabled="isReadOnly"
                   prefix="$"
                   class=""
                   v-model.number="obj.wageBeforeIncrease"
@@ -632,6 +662,7 @@
 
               <v-col class="col-md-2 col-12 ">
                 <v-text-field
+                :disabled="isReadOnly"
                   prefix="$"
                   class=""
                   v-model.number="obj.wageAfterIncrease"
@@ -643,11 +674,13 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number"
-                              outlined :rules="rules.required"
-                              v-model.number="obj.averageHours"
-                              label="Average hours per week at this facility"
-
+                <v-text-field 
+                :disabled="isReadOnly"
+                type="number"
+                outlined 
+                :rules="rules.required"
+                v-model.number="obj.averageHours"
+                label="Average hours per week at this facility"
                 />
               </v-col>
 
@@ -656,6 +689,7 @@
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
+                    :disabled="isReadOnly"
                       :rules="rules.required"
                       outlined v-model="obj.wageDate"
                       label="Date of Increase"
@@ -663,6 +697,7 @@
                     </v-text-field>
                   </template>
                   <v-date-picker
+                  :disabled="isReadOnly"
                     clearable
                     v-model="obj.wageDate"
                     @input="wageCalendar[index] = false">
@@ -676,7 +711,7 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="funding" @click="addObjToList(wageObj, model.wageList)" class="my-5" dark color='#003366'>Add
+              <v-btn id="funding" :disabled="isReadOnly" @click="addObjToList(wageObj, model.wageList)" class="my-5" dark color='#003366'>Add
                 Funding
               </v-btn>
             </div>
@@ -705,6 +740,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" When did your facility's recruitment and retention challenges begin? "
               placeholder="Describe here"
@@ -714,6 +750,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" How many Direct Care Staff have left your facility due to wages? "
               placeholder="Describe here"
@@ -723,6 +760,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" What have you done to try to recruit staff? "
               placeholder="Describe here"
@@ -732,6 +770,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" Have you had to adjust your hours/days of operation?? "
               placeholder="Describe here"
@@ -741,6 +780,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" Is your facility unable to fill spaces due to insufficient staffing? "
               placeholder="Describe here"
@@ -750,6 +790,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" Is there anything else you would like us to know about the wage increase(s)? "
               placeholder="Describe here"
@@ -787,6 +828,7 @@
             expanded, extended (defined as after 7 pm and before 6 am and/or overnight), and/or non-traditional
             hours?</p>
           <v-radio-group
+          :disabled="isReadOnly"
             :rules="rules.required"
             required
             row
@@ -855,6 +897,7 @@
             <v-row v-for="(obj, index) in model.expansionList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
+                  :disabled="isReadOnly"
                   large
                   color="blue darken-4"
                   class="mt-md-4"
@@ -877,6 +920,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
+                    :disabled="isReadOnly"
                       v-model="obj.timefrom"
                       label="Open-Previous"
                       prepend-icon="mdi-clock-time-four-outline"
@@ -886,6 +930,7 @@
                     ></v-text-field>
                   </template>
                   <v-time-picker
+                  :disabled="isReadOnly"
                     v-if="obj.menufrom"
                     v-model="obj.timefrom"
                     full-width
@@ -897,6 +942,7 @@
               <v-col class="col-md-1 col-12 ">
 
                 <v-menu
+                :disabled="isReadOnly"
                   ref="menuto"
                   v-model="obj.menuto"
                   :close-on-content-click="false"
@@ -909,6 +955,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
+                    :disabled="isReadOnly"
                       v-model="obj.timeto"
                       label="Close-Previous"
                       prepend-icon="mdi-clock-time-four-outline"
@@ -918,6 +965,7 @@
                     ></v-text-field>
                   </template>
                   <v-time-picker
+                  :disabled="isReadOnly"
                     :min="obj.timefrom"
                     v-if="obj.menuto"
                     v-model="obj.timeto"
@@ -942,6 +990,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
+                    :disabled="isReadOnly"
                       v-model="obj.newtimefrom"
                       label="Open-New"
                       prepend-icon="mdi-clock-time-four-outline"
@@ -974,6 +1023,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
+                    :disabled="isReadOnly"
                       v-model="obj.newtimeto"
                       label="Close-New"
                       prepend-icon="mdi-clock-time-four-outline"
@@ -994,11 +1044,22 @@
 
 
               <v-col class="col-md-2 col-12">
-                <v-menu v-model="expansionCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
-                        transition="scale-transition" offset-y min-width="auto">
+                <v-menu 
+                  v-model="expansionCalendarMenu[index]" 
+                  :close-on-content-click="false" 
+                  :nudge-right="40"
+                  transition="scale-transition" 
+                  offset-y min-width="auto"
+                  >
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules.required" outlined v-model="obj.date" label="Date of Change (YYYY-MM-DD)"
-                                  readonly v-bind="attrs" v-on="on">
+                    <v-text-field 
+                      :disabled="isReadOnly"
+                      :rules="rules.required" 
+                      outlined v-model="obj.date" 
+                      label="Date of Change (YYYY-MM-DD)"
+                      readonly 
+                      v-bind="attrs" v-on="on"
+                      >
                     </v-text-field>
                   </template>
                   <v-date-picker
@@ -1010,11 +1071,18 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules.required" v-model.number="obj.expense" prefix="$"/>
+                <v-text-field
+                   :disabled="isReadOnly"
+                   type="number" outlined 
+                   :rules="rules.required" 
+                   v-model.number="obj.expense" 
+                   prefix="$"
+                   />
               </v-col>
 
               <v-col class="col-md-2 col-12">
                 <v-select
+                  :disabled="isReadOnly"
                   :items="items"
                   label="Payment Frequency"
                   outlined
@@ -1035,13 +1103,14 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn @click="addObjToList(expansionObj, model.expansionList)" class="my-5" dark color='#003366'>Add Expansion Details
+              <v-btn :disabled="isReadOnly" @click="addObjToList(expansionObj, model.expansionList)" class="my-5" dark color='#003366'>Add Expansion Details
               </v-btn>
             </div>
 
             <br>
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               label=" Please explain why you have incurred (or will incur) each expense you have listed above.(e.g. Wages, Utilities)"
               outlined
@@ -1053,6 +1122,7 @@
             <br>
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               placeholder="Describe here"
               outlined
@@ -1096,6 +1166,7 @@
             <li>Language or culture resources for use in the child care program</li>
           </ul>
           <v-radio-group
+          :disabled="isReadOnly"
             label="Is your fee increase due to an increased connection to Indigenous community, culture, or language in an Indigenous Facility or Organization?"
             required
             :rules="rules.required"
@@ -1165,6 +1236,7 @@
             <v-row v-for="(indigExpense, index) in model.indigenousExpenseList" :key="index">
               <v-col class="col-md-1 col-12 mx-0">
                 <v-icon
+                  :disabled="isReadOnly"
                   large
                   color="blue darken-4"
                   class="mt-md-4"
@@ -1175,6 +1247,7 @@
               <v-col class="col-md-3 col-12 ">
 
                 <v-text-field
+                  :disabled="isReadOnly"
                   class=""
                   v-model="indigExpense.description"
                   label="Description"
@@ -1185,14 +1258,29 @@
               </v-col>
 
               <v-col class="col-md-3 col-12">
-                <v-menu v-model="indigenousCalendarMenu[index]" :close-on-content-click="false" :nudge-right="40"
-                        transition="scale-transition" offset-y min-width="auto">
+                <v-menu 
+                  v-model="indigenousCalendarMenu[index]" 
+                  :close-on-content-click="false" 
+                  :nudge-right="40"
+                  transition="scale-transition" 
+                  offset-y 
+                  min-width="auto"
+                  >
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field :rules="rules.required" outlined v-model="indigExpense.date" label="Date of Expense (YYYY-MM-DD)"
-                                  readonly v-bind="attrs" v-on="on">
+                    <v-text-field 
+                      :disabled="isReadOnly"
+                      :rules="rules.required" 
+                      outlined 
+                      v-model="indigExpense.date" 
+                      label="Date of Expense (YYYY-MM-DD)"
+                      readonly 
+                      v-bind="attrs" 
+                      v-on="on"
+                      >
                     </v-text-field>
                   </template>
                   <v-date-picker
+                    :disabled="isReadOnly"
                     clearable
                     v-model="indigExpense.date"
                     @input="indigenousCalendarMenu[index] = false">
@@ -1202,6 +1290,7 @@
 
               <v-col class="col-md-3 col-12">
                 <v-select
+                  :disabled="isReadOnly"
                   :items="items"
                   label="Expense Frequency"
                   outlined
@@ -1211,7 +1300,14 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field type="number" outlined :rules="rules.required" v-model.number="indigExpense.expense" prefix="$"/>
+                <v-text-field 
+                  :disabled="isReadOnly"
+                  type="number" 
+                  outlined 
+                  :rules="rules.required"
+                  v-model.number="indigExpense.expense" 
+                  prefix="$"
+                  />
               </v-col>
 
               <span class="white--text"> . </span>
@@ -1221,7 +1317,7 @@
 
             <div class="form-group">
               
-              <v-btn id="indigEx"  @click="addObjToList(indigenousExpenseObj, model.indigenousExpenseList)" class="my-5"
+              <v-btn id="indigEx"  :disabled="isReadOnly" @click="addObjToList(indigenousExpenseObj, model.indigenousExpenseList)" class="my-5"
                      dark color='#003366'>Add Expense
               </v-btn>
             </div>
@@ -1234,6 +1330,7 @@
             <div class="">
               <br>
               <v-textarea
+              :disabled="isReadOnly"
               :rules="rules.required"
                 label="Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above."
                 outlined
@@ -1286,6 +1383,7 @@
             </li>
           </ul>
           <v-radio-group
+          :disabled="isReadOnly"
             required
             :rules="rules.required"
             row
@@ -1306,6 +1404,7 @@
           <div v-if="model.underservedPop == 1">
             <br>
             <v-textarea
+            :disabled="isReadOnly"
               :rules="rules.required"
               outlined
               name="input-7-4"
@@ -1316,6 +1415,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               outlined
               name="input-7-4"
@@ -1326,6 +1426,7 @@
 
             <br>
             <v-textarea
+            :disabled="isReadOnly"
             :rules="rules.required"
               outlined
               name="input-7-4"
@@ -1343,7 +1444,7 @@
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
       <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="isFormComplete==false">Next</v-btn>
-      <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
+      <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true) ">Save</v-btn>
     </v-row>
 
   </v-container>
@@ -1374,6 +1475,7 @@ export default {
   data() {
     return {
       rules,
+      loading: true,
       isValidForm : false,
       expenseObj: {
         description: '',
@@ -1425,18 +1527,13 @@ export default {
       newmenufrom: false,
       newmenuto: false,
       model,
-      test: 1,
       input: '',
       calendarMenu: [],
       expansionCalendarMenu: [],
       indigenousCalendarMenu: [],
       fundingCalendar: [],
       wageCalendar: [],
-      // expense,
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
-      // rules: [
-      //   (v) => !!v || 'Required.',
-      // ],
       processing: false,
 
     };
@@ -1463,9 +1560,19 @@ export default {
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList', 'navBarList']),
-    ...mapState('application', ['programYearLabel']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus']),
     currentFacility(){
       return this.navBarList.find(element => element.ccfriApplicationId == this.$route.params.urlGuid);
+    },
+    isReadOnly(){
+      //if submitted, lock er up. If unlock CCFRI - unlock
+      if (this.currentFacility.unlockCcfri){
+        return false;
+      }
+      else if (this.applicationStatus === 'SUBMITTED'){
+        return true; 
+      }
+      return false;
     },
     isFormComplete(){
       let done = true;
@@ -1491,10 +1598,17 @@ export default {
   },
   watch: {
     '$route.params.urlGuid': {
-      handler() {
-        let ccfriId = this.$route.params.urlGuid;
-        console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
-        this.loadRfi(ccfriId);
+      async handler() {
+        try{
+          let ccfriId = this.$route.params.urlGuid;
+          console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
+          await this.loadRfi(ccfriId);
+        } catch (error) {
+          console.log(error);
+          this.setFailureAlert('An error occured while retrieving data.');
+        }
+
+        this.loading = false;
       },
       immediate: true,
       deep: true
