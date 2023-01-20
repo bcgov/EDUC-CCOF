@@ -49,8 +49,6 @@ export default {
     async saveNmf({ state, commit }, ccfriId) {
 
       checkSession();
-      console.info(state.nmfModel);
-      console.info(state.loadedModel);
 
       if (isEqual(state.nmfModel, state.loadedModel)) {
         console.info('no model changes');
@@ -58,7 +56,6 @@ export default {
       }
 
       commit('setLoadedModel', deepCloneObject(state.nmfModel));
-      // commit('app/setIsNmfComplete', state.isNmfComplete, { root: true });
       if (state.nmfModel?.nmfId) {
         // has a nmf ID, so update the data
         try {

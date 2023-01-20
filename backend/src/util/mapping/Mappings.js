@@ -241,7 +241,8 @@ const ECEWEFacilityMappings = [
 const UserProfileOrganizationMappings = [
   { back: 'organization_name', front: 'organizationName' },
   { back: 'organization_accountid', front: 'organizationId' },
-  { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' }
+  { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
+  { back: 'organization_accountnumber', front: 'organizationAccountNumber' }
 ];
 
 const UserProfileApplicationMappings = [ //application
