@@ -8,6 +8,8 @@ export default {
   state: {
     organizationId: null,
     organizationProviderType: null,
+    organizationName: null,
+    organizationAccountNumber: null,
     isOrganizationComplete: false,
     isStarted: false,
     organizationModel: {},
@@ -16,6 +18,8 @@ export default {
   mutations: {
     setOrganizationId: (state, organizationId) => { state.organizationId = organizationId; },
     setOrganizationProviderType: (state, organizationProviderType) => { state.organizationProviderType = organizationProviderType; },
+    setOrganizationName: (state, organizationName) => { state.organizationName = organizationName; },
+    setOrganizationAccountNumber: (state, organizationAccountNumber) => { state.organizationAccountNumber = organizationAccountNumber; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
     setOrganizationModel(state, model) { state.organizationModel = model; },
     setLoadedModel(state, model) { state.loadedModel = model; },

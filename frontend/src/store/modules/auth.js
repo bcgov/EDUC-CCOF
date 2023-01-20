@@ -136,6 +136,8 @@ export default {
       commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
       commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
+      commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
+      commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
