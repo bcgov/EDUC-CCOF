@@ -119,7 +119,7 @@
             </v-row>
             <v-row>
               <v-col cols="12" style="text-align: center;">
-                <p class="pt-4">Your submission has been received. We will contact you if we require further information. Return to your dashboard.</p>
+                <p class="pt-4">Your submission has been received. Please refer to your dashboard for updates on the progress of your application. We will contact you if more information is required.</p>
                 <p><router-link :to="landingPage">Return to your dashboard</router-link></p>
               </v-col>
             </v-row>

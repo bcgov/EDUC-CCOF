@@ -116,7 +116,7 @@ export default {
       this.message.subject = item.subject;
       this.message.dateReceived = item.dateReceived;
       this.message.messageContent = item.messageContent;
-      this.message.sender = 'From: My Childcare Services';
+      this.message.sender = 'From: My ChildcareBC Services';
       row.select(true);
       this.updateMessage(item.messageId);
     },

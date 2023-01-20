@@ -4,13 +4,13 @@
       <v-card class="cc-top-level-card" width="1200">
         <v-container>
           <v-row justify="center">
-            You have successfully applied for CCOF for the following Facilities:
+            You have successfully applied for CCOF for the following facilities:
           </v-row>
 
           <v-row justify="center" style="padding-top: 2em;">
             <ul style="list-style: none">
               <li v-for="item in navBarList" :key="item.facilityId" style="">
-                <a>{{ item.facilityName }}</a>
+                <span>{{ item.facilityName }}</span>
               </li>
             </ul>
           </v-row>

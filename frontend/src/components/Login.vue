@@ -12,7 +12,7 @@
             <v-row class=" ml-4 my-16">
               <v-col sm="10" align="left" >
               <span class="white--text" >
-                <p class="text-h3"   style="font-family:BCSans;">My ChildCare Services</p> <br><br>
+                <p class="text-h3"   style="font-family:BCSans;">My ChildCareBC Services</p> <br><br>
                 <p class="text-h5 ">Welcome</p>
               </span>
             </v-col>
