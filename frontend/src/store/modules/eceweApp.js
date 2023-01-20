@@ -61,7 +61,6 @@ export default {
       checkSession();
       let payload = JSON.parse(JSON.stringify(state.facilities));
       try {
-        // TODO test if deep copy is needed or not....
         commit('setLoadedFacilities', {...state.facilities});
         let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
         commit('setFacilities', response.data.facilities);

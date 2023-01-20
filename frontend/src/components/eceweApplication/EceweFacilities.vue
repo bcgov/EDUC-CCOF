@@ -30,47 +30,6 @@
         </span>
       </v-alert>
     </v-row>
-    <v-row><v-col></v-col></v-row>
-    <v-row justify="center">
-      <v-card elevation="4" class="col-9 pa-0">
-        <v-row>
-          <v-col class="py-0">
-            <v-card-title v-if="model.fundingModel == this.fundingModelTypeList[0].id && !isLoading" class="py-1 noticeInfo">
-              <span style="float:left">
-                <v-icon
-                  x-large
-                  class="py-1 px-3 noticeInfoIcon">
-                  mdi-alert
-                </v-icon>
-              </span>
-              You've indicated that all of your facilities have provincially funded ECEs and receive Low Wage Redress Funding.
-            </v-card-title>
-            <v-card-title v-else-if="!isLoading" class="py-1 noticeWarning">
-              <span style="float:left">
-                <v-icon
-                  x-large
-                  class="py-1 px-3 noticeWarningIcon">
-                  mdi-alert
-                </v-icon>
-              </span>
-              At least one facility must be opted-in
-            </v-card-title>
-            <v-card-title v-else class="py-1">
-              <span style="float:left">
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="avatar"></v-skeleton-loader>
-              </span>
-            </v-card-title>
-          </v-col>
-        </v-row>
-        <v-row justify="center" class="pa-2">
-          <v-col>
-          <span v-if="model.fundingModel == this.fundingModelTypeList[0].id && !isLoading">These facilities are not eligible for ECE-WE and have been automatically opted out.</span>
-          <span v-else-if="!isLoading">In order to continue, you must opt-in at least one facility to ECE-WE.</span>
-          <v-skeleton-loader v-else :loading="true" type="text"></v-skeleton-loader>
-        </v-col>
-        </v-row>
-      </v-card>
-    </v-row>
     <div v-if="!isLoading">
       <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
         <v-row justify="center" class="pa-4">
@@ -158,8 +117,8 @@
     <v-row><v-col></v-col></v-row>
     <v-row justify="space-around">
       <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-      <v-btn color="secondary" :loading="isProcessing" :disabled="!enableNextBtn" outlined x-large @click="next()">Next</v-btn>
-      <v-btn color="primary" :loading="isProcessing" :disabled="!enableSaveBtn || isReadOnly" outlined x-large @click="saveFacilities()">Save</v-btn>
+      <v-btn color="secondary" :loading="isProcessing" :disabled="isNextBtnDisabled" outlined x-large @click="next()">Next</v-btn>
+      <v-btn color="primary" :loading="isProcessing" :disabled="isSaveBtnDisabled || isReadOnly" outlined x-large @click="saveFacilities()">Save</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -174,12 +133,10 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      uiFacilities: {},
+      uiFacilities: [],
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
-      enableNextBtn: true,
-      enableSaveBtn: true,
     };
   },
   computed: {
@@ -187,6 +144,12 @@ export default {
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    isNextBtnDisabled() {
+      return this.uiFacilities.some(item => item.optInOrOut === null);
+    },
+    isSaveBtnDisabled() {
+      return this.model.fundingModel === this.fundingModelTypeList[0].id;
+    },
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
@@ -208,7 +171,6 @@ export default {
     this.initECEWEFacilities(this.navBarList);
     this.setupUiFacilities();
     this.model = {...this.eceweModel};
-    this.enableButtons();
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.saveFacilities(false);
@@ -218,12 +180,6 @@ export default {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
     ...mapMutations('app', ['setEceweFacilityComplete']),
     ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
-    enableButtons() {
-      if (this.model.fundingModel == this.fundingModelTypeList[0].id) {
-        this.enableSaveBtn = false;
-        this.enableNextBtn = true;
-      }
-    },
     setupUiFacilities() {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       copyFacilities.forEach(element => element.update = element.optInOrOut == null);
@@ -272,7 +228,6 @@ export default {
             }
           });
         }
-
         this.setupUiFacilities();
         if (showConfirmation || showConfirmation == null) {
           this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
