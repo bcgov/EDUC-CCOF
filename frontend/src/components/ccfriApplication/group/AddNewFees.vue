@@ -367,6 +367,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      pastCcfriGuid: undefined,
       closureFees : 'No',
       dateObj: {
         datePicker1: undefined,
@@ -404,7 +405,7 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapState('application', ['applicationStatus', 'programYearLabel', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
-    ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
 
     findIndexOfFacility(){
@@ -433,6 +434,12 @@ export default {
     //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
       async handler() {
+
+        
+        if (this.pastCcfriGuid){
+          //console.log(this.pastCcfriGuid);
+          await this.save(false);
+        }
         
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
@@ -441,7 +448,7 @@ export default {
           if (this.getClosureDateLength > 0){
             this.closureFees = 'Yes';
           }
-          //this.pastCcfriGuid = this.$route.params.urlGuid;
+          this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -498,7 +505,7 @@ export default {
           this.$router.push({path : `${PATHS.eceweEligibility}`});
         }
         else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
-          console.log('going to next fac EXISTING FEES page');
+          //console.log('going to next fac EXISTING FEES page');
           this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
           //check here if renew - then send them to appropriate screen currentFees
         }
@@ -525,10 +532,9 @@ export default {
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){
-      console.log('model:', this.loadedModel);
-      console.log('ccfriStore:', this.CCFRIFacilityModel);
-      //if 
-
+      // console.log('model:', this.loadedModel);
+      // console.log('ccfriStore:', this.CCFRIFacilityModel);
+      
       if (isEqual(this.CCFRIFacilityModel, this.loadedModel)) {
         console.info('no model changes');
         return false;
@@ -541,22 +547,21 @@ export default {
     async save(showMessage) {
       //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
-      console.log('guid to save:' , this.CCFRIFacilityModel.facilityId);
       if (this.hasModelChanged() || this.hasDataToDelete()){
-        console.log('dates in save :' , this.CCFRIFacilityModel.dates);
+        
         this.processing = true;
         let payload = [];
         let firstObj = 
           {
-            ccfriApplicationGuid : this.currentFacility.ccfriApplicationId,
+            ccfriApplicationGuid : this.ccfriId,
             facilityClosureDates : this.CCFRIFacilityModel.dates,
             ccof_formcomplete : this.isFormComplete(), //have to flip this bool because it's used to enable/diable the next button
             notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
           };
     
-        
-        let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
-        currentFacility.isCCFRIComplete = this.isFormComplete(); 
+        //move this to watcher ?
+        //let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
+        this.currentFacility.isCCFRIComplete = this.isFormComplete(); 
 
         //checks if blank - don't save empty rows
         for(let i =  this.CCFRIFacilityModel.dates.length -1; i >=0; i--){
@@ -574,7 +579,7 @@ export default {
             payload[index] = {
               parentFeeGUID : item.parentFeeGUID,
               deleteMe: item.deleteMe,
-              ccfriApplicationGuid : this.currentFacility.ccfriApplicationId, //CCFRI application GUID 
+              ccfriApplicationGuid : this.ccfriId, //CCFRI application GUID 
               childCareCategory : item.childCareCategoryId,
               programYear : item.programYearId,
               aprFee : item.approvedFeeApr,
