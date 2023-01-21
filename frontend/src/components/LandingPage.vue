@@ -159,7 +159,10 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-card>   
+    </v-card>  
+    <p class="text-center mt-4 font-weight-bold">
+      Note: For assistance completing your Program Confirmation Form, contact the program at 1-888-338-6622 (Option 2).
+    </p> 
   </v-container>
 </template>
 <script>
