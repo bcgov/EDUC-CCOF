@@ -43,7 +43,7 @@
                   <v-text-field :disabled="isLocked" outlined required v-model="model.phone" :rules="[...rules.required, rules.phone]" label="Business Phone" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field :disabled="isLocked" outlined required v-model="model.email" :rules="[...rules.required, ...rules.email]" label="Organization Facility Email" />
+                  <v-text-field :disabled="isLocked" outlined required v-model="model.email" :rules="[...rules.required, ...rules.email]" label="Facility Email Address" />
                 </v-col>
               </v-row>
 

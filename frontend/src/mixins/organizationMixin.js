@@ -61,6 +61,15 @@ export default {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
+    validateIncorporationNumber(organizationTypeId, incorporationNumber) {
+      const selectedOrgType = this.organizationTypeList.find(obj => obj.id === organizationTypeId)?.name;
+      if (!incorporationNumber) {
+        if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
+          return ['This field is required'];
+        }
+      }
+      return [];
+    },
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
