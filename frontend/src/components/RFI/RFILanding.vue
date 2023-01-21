@@ -684,14 +684,14 @@
                 :disabled="isReadOnly"
                 type="number"
                 outlined 
-                :rules="rules.required"
+                :rules="[...rules.required, rules.min(0), rules.max(168)]"
                 v-model.number="obj.averageHours"
                 label="Average hours per week at this facility"
                 />
               </v-col>
 
               <v-col class="col-md-1 col-12">
-                <v-menu v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-right="40"
+                <v-menu v-model="wageCalendar[index]" :close-on-content-click="false" :nudge-left="180"
                         transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
@@ -778,7 +778,7 @@
             <v-textarea
             :disabled="isReadOnly"
             :rules="rules.required"
-              label=" Have you had to adjust your hours/days of operation?? "
+              label=" Have you had to adjust your hours/days of operation?"
               placeholder="Describe here"
               outlined
               v-model=" model.textbox4"

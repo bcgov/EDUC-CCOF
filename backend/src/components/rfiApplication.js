@@ -100,7 +100,7 @@ async function updateRFIApplication(req, res) {
     const isRfiComplete = req.body.isRfiComplete;
     const ccfriId = req.body.ccfriApplicationId;
     if (isRfiComplete != null ) {
-      await patchOperationWithObjectId('ccof_applicationccfris', ccfriId, {ccof_rfi_formcomplete: isRfiComplete});
+      await patchOperationWithObjectId('ccof_applicationccfris', ccfriId, {ccof_has_rfi: true, ccof_rfi_formcomplete: isRfiComplete});
     }
 
     //update funding

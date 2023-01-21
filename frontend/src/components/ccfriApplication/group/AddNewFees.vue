@@ -340,13 +340,13 @@
             </v-row>
             <v-row>
               <v-col cols="12" style="text-align: center;">
-                <p class="pt-4">Your application for exceeds the 3% median increase <br>for your area for the childcare categories:<br><br>
+                <p class="pt-4">Your application exceeds the 3% median increase<br>for your area for the child care categories:<br><br>
                   <span v-for="item in rfi3percentCategories" :key="item">{{item}}<br></span>
                 </p>
-                <p>You will have to fill out a Request for Information(RFI) form.</p>
-                <p class="pt-4">You can continue to the RFI forms or press back to update your fees</p>
+                <p>You will have to fill out a Request for Information (RFI) form.</p>
+                <p class="pt-4">You can continue to the RFI form or press back to update your fees.</p>
                 <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
-                <v-btn dark color="primary" @click="toRfi()">continue to RFI</v-btn>
+                <v-btn dark color="primary" @click="toRfi()">Continue</v-btn>
               </v-col>
             </v-row>
           </v-container>
