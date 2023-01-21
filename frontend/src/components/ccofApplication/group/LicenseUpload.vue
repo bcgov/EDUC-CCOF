@@ -108,7 +108,7 @@ export default {
     this.fileRules = [
       value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
       value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name).toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
+      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
     ];
 
     await this.createTable();
