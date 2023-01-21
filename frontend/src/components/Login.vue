@@ -150,5 +150,8 @@ export default {
     max-width: 1450px
   }
 
+  .v-card__title {
+    word-break: normal;
+  }
 
 </style>
