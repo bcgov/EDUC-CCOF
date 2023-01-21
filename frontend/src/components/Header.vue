@@ -13,11 +13,19 @@
           alt="B.C. Government Logo"
       >
     </a>
-    
-    <div v-if="isAuthenticated && dataReady" class="mt-7">
+    <v-row class="verticalLine">
+      <v-row>
+        <v-toolbar-title fill-height>
+          <h6 v-if="this.$vuetify.breakpoint.xsOnly">My ChildCareBC<br>Services</h6>
+          <h2 class="mainTitle" v-else>My ChildCareBC Services</h2>
+        </v-toolbar-title>
+      </v-row>
+    </v-row>
+    <v-spacer></v-spacer>
+    <div v-if="isAuthenticated && dataReady" class="mt-6">
       <v-btn 
         id="mail_box_button" @click="goToMessagePage()"
-        color="#003366" rounded dark elevation="0" style="margin-right:50px"
+        color="#003366" rounded dark class="mr-5 elevation-0"
       >
         <v-badge
           color="red"
@@ -131,6 +139,13 @@ a {
 .v-btn.title:hover:before {
   color: #fff;
   background: none;
+}
+
+.verticalLine {
+  border-left: 1px solid #DFB433;
+  height: 50px;
+  margin-left: 12px;
+  padding-left: 24px;
 }
 
 .v-input__slot{
