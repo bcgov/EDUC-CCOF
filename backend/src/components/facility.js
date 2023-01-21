@@ -225,10 +225,10 @@ async function updateFacilityLicenseType(facilityId, data) {
       newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 2)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCareMultiAge > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 4)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCareSchool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 7)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3)?.ccof_license_categoryid);
     }
     if (data.maxPreschool > 0) {
       newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 8)?.ccof_license_categoryid);
