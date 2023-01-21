@@ -90,7 +90,7 @@
                   outlined
                   v-model="model.orgContactName"
                   :disabled="isReadOnly"
-                  label="Organization Contact Name/Digital signature (wording to be provided)."
+                  label="Organization Contact Name/Digital signature."
                 />
               </v-col>
             </v-row>
