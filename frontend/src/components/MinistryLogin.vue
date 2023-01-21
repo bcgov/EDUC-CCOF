@@ -6,17 +6,15 @@
       <v-row >
         <v-col cols="12" align="center">
           <v-img
-            :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
+            :src="require('../assets/images/login-header-img-resized.jpg')"
             max-height="300"
-            max-width="1448" >
-            <v-row class="ml-4 my-16">
-              <v-col sm="10" align="left" >
-              <span class="white--text" >
-                <p class="text-h3">My ChildCareBC Services</p> <br><br>
-                <p class="text-h5">Ministry Login</p>
-              </span>
+            max-width="1448" 
+            class="align-end">
+            <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85);">
+              <span class="text-h4 white--text font-weight-bold" style="font-family:BCSans;">My ChildCareBC Services</span>
+              <br>
+              <span class="text-h6 white--text">Ministry Login</span>
             </v-col>
-          </v-row>
           </v-img>
         </v-col>
       </v-row>
