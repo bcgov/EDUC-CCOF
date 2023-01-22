@@ -172,8 +172,13 @@ export default {
         try {
           this.loading = true;
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-          //this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-
+          if (this.CCFRIFacilityModel.existingFeesCorrect == 100000000) {
+            this.model.q1 = 'Yes';
+          } else if (this.CCFRIFacilityModel.existingFeesCorrect == 100000001) {
+            this.model.q1 = 'No';
+          } else {
+            this.model.q1 = undefined;
+          }
           await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
 
           this.feeList = [];
@@ -206,15 +211,17 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility']),  
-    previous(){
-      this.$router.push({path : `${PATHS.ccfriHome}`});
-      //this.$router.back(); 
+    ...mapActions('ccfriApp', ['loadCCFRIFacility']),
+    ...mapActions('navBar', ['getPreviousPath']),    
+    async previous(){
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
     },
     async setFees (areFeesCorrect){
       await this.loadCCFRIFacility(this.$route.params.urlGuid); 
       this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
-      //grab the previous years fees and save it to the store - so then AddNewFees will have this data ready to go 
+      await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+      this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
     },
     isFormValidAndLoaded(){
       //we need this to disable button while the page is loading
@@ -224,10 +231,10 @@ export default {
     next() {
       this.loading = true;
 
-      if (this.model.q1== 'No'){
+      if (this.model.q1 == 'No'){
         this.setFees(false);
       }
-      else if (this.model.q1== 'Yes') {
+      else if (this.model.q1 == 'Yes') {
         this.setFees(true);
       }
       this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});

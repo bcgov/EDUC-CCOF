@@ -136,7 +136,7 @@
               class="mr-5"
             > mdi-information
             </v-icon>
-            <strong>Note: See the <a href="#">Funding Guidelines</a> for the list of eligible expenses</strong>
+            <strong>Note: See the Funding Guidelines for the list of eligible expenses</strong>
           </v-banner>
           <div class="px-md-12 px-7">
 
@@ -450,7 +450,7 @@
         <br>
 
         <p class="text-h6 text--primary px-5 py-0 my-0">
-          As defined in the <a href="#"> Funding Guidelines,</a> Direct Care Staff are staff employed on either a
+          As defined in the Funding Guidelines, Direct Care Staff are staff employed on either a
           full-time, part-time, or casual basis, providing direct care to children at a facility for 50% or more of
           their working time.
         </p>
@@ -737,8 +737,8 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              <v-btn id="funding" :disabled="isReadOnly" @click="addObjToList(wageObj, model.wageList)" class="my-5" dark color='#003366'>Add
-                Funding
+              <v-btn id="wagebtn" :disabled="isReadOnly" @click="addObjToList(wageObj, model.wageList)" class="my-5" dark color='#003366'>Add
+                Staff
               </v-btn>
             </div>
             <br>
@@ -1185,7 +1185,7 @@
         <div class="px-md-12 px-7">
 
           <br>
-          <p>As outlined in the <a href="#">Funding Guidelines</a>, this may include expenses associated with, but not
+          <p>As outlined in the Funding Guidelines, this may include expenses associated with, but not
             limited to:</p>
           <ul>
             <li>Participation of an Elder, culture/language, and/or family in the child care program</li>
@@ -1396,8 +1396,7 @@
 
         <div class="px-md-12 px-7">
           <br>
-          <p>To be considered under this policy, the Facility must meet all of the following criteria as outlined in the
-            <a href="#">Funding Guidelines</a>.</p>
+          <p>To be considered under this policy, the Facility must meet all of the following criteria as outlined in the Funding Guidelines.</p>
           <ul>
             <li>Has historcally provided care to underserved populations -including Indigenous or low-income populations
               -at significantly below the regional median range of fees for their area or at no fee;
@@ -1565,20 +1564,6 @@ export default {
 
     };
   },
-  mounted() {
-    console.info('mounted');
-    //this.model = this.$store.state.ccfriApp.model ?? model;
-    console.info('model is: ', this.model);
-
-
-    //load the screen with at least one row in the form
-    this.addObjToList(this.fundingObj, this.model.fundingList);
-    this.addObjToList(this.expenseObj, this.model.expenseList);
-    this.addObjToList(this.wageObj, this.model.wageList);
-    this.addObjToList(this.expansionObj, this.model.expansionList);
-    this.addObjToList(this.indigenousExpenseObj, this.model.indigenousExpenseList);
-
-  },
   async beforeRouteLeave(_to, _from, next) {
     this.$store.commit('rfiApp/setRfiModel', this.model);
     await this.save(false);
@@ -1593,7 +1578,7 @@ export default {
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility.unlockCcfri){
+      if (this.currentFacility.unlockRfi == 1){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){
@@ -1627,6 +1612,7 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try{
+          window.scrollTo(0,0);
           let ccfriId = this.$route.params.urlGuid;
           console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
           await this.loadRfi(ccfriId);

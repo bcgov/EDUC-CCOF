@@ -34,10 +34,9 @@ export default {
 
   actions: {
     async loadRfi({getters, commit}, ccfriId) {
+      console.log('loading RFI for: ', ccfriId);
       let rfiModel = getters.getByCcfriId(ccfriId);
       if (rfiModel) {
-        // console.log('found rfimodel for ccfriId: ', ccfriId);
-        // console.log('found rfimodel for  ', rfiModel);
         commit('setRfiModel', rfiModel);
         commit('setLoadedModel', deepCloneObject(rfiModel));
       } else {
@@ -49,7 +48,17 @@ export default {
             commit('addRfiToStore', {ccfriId: ccfriId, model: response.data});
             commit('setRfiModel', response.data);
             commit('setLoadedModel', deepCloneObject(response.data));
-  
+          } else {
+            let rfi =  {
+              expansionList: [],
+              wageList: [],
+              fundingList: [],
+              expenseList: [],
+              indigenousExpenseList: []
+            };
+            commit('addRfiToStore', {ccfriId: ccfriId, model: rfi});
+            commit('setRfiModel', rfi);
+            commit('setLoadedModel', deepCloneObject(rfi));
           }
         } catch(e) {
           console.log(`Failed to get existing RFI with error - ${e}`);
@@ -94,6 +103,7 @@ export default {
         // has a rfi ID, so update the data
         try {
           await ApiService.apiAxios.put(ApiRoutes.APPLICATION_RFI + '/' + 'rfi/' + state.rfiModel?.rfiId, rfiPayloadModel);
+          commit('addRfiToStore', {ccfriId: ccfriId, model: state.rfiModel});
           return null;
         } catch (error) {
           console.log(`Failed to update existing RFI - ${error}`);
