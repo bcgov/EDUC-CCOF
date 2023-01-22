@@ -9,13 +9,9 @@
     </v-container>
   <v-container v-else>
 
-    <div class="row pt-4 justify-center">
+    <div class="pt-4 text-center">
       <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
-    </div>
-    <div class="row justify-center">
       <p class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</p>
-    </div>
-    <div class="row justify-center">
       <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
     </div>
     <div>
@@ -23,7 +19,7 @@
       <p class="text-h5 text-center blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
       <p class="text-h5 text-center blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
     </div>
-    <div class="mt-6">
+    <div class="my-10">
       <p>
         You have entered a parent fee above the 2023/24 fee increase limit. 
         Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy. 
