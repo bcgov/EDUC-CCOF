@@ -11,7 +11,6 @@
 
     <div class="pt-4 text-center">
       <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
-      <p class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</p>
       <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
     </div>
     <div>
