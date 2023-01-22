@@ -50,7 +50,9 @@ async function getUserInfo(req, res) {
     if (queryUserName) {
       try {
         log.info(`Ministry user [${userName}] is impersonating with username: [${queryUserName}].`);
-        userResponse = await getUserProfile('\'\'', queryUserName);
+        // dynamics api requires a userID. if userID not found then it wil use the query name
+        // put a random userID so that we only search by queryname
+        userResponse = await getUserProfile('cd7530df20d04ad0a28a9b26220e2e29', queryUserName);
         if (userResponse === null) { 
           return res.status(HttpStatus.NOT_FOUND).json({message: 'No user found with that BCeID UserName'});
         }
