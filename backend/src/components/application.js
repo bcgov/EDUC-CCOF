@@ -140,20 +140,19 @@ async function upsertParentFees(req, res) {
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
   //so body[0].notes will always exist 
   
-  if (body[0].notes || body[0].ccof_formcomplete){
-
-    let payload = {
-      "ccof_informationccfri" : body[0].notes,
-      "ccof_formcomplete" : body[0].ccof_formcomplete
-    };
-    try {
-      let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-      log.info('notesRes', response);
-      theResponse.push(res.status(HttpStatus.CREATED).json(response));
-    } catch (e) {
-      theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
-      hasError = true;
-    }
+  let payload = {
+    "ccof_informationccfri" : body[0].notes,
+    "ccof_formcomplete" : body[0].ccof_formcomplete,
+    "ccof_has_rfi" : body[0].ccof_has_rfi,
+    "ccof_feecorrectccfri": body[0].existingFeesCorrect
+  };
+  try {
+    let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
+    log.info('notesRes', response);
+    theResponse.push(res.status(HttpStatus.CREATED).json(response));
+  } catch (e) {
+    theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+    hasError = true;
   }
 
   //if no closure dates, don't bother sending any requests

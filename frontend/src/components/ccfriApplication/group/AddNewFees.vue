@@ -434,13 +434,11 @@ export default {
     //get facilityID from here and then set it ! 
     '$route.params.urlGuid': {
       async handler() {
-
-        
         if (this.pastCcfriGuid){
           //console.log(this.pastCcfriGuid);
           await this.save(false);
         }
-        
+        window.scrollTo(0,0);
         try {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
@@ -463,8 +461,9 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),  
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('app', ['addToRfiNavBarStore']),
+    ...mapMutations('app', ['addToRfiNavBarStore', 'forceNavBarRefresh']),
     addRow () {
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },
@@ -475,7 +474,6 @@ export default {
       });
     },
     closeDialog() {
-      this.currentFacility.hasRfi = 0;
       this.showRfiDialog = false;
 
     },
@@ -483,52 +481,51 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.currentFacility.hasRfi = 1;
+      this.currentFacility.hasRfi = true;
       this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
     },
-    previous() {
+    async previous() {
       if (this.isRenewal){
         this.$router.push({path : `${PATHS.currentFees}/${this.currentFacility.ccfriApplicationId}`});
       }
       else{
-        this.$router.push(PATHS.ccfriHome);
+        let path = await this.getPreviousPath();
+        this.$router.push(path);
       }
       
     },
     async next() {
       this.rfi3percentCategories = await this.getCcfriOver3percent();
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.rfi3percentCategories.length > 0 && this.isRenewal) {
-        this.showRfiDialog = true;
+      if (this.isRenewal) {
+        this.rfi3percentCategories = await this.getCcfriOver3percent();
+        if (this.rfi3percentCategories.length > 0) {
+          if (this.currentFacility.hasRfi) {
+            //already has RFI. just go to the next page
+            let path = await this.getNextPath();
+            this.$router.push(path);
+          } else {
+            this.showRfiDialog = true;    
+          }
+        } else {
+          //no need for RFI.
+          if (this.currentFacility.hasRfi) {
+            this.currentFacility.hasRfi = false;
+            await this.forceNavBarRefresh();
+          } 
+          let path = await this.getNextPath();
+          this.$router.push(path);
+        }
       } else {
-        if (!this.nextFacility){
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 && this.isRenewal){
-          //console.log('going to next fac EXISTING FEES page');
-          this.$router.push({path : `${PATHS.currentFees}/${this.nextFacility.ccfriApplicationId}`});
-          //check here if renew - then send them to appropriate screen currentFees
-        }
-        else if (this.nextFacility.ccfriOptInStatus == 1 ){
-          //console.log('going to next fac NEW fees page');
-          //TODO: this needs to check if opt in exists -- maybe in the nextFacility fn?
-          this.$router.push({path : `${PATHS.addNewFees}/${this.nextFacility.ccfriApplicationId}`});
-        }
-        else { //TODO: Logic will need to exist here to eval if we should go to the RFI screens
-          //RFI logic ?
-          // this.setRfiList([{name: 'facilityName', guid: 'ccfriguid'}]);
-          // if (this.rfiList?.length > 0) {
-          //   this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + '2dd4af36-9688-ed11-81ac-000d3a09ce90');
-          // } else {
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
-        }
+        //Not renewal.
+        let path = await this.getNextPath();
+        this.$router.push(path);
       }
     },
     isFormComplete(){
-      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0 && this.isValidForm){
-        return true;
+      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
+        return false;
       }
-
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){
@@ -550,19 +547,28 @@ export default {
       if (this.hasModelChanged() || this.hasDataToDelete()){
         
         this.processing = true;
-        let payload = [];
-        let firstObj = 
-          {
-            ccfriApplicationGuid : this.ccfriId,
-            facilityClosureDates : this.CCFRIFacilityModel.dates,
-            ccof_formcomplete : this.isFormComplete(), //have to flip this bool because it's used to enable/diable the next button
-            notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
-          };
-    
-        //move this to watcher ?
-        //let currentFacility = this.currentFacility; //sets the form complete flag for the checkbox
-        this.currentFacility.isCCFRIComplete = this.isFormComplete(); 
+        
+        let facility = this.navBarList.find(el => el.ccfriApplicationId == this.ccfriId);
+        if (facility) {
+          facility.isCCFRIComplete = this.isFormComplete();
+          await this.forceNavBarRefresh();
+        }
 
+        let payload = [];
+        let firstObj = {
+          ccfriApplicationGuid : this.ccfriId,
+          facilityClosureDates : this.CCFRIFacilityModel.dates,
+          ccof_formcomplete : this.isFormComplete(), 
+          notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
+          ccof_has_rfi: facility.hasRfi
+        };
+        if (this.isRenewal) {
+          firstObj = {
+            ...firstObj,
+            ccof_has_rfi: facility.hasRfi,
+            existingFeesCorrect: this.CCFRIFacilityModel.prevYearFeesCorrect ? 100000000 : 100000001,
+          };
+        }
         //checks if blank - don't save empty rows
         for(let i =  this.CCFRIFacilityModel.dates.length -1; i >=0; i--){
           if (isEqual( this.CCFRIFacilityModel.dates[i], this.dateObj)){

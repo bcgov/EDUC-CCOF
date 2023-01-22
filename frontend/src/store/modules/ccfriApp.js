@@ -54,43 +54,6 @@ function isOver3Percent(currentFees, previousFees, percentValue) {
   return false;
 }
 
-
-// function compareChildCareFees(currentFees, previousFees) {
-//   let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 20;
-//   let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 20;
-//   console.log('currentFeeFrequency', currentFeeFrequency);
-//   console.log('previousFeeFrequency', previousFeeFrequency);
-//   let currentSum = 0;
-//   currentSum += currentFees.approvedFeeJan * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeFeb * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeMar * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeApr * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeMay * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeJun * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeJul * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeAug * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeSep * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeOct * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeNov * currentFeeFrequency;
-//   currentSum += currentFees.approvedFeeDec * currentFeeFrequency;
-//   console.log(`currentSum for [${currentFees.childCareCategory}] is: [${currentSum}]`);
-//   let previousSum = 0;
-//   previousSum += previousFees.approvedFeeJan * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeFeb * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeMar * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeApr * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeMay * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeJun * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeJul * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeAug * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeSep * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeOct * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeNov * previousFeeFrequency;
-//   previousSum += previousFees.approvedFeeDec * previousFeeFrequency;
-//   console.log(`previousSum for [${previousFees.childCareCategory}] is: [${previousSum}]`);
-//   return (currentSum - previousSum) / 12;
-// }
-
 export default {
   namespaced: true,
   state: {
