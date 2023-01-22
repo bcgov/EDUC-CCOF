@@ -171,7 +171,15 @@ export default {
       async handler() {
         try {
           this.loading = true;
-          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+          await this.loadCCFRIFacility(this.$route.params.urlGuid);
+          if (!this.CCFRIFacilityModel.previousCcfriId) {
+            //Sometimes Dynamics is slow in linking up the previouc CCFRIID
+            console.log('Previous CCFRI not found, sleeping for 10 seconds');
+            await this.sleep(10000);
+            console.log('sleep finished');
+            await this.loadCCFRIFacility(this.$route.params.urlGuid);
+            console.log('found CCFRI: ', this.CCFRIFacilityModel.previousCcfriId);
+          }
           if (this.CCFRIFacilityModel.existingFeesCorrect == 100000000) {
             this.model.q1 = 'Yes';
           } else if (this.CCFRIFacilityModel.existingFeesCorrect == 100000001) {
@@ -179,20 +187,22 @@ export default {
           } else {
             this.model.q1 = undefined;
           }
-          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
+          if (this.CCFRIFacilityModel.previousCcfriId) {
+            await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
+            this.feeList = [];
 
-          this.feeList = [];
-
-          //only display last years child care fees
-          const prevYearGuid = this.getPrevYearGuid;
-          this.CCFRIFacilityModel.childCareTypes.forEach(item => { 
-            if (item.programYearId == prevYearGuid ){
-              this.feeList.push(item);
-            }
-          });
-
-          console.log(this.feeList);
-
+            //only display last years child care fees
+            const prevYearGuid = this.getPrevYearGuid;
+            this.CCFRIFacilityModel.childCareTypes.forEach(item => { 
+              if (item.programYearId == prevYearGuid ){
+                this.feeList.push(item);
+              }
+            });
+            console.log(this.feeList);
+          } else {
+            console.log('No fees found');
+            this.model.q1 = 'No';
+          }
 
           //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
@@ -212,7 +222,10 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility']),
-    ...mapActions('navBar', ['getPreviousPath']),    
+    ...mapActions('navBar', ['getPreviousPath']),
+    sleep(milliseconds) {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    },
     async previous(){
       let path = await this.getPreviousPath();
       this.$router.push(path);
