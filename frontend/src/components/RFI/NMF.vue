@@ -4,12 +4,11 @@
       <div class="text-center pt-4">
         <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
         <p class="text-h5 font-weight-bold">Parent Fees – Request for Information</p>
+        <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
+        <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
+        <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
       </div>
-      <div>
-        <p class="text-h5 text-center blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
-        <p class="text-h5 text-center blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
-        <p class="text-h5 text-center blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
-      </div>
+
       <div class="px-2 my-10">
         <p>
           As outlined in the Funding Guidelines, applications by New, New-to-CCFRI, and Modified Facilities 

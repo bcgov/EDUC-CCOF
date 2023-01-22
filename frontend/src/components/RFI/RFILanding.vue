@@ -12,12 +12,11 @@
     <div class="pt-4 text-center">
       <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
       <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
+      <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
+      <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
+      <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
     </div>
-    <div>
-      <p class="text-h5 text-center blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
-      <p class="text-h5 text-center blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
-      <p class="text-h5 text-center blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
-    </div>
+    
     <div class="my-10">
       <p>
         You have entered a parent fee above the 2023/24 fee increase limit. 
