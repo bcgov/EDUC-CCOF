@@ -225,7 +225,7 @@
               placeholder="Describe Here"
               outlined
               name="input-7-4"
-              label="Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above."
+              label="Please describe the reason for each expense listed above."
               v-model="model.expenseInformationNote"
             ></v-textarea>
           </div>
@@ -424,15 +424,13 @@
             class="mr-5"
           > mdi-information
           </v-icon>
-          <strong>Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required
-            to apply for ECE-WE prior to being approved for a fee increase under this policy. </strong>
+          <strong>Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you must apply for ECE-WE
+             before being approved for a fee increase under this policy.</strong>
         </v-banner>
         <br>
 
         <p class="text-h6 text--primary px-5 py-0 my-0">
-          As defined in the Funding Guidelines, Direct Care Staff are staff employed on either a
-          full-time, part-time, or casual basis, providing direct care to children at a facility for 50% or more of
-          their working time.
+          This exception applies to wage increases for Direct Care Staff employed at the facility on a full-time, part-time, or casual basis, providing direct care to children for 50% or more of their working time.
         </p>
 
         <br>
@@ -485,7 +483,7 @@
               required
               row
               v-model="model.isBargainingAgreement"
-              label="Is the wage increase stipulated in a collective bargaining agreement for unionized staff at the facility?"
+              label="Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?"
             >
               <v-radio
                 label="Yes"
@@ -505,7 +503,7 @@
               required
               row
               v-model="model.lossOfCareStaff"
-              label="Has the facility's current wage(s) resulted in loss of Direct Care Staff or an inability to hire sufficient Direct Care Staff?"
+              label="Has the facility lost or been unable to hire Direct Care Staff due to current wages?"
             >
               <v-radio
                 label="Yes"
@@ -525,7 +523,7 @@
               required
               row
               v-model="model.healthAndSafetyConcerns"
-              label="Is this creating immediate health and safety concerns for the facility under the requirements of the Child Care Licensing Regulation (CCLR)?"
+              label="Is this creating challenges in maintaining the staff-to-child ratios required under the facility licence?"
             >
               <v-radio
                 label="Yes"
@@ -748,7 +746,7 @@
             <v-textarea
             :disabled="isReadOnly"
             :rules="rules.required"
-              label=" When did your facility's recruitment and retention challenges begin? "
+              label="When did your facility's challenges with hiring and keeping staff begin?"
               placeholder="Describe here"
               outlined
               v-model="model.textbox1"
@@ -830,9 +828,7 @@
 
         <div class="px-md-12 px-7">
           <br>
-          <p>Is your fee increase due to an increase in hours/days of operation in order to provide care during
-            expanded, extended (defined as after 7 pm and before 6 am and/or overnight), and/or non-traditional
-            hours?</p>
+          <p>Is your fee increase due to expanding or extending the hours of child care service available for all enrolled children?</p>
           <v-radio-group
           :disabled="isReadOnly"
             :rules="rules.required"
@@ -1163,23 +1159,14 @@
         <br>
 
         <div class="px-md-12 px-7">
-
           <br>
-          <p>As outlined in the Funding Guidelines, this may include expenses associated with, but not
-            limited to:</p>
-          <ul>
-            <li>Participation of an Elder, culture/language, and/or family in the child care program</li>
-            <li>Participation of an Elder, of children in community, language, and/or cultural events or activities</li>
-            <li>Language or culture resources for use in the child care program</li>
-          </ul>
           <v-radio-group
           :disabled="isReadOnly"
-            label="Is your fee increase due to an increased connection to Indigenous community, culture, or language in an Indigenous Facility or Organization?"
+            label="Is your fee increase due to an increased connection to Indigenous community, culture, or language for all enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous peoples?"
             required
             :rules="rules.required"
             row
             v-model="model.IndigenousConnection"
-
           >
             <br>
             <v-radio
@@ -1191,6 +1178,12 @@
               :value="0"
             ></v-radio>
           </v-radio-group>
+          <p>As outlined in the <a href="#">Funding Guidelines</a>, this may include:</p>
+          <ul>
+            <li>participation of an Elder, culture/language teacher, and/or family in the child care program;</li>
+            <li>children’s participation in community, language, and/or cultural events or activities; or</li>
+            <li>language or culture resources for use in the child care program.</li>
+          </ul>
           <br>
         </div>
       </v-card-text>
@@ -1339,7 +1332,7 @@
               <v-textarea
               :disabled="isReadOnly"
               :rules="rules.required"
-                label="Please explain why you have incurred (or will incur) each expense, and/or explain the reason for the increased financial pressure(s) you have listed above."
+                label="Please describe the reason for each expense listed above."
                 outlined
                 name="input-7-4"
                 placeholder="Describe here"
@@ -1376,17 +1369,11 @@
 
         <div class="px-md-12 px-7">
           <br>
-          <p>To be considered under this policy, the Facility must meet all of the following criteria as outlined in the Funding Guidelines.</p>
+          <p>Fee increases may be considered under this exception if:</p>
           <ul>
-            <li>Has historcally provided care to underserved populations -including Indigenous or low-income populations
-              -at significantly below the regional median range of fees for their area or at no fee;
-            </li>
-            <li>Can demonstrate Parent Fee Increases will contribute to the operational sustainability of the
-              organization; and
-            </li>
-            <li>Can demonstrate Parent Fee Increases will not substantively increase the actual cost of care for
-              parents/families
-            </li>
+            <li>the facility has historically provided care to underserved populations—including Indigenous or low-income families—at significantly below the regional median range of fees for their area or at no fee;</li>
+            <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
+            <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
           </ul>
           <v-radio-group
           :disabled="isReadOnly"
@@ -1436,7 +1423,7 @@
             :rules="rules.required"
               outlined
               name="input-7-4"
-              label=" Describe whether parents out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?"
+              label="Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?"
               placeholder="Describe here"
               v-model="model.outOfPocketFees"
             ></v-textarea>
