@@ -52,7 +52,7 @@ async function getUserInfo(req, res) {
         log.info(`Ministry user [${userName}] is impersonating with username: [${queryUserName}].`);
         // dynamics api requires a userID. if userID not found then it wil use the query name
         // put a random userID so that we only search by queryname
-        userResponse = await getUserProfile('cd7530df20d04ad0a28a9b26220e2e29', queryUserName);
+        userResponse = await getUserProfile(null, queryUserName);
         if (userResponse === null) { 
           return res.status(HttpStatus.NOT_FOUND).json({message: 'No user found with that BCeID UserName'});
         }
@@ -103,9 +103,15 @@ async function getUserInfo(req, res) {
   return res.status(HttpStatus.OK).json(results);
 }
 
-async function getUserProfile(businessGuid, userName) {
+async function getUserProfile(userGuid, userName) {
   try {
-    const url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userId=${businessGuid}&userName=${userName}`;
+    let url = undefined;
+    if (userGuid) {
+      url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userId=${userGuid}&userName=${userName}`;
+    } else {
+      url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userName=${userName}`;
+    }
+    
     log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
