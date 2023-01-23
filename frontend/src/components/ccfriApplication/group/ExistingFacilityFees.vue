@@ -27,7 +27,7 @@
               </p>
               <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{feeList[0].programYear}} are as follows: 
+                Our Records show this facilites' fees for {{previousProgramYear?.name}} are as follows: 
               </p>
               <br>
               <v-simple-table>
@@ -156,11 +156,11 @@ export default {
     nextFacility(){
       return this.navBarList[this.findIndexOfFacility + 1];
     },
-    getPrevYearGuid(){
+    previousProgramYear(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
-      console.log(programYear);
+      console.log('program year found: ', programYear);
 
-      return programYear.previousYearId;
+      return programYear;
       //let currentYearGuid = //;
     }
     
@@ -192,7 +192,7 @@ export default {
             this.feeList = [];
 
             //only display last years child care fees
-            const prevYearGuid = this.getPrevYearGuid;
+            const prevYearGuid = this.previousProgramYear?.previousYearId;
             this.CCFRIFacilityModel.childCareTypes.forEach(item => { 
               if (item.programYearId == prevYearGuid ){
                 this.feeList.push(item);
