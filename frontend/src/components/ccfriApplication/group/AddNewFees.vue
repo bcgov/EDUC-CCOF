@@ -67,7 +67,8 @@
                 <v-container v-else class="ma-0 pa-0">
                 <v-row>
                   <v-col>
-                    <label>Enter your highest full-time {{item.feeFrequency}} fee in every month below. If you do not charge a fee (e.g. if the facility is closed) enter zero.</label>
+                    <label>Submit your daily parent fee if you only offer care for 4 days or fewer per week.</label><br>
+                    <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If you do not charge a parent fee (e.g. if the facility is closed) enter zero.</label>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -325,7 +326,7 @@
       <v-dialog
         v-model="showRfiDialog"
         persistent
-        max-width="600px">
+        max-width="700px">
         <v-card>
           <v-container class="pt-0">
             <v-row>
@@ -340,11 +341,11 @@
             </v-row>
             <v-row>
               <v-col cols="12" style="text-align: center;">
-                <p class="pt-4">Your application exceeds the 3% median increase<br>for your area for the child care categories:<br><br>
+                <p class="pt-4">You have entered a parent fee above the {{programYearLabel}} parent fee increase limit for the following care categories:<br><br>
                   <span v-for="item in rfi3percentCategories" :key="item">{{item}}<br></span>
                 </p>
-                <p>You will have to fill out a Request for Information (RFI) form.</p>
-                <p class="pt-4">You can continue to the RFI form or press back to update your fees.</p>
+                <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{programYearLabel}} Funding Guidelines. You can continue to the Request for Information section or press back to update your fees.</p>
+                <p class="pt-4">Please confirm you have provided your highest full-time (i.e. over 4 hours, 5 days a week) parent fee for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for 4 days or fewer per week.</p>
                 <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
                 <v-btn dark color="primary" @click="toRfi()">Continue</v-btn>
               </v-col>
