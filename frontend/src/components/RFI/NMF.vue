@@ -11,7 +11,8 @@
 
       <div class="px-2 my-10">
         <p>
-          As outlined in the Funding Guidelines, applications by New, New-to-CCFRI, and Modified Facilities 
+          As outlined in the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>
+          , applications by New, New-to-CCFRI, and Modified Facilities 
           will be assessed based on whether the facility’s parent fees are comparable to others in their region. 
           To determine if this policy applies to your facility, please provide more information.
         </p>
@@ -140,7 +141,7 @@
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
               4. Please tell us anything else you’d like us to know about how your facility’s business case 
-              supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding Guidelines.
+              supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>.
             </p>
             <div class="pt-6">
               <v-textarea

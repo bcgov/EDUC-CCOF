@@ -21,10 +21,7 @@
       <p>
         You have entered a parent fee above the 2023/24 fee increase limit. 
         Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy. 
-        See the 
-        <!-- TO-DO CCFRI-1212 - Add Hyperlink  -->
-        <a href="#">CCFRI Funding Guidelines</a> 
-        for more information.
+        See the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">CCFRI Funding Guidelines</a> for more information.
       </p>
       <p>
         Complete this section to provide more information about your fee increase, or click “Back” to return to the previous page.
@@ -46,8 +43,7 @@
         </div>
         <br>
         <p class="text-h6 text--primary px-md-10 px-7 py-0 my-0">
-          <!-- TO-DO: CCFRI-1214 - add hyperlink -->
-          As outlined in the <a href="#">Funding Guidelines</a>, this exception applies to sudden and unexpected expenses that:
+          As outlined in the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>, this exception applies to sudden and unexpected expenses that:
         </p>
         <div class="px-md-14 px-7 text--primary">
           <br>
@@ -130,7 +126,7 @@
               class="mr-5"
             > mdi-information
             </v-icon>
-            <strong>Note: See the Funding Guidelines for the list of eligible expenses</strong>
+            <strong>Note: See the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a> for the list of eligible expenses</strong>
           </v-banner>
           <div class="px-md-12 px-7">
 
@@ -1187,7 +1183,7 @@
               :value="0"
             ></v-radio>
           </v-radio-group>
-          <p>As outlined in the <a href="#">Funding Guidelines</a>, this may include:</p>
+          <p>As outlined in the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>, this may include:</p>
           <ul>
             <li>participation of an Elder, culture/language teacher, and/or family in the child care program;</li>
             <li>children’s participation in community, language, and/or cultural events or activities; or</li>
