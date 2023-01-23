@@ -1,10 +1,10 @@
 <template>
-  <v-container class="full-height m-16 ">
+  <v-container class="full-height m-16 pt-0">
     <article id="login-banner" class="top-banner">
 
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
       <v-row >
-        <v-col cols="12" align="center">
+        <v-col cols="12" align="center" class="pt-0">
           <v-img
             :src="require('../assets/images/login-header-img-resized.jpg')"
             max-height="300"

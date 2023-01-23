@@ -9,16 +9,27 @@
     </v-container>
   <v-container v-else>
 
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
-      </div>
-      <br>
-      <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+    <div class="pt-4 text-center">
+      <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
+      <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
+      <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
+      <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
+      <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
     </div>
-    <br><br>
-    <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name: {{currentFacility.facilityName}}  </p> <br>
-
+    
+    <div class="my-10">
+      <p>
+        You have entered a parent fee above the 2023/24 fee increase limit. 
+        Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy. 
+        See the 
+        <!-- TO-DO CCFRI-1212 - Add Hyperlink  -->
+        <a href="#">CCFRI Funding Guidelines</a> 
+        for more information.
+      </p>
+      <p>
+        Complete this section to provide more information about your fee increase, or click “Back” to return to the previous page.
+      </p>
+    </div>
     <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
             min-height="230"
             rounded
@@ -34,18 +45,21 @@
           </p>
         </div>
         <br>
-        <p class="text-h6 text--primary px-5 py-0 my-0">
-          As outlined in the Funding Guidelines, exceptional circumstances are expenses that are:
+        <p class="text-h6 text--primary px-md-10 px-7 py-0 my-0">
+          <!-- TO-DO: CCFRI-1214 - add hyperlink -->
+          As outlined in the <a href="#">Funding Guidelines</a>, this exception applies to sudden and unexpected expenses that:
         </p>
-        <div class="px-md-12 px-7">
+        <div class="px-md-14 px-7 text--primary">
           <br>
           <ul>
             <li>
-              Sudden, unexpected, or oustide of the Organization's control; and
+              are outside of the organization’s control and/or outside of the scope of regular cost increases;
             </li>
             <li>
-              Must also address an immediate health/safety concern, or is necessary for the facility to remain
-              operational
+              address an immediate health or safety concern or are needed for the facility to operate; and
+            </li>
+            <li>
+              occur within six months of the requested fee increase.
             </li>
           </ul>
           <br>
@@ -1703,6 +1717,10 @@ export default {
 
 .backG {
   background-color: lightgray;
+}
+
+.blueText {
+  color: rgb(0, 52, 102);
 }
 
 </style>
