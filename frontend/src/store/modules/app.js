@@ -78,7 +78,9 @@ export default {
       state.isOrganizationComplete = isOrganizationComplete;
     },
     bulkAddToNavNBar: (state, facilityList) => {
-      state.navBarList = facilityList;
+      if (facilityList) {
+        state.navBarList = facilityList;
+      }
     },
     setNavBarFacilityComplete: (state, {facilityId, complete} ) => {
       let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);

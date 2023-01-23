@@ -937,8 +937,7 @@
                     <v-text-field
                     :disabled="isReadOnly"
                       v-model="obj.timefrom"
-                      label="Open-Previous"
-                      prepend-icon="mdi-clock-time-four-outline"
+                      label="From"
                       readonly
                       v-bind="attrs"
                       v-on="on"
@@ -972,8 +971,7 @@
                     <v-text-field
                     :disabled="isReadOnly"
                       v-model="obj.timeto"
-                      label="Close-Previous"
-                      prepend-icon="mdi-clock-time-four-outline"
+                      label="To"
                       readonly
                       v-bind="attrs"
                       v-on="on"
@@ -1007,8 +1005,7 @@
                     <v-text-field
                     :disabled="isReadOnly"
                       v-model="obj.newtimefrom"
-                      label="Open-New"
-                      prepend-icon="mdi-clock-time-four-outline"
+                      label="From"
                       readonly
                       v-bind="attrs"
                       v-on="on"
@@ -1040,8 +1037,7 @@
                     <v-text-field
                     :disabled="isReadOnly"
                       v-model="obj.newtimeto"
-                      label="Close-New"
-                      prepend-icon="mdi-clock-time-four-outline"
+                      label="To"
                       readonly
                       v-bind="attrs"
                       v-on="on"
@@ -1128,7 +1124,7 @@
             <v-textarea
             :disabled="isReadOnly"
             :rules="rules.required"
-              label=" Please explain why you have incurred (or will incur) each expense you have listed above.(e.g. Wages, Utilities)"
+              label="Describe each of your expenses above. (e.g. Wages, Utilities)"
               outlined
               name="input-7-4"
               placeholder="Describe here"
@@ -1217,7 +1213,7 @@
         <v-card-text class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
             <p class="text-h5 text--primary px-5 py-0 my-0">
-              Indigenous Community Expense Information
+              Expense Information
             </p>
           </div>
           <br>
@@ -1345,7 +1341,7 @@
               <v-textarea
               :disabled="isReadOnly"
               :rules="rules.required"
-                label="Please describe the reason for each expense listed above."
+                label="Is there anything else about your expenses you would like us to know?"
                 outlined
                 name="input-7-4"
                 placeholder="Describe here"
