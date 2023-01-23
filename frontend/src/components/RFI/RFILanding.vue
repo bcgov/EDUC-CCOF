@@ -583,7 +583,7 @@
               class="mr-5"
             > mdi-information
             </v-icon>
-            <strong>Note: If two or more staff have the same information for each column, they can be included in one row. </strong>
+            <strong>Note: If two or more staff have the same information for every column, they can be included in one row. </strong>
           </v-banner>
 
           <div class="px-md-12 px-10">
@@ -730,7 +730,6 @@
 
             <div class="form-group">
               <v-btn id="wagebtn" :disabled="isReadOnly" @click="addObjToList(wageObj, model.wageList)" class="my-5" dark color='#003366'>Add
-                Staff
               </v-btn>
             </div>
             <br>
