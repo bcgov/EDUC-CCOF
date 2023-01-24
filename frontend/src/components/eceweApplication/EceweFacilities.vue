@@ -1,0 +1,242 @@
+<template>
+  <v-container>
+    <v-row justify="center" class="pt-4">
+      <span class="text-h5 text-center">Early Childhood Educator-Wage Enhancement (ECE-WE) - {{this.programYearLabel}} Program Confirmation Form</span>
+    </v-row>
+    <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
+      {{this.userInfo.organizationName}}
+    </v-row>
+    <v-row><v-col></v-col></v-row>
+    <v-row justify="center">
+      Please select each facility you would like to opt-in to ECE-WE:
+    </v-row>
+    <v-row><v-col></v-col></v-row>
+    <v-row justify="center">
+      <v-alert
+        class="col-11"
+        outlined
+        prominent
+        color="#ABADAE">
+        <span style="float:left">
+          <v-icon
+            x-large
+            color="rgb(0 51 102)"
+            class="py-1 px-3">
+             mdi-information
+          </v-icon>
+        </span>
+        <span class="pa-1">
+          Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to ECE-WE for each licence located at the same physical address.
+        </span>
+      </v-alert>
+    </v-row>
+    <div v-if="!isLoading">
+      <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
+        <v-row justify="center" class="pa-4">
+          <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
+            <v-row>
+              <v-col cols="12" class="d-flex">
+                <span>{{navBarList[index].facilityAccountNumber}}</span>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="5" class="flex-column">
+                <span>{{navBarList[index].facilityName}}</span>
+              </v-col>
+              <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
+                  Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
+              </v-col>
+              <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
+                <v-radio-group
+                  v-model="uiFacilities[index].optInOrOut"
+                  class="pt-0 my-0"
+                  row
+                  :disabled="isReadOnly">
+                  <v-radio
+                    @click="toggleRadio(index)"
+                    label="Opt-In"
+                    :value="1">
+                  </v-radio>
+                  <v-radio
+                    @click="toggleRadio(index)"
+                    label="Opt-Out"
+                    :value="0">
+                  </v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="3">
+                <v-btn
+                  v-if="(!uiFacilities?.[index].update && !isLoading) && (model.fundingModel != fundingModelTypeList[0].id)"
+                  @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
+                  color="#003366"
+                  dark
+                  :disabled="isReadOnly"> 
+                    Update
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                  License #: {{navBarList[index].licenseNumber}}
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-row>
+      </div>
+    </div>
+    <div v-if="isLoading">
+      <div v-for="index in 2" :key="index">
+        <v-row justify="center" class="pa-4">
+          <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
+            <v-row>
+              <v-col cols="12" class="d-flex pa-0">
+                <v-skeleton-loader :loading="true" type="table-cell" class="pa-0"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="5" class="flex-column pa-0">
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+              </v-col>
+              <v-col cols="4" class="d-flex justify-center align-center pt-0">
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+              </v-col>
+              <v-col cols="3" class="pa-0">
+                <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="pa-0">
+                <v-skeleton-loader :loading="true" type="table-cell"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-row>
+      </div>
+    </div>
+    <v-row><v-col></v-col></v-row>
+    <v-row justify="space-around">
+      <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
+      <v-btn color="secondary" :loading="isProcessing" :disabled="isNextBtnDisabled" outlined x-large @click="next()">Next</v-btn>
+      <v-btn color="primary" :loading="isProcessing" :disabled="isSaveBtnDisabled || isReadOnly" outlined x-large @click="saveFacilities()">Save</v-btn>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+
+import { PATHS } from '@/utils/constants';
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
+
+export default {
+  mixins: [alertMixin],
+  data() {
+    return {
+      uiFacilities: [],
+      model: {},
+      isLoading: false, // flag to UI if screen is getting data or not.
+      isProcessing: false, // flag to UI if screen is saving/processing data or not.
+    };
+  },
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('eceweApp', ['isStarted', 'eceweModel']),
+    ...mapState('app', ['navBarList', 'fundingModelTypeList']),
+    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    isNextBtnDisabled() {
+      return this.uiFacilities.some(item => item.optInOrOut === null);
+    },
+    isSaveBtnDisabled() {
+      return this.model.fundingModel === this.fundingModelTypeList[0].id;
+    },
+    facilities: {
+      get() { return this.$store.state.eceweApp.facilities; },
+      set(value) { this.$store.commit('eceweApp/setFacilities', value); }
+    },
+    isReadOnly() {
+      if (this.unlockEcewe){
+        return false;
+      }
+      else if (this.applicationStatus === 'SUBMITTED'){
+        return true; 
+      }
+      return false;
+    }
+  },
+  async beforeMount() {
+    this.setFundingModelTypes({...this.fundingModelTypeList});
+    this.setApplicationId(this.applicationId);
+    await this.loadData();
+    this.initECEWEFacilities(this.navBarList);
+    this.setupUiFacilities();
+    this.model = {...this.eceweModel};
+  },
+  async beforeRouteLeave(_to, _from, next) {
+    await this.saveFacilities(false);
+    next();
+  },
+  methods: {
+    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
+    ...mapMutations('app', ['setEceweFacilityComplete']),
+    ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
+    setupUiFacilities() {
+      let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+      copyFacilities.forEach(element => element.update = element.optInOrOut == null);
+      this.uiFacilities = copyFacilities;
+      this.setLoadedFacilities([...this.facilities]);
+    },
+    toggleRadio(index) {
+      this.uiFacilities[index].update = (this.uiFacilities[index].update==true)?false:true;
+    },
+    previous() {
+      return this.$router.push(PATHS.eceweEligibility);
+    },
+    next() {
+      this.$router.push(PATHS.supportingDocumentUpload);
+    },
+    async loadData() {
+      if (this.isStarted) {
+        return;
+      }
+      if (this.applicationId) {
+        this.isLoading = true;
+        try {
+          await this.loadECEWE();
+        } catch (error) {
+          console.log('Error loading ECEWE application.', error);
+          this.setFailureAlert('Error loading ECEWE application.');
+        }
+        this.isLoading = false;
+      }
+    },
+    async saveFacilities(showConfirmation) {
+      this.isProcessing = true;
+      try {
+        let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
+        console.log('uiFacilitiesCopy 1 ', uiFacilitiesCopy);
+        // eslint-disable-next-line no-unused-vars
+        uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
+        console.log('uiFacilitiesCopy 2 ', uiFacilitiesCopy);
+        this.setFacilities(uiFacilitiesCopy);
+        let response = await this.saveECEWEFacilities();
+        if (response?.data?.facilities) {
+          response.data.facilities?.forEach(el => {
+            let facility = this.navBarList.find(f => f.facilityId === el.facilityId);
+            if (facility) {
+              facility.eceweOptInStatus = el.optInOrOut;
+            }
+          });
+        }
+        this.setupUiFacilities();
+        if (showConfirmation || showConfirmation == null) {
+          this.setSuccessAlert('Success! ECEWE Facility appcliations have been saved.');
+        }
+      } catch (error) {
+        this.setFailureAlert('An error occurred while saving ECEWE facility applications. Please try again later.'+error);
+      }
+      this.isProcessing = false;
+    },
+  }
+};
+</script>

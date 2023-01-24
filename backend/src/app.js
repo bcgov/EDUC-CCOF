@@ -22,13 +22,15 @@ const noCache = require('nocache');
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
-const ccofRouter = require('./routes/ccof');
 const facilityRouter = require('./routes/facility');
 const organizationRouter = require('./routes/organization');
 const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const applicationRouter = require('./routes/application');
 const fundingRouter = require('./routes/funding');
+const messageRouter = require('./routes/message');
+const licenseUploadRouter = require('./routes/licenseUpload');
+const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
 
 //const userprofileRouter = require('./routes/userprofile');
 
@@ -119,7 +121,7 @@ const parseJwt = (token) => {
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
   addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');  
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');
 
   //JWT strategy is used for authorization  keycloak_bcdevexchange_idir
   passport.use('jwt', new JWTStrategy({
@@ -159,14 +161,15 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/user', userRouter);
-apiRouter.use('/ccof', ccofRouter);
 apiRouter.use('/facility', facilityRouter);
 apiRouter.use('/organization', organizationRouter);
 apiRouter.use('/public', publicRouter);
 apiRouter.use('/config',configRouter);
 apiRouter.use('/application', applicationRouter);
 apiRouter.use('/group/funding', fundingRouter);
-
+apiRouter.use('/messages', messageRouter);
+apiRouter.use('/licenseUpload', licenseUploadRouter);
+apiRouter.use('/supportingDocument', supportingDocumentUploadRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

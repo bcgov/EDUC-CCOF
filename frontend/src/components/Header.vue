@@ -5,7 +5,7 @@
     :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
     >
     <v-row class="justify-space-between">
-    <a tabindex="-1" href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/education">
+    <a tabindex="-1" href="/">
       <img
           tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
@@ -13,11 +13,35 @@
           alt="B.C. Government Logo"
       >
     </a>
-    
-    <div v-if="isAuthenticated && dataReady" class="">
+    <v-row class="verticalLine">
+      <v-row>
+        <v-toolbar-title fill-height>
+          <h6 v-if="this.$vuetify.breakpoint.xsOnly">My ChildCareBC<br>Services</h6>
+          <h2 class="mainTitle" v-else>My ChildCareBC Services</h2>
+        </v-toolbar-title>
+      </v-row>
+    </v-row>
+    <v-spacer></v-spacer>
+    <div v-if="isAuthenticated && dataReady" class="mt-6">
+      <v-btn 
+        id="mail_box_button" @click="goToMessagePage()"
+        color="#003366" rounded dark class="mr-5 elevation-0"
+      >
+        <v-badge
+          color="red"
+          :content="unreadMessageCount"
+          bottom right 
+          overlap offset-x="20" offset-y="20"
+        >
+          <v-icon aria-hidden="false" size="40" color='white'>
+              mdi-email-outline
+          </v-icon>
+        </v-badge>
+      </v-btn>
+      
       <v-menu name="user_options" offset-y>
         <template v-slot:activator="{ on }">
-          <v-chip tabindex="0" v-on="on" pill color="#003366" dark class="mt-7">
+          <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
             <v-avatar left color="info">
               {{ userInfo.displayName[0] }}
             </v-avatar>
@@ -39,7 +63,7 @@
 
     </div>
     <div v-else-if="isAuthenticated && !dataReady">
-      <v-skeleton-loader type="chip">
+      <v-skeleton-loader type="chip" class="mt-7">
       </v-skeleton-loader>
     </div>
   </v-row>
@@ -62,15 +86,26 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
+    ...mapGetters('message', ['unreadMessageCount']),
     dataReady: function () {
       return this.userInfo;
-    }
+    },
   },
   methods: {
     hasSeveralMincodes() {
       return this.userInfo?.userMinCodes?.length > 1;
-    }
-
+    },
+    goToMessagePage() {
+      this.$router.push(PATHS.messagesPage).catch(err => {
+        // Ignore the vuex err regarding  navigating to the page they are already on.
+        if (
+          err.name !== 'NavigationDuplicated' &&
+          !err.message.includes('Avoided redundant navigation to current location')
+        ) 
+          console.log(err);
+      });
+    },
+    
   }
 };
 </script>
@@ -104,6 +139,13 @@ a {
 .v-btn.title:hover:before {
   color: #fff;
   background: none;
+}
+
+.verticalLine {
+  border-left: 1px solid #DFB433;
+  height: 50px;
+  margin-left: 12px;
+  padding-left: 24px;
 }
 
 .v-input__slot{

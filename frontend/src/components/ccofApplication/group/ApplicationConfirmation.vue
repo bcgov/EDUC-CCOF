@@ -4,13 +4,13 @@
       <v-card class="cc-top-level-card" width="1200">
         <v-container>
           <v-row justify="center">
-            You have successfully applied for CCOF for the following Facilities:
+            You have successfully applied for CCOF for the following facilities:
           </v-row>
 
           <v-row justify="center" style="padding-top: 2em;">
             <ul style="list-style: none">
               <li v-for="item in navBarList" :key="item.facilityId" style="">
-                <a>{{ item.facilityName }}</a>
+                <span>{{ item.facilityName }}</span>
               </li>
             </ul>
           </v-row>
@@ -24,8 +24,8 @@
           </v-row>
 
           <v-row justify="center">
-            <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()">Yes</v-btn>
-            <v-btn color="secondary" outlined x-large style="margin: 2em;"@click="next()">No</v-btn>
+            <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()" :disabled="isLocked">Yes</v-btn>
+            <v-btn color="secondary" outlined x-large style="margin: 2em;" @click="next()" :disabled="isLocked">No</v-btn>
           </v-row>
         </v-container>
       </v-card>
@@ -40,32 +40,35 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapActions } from 'vuex';
 
 export default {
   props: {
   },
   computed: {
-    ...mapState('app', ['navBarList']),
+    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
+    ...mapState('application', ['applicationStatus']),
+    isLocked() {
+      return (this.applicationStatus === 'SUBMITTED');
+    }
   },
   methods: {
-    ...mapMutations('app', ['setCcofApplicationComplete', 'setCcofConfirmationEnabled']),    
+    ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
+    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     previous() {
       let navItem = this.navBarList[this.navBarList.length - 1];
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
-    addAnotherFacility() { 
+    addAnotherFacility() {
       this.$router.push(PATHS.group.facInfo);
     },
-    next() {
-      this.setCcofApplicationComplete(true);
-      console.log('next: ', PATHS.ccfriHome);
-      this.$router.push(PATHS.ccfriHome);
+    async next() {
+      this.$router.push(PATHS.group.licenseUpload);
     }
   },
   mounted() {
     this.setCcofConfirmationEnabled(true);
   },
-    
+
 };
 </script>

@@ -10,6 +10,6 @@ const { getUserInfo} = require('../components/user');
 
 router.get('/', passport.authenticate('jwt', {session: false}), isValidBackendToken, getUserInfo);
 
-router.get('/:userName', passport.authenticate('jwt', {session: false}), isValidBackendToken, getUserInfo);
+router.get('/:queryUserName', passport.authenticate('jwt', {session: false}), isValidBackendToken, getUserInfo);
 
 module.exports = router;

@@ -1,9 +1,14 @@
 
+//TODO: this really should be a lookup in dynamics
 const CHILD_AGE_CATEGORY_TYPES = new Map();
 CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 to 18 months');
 CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 to 36 months');
 CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
 CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Out of School Care - Kindergarten');
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-G', 'Out of School Care - Grade 1+');
+CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Preschool');
+
+
 
 //Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API 
 
@@ -12,11 +17,22 @@ const ACCOUNT_TYPE = Object.freeze({
   ORGANIZATION: 100000000
 });
 
+
+const CCOF_APPLICATION_TYPES = Object.freeze({
+  NEW: 100000000,
+  FACILITY: 100000001,
+  RENEW: 100000002
+});
+
+
 const APPLICATION_STATUS_CODES = Object.freeze({
   NEW: null,
   DRAFT: 1,
   SUBMITTED: 3,
-  WITHDRAWN: 4
+  WITHDRAWN: 4,
+  // Additional status codes not from Dynamics
+  APPROVED: 10,
+  ACTION_REQUIRED: 11
 });
 
 const CCOF_STATUS_CODES = Object.freeze({
@@ -39,15 +55,21 @@ const OPTIN_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
-  APPROVED: 1,
+  APPROVED: 3, 
   DRAFT: 2,
-  SUBMITTED: 3
+  SUBMITTED: 1,
+  NOT_APPROVED: 4,
+  INELIGIBLE: 5,
+  ACTION_REQUIRED: 6
 });
 
 const ECEWE_STATUS_CODES = Object.freeze({
-  APPROVED: 1,
+  APPROVED: 3,
   DRAFT: 2,
-  SUBMITTED: 3
+  SUBMITTED: 1,
+  NOT_APPROVED: 4,
+  INELIGIBLE: 5,
+  ACTION_REQUIRED: 6
 });
 
 const PROGRAM_YEAR_STATUS_CODES = Object.freeze({
@@ -78,5 +100,6 @@ module.exports = {
   FACILITY_AGE_GROUP_CODES,
   OPTIN_STATUS_CODES,
   PROGRAM_YEAR_STATUS_CODES,
+  CCOF_APPLICATION_TYPES,
 };
 

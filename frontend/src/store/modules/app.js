@@ -4,19 +4,29 @@ export default {
   namespaced: true,
   state: {
     pageTitle: null,
+    //NavBar Details
     showNavBar: false,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     navBarList: [], //holds the generated nav bar
     isRenewal: false,
+    isOrganizationComplete: false,
+    isLicenseUploadComplete: false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
+
+    //Notification Details
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+    supportingDocumentUploadComplete:false,
+
+    //Lookup Table Details
     programYearList: [],
     childCareCategoryList: [],
     organizationTypeList: [],
+    fundingModelTypeList: [],
     lookupInfo: null,
+    forceNavBarRefresh: 1,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -35,6 +45,9 @@ export default {
     setAlertNotification: (state, alertNotification) => {
       state.alertNotification = alertNotification;
     },
+    forceNavBarRefresh(state) {
+      state.forceNavBarRefresh = state.forceNavBarRefresh + 1;
+    },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
       if (!state.alertNotification) {
@@ -50,6 +63,10 @@ export default {
     setOrganizationTypeList: (state, organizationTypeList) => {
       state.organizationTypeList = organizationTypeList;
     },
+
+    setFundingModelTypeList: (state, fundingModelTypeList) => {
+      state.fundingModelTypeList = fundingModelTypeList;
+    },
     //Nav bar stuff
     setShowNavBar: (state, showNavBar) => {
       state.showNavBar = showNavBar;
@@ -57,8 +74,13 @@ export default {
     setNavBarGroup: (state, navBarGroup) => {
       state.navBarGroup = navBarGroup;
     },
+    setIsOrganizationComplete: (state, isOrganizationComplete) => {
+      state.isOrganizationComplete = isOrganizationComplete;
+    },
     bulkAddToNavNBar: (state, facilityList) => {
-      state.navBarList = facilityList;
+      if (facilityList) {
+        state.navBarList = facilityList;
+      }
     },
     setNavBarFacilityComplete: (state, {facilityId, complete} ) => {
       let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
@@ -69,43 +91,53 @@ export default {
     setNavBarFundingComplete: (state, {fundingId, complete} ) => {
       let navBarItem = state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
       if (navBarItem) {
-        navBarItem.isFundingComplete = complete;
+        navBarItem.isCCOFComplete = complete;
       }
-    },    
+    },
     addToNavBarList: (state, payload) => {
-      state.navBarList.push (payload); 
+      state.navBarList.push (payload);
     },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
+    // setCcfriOptInComplete: (state, ccfriOptInComplete) => {
+    //   state.ccfriOptInComplete = ccfriOptInComplete;
+    // },
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
+    setIsLicenseUploadComplete: (state, isLicenseUploadComplete) => {
+      state.isLicenseUploadComplete = isLicenseUploadComplete;
+    },
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
-    },     
+    },
+    setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
+      state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
+    },
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
     futureYearLabel: state => state.programYearList?.future?.name,
     childCareCategoryList: state => state.childCareCategoryList,
     organizationTypeList: state => state.organizationTypeList,
+    fundingModelTypeList: state => state.fundingModelTypeList,
     lookupInfo: state => state.lookupInfo,
 
-    getNavByFacilityId: (state) => (facilityId) => { 
+    getNavByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
         return null;
       }
       return state.navBarList.find(item => item.facilityId == facilityId);
     },
-    getNavByFundingId: (state) => (fundingId) => { 
+    getNavByFundingId: (state) => (fundingId) => {
       if (!fundingId) {
         return null;
       }
       return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
     },
 
-    getNextNavByFacilityId: (state) => (facilityId) => { 
+    getNextNavByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
         return null;
       }
@@ -115,7 +147,7 @@ export default {
       }
       return null;
     },
-    getNextNavByFundingId: (state) => (funding) => { 
+    getNextNavByFundingId: (state) => (funding) => {
       if (!funding) {
         return null;
       }
@@ -126,7 +158,7 @@ export default {
       return null;
     },
 
-    getNextPrevByFacilityId: (state) => (facilityId) => { 
+    getNextPrevByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
         return null;
       }
@@ -145,6 +177,7 @@ export default {
         commit('setProgramYearList', lookupInfo.data?.programYear);
         commit('setChildCareCategoryList', lookupInfo.data?.childCareCategory);
         commit('setOrganizationTypeList', lookupInfo.data?.organizationType);
+        commit('setFundingModelTypeList', lookupInfo.data?.fundingModelType);
       }
     },
 

@@ -1,5 +1,5 @@
 import {DateTimeFormatterBuilder, LocalDate, ResolverStyle} from '@js-joda/core';
-import {groupBy, isPlainObject} from 'lodash';
+import {groupBy, isPlainObject, isEmpty} from 'lodash';
 
 const datePatternWithSlash = (new DateTimeFormatterBuilder).appendPattern('uuuu/MM/dd').toFormatter(ResolverStyle.STRICT);
 export function checkDigit(pen) {
@@ -158,4 +158,16 @@ export function isValidNumber(evt) {
 
 export function isValidEmail(value) {
   return !!(value && /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(value));
+}
+
+export function getChanges(updatedModel, loadedModel) {
+  if (!loadedModel || isEmpty(loadedModel)) {
+    return { ...updatedModel };
+  }
+  const changes = Object.entries(loadedModel).reduce((ac, [k, v]) => updatedModel[k] && updatedModel[k] !== v ? (ac[k] = updatedModel[k], ac) : ac, {});
+  if (isEmpty(changes)) {
+    return null;
+  } else {
+    return changes;
+  }
 }

@@ -1,22 +1,20 @@
 <template>
-  <v-container class="full-height m-16 ">
+  <v-container class="full-height m-16 pt-0">
     <article id="login-banner" class="top-banner">
 
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
       <v-row >
-        <v-col cols="12" align="center">
+        <v-col cols="12" align="center" class="pt-0">
           <v-img
-            :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')"
+            :src="require('../assets/images/login-header-img-resized.jpg')"
             max-height="300"
-            max-width="1448" >
-            <v-row class="ml-4 my-16">
-              <v-col sm="10" align="left" >
-              <span class="white--text" >
-                <p class="text-h3">My ChildCare Services</p> <br><br>
-                <p class="text-h5">Ministry Login</p>
-              </span>
+            max-width="1448" 
+            class="align-end">
+            <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85);">
+              <span class="text-h4 white--text font-weight-bold" style="font-family:BCSans;">My ChildCareBC Services</span>
+              <br>
+              <span class="text-h6 white--text">Ministry Login</span>
             </v-col>
-          </v-row>
           </v-img>
         </v-col>
       </v-row>
@@ -71,11 +69,17 @@
             <v-card-title class="gov-header">
               <h4 id="login_text">CCFRI Estimator</h4>
             </v-card-title>
-            <v-card-text id="login_descriptor">
-              Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. <br>
-              Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. <br>
-              Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  <br>
-              Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <v-card-text id="login_descriptor" class="pb-0">
+              <p>
+                The ministry has made enhancements to the 
+                <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
+                to help estimate additional child care fee savings that started on December 1, 2022.
+              </p>
+              <p>
+                Note: <br>
+                Child care providers with a CCFRI application in process, including open applications for a mid-term fee increase, 
+                will not appear in the search results. Check back as search results are updated regularly.
+              </p>
             </v-card-text>
             <v-spacer></v-spacer>
             <v-card-actions>

@@ -129,10 +129,15 @@ export default {
         
         
       commit('setUserInfo', userInfoRes.data);
+      commit('application/setFromUserInfo', userInfoRes.data, { root: true });
       commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
+      commit('app/setIsOrganizationComplete', userInfoRes.data.isOrganizationComplete, { root: true });
+      commit('app/setIsLicenseUploadComplete', userInfoRes.data.isLicenseUploadComplete, { root: true });
+      commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
       commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
-      commit('organization/setApplicationId', userInfoRes.data.applicationId, { root: true });
-      commit('organization/setApplicationStatus', userInfoRes.data.applicationStatus, { root: true });
+      commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
+      commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
+      commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
