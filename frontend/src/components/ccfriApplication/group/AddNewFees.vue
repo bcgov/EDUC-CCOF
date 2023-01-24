@@ -160,22 +160,22 @@
             <v-radio-group
               required
               :disabled="isReadOnly"
-              v-model="closureFees"
+              v-model="CCFRIFacilityModel.hasClosureFees"
               label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
               :rules = "rules"
                
             >
               <v-radio
                 label="Yes"
-                value="Yes"
+                :value="100000000"
               ></v-radio>
               <v-radio
                 label="No"
-                value="No"
+                :value="100000001"
               ></v-radio>
             </v-radio-group>
 
-            <v-row v-if = "closureFees == 'Yes'">
+            <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
 
 
               <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
@@ -445,7 +445,7 @@ export default {
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
           if (this.getClosureDateLength > 0){
-            this.closureFees = 'Yes';
+            //this.closureFees = 'Yes';
           }
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
           this.loading = false;
@@ -524,7 +524,8 @@ export default {
       }
     },
     isFormComplete(){
-      if (this.closureFees == 'Yes' && this.CCFRIFacilityModel.dates.length === 0){
+      //100000000 == YES
+      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0){
         return false;
       }
       return this.isValidForm; //false makes button clickable, true disables button
@@ -543,6 +544,7 @@ export default {
       return true;
     },
     async save(showMessage) {
+      //console.log(this.closureFees);
       //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged() || this.hasDataToDelete()){
@@ -561,7 +563,8 @@ export default {
           facilityClosureDates : this.CCFRIFacilityModel.dates,
           ccof_formcomplete : this.isFormComplete(), 
           notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
-          ccof_has_rfi: facility.hasRfi
+          ccof_has_rfi: facility.hasRfi,
+          hasClosureFees: this.CCFRIFacilityModel.hasClosureFees
         };
         if (this.isRenewal) {
           firstObj = {
