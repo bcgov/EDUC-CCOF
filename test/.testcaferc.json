@@ -1,6 +1,8 @@
 {
     "_comment": "browsers should accept: edge -private, firefox -private-window, chrome -incognito",
-    "browsers": ["chrome: --incognito --disable-dev-shm-usage --window-size=1280,1280"],
+    "browsers": [
+        "chrome: --incognito --no-sandbox --disable-dev-shm-usage"
+    ],
     "browserInitTimeout": 360000,
     "reporter": "list",
     "quarantineMode": false,
@@ -17,8 +19,10 @@
     "selectorTimeout": 20000,
     "disableMultipleWindows": true,
     "clientScripts": [
-        { "module": "@testing-library/dom/dist/@testing-library/dom.umd.js" }
-      ],
+        {
+            "module": "@testing-library/dom/dist/@testing-library/dom.umd.js"
+        }
+    ],
     "screenshots": {
         "path": "src/screenshots",
         "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${TEST}.png",
