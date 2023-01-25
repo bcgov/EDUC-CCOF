@@ -128,7 +128,7 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareMultiAge()]" v-model.number="model.maxGroupChildCareMultiAge" label="Maximum Multi-Age Child Care" />
+                <v-text-field :disabled="isLocked" type="number" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareMultiAge()]" v-model.number="model.maxGroupChildCareMultiAge" label="Maximum Multi-Age Child Care" />
               </v-col>
             </v-row>
 
