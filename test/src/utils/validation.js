@@ -13,6 +13,7 @@ async function validateAllInput(t, fieldNames){
         fieldElement = getTextFieldWithDivHeading(fieldNames[i].label, fieldNames[i].heading);
       }else{
         fieldElement = getTextField(fieldNames[i])
+        console.info(fieldElement);
       }
       await removeContent(t, fieldElement);
       await t.expect(await getErrorMessage(fieldElement, 'This field is required').exists).ok();
@@ -30,5 +31,4 @@ const validations = {
     validateAllInput,
     validateOneInput
 };
-  
 module.exports = validations;
