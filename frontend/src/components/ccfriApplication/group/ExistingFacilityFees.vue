@@ -40,7 +40,7 @@
                     :key="index"
                      class="text-center"
                      scope="col">
-                      {{item.childCareCategory}}
+                      {{item.childCareCategory}}  -  {{item.feeFrequency}}
                     </th>
                   </tr>
                 </thead>

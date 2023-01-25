@@ -252,8 +252,8 @@ export default {
         //console.log('historcal year?' , isHistoricalYear);
         //always show 24 months of fees for preschool and out of school care for all program years after 2023/24
         if (state.CCFRIFacilityModel.prevYearFeesCorrect){ 
-          const preschoolGuid = rootState.app.childCareCategoryList.find(({ ccof_name }) =>  ccof_name === 'PRE' ).ccof_childcare_categoryid;
-          const grade1PlusGuid = rootState.app.childCareCategoryList.find(({ ccof_name }) =>  ccof_name === 'OOSC-G' ).ccof_childcare_categoryid;
+          // const preschoolGuid = rootState.app.childCareCategoryList.find(({ ccof_name }) =>  ccof_name === 'PRE' ).ccof_childcare_categoryid;
+          // const grade1PlusGuid = rootState.app.childCareCategoryList.find(({ ccof_name }) =>  ccof_name === 'OOSC-G' ).ccof_childcare_categoryid;
 
           const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
           const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
