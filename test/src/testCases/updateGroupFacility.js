@@ -23,12 +23,19 @@ fixture `Facility Tests`
 
 test('Update Facility - Completed info', async t => {
   await login.bceIdLogin(t);
-  await t
-    .click(landing.continueButton)
-    .wait(2000);
+  if(await landing.continueButton.exists){
+    await t
+      .click(landing.continueButton)
+      .wait(2000);
+  }else{
+    await t
+      .click(landing.newButton)
+      .wait(2000);
+    await t.click(landing.groupButton).wait(2000);
+  }
   await t.click(organization.nextButton);
   await facility.loadFieldsFromFile(t, 'facility-completed.txt');
-  await t.expect(facility.nextButton.hasAttribute('disabled')).notOk(); 
+  await t.expect(facility.nextButton.hasAttribute('disabled')).notOk();
   await t.takeScreenshot({fullPage: true});
   await t.click(facility.saveButton).wait(3000);
   await t.expect(alert.success.exists).ok();
@@ -45,7 +52,7 @@ test('Update Facility - Incompleted info', async t => {
   await t.click(organization.nextButton);
   await facility.loadFieldsFromFile(t, 'facility-incompleted.txt');
   await t.takeScreenshot({fullPage: true});
-  await t.expect(facility.nextButton.hasAttribute('disabled')).ok(); 
+  await t.expect(facility.nextButton.hasAttribute('disabled')).ok();
   await t.click(facility.saveButton).wait(3000);
   await t.expect(alert.success.exists).ok();
   await t.expect(Selector('.v-system-bar').exists).ok({ timeout: 5000 });
