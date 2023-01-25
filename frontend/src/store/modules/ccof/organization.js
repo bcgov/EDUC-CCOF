@@ -53,7 +53,11 @@ export default {
         }
       } else {
         // else create a new application and set the program year
+        let serverTime = rootState.auth.userInfo?.serverTime;
+        let currentProgramYearIntakeEnd = rootState.app.programYearList.current?.intakeEnd;
         let programYear = rootState.app.programYearList.current;
+        if (serverTime > currentProgramYearIntakeEnd)
+          programYear = rootState.app.programYearList.future;
         payload.programYearId = programYear.programYearId;
         commit('application/setProgramYearId', programYear.programYearId, { root: true });
         commit('application/setProgramYearLabel', programYear.name, { root: true });
