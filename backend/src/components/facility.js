@@ -110,6 +110,7 @@ async function getLicenseCategories(req, res){
         // childCareCategoryName: item['CareType.ccof_name'],
         // licenseCategoryName: item['License.ccof_name'],
         childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['CareType.ccof_name']),
+        orderNumber: CHILD_AGE_CATEGORY_TYPES.get(item['CareType.ccof_name']),
       });
     });
     return res.status(HttpStatus.OK).json(Array.from(map.values()));

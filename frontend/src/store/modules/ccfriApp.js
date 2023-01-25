@@ -247,26 +247,32 @@ export default {
           });
         }
 
-        const isHistoricalYear = (currProgramYear.name === '2022/23 FY' || currProgramYear.name === '2021/22 FY' );
-        console.log('historcal year?' , isHistoricalYear);
-        //always show 24 months of fees for preschool and out of school care
-        if (state.CCFRIFacilityModel.prevYearFeesCorrect && isHistoricalYear == false){ 
+        //this we can assume all facilites are missing Pre and OOSC-G as they are new child care categories.
+        //const isHistoricalYear = (currProgramYear.name === '2022/23 FY' || currProgramYear.name === '2021/22 FY' );
+        //console.log('historcal year?' , isHistoricalYear);
+        //always show 24 months of fees for preschool and out of school care for all program years after 2023/24
+        if (state.CCFRIFacilityModel.prevYearFeesCorrect){ 
           const preschoolGuid = rootState.app.childCareCategoryList.find(({ ccof_name }) =>  ccof_name === 'PRE' ).ccof_childcare_categoryid;
           const grade1PlusGuid = rootState.app.childCareCategoryList.find(({ ccof_name }) =>  ccof_name === 'OOSC-G' ).ccof_childcare_categoryid;
 
           const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
           const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
          
+          console.log('prevCCFRI IS:' , prevCcfriApp);
           response.data.forEach(item => {
-            if (item.childCareCategoryId == preschoolGuid || item.childCareCategoryId == grade1PlusGuid){
-              careTypes.push( {
-                programYear: prevProgramYear.name,
-                programYearId: prevProgramYear.programYearId,
-                ...item
-              });
-            }
+            // if (item.childCareCategoryId == preschoolGuid || item.childCareCategoryId == grade1PlusGuid){
+            //   careTypes.push( {
+            //     programYear: prevProgramYear.name,
+            //     programYearId: prevProgramYear.programYearId,
+            //     ...item
+            //   });
+            // }
+            //JB - We will always be missing Pre and OOSC-G so the above is redundant. leaving here just in case for a bit
+
+
             //check if we are missing fees for any child care type from last year. If so, add a card for the missing year's fees.
-            else if (prevCcfriApp.childCareTypes.length <  response.data.length){
+            //divide by 2 because each child care type will have two years of fees. We just want to find out the number of unique categories to compare to this year.
+            if ((prevCcfriApp.childCareTypes.length /2) <  response.data.length){
               console.log('child care Cat are different lengths.');
 
               let found = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
@@ -285,35 +291,6 @@ export default {
               }
             }
           });
-
-          // const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
-
-          // console.log('thePREVapp', prevCcfriApp);
-
-          // if(prevCcfriApp.childCareTypes.length <  response.data.length){
-          //   console.log(prevCcfriApp);
-          //   //then we have a scenario where there is a brand new child care cat for this year. We need to find out which one and add the fees
-          //   console.log('child care Cat are different lengths.');
-
-          //   response.data.forEach((childCareCat) => {
-          //     let found = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
-          //       console.log('prev', prevChildCareCat.childCareCategoryId);
-          //       console.log('curr', response.data.childCareCategoryId);
-          //       return (prevChildCareCat.childCareCategoryId == childCareCat.childCareCategoryId);
-          //     });
-    
-          //     //if match in last years CCFRI fees not found, add a card for that child care cat previous years fees
-          //     if (!found) {
-          //       console.log('NOT FOUND!');
-          //       careTypes.push( {
-          //         programYear: prevProgramYear.name,
-          //         programYearId: prevProgramYear.programYearId,
-          //         childCareCategory: childCareCat.childCareCategory,
-          //         childCareCategoryId: childCareCat.childCareCategoryId
-          //       });
-          //     }
-          //   });
-          // }
         }
 
 

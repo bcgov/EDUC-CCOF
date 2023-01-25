@@ -1,12 +1,12 @@
 
 //TODO: this really should be a lookup in dynamics
 const CHILD_AGE_CATEGORY_TYPES = new Map();
-CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 to 18 months');
-CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 to 36 months');
-CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
-CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Out of School Care - Kindergarten');
-CHILD_AGE_CATEGORY_TYPES.set('OOSC-G', 'Out of School Care - Grade 1+');
-CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Preschool');
+CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 to 18 months', 'orderNumber', 1);
+CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 to 36 months', 'orderNumber', 2);
+CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten', 'orderNumber', 3);
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Out of School Care - Kindergarten' , 'orderNumber', 4);
+CHILD_AGE_CATEGORY_TYPES.set('OOSC-G', 'Out of School Care - Grade 1+' , 'orderNumber', 5);
+CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Preschool' , 'orderNumber', 6);
 
 
 
