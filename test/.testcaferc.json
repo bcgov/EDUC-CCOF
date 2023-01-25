@@ -19,28 +19,17 @@
     "selectorTimeout": 20000,
     "disableMultipleWindows": true,
     "clientScripts": [
-<<<<<<< HEAD
         {
             "module": "@testing-library/dom/dist/@testing-library/dom.umd.js"
         }
     ],
-=======
-        {
-        "module": "@testing-library/dom/dist/@testing-library/dom.umd.js"
-    }
-],
->>>>>>> d010969 (Update to automation testing)
     "screenshots": {
-    "path": "src/screenshots",
-    "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${TEST}.png",
-    "takeOnFails": false,
-    "fullPage": false
-},
-"filter": {
-    "testGrep": ".*"
+        "path": "src/screenshots",
+        "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${TEST}.png",
+        "takeOnFails": false,
+        "fullPage": false
+    },
+    "filter": {
+        "testGrep": ".*"
+    }
 }
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> d010969 (Update to automation testing)
