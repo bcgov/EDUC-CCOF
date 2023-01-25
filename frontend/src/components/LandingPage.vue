@@ -16,7 +16,7 @@
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>
           <p class="text-h6" v-if="isCCOFApproved">
-            Child Care Operating Funding (CCOF) application
+            Child Care Operating Funding <strong>(CCOF)</strong>
           </p>
           <p class="text-h6" v-else>
             Apply for Child Care Operating Funding <strong>(CCOF)</strong> including: 
@@ -52,7 +52,7 @@
             <v-btn dark class="blueButton" @click="continueApplication()">Continue Application</v-btn>
           </div>   
           <div v-else>
-            <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status: Approved</p>
+            <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Approved</p>
             <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
             <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
           </div>
@@ -61,7 +61,7 @@
 
       <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
         <template #content>
-          <p class="text-h6">Renew my Funding Agreement for {{futureYearLabel}}</p>
+          <p class="text-h6">Renew my Funding Agreement</p>
           <p>
             Current providers must renew their Funding Agreement every year. For more information, visit the government website:
           </p>
@@ -84,13 +84,10 @@
 
       <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isCCOFApproved">
         <template #content>
-          <p class="text-h6" v-if="!isCCOFApproved">
+          <p class="text-h6">
             Report changes to your licence or service
           </p>
-          <p class="text-h6" v-else>
-            Make a change to my information, parent fees, or funding agreement
-          </p>
-          <p v-if="!isCCOFApproved">
+          <p>
             You must notify the Child Care Operating Funding program within two business days of any change to your facility licence 
             or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
           </p>
