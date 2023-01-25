@@ -152,7 +152,7 @@
         <v-card-text class="pa-0" >
           <div class="pa-2 pa-md-4 ma-0 backG">
             <p class="text-h5 text--primary px-5 py-0 my-0">
-              Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?
+              Do you charge parent fees at this facility for any closures on business days (other than statutory holidays)?
             </p>
           </div>
           <div class="px-md-12 px-7">
@@ -161,10 +161,12 @@
               required
               :disabled="isReadOnly"
               v-model="CCFRIFacilityModel.hasClosureFees"
-              label="Do you charge parent fees at this facility for any closures on business days (other than statuary holidays)?"
+              label="Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than British Columbia statutory holidays. Only indicate the date of closures where parent fees are charged."
               :rules = "rules"
                
             >
+            <label> <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays </a> </label>
+            <br>
               <v-radio
                 label="Yes"
                 :value="100000000"
@@ -557,6 +559,11 @@ export default {
           await this.forceNavBarRefresh();
         }
 
+        //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
+        if (this.CCFRIFacilityModel.hasClosureFees == 100000001){
+          this.CCFRIFacilityModel.dates = [];
+        }
+
         let payload = [];
         let firstObj = {
           ccfriApplicationGuid : this.ccfriId,
@@ -573,13 +580,13 @@ export default {
             existingFeesCorrect: this.CCFRIFacilityModel.prevYearFeesCorrect ? 100000000 : 100000001,
           };
         }
+
         //checks if blank - don't save empty rows
         for(let i =  this.CCFRIFacilityModel.dates.length -1; i >=0; i--){
           if (isEqual( this.CCFRIFacilityModel.dates[i], this.dateObj)){
             this.CCFRIFacilityModel.dates.splice(i, 1);
           }
         }
-
 
         //for each child care type - prepare an object for the payload 
         //index will also match the order of how the cards are displayed. 

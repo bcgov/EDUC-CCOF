@@ -159,19 +159,18 @@ async function upsertParentFees(req, res) {
     hasError = true;
   }
 
-  //if no closure dates, don't bother sending any requests
-  //closure dates are the same for each age group - so pick the first group in the array and take data from there
-  if (body[0].facilityClosureDates){
-    log.info(body[0].facilityClosureDates);
-    try {
-      let response = await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
-      //log.info('datesRes', response);
-      theResponse.push(res.status(HttpStatus.CREATED).json(response));
-    } catch (e) {
-      theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
-      hasError = true;
-    }
+  //dates array will always exist - even if blank. 
+  //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
+  log.info(body[0].facilityClosureDates);
+  try {
+    let response = await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
+    //log.info('datesRes', response);
+    theResponse.push(res.status(HttpStatus.CREATED).json(response));
+  } catch (e) {
+    theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+    hasError = true;
   }
+
   if (hasError) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
   } else {
