@@ -2,12 +2,14 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 
+
+
 function getProgramYear(selectedGuid, programYearList){
   const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
 
   if(!programYear){
-    console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
-    throw 'SELECTED PROGRAM YEAR GUID NOT FOUND :( ';
+    //console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
+    throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ';
   }
 
   return programYear;
@@ -177,11 +179,11 @@ export default {
 
       try {
         let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`); 
+        console.log('resp', response);
         let careTypes = [];
-        //state.CCFRIFacilityModel.childCareTypes = []; //set to empty so if user changes yes/no selection, the cards update
-
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
-        //maybe add error checking here? - undefined means we didn't find a valid program year 
+
+        console.log('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
         response.data.forEach(item => {
@@ -206,7 +208,8 @@ export default {
         //   state.CCFRIFacilityModel.prevYearFeesCorrect = true;
         // }
         
-        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
+        //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
+        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ 
           response.data.forEach(item => {
             const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
             //check for undefined here! 
@@ -243,6 +246,52 @@ export default {
             }
           });
         }
+
+        //this we can assume all facilites are missing Pre and OOSC-G as they are new child care categories.
+        //const isHistoricalYear = (currProgramYear.name === '2022/23 FY' || currProgramYear.name === '2021/22 FY' );
+        //console.log('historcal year?' , isHistoricalYear);
+        //always show 24 months of fees for preschool and out of school care for all program years after 2023/24
+        if (state.CCFRIFacilityModel.prevYearFeesCorrect){ 
+          const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
+          const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
+         
+          console.log('prevCCFRI IS:' , prevCcfriApp);
+          response.data.forEach(item => {
+            // if (item.childCareCategoryId == preschoolGuid || item.childCareCategoryId == grade1PlusGuid){
+            //   careTypes.push( {
+            //     programYear: prevProgramYear.name,
+            //     programYearId: prevProgramYear.programYearId,
+            //     ...item
+            //   });
+            // }
+            //JB - We will always be missing Pre and OOSC-G so the above is redundant. leaving here just in case for a bit
+
+
+            //check if we are missing fees for any child care type from last year. If so, add a card for the missing year's fees.
+            //divide by 2 because each child care type will have two years of fees. We just want to find out the number of unique categories to compare to this year.
+            if ((prevCcfriApp.childCareTypes.length /2) <  response.data.length){
+              console.log('child care Cat are different lengths.');
+
+              let found = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
+                return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId);
+              });
+    
+              //if match in last years CCFRI fees not found, add a card for that child care cat previous years fees
+              if (!found) {
+                console.log('NOT FOUND!');
+                careTypes.push( {
+                  programYear: prevProgramYear.name,
+                  programYearId: prevProgramYear.programYearId,
+                  childCareCategory: item.childCareCategory,
+                  childCareCategoryId: item.childCareCategoryId,
+                  orderNumber : item.orderNumber
+                });
+              }
+            }
+          });
+        }
+
+
         
         //if childcarecat GUID exists in childcaretypes but NOT in response - run delete
         //this handles the edge case of a user entering fees for CCFRI then going back to CCOF
@@ -257,8 +306,15 @@ export default {
             childCareCat.deleteMe = true;
           }
         });
-        
+
+
+       
+
         state.CCFRIFacilityModel.childCareTypes.push(...careTypes);
+
+        //sort them by age asc 
+        state.CCFRIFacilityModel.childCareTypes.sort((a, b) => a.orderNumber - b.orderNumber);
+
         commit('setCCFRIFacilityModel', state.CCFRIFacilityModel);
         commit('setLoadedModel', _.cloneDeep(state.CCFRIFacilityModel));
       } catch (e) {

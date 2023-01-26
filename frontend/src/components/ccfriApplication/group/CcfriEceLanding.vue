@@ -19,7 +19,7 @@
         dark color='#003366'
         :disabled="applicationStatus === 'SUBMITTED'" 
         > 
-        Opt-in All Facilities
+        Opt in All Facilities
       </v-btn>
         <LargeButtonContainer>
 
@@ -36,9 +36,9 @@
             <v-card-text>
               <v-row>
                 <v-col cols="" class="col-12 col-md-7">
-                  <p class="text--primary "><strong> Facility Name : {{facilityName}}</strong></p>
+                  <p class="text--primary "><strong> Facility Name: {{facilityName}}</strong></p>
                   <p class="text--primary"> License: {{licenseNumber}}</p>                  
-                  <strong> <p class="text--primary  " >Opt-In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
+                  <strong> <p class="text--primary  " >Opt In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
                 </v-col>
                 <v-col cols="" class="d-flex align-center col-12 col-md-5"
                   v-if="!showOptStatus[index]"
@@ -64,12 +64,12 @@
                       :rules = "rules"
                     >
                       <v-radio
-                        label="Opt-In"
+                        label="Opt In"
                         value="1"
                         
                       ></v-radio>
                       <v-radio
-                        label="Opt-Out"
+                        label="Opt Out"
                         value="0"
                         
                       ></v-radio>
@@ -230,7 +230,7 @@ export default {
           });
           this.forceNavBarRefresh();
           if (withAlert) {
-            this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
+            this.setSuccessAlert('Success! CCFRI Opt In status has been saved.');
           }
         } catch (error) {
           console.info(error);

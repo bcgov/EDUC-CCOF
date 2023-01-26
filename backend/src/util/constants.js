@@ -8,6 +8,15 @@ CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Out of School Care - Kindergarten');
 CHILD_AGE_CATEGORY_TYPES.set('OOSC-G', 'Out of School Care - Grade 1+');
 CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Preschool');
 
+const CHILD_AGE_CATEGORY_ORDER = new Map();
+CHILD_AGE_CATEGORY_ORDER.set('0-18', 1);
+CHILD_AGE_CATEGORY_ORDER.set('18-36', 2);
+CHILD_AGE_CATEGORY_ORDER.set('3Y-K', 3);
+CHILD_AGE_CATEGORY_ORDER.set('PRE', 4);
+CHILD_AGE_CATEGORY_ORDER.set('OOSC-K', 5);
+CHILD_AGE_CATEGORY_ORDER.set('OOSC-G', 6);
+
+
 
 
 //Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API 
@@ -101,5 +110,6 @@ module.exports = {
   OPTIN_STATUS_CODES,
   PROGRAM_YEAR_STATUS_CODES,
   CCOF_APPLICATION_TYPES,
+  CHILD_AGE_CATEGORY_ORDER
 };
 

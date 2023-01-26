@@ -46,6 +46,7 @@ const CCFRIFacilityMappings = [
   { back: '_ccof_previousccfri_value', front: 'previousCcfriId' },
   { back: 'ccof_formcomplete', front: 'ccof_formcomplete' },
   { back: 'ccof_feecorrectccfri', front: 'existingFeesCorrect' },
+  { back: 'ccof_chargefeeccfri', front: 'hasClosureFees' },
   
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
