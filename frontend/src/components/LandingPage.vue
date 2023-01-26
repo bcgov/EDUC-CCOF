@@ -430,14 +430,14 @@ export default {
         this.goToECEWE();
       else if (this.unlockSupportingDocuments)
         this.goToSupportingDocumentUpload();
-      else if (this.unlockDeclaration)
-        this.goToSummaryDeclaration();
       else if (this.unlockCCFRIList.length > 0 )
         this.goToCCFRI();
       else if (this.unlockNMFList.length > 0 )
         this.goToNMF();
       else if (this.unlockRFIList.length > 0 )
         this.goToRFI();
+      else if (this.unlockDeclaration)
+        this.goToSummaryDeclaration();
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
       if (this.isCCFRIUnlock(ccfriApplicationId))
