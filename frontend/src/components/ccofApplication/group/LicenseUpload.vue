@@ -4,7 +4,7 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center"><h3>License Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
+            <v-card-title class="justify-center"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
             <v-data-table v-if="!isLoading"
                           :headers="headers"
                           :items="licenseUploadData"
@@ -138,14 +138,14 @@ export default {
           class: 'table-header'
         },
         {
-          text: 'Facility License Number',
+          text: 'Facility Licence Number',
           sortable: false,
           value: 'licenseNumber',
           class: 'table-header'
 
         },
         {
-          text: 'Upload License',
+          text: 'Upload Licence',
           sortable: false,
           value: 'document',
           class: 'table-header'

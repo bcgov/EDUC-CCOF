@@ -30,7 +30,7 @@
                 Our Records show this facilites' fees for {{previousProgramYearLabel}} are as follows: 
               </p>
               <br>
-              <v-simple-table>
+              <v-simple-table v-if="feeList.length > 0">
                 <thead>
                   <tr>
                     <th  scope="col" class="text-left">
@@ -40,7 +40,7 @@
                     :key="index"
                      class="text-center"
                      scope="col">
-                      {{item.childCareCategory}}
+                      {{item.childCareCategory}}  -  {{item.feeFrequency}}
                     </th>
                   </tr>
                 </thead>
@@ -65,10 +65,12 @@
                   </tr>
                 </tbody>
               </v-simple-table>
+              <h2 class="text-center"  v-else>No Previous Year Fees Available</h2>
             </v-card-text>
         </v-card>
 
         <div v-if="loading" :loading="loading"></div>
+        <div v-else-if="feeList.length == 0"></div>
         <v-card v-else elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded

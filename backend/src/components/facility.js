@@ -6,7 +6,7 @@ const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
-const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES} = require('../util/constants');
+const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER} = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
 
@@ -104,12 +104,15 @@ async function getLicenseCategories(req, res){
     log.info('get Data Url', url);
     const response = await axios.get(url, getHttpHeader());
     let map = new Map();
+
+    log.info(CHILD_AGE_CATEGORY_TYPES);
     response.data.value.forEach(item => {
       map.set(item['CareType.ccof_childcare_categoryid'], {
         childCareCategoryId: item['CareType.ccof_childcare_categoryid'],
         // childCareCategoryName: item['CareType.ccof_name'],
         // licenseCategoryName: item['License.ccof_name'],
         childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['CareType.ccof_name']),
+        orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['CareType.ccof_name']),
       });
     });
     return res.status(HttpStatus.OK).json(Array.from(map.values()));
@@ -133,6 +136,8 @@ async function getFacilityChildCareTypes(req, res){
     ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
       // if (hasChildCareCategory(item)) {
       //currentProgramYear = item._ccof_programyear_value;
+
+      //_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue
       childCareTypes.push(
         {
           parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
@@ -152,7 +157,8 @@ async function getFacilityChildCareTypes(req, res){
           approvedFeeNov: item.ccof_nov,
           approvedFeeOct: item.ccof_oct,
           approvedFeeSep: item.ccof_sep,
-          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') )
+          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') ),
+          orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
         }
       );
       // }

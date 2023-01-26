@@ -78,6 +78,8 @@ export default {
           console.log(`Failed to get Organization messages - ${error}`);
           throw error;
         }
+      } else {
+        commit('setAllMessages', []);
       }
     },
 
