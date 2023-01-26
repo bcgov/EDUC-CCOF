@@ -194,6 +194,8 @@ export default {
             }
           });
 
+          this.feeList.sort((a, b) => a.orderNumber - b.orderNumber);
+
           console.log(this.feeList);
 
 
