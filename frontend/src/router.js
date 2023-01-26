@@ -244,10 +244,10 @@ const router = new VueRouter({
     },
     {
       path: PATHS.group.licenseUpload,
-      name: 'License Upload',
+      name: 'Licence Upload',
       component: LicenseUpload,
       meta: {
-        pageTitle: 'License Upload',
+        pageTitle: 'Licence Upload',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
