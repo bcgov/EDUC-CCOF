@@ -1,11 +1,37 @@
 <template>
   <v-form ref="form">
+    
     <v-container>
-      <v-row justify="center" class="pt-4">
-        <span class="text-h5">Early Childhood Educator-Wage Enhancement (ECE-WE) - {{this.programYearLabel}} Program Confirmation Form</span>
-      </v-row>
+      <div class="row pt-4 justify-center">
+        <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      </div>
+      <br>
+      <div class="row pt-4 justify-center">
+        <span class="text-h5">Early Childhood Educator Wage Enhancement (ECE-WE)</span>
+      </div>
+      <br>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
+      </v-row>
+      <v-row justify="center" class="mt-6">
+        <v-alert
+          class="col-11 mb-0"
+          outlined
+          prominent>
+          <span class="pr-1" style="float:left">
+            <v-icon
+              x-large
+              color="rgb(0 51 102)"
+              class="py-1 px-3">
+              mdi-information
+            </v-icon>
+          </span>
+          <span>
+            <strong>Note:</strong> Please ensure you have read and understand the full eligibility requirements 
+            outlined in the ECE Wage Enhancement Funding Guidelines. 
+            All CCFRI-eligible facilities <strong><u>must</u></strong> first opt-in to CCFRI in order to be eligible for ECE-WE.
+          </span>
+        </v-alert>
       </v-row>
       <v-row justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
@@ -87,7 +113,7 @@
                 v-model="model.applicableSector"
                 :disabled="isReadOnly">
                 <template v-slot:label>
-                  <span class="radio-label">Select the applicable sector:</span>
+                  <div class="radio-label text-center">Select the applicable sector:</div>
                 </template>
                 <div class="flex-center">
                 <v-radio class="pt-2 pr-8"
@@ -156,9 +182,10 @@
               <v-radio-group
                   v-model="model.fundingModel"
                   row
-                  :disabled="isReadOnly">
+                  :disabled="isReadOnly"
+                  class="mt-0">
                 <v-row justify="center">
-                  <v-col class="pt-2">
+                  <v-col class="pt-7">
                     <v-radio
                       :label="fundingModelTypeList[0].description"
                       :value="fundingModelTypeList[0].id"></v-radio>
