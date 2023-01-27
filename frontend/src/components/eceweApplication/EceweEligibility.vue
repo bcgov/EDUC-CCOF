@@ -65,6 +65,7 @@
                   class="pt-1"
                   label="No"
                   :value="0"
+                  @click="model.applicableSector=null"
                 ></v-radio>
               </div>
               </v-radio-group>
@@ -92,11 +93,13 @@
                 <v-radio class="pt-2 pr-8"
                   label="Community Social Services Employers' Association (CSSEA) Member"
                   :value="100000000"
+                  @click="model.confirmation=null"
               ></v-radio>
               <v-radio
                   class="pt-1"
                   label="Other Unionized Employer"
                   :value="100000001"
+                  @click="model.confirmation=null"
                 ></v-radio>
               </div>
               </v-radio-group>
@@ -253,7 +256,7 @@
       <v-row justify="space-around" class="mt-10">
         <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
         <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn :disabled="!enableButtons || isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
+        <v-btn :disabled="isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>
@@ -285,7 +288,7 @@ export default {
     },
     enableButtons() {
       return (this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && (this.model.fundingModel === this.fundingModelTypeList[1].id || this.model.fundingModel === this.fundingModelTypeList[2].id) && this.model.confirmation === 1)
-            ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && (this.model.fundingModel === this.fundingModelTypeList[0].id || this.model.fundingModel === null))
+            ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && this.model.fundingModel === this.fundingModelTypeList[0].id)
             ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000001 && this.model.confirmation === 1)
             ||this.model.belongsToUnion === 0
             ||this.model.optInECEWE === 0;
