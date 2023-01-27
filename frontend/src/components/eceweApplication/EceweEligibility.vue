@@ -132,7 +132,7 @@
             </v-row>
           </v-container>
           <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center" class="mx-2 mb-4">
-            <v-row>
+            <v-row v-if="!isLoading" >
               <v-col class="py-0">
                 <v-card-title class="py-0 noticeInfo">
                   <span style="float:left">
@@ -147,7 +147,7 @@
                 </v-card-title>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="!isLoading" >
               <v-col class="pl-6 d-flex py-0">
                 <v-checkbox
                   class="pa-0"
@@ -250,7 +250,7 @@
               </v-card>
             </div>            
             <v-card v-if="model.fundingModel === fundingModelTypeList[1].id || model.fundingModel === fundingModelTypeList[2].id" width="100%">
-              <v-row>
+              <v-row v-if="!isLoading" >
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeInfo">
                     <span style="float:left">
@@ -265,7 +265,7 @@
                   </v-card-title>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row v-if="!isLoading" >
                 <v-col class="pl-6 d-flex py-0">
                   <v-checkbox
                     class="pa-0"
