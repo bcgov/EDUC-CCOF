@@ -65,7 +65,7 @@
                   </tr>
                 </tbody>
               </v-simple-table>
-              <h2 class="text-center"  v-else>No Previous Year Fees Available</h2>
+              <h2 class="text-center"  v-else>We have no fees on record for this facility. Click "Next" to enter your fees for the previous 24 months.</h2>
             </v-card-text>
         </v-card>
 
