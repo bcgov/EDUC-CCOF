@@ -77,6 +77,67 @@
           <v-container>
             <v-row v-if="isLoading">
               <v-col>
+                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
+                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+            <v-row v-if="!isLoading" justify="center">
+              <v-radio-group
+                v-model="model.applicableSector"
+                :disabled="isReadOnly">
+                <template v-slot:label>
+                  <span class="radio-label">Select the applicable sector:</span>
+                </template>
+                <div class="flex-center">
+                <v-radio class="pt-2 pr-8"
+                  label="Community Social Services Employers' Association (CSSEA) Member"
+                  :value="100000000"
+              ></v-radio>
+              <v-radio
+                  class="pt-1"
+                  label="Other Unionized Employer"
+                  :value="100000001"
+                ></v-radio>
+              </div>
+              </v-radio-group>
+            </v-row>
+          </v-container>
+          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center" class="mx-2 mb-4">
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-0 noticeInfo">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  color="#D40D19"
+                  class="py-1 px-3 noticeInfoIcon">
+                  mdi-information
+                </v-icon>
+                </span>
+                  Please confirm
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="pl-6 d-flex py-0">
+                <v-checkbox
+                  class="pa-0"
+                  v-model="model.confirmation"
+                  :value="1"
+                  label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
+                  :disabled="isReadOnly">
+                </v-checkbox>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-card>
+      </v-row>
+      
+      <v-row v-if="(model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center">
+        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+          <v-container>
+            <v-row v-if="isLoading">
+              <v-col>
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading"></v-skeleton-loader>
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
@@ -223,8 +284,9 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     enableButtons() {
-      return (this.model.belongsToUnion === 1 && (this.model.fundingModel === this.fundingModelTypeList[1].id || this.model.fundingModel === this.fundingModelTypeList[2].id) && this.model.confirmation === 1)
-            ||(this.model.belongsToUnion === 1 && (this.model.fundingModel === this.fundingModelTypeList[0].id || this.model.fundingModel === null))
+      return (this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && (this.model.fundingModel === this.fundingModelTypeList[1].id || this.model.fundingModel === this.fundingModelTypeList[2].id) && this.model.confirmation === 1)
+            ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && (this.model.fundingModel === this.fundingModelTypeList[0].id || this.model.fundingModel === null))
+            ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000001 && this.model.confirmation === 1)
             ||this.model.belongsToUnion === 0
             ||this.model.optInECEWE === 0;
     },
@@ -290,7 +352,9 @@ export default {
           this.model.fundingModel = null;
           this.model.confirmation = null;
         } else {
-          if (this.model.fundingModel === this.fundingModelTypeList[0].id) {
+          if (this.model.applicableSector == 100000001) {
+            this.model.fundingModel = null;
+          } else if (this.model.applicableSector == 100000000 && this.model.fundingModel === this.fundingModelTypeList[0].id) {
             this.model.confirmation = null;
           }
         }
