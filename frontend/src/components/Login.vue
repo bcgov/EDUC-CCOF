@@ -25,6 +25,17 @@
 
       <!-- containerWidth1450 is a custom css class I wrote to make the container behave in the margins... It "should" just listen to the Vuetify margins, but it wasn't and I couldn't figure out why.-->
       <v-container class="containerWidth1450 pa-0" >
+      <p class="pt-4">
+        <strong>NOTE:</strong> The information collected through My ChildCareBC Services is collected 
+        under the authority of the <i>Freedom of Information and Protection of Privacy Act</i> (FOIPPA) 
+        and the <i>Child Care BC Act</i> (SBC 2001, c. 4) and will be used for the purpose of administering 
+        the Child Care Operating Funding Program, which includes the Child Care Fee Reduction Initiative 
+        and the Early Childhood Educator (ECE) Wage Enhancement for successfully enrolled applicants. 
+        Personal information is protected from unauthorized use and disclosure in accordance with FOIPPA. 
+        Any questions or concerns about the collection of this information can be directed to the Director, 
+        Child Care Operating Funding Program, PO Box 9965 Stn Prov Govt, Victoria BC V8W 9R4, 
+        Phone: in Greater Victoria: 250 356-6501, outside of Greater Victoria, Toll Free: 1 888 338-6622 (option 2).
+      </p>
       <v-row>
         <v-col class="xs-12 lg-4 xl-2 ">
           <v-divider></v-divider>

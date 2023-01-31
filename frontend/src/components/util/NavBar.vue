@@ -210,7 +210,7 @@ export default {
       positionIndex = 0;
       navBarId = 0;
       isCCOFGroupComplete = false;
-      
+
       this.items = [];
       this.items.push(
         {
@@ -225,11 +225,11 @@ export default {
       if (this.isRenewal) {
         this.items.push(
           {
-            title: 'License Upload',
-            link: { name: 'License Upload'},
+            title: 'Licence Upload',
+            link: { name: 'Licence Upload'},
             isAccessible: true,
             icon: this.getCheckbox(this.isLicenseUploadComplete),
-            isActive: 'License Upload' === this.$route.name,
+            isActive: 'Licence Upload' === this.$route.name,
             position: positionIndex++,
             navBarId: navBarId++
           });
@@ -286,7 +286,7 @@ export default {
           icon: this.getCheckbox(this.isCCFRIOptInComplete()),
           isActive: 'ccfri-home' === this.$route.name,
           position: positionIndex++,
-          navBarId: navBarId++          
+          navBarId: navBarId++
         },
 
       );
@@ -300,9 +300,9 @@ export default {
                   title: 'Parent Fees',
                   subTitle: item.facilityName,
                   id: item.facilityId,
-                  link: { name: (this.applicationStatus==='SUBMITTED' && item.unlockCcfri != 1) ? 'ccfri-add-fees-guid' : 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}}, 
+                  link: { name: (this.applicationStatus==='SUBMITTED' && item.unlockCcfri != 1) ? 'ccfri-add-fees-guid' : 'ccfri-current-fees-guid', params: {urlGuid: item.ccfriApplicationId}},
                   isAccessible: this.applicationStatus==='SUBMITTED' ? true: this.isCCFRIOptInComplete(), //don't let user nav to add new fees if opt in / out not compete
-                  icon: this.getCheckbox(item.isCCFRIComplete),  
+                  icon: this.getCheckbox(item.isCCFRIComplete),
                   isActive: ('ccfri-current-fees-guid' === this.$route.name || 'ccfri-add-fees-guid' === this.$route.name)  && this.$route.params.urlGuid === item.ccfriApplicationId,
                   position: positionIndex++,
                   navBarId: navBarId++
@@ -315,9 +315,9 @@ export default {
                     title: 'Parent Fee Increase – RFI',
                     subTitle: item.facilityName,
                     id: item.facilityId,
-                    link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}}, 
+                    link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}},
                     isAccessible: true,
-                    icon: this.getCheckbox(item.isRfiComplete),  
+                    icon: this.getCheckbox(item.isRfiComplete),
                     isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
                     position: positionIndex++,
                     navBarId: navBarId++
@@ -431,11 +431,11 @@ export default {
       }
       items.push(
         {
-          title: 'License Upload',
-          link: { name: 'License Upload'},
+          title: 'Licence Upload',
+          link: { name: 'Licence Upload'},
           isAccessible: this.ccofConfirmationEnabled,
           icon: this.getCheckbox(this.isLicenseUploadComplete),
-          isActive: 'License Upload' === this.$route.name,
+          isActive: 'Licence Upload' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
         }
@@ -528,11 +528,11 @@ export default {
       );
       items.push(
         {
-          title: 'License Upload',
-          link: { name: 'License Upload'},
+          title: 'Licence Upload',
+          link: { name: 'Licence Upload'},
           isAccessible: this.ccofConfirmationEnabled,
           icon: this.getCheckbox(this.isLicenseUploadComplete),
-          isActive: 'License Upload' === this.$route.name,
+          isActive: 'Licence Upload' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
         }
