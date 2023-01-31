@@ -272,12 +272,10 @@ async function updateECEWEFacilityApplication(req, res) {
         // send PATCH (update existing ECEWE facility)
         response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
       } else {
-        if (facility.ccof_optintoecewe != null) {
-          // send POST (create a new ECEWE facility)
-          let operation = 'ccof_applicationecewes';
-          response = await postOperation(operation, facility);
-          facilities[key].eceweApplicationId = response;
-        }
+        // send POST (create a new ECEWE facility)
+        let operation = 'ccof_applicationecewes';
+        response = await postOperation(operation, facility);
+        facilities[key].eceweApplicationId = response;
       }
     }
     return res.status(HttpStatus.OK).json({facilities: facilities});

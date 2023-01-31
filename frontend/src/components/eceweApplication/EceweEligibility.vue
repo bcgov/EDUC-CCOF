@@ -313,11 +313,18 @@ export default {
       this.isLoading = false;
     },
     optOutFacilities() {
-      this.facilities = this.facilities.map(facility => {
-        if (facility.optInOrOut != 0) {
-          facility.optInOrOut = 0;
-        }
-        return facility;
+      //this was modified by JB to try and fix bugs with the checkmarks. 
+      // this.facilities = this.facilities.map(facility => {
+      //   if (facility.optInOrOut != 0) {
+      //     facility.optInOrOut = 0;
+      //   }
+      //   return facility;
+      // });
+      this.navBarList.forEach(facility => {
+        facility.eceweOptInStatus = 0;
+      });
+      this.facilities.forEach(facility => {
+        facility.optInOrOut = 0;
       });
     },
     async saveECEWEApplication(showConfirmation = true) {
@@ -326,14 +333,24 @@ export default {
         this.updateQuestions();
         this.setEceweModel(this.model);
         await this.saveECEWE(this.enableButtons);
-        this.setIsEceweComplete(this.enableButtons);
+        this.setIsEceweComplete(this.enableButtons); 
         const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut === 1);
+
+        //jb below
+        if (this.model.optInECEWE === 0){
+          console.log('opting out of all!');
+          this.optOutFacilities();
+          
+        }
+
         // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (this.model.fundingModel === this.fundingModelTypeList[0].id || optOutFacilities) {
           this.optOutFacilities();
-          await this.saveECEWEFacilities(showConfirmation);
+          //await this.saveECEWEFacilities(showConfirmation); 
+          //save the facilites reagrdless so ECE WE application is always created 
         }
+        await this.saveECEWEFacilities(showConfirmation);
         if (showConfirmation) {
           this.setSuccessAlert('Success! ECEWE application has been saved.');
         }
