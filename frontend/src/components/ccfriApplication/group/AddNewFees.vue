@@ -152,7 +152,7 @@
         <v-card-text class="pa-0" >
           <div class="pa-2 pa-md-4 ma-0 backG">
             <p class="text-h5 text--primary px-5 py-0 my-0">
-              Do you charge parent fees at this facility for any closures on business days (other than statutory holidays)?
+              Do you charge parent fees at this facility for any closures on business days?
             </p>
           </div>
           <div class="px-md-12 px-7">

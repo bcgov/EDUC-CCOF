@@ -229,13 +229,14 @@
             </div>
             <br>
             <br>
+            <label for="textArea"> Please describe the reason for each expense listed above. </label>
             <v-textarea
+            id="textArea"
             :disabled="isReadOnly"
             :rules="rules.required"
               placeholder="Describe Here"
               outlined
               name="input-7-4"
-              label="Please describe the reason for each expense listed above."
               v-model="model.expenseInformationNote"
             ></v-textarea>
           </div>
@@ -752,60 +753,68 @@
           <div class="px-md-12 px-7">
 
             <br>
+            <label for="wage"> When did your facility's challenges with hiring and keeping staff begin? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="wage"
             :rules="rules.required"
-              label="When did your facility's challenges with hiring and keeping staff begin?"
               placeholder="Describe here"
               outlined
               v-model="model.textbox1"
             ></v-textarea>
 
             <br>
+            <label for="wage1"> How many Direct Care Staff have left your facility due to wages?  </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="wage1"
             :rules="rules.required"
-              label=" How many Direct Care Staff have left your facility due to wages? "
-              placeholder="Describe here"
+            placeholder="Describe here"
               outlined
               v-model=" model.textbox2"
             ></v-textarea>
 
             <br>
+            <label for="wage2"> What have you done to try to recruit staff? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="wage2"
             :rules="rules.required"
-              label=" What have you done to try to recruit staff? "
+              
               placeholder="Describe here"
               outlined
               v-model=" model.textbox3"
             ></v-textarea>
 
             <br>
+            <label for="wage3">Have you had to adjust your hours/days of operation? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="wage3"
             :rules="rules.required"
-              label=" Have you had to adjust your hours/days of operation?"
+              
               placeholder="Describe here"
               outlined
               v-model=" model.textbox4"
             ></v-textarea>
 
             <br>
+            <label for="wage4"> Is your facility unable to fill spaces due to insufficient staffing? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="wage4"
             :rules="rules.required"
-              label=" Is your facility unable to fill spaces due to insufficient staffing? "
               placeholder="Describe here"
               outlined
               v-model=" model.textbox5"
             ></v-textarea>
 
             <br>
+            <label for="wage5"> Is there anything else you would like us to know about the wage increase(s)? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="wage5"
             :rules="rules.required"
-              label=" Is there anything else you would like us to know about the wage increase(s)? "
               placeholder="Describe here"
               outlined
               v-model=" model.textbox6"
@@ -1117,10 +1126,11 @@
 
             <br>
             <br>
+            <label for="serviceExpense1"> Is there anything else about your change in hours of operation you would like us to know? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="serviceExpense1"
             :rules="rules.required"
-              label="Describe each of your expenses above. (e.g. Wages, Utilities)"
               outlined
               name="input-7-4"
               placeholder="Describe here"
@@ -1129,13 +1139,14 @@
 
             <br>
             <br>
+            <label for="serviceExpense2"> Is there anything else about your change in hours of operation you would like us to know? </label>
             <v-textarea
             :disabled="isReadOnly"
+            id="serviceExpense2"
             :rules="rules.required"
               placeholder="Describe here"
               outlined
               name="input-7-4"
-              label="Is there anything else about your change in hours of operation you would like us to know?"
               v-model="model.notes2"
             ></v-textarea>
           </div>
@@ -1334,10 +1345,11 @@
 
             <div class="">
               <br>
+              <label for="expense1">Is there anything else about your expenses you would like us to know?</label>
               <v-textarea
               :disabled="isReadOnly"
+              id="expense1"
               :rules="rules.required"
-                label="Is there anything else about your expenses you would like us to know?"
                 outlined
                 name="input-7-4"
                 placeholder="Describe here"
@@ -1401,34 +1413,37 @@
 
           <div v-if="model.underservedPop == 1">
             <br>
+            <label for="underservedPop1">Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)</label>
             <v-textarea
             :disabled="isReadOnly"
+              id="underservedPop1"
               :rules="rules.required"
               outlined
               name="input-7-4"
-              label="Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)"
               placeholder="Describe here"
               v-model="model.underservedChildCareTypes"
             ></v-textarea>
 
             <br>
+            <label for="underservedPop2">How will your fee increase contribute to the overall sustainability of the organization/facility?</label>
             <v-textarea
             :disabled="isReadOnly"
+            id="underservedPop2"
             :rules="rules.required"
               outlined
               name="input-7-4"
-              label="How will your fee increase contribute to the overall sustainability of the organization/facility?"
               placeholder="Describe here"
               v-model="model.orgsustainability"
             ></v-textarea>
 
             <br>
+            <label for="underservedPop3">Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?</label>
             <v-textarea
             :disabled="isReadOnly"
+            id="underservedPop3"
             :rules="rules.required"
               outlined
               name="input-7-4"
-              label="Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?"
               placeholder="Describe here"
               v-model="model.outOfPocketFees"
             ></v-textarea>

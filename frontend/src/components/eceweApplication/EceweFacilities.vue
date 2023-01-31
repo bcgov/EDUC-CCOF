@@ -1,8 +1,13 @@
 <template>
   <v-container>
-    <v-row justify="center" class="pt-4">
-      <span class="text-h5 text-center">Early Childhood Educator-Wage Enhancement (ECE-WE) - {{this.programYearLabel}} Program Confirmation Form</span>
-    </v-row>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+    </div>
+    <br>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Early Childhood Educator Wage Enhancement (ECE-WE)</span>
+    </div>
+    <br>
     <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
       {{this.userInfo.organizationName}}
     </v-row>
@@ -15,8 +20,7 @@
       <v-alert
         class="col-11"
         outlined
-        prominent
-        color="#ABADAE">
+        prominent>
         <span style="float:left">
           <v-icon
             x-large
@@ -25,7 +29,7 @@
              mdi-information
           </v-icon>
         </span>
-        <span class="pa-1">
+        <span>
           Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to ECE-WE for each licence located at the same physical address.
         </span>
       </v-alert>

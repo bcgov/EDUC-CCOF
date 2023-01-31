@@ -4,7 +4,10 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
+            <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
+             <v-row flex >
+              <caption class="licence-upload-hint pb-5">Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.</caption>
+            </v-row>
             <v-data-table v-if="!isLoading"
                           :headers="headers"
                           :items="licenseUploadData"
@@ -312,5 +315,9 @@ export default {
 <style scoped>
 .table-header {
   background-color: #F2F2F2;
+}
+.licence-upload-hint{
+  font-style: italic;
+  color: grey;
 }
 </style>

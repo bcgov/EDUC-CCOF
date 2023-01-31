@@ -247,29 +247,19 @@ export default {
           });
         }
 
-        //this we can assume all facilites are missing Pre and OOSC-G as they are new child care categories.
-        //const isHistoricalYear = (currProgramYear.name === '2022/23 FY' || currProgramYear.name === '2021/22 FY' );
-        //console.log('historcal year?' , isHistoricalYear);
-        //always show 24 months of fees for preschool and out of school care for all program years after 2023/24
+        //check if we are missing fees for any child care type from last year. If so, add a card for the missing year's fees. 
         if (state.CCFRIFacilityModel.prevYearFeesCorrect){ 
           const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
           const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
          
           console.log('prevCCFRI IS:' , prevCcfriApp);
           response.data.forEach(item => {
-            // if (item.childCareCategoryId == preschoolGuid || item.childCareCategoryId == grade1PlusGuid){
-            //   careTypes.push( {
-            //     programYear: prevProgramYear.name,
-            //     programYearId: prevProgramYear.programYearId,
-            //     ...item
-            //   });
-            // }
-            //JB - We will always be missing Pre and OOSC-G so the above is redundant. leaving here just in case for a bit
-
-
-            //check if we are missing fees for any child care type from last year. If so, add a card for the missing year's fees.
-            //divide by 2 because each child care type will have two years of fees. We just want to find out the number of unique categories to compare to this year.
-            if ((prevCcfriApp.childCareTypes.length /2) <  response.data.length){
+          
+            //find out the number of unique categories to compare to this year by looking at previous year child care category GUIDS.
+            const numberChildCareTypes = [...new Set(prevCcfriApp.childCareTypes.map(item => item.childCareCategoryId ))].length;
+            
+            //Response returns 1 object for each child care category the facility holds a liscese for
+            if (numberChildCareTypes <  response.data.length){
               console.log('child care Cat are different lengths.');
 
               let found = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
@@ -277,6 +267,7 @@ export default {
               });
     
               //if match in last years CCFRI fees not found, add a card for that child care cat previous years fees
+              //this ensures we get 24 months of fees for a child care type that is new to the facility. 
               if (!found) {
                 console.log('NOT FOUND!');
                 careTypes.push( {
@@ -314,6 +305,20 @@ export default {
 
         //sort them by age asc 
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) => a.orderNumber - b.orderNumber);
+
+        //then sort by prev year first 
+        state.CCFRIFacilityModel.childCareTypes.sort((a, b) =>{
+          const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase
+          const nameB = b.programYear.toUpperCase(); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          // names must be equal
+          return 0;
+        });
 
         commit('setCCFRIFacilityModel', state.CCFRIFacilityModel);
         commit('setLoadedModel', _.cloneDeep(state.CCFRIFacilityModel));
