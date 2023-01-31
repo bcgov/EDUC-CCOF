@@ -577,7 +577,7 @@ export default {
           firstObj = {
             ...firstObj,
             ccof_has_rfi: facility.hasRfi,
-            existingFeesCorrect: this.CCFRIFacilityModel.prevYearFeesCorrect ? 100000000 : 100000001,
+            existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect ? 100000000 : 100000001,
           };
         }
 
@@ -635,7 +635,7 @@ export default {
           this.deleteChildCareTypes();
         } catch (error) {
           console.info(error);
-          this.setFailureAlert('An error occurred while saving.');
+          this.setFailureAlert('An error occurred while saving.!');
 
           //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
           //and life will be good :) 

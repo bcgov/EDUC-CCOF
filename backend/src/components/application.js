@@ -148,7 +148,6 @@ async function upsertParentFees(req, res) {
     "ccof_chargefeeccfri": body[0].hasClosureFees
   };
 
-  log.info('oi');
   log.info(body[0].hasClosureFees);
   try {
     let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
