@@ -209,7 +209,7 @@ export default {
         // }
         
         //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
-        if (!rootState.app.isRenewal || !state.CCFRIFacilityModel.prevYearFeesCorrect){ 
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001){ 
           response.data.forEach(item => {
             const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
             //check for undefined here! 
@@ -232,7 +232,7 @@ export default {
           });
         }
 
-        if (rootState.app.isRenewal  && state.CCFRIFacilityModel.prevYearFeesCorrect){ //hides the prev year cards if user goes back and changes "prev fees correct" from NO to YES
+        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ //hides the prev year cards if user goes back and changes "prev fees correct" from NO to YES
           response.data.forEach(item => {
             const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
             //check for undefined here! 
@@ -248,7 +248,7 @@ export default {
         }
 
         //check if we are missing fees for any child care type from last year. If so, add a card for the missing year's fees. 
-        if (state.CCFRIFacilityModel.prevYearFeesCorrect){ 
+        if (state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ 
           const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
           const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
          

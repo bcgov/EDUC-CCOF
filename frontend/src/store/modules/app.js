@@ -100,9 +100,6 @@ export default {
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
-    // setCcfriOptInComplete: (state, ccfriOptInComplete) => {
-    //   state.ccfriOptInComplete = ccfriOptInComplete;
-    // },
     setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
       state.ccofConfirmationEnabled = ccofConfirmationEnabled;
     },
