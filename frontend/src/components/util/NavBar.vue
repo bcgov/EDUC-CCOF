@@ -278,21 +278,6 @@ export default {
 
                 },
               );
-              if (item.hasRfi || item.unlockRfi) {
-                items.push(
-                  {
-                    title: 'Parent Fee Increase – RFI',
-                    subTitle: item.facilityName,
-                    id: item.facilityId,
-                    link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}},
-                    isAccessible: true,
-                    icon: this.getCheckbox(item.isRfiComplete),
-                    isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
-                    position: positionIndex++,
-                    navBarId: navBarId++
-                  },
-                );
-              }
             }
             else {
               items.push(
@@ -304,6 +289,36 @@ export default {
                   isAccessible: this.applicationStatus==='SUBMITTED' ? true: this.isCCFRIOptInComplete(),
                   icon:  this.getCheckbox(item.isCCFRIComplete),
                   isActive: 'ccfri-add-fees-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
+            if (item.hasRfi || item.unlockRfi) {
+              items.push(
+                {
+                  title: 'Parent Fee Increase – RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}},
+                  isAccessible: true,
+                  icon: this.getCheckbox(item.isRfiComplete),
+                  isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
+            if (item.unlockNmf || item.hasNmf) {
+              items.push(
+                {
+                  title: 'Parent Fee - RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
+                  isAccessible: true,
+                  icon:  this.getCheckbox(item.isNmfComplete),
+                  isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
                   position: positionIndex++,
                   navBarId: navBarId++
                 },
