@@ -13,7 +13,7 @@ class PageOrganization {
       'Facility Contact Name',
       'Position',
       'Business Phone',
-      'Organization Facility Email',
+      'Facility Email Address',
       'Facility Licence Number',
       { date: 'Effective Date of Current Licence'},
       { radio: 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?', addedField: 'Facility Name'},

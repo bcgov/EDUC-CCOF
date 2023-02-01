@@ -1,0 +1,12 @@
+Test Automation Facility 2
+2022
+111 org address
+Vancouver
+V1V1V1
+AT Facility2ContactName
+AT Facility2Manager
+604-123-4567
+ccofat@gov.bc.ca
+55443322
+2022-12-08
+Yes
