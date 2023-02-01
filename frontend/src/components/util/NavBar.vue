@@ -158,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('navBar', ['setNavBarItems']),
+    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit']),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
@@ -174,37 +174,6 @@ export default {
         return item.icon === 'mdi-check-circle' || item.icon === 'mdi-information' || item.icon === 'mdi-home';
       });
     },
-    // setNavigationPath() {
-    //   let prev = undefined;
-    //   let curr = undefined;
-    //   this.items?.forEach( mainItem => {
-    //     if (mainItem.isActive) {
-    //       console.log('PREV: ' +prev?.name);
-    //       console.log('CURR: ' +mainItem.link?.name);
-    //       curr = mainItem.link;
-    //     } else {
-    //       if (curr) {
-    //         console.log('NEXT:' + mainItem.link?.name);
-    //         curr = undefined;
-    //       }
-    //     }
-    //     prev = mainItem.link;
-    //     mainItem.items?.forEach(subItem => {
-    //       if (subItem.isActive) {
-    //         console.log('PREV: '  + prev?.name);
-    //         console.log('CURR: '  + subItem.link?.name);
-    //         curr = subItem.link;
-    //       } else {
-    //         if (curr) {
-    //           console.log('NEXT:'  +  subItem.link?.name);
-    //           curr = undefined;
-    //         }
-    //       }
-    //       prev = subItem.link;
-
-    //     });
-    //   });
-    // },
     buildNavBar(){
       positionIndex = 0;
       navBarId = 0;
@@ -253,6 +222,7 @@ export default {
 
       });
       let declarationAccessible = this.areChildrenComplete(this.items);
+      this.setCanSubmit(declarationAccessible);
       this.items.push(
         {
           title: 'Declaration',
@@ -339,21 +309,6 @@ export default {
                 },
               );
             }
-          }
-          if (item.unlockNmf || item.hasNmf) {
-            items.push(
-              {
-                title: 'Parent Fee - RFI',
-                subTitle: item.facilityName,
-                id: item.facilityId,
-                link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
-                isAccessible: true,
-                icon:  this.getCheckbox(item.isNmfComplete),
-                isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
-                position: positionIndex++,
-                navBarId: navBarId++
-              },
-            );
           }
         });
       }
