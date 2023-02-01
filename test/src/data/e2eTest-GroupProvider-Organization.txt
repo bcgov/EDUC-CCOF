@@ -1,0 +1,13 @@
+Test Automation Organization
+111 org address
+Vancouver
+V1V1V1
+222 mailing address
+Victoria
+V2V2V2
+AT OrganizationContact
+Manager
+604-123-4567
+ccofat@gov.bc.ca
+55442233
+First Nations Government
