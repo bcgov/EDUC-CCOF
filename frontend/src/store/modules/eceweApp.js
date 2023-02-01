@@ -42,10 +42,9 @@ export default {
           return;
         }
         checkSession();
-        console.log('save ecewe: is form complete', isFormComplete);
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
-        payload.isEceweComplete = isFormComplete;
+        payload.isEceweComplete = isFormComplete; 
         commit('setLoadedModel', {...state.eceweModel});
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
         return response;

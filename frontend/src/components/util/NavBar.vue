@@ -108,7 +108,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'ccfriOptInComplete', 'forceNavBarRefresh', 'isOrganizationComplete']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
@@ -588,7 +588,7 @@ export default {
       return this.navBarList?.length > 0 ? this.navBarList.every(facility => (facility.ccfriOptInStatus == 1 || facility.ccfriOptInStatus == 0 )) : false;
     },
     isEceweFacilitiesComplete() {
-      return this.navBarList?.length > 0 ? this.navBarList.every(facility => facility.eceweOptInStatus != null) : false;
+      return this.navBarList?.length > 0 ? this.navBarList.every(facility => (facility.eceweOptInStatus == 1 || facility.eceweOptInStatus == 0 )) : false;
     },
     isCcfriComplete(){
       return this.navBarList.every(fac => {

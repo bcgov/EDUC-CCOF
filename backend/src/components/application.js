@@ -148,7 +148,6 @@ async function upsertParentFees(req, res) {
     "ccof_chargefeeccfri": body[0].hasClosureFees
   };
 
-  log.info('oi');
   log.info(body[0].hasClosureFees);
   try {
     let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
@@ -272,12 +271,10 @@ async function updateECEWEFacilityApplication(req, res) {
         // send PATCH (update existing ECEWE facility)
         response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
       } else {
-        if (facility.ccof_optintoecewe != null) {
-          // send POST (create a new ECEWE facility)
-          let operation = 'ccof_applicationecewes';
-          response = await postOperation(operation, facility);
-          facilities[key].eceweApplicationId = response;
-        }
+        // send POST (create a new ECEWE facility)
+        let operation = 'ccof_applicationecewes';
+        response = await postOperation(operation, facility);
+        facilities[key].eceweApplicationId = response;
       }
     }
     return res.status(HttpStatus.OK).json({facilities: facilities});
