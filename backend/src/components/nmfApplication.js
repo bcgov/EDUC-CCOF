@@ -7,9 +7,9 @@ const { MappableObjectForFront, MappableObjectForBack } = require('../util/mappi
 const { NMFApplicationMappings } = require('../util/mapping/Mappings');
 
 function mapNMFApplicationObjectForFront(data) {
-  data.ccof_supportneeds = data.ccof_supportneeds ? ((data.ccof_supportneeds === 1) ? "Yes" : "No") : null;
-  data.ccof_lowincome_families = data.ccof_lowincome_families ? ((data.ccof_lowincome_families === 1) ? "Yes" : "No") : null;
-  data.ccof_remote_communities = data.ccof_remote_communities ? ((data.ccof_remote_communities === 1) ? "Yes" : "No") : null;
+  data.ccof_supportneeds = data.ccof_supportneeds != null ? ((data.ccof_supportneeds === 1) ? "Yes" : "No") : null;
+  data.ccof_lowincome_families = data.ccof_lowincome_families != null ? ((data.ccof_lowincome_families === 1) ? "Yes" : "No") : null;
+  data.ccof_remote_communities = data.ccof_remote_communities != null? ((data.ccof_remote_communities === 1) ? "Yes" : "No") : null;
   return new MappableObjectForFront(data, NMFApplicationMappings).toJSON();
 }
 
