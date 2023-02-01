@@ -13,6 +13,13 @@ const userSetUp = {
         await restUtils.deleteOperationWithObjectId('ccof_bceid_organizations', ccofOrganizationResponse.value[0].ccof_bceid_organizationid);
       }
     }
+  },
+  async deleteOrganization(orgName){
+    const organizationResponse = await restUtils.getOperation(`accounts?$select=accountid&$filter=(name eq '${orgName}')`);
+    log.info('organizationResponse', organizationResponse);
+    if (!arrayIsEmpty(organizationResponse.value) && organizationResponse.value[0].accountid) {
+      await restUtils.deleteOperationWithObjectId('accounts', organizationResponse.value[0].accountid);
+    }
   }
 };
 
