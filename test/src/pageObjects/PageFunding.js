@@ -8,8 +8,8 @@ class PageFunding {
       'Maximum of weeks per year you provide child care',
       { radio: 'Are there months when ALL of the programs at this facility are closed for the entire month?'},
       { select: 'If YES, check all the applicable months:'},
-      'Facility hours of operation From',
-      'Facility hours of operation To',
+      { time:'Facility hours of operation From'},
+      { time:'Facility hours of operation To'},
       'Maximum Licensed Capacity',
       'Maximum Number for Group Child Care (under 36 months)',
       'Maximum Number for Group Child Care (36 months to School Age)',
@@ -26,6 +26,14 @@ class PageFunding {
       { radio: 'Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?'},
       'Maximum number of days per week you offer extended hours of child care?',
       'Maximum number of weeks per year you offer extended hours of child care?',
+      'Group Child Care (under 36 months)',
+      'Group Child Care (36 months to School Age)',
+      'Group Child Care (School Age / School age care on School Grounds)',
+      'Multi-Age Care',
+      'Group Child Care (under 36 months)',
+      'Group Child Care (36 months to School Age)',
+      'Group Child Care (School Age/ School age care on School Grounds)',
+      'Multi-Age Care'
     ];
 
     this.backButton = getButton('Back');
