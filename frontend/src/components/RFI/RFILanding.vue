@@ -243,8 +243,7 @@
 
         </v-card-text>
       </v-card>
-    </div>
-    <div>
+
       <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
               rounded
@@ -404,7 +403,9 @@
         </v-card-text>
       </v-card>
 
-    </div> <!--end show if yes / yes selected-->
+    </div>
+    
+    <!--end show if yes / yes selected-->
 
     <!--end page 1 RFI landing-->
 
@@ -1388,10 +1389,12 @@
           <br>
           <p>Fee increases may be considered under this exception if:</p>
           <ul>
-            <li>the facility has historically provided care to underserved populations—including Indigenous or low-income families—at significantly below the regional median range of fees for their area or at no fee;</li>
-            <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
-            <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
+            <li>The facility has historically provided care to underserved populations including Indigenous or low-income families at significantly below the regional median range of fees for their area or at no fee</li>
+            <li>The fee increase will contribute to the operational sustainability of the organization; and</li>
+            <li>The fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
           </ul>
+          <br>
+          <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/ccfri_funding_guidelines_23_24.pdf">CCFRI Funding Guidelines 2023/24 (gov.bc.ca)</a>
           <v-radio-group
           :disabled="isReadOnly"
             required

@@ -635,7 +635,7 @@ export default {
           this.deleteChildCareTypes();
         } catch (error) {
           console.info(error);
-          this.setFailureAlert('An error occurred while saving.!');
+          this.setFailureAlert('An error occurred while saving.');
 
           //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
           //and life will be good :) 

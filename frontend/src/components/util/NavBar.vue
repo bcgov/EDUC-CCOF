@@ -110,7 +110,6 @@ export default {
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration']),
-    ...mapState('eceweApp', ['eceweModel']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
