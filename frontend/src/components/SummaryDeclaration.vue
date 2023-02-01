@@ -7,9 +7,7 @@
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
       </v-row>
-
-
-      <v-row justify="center">
+      <v-row v-if="!canSubmit" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
@@ -17,22 +15,17 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">Incomplete Form</v-card-title>
               </v-col>
             </v-row>
-            <v-row v-if="!canSubmit">
+            <v-row>
               <v-col class="pb-0">
                 <div>
-                  <p>You will not be able to submit your declaration until your application is fully complete.  Please review your application for sections that are incomplete</p>
-                  <p>Incomplete sections will have a circle without a checkmark on the left navigation panel</p>
+                  <p>You will not be able to submit your declaration until your application is fully complete.  Please review your application for sections that are incomplete.</p>
+                  <p>Incomplete sections will have a circle without a checkmark on the left navigation panel.</p>
                 </div>
               </v-col>
             </v-row>
           </v-container>
         </v-card>
       </v-row>
-
-
-
-
-
       <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
