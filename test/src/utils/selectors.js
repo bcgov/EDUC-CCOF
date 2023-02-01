@@ -81,7 +81,7 @@ async function selectDate(t, date_data){
   const date_arr = date_data.trim().split('-');
   const date_year = date_arr[0];
   const date_month = date_arr[1];
-  const date_day = date_arr[2]; 
+  const date_day = date_arr[2];
 
   const year_title = Selector('div.v-date-picker-title__year').filterVisible();
   await t.click(year_title);
@@ -91,8 +91,31 @@ async function selectDate(t, date_data){
   await t.click(month_option);
   const day_option = Selector('div.v-date-picker-table--date').find('div').withText(date_day.replace(/^0+/, '')).filterVisible(); //remove the leading zero
   await t.click(day_option);
-} 
+}
 
+async function selectTime(t, time_data){
+  const time_Arr = time_data.trim().split('-');
+  const time_hour = time_Arr[0];
+  console.info('----time_hour', time_hour);
+  const time_minute = time_Arr[1];
+  console.info('----time_minute', time_minute);
+  const time_AM_PM = time_Arr[2];
+  console.info('----time_AM_PM', time_AM_PM);
+
+
+  const day_option = Selector('div.v-time-picker-clock__ampm').find('div.v-picker__title__btn').withText(time_AM_PM).filterVisible();
+  console.info('----day_option', day_option);
+  await t.click(day_option);
+  console.info('----day_option - clicked');
+
+  const hour_option = Selector('div.v-time-picker-clock__inner').find('span').withExactText(time_hour);
+  console.info('----hour_option', hour_option);
+  await t.click(hour_option);
+  const minute_option = Selector('div.v-time-picker-clock__inner').find('span').withExactText(time_minute);
+  console.info('----minute_option', minute_option);
+  await t.click(minute_option);
+
+}
 
 function getSelectOption(labelName, selectedName) {
   return Selector('label').withText(labelName).parent().parent().nextSibling().find('label').withText(selectedName).prevSibling();
@@ -127,7 +150,13 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       const date_picker = getTextField(fields[index].date);
       await t.click(date_picker).wait(1000);
       await selectDate(t, lines[index]);
-    } else if (fields[index].select) {
+    } else if (fields[index].time){
+      console.info("---time picker called")
+      const time_picker = getTextField(fields[index].time);
+      await t.click(time_picker).wait(1000);
+      await selectTime(t, lines[index]);
+    }
+    else if (fields[index].select) {
       let n = 0;
       let options = lines[index].split(",");
 
@@ -144,7 +173,7 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       }
     }
   }
-    
+
   if (typeof callback == 'function') {
     console.log('calling callback');
     callback(index, lines);
