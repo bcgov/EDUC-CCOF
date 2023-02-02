@@ -24,5 +24,8 @@ class PageCCFRIOpt {
         await t.click(Selector('label').withText(lines[index].trim()).nth(index));
     }
   }
+  async clickOptInAll(t){
+    await t.click(this.optInAllButton);
+  }
 }
 export default PageCCFRIOpt;
