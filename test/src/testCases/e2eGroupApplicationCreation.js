@@ -76,7 +76,7 @@ test('e2e-Test', async t => {
   log.info('Facility page save button clicked');
   await t.click(facility.nextButton);
   log.info('Facility page next button clicked');
-
+  await t.wait(3000);
   //funding-1
   await funding.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Facility1-Funding.txt');
   log.info('Funding page data loaded');
@@ -85,7 +85,7 @@ test('e2e-Test', async t => {
   log.info('Funding page save button clicked');
   await t.click(funding.nextButton);
   log.info('Funding page next button clicked');
-
+  await t.wait(3000);
   //Add Facility
   await addFacility.clickYesToAddFacility(t);
   log.info('Add Facility page Yes button clicked');
@@ -98,7 +98,7 @@ test('e2e-Test', async t => {
   log.info('Facility2 page save button clicked');
   await t.click(facility.nextButton);
   log.info('Facility2 page next button clicked');
-
+  await t.wait(3000);
   //funding-2
   await funding.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Facility2-Funding.txt');
   log.info('Facility2 Funding page data loaded');
@@ -109,6 +109,7 @@ test('e2e-Test', async t => {
   log.info('Facility2 Funding page next button clicked');
 
   // Navigate to License Upload
+  await t.wait(3000);
   await addFacility.clickNoToAddFacility(t);
   log.info('Add Facility page No button clicked');
 
@@ -117,12 +118,17 @@ test('e2e-Test', async t => {
   await t.expect(licenseUpload.nextButton.hasAttribute('disabled')).ok();
   await licenseUpload.uploadLicense(t, 'CCOF_License1.png',facility1Name);
   log.info('Licence Upload Page  Licence uploaded for Facility 1');
-  await licenseUpload.uploadLicense(t, 'CCOF_License2.png',facility2Name);
+  await t.expect(licenseUpload.nextButton.hasAttribute('disabled')).ok();
+  await licenseUpload.uploadLicense(t, 'CCOF_License2.jpg',facility2Name);
   log.info('Licence Upload Page  Licence uploaded for Facility 2');
   await t.expect(licenseUpload.nextButton.hasAttribute('disabled')).notOk();
   await t.click(licenseUpload.saveButton).wait(3000);
   log.info('Licence Upload Page  save button clicked');
   await t.click(licenseUpload.nextButton);
   log.info('Licence Upload Page next button clicked');
+
+  //Opt In CCFRI
+
+
 });
 
