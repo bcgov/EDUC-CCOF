@@ -12,14 +12,19 @@
           <v-container class="pa-0">
             <v-row>
               <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">Incomplete Form</v-card-title>
+                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
+                  <v-icon
+                    x-large
+                    class="py-1 px-3 noticeAlertIcon">
+                    mdi-alert-octagon
+                  </v-icon>Incomplete Form</v-card-title>
               </v-col>
             </v-row>
             <v-row>
               <v-col class="pb-0">
                 <div>
-                  <p>You will not be able to submit your declaration until your application is fully complete.  Please review your application for sections that are incomplete.</p>
-                  <p>Incomplete sections will have a circle without a checkmark on the left navigation panel.</p>
+                  <p>You will not be able to submit your application until it is complete.</p>
+                  <p>Incomplete sections will have a circle without a checkmark on the navigational panel to the left of the screen.</p>
                 </div>
               </v-col>
             </v-row>
