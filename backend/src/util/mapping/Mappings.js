@@ -345,6 +345,13 @@ const DeclarationMappings = [
   { back: 'facilities', front: 'facilities'}
 ];
 
+const SystemMessagesMappings = [
+  { back: 'ccof_systemmessageid', front: 'messageID' },
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_message', front: 'message' }
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -370,5 +377,6 @@ module.exports = {
   ExpenseInformationMappings,
   OtherFundingProgramMappings,
   NMFApplicationMappings,
-  IndigenousExpenseMappings
+  IndigenousExpenseMappings,
+  SystemMessagesMappings
 };

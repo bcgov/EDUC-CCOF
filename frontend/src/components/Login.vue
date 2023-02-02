@@ -25,6 +25,24 @@
 
       <!-- containerWidth1450 is a custom css class I wrote to make the container behave in the margins... It "should" just listen to the Vuetify margins, but it wasn't and I couldn't figure out why.-->
       <v-container class="containerWidth1450 pa-0" >
+      <div v-for="item in systemMessages" :key="item.messageID">
+        <v-card class="elevation-0">
+          <v-col class="py-2">
+            <v-row class="py-0 noticeInfo" align="center">
+              <v-col :cols="12" align="center" md="1">
+                <v-icon
+                  x-large
+                  class="py-1 noticeInfoIcon">
+                  mdi-information
+                </v-icon>
+              </v-col>
+              <v-col>
+                {{ item.message }}
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-card>
+      </div>
       <p class="pt-4">
         <strong>NOTE:</strong> The information collected through My ChildCareBC Services is collected 
         under the authority of the <i>Freedom of Information and Protection of Privacy Act</i> (FOIPPA) 
@@ -125,7 +143,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import { AuthRoutes } from '@/utils/constants';
-import { PATHS } from '@/utils/constants';
+import { PATHS, ApiRoutes } from '@/utils/constants';
+import ApiService from '@/common/apiService';
 
 export default {
   name: 'Login',
@@ -135,8 +154,12 @@ export default {
   data() {
     return {
       appTitle: process.env.VUE_APP_TITLE,
-      authRoutes: AuthRoutes
+      authRoutes: AuthRoutes,
+      systemMessages: [],
     };
+  },
+  async created() {
+    this.loadSystemMessages();
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated']),
@@ -147,7 +170,12 @@ export default {
     },
     toEstimator(){
       this.$router.push(PATHS.estimator); //TODO: change this, from CCOF page
-    }
+    },
+    async loadSystemMessages() {
+      let resData = await ApiService.apiAxios.get(ApiRoutes.SYSTEM_MESSAGES);
+      if (resData)
+        this.systemMessages = resData.data;
+    },
   }
 };
 </script>
