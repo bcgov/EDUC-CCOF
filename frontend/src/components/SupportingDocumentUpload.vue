@@ -24,6 +24,7 @@
             class="elevation-1"
             hide-default-header
             hide-default-footer
+            :items-per-page="-1"
           >
             <template v-slot:top>
               <v-col flex>
