@@ -254,7 +254,6 @@ export default {
         let ccfriId = this.$route.params.urlGuid;
         let nmfId = await this.saveNmf(ccfriId);
         if (nmfId) {
-          console.log('nmfId set: ', nmfId);
           this.model.nmfId = nmfId;
         }
         this.updateCurrentFacilityNMFCompleteStatus();
