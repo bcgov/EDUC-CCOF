@@ -96,23 +96,16 @@ async function selectDate(t, date_data){
 async function selectTime(t, time_data){
   const time_Arr = time_data.trim().split('-');
   const time_hour = time_Arr[0];
-  console.info('----time_hour', time_hour);
   const time_minute = time_Arr[1];
-  console.info('----time_minute', time_minute);
   const time_AM_PM = time_Arr[2];
-  console.info('----time_AM_PM', time_AM_PM);
 
 
   const day_option = Selector('div.v-time-picker-clock__ampm').find('div.v-picker__title__btn').withText(time_AM_PM).filterVisible();
-  console.info('----day_option', day_option);
   await t.click(day_option);
-  console.info('----day_option - clicked');
 
   const hour_option = Selector('div.v-time-picker-clock__inner').find('span').withExactText(time_hour);
-  console.info('----hour_option', hour_option);
   await t.click(hour_option);
   const minute_option = Selector('div.v-time-picker-clock__inner').find('span').withExactText(time_minute);
-  console.info('----minute_option', minute_option);
   await t.click(minute_option);
 
 }
