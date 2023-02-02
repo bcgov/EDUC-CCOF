@@ -65,7 +65,7 @@ export default {
           };
           let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_NMF + '/' + 'nmf/' + state.nmfModel?.nmfId, payload);
           commit('addNmfToStore', {ccfriId: ccfriId, model: state.nmfModel});
-          return response;
+          return;
         } catch (error) {
           console.log(`Failed to update existing NMF - ${error}`);
           throw error;
@@ -75,8 +75,9 @@ export default {
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_NMF + '/' + ccfriId + '/nmf', {nmfModel: state.nmfModel});
           state.nmfModel.nmfId = response.data.nmfApplicationGuid;
+          state.loadedModel.nmfId = response.data.nmfApplicationGuid;
           commit('addNmfToStore', {ccfriId: ccfriId, model: state.nmfModel});
-          return response;
+          return response.data.nmfApplicationGuid;
         } catch (error) {
           console.log(`Failed to save new NMF - ${error}`);
           throw error;

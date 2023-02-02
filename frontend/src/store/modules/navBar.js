@@ -32,9 +32,11 @@ export default {
   namespaced: true,
   state: {
     navBarItems: [],
+    canSubmit: true,
   },
   mutations: {
     setNavBarItems: (state, value) => { state.navBarItems = value; },
+    setCanSubmit: (state, value) => { state.canSubmit = value; },
   },
   actions: {
     getNextPath: ({state}) => {
