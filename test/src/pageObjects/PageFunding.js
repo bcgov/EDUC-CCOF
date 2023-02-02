@@ -26,14 +26,14 @@ class PageFunding {
       { radio: 'Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?'},
       'Maximum number of days per week you offer extended hours of child care?',
       'Maximum number of weeks per year you offer extended hours of child care?',
-      'Group Child Care (under 36 months)',
-      'Group Child Care (36 months to School Age)',
-      'Group Child Care (School Age / School age care on School Grounds)',
-      'Multi-Age Care',
-      'Group Child Care (under 36 months)',
-      'Group Child Care (36 months to School Age)',
-      'Group Child Care (School Age/ School age care on School Grounds)',
-      'Multi-Age Care'
+      { heading:'4 hours or less extended child care', label:'Group Child Care (under 36 months)'},
+      { heading:'4 hours or less extended child care', label:'Group Child Care (36 months to School Age)'},
+      { heading:'4 hours or less extended child care', label:'Group Child Care (School Age / School age care on School Grounds)'},
+      { heading:'4 hours or less extended child care', label:'Multi-Age Care'},
+      { heading:'More than 4 extended child care', label:'Group Child Care (under 36 months)'},
+      { heading:'More than 4 extended child care', label:'Group Child Care (36 months to School Age)'},
+      { heading:'More than 4 extended child care', label:'Group Child Care (School Age/ School age care on School Grounds)'},
+      { heading:'More than 4 extended child care', label:'Multi-Age Care'},
     ];
 
     this.backButton = getButton('Back');
