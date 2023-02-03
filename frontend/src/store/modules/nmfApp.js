@@ -63,7 +63,7 @@ export default {
             nmfModel: state.nmfModel,
             ccfriId: ccfriId
           };
-          let response = await ApiService.apiAxios.put(ApiRoutes.APPLICATION_NMF + '/' + 'nmf/' + state.nmfModel?.nmfId, payload);
+          await ApiService.apiAxios.put(ApiRoutes.APPLICATION_NMF + '/' + 'nmf/' + state.nmfModel?.nmfId, payload);
           commit('addNmfToStore', {ccfriId: ccfriId, model: state.nmfModel});
           return;
         } catch (error) {
