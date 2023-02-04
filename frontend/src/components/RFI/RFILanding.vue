@@ -1138,18 +1138,6 @@
               v-model="model.serviceExpansionDetailsNote"
             ></v-textarea>
 
-            <br>
-            <br>
-            <label for="serviceExpense2"> Is there anything else about your change in hours of operation you would like us to know? </label>
-            <v-textarea
-            :disabled="isReadOnly"
-            id="serviceExpense2"
-            :rules="rules.required"
-              placeholder="Describe here"
-              outlined
-              name="input-7-4"
-              v-model="model.notes2"
-            ></v-textarea>
           </div>
         </v-card-text>
       </v-card>
