@@ -8,6 +8,12 @@ import PageAddFacility from '../pageObjects/PageAddFacility';
 import PageUploadLicense from '../pageObjects/PageUploadLicense';
 import log from "npmlog";
 import {Selector} from 'testcafe';
+import PageCCFRIOpt from '../pageObjects/PageCCFRIOpt';
+import PageParentFee from '../pageObjects/PageParentFee';
+import PageECEWEfacility from '../pageObjects/pageECEWEfacility';
+import PageSupportingDocument from '../pageObjects/PageSupportingDocument';
+import PageECEWEEligibility from '../pageObjects/pageECEWEEligibility';
+import PageDeclaration from '../pageObjects/PageDeclaration';
 const config = require('../utils/configLoader');
 const validation = require('../utils/validation');
 
@@ -18,6 +24,13 @@ const facility = new PageFacility();
 const funding = new PageFunding();
 const addFacility = new PageAddFacility();
 const licenseUpload = new PageUploadLicense();
+const ccfriOpt = new PageCCFRIOpt();
+const parentFee = new PageParentFee();
+const eceweEligibility = new PageECEWEEligibility();
+const eceweFacility = new PageECEWEfacility();
+const supportingDocument = new PageSupportingDocument();
+const declaration = new PageDeclaration();
+
 const alert = new PageAlert();
 const userSetup = require('../services/user-set-up.js');
 const facility1Name= 'Test Automation Facility 1';
@@ -61,30 +74,21 @@ test('e2e-Test', async t => {
   log.info('User Logged in and on Organization page');
   await organization.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Organization.txt');
   log.info('Organization page data loaded');
-  await t.expect(organization.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(organization.saveButton).wait(3000);
-  log.info('Organization page save button clicked');
-  await t.expect(alert.success.exists).ok();
-  await t.click(organization.nextButton);
-  log.info('Organization page next button clicked');
+  await organization.nextButtonIsEnabled(t);
+  await organization.clickSaveAndNextButton(t)
 
   //facility-1
   await facility.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Facility.txt');
   log.info('Facility page data loaded');
-  await t.expect(facility.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(facility.saveButton).wait(3000);
-  log.info('Facility page save button clicked');
-  await t.click(facility.nextButton);
-  log.info('Facility page next button clicked');
+  await facility.nextButtonIsEnabled(t);
+  await facility.clickSaveAndNextButton(t);
   await t.wait(3000);
+
   //funding-1
   await funding.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Facility1-Funding.txt');
   log.info('Funding page data loaded');
-  await t.expect(funding.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(funding.saveButton).wait(3000);
-  log.info('Funding page save button clicked');
-  await t.click(funding.nextButton);
-  log.info('Funding page next button clicked');
+  await funding.nextButtonIsEnabled(t);
+  await funding.clickSaveAndNextButton(t);
   await t.wait(3000);
   //Add Facility
   await addFacility.clickYesToAddFacility(t);
@@ -93,23 +97,18 @@ test('e2e-Test', async t => {
   //facility-2
   await facility.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Facility2.txt');
   log.info('Facility2  page data loaded');
-  await t.expect(facility.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(facility.saveButton).wait(3000);
-  log.info('Facility2 page save button clicked');
-  await t.click(facility.nextButton);
-  log.info('Facility2 page next button clicked');
+  await facility.nextButtonIsEnabled(t);
+  await facility.clickSaveAndNextButton(t);
   await t.wait(3000);
+
   //funding-2
   await funding.loadFieldsFromFile(t, 'e2eTest-GroupProvider-Facility2-Funding.txt');
   log.info('Facility2 Funding page data loaded');
-  await t.expect(funding.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(funding.saveButton).wait(3000);
-  log.info('Facility2 Funding page save button clicked');
-  await t.click(funding.nextButton);
-  log.info('Facility2 Funding page next button clicked');
+  await funding.nextButtonIsEnabled(t);
+  await funding.clickSaveAndNextButton(t);
+  await t.wait(3000);
 
   // Navigate to License Upload
-  await t.wait(3000);
   await addFacility.clickNoToAddFacility(t);
   log.info('Add Facility page No button clicked');
 
@@ -118,17 +117,92 @@ test('e2e-Test', async t => {
   await t.expect(licenseUpload.nextButton.hasAttribute('disabled')).ok();
   await licenseUpload.uploadLicense(t, 'CCOF_License1.png',facility1Name);
   log.info('Licence Upload Page  Licence uploaded for Facility 1');
-  await t.expect(licenseUpload.nextButton.hasAttribute('disabled')).ok();
+  await licenseUpload.nextButtonIsDisabled(t);
   await licenseUpload.uploadLicense(t, 'CCOF_License2.jpg',facility2Name);
   log.info('Licence Upload Page  Licence uploaded for Facility 2');
-  await t.expect(licenseUpload.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(licenseUpload.saveButton).wait(3000);
-  log.info('Licence Upload Page  save button clicked');
-  await t.click(licenseUpload.nextButton);
-  log.info('Licence Upload Page next button clicked');
+  await licenseUpload.nextButtonIsEnabled(t);
+  await licenseUpload.clickSaveAndNextButton(t);
 
   //Opt In CCFRI
+  await ccfriOpt.clickOptInForAllFacilities(t);
+  await ccfriOpt.clickSaveAndNextButton(t);
 
+
+  //parent fee facility 1
+  log.info('CCFRI Parent Fee for Facility 1 ');
+  await parentFee.chooseFacility(t, facility1Name);
+  log.info('Reading File:facility-parentfee-1.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-1.txt');
+  log.info('Reading File:facility-parentfee-2.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-2.txt');
+  log.info('Reading File:facility-parentfee-3.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-3.txt');
+  log.info('Reading File:facility-parentfee-4.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-4.txt');
+  log.info('Reading File:facility-parentfee-5.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-5.txt');
+  log.info('Reading File:facility-parentfee-6.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-6.txt');
+  log.info('Reading File:facility-parentfee-1-1.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-1-1.txt');
+  log.info('Reading File:facility-parentfee-2-2.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-2-2.txt');
+  log.info('Reading File:facility-parentfee-3-3.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-3-3.txt');
+  log.info('Reading File:facility-parentfee-4-4.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-4-4.txt');
+  log.info('Reading File:facility-parentfee-5-5.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-5-5.txt');
+  log.info('Reading File:facility-parentfee-6-6.txt ');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-6-6.txt');
+  await t.wait(3000);
+  await parentFee.updateClosure(t, 'facility-parentfee-closure.txt');
+  await parentFee.updateInformation(t, 'facility-parentfee-information.txt');
+  await parentFee.clickSaveAndNextButton(t);
+  await t.wait(3000);
+
+  //parent fee facility 2
+  log.info('CCFRI Parent Fee for Facility 2');
+  await parentFee.chooseFacility(t, facility2Name);
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-1.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-2.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-3.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-4.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-5.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-6.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-1-1.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-2-2.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-3-3.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-4-4.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-5-5.txt');
+  await parentFee.updateFeeFromFile(t, 'facility-parentfee-6-6.txt');
+  await parentFee.updateClosure(t, 'facility-parentfee-noclosure.txt');
+  await parentFee.updateInformation(t, 'facility-parentfee-information.txt');
+  await parentFee.clickSaveAndNextButton(t);
+
+  //ECE-WE Eligibility
+  log.info('ECE-WE Eligibility Page Loaded');
+  await eceweEligibility.updateOptionFromFile(t, 'ee2eTest-ecewe-eligibility.txt');
+  await eceweEligibility.clickSaveAndNextButton(t);
+
+  //ECE-WE Facility
+  log.info('ECE-WE Facility Loaded');
+  await eceweFacility.updateOptFromFile(t, 'e2eTest-ecewe-facility.txt');
+  await eceweFacility.clickSaveAndNextButton(t);
+
+  //Supporting Document
+  log.info('Supporting Document Loaded');
+  await supportingDocument.uploadSupportingDocumentForFacility(t, 'sample_txt.txt', facility1Name);
+  await supportingDocument.nextButtonIsEnabled(t);
+  await supportingDocument.clickSaveAndNextButton(t);
+
+  //Declaration
+  log.info('Declaration Loaded');
+  await declaration.clickDeclarationCheckBox(t);
+  await declaration.submitButtonIsDisabled(t);
+  await declaration.singDeclaration(t, 'Test Automation Submitted');
+  await declaration.submitButtonIsEnabled(t);
+  await declaration.clickSubmitButton(t);
 
 });
 
