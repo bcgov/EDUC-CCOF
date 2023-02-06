@@ -14,6 +14,7 @@
                           class="elevation-1"
                           hide-default-header
                           hide-default-footer
+                          :items-per-page="-1"
             >
               <template v-slot:header="{ props: { headers } }">
                 <thead>

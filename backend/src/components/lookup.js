@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const _ = require ('lodash');
 const cache = require('memory-cache');
 const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
-const { ProgramYearMappings } = require('../util/mapping/Mappings');
+const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const log = require('./logger');
 
@@ -120,7 +120,21 @@ async function getLookupInfo(req, res) {
   //log.info('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
+
+async function getSystemMessages(req, res) {
+  let systemMessages = lookupCache.get('systemMessages');
+  if (!systemMessages) {
+    let currentTime = (new Date()).toISOString();
+    systemMessages = [];
+    let resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
+    resData?.value.forEach(message => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));    
+    lookupCache.put('systemMessages', systemMessages, 60 * 60 * 1000);
+  }
+  return res.status(HttpStatus.OK).json(systemMessages);
+}
+
 module.exports = {
   getLookupInfo,
-  getLicenseCategory
+  getLicenseCategory,
+  getSystemMessages
 };

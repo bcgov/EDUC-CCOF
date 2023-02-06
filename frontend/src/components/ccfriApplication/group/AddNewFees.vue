@@ -387,7 +387,7 @@ export default {
       isValidForm : false,
      
       feeRules: [
-        (v) => ( typeof v == 'number'|| v == '' || v == ' ') || 'Required.',
+        (v) => !isNaN(parseFloat(v))  || 'Must be a number',
         (v)  => v <=  9999|| 'Max fee is $9999.00',
         (v) => v >= 0  || 'Input a positve number',
       ],

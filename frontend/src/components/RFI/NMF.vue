@@ -252,7 +252,10 @@ export default {
       try {
         this.setNmfModel({ ...this.model, isNmfComplete: this.isValidForm });
         let ccfriId = this.$route.params.urlGuid;
-        await this.saveNmf(ccfriId);
+        let nmfId = await this.saveNmf(ccfriId);
+        if (nmfId) {
+          this.model.nmfId = nmfId;
+        }
         this.updateCurrentFacilityNMFCompleteStatus();
         if (showNotification) {
           this.setSuccessAlert('Success! RFI information has been saved.');

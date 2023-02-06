@@ -109,7 +109,7 @@
 </template>
 <script>
 
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 
@@ -125,13 +125,24 @@ export default {
   },  
   computed: {
     ...mapGetters('app', ['futureYearLabel']),
+    ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId']),
+    ...mapState('app', ['programYearList']),
+  },
+  mounted() {
+    this.processing = false;
+    //prevents a user from creating another RENEWAL, in case they hit the 'back' button on the browser and try again.
+    if (this.applicationStatus == 'DRAFT'
+      && this.applicationType == 'RENEW'
+      && this.ccofApplicationStatus == 'NEW'
+      && this.programYearId == this.programYearList.future?.programYearId) {
+      this.$router.push(PATHS.group.licenseUpload);  
+    }
   },
   methods: {
     ...mapActions('organization', ['renewApplication']),
-    async next (){
+    async next() {
       this.processing = true;
       await this.renewApplication();
-      this.processing = false;
       this.$router.push(PATHS.group.licenseUpload);
     },
     back() {
