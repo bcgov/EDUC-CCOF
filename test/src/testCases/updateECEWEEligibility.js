@@ -1,6 +1,6 @@
 import PageLogin from '../pageObjects/PageLogin';
 import PageLanding from '../pageObjects/PageLanding';
-import pageECEWEEligibility from '../pageObjects/pageECEWEEligibility';
+import PageECEWEEligibility from '../pageObjects/pageECEWEEligibility';
 import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
@@ -8,7 +8,7 @@ const config = require('../utils/configLoader');
 
 const login = new PageLogin();
 const landing = new PageLanding();
-const eligibility = new pageECEWEEligibility();
+const eligibility = new PageECEWEEligibility();
 const alert = new PageAlert();
 
 fixture `ECE-WE Eligibility Tests`

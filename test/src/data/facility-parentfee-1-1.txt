@@ -1,7 +1,10 @@
-2022/23
+2023/24
 Full-Time
 0 to 18 months
-Daily
+Monthly
+Jan:10
+Feb:10
+March:10
 April:10
 May:10
 June:10
@@ -11,6 +14,3 @@ September:10
 October:10
 November:10
 December:10
-Jan:10
-Feb:10
-March:10
