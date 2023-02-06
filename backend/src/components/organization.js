@@ -63,7 +63,7 @@ async function createOrganization(req, res) {
       }
     ];
 
-    log.info('createOrganziation payload:', organization);
+    log.info('createOrganization payload:', organization);
     let organizationGuid = await postOperation('accounts', organization);
     //After the application is created, get the application guid
     let operation = 'accounts(' + organizationGuid + ')?$select=accountid&$expand=ccof_ccof_application_Organization_account($select=ccof_applicationid,statuscode)';
@@ -78,7 +78,7 @@ async function createOrganization(req, res) {
     } else {
       log.error('Unable to find applicationId when creating organization: ', organizationGuid);
     }
-    return res.status(HttpStatus.CREATED).json({ 
+    return res.status(HttpStatus.CREATED).json({
       organizationId: organizationGuid,
       applicationId: applicationId,
       applicationStatus: applicationStatus,
