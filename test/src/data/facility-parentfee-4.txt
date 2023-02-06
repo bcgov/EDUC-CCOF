@@ -1,12 +1,13 @@
-<<<<<<< HEAD
+
 2022/23
 Full-Time
 Out of School Care - Kindergarten
-=======
 2021/22
 Full-Time
 18-36
->>>>>>> 96c64a0 (Update CCFRI Parent Fee Page)
+2022/23
+Full-Time
+Out of School Care - Kindergarten
 Monthly
 Jan:2
 Feb:2
@@ -19,8 +20,4 @@ August:2
 September:2
 October:2
 November:2
-<<<<<<< HEAD
 December:2
-=======
-December:2
->>>>>>> 96c64a0 (Update CCFRI Parent Fee Page)
