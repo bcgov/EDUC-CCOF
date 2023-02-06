@@ -1125,6 +1125,19 @@
               </v-btn>
             </div>
 
+           <br>
+            <br>
+            <label for="serviceExpense"> Describe each of your expenses above. (e.g. Wages, Utilities) </label>
+            <v-textarea
+            :disabled="isReadOnly"
+            id="serviceExpense"
+            :rules="rules.required"
+              outlined
+              name="input-7-4"
+              placeholder="Describe here"
+              v-model="model.serviceExpansionDetailsNote"
+            ></v-textarea>
+
             <br>
             <br>
             <label for="serviceExpense1"> Is there anything else about your change in hours of operation you would like us to know? </label>
@@ -1135,7 +1148,7 @@
               outlined
               name="input-7-4"
               placeholder="Describe here"
-              v-model="model.serviceExpansionDetailsNote"
+              v-model="model.notes2"
             ></v-textarea>
 
           </div>

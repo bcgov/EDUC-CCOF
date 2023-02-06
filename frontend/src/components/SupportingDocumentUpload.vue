@@ -24,6 +24,7 @@
             class="elevation-1"
             hide-default-header
             hide-default-footer
+            :items-per-page="-1"
           >
             <template v-slot:top>
               <v-col flex>
@@ -102,7 +103,7 @@
       </v-row>
       <v-row justify="space-around">
         <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="isProcessing" :disabled="!isValidForm" @click="next()">Next</v-btn>
+        <v-btn color="secondary" outlined x-large :loading="isProcessing" :disabled="!isNextEnabled" @click="next()">Next</v-btn>
         <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isSaveDisabled || isLocked" @click="saveClicked()">Save</v-btn>
       </v-row>
     </v-container>
@@ -128,6 +129,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
+    ...mapState('navBar', ['canSubmit']),
     ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments','applicationStatus', 'applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     isLocked() {
@@ -142,6 +144,9 @@ export default {
       const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
       return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
     },
+    isNextEnabled() {
+      return this.isValidForm && this.canSubmit;
+    }
 
   },
 

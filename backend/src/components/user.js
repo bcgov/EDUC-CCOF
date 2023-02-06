@@ -37,7 +37,7 @@ async function getUserInfo(req, res) {
   }
   
   let resData = {
-    displayName: (queryUserName)? req.session.passport.user._json.display_name + '-' + queryUserName : req.session.passport.user._json.display_name,
+    displayName: (queryUserName)? userName + '-' + queryUserName : userName,
     userName: userName,
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
