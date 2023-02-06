@@ -1,6 +1,6 @@
 import PageLogin from '../pageObjects/PageLogin';
 import PageLanding from '../pageObjects/PageLanding';
-import pageECEWEfacility from '../pageObjects/pageECEWEfacility';
+import PageECEWEfacility from '../pageObjects/pageECEWEfacility';
 import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
@@ -8,7 +8,7 @@ const config = require('../utils/configLoader');
 
 const login = new PageLogin();
 const landing = new PageLanding();
-const opt = new pageECEWEfacility();
+const opt = new PageECEWEfacility();
 const alert = new PageAlert();
 
 fixture `ECE-WE Facility Opt-in Tests`
