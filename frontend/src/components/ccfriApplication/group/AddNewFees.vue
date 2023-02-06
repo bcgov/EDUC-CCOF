@@ -17,128 +17,160 @@
         <strong>Enter the fee before CCFRI is applied. </strong> <br><br>
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
       </p>
-
       
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
       
-      <div v-else v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
-        <v-card  v-if = "!item.deleteMe"
-        
-        
-        elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
-            min-height="230"
-            rounded
-            tiled
-            exact 
-            tile
-            :ripple="false"
+      <div v-else> 
+        <v-card v-if="isReadOnly" elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+          min-height="230"
+          rounded
+          tiled
+          exact 
+          tile
+          :ripple="false"
+          
           >
-            <v-card-text class="pa-0" >
-              <div class="pa-2 pa-md-4 ma-0 backG">
-                <p class="text-h5 text--primary px-5 py-0 my-0">
-                  Parent Fees {{item.programYear}}: Full-Time {{item.childCareCategory}}
-                </p>
-              </div>
-              <div class="px-md-12 px-7">
-                <br>
-                <!-- <p class="text-h6 text--primary">
-                  Are your parent fees
-                  
-                </p> -->
-                <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
-                <v-radio-group
-                :rules = "rules"
-                  v-model="item.feeFrequency"
-                  label="Are your parent fees"
-                  :disabled="isReadOnly"
-                >
-                  <v-radio
-                    label="Daily"
-                    value="Daily"
-                  ></v-radio>
-                  <v-radio
-                    label="Monthly"
-                    value="Monthly"
-                  ></v-radio>
-                </v-radio-group>
-
-              <v-container v-if="!item.feeFrequency"></v-container>
-
-                <v-container v-else class="ma-0 pa-0">
-                <v-row>
-                  <v-col>
-                    <label>Submit your daily parent fee if you only offer care for 4 days or fewer per week.</label><br>
-                    <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If you do not charge a parent fee (e.g. if the facility is closed) enter zero.</label>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col
-                    class="col-6 col-md-2"
-                  >
-                  <!-- childCareTypes[index].approvedFeeApr 
-                    I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeApr" label="April" prefix="$"/>
-                  </v-col>
-                  <v-col 
-                    class="col-6 col-md-2"
-                  >
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMay" label="May" prefix="$"/>
-                  </v-col >
-                  <v-col 
-                    class="col-6 col-md-2"
-                  >
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJun" label="June" prefix="$"/>
-                  </v-col>
-                  <v-col
-                  class="col-6 col-md-2"
-                  >
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJul" label="July" prefix="$"/>
-                  </v-col>
-                  <v-col 
-                    class="col-6 col-md-2"
-                  >
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeAug" label="August" prefix="$" />
-                  </v-col>
-                  <v-col
-                    class="col-6 col-md-2"
-                  >
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeSep" label="September" prefix="$" />
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col 
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeOct" label="October" prefix="$"/>
-                  </v-col>
-                  <v-col 
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeNov" label="November" prefix="$"/>
-                  </v-col >
-                  <v-col 
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeDec" label="December" prefix="$"/>
-                  </v-col >
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJan" label="Jan" prefix="$"/>
-                  </v-col>
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeFeb" label="Feb" prefix="$" />
-                  </v-col>
-                  <v-col
-                    class="col-6 col-md-2">
-                    <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMar" label="March" prefix="$" />
-                  </v-col>
-                </v-row>
-              
-                </v-container>
-              </div>
+            <v-card-text>
+              <p class="text-h6 text--primary">
+                Are the previous year's fees correct for this facility?
+              </p>
+              <br>
+              <v-radio-group
+              :rules = "rules"
+              disabled=true
+                row
+                v-model="CCFRIFacilityModel.existingFeesCorrect"
+              >
+                <v-radio
+                  label="Yes"
+                  :value=100000000
+                ></v-radio>
+                <v-radio
+                  label="No"
+                  :value=100000001
+                ></v-radio>
+              </v-radio-group>
             </v-card-text>
         </v-card>
-      </div>
 
+        <div v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
+          <v-card  v-if = "!item.deleteMe"
+          
+          
+          elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+              min-height="230"
+              rounded
+              tiled
+              exact 
+              tile
+              :ripple="false"
+            >
+              <v-card-text class="pa-0" >
+                <div class="pa-2 pa-md-4 ma-0 backG">
+                  <p class="text-h5 text--primary px-5 py-0 my-0">
+                    Parent Fees {{item.programYear}}: Full-Time {{item.childCareCategory}}
+                  </p>
+                </div>
+                <div class="px-md-12 px-7">
+                  <br>
+                  <!-- <p class="text-h6 text--primary">
+                    Are your parent fees
+                    
+                  </p> -->
+                  <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
+                  <v-radio-group
+                  :rules = "rules"
+                    v-model="item.feeFrequency"
+                    label="Are your parent fees"
+                    :disabled="isReadOnly"
+                  >
+                    <v-radio
+                      label="Daily"
+                      value="Daily"
+                    ></v-radio>
+                    <v-radio
+                      label="Monthly"
+                      value="Monthly"
+                    ></v-radio>
+                  </v-radio-group>
+
+                <v-container v-if="!item.feeFrequency"></v-container>
+
+                  <v-container v-else class="ma-0 pa-0">
+                  <v-row>
+                    <v-col>
+                      <label>Submit your daily parent fee if you only offer care for 4 days or fewer per week.</label><br>
+                      <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If you do not charge a parent fee (e.g. if the facility is closed) enter zero.</label>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col
+                      class="col-6 col-md-2"
+                    >
+                    <!-- childCareTypes[index].approvedFeeApr 
+                      I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeApr" label="April" prefix="$"/>
+                    </v-col>
+                    <v-col 
+                      class="col-6 col-md-2"
+                    >
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMay" label="May" prefix="$"/>
+                    </v-col >
+                    <v-col 
+                      class="col-6 col-md-2"
+                    >
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJun" label="June" prefix="$"/>
+                    </v-col>
+                    <v-col
+                    class="col-6 col-md-2"
+                    >
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJul" label="July" prefix="$"/>
+                    </v-col>
+                    <v-col 
+                      class="col-6 col-md-2"
+                    >
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeAug" label="August" prefix="$" />
+                    </v-col>
+                    <v-col
+                      class="col-6 col-md-2"
+                    >
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeSep" label="September" prefix="$" />
+                    </v-col>
+                  </v-row>
+
+                  <v-row>
+                    <v-col 
+                      class="col-6 col-md-2">
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeOct" label="October" prefix="$"/>
+                    </v-col>
+                    <v-col 
+                      class="col-6 col-md-2">
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeNov" label="November" prefix="$"/>
+                    </v-col >
+                    <v-col 
+                      class="col-6 col-md-2">
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeDec" label="December" prefix="$"/>
+                    </v-col >
+                    <v-col
+                      class="col-6 col-md-2">
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJan" label="Jan" prefix="$"/>
+                    </v-col>
+                    <v-col
+                      class="col-6 col-md-2">
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeFeb" label="Feb" prefix="$" />
+                    </v-col>
+                    <v-col
+                      class="col-6 col-md-2">
+                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMar" label="March" prefix="$" />
+                    </v-col>
+                  </v-row>
+                
+                  </v-container>
+                </div>
+              </v-card-text>
+          </v-card>
+        </div>
+      </div>
       <br>
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"><br><br></v-skeleton-loader>
       <v-card  v-else elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
