@@ -21,35 +21,24 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
       
       <div v-else> 
-        <v-card v-if="isReadOnly" elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+        <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
           exact 
           tile
           :ripple="false"
-          
           >
             <v-card-text>
-              <p class="text-h6 text--primary">
+              <p class="text-h5 text--primary">
                 Are the previous year's fees correct for this facility?
               </p>
               <br>
-              <v-radio-group
-              :rules = "rules"
-              disabled=true
-                row
-                v-model="CCFRIFacilityModel.existingFeesCorrect"
-              >
-                <v-radio
-                  label="Yes"
-                  :value=100000000
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  :value=100000001
-                ></v-radio>
-              </v-radio-group>
+              <br>
+
+              <p class="text-h5 text--primary ">
+                {{ CCFRIFacilityModel.existingFeesCorrect == 100000000? "Yes": "No"}}
+              </p>
             </v-card-text>
         </v-card>
 
