@@ -38,7 +38,7 @@ const facility2Name= 'Test Automation Facility 2';
 fixture `e2e Test Happy Path`
   .page(`${config.get('url')}/login`).after(async t => {
   //await userSetup.deleteUserOrganizationSetup(config.get('bceid_credentials:username'));
-  await userSetup.deleteOrganization('Test Automation Organization');
+  //await userSetup.deleteOrganization('Test Automation Organization');
 })
   .before(async t => {
     await userSetup.deleteUserOrganizationSetup(config.get('bceid_credentials:username'));
@@ -176,6 +176,7 @@ test('e2e-Test', async t => {
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-4-4.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-5-5.txt');
   await parentFee.updateFeeFromFile(t, 'facility-parentfee-6-6.txt');
+  await t.wait(3000);
   await parentFee.updateClosure(t, 'facility-parentfee-noclosure.txt');
   await parentFee.updateInformation(t, 'facility-parentfee-information.txt');
   await parentFee.clickSaveAndNextButton(t);
@@ -183,10 +184,12 @@ test('e2e-Test', async t => {
   //ECE-WE Eligibility
   log.info('ECE-WE Eligibility Page Loaded');
   await eceweEligibility.updateOptionFromFile(t, 'ee2eTest-ecewe-eligibility.txt');
+  await t.wait(3000);
   await eceweEligibility.clickSaveAndNextButton(t);
 
   //ECE-WE Facility
   log.info('ECE-WE Facility Loaded');
+  log.info('ECE-WE Facility Page Loaded');
   await eceweFacility.updateOptFromFile(t, 'e2eTest-ecewe-facility.txt');
   await eceweFacility.clickSaveAndNextButton(t);
 
