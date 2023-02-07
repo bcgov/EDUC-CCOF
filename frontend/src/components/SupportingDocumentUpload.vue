@@ -4,7 +4,7 @@
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
           <v-card-title class="justify-center">
-            <span class="text-h5">Child Care Operating Funding Program - {{this.programYearLabel}} Program Confirmation Form</span>
+            <span class="text-h5">Child Care Operating Funding Program - {{this.formattedProgramYear}} Program Confirmation Form</span>
           </v-card-title>
           <h2 class="text-center">
             Supporting Document Upload
@@ -16,7 +16,7 @@
             Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE funding assessment.
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
-            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.
+            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
@@ -52,6 +52,7 @@
                         v-model="item.selectFacility"
                         :items="facilityNames"
                         item-text="facilityName"
+                        placeholder="Select a facility"
                         return-object
                         class="drop-down-select"
                         required
@@ -130,7 +131,7 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments','applicationStatus', 'applicationId']),
+    ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     isLocked() {
       if (this.unlockSupportingDocuments) {
