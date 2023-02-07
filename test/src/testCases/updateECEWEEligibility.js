@@ -3,7 +3,6 @@ import PageLanding from '../pageObjects/PageLanding';
 import PageECEWEEligibility from '../pageObjects/pageECEWEEligibility';
 import PageAlert from '../pageObjects/PageAlert';
 import PageECEWEfacility from '../pageObjects/pageECEWEfacility';
-import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
 
@@ -28,11 +27,10 @@ test('Update ECE-WE Eligibility', async t => {
     .wait(2000);
   await t.click(eligibility.ECEWEButton);
   await t.click(eligibility.eligibilityButton);
-  await eligibility.updateOptionFromFile(t, 'ecewe-eligibility.txt');
-  await t.expect(eligibility.nextButton.hasAttribute('disabled')).notOk();
-  await t.click(eligibility.saveButton).wait(3000);
-  await t.expect(alert.success.exists).ok();
-  await t.click(eligibility.nextButton);
+  await eligibility.updateOptionFromFile(t, 'ee2eTest-ecewe-eligibility.txt');
+  await eligibility.clickSaveAndNextButton(t);
+  await opt.updateOptFromFile(t, 'e2eTest-ecewe-facility.txt');
+  await opt.clickSaveAndNextButton(t);
 
 });
 
