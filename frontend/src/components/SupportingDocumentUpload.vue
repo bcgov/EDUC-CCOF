@@ -131,7 +131,7 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('application', ['isRenewal', 'programYearLabel', 'unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
+    ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     isLocked() {
       if (this.unlockSupportingDocuments) {

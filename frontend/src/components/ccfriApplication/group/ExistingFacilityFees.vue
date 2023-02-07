@@ -2,7 +2,7 @@
   <v-container>
 
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
       </div>
       <br>
       <div class="row pt-4 justify-center">
@@ -27,7 +27,7 @@
               </p>
               <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{previousProgramYearLabel}} are as follows: 
+                Our Records show this facilites' fees for {{previousProgramYearLabel}} are as follows:
               </p>
               <br>
               <v-simple-table v-if="feeList.length > 0">
@@ -75,7 +75,7 @@
           min-height="230"
           rounded
           tiled
-          exact 
+          exact
           tile
           :ripple="false"
           >
@@ -112,7 +112,7 @@
         </v-row>
       </v-form>
   </v-container>
-  
+
 </template>
 
 <script>
@@ -142,14 +142,14 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('application', ['programYearLabel', 'applicationId']),
+    ...mapState('application', ['formattedProgramYear', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
-    
+
     findIndexOfFacility(){
-      let activeFac = this.navBarList.findIndex((element) =>{ 
+      let activeFac = this.navBarList.findIndex((element) =>{
         return element.ccfriApplicationId == this.$route.params.urlGuid;
       });
-      
+
       return activeFac;
     },
     currentFacility(){
@@ -169,12 +169,12 @@ export default {
     }
   },
   watch: {
-    //get facilityID from here and then set it ! 
+    //get facilityID from here and then set it !
     '$route.params.urlGuid': {
       async handler() {
         try {
           this.loading = true;
-          await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+          await this.loadCCFRIFacility(this.$route.params.urlGuid);
           if (this.CCFRIFacilityModel.existingFeesCorrect == 100000000) {
             this.model.q1 = 'Yes';
           } else if (this.CCFRIFacilityModel.existingFeesCorrect == 100000001) {
@@ -182,13 +182,13 @@ export default {
           } else {
             this.model.q1 = undefined;
           }
-          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data 
+          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data
 
           this.feeList = [];
 
           //only display last years child care fees
           const prevYearGuid = this.previousProgramYearGuid;
-          this.CCFRIFacilityModel.childCareTypes.forEach(item => { 
+          this.CCFRIFacilityModel.childCareTypes.forEach(item => {
             if (item.programYearId == prevYearGuid ){
               this.feeList.push(item);
             }
@@ -208,7 +208,7 @@ export default {
           } else {
             this.setFailureAlert('The server was busy.  Please wait 10 seconds and refresh this screen.');
           }
-          
+
         }
       },
       immediate: true,
@@ -217,20 +217,20 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility']),
-    ...mapActions('navBar', ['getPreviousPath']),    
+    ...mapActions('navBar', ['getPreviousPath']),
     async previous(){
       let path = await this.getPreviousPath();
       this.$router.push(path);
     },
     async setFees (areFeesCorrect){
-      await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-      await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+      await this.loadCCFRIFacility(this.$route.params.urlGuid);
+      await this.loadCCFRIFacility(this.$route.params.urlGuid);
       this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
     },
     isFormValidAndLoaded(){
       //we need this to disable button while the page is loading
       return this.isValidForm && this.loading == false;
-       
+
     },
     next() {
       this.loading = true;
@@ -242,10 +242,10 @@ export default {
         this.setFees(true);
       }
       this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-      
-      
+
+
       //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-      
+
     },
   },
 };

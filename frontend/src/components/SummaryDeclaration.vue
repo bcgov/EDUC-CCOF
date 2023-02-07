@@ -2,7 +2,7 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h4">Declaration - {{this.programYearLabel}} Program Confirmation Form</span>
+        <span class="text-h4">Declaration - {{this.formattedProgramYear}} Program Confirmation Form</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
@@ -167,7 +167,7 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {

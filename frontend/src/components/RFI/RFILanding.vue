@@ -10,17 +10,17 @@
   <v-container v-else>
 
     <div class="pt-4 text-center">
-      <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
+      <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</p>
       <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
       <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
       <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
       <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
     </div>
-    
+
     <div class="my-10">
       <p>
-        You have entered a parent fee above the 2023/24 fee increase limit. 
-        Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy. 
+        You have entered a parent fee above the 2023/24 fee increase limit.
+        Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy.
         See the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">CCFRI Funding Guidelines</a> for more information.
       </p>
       <p>
@@ -207,11 +207,11 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field :disabled="isReadOnly" 
-                type="number" 
-                outlined 
-                :rules="rules.required" 
-                v-model.number="expense.expense" 
+                <v-text-field :disabled="isReadOnly"
+                type="number"
+                outlined
+                :rules="rules.required"
+                v-model.number="expense.expense"
                 prefix="$"
                 label = "Expense"
                 />
@@ -404,7 +404,7 @@
       </v-card>
 
     </div>
-    
+
     <!--end show if yes / yes selected-->
 
     <!--end page 1 RFI landing-->
@@ -690,10 +690,10 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field 
+                <v-text-field
                 :disabled="isReadOnly"
                 type="number"
-                outlined 
+                outlined
                 :rules="[...rules.required, rules.min(0), rules.max(168)]"
                 v-model.number="obj.averageHours"
                 label="Average hours per week at this facility"
@@ -781,7 +781,7 @@
             :disabled="isReadOnly"
             id="wage2"
             :rules="rules.required"
-              
+
               placeholder="Describe here"
               outlined
               v-model=" model.textbox3"
@@ -793,7 +793,7 @@
             :disabled="isReadOnly"
             id="wage3"
             :rules="rules.required"
-              
+
               placeholder="Describe here"
               outlined
               v-model=" model.textbox4"
@@ -1061,20 +1061,20 @@
 
 
               <v-col class="col-md-2 col-12">
-                <v-menu 
-                  v-model="expansionCalendarMenu[index]" 
-                  :close-on-content-click="false" 
+                <v-menu
+                  v-model="expansionCalendarMenu[index]"
+                  :close-on-content-click="false"
                   :nudge-right="40"
-                  transition="scale-transition" 
+                  transition="scale-transition"
                   offset-y min-width="auto"
                   >
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field 
+                    <v-text-field
                       :disabled="isReadOnly"
-                      :rules="rules.required" 
-                      outlined v-model="obj.date" 
+                      :rules="rules.required"
+                      outlined v-model="obj.date"
                       label="Date of Change (YYYY-MM-DD)"
-                      readonly 
+                      readonly
                       v-bind="attrs" v-on="on"
                       >
                     </v-text-field>
@@ -1090,10 +1090,10 @@
               <v-col class="col-md-2 col-12">
                 <v-text-field
                    :disabled="isReadOnly"
-                   type="number" 
-                   outlined 
-                   :rules="rules.required" 
-                   v-model.number="obj.expense" 
+                   type="number"
+                   outlined
+                   :rules="rules.required"
+                   v-model.number="obj.expense"
                    prefix="$"
                    />
               </v-col>
@@ -1276,23 +1276,23 @@
               </v-col>
 
               <v-col class="col-md-3 col-12">
-                <v-menu 
-                  v-model="indigenousCalendarMenu[index]" 
-                  :close-on-content-click="false" 
+                <v-menu
+                  v-model="indigenousCalendarMenu[index]"
+                  :close-on-content-click="false"
                   :nudge-right="40"
-                  transition="scale-transition" 
-                  offset-y 
+                  transition="scale-transition"
+                  offset-y
                   min-width="auto"
                   >
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field 
+                    <v-text-field
                       :disabled="isReadOnly"
-                      :rules="rules.required" 
-                      outlined 
-                      v-model="indigExpense.date" 
+                      :rules="rules.required"
+                      outlined
+                      v-model="indigExpense.date"
                       label="Date of Expense (YYYY-MM-DD)"
-                      readonly 
-                      v-bind="attrs" 
+                      readonly
+                      v-bind="attrs"
                       v-on="on"
                       >
                     </v-text-field>
@@ -1318,12 +1318,12 @@
               </v-col>
 
               <v-col class="col-md-2 col-12">
-                <v-text-field 
+                <v-text-field
                   :disabled="isReadOnly"
-                  type="number" 
-                  outlined 
+                  type="number"
+                  outlined
                   :rules="rules.required"
-                  v-model.number="indigExpense.expense" 
+                  v-model.number="indigExpense.expense"
                   prefix="$"
                   />
               </v-col>
@@ -1334,7 +1334,7 @@
             </v-row> <!-- end v for-->
 
             <div class="form-group">
-              
+
               <v-btn id="indigEx"  :disabled="isReadOnly" @click="addObjToList(indigenousExpenseObj, model.indigenousExpenseList)" class="my-5"
                      dark color='#003366'>Add Expense
               </v-btn>
@@ -1563,7 +1563,7 @@ export default {
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList', 'navBarList']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus']),
+    ...mapState('application', ['formattedProgramYear', 'applicationStatus']),
     currentFacility(){
       return this.navBarList.find(element => element.ccfriApplicationId == this.$route.params.urlGuid);
     },
@@ -1573,7 +1573,7 @@ export default {
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){
-        return true; 
+        return true;
       }
       return false;
     },
@@ -1660,7 +1660,7 @@ export default {
       this.processing = true;
 
       //checks if blank by comparing a default row for the list
-      //don't save blank rows 
+      //don't save blank rows
       for(let i = this.model.expenseList.length -1; i >=0; i--){
         if (isEqual(this.model.expenseList[i], this.expenseObj)){
           this.model.expenseList.splice(i, 1);
@@ -1687,7 +1687,7 @@ export default {
           this.model.indigenousExpenseList.splice(i, 1);
         }
       }
-      
+
 
       this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
@@ -1699,7 +1699,7 @@ export default {
         }
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
-        }        
+        }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }

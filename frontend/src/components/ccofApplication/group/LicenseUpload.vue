@@ -4,7 +4,7 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
+            <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.formattedProgramYear }} Program Confirmation Form</span></h3></v-card-title>
              <v-row flex >
               <caption class="licence-upload-hint pb-5">Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.</caption>
             </v-row>
@@ -82,7 +82,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'programYearLabel', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
+    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
     isLocked() {
