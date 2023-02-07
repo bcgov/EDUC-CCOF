@@ -9,7 +9,7 @@ createTestCafe('localhost', 1337, 1338)
     const runner = testcafe.createRunner();
     return runner
       // list multiple test files
-      .src(["src/testCases/e2eGroupApplicationCreation.js"])
+      .src(["src/testCases/updateECEWEEligibility.js"])
       .run();
   })
   .then(failedCount => {
