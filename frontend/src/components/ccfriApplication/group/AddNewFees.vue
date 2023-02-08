@@ -21,7 +21,7 @@
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
       
       <div v-else> 
-        <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+        <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
           tiled
@@ -29,16 +29,31 @@
           tile
           :ripple="false"
           >
-            <v-card-text>
+            <v-card-text class="pt-7 pa-0">
+              <div class="px-md-12 px-7">
               <p class="text-h5 text--primary">
                 Are the previous year's fees correct for this facility?
               </p>
               <br>
-              <br>
+            
+              <v-radio-group
+              required
+              :disabled="true"
+              v-model="prevFeesCorrect"
+              :rules = "rules"
+               
+            >
+              <v-radio
+                label="Yes"
+                value="Yes"
+              ></v-radio>
+              <v-radio
+                label="No"
+                value="No"
+              ></v-radio>
+            </v-radio-group>
 
-              <p class="text-h5 text--primary ">
-                {{ CCFRIFacilityModel.existingFeesCorrect == 100000000? "Yes": "No"}}
-              </p>
+          </div>
             </v-card-text>
         </v-card>
 
@@ -391,8 +406,10 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+
       pastCcfriGuid: undefined,
       closureFees : 'No',
+      prevFeesCorrect : undefined,
       dateObj: {
         datePicker1: undefined,
         datePicker2: undefined,
@@ -467,6 +484,8 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid); 
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
+
+          this.prevFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect == 100000000? 'Yes': 'No';
           if (this.getClosureDateLength > 0){
             //this.closureFees = 'Yes';
           }
@@ -509,7 +528,10 @@ export default {
       this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
     },
     async previous() {
-      if (this.isRenewal){
+      if (this.isReadOnly){
+        this.$router.push({path : `${PATHS.ccfriHome}`});
+      }
+      else if (this.isRenewal){
         this.$router.push({path : `${PATHS.currentFees}/${this.currentFacility.ccfriApplicationId}`});
       }
       else{
