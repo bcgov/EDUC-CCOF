@@ -408,6 +408,7 @@ export default {
     return {
 
       pastCcfriGuid: undefined,
+      closureFees : 'No',
       prevFeesCorrect : undefined,
       dateObj: {
         datePicker1: undefined,
