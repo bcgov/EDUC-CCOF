@@ -224,7 +224,7 @@ export default {
     },
     async setFees (areFeesCorrect){
       await this.loadCCFRIFacility(this.$route.params.urlGuid); 
-      await this.loadCCFRIFacility(this.$route.params.urlGuid); 
+      this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
       this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
     },
     isFormValidAndLoaded(){
