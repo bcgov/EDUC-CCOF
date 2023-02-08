@@ -509,7 +509,10 @@ export default {
       this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
     },
     async previous() {
-      if (this.isRenewal){
+      if (this.isReadOnly){
+        this.$router.push({path : `${PATHS.ccfriHome}`});
+      }
+      else if (this.isRenewal){
         this.$router.push({path : `${PATHS.currentFees}/${this.currentFacility.ccfriApplicationId}`});
       }
       else{
