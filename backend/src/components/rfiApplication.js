@@ -161,8 +161,8 @@ async function updateRFIApplication(req, res) {
     if (req.body.indigenousExpenseList){
       log.info('full list is:' , req.body.indigenousExpenseList);
       await deleteChildTable(rfipfiid, 'ccof_rfipfiserviceexpansionindigenouscommunities', 'ccof_rfipfiserviceexpansionindigenouscommunityid', '_ccof_rfipfi_indegenousserviceexpansion_value');
-      let indigenousExpensePayload = req.body.indigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousExpenseMappings).data);
-      indigenousExpensePayload?.forEach(async (payload)=> {
+      const indigenousExpensePayload = req.body.indigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousExpenseMappings).data);
+      indigenousExpensePayload?.forEach(async payload => {
         payload.ccof_date = payload.ccof_date + 'T12:00:00Z';
         payload['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansionindigenouscommunities', payload);
