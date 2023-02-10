@@ -51,9 +51,6 @@ async function getRFIMedian(req, res) {
 }
 
 function formatDate(data, columnName) {
-  log.info('THE DAAAAAAAAAAAAATE IS: ');
-  log.info(data);
-  log.info('COL NAME:' , columnName);
   if (data[columnName]) {
     data[columnName] = data[columnName].split('T')[0];
   }
