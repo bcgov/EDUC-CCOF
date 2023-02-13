@@ -82,6 +82,11 @@ async function getRFIApplication(req, res) {
   }
 }
 
+function formatTimeForBack(timeString){
+
+  return timeString +'T12:00:00-07:00';
+}
+
 async function updateRFIApplication(req, res) {
   try {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
@@ -109,7 +114,7 @@ async function updateRFIApplication(req, res) {
       const fundingListPayload = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
       log.verbose('funding payload', minify(fundingListPayload));
       fundingListPayload?.forEach(async payload => {
-        payload.ccof_applicationdate = payload.ccof_applicationdate + 'T12:00:00Z';
+        payload.ccof_applicationdate = formatTimeForBack(payload.ccof_applicationdate);
         payload['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfi_pfi_other_fundings', payload);
         await sleep(100);
@@ -122,7 +127,7 @@ async function updateRFIApplication(req, res) {
       const wageListPayload = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
       log.verbose('wageList payload', minify(wageListPayload));
       wageListPayload?.forEach(async payload => {
-        payload.ccof_wageincreasedate = payload.ccof_wageincreasedate + 'T12:00:00Z';
+        payload.ccof_wageincreasedate = formatTimeForBack(payload.ccof_wageincreasedate);
         payload['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfi_pfi_dcs_wi_details', payload);
         await sleep(100);
@@ -135,7 +140,7 @@ async function updateRFIApplication(req, res) {
       const expansionListPayload = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
       log.verbose('expansionList payload', minify(expansionListPayload));
       expansionListPayload?.forEach(async payload => {
-        payload.ccof_dateofchange = payload.ccof_dateofchange + 'T12:00:00Z';
+        payload.ccof_dateofchange = formatTimeForBack(payload.ccof_dateofchange);
         payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansiondetails', payload);
         await sleep(100);
@@ -148,7 +153,7 @@ async function updateRFIApplication(req, res) {
       const expenseListPayload = req.body.expenseList?.map(el=> new MappableObjectForBack(el,ExpenseInformationMappings).data);
       log.verbose('expenseListPayload payload', minify(expenseListPayload));
       expenseListPayload?.forEach(async payload => {
-        payload.ccof_dateofexpense = payload.ccof_dateofexpense + 'T12:00:00Z';
+        payload.ccof_dateofexpense = formatTimeForBack(payload.ccof_dateofexpense);
         log.info(payload);
         payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiexpenseinfos', payload);
@@ -163,7 +168,7 @@ async function updateRFIApplication(req, res) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiserviceexpansionindigenouscommunities', 'ccof_rfipfiserviceexpansionindigenouscommunityid', '_ccof_rfipfi_indegenousserviceexpansion_value');
       const indigenousExpensePayload = req.body.indigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousExpenseMappings).data);
       indigenousExpensePayload?.forEach(async payload => {
-        payload.ccof_date = payload.ccof_date + 'T12:00:00Z';
+        payload.ccof_date = formatTimeForBack(payload.ccof_date);
         payload['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansionindigenouscommunities', payload);
         await sleep(100);
