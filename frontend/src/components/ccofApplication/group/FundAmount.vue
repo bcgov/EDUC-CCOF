@@ -226,7 +226,7 @@
           </v-container>
         </v-card>
 
-        <v-card class="cc-top-level-card" width="1200">
+        <v-card class="cc-top-level-card" width="1200" v-if="model.isExtendedHours === 'yes'">
           <v-card-subtitle>Write the maximum <strong>number of spaces</strong> you offer extended hours of child care
             for
             each type of service</v-card-subtitle>
