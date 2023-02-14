@@ -232,16 +232,19 @@ export default {
           });
         }
 
-        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ //hides the prev year cards if user goes back and changes "prev fees correct" from NO to YES
+        //hides the prev year cards if user goes back and changes "prev fees correct" from NO to YES  
+        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ 
           response.data.forEach(item => {
             const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
             //check for undefined here! 
 
             let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
               return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == prevProgramYear.programYearId);
+              searchItem.programYearId == prevProgramYear.programYearId && !searchItem.feeFrequency);
             });
+            // && !searchItem.feeFrequency -- i think this could be part of the solution 
             if (found) {
+              console.log('delete flag set!');
               found.deleteMe = true;
             }
           });
@@ -263,12 +266,19 @@ export default {
               console.log('child care Cat are different lengths.');
 
               let found = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
-                return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId);
+                return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId );
               });
+
+              let dataAlreadyExists = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+                return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+                searchItem.programYearId == prevProgramYear.programYearId && searchItem.feeFrequency);
+              });
+
+              console.log('data already exists?', dataAlreadyExists);
     
               //if match in last years CCFRI fees not found, add a card for that child care cat previous years fees
               //this ensures we get 24 months of fees for a child care type that is new to the facility. 
-              if (!found) {
+              if (!found && !dataAlreadyExists) {
                 console.log('NOT FOUND!');
                 careTypes.push( {
                   programYear: prevProgramYear.name,
@@ -278,6 +288,9 @@ export default {
                   orderNumber : item.orderNumber
                 });
               }
+              // else{
+              //   found.deleteMe = false; 
+              // }
             }
           });
         }
