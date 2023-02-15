@@ -271,10 +271,10 @@ export default {
 
             }
 
-            if (!pastChildCareTypefound && foundChildCareCat){
-              console.log('doing nothing');
-              //save data for that year exists but no child care type for last year, do nothing?
-            }
+            // if (!pastChildCareTypefound && foundChildCareCat){
+            //   console.log('doing nothing');
+            //   //save data for that year exists but no child care type for last year, do nothing?
+            // }
             else if (pastChildCareTypefound && foundChildCareCat){
               console.log('adding delete flag for: ' , foundChildCareCat);
               //past child care type with fees found AND our users choice marked prev fees as correct... delete the card
