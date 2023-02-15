@@ -80,7 +80,9 @@ async function upsertParentFees(req, res) {
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async(feeGroup) => {
-    if (feeGroup.deleteMe){
+
+    //only call the delete API if there is a GUID acossciated to that child care category fee group
+    if (feeGroup?.deleteMe && feeGroup?.parentFeeGUID ){
       
       try {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
@@ -94,7 +96,7 @@ async function upsertParentFees(req, res) {
       }
     }
 
-    else if (feeGroup.feeFrequency ){
+    else if (feeGroup?.feeFrequency ){
 
       let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
       let programYear = `/ccof_program_years(${feeGroup.programYear})`;
