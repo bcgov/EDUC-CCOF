@@ -84,6 +84,19 @@
 
               ></v-file-input>
             </template>
+            <template v-slot:item.description="{ item }">
+              <div v-if="item?.annotationid">
+                <span> {{ item?.description }} </span>
+              </div>
+              <v-text-field v-else
+                            placeholder="Enter a description (Optional)"
+                            dense
+                            clearable
+                            :rules="[rules.maxLength(255)]"
+                            v-model="item.description"
+                            @change="updateDescription(item)"
+              ></v-text-field>
+            </template>
 
             <template v-slot:item.actions="{ item }">
               <v-icon
@@ -197,6 +210,13 @@ export default {
           class: 'table-header'
         },
         {
+          text: 'Description',
+          align: 'left',
+          sortable: false,
+          value: 'description',
+          class: 'table-header'
+        },
+        {
           text: 'Actions',
           align: 'left',
           sortable: false,
@@ -262,6 +282,7 @@ export default {
           ccof_applicationid: this.applicationId,
           ccof_facility: file.selectFacility?.facilityId,
           subject: 'SUPPORTING',
+          notetext: file.description,
           ...this.fileMap.get(String(file.id))
         };
         payload.push(obj);
@@ -351,7 +372,10 @@ export default {
       this.uploadedDocuments.unshift(addObj);
       this.editItem(addObj);
     },
-
+    updateDescription(item) {
+      const index = this.uploadedDocuments.indexOf(item);
+      this.uploadedDocuments[index].description = item.description;
+    },
     async mapFacilityData() {
       for (let facilityInfo of this.navBarList) {
         const facility = {};
