@@ -189,11 +189,15 @@ async function createRFIApplication(req, res) {
     delete friApplication.ccof_rfipfiid;
 
     friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi']?.forEach( item => item.ccof_dateofchange = formatTimeForBack(item.ccof_dateofchange));
     friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
+    friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail']?.forEach( item => item.ccof_wageincreasedate = formatTimeForBack(item.ccof_wageincreasedate));
     friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map(el=> new MappableObjectForBack(el,OtherFundingProgramMappings).data);
+    friApplication['ccof_rfi_pfi_other_funding_RFI_PFI']?.forEach( item => item.ccof_applicationdate = formatTimeForBack(item.ccof_applicationdate));
     friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.expenseList?.map(el=> new MappableObjectForBack(el,ExpenseInformationMappings).data);
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi']?.forEach( item => item.ccof_dateofexpense = formatTimeForBack(item.ccof_dateofexpense));
     friApplication['ccof_rfipfi_ccof_rfipfi_IndegenousService'] = req.body.indigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousExpenseMappings).data);
-
+    friApplication['ccof_rfipfi_ccof_rfipfi_IndegenousService']?.forEach ( item => item.ccof_date = formatTimeForBack(item.ccof_date));
 
     friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
     log.info('createRFIApplication payload:', friApplication);
