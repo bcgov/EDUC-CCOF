@@ -620,7 +620,7 @@ export default {
           firstObj = {
             ...firstObj,
             ccof_has_rfi: facility.hasRfi,
-            existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect ? 100000000 : 100000001,
+            existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
           };
         }
 

@@ -93,8 +93,8 @@ const RFIApplicationMappings = [
 const ServiceExpansionDetailsMappings = [//ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi.
   { back: 'ccof_facilitysprevioushoursofoperationto', front: 'timeto'},
   { back: 'ccof_facilitysprevioushoursofoperation', front: 'timefrom'},
-  { back: 'ccof_facilitysnewhoursofoperation', front: 'newtimeto'},
-  { back: 'ccof_facilitysnewhoursofoperationto', front: 'newtimefrom'},
+  { back: 'ccof_facilitysnewhoursofoperation', front: 'newtimefrom'},
+  { back: 'ccof_facilitysnewhoursofoperationto', front: 'newtimeto' },
   { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
   { back: 'ccof_dateofchange', front: 'date'},
   { back: 'ccof_amountofexpense', front: 'expense'},
