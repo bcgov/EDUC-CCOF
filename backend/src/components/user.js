@@ -86,6 +86,8 @@ async function getUserInfo(req, res) {
 
   let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
 
+  organization.fundingAgreementNumber = '1234-4567-6789'; //JB ! Hardcoded as it doesn't exist yet in dynamics. Update the UserProfileORgMappings when implemented :)
+
   let application = new MappableObjectForFront(userResponse.application, UserProfileApplicationMappings).data;
   application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
   application.applicationStatus = getLabelFromValue(application.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
