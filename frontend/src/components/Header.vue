@@ -22,14 +22,6 @@
       </v-row>
     </v-row>
     <v-spacer></v-spacer>
-    <v-row class="justify-right">
-        <v-toolbar-title fill-height >
-          <!--don't show funding agreement number on mobile... there is no space on the Header for it-->
-          <h6 v-if="this.$vuetify.breakpoint.xsOnly"></h6>
-          <h3 class="" v-else-if="fundingAgreementNumber">FA# {{ fundingAgreementNumber }}</h3>
-          <h3 class="" v-else></h3>
-        </v-toolbar-title>
-      </v-row>
     <div v-if="isAuthenticated && dataReady" class="mt-6">
       <v-btn 
         id="mail_box_button" @click="goToMessagePage()"
@@ -80,7 +72,7 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex';
+import {mapGetters} from 'vuex';
 import {AuthRoutes , ApiRoutes, PATHS} from '@/utils/constants';
 
 export default {
@@ -95,7 +87,6 @@ export default {
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
     ...mapGetters('message', ['unreadMessageCount']),
-    ...mapState('organization', ['fundingAgreementNumber']),
     dataReady: function () {
       return this.userInfo;
     },
@@ -163,11 +154,6 @@ a {
 .top-down{
   padding-top: 20px;
   height: 80%;
-}
-
-.justify-right{
-  justify-content: flex-end;
-  margin-right: 5px;
 }
 
 @media screen and (max-width: 801px){
