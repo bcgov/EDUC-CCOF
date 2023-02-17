@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-
+import { deepCloneObject } from '../../utils/common';
 
 
 function getProgramYear(selectedGuid, programYearList){
@@ -155,7 +155,7 @@ export default {
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId); 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
-        commit('setLoadedModel', _.cloneDeep(CCFRIFacilityModel)); //copy the data from the ccfri facility model into a new object - otherwsie loadedModel will change also when user modifes the page
+        commit('setLoadedModel', deepCloneObject(CCFRIFacilityModel)); //copy the data from the ccfri facility model into a new object - otherwsie loadedModel will change also when user modifes the page
       } else {
         if (!localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
           console.log('unable to load facility because you are not logged in');
@@ -165,7 +165,7 @@ export default {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`); 
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});                       
           commit('setCCFRIFacilityModel', response.data);
-          commit('setLoadedModel', _.cloneDeep(response.data));
+          commit('setLoadedModel', deepCloneObject(response.data));
          
         } catch(e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
@@ -182,7 +182,7 @@ export default {
         console.log('resp', response);
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
-
+        const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
         console.log('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
@@ -202,16 +202,12 @@ export default {
           }
         });
 
-        //if the user manually refreshes AddNewFees page - assume that previous years fees are correct. (same as hitting yes on Existing Fees Page)
-        //may take this out later - rlo commented this out
-        // if (state.CCFRIFacilityModel.prevYearFeesCorrect === undefined){
-        //   state.CCFRIFacilityModel.prevYearFeesCorrect = true;
-        // }
         
-        //only display previous year fees if it's the first time CCFRI application  -- OR prev fees are incorrect
+        
+        //only display ALL previous year fee cards if it's the first time CCFRI application  -- OR prev fees are incorrect
         if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001){ 
           response.data.forEach(item => {
-            const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
+            
             //check for undefined here! 
 
             let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
@@ -232,61 +228,55 @@ export default {
           });
         }
 
-        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ //hides the prev year cards if user goes back and changes "prev fees correct" from NO to YES
-          response.data.forEach(item => {
-            const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
-            //check for undefined here! 
-
-            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
-              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == prevProgramYear.programYearId);
-            });
-            if (found) {
-              found.deleteMe = true;
-            }
-          });
-        }
-
-        //check if we are missing fees for any child care type from last year. If so, add a card for the missing year's fees. 
-        if (state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ 
-          const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
+        
+        /* 
+          first check if we are missing fee cards from last year. This can happen when a user has a new license for this year. 
+          Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
+        */
+        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){ 
           const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
-         
           console.log('prevCCFRI IS:' , prevCcfriApp);
+
           response.data.forEach(item => {
           
-            //find out the number of unique categories to compare to this year by looking at previous year child care category GUIDS.
-            const numberChildCareTypes = [...new Set(prevCcfriApp.childCareTypes.map(item => item.childCareCategoryId ))].length;
-            
-            //Response returns 1 object for each child care category the facility holds a liscese for
-            if (numberChildCareTypes <  response.data.length){
-              console.log('child care Cat are different lengths.');
+            //check to see if childcarecat exists in last years CCFRI app.
+            let pastChildCareTypefound = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
+              return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId && 
+                prevChildCareCat.programYearId == prevProgramYear.programYearId ); 
+            });
 
-              let found = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
-                return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId);
+            //check to see if we have saved data for this child care cat in the list
+            let foundChildCareCat = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+              searchItem.programYearId == prevProgramYear.programYearId );
+            });
+  
+            //if child care type in last years CCFRI fees not found, but license  add a card for that child care cat previous years fees
+            //this ensures we get 24 months of fees for a child care type that is new to the facility. 
+            if (!pastChildCareTypefound && !foundChildCareCat) {
+              console.log('NOT FOUND!');
+              careTypes.push( {
+                programYear: prevProgramYear.name,
+                programYearId: prevProgramYear.programYearId,
+                childCareCategory: item.childCareCategory,
+                childCareCategoryId: item.childCareCategoryId,
+                orderNumber : item.orderNumber
               });
-    
-              //if match in last years CCFRI fees not found, add a card for that child care cat previous years fees
-              //this ensures we get 24 months of fees for a child care type that is new to the facility. 
-              if (!found) {
-                console.log('NOT FOUND!');
-                careTypes.push( {
-                  programYear: prevProgramYear.name,
-                  programYearId: prevProgramYear.programYearId,
-                  childCareCategory: item.childCareCategory,
-                  childCareCategoryId: item.childCareCategoryId,
-                  orderNumber : item.orderNumber
-                });
-              }
+            }
+
+            //not an else because (!pastChildCareTypefound && foundChildCareCat) is a possible event
+            else if (pastChildCareTypefound && foundChildCareCat){
+              console.log('adding delete flag for: ' , foundChildCareCat);
+              //past child care type with fees found AND our users choice marked prev fees as correct... delete the card
+              foundChildCareCat.deleteMe = true;
             }
           });
         }
-
 
         
         //if childcarecat GUID exists in childcaretypes but NOT in response - run delete
         //this handles the edge case of a user entering fees for CCFRI then going back to CCOF
-        //and removing that child care type
+        //and removing that child care type for new applications
         state.CCFRIFacilityModel.childCareTypes.forEach((childCareCat) => {
           let found = response.data.find(searchItem => {
             return (searchItem.childCareCategoryId == childCareCat.childCareCategoryId);
@@ -294,6 +284,7 @@ export default {
 
           //Mark the child care type, and call the delete API with the parentFeeGUID
           if (!found) {
+            console.log('no license for child care type' , childCareCat);
             childCareCat.deleteMe = true;
           }
         });
@@ -321,7 +312,7 @@ export default {
         });
 
         commit('setCCFRIFacilityModel', state.CCFRIFacilityModel);
-        commit('setLoadedModel', _.cloneDeep(state.CCFRIFacilityModel));
+        commit('setLoadedModel', deepCloneObject(state.CCFRIFacilityModel));
       } catch (e) {
         console.log('error', e);
       }
