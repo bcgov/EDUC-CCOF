@@ -138,6 +138,7 @@ export default {
       commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
       commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
       commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
+      commit('organization/setFundingAgreementNumber', userInfoRes.data?.fundingAgreementNumber, { root: true });
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
