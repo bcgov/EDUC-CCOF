@@ -34,6 +34,15 @@
         </span>
       </v-alert>
     </v-row>
+    <br>
+    <v-btn
+        class = "mx-0 justify-end"
+        @click="toggleAll()"
+        dark color='#003366'
+        :disabled="applicationStatus === 'SUBMITTED'" 
+        > 
+        Opt in All Facilities
+      </v-btn>
     <div v-if="!isLoading">
       <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
         <v-row justify="center" class="pa-4">
@@ -192,6 +201,12 @@ export default {
     },
     toggleRadio(index) {
       this.uiFacilities[index].update = (this.uiFacilities[index].update==true)?false:true;
+    },
+    toggleAll(){
+      this.uiFacilities.forEach((fac, index) => {
+        this.toggleRadio(index);
+        this.uiFacilities[index].optInOrOut = 1 ;
+      });
     },
     previous() {
       return this.$router.push(PATHS.eceweEligibility);
