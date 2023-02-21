@@ -69,11 +69,11 @@
                   </p>
                 </div>
                 <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
-                  <p>I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
+                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
                 <div v-show="this.model.declarationBStatus == 1 && this.isRenewal">
-                  <p>I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
+                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
                   <p>By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby confirm that I have carefully read this Form and the corresponding terms and conditions of the Child Care Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:</p>
 
@@ -117,7 +117,7 @@
                   outlined
                   v-model="model.orgContactName"
                   :disabled="isReadOnly"
-                  label="Organization Contact Name/Digital signature."
+                  label="Your Organization's Authorized Signing Authority"
                 />
               </v-col>
             </v-row>
