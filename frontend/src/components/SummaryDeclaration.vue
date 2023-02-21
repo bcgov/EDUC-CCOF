@@ -162,7 +162,10 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
-let model = {};
+let model = {
+  agreeConsentCertify: undefined,
+  orgContactName: undefined,
+};
 
 export default {
   mixins: [alertMixin],
@@ -279,8 +282,11 @@ export default {
     },
   },
   async mounted() {
-    await this.loadData();
-    this.model = this.$store.state.summaryDeclaration.model ?? model;
+    if (!this.unlockDeclaration) {
+      await this.loadData();
+      this.model = this.$store.state.summaryDeclaration.model ?? model;
+    }
+
     if (this.isRenewal) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
@@ -298,8 +304,10 @@ export default {
       // saved as part of submission.
       if (serverTime < declarationBStart) {
         this.model.declarationAStatus = 1;
+        this.model.declarationBStatus = undefined;
       } else {
         this.model.declarationBStatus = 1;
+        this.model.declarationAStatus = undefined;
       }
     }
   },
