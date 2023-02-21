@@ -167,6 +167,7 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
+    ...mapState('organization', ['fundingAgreementNumber']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {

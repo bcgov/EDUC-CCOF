@@ -246,7 +246,8 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_name', front: 'organizationName' },
   { back: 'organization_accountid', front: 'organizationId' },
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
-  { back: 'organization_accountnumber', front: 'organizationAccountNumber' }
+  { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
+  { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' }
 ];
 
 const UserProfileApplicationMappings = [ //application
