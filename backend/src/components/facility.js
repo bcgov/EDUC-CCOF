@@ -315,11 +315,20 @@ async function updateFacility(req, res) {
   }
 }
 
+async function deleteFacility(req, res) {
+  let { facilityId } = req.params;
+  log.verbose('deleting facility', facilityId);
+  await deleteOperationWithObjectId('accounts', facilityId);
+  log.verbose('facility deleted successfully', facilityId);
+  return res.status(HttpStatus.OK).end();
+}
+
 module.exports = {
   getFacility,
   getFacilityChildCareTypes,
   createFacility,
   updateFacility,
+  deleteFacility,
   getLicenseCategories,
   updateFacilityLicenseType,
   getCCFRIClosureDates

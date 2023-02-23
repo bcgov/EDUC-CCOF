@@ -32,6 +32,9 @@ export default {
       if (fundingId) {
         state.modelStore[fundingId] = model;
       }
+    },
+    deleteFromStore: (state, fundingId) => {
+      delete state.modelStore[fundingId];
     }
   },
   getters: {

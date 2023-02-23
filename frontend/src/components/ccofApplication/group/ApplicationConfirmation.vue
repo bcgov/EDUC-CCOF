@@ -11,6 +11,9 @@
             <ul style="list-style: none">
               <li v-for="item in navBarList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
+                <v-btn variant="outlined" icon color="red" @click="deleteApplication(item.facilityId, item.facilityName)">
+                  <v-icon>mdi-close-circle</v-icon>
+                </v-btn>
               </li>
             </ul>
           </v-row>
@@ -48,6 +51,7 @@ export default {
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
     ...mapState('application', ['applicationStatus']),
+    ...mapState('organization', ['organizationProviderType']),
     isLocked() {
       return (this.applicationStatus === 'SUBMITTED');
     }
@@ -55,6 +59,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
+    ...mapActions('facility', ['deleteFacility']),
     previous() {
       let navItem = this.navBarList[this.navBarList.length - 1];
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
@@ -64,6 +69,21 @@ export default {
     },
     async next() {
       this.$router.push(PATHS.group.licenseUpload);
+    },
+    async deleteApplication(facilityId, facilityName) {
+      if (!window.confirm(`Are you sure you want to delete application for ${facilityName}?`)) {
+        return;
+      }
+
+      await this.deleteFacility({ facilityId, facilityName });
+
+      if (this.organizationProviderType === 'GROUP') {
+        this.$router.push(PATHS.group.orgInfo);
+      } else if (this.organizationProviderType === 'FAMILY') {
+        this.$router.push(PATHS.family.orgInfo);
+      } else {
+        this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
+      }
     }
   },
   mounted() {

@@ -97,6 +97,10 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push (payload);
     },
+    deleteFromNavBarList: (state, facilityId) => {
+      console.log('deleteFromNavBarList', state.navBarList, facilityId);
+      state.navBarList = state.navBarList.filter(item => item.facilityId !== facilityId);
+    },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
