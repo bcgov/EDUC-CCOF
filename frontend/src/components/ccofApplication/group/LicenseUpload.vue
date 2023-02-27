@@ -231,12 +231,7 @@ export default {
       const payload = {fileList,
         isLicenseUploadComplete:!this.nextButtonDisabled,
         applicationId: this.applicationId};
-
-      try {
-        await this.saveLicenseFiles(payload);
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
+      await this.saveLicenseFiles(payload);
     },
     async processLicenseFileDelete() {
       const deletedFiles = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid)).map(element => element.deletedDocument);
@@ -257,7 +252,6 @@ export default {
         map.set(this.currentrow, deepCloneObject(doc));
         this.fileMap = map;
         this.$refs.form.validate();
-        //this.fileMap.set(this.currentrow, deepCloneObject(doc));
       }
     },
     readFile(file) {
