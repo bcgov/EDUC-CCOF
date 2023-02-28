@@ -86,6 +86,7 @@
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
+import StaticConfig from '../../common/staticConfig';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -108,8 +109,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete']),
-    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete', 'programYearList']),
+    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
@@ -222,6 +223,9 @@ export default {
 
       });
       let declarationAccessible = this.areChildrenComplete(this.items);
+      if (StaticConfig.DECB_VALIDATION_BYPASS && this.isDeclarationB()) {
+        declarationAccessible = true;  
+      }
       this.setCanSubmit(declarationAccessible);
       this.items.push(
         {
@@ -241,6 +245,18 @@ export default {
         return 'mdi-check-circle';
       }
       return 'mdi-checkbox-blank-circle-outline';
+    },
+    
+    isDeclarationB() {
+      if (this.programYearList?.list) {
+        const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId );
+        const serverTime = new Date(this.userInfo.serverTime);
+        if (programYear) {
+          let declarationBStart = new Date(programYear.declarationbStart);
+          return (serverTime >= declarationBStart);
+        }
+      }
+      return false;
     },
     isExpanded(groupName) {
       return (groupName === this.navBarGroup);
