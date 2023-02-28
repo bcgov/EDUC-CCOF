@@ -133,10 +133,8 @@ export default {
         }
       }
     },
-    async deleteFacility({ commit }, { facilityId, facilityName }) {
+    async deleteFacility({ commit }, { facilityId }) {
       checkSession();
-
-      console.log('delete facility', facilityId, facilityName);
 
       await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityId);
 

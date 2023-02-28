@@ -11,7 +11,7 @@
             <ul style="list-style: none">
               <li v-for="item in navBarList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
-                <v-btn variant="outlined" icon color="red" @click="deleteApplication(item.facilityId, item.facilityName)">
+                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName)">
                   <v-icon>mdi-close-circle</v-icon>
                 </v-btn>
               </li>
@@ -37,6 +37,34 @@
     <v-row justify="space-around">
       <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
     </v-row>
+
+    <v-dialog v-model="dialog" persistent max-width="525px">
+      <v-card>
+        <v-container class="pt-0">
+          <v-row>
+            <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+              <v-card-title class="white--text">Delete Application</v-card-title>
+            </v-col>
+            <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: left;">
+              <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: center;">
+              <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
+              <v-btn dark color="primary" :loading="processing" @click="deleteApplication()">Continue</v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -46,7 +74,13 @@ import { PATHS } from '@/utils/constants';
 import { mapState, mapMutations, mapActions } from 'vuex';
 
 export default {
-  props: {
+  data() {
+    return {
+      dialog: false,
+      deleteFacilityName: undefined,
+      deleteFacilityId: undefined,
+      processing: false
+    };
   },
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
@@ -70,20 +104,16 @@ export default {
     async next() {
       this.$router.push(PATHS.group.licenseUpload);
     },
-    async deleteApplication(facilityId, facilityName) {
-      if (!window.confirm(`Are you sure you want to delete application for ${facilityName}?`)) {
-        return;
-      }
-
-      await this.deleteFacility({ facilityId, facilityName });
-
-      if (this.organizationProviderType === 'GROUP') {
-        this.$router.push(PATHS.group.orgInfo);
-      } else if (this.organizationProviderType === 'FAMILY') {
-        this.$router.push(PATHS.family.orgInfo);
-      } else {
-        this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
-      }
+    confirmDeleteApplication(facilityId, facilityName) {
+      this.deleteFacilityName = facilityName;
+      this.deleteFacilityId = facilityId;
+      this.dialog = true;
+    },
+    async deleteApplication() {
+      this.processing = true;
+      await this.deleteFacility({ facilityId: this.deleteFacilityId });
+      this.processing = false;
+      this.dialog = false;
     }
   },
   mounted() {
