@@ -3,4 +3,5 @@ var config = {
   VUE_APP_META_DATA: [ { name: 'robots', content: 'noindex,nofollow' } ],
   BANNER_ENVIRONMENT:'DEV',
   BANNER_COLOR:'#8d28d7',
+  DECB_VALIDATION_BYPASS: true
 };
