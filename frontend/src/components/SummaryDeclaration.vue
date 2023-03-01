@@ -1,12 +1,175 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
-    <v-container>
-      <v-row justify="center" class="pt-4">
-        <span class="text-h4">Declaration - {{this.programYearLabel}} Program Confirmation Form</span>
+  <v-container fluid>
+    <v-form ref="form" v-model="isValidForm">
+    <v-row class="d-flex justify-center">
+      <span class="text-h4">Child Care Operating Funding Program - {{this.programYearLabel}} Program Confirmation Form</span>
+    </v-row>
+    <v-row class="d-flex justify-center">
+      <h2>Summary and Declaration</h2>
+    </v-row>
+    <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+      {{this.userInfo.organizationName}}
+    </v-row>
+      <v-row class="d-flex justify-center">
+      <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
+          <v-row  class="d-flex justify-start">
+           <v-col class="pa-0">
+              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">Summary</v-card-title>
+            </v-col>
+          </v-row>
+          <v-row v-if="isProcessing">
+            <v-col>
+              <v-skeleton-loader v-if="isProcessing" :loading="isProcessing" type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
+            </v-col>
+          </v-row>
+          <v-row v-else no-gutters>
+            <v-row class="d-flex justify-start pt-0">
+              <v-col cols="12" class="d-flex justify-start">
+                <h4 style="color: blue">Organization Information</h4>
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+
+            <v-row class="d-flex justify-start">
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span style="color: grey">Legal Name</span>
+                  </v-col>
+                  </v-row>
+                <v-row>
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span  style="color: black">LegalName</span>
+                  </v-col>
+                  </v-row>
+              </v-col>
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row  no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span style="color: grey">Organization(As it appears in BC Corporate Registry)</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">Organization</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start">
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">Organization Mailing Address</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">Mailing Address....long line with wrap</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">Organization Contact Name</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">Organization Contact Name</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">Position</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">Position</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+
+            <v-row class="d-flex justify-start">
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">City/Town</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">City/Town</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">Postal Code</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">postalcode</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">Business phone</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">Business phone</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">E-mail Address of Signing Authority</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">E-mailAddressofSigningAuthority</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start">
+            <v-col class="pb-0 pt-0">
+              <v-row  class="d-flex justify-start">
+                <v-col class="d-flex justify-start">
+                  <span style="color: grey">Type of Organization</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <span  style="color: black">TypeofOrganization</span>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col class="pb-0 pt-0">
+              <v-row  class="d-flex justify-start">
+                <v-col class="d-flex justify-start">
+                  <span style="color: grey">Business BCEID</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <span  style="color: black">Businessbceid</span>
+                </v-col>
+              </v-row>
+            </v-col>
+              <v-col class="pb-0 pt-0">
+                <v-row  class="d-flex justify-start">
+                  <v-col class="d-flex justify-start">
+                    <span style="color: grey">Incorporation Number</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  style="color: black">IncorporationNumber</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+          </v-row>
+              <v-row class="d-flex justify-start">
+
+
+              </v-row>
+          </v-row>
+          </v-row>
+      </v-card>
       </v-row>
-      <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
-        {{this.userInfo.organizationName}}
-      </v-row>
+      <!---Declaration Start--->
       <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
         Funding Agreement Number: {{ fundingAgreementNumber }}
       </v-row>
@@ -153,8 +316,8 @@
           </v-container>
         </v-card>
       </v-dialog>
-    </v-container>
   </v-form>
+  </v-container>
 </template>
 <script>
 
@@ -179,7 +342,7 @@ export default {
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
-      } if (!this.canSubmit) {
+      } else if (!this.canSubmit) {
         return true;
       } else if (this.unlockDeclaration) {
         return false;
