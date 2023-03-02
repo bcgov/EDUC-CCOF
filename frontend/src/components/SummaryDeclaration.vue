@@ -10,11 +10,12 @@
     <v-row class="d-flex justify-center text-h5" style="color:#003466;">
       {{this.userInfo.organizationName}}
     </v-row>
+      <div>
       <v-row class="d-flex justify-center">
       <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row  class="d-flex justify-start">
            <v-col class="pa-0">
-              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">Summary</v-card-title>
+              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
             </v-col>
           </v-row>
           <v-row v-if="isProcessing">
@@ -22,10 +23,11 @@
               <v-skeleton-loader v-if="isProcessing" :loading="isProcessing" type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
             </v-col>
           </v-row>
+
           <v-row v-else no-gutters class="d-flex flex-column">
             <v-row class="d-flex justify-start pt-0">
               <v-col cols="12" class="d-flex justify-start">
-                <h4 style="color: blue">Organization Information</h4>
+                <h4 style="color:#003466;">Organization Information</h4>
               </v-col>
             </v-row>
             <v-row no-gutters class="d-flex flex-column">
@@ -33,7 +35,7 @@
               <v-col cols="4" lg="3" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="10" class="d-flex justify-start">
-                    <span class="summary-label" >Legal Name</span>
+                    <span class="summary-label" >Legal Name (first, middle and last)</span>
                   </v-col>
                   <v-col  class="d-flex justify-start">
                     <span  class="summary-value">LegalName</span>
@@ -43,7 +45,7 @@
               <v-col cols="4" lg="3" class="pb-0 pt-0">
                 <v-row  no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
-                    <span class="summary-label">Organization(As it appears in BC Corporate Registry)</span>
+                    <span class="summary-label">Organization (As it appears in BC Corporate Registry)</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
                     <span  class="summary-value">Organization</span>
@@ -52,9 +54,9 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
-              <v-col  cols="4" lg="3" class="pb-0 pt-0">
+              <v-col  cols="6" lg="4" class="pb-0 pt-0">
                 <v-row  no-gutters class="d-flex justify-start">
-                  <v-col cols="10" class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Organization Mailing Address</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
@@ -62,7 +64,7 @@
                   </v-col>
                   </v-row>
               </v-col>
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-col cols="6" lg="4" class="pb-0 pt-0">
                 <v-row  no-gutters class="d-flex justify-start">
                   <v-col cols="10" class="d-flex justify-start">
                     <span class="summary-label">Organization Contact Name</span>
@@ -72,7 +74,7 @@
                   </v-col>
                   </v-row>
               </v-col>
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-col cols="6" lg="4" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start flex-column">
                   <v-col cols="10" class="d-flex justify-start">
                     <span class="summary-label">Position</span>
@@ -84,29 +86,25 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-col cols="6" lg="4" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
-                  <v-col cols="10" class="d-flex justify-start">
+                  <v-col cols="5" class="d-flex justify-start">
                     <span class="summary-label">City/Town</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  class="summary-value">City/Town</span>
-                  </v-col>
-                  </v-row>
-              </v-col>
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
-                <v-row  no-gutters class="d-flex justify-start">
-                  <v-col cols="10" class="d-flex justify-start">
+                  <v-col cols="5" class="d-flex justify-start">
                     <span class="summary-label">Postal Code</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
+                  <v-col cols="5" class="d-flex justify-start">
+                    <span  class="summary-value">City/Town</span>
+                  </v-col>
+                  <v-col cols="5" class="d-flex justify-start">
                     <span  class="summary-value">postalcode</span>
                   </v-col>
                   </v-row>
               </v-col>
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-col cols="6" lg="4" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
-                  <v-col cols="10" class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Business phone</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
@@ -114,7 +112,7 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col  cols="4" lg="3" class="pb-0 pt-0">
+              <v-col  cols="6" lg="4" class="pb-0 pt-0">
                 <v-row  no-gutters class="d-flex justify-start">
                   <v-col cols="10" class="d-flex justify-start">
                     <span class="summary-label">E-mail Address of Signing Authority</span>
@@ -126,7 +124,7 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
-            <v-col cols="4" lg="3" class="pb-0 pt-0">
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
               <v-row  no-gutters class="d-flex justify-start">
                 <v-col cols="10" class="d-flex justify-start">
                   <span class="summary-label">Type of Organization</span>
@@ -136,10 +134,10 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="4" lg="3" class="pb-0 pt-0">
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="10" class="d-flex justify-start">
-                  <span class="summary-label">Business BCEID</span>
+                  <span class="summary-label">Business BCeID</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
                   <span class="summary-value">Businessbceid</span>
@@ -159,8 +157,13 @@
           </v-row>
           </v-row>
           </v-row>
+          <FacilityInformationSummary></FacilityInformationSummary>
+          <CCOFSummary :programYear="this.programYearLabel"></CCOFSummary>
+        <CCFRISummary :programYear="this.programYearLabel"></CCFRISummary>
+        <ECEWESummary :programYear="this.programYearLabel" ></ECEWESummary>
       </v-card>
       </v-row>
+      </div>
       <!---Declaration Start--->
       <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
         Funding Agreement Number: {{ fundingAgreementNumber }}
@@ -316,6 +319,10 @@
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
+import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
+import CCOFSummary from '@/components/summary/group/CCOFSummary';
+import ECEWESummary from '@/components/summary/group/ECEWESummary';
+import CCFRISummary from '@/components/summary/group/CCFRISummary';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -323,6 +330,7 @@ let model = {
 };
 
 export default {
+  components: {FacilityInformationSummary,CCOFSummary,CCFRISummary,ECEWESummary},
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
