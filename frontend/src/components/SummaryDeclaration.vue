@@ -22,149 +22,141 @@
               <v-skeleton-loader v-if="isProcessing" :loading="isProcessing" type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
             </v-col>
           </v-row>
-          <v-row v-else no-gutters>
+          <v-row v-else no-gutters class="d-flex flex-column">
             <v-row class="d-flex justify-start pt-0">
               <v-col cols="12" class="d-flex justify-start">
                 <h4 style="color: blue">Organization Information</h4>
               </v-col>
             </v-row>
-            <v-row no-gutters>
-
+            <v-row no-gutters class="d-flex flex-column">
             <v-row class="d-flex justify-start">
               <v-col cols="4" lg="3" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="10" class="d-flex justify-start">
-                    <span style="color: grey">Legal Name</span>
+                    <span class="summary-label" >Legal Name</span>
+                  </v-col>
+                  <v-col  class="d-flex justify-start">
+                    <span  class="summary-value">LegalName</span>
                   </v-col>
                   </v-row>
-                <v-row>
+              </v-col>
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row  no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Organization(As it appears in BC Corporate Registry)</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">Organization</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start">
+              <v-col  cols="4" lg="3" class="pb-0 pt-0">
+                <v-row  no-gutters class="d-flex justify-start">
                   <v-col cols="10" class="d-flex justify-start">
-                    <span  style="color: black">LegalName</span>
+                    <span class="summary-label">Organization Mailing Address</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">Mailing Address....long line with wrap.....</span>
                   </v-col>
                   </v-row>
               </v-col>
               <v-col cols="4" lg="3" class="pb-0 pt-0">
                 <v-row  no-gutters class="d-flex justify-start">
                   <v-col cols="10" class="d-flex justify-start">
-                    <span style="color: grey">Organization(As it appears in BC Corporate Registry)</span>
+                    <span class="summary-label">Organization Contact Name</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  style="color: black">Organization</span>
+                    <span class="summary-value">Organization Contact Name</span>
+                  </v-col>
+                  </v-row>
+              </v-col>
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start flex-column">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span class="summary-label">Position</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">Position</span>
+                  </v-col>
+                  </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start">
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span class="summary-label">City/Town</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">City/Town</span>
+                  </v-col>
+                  </v-row>
+              </v-col>
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row  no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span class="summary-label">Postal Code</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">postalcode</span>
+                  </v-col>
+                  </v-row>
+              </v-col>
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span class="summary-label">Business phone</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">Business phone</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col  cols="4" lg="3" class="pb-0 pt-0">
+                <v-row  no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span class="summary-label">E-mail Address of Signing Authority</span>
+                  </v-col>
+                  <v-col class="d-flex justify-start">
+                    <span  class="summary-value">E-mailAddressofSigningAuthority</span>
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">Organization Mailing Address</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">Mailing Address....long line with wrap</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">Organization Contact Name</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">Organization Contact Name</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">Position</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">Position</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-
-            <v-row class="d-flex justify-start">
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">City/Town</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">City/Town</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">Postal Code</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">postalcode</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">Business phone</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">Business phone</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">E-mail Address of Signing Authority</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  style="color: black">E-mailAddressofSigningAuthority</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row class="d-flex justify-start">
-            <v-col class="pb-0 pt-0">
-              <v-row  class="d-flex justify-start">
-                <v-col class="d-flex justify-start">
-                  <span style="color: grey">Type of Organization</span>
+            <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-row  no-gutters class="d-flex justify-start">
+                <v-col cols="10" class="d-flex justify-start">
+                  <span class="summary-label">Type of Organization</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
-                  <span  style="color: black">TypeofOrganization</span>
+                  <span  class="summary-value">TypeofOrganization</span>
                 </v-col>
               </v-row>
             </v-col>
-            <v-col class="pb-0 pt-0">
-              <v-row  class="d-flex justify-start">
-                <v-col class="d-flex justify-start">
-                  <span style="color: grey">Business BCEID</span>
+            <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="10" class="d-flex justify-start">
+                  <span class="summary-label">Business BCEID</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
-                  <span  style="color: black">Businessbceid</span>
+                  <span class="summary-value">Businessbceid</span>
                 </v-col>
               </v-row>
             </v-col>
-              <v-col class="pb-0 pt-0">
-                <v-row  class="d-flex justify-start">
-                  <v-col class="d-flex justify-start">
-                    <span style="color: grey">Incorporation Number</span>
+              <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
+                    <span class="summary-label">Incorporation Number</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  style="color: black">IncorporationNumber</span>
+                    <span  class="summary-value">IncorporationNumber</span>
                   </v-col>
                 </v-row>
               </v-col>
           </v-row>
-              <v-row class="d-flex justify-start">
-
-
-              </v-row>
           </v-row>
           </v-row>
       </v-card>
@@ -486,6 +478,13 @@ color:#003466;
 font-size:20px;
 font-weight:bold;
 background-color:#E5E4E4;
+}
+.summary-label {
+  color: grey; font-size: small;
+}
+.summary-value {
+  font-size: medium;
+  color: black;
 }
 
 </style>
