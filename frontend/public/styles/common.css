@@ -74,7 +74,6 @@ input[type=number] {
 }
 
 .disabledButton {
-  color: black !important;
   opacity: 0.26 !important;
 }
 
