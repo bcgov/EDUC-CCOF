@@ -1460,7 +1460,7 @@
     <v-row justify="space-around">
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
-      <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()" :disabled="isFormComplete==false">Next</v-btn>
+      <v-btn :color="isFormComplete ? 'secondary' : 'rgba(0, 0, 0, 0.26)'" outlined x-large :loading="processing" @click="nextBtnClicked()">Next</v-btn>
       <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true) ">Save</v-btn>
     </v-row>
 
@@ -1649,8 +1649,11 @@ export default {
     ...mapMutations('app', ['refreshNavBar']),
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     async nextBtnClicked() {
-      let path = await this.getNextPath();
-      this.$router.push(path);
+      this.$refs.form.validate();
+      if (this.isFormComplete) {
+        let path = await this.getNextPath();
+        this.$router.push(path);
+      }
     },
     async previous() {
       let path = await this.getPreviousPath();
