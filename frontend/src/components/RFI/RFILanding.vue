@@ -1460,7 +1460,7 @@
     <v-row justify="space-around">
       <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
       <!--add form logic here to disable/enable button-->
-      <v-btn :color="isFormComplete ? 'secondary' : 'rgba(0, 0, 0, 0.26)'" outlined x-large :loading="processing" @click="nextBtnClicked()">Next</v-btn>
+      <v-btn color="secondary" :class="isFormComplete ? '' : 'disabledButton'" outlined x-large :loading="processing" @click="nextBtnClicked()">Next</v-btn>
       <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true) ">Save</v-btn>
     </v-row>
 

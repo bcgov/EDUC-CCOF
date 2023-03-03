@@ -73,6 +73,11 @@ input[type=number] {
   visibility: hidden;
 }
 
+.disabledButton {
+  color: black !important;
+  opacity: 0.26 !important;
+}
+
 @keyframes bone {
   to {
     background-position: 100% 0;
