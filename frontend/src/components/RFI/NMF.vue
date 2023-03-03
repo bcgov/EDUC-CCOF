@@ -2,7 +2,7 @@
   <v-form ref="isValidForm" v-model="isValidForm" :class="isLoading ? 'ccof-skeleton-loader' : ''">
     <v-container class="px-xl-12">
       <div class="text-center pt-4">
-        <p class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</p>
+        <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</p>
         <p class="text-h5 font-weight-bold">Parent Fees – Request for Information</p>
         <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
         <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
@@ -12,8 +12,8 @@
       <div class="px-2 my-10">
         <p>
           As outlined in the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>
-          , applications by New, New-to-CCFRI, and Modified Facilities 
-          will be assessed based on whether the facility’s parent fees are comparable to others in their region. 
+          , applications by New, New-to-CCFRI, and Modified Facilities
+          will be assessed based on whether the facility’s parent fees are comparable to others in their region.
           To determine if this policy applies to your facility, please provide more information.
         </p>
       </div>
@@ -28,7 +28,7 @@
           </v-card>
           <div class="px-md-12 px-7 py-10">
             <p class="text-h6 text--primary my-0">
-              1.	Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021 
+              1.	Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021
               (e.g. New Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?
             </p>
             <v-radio-group
@@ -51,7 +51,7 @@
             <div v-if="model.supportNeeds === 'Yes'">
               <div class="text-h6 text--primary pt-2">
                 <p>
-                  Please enter your Project ID, Funding Program, and Application Date. 
+                  Please enter your Project ID, Funding Program, and Application Date.
                   If you are not sure what your Project ID is, call Child Care Capital and Community Services at 1-888-338-6622 (Option 5).
                 </p>
                 <v-textarea
@@ -67,7 +67,7 @@
           </div>
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
-              2.	Does your facility provide additional services (such as meals or other wrap-around services),  
+              2.	Does your facility provide additional services (such as meals or other wrap-around services),
               to support families experiencing vulnerability and/or underserved populations, such as Indigenous or low-income families?
             </p>
             <v-radio-group
@@ -103,7 +103,7 @@
           </div>
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
-              3. Do you provide transportation to/from your facility to support families in rural or remote communities 
+              3. Do you provide transportation to/from your facility to support families in rural or remote communities
               who may not otherwise be able to access child care?
             </p>
             <v-radio-group
@@ -140,7 +140,7 @@
 
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
-              4. Please tell us anything else you’d like us to know about how your facility’s business case 
+              4. Please tell us anything else you’d like us to know about how your facility’s business case
               supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>.
             </p>
             <div class="pt-6">
@@ -163,7 +163,7 @@
         <v-btn color="secondary" outlined x-large @click="next()" :loading="isProcessing" :disabled="!isValidForm">
           Next
         </v-btn>
-        <v-btn color="primary" outlined x-large @click="save(true)" :disabled="isReadOnly" :loading="isProcessing"> 
+        <v-btn color="primary" outlined x-large @click="save(true)" :disabled="isReadOnly" :loading="isProcessing">
           Save
         </v-btn>
       </v-row>
@@ -198,11 +198,11 @@ export default {
     next();
   },
   computed: {
-    ...mapState('application', ['programYearLabel']),
+    ...mapState('application', ['formattedProgramYear']),
     ...mapState('nmfApp', ['nmfModel']),
     ...mapState('app', ['navBarList']),
     findIndexOfFacility(){
-      return this.navBarList.findIndex((element) => { 
+      return this.navBarList.findIndex((element) => {
         return element.ccfriApplicationId == this.$route.params.urlGuid;
       });
     },
@@ -232,7 +232,7 @@ export default {
       immediate: true,
       deep: true
     }
-  },  
+  },
   methods : {
     ...mapMutations('nmfApp', ['setNmfModel','setIsNmfComplete','setHasNmf']),
     ...mapActions('navBar', ['getNextPath']),

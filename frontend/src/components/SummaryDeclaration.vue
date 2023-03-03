@@ -2,13 +2,10 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h4">Declaration - {{this.programYearLabel}} Program Confirmation Form</span>
+        <span class="text-h4">Declaration - {{this.formattedProgramYear}} Program Confirmation Form</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
-      </v-row>
-      <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
-        Funding Agreement Number: {{ fundingAgreementNumber }}
       </v-row>
       <v-row v-if="!canSubmit" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -174,7 +171,7 @@ export default {
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
-    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {
