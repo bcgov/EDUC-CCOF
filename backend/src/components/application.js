@@ -1,12 +1,13 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep} = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES } = require('../util/constants');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep, getLabelFromValue} = require('./utils');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, DeclarationMappings, UserProfileCCFRIMappings } = require('../util/mapping/Mappings');
+const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
+const { ECEWEApplicationMappings, ECEWEFacilityMappings, DeclarationMappings, UserProfileCCFRIMappings, ApplicationSummaryMappings, ApplicationSummaryCcfriMappings  } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
+const { mapFundingObjectForFront } = require('./funding');
 
 
 async function renewCCOFApplication(req, res) {
@@ -333,6 +334,51 @@ async function submitApplication(req, res) {
   }
 }
 
+function getFacilityInMap(map, facilityId) {
+  let facility = map.get(facilityId);
+  if (!facility) {
+    facility = { facilityId: facilityId};
+    map.set(facilityId, facility);
+  }
+  return facility;
+}
+
+async function getApplicationSummary(req, res) {
+  try {
+    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(ApplicationSummaryCcfriMappings)}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode),ccof_application_basefunding_Application`;
+    let results = await getOperation(operation);
+    let applicationSummary = new MappableObjectForFront(results, ApplicationSummaryMappings).data;
+    applicationSummary.organizationProviderType = getLabelFromValue(applicationSummary.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
+    applicationSummary.applicationType = getLabelFromValue(applicationSummary.applicationType, CCOF_APPLICATION_TYPES);
+    applicationSummary.ccofStatus = getLabelFromValue(applicationSummary.ccofStatus, CCOF_STATUS_CODES, 'NEW');
+    applicationSummary.applicationStatus = getLabelFromValue(applicationSummary.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
+
+    //setup the Facility map
+    const facilityMap = new Map();
+    //map CCFRI
+    results.ccof_applicationccfri_Application_ccof_ap?.forEach(ccfri => {
+      const mappedCCFRI = new MappableObjectForFront(ccfri, ApplicationSummaryCcfriMappings).data;
+      getFacilityInMap(facilityMap, mappedCCFRI.facilityId).ccfri = mappedCCFRI;
+    })
+
+    //map ECE-WE
+    results.ccof_ccof_application_ccof_applicationecewe_application?.forEach(ecewe => {
+      const mappedEcewe = new MappableObjectForFront(ecewe, ECEWEFacilityMappings).data;
+      getFacilityInMap(facilityMap, mappedEcewe.facilityId).ecewe = mappedEcewe;
+    })
+
+    //map CCOF Base funding if it exists
+    results.ccof_application_basefunding_Application?.forEach(baseFunding => {
+      const mappedBaseFunding = mapFundingObjectForFront(baseFunding);
+      getFacilityInMap(facilityMap, mappedBaseFunding.facilityId).funding = mappedBaseFunding;
+    });
+    return res.status(HttpStatus.OK).json({ application: applicationSummary, facilities: Array.from( facilityMap.values() ) });
+  } catch (e) {
+    log.error('An error occurred while getting getApplicationSummary', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 /* Checks if object attrubte name exists in payload */
 function checkKey(key, obj) {
   for (let name in obj) {
@@ -357,4 +403,5 @@ module.exports = {
   renewCCOFApplication,
   getDeclaration,
   submitApplication,
+  getApplicationSummary,
 };

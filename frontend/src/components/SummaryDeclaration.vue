@@ -363,7 +363,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
     isPageComplete(){
       if (this.model.agreeConsentCertify && this.model.orgContactName) {
@@ -445,6 +445,7 @@ export default {
     },
   },
   async mounted() {
+    this.loadSummary();
     if (!this.unlockDeclaration) {
       await this.loadData();
       this.model = this.$store.state.summaryDeclaration.model ?? model;

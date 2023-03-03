@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
 const { getRFIMedian, getRFIApplication, createRFIApplication, updateRFIApplication} = require('../components/rfiApplication');
-const { upsertParentFees, updateCCFRIApplication, renewCCOFApplication } = require('../components/application');
+const { upsertParentFees, updateCCFRIApplication, renewCCOFApplication, getApplicationSummary } = require('../components/application');
 const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication} = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const { param, validationResult } = require('express-validator');
@@ -106,6 +106,12 @@ router.get('/declaration/:applicationId', passport.authenticate('jwt', {session:
 router.patch('/declaration/submit/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
   param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
   return submitApplication(req, res);
+});
+
+/* Get the full summary of the application */
+router.get('/summary/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
+  return getApplicationSummary(req, res);
 });
 
 module.exports = router;

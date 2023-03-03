@@ -7,13 +7,37 @@ export default {
   state: {
     isValidForm: undefined,
     model: {},
+    summaryModel: {},
 
   },
-  getters: {},  
+  getters: {
+    isCCFRIComplete: (state) => {
+      return state.summaryModel?.facilities?.length > 0 ? state.summaryModel?.facilities.every(facility => 
+        facility.ccfri?.ccof_formcomplete && (facility.ccfri?.ccfriOptInStatus === 1 || facility.ccfri?.ccfriOptInStatus === 0)
+        && ((facility.ccfri?.unlockRfi === 1 || facility.ccfri?.hasRfi) ? facility.ccfri?.isRfiComplete : true)
+        && ((facility.ccfri?.unlockNmf === 1 || facility.ccfri?.hasNmf) ? facility.ccfri?.isNmfComplete : true)) : false;
+    },
+    isECEWEComplete: (state) => {
+      return state.summaryModel?.application?.isEceweComplete
+        && state.summaryModel?.facilities?.length > 0 ? state.summaryModel?.facilities.every(facility => (facility.ecewe?.optInOrOut === 1 || facility.ecewe?.optInOrOut === 0)) : false;
+    },
+    isFacilityComplete: (state) => {
+      return state.summaryModel?.facilities?.length > 0 ? state.summaryModel?.facilities.every(facility => (facility.facilityInfo?.isFacilityComplete == true)) : false;
+    },
+    areCheckBoxesComplete: (state, getters) => {
+      let isComplete = (state.summaryModel?.application?.isEceweComplete
+        && state.summaryModel?.application?.isLicenseUploadComplete
+        && getters.isCCFRIComplete);
+      return isComplete;  
+    },
+  },
   mutations: {
     model(state, value) {
       state.model = value;
     },
+    summaryModel(state, value) {
+      state.summaryModel = value;
+    },    
     isValidForm(state, value) {
       state.isValidForm = value;
     },
@@ -48,5 +72,37 @@ export default {
         throw error;
       }
     },
+    async loadSummary({ commit, state, rootState }) {
+      checkSession();
+      try {
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + rootState.application.applicationId)).data;
+        let summaryModel = {
+          organization: undefined,
+          application: payload.application,
+          facilities: payload.facilities,
+        }
+        commit('summaryModel', summaryModel);
+        if (rootState.app.isRenewal && payload.application?.organizationId) { //TODO: verify if we need to show this on renewal
+          summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
+          commit('summaryModel', summaryModel);
+        }
+        summaryModel.facilities?.forEach(async (facility, index) =>  {
+          if (facility.ccfri?.ccfriId) {
+            let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
+            summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
+            summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
+            commit('summaryModel', summaryModel);
+          }
+          if (rootState.app.isRenewal) { //TODO: verify if we need to show this on renewal
+            summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
+            commit('summaryModel', summaryModel);
+          }
+        });
+      } catch (error) {
+        console.log(`Failed to load Summary - ${error}`);
+        throw error;
+      }
+    },      
   },
+
 };
