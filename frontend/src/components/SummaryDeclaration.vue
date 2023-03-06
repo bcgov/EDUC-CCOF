@@ -311,18 +311,13 @@
           </v-container>
         </v-card>
       </v-dialog>
-  </v-form>
-  </v-container>
+    </v-container>
 </template>
 <script>
 
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
-import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
-import CCOFSummary from '@/components/summary/group/CCOFSummary';
-import ECEWESummary from '@/components/summary/group/ECEWESummary';
-import CCFRISummary from '@/components/summary/group/CCFRISummary';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -330,19 +325,18 @@ let model = {
 };
 
 export default {
-  components: {FacilityInformationSummary,CCOFSummary,CCFRISummary,ECEWESummary},
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
-    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
-      } else if (!this.canSubmit) {
+      } if (!this.canSubmit) {
         return true;
       } else if (this.unlockDeclaration) {
         return false;
@@ -363,7 +357,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration']),
     ...mapActions('navBar', ['getPreviousPath']),
     isPageComplete(){
       if (this.model.agreeConsentCertify && this.model.orgContactName) {
@@ -445,7 +439,6 @@ export default {
     },
   },
   async mounted() {
-    this.loadSummary();
     if (!this.unlockDeclaration) {
       await this.loadData();
       this.model = this.$store.state.summaryDeclaration.model ?? model;

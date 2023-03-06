@@ -29,6 +29,7 @@ async function getUploadedDocuments(req, res) {
           document.ccof_facility = fileInfo['ApplicationFacilityDocument.ccof_facility'];
           document.ccof_facility_name = fileInfo['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'];
           document.ccof_application_facility_documentId = fileInfo['ApplicationFacilityDocument.ccof_application_facility_documentid'];
+          document.description=fileInfo.notetext;
           documentFiles.push(document);
         }
       }
