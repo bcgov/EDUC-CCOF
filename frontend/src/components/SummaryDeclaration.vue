@@ -320,12 +320,18 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
+import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
+import CCOFSummary from '@/components/summary/group/CCOFSummary';
+import ECEWESummary from '@/components/summary/group/ECEWESummary';
+import CCFRISummary from '@/components/summary/group/CCFRISummary';
+
 let model = {
   agreeConsentCertify: undefined,
   orgContactName: undefined,
 };
 
 export default {
+  components: {FacilityInformationSummary,CCOFSummary,CCFRISummary,ECEWESummary},
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
