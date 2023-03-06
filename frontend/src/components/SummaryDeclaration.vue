@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-form ref="form" v-model="isValidForm">
     <v-row class="d-flex justify-center">
-      <span class="text-h4">Child Care Operating Funding Program - {{this.programYearLabel}} Program Confirmation Form</span>
+      <span class="text-h4">Child Care Operating Funding Program - {{this.formattedProgramYear}} Program Confirmation Form</span>
     </v-row>
     <v-row class="d-flex justify-center">
       <h2>Summary and Declaration</h2>
@@ -158,9 +158,9 @@
           </v-row>
           </v-row>
           <FacilityInformationSummary></FacilityInformationSummary>
-          <CCOFSummary :programYear="this.programYearLabel"></CCOFSummary>
-        <CCFRISummary :programYear="this.programYearLabel"></CCFRISummary>
-        <ECEWESummary :programYear="this.programYearLabel" ></ECEWESummary>
+          <CCOFSummary :programYear="this.formattedProgramYear"></CCOFSummary>
+        <CCFRISummary :programYear="this.formattedProgramYear"></CCFRISummary>
+        <ECEWESummary :programYear="this.formattedProgramYear" ></ECEWESummary>
       </v-card>
       </v-row>
       </div>
