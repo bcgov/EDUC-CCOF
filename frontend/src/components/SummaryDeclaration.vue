@@ -311,7 +311,8 @@
           </v-container>
         </v-card>
       </v-dialog>
-    </v-container>
+    </v-form>
+  </v-container>
 </template>
 <script>
 
@@ -336,7 +337,7 @@ export default {
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
-      } if (!this.canSubmit) {
+      } else if (!this.canSubmit) {
         return true;
       } else if (this.unlockDeclaration) {
         return false;
