@@ -1481,8 +1481,7 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
         <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="nextBtnClicked()"
-               :disabled="isFormComplete==false">Next
+        <v-btn color="secondary" :class="isFormComplete ? '' : 'disabledButton'" outlined x-large :loading="processing" @click="nextBtnClicked()">Next
         </v-btn>
         <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true) ">Save
         </v-btn>
@@ -1680,8 +1679,11 @@ export default {
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     async nextBtnClicked() {
-      let path = await this.getNextPath();
-      this.$router.push(path);
+      this.$refs.form.validate();
+      if (this.isFormComplete) {
+        let path = await this.getNextPath();
+        this.$router.push(path);
+      }
     },
     async previous() {
       let path = await this.getPreviousPath();
