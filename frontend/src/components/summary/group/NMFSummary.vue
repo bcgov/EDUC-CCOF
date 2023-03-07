@@ -1,22 +1,22 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
     <v-expansion-panel-header>
-      <h4 style="color:#003466;">Early Childhood Educator-Wage Enhancement (ECE-WE)</h4>
+      <h4 style="color:#003466;">NMF</h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
     <v-row no-gutters class="d-flex flex-column">
-    <v-row class="d-flex justify-start">
-      <v-col cols="8" lg="6" class="pb-0 pt-0">
-        <v-row no-gutters class="d-flex justify-start">
-          <v-col cols="10" class="d-flex justify-start">
-            <span class="summary-label">For the {{this.program_year}} funding term, would you like to opt-in to ECE-WE for any facility in your organization</span>
-          </v-col>
-          <v-col class="d-flex justify-start">
-            <span class="summary-value-small">#Yes</span>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
+      <v-row class="d-flex justify-start">
+        <v-col cols="8" lg="6" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start">
+            <v-col cols="10" class="d-flex justify-start">
+              <span class="summary-label">For the {{this.program_year}} funding term, would you like to opt-in to ECE-WE for any facility in your organization</span>
+            </v-col>
+            <v-col class="d-flex justify-start">
+              <span class="summary-value-small">#Yes</span>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
       <v-row class="d-flex justify-start">
         <v-col cols="8" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">

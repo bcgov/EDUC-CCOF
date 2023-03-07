@@ -18,39 +18,31 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
             </v-col>
           </v-row>
+        <v-expansion-panels focusable>
           <v-row v-if="isProcessing">
             <v-col>
               <v-skeleton-loader v-if="isProcessing" :loading="isProcessing" type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
             </v-col>
           </v-row>
 
+
           <v-row v-else no-gutters class="d-flex flex-column">
-            <v-row class="d-flex justify-start pt-0">
-              <v-col cols="12" class="d-flex justify-start">
+            <v-expansion-panel>
+              <v-expansion-panel-header>
                 <h4 style="color:#003466;">Organization Information</h4>
-              </v-col>
-            </v-row>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
             <v-row no-gutters class="d-flex flex-column">
             <v-row class="d-flex justify-start">
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-col cols="8" lg="5" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
-                  <v-col cols="10" class="d-flex justify-start">
-                    <span class="summary-label" >Legal Name (first, middle and last)</span>
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label" >Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span>
                   </v-col>
                   <v-col  class="d-flex justify-start">
-                    <span  class="summary-value">LegalName</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.legalName}}</span>
                   </v-col>
                   </v-row>
-              </v-col>
-              <v-col cols="4" lg="3" class="pb-0 pt-0">
-                <v-row  no-gutters class="d-flex justify-start">
-                  <v-col cols="12" class="d-flex justify-start">
-                    <span class="summary-label">Organization (As it appears in BC Corporate Registry)</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <span  class="summary-value">Organization</span>
-                  </v-col>
-                </v-row>
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
@@ -59,18 +51,21 @@
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Organization Mailing Address</span>
                   </v-col>
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span  class="summary-value"> {{this.summaryModel?.organization?.address1}}</span>
+                  </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  class="summary-value">Mailing Address....long line with wrap.....</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.address2}}</span>
                   </v-col>
                   </v-row>
               </v-col>
               <v-col cols="6" lg="4" class="pb-0 pt-0">
                 <v-row  no-gutters class="d-flex justify-start">
-                  <v-col cols="10" class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Organization Contact Name</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span class="summary-value">Organization Contact Name</span>
+                    <span class="summary-value">{{this.summaryModel?.application?.orgContactName}}</span>
                   </v-col>
                   </v-row>
               </v-col>
@@ -80,7 +75,7 @@
                     <span class="summary-label">Position</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  class="summary-value">Position</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.position}}</span>
                   </v-col>
                   </v-row>
               </v-col>
@@ -95,10 +90,10 @@
                     <span class="summary-label">Postal Code</span>
                   </v-col>
                   <v-col cols="5" class="d-flex justify-start">
-                    <span  class="summary-value">City/Town</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.city1}}</span>
                   </v-col>
                   <v-col cols="5" class="d-flex justify-start">
-                    <span  class="summary-value">postalcode</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.postalCode1}}</span>
                   </v-col>
                   </v-row>
               </v-col>
@@ -108,7 +103,7 @@
                     <span class="summary-label">Business phone</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  class="summary-value">Business phone</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.phone}}</span>
                   </v-col>
                 </v-row>
               </v-col>
@@ -118,7 +113,7 @@
                     <span class="summary-label">E-mail Address of Signing Authority</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  class="summary-value">E-mailAddressofSigningAuthority</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.email}}</span>
                   </v-col>
                 </v-row>
               </v-col>
@@ -126,11 +121,11 @@
             <v-row class="d-flex justify-start">
             <v-col cols="6" lg="4" class="pb-0 pt-0">
               <v-row  no-gutters class="d-flex justify-start">
-                <v-col cols="10" class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label">Type of Organization</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
-                  <span  class="summary-value">TypeofOrganization</span>
+                  <span  class="summary-value">{{this.summaryModel?.application?.organizationProviderType}}</span>
                 </v-col>
               </v-row>
             </v-col>
@@ -150,19 +145,38 @@
                     <span class="summary-label">Incorporation Number</span>
                   </v-col>
                   <v-col class="d-flex justify-start">
-                    <span  class="summary-value">IncorporationNumber</span>
+                    <span  class="summary-value">{{this.summaryModel?.organization?.incNumber}}</span>
                   </v-col>
                 </v-row>
               </v-col>
           </v-row>
           </v-row>
-          </v-row>
+              </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
           <FacilityInformationSummary></FacilityInformationSummary>
-          <CCOFSummary :programYear="this.formattedProgramYear"></CCOFSummary>
-        <CCFRISummary :programYear="this.formattedProgramYear"></CCFRISummary>
-        <ECEWESummary :programYear="this.formattedProgramYear" ></ECEWESummary>
+          </v-expansion-panel>
+            <v-expansion-panel>
+            <CCOFSummary :programYear="this.formattedProgramYear"></CCOFSummary>
+            </v-expansion-panel>
+              <v-expansion-panel>
+              <CCFRISummary :programYear="this.formattedProgramYear"></CCFRISummary>
+              </v-expansion-panel>
+            <v-expansion-panel>
+              <RFISummary :programYear="this.formattedProgramYear"></RFISummary>
+            </v-expansion-panel>
+            <v-expansion-panel>
+              <NMFSummary :programYear="this.formattedProgramYear"></NMFSummary>
+            </v-expansion-panel>
+                <v-expansion-panel>
+                <ECEWESummary :programYear="this.formattedProgramYear" ></ECEWESummary>
+                </v-expansion-panel>
+          </v-row>
+        </v-expansion-panels>
+
       </v-card>
       </v-row>
+
       </div>
       <!---Declaration Start--->
       <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
@@ -324,6 +338,8 @@ import FacilityInformationSummary from '@/components/summary/group/FacilityInfor
 import CCOFSummary from '@/components/summary/group/CCOFSummary';
 import ECEWESummary from '@/components/summary/group/ECEWESummary';
 import CCFRISummary from '@/components/summary/group/CCFRISummary';
+import RFISummary from '@/components/summary/group/RFISummary';
+import NMFSummary from '@/components/summary/group/NMFSummary';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -331,13 +347,14 @@ let model = {
 };
 
 export default {
-  components: {FacilityInformationSummary,CCOFSummary,CCFRISummary,ECEWESummary},
+  components: {NMFSummary, RFISummary, FacilityInformationSummary,CCOFSummary,CCFRISummary,ECEWESummary},
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
+    ...mapState('summaryDeclaration', ['summaryModel']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
@@ -364,7 +381,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
     isPageComplete(){
       if (this.model.agreeConsentCertify && this.model.orgContactName) {
@@ -442,10 +459,11 @@ export default {
     },
     async previous() {
       let path = await this.getPreviousPath();
-      this.$router.push(path);
+      await this.$router.push(path);
     },
   },
   async mounted() {
+    await this.loadSummary();
     if (!this.unlockDeclaration) {
       await this.loadData();
       this.model = this.$store.state.summaryDeclaration.model ?? model;

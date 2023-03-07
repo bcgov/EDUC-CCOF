@@ -1,10 +1,9 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
-    <v-row class="d-flex justify-start pt-0">
-      <v-col cols="12" class="d-flex justify-start">
-        <h4 style="color:#003466;">Child Care Operating Funding (CCOF)</h4>
-      </v-col>
-    </v-row>
+    <v-expansion-panel-header>
+      <h4 style="color:#003466;">Child Care Operating Funding (CCOF)</h4>
+    </v-expansion-panel-header>
+    <v-expansion-panel-content>
     <v-row no-gutters class="d-flex flex-column">
       <v-row class="d-flex justify-start">
         <v-col cols="8" lg="6" class="pb-0 pt-0">
@@ -263,6 +262,7 @@
         </v-col>
       </v-row>
     </v-row>
+    </v-expansion-panel-content>
   </v-row>
 </template>
 <script>
