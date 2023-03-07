@@ -12,7 +12,7 @@ export default {
   },
   getters: {
     isCCFRIComplete: (state) => {
-      return state.summaryModel?.facilities?.length > 0 ? state.summaryModel?.facilities.every(facility => 
+      return state.summaryModel?.facilities?.length > 0 ? state.summaryModel?.facilities.every(facility =>
         facility.ccfri?.ccof_formcomplete && (facility.ccfri?.ccfriOptInStatus === 1 || facility.ccfri?.ccfriOptInStatus === 0)
         && ((facility.ccfri?.unlockRfi === 1 || facility.ccfri?.hasRfi) ? facility.ccfri?.isRfiComplete : true)
         && ((facility.ccfri?.unlockNmf === 1 || facility.ccfri?.hasNmf) ? facility.ccfri?.isNmfComplete : true)) : false;
@@ -28,7 +28,7 @@ export default {
       let isComplete = (state.summaryModel?.application?.isEceweComplete
         && state.summaryModel?.application?.isLicenseUploadComplete
         && getters.isCCFRIComplete);
-      return isComplete;  
+      return isComplete;
     },
   },
   mutations: {
@@ -37,7 +37,7 @@ export default {
     },
     summaryModel(state, value) {
       state.summaryModel = value;
-    },    
+    },
     isValidForm(state, value) {
       state.isValidForm = value;
     },
@@ -80,9 +80,9 @@ export default {
           organization: undefined,
           application: payload.application,
           facilities: payload.facilities,
-        }
+        };
         commit('summaryModel', summaryModel);
-        if (rootState.app.isRenewal && payload.application?.organizationId) { //TODO: verify if we need to show this on renewal
+        if (!rootState.app.isRenewal && payload.application?.organizationId) {
           summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
           commit('summaryModel', summaryModel);
         }
@@ -93,7 +93,7 @@ export default {
             summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
             commit('summaryModel', summaryModel);
           }
-          if (rootState.app.isRenewal) { //TODO: verify if we need to show this on renewal
+          if (!rootState.app.isRenewal) {
             summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
             commit('summaryModel', summaryModel);
           }
@@ -102,7 +102,7 @@ export default {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
       }
-    },      
+    },
   },
 
 };
