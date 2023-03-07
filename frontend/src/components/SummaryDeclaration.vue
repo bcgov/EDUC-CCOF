@@ -32,7 +32,7 @@
                 </v-expansion-panel>
                 <div v-if="this.isFacilitiesAvailable">
                   <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId">
-                    <v-expansion-panel v-if="facility.facilityInfo">
+                    <v-expansion-panel v-if="facility?.facilityInfo">
                       <FacilityInformationSummary :facility-info="facility?.facilityInfo"></FacilityInformationSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
