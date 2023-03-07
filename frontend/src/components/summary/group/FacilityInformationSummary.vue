@@ -12,7 +12,7 @@
               <span class="summary-label" >Facility Name (as it appears on the Community Care Assisted Living Act Licence)</span>
             </v-col>
             <v-col  class="d-flex justify-start">
-              <span  class="summary-value">FacilityName</span>
+              <span  class="summary-value">{{ this.facilityInfo?.facilityName }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -22,7 +22,7 @@
               <span class="summary-label">Year Facility Began Operation (YYYY)</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <span  class="summary-value">2003</span>
+              <span  class="summary-value">{{ this.facilityInfo?.yearBeganOperation }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -34,7 +34,7 @@
               <span class="summary-label">Facility Street Address</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <span  class="summary-value">Mailing Address....long line with wrap.....</span>
+              <span  class="summary-value">{{ this.facilityInfo?.facilityAddress }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -47,10 +47,10 @@
               <span class="summary-label">Position</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <span class="summary-value">Organization Contact Name</span>
+              <span class="summary-value">{{ this.facilityInfo?.contactName }}</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <span  class="summary-value">Position</span>
+              <span  class="summary-value">{{ this.facilityInfo?.position }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -65,10 +65,10 @@
               <span class="summary-label">Postal Code</span>
             </v-col>
             <v-col cols="4" class="d-flex justify-start">
-              <span  class="summary-value">City/Town</span>
+              <span  class="summary-value">{{ this.facilityInfo?.city }}</span>
             </v-col>
             <v-col cols="6" class="d-flex justify-start">
-              <span  class="summary-value">postalcode</span>
+              <span  class="summary-value">{{ this.facilityInfo?.postalCode }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -81,10 +81,10 @@
               <span class="summary-label">Facility E-mail Address</span>
             </v-col>
             <v-col cols="6" class="d-flex justify-start">
-              <span  class="summary-value">Business phone</span>
+              <span  class="summary-value">{{ this.facilityInfo?.phone }}</span>
             </v-col>
             <v-col cols="6" class="d-flex justify-start">
-              <span  class="summary-value">E-mailAddressofSigningAuthority</span>
+              <span  class="summary-value">{{ this.facilityInfo?.email }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -96,7 +96,7 @@
               <span class="summary-label">Facility Licence Number</span>
             </v-col>
             <v-col cols="10" class="d-flex justify-start">
-              <span  class="summary-value">Facility Licence Number</span>
+              <span  class="summary-value">{{ this.facilityInfo?.licenseNumber }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -106,7 +106,7 @@
               <span class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <span class="summary-value">2007-01-01</span>
+              <span class="summary-value">{{ this.facilityInfo?.licenseEffectiveDate }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -116,6 +116,14 @@
   </v-row>
 </template>
 <script>
+export default {
+  props: {
+    facilityInfo: {
+      type: Object,
+      required: true
+    }
+  }
+};
 </script>
 <style>
 .summary-label {

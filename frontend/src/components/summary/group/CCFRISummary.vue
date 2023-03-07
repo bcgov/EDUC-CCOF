@@ -48,8 +48,8 @@
 <script>
 export default {
   props: {
-    programYear: {
-      type: String,
+    ccfri: {
+      type: Object,
       required: true
     }
   }

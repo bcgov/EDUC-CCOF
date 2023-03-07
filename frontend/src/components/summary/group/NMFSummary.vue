@@ -9,7 +9,7 @@
         <v-col cols="8" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="10" class="d-flex justify-start">
-              <span class="summary-label">For the {{this.program_year}} funding term, would you like to opt-in to ECE-WE for any facility in your organization</span>
+              <span class="summary-label">For the funding term, would you like to opt-in to ECE-WE for any facility in your organization</span>
             </v-col>
             <v-col class="d-flex justify-start">
               <span class="summary-value-small">#Yes</span>
@@ -48,23 +48,14 @@
 <script>
 
 export default {
-  watch:{
-    programYear: function (val) {
-      this.program_year = val;
-    }
-
-  },
+  name: 'NMFSummary',
   props: {
     programYear: {
       type: String,
       required: true
     }
   },
-  data() {
-    return {
-      program_year: null,
-    };
-  },
+
 };
 </script>
 <style>
