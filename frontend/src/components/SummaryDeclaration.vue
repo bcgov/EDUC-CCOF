@@ -310,6 +310,7 @@ export default {
     isFacilitiesAvailable() {
       return this.summaryModel?.facilities?.length > 0;
     },
+
   },
   data() {
     return {
@@ -408,7 +409,9 @@ export default {
     },
   },
   async mounted() {
+
     await this.loadSummary();
+
     if (!this.unlockDeclaration) {
       await this.loadData();
       this.model = this.$store.state.summaryDeclaration.model ?? model;
@@ -437,6 +440,7 @@ export default {
         this.model.declarationAStatus = undefined;
       }
     }
+
   },
 };
 </script>
