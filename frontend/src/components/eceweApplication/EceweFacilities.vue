@@ -39,7 +39,7 @@
         class = "mx-0 justify-end"
         @click="toggleAll()"
         dark color='#003366'
-        :disabled="applicationStatus === 'SUBMITTED'" 
+        :disabled="isReadOnly" 
         > 
         Opt in All Facilities
       </v-btn>
@@ -171,10 +171,7 @@ export default {
       if (this.unlockEcewe){
         return false;
       }
-      else if (this.applicationStatus === 'SUBMITTED'){
-        return true;
-      }
-      return false;
+      return (this.applicationStatus === 'SUBMITTED');
     }
   },
   async beforeMount() {
