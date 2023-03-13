@@ -168,6 +168,7 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
+      //will only return true if set by a ministry user in dynamics
       if (this.unlockEcewe){
         return false;
       }
