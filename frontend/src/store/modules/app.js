@@ -21,7 +21,7 @@ export default {
     supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
-    programYearList: [],
+    programYearList: {},
     childCareCategoryList: [],
     organizationTypeList: [],
     fundingModelTypeList: [],

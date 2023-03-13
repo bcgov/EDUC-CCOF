@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -83,7 +83,7 @@
                   @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
                   color="#003366"
                   dark
-                  :disabled="isReadOnly"> 
+                  :disabled="isReadOnly">
                     Update
                 </v-btn>
               </v-col>
@@ -156,7 +156,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -172,7 +172,7 @@ export default {
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){
-        return true; 
+        return true;
       }
       return false;
     }

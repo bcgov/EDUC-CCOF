@@ -2,13 +2,10 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="center" class="pt-4">
-        <span class="text-h4">Declaration - {{this.programYearLabel}} Program Confirmation Form</span>
+        <span class="text-h4">Declaration - {{this.formattedProgramYear}} Program Confirmation Form</span>
       </v-row>
       <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
         {{this.userInfo.organizationName}}
-      </v-row>
-      <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
-        Funding Agreement Number: {{ fundingAgreementNumber }}
       </v-row>
       <v-row v-if="!canSubmit" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -69,11 +66,11 @@
                   </p>
                 </div>
                 <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
-                  <p>I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
+                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
                 <div v-show="this.model.declarationBStatus == 1 && this.isRenewal">
-                  <p>I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
+                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
                   <p>By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby confirm that I have carefully read this Form and the corresponding terms and conditions of the Child Care Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:</p>
 
@@ -117,7 +114,7 @@
                   outlined
                   v-model="model.orgContactName"
                   :disabled="isReadOnly"
-                  label="Organization Contact Name/Digital signature."
+                  label="Your Organization's Authorized Signing Authority"
                 />
               </v-col>
             </v-row>
@@ -162,7 +159,10 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
-let model = {};
+let model = {
+  agreeConsentCertify: undefined,
+  orgContactName: undefined,
+};
 
 export default {
   mixins: [alertMixin],
@@ -171,7 +171,7 @@ export default {
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
-    ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {
@@ -279,8 +279,11 @@ export default {
     },
   },
   async mounted() {
-    await this.loadData();
-    this.model = this.$store.state.summaryDeclaration.model ?? model;
+    if (!this.unlockDeclaration) {
+      await this.loadData();
+      this.model = this.$store.state.summaryDeclaration.model ?? model;
+    }
+
     if (this.isRenewal) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
@@ -298,8 +301,10 @@ export default {
       // saved as part of submission.
       if (serverTime < declarationBStart) {
         this.model.declarationAStatus = 1;
+        this.model.declarationBStatus = undefined;
       } else {
         this.model.declarationBStatus = 1;
+        this.model.declarationAStatus = undefined;
       }
     }
   },

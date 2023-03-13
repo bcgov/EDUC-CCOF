@@ -179,6 +179,14 @@ async function upsertParentFees(req, res) {
   }
 }
 
+function formatTimeForBack(timeString){
+  if (timeString) {
+    return timeString +'T12:00:00-07:00';
+  }
+  return timeString;
+}
+
+
 async function postClosureDates(dates, ccfriApplicationGuid, res){
   let retVal= [];
 
@@ -204,9 +212,9 @@ async function postClosureDates(dates, ccfriApplicationGuid, res){
     await Promise.all(dates.map(async (date) => {
 
       let payload = {
-        "ccof_startdate": new Date (date.formattedStartDate),
+        "ccof_startdate": formatTimeForBack(date.formattedStartDate),
         "ccof_paidclosure": date.feesPaidWhileClosed,
-        "ccof_enddate": date.formattedEndDate? new Date (date.formattedEndDate) :new Date (date.formattedStartDate),
+        "ccof_enddate": date.formattedEndDate? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
         "ccof_comment": date.closureReason,
         "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
       };
