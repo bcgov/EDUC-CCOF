@@ -41,8 +41,8 @@
                     <v-expansion-panel>
                       <CCFRISummary :ccfri="facility.ccfri"></CCFRISummary>
                     </v-expansion-panel>
-                    <v-expansion-panel>
-                      <RFISummary programYear="2023"></RFISummary>
+                    <v-expansion-panel v-if="facility?.rfiApp">
+                      <RFISummary :rfiApp="facility?.rfiApp"></RFISummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <NMFSummary programYear="2023"></NMFSummary>

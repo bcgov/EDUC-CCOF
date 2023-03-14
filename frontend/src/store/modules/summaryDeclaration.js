@@ -91,6 +91,11 @@ export default {
             let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
             summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
             summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
+            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)            
+              summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;            
+            commit('summaryModel', summaryModel);
+            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf) 
+              summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
             commit('summaryModel', summaryModel);
           }
           if (!rootState.app.isRenewal) {
