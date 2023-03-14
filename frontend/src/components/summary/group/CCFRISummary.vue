@@ -1,7 +1,12 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
+    <v-form ref="ccfriSummaryForm" v-model="isValidForm">
     <v-expansion-panel-header>
-      <h4 style="color:#003466;">Child Care Fee Reduction Initiative (CCFRI)</h4>
+      <h4 style="color:#003466;">Child Care Fee Reduction Initiative (CCFRI)
+        <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
+        <v-icon v-if="!isValidForm" color="red" large>mdi-alert-circle-outline</v-icon>
+        <span v-if="!isValidForm" style="color:#D40D19;">CCFRI Information has errors please check - Text TBD</span>
+      </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
     <v-row no-gutters class="d-flex flex-column">
@@ -73,7 +78,7 @@
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="6" class="d-flex justify-start">
               <span class="summary-label">Do you charge parent fees at this facility to any closures on business days (other than statutory holidays)</span>
-              <span class="summary-value-small ml-2">NO</span>
+              <span class="summary-value-small ml-2">{{ this.getClosureFees(this.ccfri.hasClosureFees) }}</span>
             </v-col>
           </v-row>
         </v-col>
@@ -81,17 +86,29 @@
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="6" class="d-flex justify-start">
               <span class="summary-label">Is there any other information about this facility you would like us to know</span>
-              <span class="summary-value-small ml-2">NO</span>
+              <span class="summary-value-small ml-2">{{ this.ccfri.ccfriApplicationNotes }}</span>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
     </v-row>
+      <v-row v-if="!isValidForm" class="d-flex justify-start">
+        <v-col cols="6" lg="4" class="pb-0 pt-0">
+          <v-row  no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
+              <a :href="PATHS.group.orgInfo" > <span style="color:#D40D19; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-expansion-panel-content>
+    </v-form>
   </v-row>
 </template>
 <script>
 import _ from 'lodash';
+import {PATHS} from '@/utils/constants';
+import rules from '@/utils/rules';
 export default {
   props: {
     ccfri: {
@@ -99,9 +116,27 @@ export default {
       required: true
     }
   },
-  computed: {
+  data() {
+    return {
+
+      PATHS,
+      rules,
+      isValidForm: true,
+
+    };
+  },
+  computed:{
     ccfriChildCareTypes() {
       return _.sortBy(this.ccfri?.childCareTypes, 'orderNumber');
+    }
+  },
+  methods: {
+    getClosureFees(value) {
+      if (value === 100000000) {
+        return 'Yes';
+      } else if(value === 100000001) {
+        return 'No';
+      }
     }
   }
 };

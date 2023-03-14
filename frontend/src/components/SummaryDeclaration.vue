@@ -33,7 +33,7 @@
                 <div v-if="this.isFacilitiesAvailable">
                   <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId">
                     <v-expansion-panel v-if="facility?.facilityInfo">
-                      <FacilityInformationSummary :facility-info="facility?.facilityInfo"></FacilityInformationSummary>
+                      <FacilityInformationSummary :facility-info="facility?.facilityInfo" :facility-id="facility.facilityId" :ccfri-status="facility?.ccfri?.ccfriOptInStatus" :ecewe-status="facility?.ecewe?.optInOrOut"></FacilityInformationSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <CCOFSummary :funding="facility.funding"></CCOFSummary>
@@ -49,6 +49,9 @@
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <ECEWESummary :ecewe="facility.ecewe"></ECEWESummary>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                      <UploadedDocumentsSummary :ecewe="facility.ecewe"></UploadedDocumentsSummary>
                     </v-expansion-panel>
                   </div>
                 </div>
@@ -275,7 +278,7 @@ import CCFRISummary from '@/components/summary/group/CCFRISummary';
 import RFISummary from '@/components/summary/group/RFISummary';
 import NMFSummary from '@/components/summary/group/NMFSummary';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary';
-
+import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
 let model = {
   agreeConsentCertify: undefined,
   orgContactName: undefined,
@@ -283,7 +286,7 @@ let model = {
 
 export default {
   components: {
-    OrganizationSummary,
+    OrganizationSummary,UploadedDocumentsSummary,
     NMFSummary, RFISummary, FacilityInformationSummary, CCOFSummary, CCFRISummary, ECEWESummary
   },
   mixins: [alertMixin],
@@ -320,6 +323,8 @@ export default {
       isProcessing: false,
       dialog: false,
       landingPage: PATHS.home,
+      summaryKey:1,
+      summaryModelFacilities: [],
     };
   },
   methods: {
@@ -409,7 +414,7 @@ export default {
     },
   },
   async mounted() {
-
+    this.isProcessing = true;
     await this.loadSummary();
 
     if (!this.unlockDeclaration) {
@@ -440,7 +445,8 @@ export default {
         this.model.declarationAStatus = undefined;
       }
     }
-
+    this.summaryKey = this.summaryKey + 1;
+    this.isProcessing = false;
   },
 };
 </script>
