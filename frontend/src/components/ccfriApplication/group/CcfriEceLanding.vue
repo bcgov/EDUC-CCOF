@@ -1,8 +1,8 @@
 <template>
   <v-container>
-      
+
     <div class="row pt-4 justify-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -12,13 +12,13 @@
     <div class="row pt-4 justify-center">
     <span class="text-h5">Confirm CCFRI participation for each facility.</span>
     </div>
-    
+
     <v-btn
       class = "mx-0 justify-end"
       @click="toggleAll()"
       dark color='#003366'
-      :disabled="applicationStatus === 'SUBMITTED'" 
-      > 
+      :disabled="applicationStatus === 'SUBMITTED'"
+      >
       Opt in All Facilities
     </v-btn>
       <LargeButtonContainer>
@@ -26,7 +26,7 @@
         <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
-        
+
         <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12 " min-width="500px"
           rounded
           tiled
@@ -37,21 +37,21 @@
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
                 <p class="text--primary "><strong> Facility Name: {{facilityName}}</strong></p>
-                <p class="text--primary"> License: {{licenseNumber}}</p>                  
+                <p class="text--primary"> License: {{licenseNumber}}</p>
                 <strong> <p class="text--primary  " >Opt In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
               </v-col>
               <v-col cols="" class="d-flex align-center col-12 col-md-5"
                 v-if="!showOptStatus[index]"
               >
-                
+
                 <v-btn
                 class = "my-10 mx-14 justify-end"
                 @click="toggle(index)"
                 :showOptStatus = "showOptStatus[index]"
-                dark color='#003366' 
+                dark color='#003366'
                 :rules = "rules"
                 :disabled="isReadOnly"
-                > 
+                >
                   UPDATE
                 </v-btn>
               </v-col>
@@ -66,12 +66,12 @@
                     <v-radio
                       label="Opt In"
                       value="1"
-                      
+
                     ></v-radio>
                     <v-radio
                       label="Opt Out"
                       value="0"
-                      
+
                     ></v-radio>
                   </v-radio-group>
                 </v-row>
@@ -80,10 +80,10 @@
           </v-card-text>
         </v-card>
       </v-form>
-      
+
 
       </LargeButtonContainer>
-    
+
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
