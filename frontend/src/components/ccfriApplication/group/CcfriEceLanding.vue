@@ -1,6 +1,5 @@
 <template>
   <v-container>
-
     <div class="row pt-4 justify-center">
     <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
     </div>
@@ -129,7 +128,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus',  'programYearLabel', 'applicationId']),
+    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
 
     isReadOnly(){
