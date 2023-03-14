@@ -15,78 +15,80 @@
         <v-col cols="6" lg="6" class="pb-0 pt-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <span class="summary-label">Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}:</span>
-              <span class="summary-value-small ml-5">{{ ccType.feeFrequency }}</span>
+              <span class="summary-label pt-3" v-if="!!ccType.programYear && !!ccType.childCareCategory">Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}:</span>
+              <v-text-field v-else :value="generateProgYearText(ccType.programYear,ccType.childCareCategory)" class="summary-label" dense flat solo hide-details readonly :rules="rules.required" prefix="Parent Fees" ></v-text-field>
+              <v-text-field :value="ccType.feeFrequency" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
             <v-col cols="12" class="d-flex justify-start">
-              <span class="summary-label">Your <b>highest {{ ccType.feeFrequency.toLowerCase() }} parent fee before CCFRI is applied</b> in every month below. </span>
+              <span v-if="!!ccType.feeFrequency" class="summary-label">Your <b>highest {{ ccType.feeFrequency.toLowerCase() }} parent fee before CCFRI is applied</b> in every month below. </span>
+              <v-text-field v-else :value="ccType.feeFrequency" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Apr:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeApr }}</span>
+              <span class="summary-label pt-3">Apr:</span>
+              <v-text-field :value="ccType.approvedFeeApr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col cols="2" class="d-flex justify-start">
-              <span class="summary-label">May:</span>
-              <span class="summary-value-small ml-1">$${{ ccType.approvedFeeMay }}</span>
+              <span class="summary-label pt-3">May:</span>
+              <v-text-field :value="ccType.approvedFeeMay" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Jun:</span>
-              <span class="summary-value-small ml-1">$${{ ccType.approvedFeeJun }}</span>
+              <span class="summary-label pt-3">Jun:</span>
+              <v-text-field :value="ccType.approvedFeeJun" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Jul:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeJul }}</span>
+              <span class="summary-label pt-3">Jul:</span>
+              <v-text-field :value="ccType.approvedFeeJul" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Aug:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeAug }}</span>
+              <span class="summary-label pt-3">Aug:</span>
+              <v-text-field :value="ccType.approvedFeeAug" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Sep:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeSep }}</span>
+              <span class="summary-label pt-3">Sep:</span>
+              <v-text-field :value="ccType.approvedFeeSep" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Oct:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeOct }}</span>
+              <span class="summary-label pt-3">Oct:</span>
+              <v-text-field :value="ccType.approvedFeeOct" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col cols="2" class="d-flex justify-start">
-              <span class="summary-label">Nov:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeNov }}</span>
+              <span class="summary-label pt-3">Nov:</span>
+              <v-text-field :value="ccType.approvedFeeNov" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Dec:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeDec }}</span>
+              <span class="summary-label pt-3">Dec:</span>
+              <v-text-field :value="ccType.approvedFeeDec" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Jan:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeJan }}</span>
+              <span class="summary-label pt-3">Jan:</span>
+              <v-text-field :value="ccType.approvedFeeJan" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Feb:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeFeb }}</span>
+              <span class="summary-label pt-3">Feb:</span>
+              <v-text-field :value="ccType.approvedFeeFeb" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
             <v-col  cols="2" class="d-flex justify-start">
-              <span class="summary-label">Mar:</span>
-              <span class="summary-value-small ml-1">${{ ccType.approvedFeeMar }}</span>
+              <span class="summary-label pt-3">Mar:</span>
+              <v-text-field :value="ccType.approvedFeeMar" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" prefix="$"></v-text-field>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       </div>
       <v-row class="d-flex justify-start">
-        <v-col cols="6" lg="6" class="pb-0 pt-0">
+        <v-col cols="6" lg="6" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="6" class="d-flex justify-start">
               <span class="summary-label">Do you charge parent fees at this facility to any closures on business days (other than statutory holidays)</span>
-              <span class="summary-value-small ml-2">{{ this.getClosureFees(this.ccfri.hasClosureFees) }}</span>
+              <v-text-field :value="this.getClosureFees(this.ccfri.hasClosureFees)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="6" lg="6" class="pb-0 pt-0">
+        <v-col cols="6" lg="6" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="6" class="d-flex justify-start">
               <span class="summary-label">Is there any other information about this facility you would like us to know</span>
-              <span class="summary-value-small ml-2">{{ this.ccfri.ccfriApplicationNotes }}</span>
+              <v-text-field :value="this.ccfri.ccfriApplicationNotes" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -137,7 +139,19 @@ export default {
       } else if(value === 100000001) {
         return 'No';
       }
-    }
+    },
+    generateProgYearText(programYear,childCareCategory){
+      if(programYear && childCareCategory){
+        return 'Parent Fees '+programYear+': '+childCareCategory+':';
+      }
+      return null;
+    },
+    generateFeeFrequencyText(feeFrequency){
+      if(feeFrequency){
+        return 'Your <b>highest' +feeFrequency.toLowerCase()  +'parent fee before CCFRI is applied</b> in every month below.';
+      }
+      return null;
+    },
   }
 };
 </script>
