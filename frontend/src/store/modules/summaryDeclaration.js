@@ -72,7 +72,7 @@ export default {
         throw error;
       }
     },
-    async loadSummary({ commit, state, rootState }) {
+    async loadSummary({ commit, rootState }) {
       checkSession();
       try {
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + rootState.application.applicationId)).data;
@@ -86,7 +86,8 @@ export default {
           summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
           commit('summaryModel', summaryModel);
         }
-        summaryModel.facilities?.forEach(async (facility, index) =>  {
+        for (const facility of summaryModel.facilities) {
+          const index = summaryModel.facilities.indexOf(facility);
           if (facility.ccfri?.ccfriId) {
             let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
             summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
@@ -102,7 +103,7 @@ export default {
             summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
             commit('summaryModel', summaryModel);
           }
-        });
+        }
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
