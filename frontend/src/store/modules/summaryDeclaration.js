@@ -1,6 +1,6 @@
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
-import { checkSession } from '@/utils/session';
+import {ApiRoutes} from '@/utils/constants';
+import {checkSession} from '@/utils/session';
 
 export default {
   namespaced: true,
@@ -80,30 +80,51 @@ export default {
           organization: undefined,
           application: payload.application,
           facilities: payload.facilities,
+          ecewe:undefined
         };
         commit('summaryModel', summaryModel);
         if (!rootState.app.isRenewal && payload.application?.organizationId) {
           summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
           commit('summaryModel', summaryModel);
+          summaryModel.ecewe = (await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)).data;
+          commit('summaryModel', summaryModel);
         }
+        if (!rootState.app.isRenewal && payload.application?.organizationId) {
+          const config={
+            params: {
+              allFiles: true
+            }
+          };
+          summaryModel['allDocuments'] = (await ApiService.apiAxios.get(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD + '/' + payload.application.applicationId, config)).data;
+          console.info('allDocuments', summaryModel['allDocuments'].length);
+
+        }
+
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
           if (facility.ccfri?.ccfriId) {
             let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
             summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
             summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
-            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)            
-              summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;            
+            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
+              summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
             commit('summaryModel', summaryModel);
-            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf) 
+            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
               summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
             commit('summaryModel', summaryModel);
           }
           if (!rootState.app.isRenewal) {
             summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
             commit('summaryModel', summaryModel);
+            const allDocuments =summaryModel.allDocuments;
+            summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
+            commit('summaryModel', summaryModel);
+
           }
+
+
         }
+        summaryModel.allDocuments = null;
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;

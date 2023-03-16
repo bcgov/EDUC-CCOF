@@ -12,13 +12,13 @@
     <v-expansion-panel-content eager>
       <v-row no-gutters class="d-flex flex-column">
         <v-row class="d-flex justify-start">
-          <v-col cols="8" lg="5" class="pb-0 pt-0">
+          <v-col cols="8" lg="6" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label" >Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span>
               </v-col>
-              <v-col cols="12" class="d-flex justify-start">
-                <v-text-field label="Required" :value="this.legalName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-col class="d-flex justify-start">
+                <v-text-field placeholder="Required" :value="this.summaryModel?.organization?.legalName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -29,11 +29,11 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Organization Mailing Address</span>
               </v-col>
-              <v-col cols="12" class="d-flex justify-start pb-0">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.address1" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
+              <v-col cols="12" class="d-flex justify-start">
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address1" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.address2" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address2" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -43,7 +43,7 @@
                 <span class="summary-label">Organization Contact Name</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.application?.orgContactName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.application?.orgContactName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -53,7 +53,7 @@
                 <span class="summary-label">Position</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.position" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.position" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -68,10 +68,10 @@
                 <span class="summary-label">Postal Code</span>
               </v-col>
               <v-col cols="5" class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.city1" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.city1" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
               <v-col cols="5" class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.postalCode1" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.postalCode1" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -81,7 +81,7 @@
                 <span class="summary-label">Business phone</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.phone" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.phone" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -91,7 +91,7 @@
                 <span class="summary-label">E-mail Address of Signing Authority</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.email" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.email" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -103,7 +103,7 @@
                 <span class="summary-label">Type of Organization</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.application?.organizationProviderType" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.application?.organizationProviderType" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -113,7 +113,7 @@
                 <span class="summary-label">Business BCeID</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.userInfo.userName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.userInfo.userName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -123,7 +123,7 @@
                 <span class="summary-label">Incorporation Number</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field label="Required" class="summary-value" :value="this.summaryModel?.organization?.incNumber" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.incNumber" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -184,8 +184,15 @@ export default {
 
 .summary-value {
   font-size: medium;
-  color: black;
+  color: black !important;
+
 }
+*:disabled {
+  background-color: dimgrey !important;
+  color: red !important;
+  opacity: 1 !important;
+}
+
 >>>.summary-value .v-label {
   color: #ff5252;
   opacity: 1;
@@ -205,7 +212,10 @@ export default {
   font-size: small;
   font-weight: bold
 }
-
+>>>::placeholder {
+  color: red!important;
+  opacity: 1;
+}
 
 
 </style>

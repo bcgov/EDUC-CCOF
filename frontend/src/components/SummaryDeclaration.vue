@@ -10,6 +10,9 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
+      <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+        Text to inform user to sign Declaration at the end of page TBD
+      </v-row>
       <div>
         <v-row class="d-flex justify-center">
           <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -30,6 +33,9 @@
                   <OrganizationSummary :program-year="this.formattedProgramYear"
                                        :summary-model="this.summaryModel"></OrganizationSummary>
                 </v-expansion-panel>
+                <v-expansion-panel>
+                  <ECEWESummary :ecewe="this.summaryModel.ecewe" :ecewe-facility="null" ></ECEWESummary>
+                </v-expansion-panel>
                 <div v-if="this.isFacilitiesAvailable">
                   <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId">
                     <v-expansion-panel v-if="facility?.facilityInfo">
@@ -48,10 +54,10 @@
                       <NMFSummary programYear="2023"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <ECEWESummary :ecewe="facility.ecewe"></ECEWESummary>
+                      <ECEWESummary :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <UploadedDocumentsSummary :ecewe="facility.ecewe"></UploadedDocumentsSummary>
+                      <UploadedDocumentsSummary :documents="facility.documents"></UploadedDocumentsSummary>
                     </v-expansion-panel>
                   </div>
                 </div>
@@ -279,6 +285,7 @@ import RFISummary from '@/components/summary/group/RFISummary';
 import NMFSummary from '@/components/summary/group/NMFSummary';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
+
 let model = {
   agreeConsentCertify: undefined,
   orgContactName: undefined,

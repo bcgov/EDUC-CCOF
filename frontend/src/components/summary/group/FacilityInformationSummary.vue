@@ -5,61 +5,61 @@
     <v-row class="d-flex justify-start" >
       <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
-          <v-col cols="12" class="d-flex justify-start">
+          <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label" >Facility Name</span>
           </v-col>
           <v-col  class="d-flex justify-start">
-            <span  class="summary-value">{{ this.facilityInfo.facilityName }}</span>
+            <v-text-field placeholder="Required" :value="this.facilityInfo.facilityName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
         <v-row  no-gutters class="d-flex justify-start">
-          <v-col cols="12" class="d-flex justify-start">
+          <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label">Facility ID</span>
           </v-col>
           <v-col class="d-flex justify-start">
-            <span  class="summary-value">{{ this.facilityId }}</span>
+            <v-text-field placeholder="Required" :value="this.facilityId" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
-          <v-col cols="12" class="d-flex justify-start">
+          <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label" >Licence Number</span>
           </v-col>
           <v-col  class="d-flex justify-start">
-            <span  class="summary-value">{{ this.facilityInfo?.licenseNumber }}</span>
+            <v-text-field placeholder="Required" :value="this.facilityInfo?.licenseNumber" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
-          <v-col cols="12" class="d-flex justify-start">
+          <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label" >Licence Category</span>
           </v-col>
           <v-col  class="d-flex justify-start">
-            <span  class="summary-value">TBD</span>
+            <v-text-field placeholder="Required" :value="TBD" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
         <v-row  no-gutters class="d-flex justify-start">
-          <v-col cols="12" class="d-flex justify-start">
+          <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label">CCFRI</span>
           </v-col>
           <v-col class="d-flex justify-start">
-            <span  class="summary-value">{{this.getOptInOptOut(this.ccfriStatus)}}</span>
+            <v-text-field placeholder="Required" :value="this.getOptInOptOut(this.ccfriStatus)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
         <v-row  no-gutters class="d-flex justify-start">
-          <v-col cols="12" class="d-flex justify-start">
+          <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label">ECE-WE</span>
           </v-col>
           <v-col class="d-flex justify-start">
-            <span  class="summary-value">{{this.getOptInOptOut(this.eceweStatus)}}</span>
+            <v-text-field placeholder="Required" :value="this.getOptInOptOut(this.eceweStatus)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
@@ -83,7 +83,7 @@
               <span class="summary-label" >Facility Name (as it appears on the Community Care Assisted Living Act Licence)</span>
             </v-col>
             <v-col  class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.facilityName" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo.facilityName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -93,7 +93,7 @@
               <span class="summary-label">Year Facility Began Operation (YYYY)</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.yearBeganOperation" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.yearBeganOperation" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -105,7 +105,7 @@
               <span class="summary-label">Facility Street Address</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.facilityAddress" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.facilityAddress" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -118,10 +118,10 @@
               <span class="summary-label">Position</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.contactName" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.contactName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
             <v-col class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.position" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.position" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -136,10 +136,10 @@
               <span class="summary-label">Postal Code</span>
             </v-col>
             <v-col cols="4" class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.city" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.city" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
             <v-col cols="6" class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.postalCode" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.postalCode" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -152,10 +152,10 @@
               <span class="summary-label">Facility E-mail Address</span>
             </v-col>
             <v-col cols="6" class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.phone" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.phone" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
             <v-col cols="6" class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.email" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.email" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -167,7 +167,7 @@
               <span class="summary-label">Facility Licence Number</span>
             </v-col>
             <v-col cols="10" class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.licenseNumber" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.licenseNumber" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -177,7 +177,7 @@
               <span class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</span>
             </v-col>
             <v-col class="d-flex justify-start">
-              <v-text-field label="Required" :value="this.facilityInfo?.licenseEffectiveDate" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" class="summary-value" :value="this.facilityInfo?.licenseEffectiveDate"  dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -187,7 +187,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="this.route_facility" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
             </v-col>
           </v-row>
         </v-col>
@@ -235,11 +235,13 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
+      legal:null,
+      route_facility: PATHS.group.facInfo+'/'+this.facilityId,
     };
   },
 };
 </script>
-<style>
+<style scoped>
 .summary-label {
   color: grey; font-size: small;
 }
@@ -247,11 +249,12 @@ export default {
   font-size: medium;
   color: black;
 }
->>>.summary-value .v-label {
-  color: red;
+>>>::placeholder {
+  color: #ff5252!important;
   opacity: 1;
 }
 .summary-label-smaller{
   color: grey; font-size: x-small;
 }
+
 </style>
