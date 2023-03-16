@@ -50,8 +50,8 @@
                     <v-expansion-panel v-if="facility?.rfiApp">
                       <RFISummary :rfiApp="facility?.rfiApp"></RFISummary>
                     </v-expansion-panel>
-                    <v-expansion-panel>
-                      <NMFSummary programYear="2023"></NMFSummary>
+                    <v-expansion-panel  v-if="facility?.nmfApp">
+                      <NMFSummary :nmfApp="facility?.nmfApp" programYear="2023"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <ECEWESummary :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
@@ -462,6 +462,11 @@ export default {
 li {
   padding-bottom: 12px;
 }
+
+>>>::placeholder {
+  color: red!important;
+}
+
 
 .card-title {
   color: #003466;

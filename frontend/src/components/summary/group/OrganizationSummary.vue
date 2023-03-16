@@ -17,8 +17,8 @@
               <v-col cols="12" class="d-flex justify-start ml-3 pt-2">
                 <span class="summary-label" >Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span>
               </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.summaryModel?.organization?.legalName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-col cols="12" class="d-flex justify-start">
+                <v-text-field placeholder="Required" :value="this.legalName" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -43,7 +43,7 @@
                 <span class="summary-label">Organization Contact Name</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.application?.orgContactName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="" :value="this.summaryModel?.application?.orgContactName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -197,6 +197,10 @@ export default {
   color: #ff5252;
   opacity: 1;
 }
+
+>>>::placeholder {
+  color: red!important;
+}
 .summary-label-smaller {
   color: grey;
   font-size: x-small;
@@ -212,10 +216,7 @@ export default {
   font-size: small;
   font-weight: bold
 }
->>>::placeholder {
-  color: red!important;
-  opacity: 1;
-}
+
 
 
 </style>
