@@ -120,7 +120,7 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Monday</span>
               </v-col>
-              <v-col cols="1" class="d-flex justify-left">
+              <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.funding?.monday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
@@ -130,7 +130,7 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Tuesday</span>
               </v-col>
-              <v-col cols="1" class="d-flex justify-left">
+              <v-col class="d-flex justify-left">
                 <v-text-field placeholder="Required" :value="this.funding?.tusday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
@@ -140,7 +140,7 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Wednesday</span>
               </v-col>
-              <v-col cols="1" class="d-flex justify-left">
+              <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.funding?.wednesday" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
@@ -150,7 +150,7 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Thursday</span>
               </v-col>
-              <v-col cols="1" class="d-flex justify-left">
+              <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.funding?.thursday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
@@ -160,7 +160,7 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Friday</span>
               </v-col>
-              <v-col cols="1" class="d-flex justify-left">
+              <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.funding?.friday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
@@ -170,9 +170,8 @@
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label">Total</span>
               </v-col>
-              <v-col cols="1" class="d-flex justify-left">
+              <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.calculateTotal()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-                <span class="summary-value">{{ this.calculateTotal() }}</span>
               </v-col>
             </v-row>
           </v-col>

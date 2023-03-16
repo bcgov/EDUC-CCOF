@@ -124,6 +124,7 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
+      route_facility: PATHS.group.facInfo+'/'+this.facilityId,
 
     };
   },
