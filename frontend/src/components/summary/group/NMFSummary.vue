@@ -1,7 +1,12 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
+    <v-form ref="nmfSummaryForm" v-model="isValidForm">
     <v-expansion-panel-header>
-      <h4 style="color:#003466;">NMF</h4>
+      <h4 style="color:#003466;">NMF
+        <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
+        <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+        <span v-if="!isValidForm" style="color:#ff5252;">CCFRI Information has errors please check - Text TBD</span>
+      </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
     <v-row no-gutters class="d-flex flex-column">
@@ -17,7 +22,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-            <v-textarea placeholder="" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+            <v-textarea placeholder="" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details readonly  ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -32,7 +37,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+          <v-textarea placeholder="" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly  ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -47,7 +52,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+          <v-textarea placeholder="" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -57,13 +62,23 @@
               <span class="summary-label pt-3">Please tell us anything else you'd like us to know about how your facility's business case supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding Guidelines.</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-left">
-              <v-textarea placeholder="" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+              <v-textarea placeholder="" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
     </v-row>
+    <v-row v-if="!isValidForm" class="d-flex justify-start">
+        <v-col cols="6" lg="4" class="pb-0 pt-0">
+          <v-row  no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
+              <a :href="PATHS.NMF + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-expansion-panel-content>
+  </v-form>
   </v-row>
 </template>
 <script>
@@ -85,6 +100,10 @@ export default {
       type: String,
       required: true
     },
+    ccfriId: {
+      type: String,
+      required: true
+    },
     nmfApp: {
       type: Object,
       required: true
@@ -93,20 +112,19 @@ export default {
 
 };
 </script>
-<style>
+<style scoped>
 
->>>::placeholder {
-  color: red!important;
-}
 
->>>.summary-value .v-label {
-  color: #ff5252;
-  opacity: 1;
-}
+
 
 .summary-label {
   color: grey;
   font-size: small;
+}
+
+>>>::placeholder {
+  color: #ff5252!important;
+  opacity: 1;
 }
 
 .summary-value {

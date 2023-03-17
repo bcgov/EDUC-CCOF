@@ -51,7 +51,7 @@
                       <RFISummary :rfiApp="facility?.rfiApp"></RFISummary>
                     </v-expansion-panel>
                     <v-expansion-panel  v-if="facility?.nmfApp">
-                      <NMFSummary :nmfApp="facility?.nmfApp" programYear="2023"></NMFSummary>
+                      <NMFSummary :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri.ccfriId" programYear="2023"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <ECEWESummary :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
@@ -466,7 +466,7 @@ li {
 >>>::placeholder {
   color: red!important;
 }
-
+ *
 
 .card-title {
   color: #003466;
