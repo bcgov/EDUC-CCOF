@@ -37,7 +37,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly  ></v-textarea>
+          <v-textarea placeholder="Required" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -52,7 +52,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly ></v-textarea>
+          <v-textarea placeholder="Required" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -62,7 +62,7 @@
               <span class="summary-label pt-3">Please tell us anything else you'd like us to know about how your facility's business case supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding Guidelines.</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-left">
-              <v-textarea placeholder="" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly ></v-textarea>
+              <v-textarea placeholder="Required" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
