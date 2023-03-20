@@ -84,12 +84,12 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="6" lg="6" class="pb-2 pt-2">
+        <v-col cols="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
-            <v-col cols="6" class="d-flex justify-start">
+            
               <span class="summary-label">Is there any other information about this facility you would like us to know</span>
-              <v-text-field placeholder="Required"  :value="this.ccfri.ccfriApplicationNotes" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-            </v-col>
+              <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+            
           </v-row>
         </v-col>
       </v-row>
