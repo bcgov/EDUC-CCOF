@@ -135,6 +135,10 @@ export default {
         throw error;
       }
     },
+    validateCompleteness({ commit, rootState }) {
+      //test if each section is complete,
+      //compare with nav checkboxes.
+    },
   },
 
 };
