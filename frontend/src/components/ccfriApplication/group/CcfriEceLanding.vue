@@ -155,7 +155,7 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']), 
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
@@ -175,7 +175,7 @@ export default {
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
       const radioButtonsIncomplete = Object.values(this.ccfriOptInOrOut).includes(undefined);
-      
+
       let allOptStatusIncomplete = false;
       for (const element of this.navBarList) {
         if (element.ccfriOptInStatus == null){
@@ -183,17 +183,17 @@ export default {
           break;
         }
       }
-    
+
       //if all opt in status is incomplete, disable next button
       if (allOptStatusIncomplete && radioButtonsIncomplete){
         return false;
       }
-      
+
       return this.isValidForm;
     },
     async next() {
       await this.save(false);
-    
+
       let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
 
       //if all facilites are opt OUT, go to ECE WE
@@ -201,7 +201,7 @@ export default {
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
       //if application locked, send to add new fees
-      else if (this.isReadOnly) { 
+      else if (this.isReadOnly) {
         this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
       //if CCFRI is being renewed, go to page that displays fees
@@ -209,17 +209,17 @@ export default {
         this.$router.push({path : `${PATHS.currentFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
       // else go directly to addNewFees page
-      else { 
+      else {
         this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
     },
-     
+
     async save(withAlert) {
       this.processing = true;
       let payload = [];
 
       for (let i = 0; i < this.navBarList.length; i++) {
-      //change this to only send payloads with value chosen --- don't send undefined 
+      //change this to only send payloads with value chosen --- don't send undefined
 
         if (!ccfriOptInOrOut[i]){
           continue;
@@ -228,7 +228,7 @@ export default {
           this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
           payload.push( {
             applicationID : this.applicationId, //CCOF BASE application ID
-            facilityID : this.navBarList[i].facilityId, 
+            facilityID : this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
             ccfriApplicationId: this.navBarList[i].ccfriApplicationId
           });
@@ -237,7 +237,7 @@ export default {
       if (payload.length > 0) {
         try {
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-      
+
           response.data.forEach(item => {
             if (item.ccfriApplicationId) {
               this.navBarList.find(facility => {
@@ -260,7 +260,6 @@ export default {
       }
       this.processing = false;
     },
-  
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
