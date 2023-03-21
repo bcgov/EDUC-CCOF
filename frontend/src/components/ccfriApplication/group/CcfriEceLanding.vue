@@ -1,17 +1,17 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
-    </div>
-    <br>
-    <div class="row pt-4 justify-center">
-    <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
-    </div>
-    <br>
-    <div class="row pt-4 justify-center">
-    <span class="text-h5">Confirm CCFRI participation for each facility.</span>
-    </div>
 
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
+    </div>
+    <br>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+    </div>
+    <br>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Confirm CCFRI participation for each facility.</span>
+    </div>
     <v-btn
       class = "mx-0 justify-end"
       @click="toggleAll()"
@@ -21,6 +21,7 @@
       Opt in All Facilities
     </v-btn>
       <LargeButtonContainer>
+
 
         <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
