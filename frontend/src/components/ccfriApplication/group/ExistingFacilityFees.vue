@@ -22,9 +22,16 @@
           :ripple="false"
           >
             <v-card-text>
+              <p class="text-h5 text--primary text-center" v-if="currentFacility.facilityAccountNumber">
+                Facility ID: {{currentFacility.facilityAccountNumber}}
+              </p>
               <p class="text-h5 text--primary text-center">
                 {{currentFacility.facilityName}}
               </p>
+              <p class="text-h5 text--primary text-center" v-if="currentFacility.licenseNumber">
+                Licence Number: {{currentFacility.licenseNumber}}
+              </p>
+              <br>
               <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
                 Our Records show this facilites' fees for {{previousProgramYearLabel}} are as follows:
