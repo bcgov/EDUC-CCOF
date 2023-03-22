@@ -109,10 +109,9 @@ async function getLicenseCategories(req, res){
     response.data.value.forEach(item => {
       map.set(item['CareType.ccof_childcare_categoryid'], {
         childCareCategoryId: item['CareType.ccof_childcare_categoryid'],
-        // childCareCategoryName: item['CareType.ccof_name'],
-        // licenseCategoryName: item['License.ccof_name'],
         childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['CareType.ccof_name']),
         orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['CareType.ccof_name']),
+        licenseCategoryId: item['_ccof_licensecategory_value'],
       });
     });
     return res.status(HttpStatus.OK).json(Array.from(map.values()));

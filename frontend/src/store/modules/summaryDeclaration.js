@@ -2,6 +2,13 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 
+function parseLicenseCategories(licenseCategories, rootState) {
+  const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
+  const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
+  let categories = lookupCategories.filter(item => uniqueLicenseCategories.includes(item.ccof_license_categoryid)).map(a => a.ccof_name);
+  return categories ? categories.toString() : '';
+}
+
 export default {
   namespaced: true,
   state: {
@@ -104,6 +111,8 @@ export default {
 
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
+          let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+          summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
           if (facility.ccfri?.ccfriId) {
             let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
             summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
@@ -134,10 +143,6 @@ export default {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
       }
-    },
-    validateCompleteness({ commit, rootState }) {
-      //test if each section is complete,
-      //compare with nav checkboxes.
     },
   },
 
