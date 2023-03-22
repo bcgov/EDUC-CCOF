@@ -34,6 +34,7 @@ const FacilityMappings = [
   { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
   { back: 'ccof_facilityreceived_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'accountnumber', front: 'facilityAccountNumber' },
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
@@ -47,7 +48,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_formcomplete', front: 'ccof_formcomplete' },
   { back: 'ccof_feecorrectccfri', front: 'existingFeesCorrect' },
   { back: 'ccof_chargefeeccfri', front: 'hasClosureFees' },
-  
+
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
@@ -399,7 +400,7 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete'}, // false,
   { back: 'ccof_has_rfi', front: 'hasRfi'}, // false,
   { back: 'ccof_unlock_rfi', front: 'unlockRfi'}, // null,
-  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,  
+  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,
 ]
 
 module.exports = {

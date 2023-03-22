@@ -29,20 +29,24 @@
                 </v-col>
               </v-row>
               <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
-                <v-expansion-panel>
-                  <OrganizationSummary :program-year="this.formattedProgramYear"
-                                       :summary-model="this.summaryModel"></OrganizationSummary>
-                </v-expansion-panel>
-                <v-expansion-panel>
-                  <ECEWESummary :ecewe="this.summaryModel.ecewe" :ecewe-facility="null" ></ECEWESummary>
-                </v-expansion-panel>
+                <div v-if="!this.isRenewal" >
+                  <v-expansion-panel>
+                    <OrganizationSummary :program-year="this.formattedProgramYear"
+                                        :summary-model="this.summaryModel">
+                    </OrganizationSummary>
+                  </v-expansion-panel>
+                  <v-expansion-panel>
+                    <ECEWESummary :ecewe="this.summaryModel.ecewe" :ecewe-facility="null" ></ECEWESummary>
+                  </v-expansion-panel>
+                </div>
                 <div v-if="this.isFacilitiesAvailable">
-                  <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId">
+                  <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
                     <v-expansion-panel v-if="facility?.facilityInfo">
                       <FacilityInformationSummary :facility-info="facility?.facilityInfo" :facility-id="facility.facilityId" :ccfri-status="facility?.ccfri?.ccfriOptInStatus" :ecewe-status="facility?.ecewe?.optInOrOut"></FacilityInformationSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <CCOFSummary :funding="facility.funding"></CCOFSummary>
+                      <div v-if="!facility.funding"> </div>
+                      <CCOFSummary v-else :funding="facility.funding"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <CCFRISummary :ccfri="facility.ccfri"></CCFRISummary>
@@ -57,7 +61,8 @@
                       <ECEWESummary :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <UploadedDocumentsSummary :documents="facility.documents"></UploadedDocumentsSummary>
+                      <div v-if="!facility.funding"> </div>
+                      <UploadedDocumentsSummary v-else :documents="facility.documents"></UploadedDocumentsSummary>
                     </v-expansion-panel>
                   </div>
                 </div>
@@ -299,7 +304,7 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapState('app', ['programYearList', 'navBarList']),
+    ...mapState('app', ['programYearList', 'navBarList, ']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
     ...mapState('summaryDeclaration', ['summaryModel']),
@@ -483,6 +488,10 @@ li {
 .summary-value {
   font-size: medium;
   color: black;
+}
+
+.special {
+  margin-top: 5vh !important;
 }
 
 </style>

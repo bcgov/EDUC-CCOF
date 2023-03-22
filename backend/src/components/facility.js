@@ -23,22 +23,22 @@ function buildNewFacilityPayload(req) {
       'ccof_Application@odata.bind': applicationString
     }
   ];
-  
+
   return facility;
 }
 
-function mapFacilityObjectForBack(data) { 
+function mapFacilityObjectForBack(data) {
   let facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
 
-  if (facilityForBack.ccof_facilitystartdate) { 
+  if (facilityForBack.ccof_facilitystartdate) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
 
   if (data.hasReceivedFunding === 'no') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
-  } else if (data.hasReceivedFunding === 'yes') { 
+  } else if (data.hasReceivedFunding === 'yes') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
-  } else if (data.hasReceivedFunding === 'yesFacility') { 
+  } else if (data.hasReceivedFunding === 'yesFacility') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000002;
   } else if (data.hasReceivedFunding) {
     console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
@@ -47,17 +47,17 @@ function mapFacilityObjectForBack(data) {
   return facilityForBack;
 }
 
-function mapFacilityObjectForFront(data) { 
+function mapFacilityObjectForFront(data) {
   if (data.ccof_facilitystartdate) {
     let year = data.ccof_facilitystartdate.split('-')[0];
     data.ccof_facilitystartdate = year;
   }
 
-  if (data.ccof_licensestartdate) { 
+  if (data.ccof_licensestartdate) {
     data.ccof_licensestartdate = data.ccof_licensestartdate.split('T')[0];
   }
 
-  let obj = new MappableObjectForFront(data, FacilityMappings).toJSON(); 
+  let obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
 
   //TODO: map this if it is returned from dynamics
   if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
@@ -66,7 +66,7 @@ function mapFacilityObjectForFront(data) {
     obj.hasReceivedFunding = 'yes';
   } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000002) {
     obj.hasReceivedFunding = 'yesFacility';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram) { 
+  } else if (data.ccof_everreceivedfundingundertheccofprogram) {
     console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
   }
 
@@ -76,17 +76,17 @@ function mapFacilityObjectForFront(data) {
   return obj;
 }
 
-function mapCCFRIObjectForFront(data) { 
-  
-  return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON(); 
+function mapCCFRIObjectForFront(data) {
+
+  return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON();
 }
 
 async function getFacility(req, res) {
   try {
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding'; //+ getMappingString(FacilityMappings);
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
-    
+
     if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
     }
@@ -130,7 +130,7 @@ async function getFacilityChildCareTypes(req, res){
     let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)';
     log.info('operation: ', operation);
     let ccfriData = await getOperation(operation);
-   
+
     let childCareTypes = [];
     // let currentProgramYear;
     ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
@@ -193,7 +193,7 @@ async function getCCFRIClosureDates(ccfriId){
 
     let formattedEndDate = new Date(date.ccof_enddate).toISOString().slice(0, 10);
     // formattedEndDate.toISOString().slice(0, 10);
-    
+
     closureDates.push({
       'closureDateId' : date.ccof_application_ccfri_closureid,
       'startDate' : date.ccof_startdate,

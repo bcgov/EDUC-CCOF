@@ -83,12 +83,15 @@ export default {
           ecewe:undefined
         };
         commit('summaryModel', summaryModel);
+
+        //new app only?
         if (!rootState.app.isRenewal && payload.application?.organizationId) {
           summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
           commit('summaryModel', summaryModel);
           summaryModel.ecewe = (await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)).data;
           commit('summaryModel', summaryModel);
         }
+        //new app only (i think this if block could be part of the one above?)
         if (!rootState.app.isRenewal && payload.application?.organizationId) {
           const config={
             params: {
@@ -97,7 +100,6 @@ export default {
           };
           summaryModel['allDocuments'] = (await ApiService.apiAxios.get(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD + '/' + payload.application.applicationId, config)).data;
           console.info('allDocuments', summaryModel['allDocuments'].length);
-
         }
 
         for (const facility of summaryModel.facilities) {
@@ -113,9 +115,12 @@ export default {
               summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
             commit('summaryModel', summaryModel);
           }
+
+          //jb changed below to work with renewel apps
+          summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
+          commit('summaryModel', summaryModel);
+
           if (!rootState.app.isRenewal) {
-            summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
-            commit('summaryModel', summaryModel);
             const allDocuments =summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
             commit('summaryModel', summaryModel);

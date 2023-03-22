@@ -3,7 +3,7 @@
 <v-card>
   <v-row no-gutters class="d-flex flex-column">
     <v-row class="d-flex justify-start" >
-      <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
+      <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label" >Facility Name</span>
@@ -13,17 +13,18 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
+      <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row  no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label">Facility ID</span>
           </v-col>
           <v-col class="d-flex justify-start">
-            <v-text-field placeholder="Required" :value="this.facilityId" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            <!-- Facility ID is assigned in dynamics, and may not exist as far as I know, so no required is implemented here -- JB -->
+            <v-text-field label="--" :value="this.facilityInfo?.facilityAccountNumber" class="summary-value" dense flat solo hide-details readonly  ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
+      <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label" >Licence Number</span>
@@ -33,17 +34,18 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
+      <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label" >Licence Category</span>
           </v-col>
           <v-col  class="d-flex justify-start">
-            <v-text-field placeholder="Required" :value="TBD" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            <!-- change below value to :value -->
+            <v-text-field placeholder="Required" value="TBD" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
+      <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row  no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label">CCFRI</span>
@@ -53,7 +55,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="5" class="pb-1 pt-1 ml-5">
+      <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row  no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
             <span class="summary-label">ECE-WE</span>
@@ -66,7 +68,8 @@
     </v-row>
   </v-row>
 </v-card>
-    <v-form ref="informationSummaryForm" v-model="isValidForm">
+<!-- JB here to make this work with renewels-->
+    <v-form ref="informationSummaryForm" v-model="isValidForm" v-if="!this.isRenewal">
     <v-expansion-panel-header>
       <h4 style="color:#003466;">Facility Information
       <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
@@ -199,6 +202,7 @@
 <script>
 import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
+import {mapState} from 'vuex';
 
 export default {
   props: {
@@ -218,6 +222,10 @@ export default {
       type: Number,
       required: true
     },
+
+  },
+  computed: {
+    ...mapState('application', ['isRenewal',])
   },
   methods: {
     getOptInOptOut(status) {

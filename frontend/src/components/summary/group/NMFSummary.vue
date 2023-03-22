@@ -22,7 +22,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-            <v-textarea placeholder="" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details readonly  ></v-textarea>
+            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details readonly :rules="rules.required"></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -37,7 +37,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="Required" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+          <v-textarea placeholder="Required"  v-if="this.nmfApp?.lowIncomeFamilies == 'Yes'" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -52,7 +52,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="Required" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+          <v-textarea placeholder="Required" v-if="this.nmfApp?.remoteCommunities == 'Yes'" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">

@@ -9,7 +9,7 @@
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager>
-    <v-row no-gutters class="d-flex flex-column">
+    <v-row v-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
       <div v-for="ccType in ccfriChildCareTypes" :key="ccType?.ccfriId">
       <v-row class="d-flex justify-start">
         <v-col cols="6" lg="6" class="pb-0 pt-2">
@@ -87,12 +87,23 @@
         <v-col cols="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
             
-              <span class="summary-label">Is there any other information about this facility you would like us to know</span>
-              <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+              <span class="summary-label">Is there any other information about this facility you would like us to know?</span>
+              <v-textarea placeholder="" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details readonly  ></v-textarea>
             
           </v-row>
         </v-col>
       </v-row>
+    </v-row>
+    <v-row v-else class="d-flex justify-start">
+      <v-col cols="8" lg="6" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start mt-5 ">
+              <span class="summary-label mr-5">CCFRI Opt In Status: </span>
+              <p class="summary-value-small">Opt Out</p>
+            </v-col>
+          </v-row>
+        </v-col>
+      
     </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
