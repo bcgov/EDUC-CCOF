@@ -41,7 +41,7 @@
           </v-col>
           <v-col  class="d-flex justify-start">
             <!-- change below value to :value -->
-            <v-text-field placeholder="Required" value="TBD" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            <v-text-field :value="this.licenseCategories" class="summary-value" dense flat solo hide-details readonly ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
@@ -222,6 +222,10 @@ export default {
       type: Number,
       required: true
     },
+    licenseCategories: {
+      type: String,
+      required: true,
+    }
 
   },
   mounted() {
