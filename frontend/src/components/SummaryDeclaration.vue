@@ -49,10 +49,10 @@
                       <CCOFSummary v-else :funding="facility.funding"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <CCFRISummary :ccfri="facility.ccfri"></CCFRISummary>
+                      <CCFRISummary :ccfri="facility.ccfri" :ccfriId="facility.ccfri.ccfriId"></CCFRISummary>
                     </v-expansion-panel>
                     <v-expansion-panel v-if="facility?.rfiApp">
-                      <RFISummary :rfiApp="facility?.rfiApp"></RFISummary>
+                      <RFISummary :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri.ccfriId"></RFISummary>
                     </v-expansion-panel>
                     <v-expansion-panel  v-if="facility?.nmfApp">
                       <NMFSummary :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri.ccfriId" programYear="2023"></NMFSummary>

@@ -8,7 +8,7 @@
           <span v-if="!isValidForm" style="color:#D40D19;">RFI has errors please check - Text TBD</span>
         </h4>
       </v-expansion-panel-header>
-      <v-expansion-panel-content>
+      <v-expansion-panel-content eager>
         <v-row no-gutters class="d-flex">
           <v-col class="col-12 pb-0">
             <span class="summary-label-bold">Exceptional Circumstances</span>
@@ -443,24 +443,24 @@
           </v-col>
           <v-col class="col-12" v-if="rfiApp?.underservedPop">
             <v-row no-gutters class="d-flex">
-              
+
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)</span>
                   <v-textarea placeholder="Required" class="col-12 summary-value-small" :value="rfiApp?.underservedChildCareTypes" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
                 </v-row>
-              
-              
+
+
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">How will your fee increase contribute to the overall sustainability of the organization/facility?</span>
                   <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.orgsustainability" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
                 </v-row>
-              
-              
+
+
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?</span>
                   <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.outOfPocketFees" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
                 </v-row>
-              
+
             </v-row>
           </v-col>
         </v-row>
@@ -468,7 +468,7 @@
           <v-col cols="6" lg="4" class="pb-0 pt-0">
             <v-row  no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <a :href="PATHS.group.orgInfo" > <span style="color:#D40D19; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+                <a :href="PATHS.ccfriRequestMoreInfo + '/' + ccfriId " > <span style="color:#D40D19; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
               </v-col>
             </v-row>
           </v-col>
@@ -486,6 +486,10 @@ export default {
   props: {
     rfiApp: {
       type: Object,
+      required: true
+    },
+    ccfriId: {
+      type: String,
       required: true
     },
   },
