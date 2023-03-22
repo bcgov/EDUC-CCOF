@@ -86,10 +86,10 @@
         </v-col>
         <v-col cols="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
-            
+
               <span class="summary-label">Is there any other information about this facility you would like us to know?</span>
               <v-textarea placeholder="" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details readonly  ></v-textarea>
-            
+
           </v-row>
         </v-col>
       </v-row>
@@ -103,13 +103,16 @@
             </v-col>
           </v-row>
         </v-col>
-      
+
     </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
-            <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+            <v-col cols="12" v-if="this.isRenewal" class="d-flex justify-start">
+              <a :href="PATHS.currentFees + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+            </v-col>
+            <v-col cols="12" v-else class="d-flex justify-start">
+              <a :href="PATHS.addNewFees + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
             </v-col>
           </v-row>
         </v-col>
@@ -122,12 +125,19 @@
 import _ from 'lodash';
 import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
+import {mapState} from 'vuex';
+
+
 export default {
   props: {
     ccfri: {
       type: Object,
       required: true
-    }
+    },
+    ccfriId: {
+      type: String,
+      required: true
+    },
   },
   data() {
     return {
@@ -140,9 +150,10 @@ export default {
     };
   },
   computed:{
+    ...mapState('application', ['isRenewal',]),
     ccfriChildCareTypes() {
       return _.sortBy(this.ccfri?.childCareTypes, 'orderNumber');
-    }
+    },
   },
   methods: {
     getClosureFees(value) {
