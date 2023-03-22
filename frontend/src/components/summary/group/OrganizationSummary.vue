@@ -18,7 +18,7 @@
                 <span class="summary-label" >Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.legalName" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" :value="this.summaryModel?.organization?.legalName" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
