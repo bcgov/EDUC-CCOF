@@ -95,6 +95,16 @@ export default {
       isValidForm: true,
     };
   },
+  mounted() {
+    this.$emit('isSummaryValid', 'NMFSummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'NMFSummary', val);
+      },
+    }
+  },
   props: {
     programYear: {
       type: String,

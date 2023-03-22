@@ -93,7 +93,6 @@ export default {
   },
   data() {
     return {
-
       PATHS,
       rules,
       isValidForm: true,
@@ -147,6 +146,16 @@ export default {
       } else {
         return '';
       }
+    }
+  },
+  mounted() {
+    this.$emit('isSummaryValid', 'ECEWESummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'ECEWESummary', val);
+      },
     }
   },
 

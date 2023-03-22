@@ -224,6 +224,17 @@ export default {
     },
 
   },
+  mounted() {
+    this.$emit('isSummaryValid', 'FacilityInformationSummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'FacilityInformationSummary', val);
+      },
+
+    }
+  },
   computed: {
     ...mapState('application', ['isRenewal',])
   },

@@ -303,7 +303,16 @@ export default {
       route_funding:PATHS.group.fundAmount+'/'+this.facilityId,
     };
   },
-
+  mounted() {
+    this.$emit('isSummaryValid', 'CCOFSummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'CCOFSummary', val);
+      },
+    }
+  },
 };
 </script>
 <style scoped>

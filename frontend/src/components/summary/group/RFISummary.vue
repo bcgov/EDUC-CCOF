@@ -500,6 +500,16 @@ export default {
       isValidForm: true,
     };
   },
+  mounted() {
+    this.$emit('isSummaryValid', 'RFISummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'RFISummary', val);
+      },
+    }
+  },
 };
 </script>
 <style scoped>

@@ -29,40 +29,45 @@
                 </v-col>
               </v-row>
               <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
-                <div v-if="!this.isRenewal" >
+                <div v-if="!this.isRenewal">
                   <v-expansion-panel>
-                    <OrganizationSummary :program-year="this.formattedProgramYear"
-                                        :summary-model="this.summaryModel">
+                    <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
+                                         :summary-model="this.summaryModel">
                     </OrganizationSummary>
                   </v-expansion-panel>
                   <v-expansion-panel>
-                    <ECEWESummary :ecewe="this.summaryModel.ecewe" :ecewe-facility="null" ></ECEWESummary>
+                    <ECEWESummary @isSummaryValid="isECEWEOrgFormComplete" :ecewe="this.summaryModel.ecewe" :ecewe-facility="null"></ECEWESummary>
                   </v-expansion-panel>
                 </div>
                 <div v-if="this.isFacilitiesAvailable">
                   <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
                     <v-expansion-panel v-if="facility?.facilityInfo">
-                      <FacilityInformationSummary :facility-info="facility?.facilityInfo" :facility-id="facility.facilityId" :ccfri-status="facility?.ccfri?.ccfriOptInStatus" :ecewe-status="facility?.ecewe?.optInOrOut"></FacilityInformationSummary>
+                      <FacilityInformationSummary :facility-info="facility?.facilityInfo"
+                                                  :facility-id="facility.facilityId"
+                                                  :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
+                                                  :ecewe-status="facility?.ecewe?.optInOrOut"
+                                                  @isSummaryValid="isFormComplete"></FacilityInformationSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <div v-if="!facility.funding"> </div>
-                      <CCOFSummary v-else :funding="facility.funding"></CCOFSummary>
+                      <div v-if="!facility.funding"></div>
+                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <CCFRISummary :ccfri="facility.ccfri" :ccfriId="facility.ccfri.ccfriId"></CCFRISummary>
+                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility.ccfri" :ccfriId="facility.ccfri.ccfriId"></CCFRISummary>
                     </v-expansion-panel>
                     <v-expansion-panel v-if="facility?.rfiApp">
-                      <RFISummary :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri.ccfriId"></RFISummary>
+                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri.ccfriId"></RFISummary>
                     </v-expansion-panel>
-                    <v-expansion-panel  v-if="facility?.nmfApp">
-                      <NMFSummary :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri.ccfriId" programYear="2023"></NMFSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel>
-                      <ECEWESummary :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
+                    <v-expansion-panel v-if="facility?.nmfApp">
+                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri.ccfriId"
+                                  programYear="2023"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <div v-if="!facility.funding"> </div>
-                      <UploadedDocumentsSummary v-else :documents="facility.documents"></UploadedDocumentsSummary>
+                      <ECEWESummary @isSummaryValid="isECEWEFacilityFormComplete" :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                      <div v-if="!facility.funding"></div>
+                      <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete" :documents="facility.documents"></UploadedDocumentsSummary>
                     </v-expansion-panel>
                   </div>
                 </div>
@@ -77,7 +82,7 @@
       <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
         Funding Agreement Number: {{ fundingAgreementNumber }}
       </v-row>
-      <v-row v-if="!canSubmit" justify="center">
+      <v-row v-if="!this.isSummaryComplete" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
@@ -104,7 +109,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="center">
+      <v-row justify="center" >
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
@@ -298,7 +303,7 @@ let model = {
 
 export default {
   components: {
-    OrganizationSummary,UploadedDocumentsSummary,
+    OrganizationSummary, UploadedDocumentsSummary,
     NMFSummary, RFISummary, FacilityInformationSummary, CCOFSummary, CCFRISummary, ECEWESummary
   },
   mixins: [alertMixin],
@@ -325,6 +330,10 @@ export default {
     isFacilitiesAvailable() {
       return this.summaryModel?.facilities?.length > 0;
     },
+    isSummaryComplete() {
+      console.info('isSummaryComplete', this.invalidSummaryForms.length);
+      return (this.invalidSummaryForms.length <1);
+    },
 
   },
   data() {
@@ -335,15 +344,16 @@ export default {
       isProcessing: false,
       dialog: false,
       landingPage: PATHS.home,
-      summaryKey:1,
+      summaryKey: 1,
       summaryModelFacilities: [],
+      invalidSummaryForms: [],
     };
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
     isPageComplete() {
-      if (this.model.agreeConsentCertify && this.model.orgContactName) {
+      if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;
@@ -424,6 +434,26 @@ export default {
       let path = await this.getPreviousPath();
       await this.$router.push(path);
     },
+    isFormComplete(formName, isComplete) {
+      const foundIndex = this.invalidSummaryForms.findIndex(item => item === formName);
+      if (foundIndex>0) {
+        if (isComplete) {
+          this.invalidSummaryForms.splice(foundIndex, 1);
+        }
+      } else {
+        if (!isComplete) {
+          this.invalidSummaryForms.push(formName);
+        }
+      }
+      console.info('isFormComplete', formName, isComplete, this.invalidSummaryForms.length);
+    },
+
+    isECEWEFacilityFormComplete(formName, isComplete) {
+      this.isFormComplete('ECEWEFacilitySummary', isComplete);
+    },
+    isECEWEOrgFormComplete(formName, isComplete) {
+      this.isFormComplete('ECEWEOrgSummary', isComplete);
+    },
   },
   async mounted() {
     this.isProcessing = true;
@@ -468,11 +498,11 @@ li {
   padding-bottom: 12px;
 }
 
->>>::placeholder {
-  color: red!important;
+>>> ::placeholder {
+  color: red !important;
 }
- *
 
+*
 .card-title {
   color: #003466;
   font-size: 20px;

@@ -173,6 +173,15 @@ export default {
   },
   mounted() {
     this.$refs.organizationSummaryForm.validate();
+    this.$emit('isSummaryValid', 'OrganizationSummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'OrganizationSummary', val);
+      },
+
+    }
   },
 };
 </script>

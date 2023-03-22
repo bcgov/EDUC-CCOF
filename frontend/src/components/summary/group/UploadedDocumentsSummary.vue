@@ -66,6 +66,14 @@ export default {
   },
   mounted() {
     this.getSupportingDocuments();
+    this.$emit('isSummaryValid', 'DocumentSummary', this.isValidForm);
+  },
+  watch: {
+    isValidForm: {
+      handler: function (val) {
+        this.$emit('isSummaryValid', 'DocumentSummary', val);
+      },
+    }
   },
   methods: {
     getLicenceDocumentFileName() {
