@@ -39,7 +39,7 @@
       </v-col>
     </v-row>
       <v-row v-if="!facilityInformationExists()" class="d-flex justify-start">
-        <v-col cols="6" lg="4" class="pb-0 pt-0">
+        <v-col v-if="isApplicableSectorRequired(ecewe?.belongsToUnion)" cols="6" lg="4" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Applicable Sector :</span>
@@ -47,7 +47,7 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="6" lg="4" class="pb-0 pt-0">
+        <v-col v-if="isFundingModelRequired(ecewe?.belongsToUnion)" cols="6" lg="4" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Funding model:</span>
@@ -107,6 +107,12 @@ export default {
       }else{
         return null;
       }
+    },
+    isApplicableSectorRequired(value){
+      return value === 1;
+    },
+    isFundingModelRequired(value){
+      return value === 0;
     },
     getSectorValue(value) {
       if (value === 100000001) {
