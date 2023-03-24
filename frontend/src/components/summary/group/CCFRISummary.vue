@@ -9,8 +9,15 @@
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager>
-    <v-row v-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
-      <div v-for="ccType in ccfriChildCareTypes" :key="ccType?.ccfriId">
+    <v-row v-if="!ccfri" >
+      <v-col cols="12" >
+          <span  cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
+          <v-text-field  cols="6" placeholder="Required" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+      </v-col>
+
+    </v-row>
+    <v-row v-else-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
+      <div v-for="ccType in ccfriChildCareTypes" :key="ccType?.ccfri?.ccfriId">
       <v-row class="d-flex justify-start">
         <v-col cols="6" lg="6" class="pb-0 pt-2">
           <v-row no-gutters class="d-flex justify-start">
@@ -95,19 +102,33 @@
         <v-col cols="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
               <span class="summary-label">Is there any other information about this facility you would like us to know?</span>
-              <v-textarea placeholder="" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details readonly  ></v-textarea>
+              <v-textarea label="--" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details no-resize readonly rows="3" ></v-textarea>
           </v-row>
         </v-col>
       </v-row>
     </v-row>
+    <v-row v-else  class="d-flex flex-column">
+      <v-col cols="6" lg="6" class="pb-2 pt-2">
+        <v-row no-gutters class="d-flex justify-start">
+          <v-col cols="6" class="d-flex justify-start">
+        <span cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
+        <v-text-field cols="6"  placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)" class="summary-value " flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+      </v-col>
+      </v-row>
+      </v-col>
+
+    </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
-            <v-col cols="12" v-if="this.isRenewal" class="d-flex justify-start">
-              <a :href="PATHS.currentFees + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+            <v-col cols="12" v-if="!ccfri" class="d-flex justify-start">
+              <a :href="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+            </v-col>
+            <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
+              <a :href="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
             </v-col>
             <v-col cols="12" v-else class="d-flex justify-start">
-              <a :href="PATHS.addNewFees + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.addNewFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
             </v-col>
           </v-row>
         </v-col>
@@ -127,12 +148,9 @@ export default {
   props: {
     ccfri: {
       type: Object,
-      required: true
+      required: false
     },
-    ccfriId: {
-      type: String,
-      required: true
-    },
+
   },
   data() {
     return {

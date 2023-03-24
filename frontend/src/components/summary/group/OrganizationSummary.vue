@@ -43,7 +43,7 @@
                 <span class="summary-label">Organization Contact Name</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" class="" :value="this.summaryModel?.application?.orgContactName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" class="" :value="this.summaryModel?.organization?.contactName" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>

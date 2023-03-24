@@ -4,7 +4,7 @@
       <v-expansion-panel-header>
         <h4 style="color:#003466;">RFI
           <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
-          <v-icon v-if="!isValidForm" color="red" large>mdi-alert-circle-outline</v-icon>
+          <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
           <span v-if="!isValidForm" style="color:#D40D19;">RFI has errors please check - Text TBD</span>
         </h4>
       </v-expansion-panel-header>
@@ -69,7 +69,7 @@
                   <v-col class="col-12">
                     <v-row no-gutters class="d-flex">
                       <span class="summary-label pt-3">Please describe the reason for each expense listed above.</span>
-                      <v-textarea placeholder="Required" class="col-12" :value="rfiApp?.expenseInformationNote" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+                      <v-textarea placeholder="Required" class="col-12" :value="rfiApp?.expenseInformationNote" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
                     </v-row>
                   </v-col>
                 </v-row>
@@ -216,37 +216,37 @@
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">When did your facility's challenges with hiring and keeping staff begin?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small" :value="rfiApp?.textbox1" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small" :value="rfiApp?.textbox1" dense flat solo hide-details readonly no-resize rows="3"  required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">How many Direct Care Staff have left your facility due to wages?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox2" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox2" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">What have you done to try to recruit staff?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox3" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox3" dense flat solo hide-details  no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Have you had to adjust your hours/days of operation?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox4" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox4" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is your facility unable to fill spaces due to insufficient staffing?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox5" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox5" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is there anything else you would like us to know about the wage increase(s)?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox6" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.textbox6" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
             </v-row>
@@ -346,13 +346,13 @@
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Describe each of your expenses above. (e.g. Wages, Utilities)</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.serviceExpansionDetailsNote" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.serviceExpansionDetailsNote" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is there anything else about your change in hours of operation you would like us to know?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.notes2" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.notes2" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
               </v-col>
             </v-row>
@@ -417,7 +417,7 @@
                   <v-col class="col-12">
                     <v-row no-gutters class="d-flex">
                       <span class="summary-label">Is there anything else about your expenses you would like us to know?</span>
-                      <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.iCEIDetailsNote" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                      <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.iCEIDetailsNote" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                     </v-row>
                   </v-col>
                 </v-row>
@@ -446,19 +446,19 @@
 
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">Please describe how the majority of children you provide care for represent an underserved population (e.g. indigenous children, low-income families?)</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small" :value="rfiApp?.underservedChildCareTypes" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small" :value="rfiApp?.underservedChildCareTypes" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
 
 
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">How will your fee increase contribute to the overall sustainability of the organization/facility?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.orgsustainability" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.orgsustainability" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
 
 
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding source). Will any families experience a cost increase, and if so, by how much?</span>
-                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.outOfPocketFees" dense flat solo hide-details  required :rules="rules.required" ></v-textarea>
+                  <v-textarea placeholder="Required" class="col-12 summary-value-small"  :value="rfiApp?.outOfPocketFees" dense flat solo hide-details no-resize rows="3" required :rules="rules.required" ></v-textarea>
                 </v-row>
 
             </v-row>
