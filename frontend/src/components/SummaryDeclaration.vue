@@ -46,6 +46,7 @@
                                                   :facility-id="facility.facilityId"
                                                   :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
                                                   :ecewe-status="facility?.ecewe?.optInOrOut"
+                                                  :license-categories="facility?.licenseCategories"
                                                   @isSummaryValid="isFormComplete"></FacilityInformationSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
