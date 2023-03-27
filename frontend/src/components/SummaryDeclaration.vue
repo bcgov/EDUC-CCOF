@@ -54,13 +54,13 @@
                       <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility.ccfri" :ccfriId="facility.ccfri.ccfriId"></CCFRISummary>
+                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" ></CCFRISummary>
                     </v-expansion-panel>
                     <v-expansion-panel v-if="facility?.rfiApp">
-                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri.ccfriId"></RFISummary>
+                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId"></RFISummary>
                     </v-expansion-panel>
                     <v-expansion-panel v-if="facility?.nmfApp">
-                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri.ccfriId"
+                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId"
                                   programYear="2023"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>

@@ -22,7 +22,7 @@
           </v-row>
         </v-col>
         <v-col cols="10">
-            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details readonly :rules="rules.required"></v-textarea>
+            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details no-resize rows="3" readonly :rules="rules.required"></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -32,12 +32,12 @@
               <span class="summary-label pt-3">Does your facility provide additional services (such as meals or other wrap-around services), to support families experiencing vulnerability and/or underserved populations, such as Indigenous or low-income families?</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-left">
-              <v-text-field placeholder="Required" :value="this.nmfApp?.lowIncomeFamilies" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-text-field placeholder="Required" :value="this.nmfApp?.lowIncomeFamilies" class="" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="Required"  v-if="this.nmfApp?.lowIncomeFamilies == 'Yes'" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+          <v-textarea placeholder="Required"  v-if="this.nmfApp?.lowIncomeFamilies == 'Yes'" :value="this.nmfApp?.lowIncomeFamiliesComments" class="" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -47,12 +47,12 @@
               <span class="summary-label pt-3">Do you provide transportation to/from your facility to support families in rural or remote communities who may not otherwise be able to access child care?</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-start">
-              <v-text-field placeholder="Required" :value="this.nmfApp?.remoteCommunities" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-text-field placeholder="Required" :value="this.nmfApp?.remoteCommunities" class="" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="10">
-          <v-textarea placeholder="Required" v-if="this.nmfApp?.remoteCommunities == 'Yes'" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+          <v-textarea placeholder="Required" v-if="this.nmfApp?.remoteCommunities == 'Yes'" :value="this.nmfApp?.remoteCommunitiesComments" class="" dense flat solo hide-details  no-resize rows="3" readonly :rules="rules.required" ></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -62,7 +62,7 @@
               <span class="summary-label pt-3">Please tell us anything else you'd like us to know about how your facility's business case supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding Guidelines.</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-left">
-              <v-textarea placeholder="Required" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-textarea>
+              <v-textarea placeholder="Required" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
