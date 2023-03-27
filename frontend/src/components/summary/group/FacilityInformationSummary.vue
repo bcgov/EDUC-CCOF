@@ -229,12 +229,13 @@ export default {
 
   },
   mounted() {
-    this.$emit('isSummaryValid', 'FacilityInformationSummary', this.isValidForm);
+
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'FacilityInformationSummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
 
     }
@@ -259,6 +260,10 @@ export default {
       rules,
       isValidForm: true,
       legal:null,
+      formObj:{
+        formName: 'FacilityInformationSummary',
+        formId: this.facilityId,
+      }
     };
   },
 };
