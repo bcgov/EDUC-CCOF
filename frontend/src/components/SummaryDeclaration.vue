@@ -51,7 +51,7 @@
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <div v-if="!facility.funding"></div>
-                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"></CCOFSummary>
+                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"  :facilityId="facility.facilityId"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel>
                       <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" ></CCFRISummary>
@@ -332,7 +332,7 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      console.info('isSummaryComplete', this.invalidSummaryForms.length);
+      //console.info('isSummaryComplete', this.invalidSummaryForms.length);
       return (this.invalidSummaryForms.length <1);
     },
 
@@ -446,7 +446,7 @@ export default {
           this.invalidSummaryForms.push(formName);
         }
       }
-      console.info('isFormComplete', formName, isComplete, this.invalidSummaryForms.length);
+      //console.info('isFormComplete', formName, isComplete, this.invalidSummaryForms.length);
     },
 
     isECEWEFacilityFormComplete(formName, isComplete) {
