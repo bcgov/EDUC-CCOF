@@ -169,16 +169,19 @@ export default {
       rules,
       legalName: null,
       isValidForm: true,
+      formObj:{
+        formName: 'OrganizationSummary',
+      }
     };
   },
   mounted() {
     this.$refs.organizationSummaryForm.validate();
-    this.$emit('isSummaryValid', 'OrganizationSummary', this.isValidForm);
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'OrganizationSummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
 
     }

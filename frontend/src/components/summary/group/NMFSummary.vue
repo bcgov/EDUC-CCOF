@@ -93,15 +93,18 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
+      formObj:{
+        formName: 'NMFSummary',
+      }
     };
   },
   mounted() {
-    this.$emit('isSummaryValid', 'NMFSummary', this.isValidForm);
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'NMFSummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
     }
   },

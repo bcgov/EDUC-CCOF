@@ -352,6 +352,7 @@ export default {
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
+    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsEceweComplete', 'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh']),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
@@ -441,13 +442,13 @@ export default {
 
         if (isComplete) {
           this.invalidSummaryForms.splice(foundIndex, 1);
+         //
         }
       } else {
         if (!isComplete) {
           this.invalidSummaryForms.push(formObj);
         }
       }
-      console.info('isFormComplete', formObj, isComplete, this.invalidSummaryForms.length);
     },
 
     isECEWEFacilityFormComplete(formName, isComplete) {
@@ -462,7 +463,8 @@ export default {
         for(let summaryFormObj of invalidSummaryForms) {
           switch(summaryFormObj.formName){
           case 'FacilityInformationSummary':
-            this.setNavBarFacilityComplete(summaryFormObj.formId,false);
+            console.info('updateNavBarStatus - facility- facilityId', summaryFormObj.formId);
+            this.setNavBarFacilityComplete({ facilityId: summaryFormObj.formId, complete: false });
             break;
           case 'CCOFSummary':
             this.setNavBarFundingComplete(summaryFormObj.formId,false);
@@ -484,6 +486,7 @@ export default {
             break;
           case 'DocumentSummary':
             this.setIsLicenseUploadComplete(false);
+            this.updateLicenseCompleteStatus(false);
             break;
           }
         }

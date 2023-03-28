@@ -96,6 +96,9 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
+      formObj:{
+        formName: 'ECEWESummary',
+      }
     };
   },
   methods:{
@@ -155,12 +158,12 @@ export default {
     }
   },
   mounted() {
-    this.$emit('isSummaryValid', 'ECEWESummary', this.isValidForm);
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'ECEWESummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
     }
   },

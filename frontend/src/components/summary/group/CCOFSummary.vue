@@ -301,15 +301,20 @@ export default {
       rules,
       isValidForm: true,
       route_funding:PATHS.group.fundAmount+'/'+this.facilityId,
+      formObj:{
+        formName: 'CCOFSummary',
+        formId: this.facilityId,
+      }
+
     };
   },
   mounted() {
-    this.$emit('isSummaryValid', 'CCOFSummary', this.isValidForm);
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'CCOFSummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
     }
   },

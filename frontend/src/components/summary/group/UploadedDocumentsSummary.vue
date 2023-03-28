@@ -66,12 +66,12 @@ export default {
   },
   mounted() {
     this.getSupportingDocuments();
-    this.$emit('isSummaryValid', 'DocumentSummary', this.isValidForm);
+    this.$emit('isSummaryValid',this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'DocumentSummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
     }
   },
@@ -107,6 +107,9 @@ export default {
         },
 
       ],
+      formObj:{
+        formName: 'DocumentSummary',
+      }
     };
   }
 

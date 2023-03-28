@@ -159,16 +159,20 @@ export default {
       rules,
       isValidForm: true,
       route_facility: PATHS.group.facInfo+'/'+this.facilityId,
+      formObj:{
+        formName: 'CCFRISummary',
+        formId: this.facilityId,
+      }
 
     };
   },
   mounted() {
-    this.$emit('isSummaryValid', 'CCFRISummary', this.isValidForm);
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'CCFRISummary', val);
+        this.$emit('isSummaryValid', this.formObj, val);
       },
     }
   },

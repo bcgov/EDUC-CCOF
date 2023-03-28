@@ -108,7 +108,7 @@
               <span class="summary-label">Facility Street Address</span>
             </v-col>
             <v-col class="d-flex justify-start">
-               <v-text-field placeholder="Required" :value="this.facilityInfo?.facilityAddress" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+               <v-text-field placeholder="Required" :value="this.legal" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>

@@ -498,15 +498,18 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
+      formObj:{
+        formName: 'RFISummary',
+      }
     };
   },
   mounted() {
-    this.$emit('isSummaryValid', 'RFISummary', this.isValidForm);
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   watch: {
     isValidForm: {
       handler: function (val) {
-        this.$emit('isSummaryValid', 'RFISummary', val);
+        this.$emit('isSummaryValid',this.formObj, val);
       },
     }
   },
