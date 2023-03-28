@@ -285,7 +285,7 @@
 <script>
 
 import {PATHS} from '@/utils/constants';
-import {mapGetters, mapActions, mapState} from 'vuex';
+import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 
 import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
@@ -310,7 +310,7 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapState('app', ['programYearList', 'navBarList, ']),
+    ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
     ...mapState('summaryDeclaration', ['summaryModel']),
@@ -332,7 +332,6 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      //console.info('isSummaryComplete', this.invalidSummaryForms.length);
       return (this.invalidSummaryForms.length <1);
     },
 
@@ -353,6 +352,7 @@ export default {
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
+    ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsEceweComplete', 'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh']),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
@@ -435,18 +435,19 @@ export default {
       let path = await this.getPreviousPath();
       await this.$router.push(path);
     },
-    isFormComplete(formName, isComplete) {
-      const foundIndex = this.invalidSummaryForms.findIndex(item => item === formName);
-      if (foundIndex>0) {
+    isFormComplete(formObj, isComplete) {
+      const foundIndex = this.invalidSummaryForms.findIndex(item => item === formObj);
+      if (foundIndex > -1) {
+
         if (isComplete) {
           this.invalidSummaryForms.splice(foundIndex, 1);
         }
       } else {
         if (!isComplete) {
-          this.invalidSummaryForms.push(formName);
+          this.invalidSummaryForms.push(formObj);
         }
       }
-      //console.info('isFormComplete', formName, isComplete, this.invalidSummaryForms.length);
+      console.info('isFormComplete', formObj, isComplete, this.invalidSummaryForms.length);
     },
 
     isECEWEFacilityFormComplete(formName, isComplete) {
@@ -454,6 +455,40 @@ export default {
     },
     isECEWEOrgFormComplete(formName, isComplete) {
       this.isFormComplete('ECEWEOrgSummary', isComplete);
+    },
+    async updateNavBarStatus(invalidSummaryForms) {
+      console.info('updateNavBarStatus', invalidSummaryForms);
+      if (invalidSummaryForms.length > 0) {
+        for(let summaryFormObj of invalidSummaryForms) {
+          switch(summaryFormObj.formName){
+          case 'FacilityInformationSummary':
+            this.setNavBarFacilityComplete(summaryFormObj.formId,false);
+            break;
+          case 'CCOFSummary':
+            this.setNavBarFundingComplete(summaryFormObj.formId,false);
+            break;
+          case 'ECEWEOrgSummary':
+            this.setIsEceweComplete(false);
+            break;
+          case 'ECEWEFacilitySummary':
+            this.setIsEceweComplete(false);
+            break;
+          case 'CCFRISummary':
+            break;
+          case 'RFISummary':
+            break;
+          case 'NMFSummary':
+            break;
+          case 'OrganizationSummary':
+            this.setIsOrganizationComplete(false);
+            break;
+          case 'DocumentSummary':
+            this.setIsLicenseUploadComplete(false);
+            break;
+          }
+        }
+        await this.forceNavBarRefresh();
+      }
     },
   },
   async mounted() {
@@ -491,6 +526,12 @@ export default {
     this.summaryKey = this.summaryKey + 1;
     this.isProcessing = false;
   },
+  watch: {
+    invalidSummaryForms: async function (newVal) {
+      await this.updateNavBarStatus(newVal);
+    }
+  },
+
 };
 </script>
 
