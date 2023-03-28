@@ -95,6 +95,7 @@ export default {
       isValidForm: true,
       formObj:{
         formName: 'NMFSummary',
+        formId: this.facilityId,
       }
     };
   },
@@ -109,10 +110,6 @@ export default {
     }
   },
   props: {
-    programYear: {
-      type: String,
-      required: true
-    },
     ccfriId: {
       type: String,
       required: true
@@ -120,7 +117,11 @@ export default {
     nmfApp: {
       type: Object,
       required: true
-    }
+    },
+    facilityId: {
+      type: String,
+      required: true
+    },
   },
 
 };

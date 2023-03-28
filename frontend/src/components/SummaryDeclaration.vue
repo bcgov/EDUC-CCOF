@@ -54,14 +54,13 @@
                       <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"  :facilityId="facility.facilityId"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion">
-                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" ></CCFRISummary>
+                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" :facility-id="facility.facilityId"></CCFRISummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
-                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId"></RFISummary>
+                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
-                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId"
-                                  programYear="2023"></NMFSummary>
+                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion">
                       <ECEWESummary @isSummaryValid="isECEWEFacilityFormComplete" :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
@@ -316,7 +315,7 @@ export default {
     ...mapState('organization', ['fundingAgreementNumber']),
     ...mapState('summaryDeclaration', ['summaryModel']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isOrganizationComplete','isLicenseUploadComplete','isEceweComplete']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -354,7 +353,7 @@ export default {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete',  'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh']),
+    ...mapMutations('app', ['setIsLicenseUploadComplete',  'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh',]),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
@@ -468,30 +467,45 @@ export default {
               this.setNavBarFacilityComplete({ facilityId: summaryFormObj.formId, complete: false });
             }
             break;
-
           case 'CCOFSummary':
             if(this.getNavByFundingId(summaryFormObj.formId)?.isCCOFComplete){
               this.setNavBarFundingComplete({fundingId: summaryFormObj.formId, complete: false});
             }
             break;
           case 'ECEWEOrgSummary':
-            this.setIsEceweComplete(false);
+            if(this.isEceweComplete){
+              this.setIsEceweComplete(false);
+            }
             break;
           case 'ECEWEFacilitySummary':
             this.setIsEceweComplete(false);
             break;
           case 'CCFRISummary':
+            if(this.getNavByFacilityId(summaryFormObj.formId)?.isCCFRIComplete){
+              this.getNavByFacilityId(summaryFormObj.formId).isCCFRIComplete = false;
+            }
             break;
           case 'RFISummary':
+            if(this.getNavByFacilityId(summaryFormObj.formId)?.isRfiComplete){
+              this.getNavByFacilityId(summaryFormObj.formId).isRfiComplete = false;
+            }
             break;
           case 'NMFSummary':
+            if(this.getNavByFacilityId(summaryFormObj.formId)?.isNmfComplete){
+              this.getNavByFacilityId(summaryFormObj.formId).isNmfComplete = false;
+            }
             break;
           case 'OrganizationSummary':
-            this.setIsOrganizationComplete(false);
+            if(this.isOrganizationComplete){
+              this.setIsOrganizationComplete(false);
+            }
+
             break;
           case 'DocumentSummary':
-            this.setIsLicenseUploadComplete(false);
-            await this.updateLicenseCompleteStatus(false);
+            if(this.isLicenseUploadComplete){
+              this.setIsLicenseUploadComplete(false);
+              await this.updateLicenseCompleteStatus(false);
+            }
             break;
           }
         }
@@ -515,24 +529,41 @@ export default {
           }
           break;
         case 'ECEWEOrgSummary':
-          this.setIsEceweComplete(true);
+          if(!this.isEceweComplete){
+            this.setIsEceweComplete(true);
+          }
+
           break;
         case 'ECEWEFacilitySummary':
           this.setIsEceweComplete(true);
           break;
         case 'CCFRISummary':
+          if(!this.getNavByFacilityId(formObj.formId)?.isCCFRIComplete){
+            this.getNavByFacilityId(formObj.formId).isCCFRIComplete = true;
+          }
           break;
         case 'RFISummary':
+          if(!this.getNavByFacilityId(formObj.formId)?.isRfiComplete){
+            this.getNavByFacilityId(formObj.formId).isRfiComplete = true;
+          }
           break;
         case 'NMFSummary':
+          if(!this.getNavByFacilityId(formObj.formId)?.isNmfComplete){
+            this.getNavByFacilityId(formObj.formId).isNmfComplete = true;
+          }
           break;
         case 'OrganizationSummary':
-          this.setIsOrganizationComplete(true);
+          if(!this.isOrganizationComplete){
+            this.setIsOrganizationComplete(true);
+          }
           break;
         case 'DocumentSummary':
-          this.setIsLicenseUploadComplete(true);
-          await this.updateLicenseCompleteStatus(true);
-          break;
+          if(!this.isLicenseUploadComplete){
+            this.setIsLicenseUploadComplete(true);
+            await this.updateLicenseCompleteStatus(true);
+            break;
+          }
+
         }
         await this.forceNavBarRefresh();
       }

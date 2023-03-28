@@ -149,7 +149,10 @@ export default {
       type: Object,
       required: false
     },
-
+    facilityId: {
+      type: String,
+      required: true
+    },
   },
   data() {
     return {

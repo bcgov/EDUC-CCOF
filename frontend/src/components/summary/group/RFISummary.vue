@@ -492,6 +492,10 @@ export default {
       type: String,
       required: true
     },
+    facilityId: {
+      type: String,
+      required: true
+    },
   },
   data() {
     return {
@@ -500,6 +504,7 @@ export default {
       isValidForm: true,
       formObj:{
         formName: 'RFISummary',
+        formId: this.facilityId,
       }
     };
   },
