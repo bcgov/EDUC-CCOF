@@ -3,17 +3,13 @@ import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
-  console.log(licenseCategories,  'ORIG');
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
-  console.log('unique LICS', uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
   let categories = lookupCategories.filter(item => uniqueLicenseCategories.includes(item.ccof_license_categoryid)).map(a => a.ccof_name);
   return categories ? categories.toString() : '';
 }
 
 function getProgramYear(selectedGuid, programYearList){
-  console.log(selectedGuid);
-  console.log(programYearList);
   const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
 
   if(!programYear){
@@ -160,7 +156,7 @@ export default {
 
             }
 
-        }
+          }
 
         }
         summaryModel.allDocuments = null;

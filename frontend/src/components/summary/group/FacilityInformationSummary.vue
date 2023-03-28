@@ -68,6 +68,7 @@
     </v-row>
   </v-row>
 </v-card>
+
 <!-- JB here to make this work with renewels-->
     <v-form ref="informationSummaryForm" v-model="isValidForm" v-if="!this.isRenewal">
     <v-expansion-panel-header>
@@ -77,7 +78,7 @@
       <span v-if="!isValidForm" style="color:#ff5252;">Facility Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager variant="accordion">
+    <v-expansion-panel-content eager  >
     <v-row no-gutters class="d-flex flex-column">
       <v-row class="d-flex justify-start">
         <v-col cols="8" lg="6" class="pb-0 pt-0">

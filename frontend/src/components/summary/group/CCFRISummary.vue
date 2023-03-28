@@ -8,7 +8,7 @@
         <span v-if="!isValidForm" style="color:#ff5252;">CCFRI Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager variant="accordion">
+    <v-expansion-panel-content eager  >
     <v-row v-if="!ccfri" >
       <v-col cols="12" >
           <span  cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
@@ -182,7 +182,7 @@ export default {
         let childCareTypesArr = [];
 
         const findChildCareTypes = ((yearToSearch) => {
-          console.log(yearToSearch);
+
           this.ccfri?.childCareLicenses.forEach((category) => {
 
             let found = this.ccfri.childCareTypes.find(searchItem => {
@@ -190,15 +190,12 @@ export default {
             });
 
             if (found){
-              console.log('found');
               childCareTypesArr.push(found);
             }
             else {
               let theCat = _.cloneDeep(category);
               theCat.programYear = yearToSearch.name;
-              console.log(theCat, 'the cat to push');
               childCareTypesArr.push(theCat);
-              //childCareTypesArr[childCareTypesArr.length -1].programYear = yearToSearch.name;
             }
           });
         });
@@ -208,14 +205,10 @@ export default {
 
         //only show last year fees if new app or previous year fees are incorrect
         if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 ){
-          console.log('innnn');
           findChildCareTypes(this.ccfri.prevYear);
         }
-
-        console.log(childCareTypesArr, 'after past year');
-
-
         //_.sortBy(childCareTypesArr, 'orderNumber');
+
         //age group asc
         childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);
 

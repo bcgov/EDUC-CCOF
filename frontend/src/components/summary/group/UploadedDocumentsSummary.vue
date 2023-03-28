@@ -8,7 +8,7 @@
         <span v-if="!isValidForm" style="color:#ff5252;">Organization Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager variant="accordion">
+    <v-expansion-panel-content eager  >
       <v-row no-gutters class="d-flex flex-column">
         <v-row class="d-flex justify-start">
           <v-col cols="6" lg="4" class="pb-0 pt-2">
