@@ -21,7 +21,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple>
+            <v-expansion-panels focusable multiple variant="accordion" >
               <v-row v-if="isProcessing">
                 <v-col>
                   <v-skeleton-loader v-if="isProcessing" :loading="isProcessing"
@@ -30,18 +30,18 @@
               </v-row>
               <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
                 <div v-if="!this.isRenewal">
-                  <v-expansion-panel>
+                  <v-expansion-panel variant="accordion">
                     <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
                                          :summary-model="this.summaryModel">
                     </OrganizationSummary>
                   </v-expansion-panel>
-                  <v-expansion-panel>
+                  <v-expansion-panel variant="accordion">
                     <ECEWESummary @isSummaryValid="isECEWEOrgFormComplete" :ecewe="this.summaryModel.ecewe" :ecewe-facility="null"></ECEWESummary>
                   </v-expansion-panel>
                 </div>
                 <div v-if="this.isFacilitiesAvailable">
                   <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
-                    <v-expansion-panel v-if="facility?.facilityInfo">
+                    <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
                       <FacilityInformationSummary :facility-info="facility?.facilityInfo"
                                                   :facility-id="facility.facilityId"
                                                   :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
@@ -49,24 +49,24 @@
                                                   :license-categories="facility?.licenseCategories"
                                                   @isSummaryValid="isFormComplete"></FacilityInformationSummary>
                     </v-expansion-panel>
-                    <v-expansion-panel>
+                    <v-expansion-panel variant="accordion">
                       <div v-if="!facility.funding"></div>
-                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"></CCOFSummary>
+                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"  :facilityId="facility.facilityId"></CCOFSummary>
                     </v-expansion-panel>
-                    <v-expansion-panel>
+                    <v-expansion-panel variant="accordion">
                       <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" ></CCFRISummary>
                     </v-expansion-panel>
-                    <v-expansion-panel v-if="facility?.rfiApp">
+                    <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
                       <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId"></RFISummary>
                     </v-expansion-panel>
-                    <v-expansion-panel v-if="facility?.nmfApp">
+                    <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
                       <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId"
                                   programYear="2023"></NMFSummary>
                     </v-expansion-panel>
-                    <v-expansion-panel>
+                    <v-expansion-panel variant="accordion">
                       <ECEWESummary @isSummaryValid="isECEWEFacilityFormComplete" :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
                     </v-expansion-panel>
-                    <v-expansion-panel>
+                    <v-expansion-panel variant="accordion">
                       <div v-if="!facility.funding"></div>
                       <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete" :documents="facility.documents"></UploadedDocumentsSummary>
                     </v-expansion-panel>

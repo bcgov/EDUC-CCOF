@@ -9,6 +9,17 @@ function parseLicenseCategories(licenseCategories, rootState) {
   return categories ? categories.toString() : '';
 }
 
+function getProgramYear(selectedGuid, programYearList){
+  const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
+
+  if(!programYear){
+    ///console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
+    throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ';
+  }
+
+  return programYear;
+}
+
 export default {
   namespaced: true,
   state: {
@@ -109,33 +120,43 @@ export default {
           console.info('allDocuments', summaryModel['allDocuments'].length);
         }
 
+        //check for opt out - only call if opt in
         for (const facility of summaryModel.facilities) {
-          const index = summaryModel.facilities.indexOf(facility);
-          let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
-          summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
-          if (facility.ccfri?.ccfriId) {
-            let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
-            summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
-            summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
-            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
-              summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
+
+          if (facility.ccfri.ccfriOptInStatus == 1){
+            const index = summaryModel.facilities.indexOf(facility);
+            let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+            summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+            if (facility.ccfri?.ccfriId) {
+              let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
+              summaryModel.facilities[index].ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
+              summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
+              summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
+              const  ccofProgramYearId = rootState.application.programYearId;
+              const programYearList = rootState.app.programYearList.list;
+              summaryModel.facilities[index].ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
+              summaryModel.facilities[index].ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
+              if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
+
+                summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
+              commit('summaryModel', summaryModel);
+              if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
+                summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
+              commit('summaryModel', summaryModel);
+            }
+
+            //jb changed below to work with renewel apps
+            summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
             commit('summaryModel', summaryModel);
-            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
-              summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
-            commit('summaryModel', summaryModel);
+
+            if (!rootState.app.isRenewal) {
+              const allDocuments =summaryModel.allDocuments;
+              summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
+              commit('summaryModel', summaryModel);
+
+            }
+
           }
-
-          //jb changed below to work with renewel apps
-          summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
-          commit('summaryModel', summaryModel);
-
-          if (!rootState.app.isRenewal) {
-            const allDocuments =summaryModel.allDocuments;
-            summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
-            commit('summaryModel', summaryModel);
-
-          }
-
 
         }
         summaryModel.allDocuments = null;

@@ -8,9 +8,9 @@
         <span v-if="!isValidForm" style="color:#ff5252;">CCOF Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager>
-      <v-row no-gutters class="d-flex flex-column">
-        <v-row class="d-flex justify-start">
+    <v-expansion-panel-content eager  >
+      <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
+        <v-row class="d-flex justify-start ">
           <v-col cols="8" lg="6" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
@@ -264,6 +264,23 @@
         </v-row>
       </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
+        <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
+          <v-row  no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
+
+              <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
+              <a :href="this.PATHS.family.orgInfo" v-if=" !getCCOFBaseFundingGuid() && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="this.PATHS.family.fundAmount + '/' + getCCOFBaseFundingGuid()" v-else-if="getCCOFBaseFundingGuid() && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="this.PATHS.group.fundAmount + '/' + getCCOFBaseFundingGuid()" v-else-if="getCCOFBaseFundingGuid() && this.summaryModel.application.organizationProviderType == 'GROUP'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a> -->
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+
+
+      <!-- <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
@@ -271,7 +288,7 @@
             </v-col>
           </v-row>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-expansion-panel-content>
     </v-form>
   </v-row>
@@ -279,6 +296,7 @@
 <script>
 import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
+import {mapState} from 'vuex';
 
 export default {
   name: 'CCOFSummary',
@@ -286,7 +304,11 @@ export default {
     funding: {
       type: Object,
       required: true
-    }
+    },
+    facilityId: {
+      type: String,
+      required: true
+    },
   },
   methods: {
     calculateTotal() {
@@ -294,6 +316,19 @@ export default {
       total = (this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday);
       return total;
     },
+    getCCOFBaseFundingGuid(){
+      for (const fac of this.navBarList){
+        //console.log(this.facilityId, 'fac ID prop');
+        if (fac.facilityId === this.facilityId){
+          //console.log('!!');
+          return fac.ccofBaseFundingId; //this COULD be undefined, if user has filled nothing and tries to go to decleration so check for undefined above
+        }
+      }
+    },
+  },
+  computed: {
+    ...mapState('summaryDeclaration', ['summaryModel',]),
+    ...mapState('app', ['navBarList',]),
   },
   data() {
     return {
