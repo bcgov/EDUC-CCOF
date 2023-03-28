@@ -8,8 +8,8 @@
         <span v-if="!isValidForm" style="color:#ff5252;">(ECE-WE) Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager>
-    <v-row no-gutters class="d-flex flex-column">
+    <v-expansion-panel-content eager variant="accordion">
+    <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
       <v-row v-if="facilityInformationExists()" class="d-flex justify-start">
         <v-col cols="8" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
@@ -58,7 +58,7 @@
       </v-row>
     </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
-        <v-col cols="6" lg="4" class="pb-0 pt-0">
+        <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <a :href="getRoutingPath()" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>

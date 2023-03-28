@@ -8,8 +8,8 @@
           <span v-if="!isValidForm" style="color:#D40D19;">RFI has errors please check - Text TBD</span>
         </h4>
       </v-expansion-panel-header>
-      <v-expansion-panel-content eager>
-        <v-row no-gutters class="d-flex">
+      <v-expansion-panel-content eager variant="accordion" class="ml-2 mt-2">
+        <v-row no-gutters class="d-flex ">
           <v-col class="col-12 pb-0">
             <span class="summary-label-bold">Exceptional Circumstances</span>
           </v-col>

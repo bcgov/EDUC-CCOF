@@ -8,21 +8,20 @@
         <span v-if="!isValidForm" style="color:#ff5252;">CCFRI Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager>
+    <v-expansion-panel-content eager variant="accordion">
     <v-row v-if="!ccfri" >
       <v-col cols="12" >
           <span  cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
           <v-text-field  cols="6" placeholder="Required" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
       </v-col>
-
     </v-row>
     <v-row v-else-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
-      <div v-for="ccType in ccfriChildCareTypes" :key="ccType?.ccfri?.ccfriId">
+      <div v-for=" (ccType, index) in ccfriChildCareTypes" :key="index">
       <v-row class="d-flex justify-start">
-        <v-col cols="6" lg="6" class="pb-0 pt-2">
+        <v-col cols="6" lg="6" class="pb-1 pt-1 ml-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <span class="summary-label pt-3" v-if="!!ccType.programYear && !!ccType.childCareCategory">Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}:</span>
+              <span class="summary-label pt-3" v-if="!!ccType.programYear && !!ccType.childCareCategory">Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}: </span>
               <v-text-field placeholder="Required"  v-else :value="generateProgYearText(ccType.programYear,ccType.childCareCategory)" class="summary-label" dense flat solo hide-details readonly :rules="rules.required" prefix="Parent Fees" ></v-text-field>
               <v-text-field placeholder="Required"  :value="ccType.feeFrequency" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
@@ -82,7 +81,7 @@
         </v-col>
       </v-row>
       </div>
-      <v-row class="d-flex justify-start">
+      <v-row class="d-flex justify-start ml-0">
         <v-col cols="6" lg="6" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="6" class="d-flex justify-start">
@@ -108,7 +107,7 @@
       </v-row>
     </v-row>
     <v-row v-else  class="d-flex flex-column">
-      <v-col cols="6" lg="6" class="pb-2 pt-2">
+      <v-col cols="6" lg="6" class="pb-2 pt-2 ml-2">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="6" class="d-flex justify-start">
         <span cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
@@ -119,7 +118,7 @@
 
     </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
-        <v-col cols="6" lg="4" class="pb-0 pt-0">
+        <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" v-if="!ccfri" class="d-flex justify-start">
               <a :href="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
@@ -175,7 +174,70 @@ export default {
   computed:{
     ...mapState('application', ['isRenewal',]),
     ccfriChildCareTypes() {
-      return _.sortBy(this.ccfri?.childCareTypes, 'orderNumber');
+
+
+      //if the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
+      //this checks for all licenses available for the facility, and displays what is missing to the user.
+      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses.length){
+        let childCareTypesArr = [];
+
+        const findChildCareTypes = ((yearToSearch) => {
+          console.log(yearToSearch);
+          this.ccfri?.childCareLicenses.forEach((category) => {
+
+            let found = this.ccfri.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == category.childCareCategoryId && searchItem.programYearId == yearToSearch.programYearId);
+            });
+
+            if (found){
+              console.log('found');
+              childCareTypesArr.push(found);
+            }
+            else {
+              let theCat = _.cloneDeep(category);
+              theCat.programYear = yearToSearch.name;
+              console.log(theCat, 'the cat to push');
+              childCareTypesArr.push(theCat);
+              //childCareTypesArr[childCareTypesArr.length -1].programYear = yearToSearch.name;
+            }
+          });
+        });
+
+
+        findChildCareTypes(this.ccfri.currentYear);
+
+        //only show last year fees if new app or previous year fees are incorrect
+        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 ){
+          console.log('innnn');
+          findChildCareTypes(this.ccfri.prevYear);
+        }
+
+        console.log(childCareTypesArr, 'after past year');
+
+
+        //_.sortBy(childCareTypesArr, 'orderNumber');
+        //age group asc
+        childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);
+
+        //sort by program year
+        return  childCareTypesArr.sort((a, b) =>{
+          const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase
+          const nameB = b.programYear.toUpperCase(); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          // names must be equal
+          return 0;
+        });
+
+      }
+      else {
+        return _.sortBy(this.ccfri?.childCareTypes, 'orderNumber');
+      }
+
     },
   },
   methods: {
