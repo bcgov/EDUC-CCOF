@@ -310,6 +310,7 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
+    ...mapGetters('app', ['getNavByFacilityId','getNavByFundingId']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
@@ -353,7 +354,7 @@ export default {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsEceweComplete', 'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh']),
+    ...mapMutations('app', ['setIsLicenseUploadComplete',  'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh']),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
@@ -436,13 +437,13 @@ export default {
       let path = await this.getPreviousPath();
       await this.$router.push(path);
     },
-    isFormComplete(formObj, isComplete) {
+    async isFormComplete(formObj, isComplete) {
       const foundIndex = this.invalidSummaryForms.findIndex(item => item === formObj);
       if (foundIndex > -1) {
 
         if (isComplete) {
           this.invalidSummaryForms.splice(foundIndex, 1);
-         //
+          await this.updateNavBarStatusToComplete(formObj);
         }
       } else {
         if (!isComplete) {
@@ -457,17 +458,21 @@ export default {
     isECEWEOrgFormComplete(formName, isComplete) {
       this.isFormComplete('ECEWEOrgSummary', isComplete);
     },
-    async updateNavBarStatus(invalidSummaryForms) {
+    async updateNavBarStatusToIncomplete(invalidSummaryForms) {
       console.info('updateNavBarStatus', invalidSummaryForms);
       if (invalidSummaryForms.length > 0) {
         for(let summaryFormObj of invalidSummaryForms) {
           switch(summaryFormObj.formName){
           case 'FacilityInformationSummary':
-            console.info('updateNavBarStatus - facility- facilityId', summaryFormObj.formId);
-            this.setNavBarFacilityComplete({ facilityId: summaryFormObj.formId, complete: false });
+            if(this.getNavByFacilityId(summaryFormObj.formId)?.isFacilityComplete){
+              this.setNavBarFacilityComplete({ facilityId: summaryFormObj.formId, complete: false });
+            }
             break;
+
           case 'CCOFSummary':
-            this.setNavBarFundingComplete(summaryFormObj.formId,false);
+            if(this.getNavByFundingId(summaryFormObj.formId)?.isCCOFComplete){
+              this.setNavBarFundingComplete({fundingId: summaryFormObj.formId, complete: false});
+            }
             break;
           case 'ECEWEOrgSummary':
             this.setIsEceweComplete(false);
@@ -486,9 +491,48 @@ export default {
             break;
           case 'DocumentSummary':
             this.setIsLicenseUploadComplete(false);
-            this.updateLicenseCompleteStatus(false);
+            await this.updateLicenseCompleteStatus(false);
             break;
           }
+        }
+        await this.forceNavBarRefresh();
+      }
+    },
+
+    async updateNavBarStatusToComplete(formObj) {
+      console.info('updateNavBarStatusToComplete', formObj);
+      if (formObj) {
+        switch(formObj.formName){
+        case 'FacilityInformationSummary':
+          if(!this.getNavByFacilityId(formObj.formId)?.isFacilityComplete){
+            this.setNavBarFacilityComplete({ facilityId: formObj.formId, complete: true });
+          }
+          break;
+
+        case 'CCOFSummary':
+          if(!this.getNavByFundingId(formObj.formId)?.isCCOFComplete){
+            this.setNavBarFundingComplete({fundingId: formObj.formId, complete: true});
+          }
+          break;
+        case 'ECEWEOrgSummary':
+          this.setIsEceweComplete(true);
+          break;
+        case 'ECEWEFacilitySummary':
+          this.setIsEceweComplete(true);
+          break;
+        case 'CCFRISummary':
+          break;
+        case 'RFISummary':
+          break;
+        case 'NMFSummary':
+          break;
+        case 'OrganizationSummary':
+          this.setIsOrganizationComplete(true);
+          break;
+        case 'DocumentSummary':
+          this.setIsLicenseUploadComplete(true);
+          await this.updateLicenseCompleteStatus(true);
+          break;
         }
         await this.forceNavBarRefresh();
       }
@@ -531,7 +575,7 @@ export default {
   },
   watch: {
     invalidSummaryForms: async function (newVal) {
-      await this.updateNavBarStatus(newVal);
+      await this.updateNavBarStatusToIncomplete(newVal);
     }
   },
 
