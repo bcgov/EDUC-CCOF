@@ -5,7 +5,7 @@
         <h4 style="color:#003466;">RFI
           <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
           <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-          <span v-if="!isValidForm" style="color:#D40D19;">RFI has errors please check - Text TBD</span>
+          <span v-if="!isValidForm" style="color:#ff5252;">RFI has errors please check - Text TBD</span>
         </h4>
       </v-expansion-panel-header>
       <v-expansion-panel-content eager   class="ml-2 mt-2">
