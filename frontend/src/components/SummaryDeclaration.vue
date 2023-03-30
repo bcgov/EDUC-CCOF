@@ -361,6 +361,7 @@ export default {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
+    ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
