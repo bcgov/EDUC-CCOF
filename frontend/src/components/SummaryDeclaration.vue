@@ -21,7 +21,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple variant="accordion" >
+            <v-expansion-panels focusable multiple variant="accordion">
               <v-row v-if="isProcessing">
                 <v-col>
                   <v-skeleton-loader v-if="isProcessing" :loading="isProcessing"
@@ -36,7 +36,8 @@
                     </OrganizationSummary>
                   </v-expansion-panel>
                   <v-expansion-panel variant="accordion">
-                    <ECEWESummary @isSummaryValid="isECEWEOrgFormComplete" :ecewe="this.summaryModel.ecewe" :ecewe-facility="null"></ECEWESummary>
+                    <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
+                                  :ecewe-facility="null"></ECEWESummary>
                   </v-expansion-panel>
                 </div>
                 <div v-if="this.isFacilitiesAvailable">
@@ -51,23 +52,29 @@
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion">
                       <div v-if="!facility.funding"></div>
-                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"  :facilityId="facility.facilityId"></CCOFSummary>
+                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"
+                                   :facilityId="facility.facilityId"></CCOFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion">
-                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" :facility-id="facility.facilityId"></CCFRISummary>
+                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri"
+                                    :facility-id="facility.facilityId"></CCFRISummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
-                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
+                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp"
+                                  :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
-                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
+                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp"
+                                  :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion">
-                      <ECEWESummary @isSummaryValid="isECEWEFacilityFormComplete" :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
+                      <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
+                                    :ecewe-facility="facility.ecewe"></ECEWESummary>
                     </v-expansion-panel>
                     <v-expansion-panel variant="accordion">
                       <div v-if="!facility.funding"></div>
-                      <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete" :documents="facility.documents"></UploadedDocumentsSummary>
+                      <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete"
+                                                :documents="facility.documents"></UploadedDocumentsSummary>
                     </v-expansion-panel>
                   </div>
                 </div>
@@ -109,7 +116,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="center" >
+      <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
@@ -309,13 +316,13 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('app', ['getNavByFacilityId','getNavByFundingId']),
-    ...mapState('app', ['programYearList', 'navBarList']),
+    ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId']),
+    ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
     ...mapState('summaryDeclaration', ['summaryModel']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isOrganizationComplete','isLicenseUploadComplete','isEceweComplete']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -332,7 +339,7 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      return (this.invalidSummaryForms.length <1);
+      return (this.invalidSummaryForms.length < 1);
     },
 
   },
@@ -347,13 +354,17 @@ export default {
       summaryKey: 1,
       summaryModelFacilities: [],
       invalidSummaryForms: [],
+      completedFormDataObj: null,
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
+    ...mapActions('funding', ['updateFundingCompleteStatus']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete',  'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh',]),
+    ...mapActions('facility', ['updateFacilityCompleteStatus']),
+    ...mapActions('organization', ['updateOrganizationCompleteStatus']),
+    ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
@@ -441,8 +452,8 @@ export default {
       if (foundIndex > -1) {
 
         if (isComplete) {
+          this.completedFormDataObj = formObj;
           this.invalidSummaryForms.splice(foundIndex, 1);
-          await this.updateNavBarStatusToComplete(formObj);
         }
       } else {
         if (!isComplete) {
@@ -451,121 +462,215 @@ export default {
       }
     },
 
-    isECEWEFacilityFormComplete(formName, isComplete) {
-      this.isFormComplete('ECEWEFacilitySummary', isComplete);
-    },
-    isECEWEOrgFormComplete(formName, isComplete) {
-      this.isFormComplete('ECEWEOrgSummary', isComplete);
-    },
     async updateNavBarStatusToIncomplete(invalidSummaryForms) {
       console.info('updateNavBarStatus', invalidSummaryForms);
+      const payload = {};
+
       if (invalidSummaryForms.length > 0) {
-        for(let summaryFormObj of invalidSummaryForms) {
-          switch(summaryFormObj.formName){
+        if (!payload.applicationId) {
+          payload['applicationId'] = this.summaryModel?.application?.applicationId;
+        }
+        for (let summaryFormObj of invalidSummaryForms) {
+          switch (summaryFormObj.formName) {
           case 'FacilityInformationSummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isFacilityComplete){
-              this.setNavBarFacilityComplete({ facilityId: summaryFormObj.formId, complete: false });
+            if (this.getNavByFacilityId(summaryFormObj.formId)?.isFacilityComplete) {
+              this.setNavBarFacilityComplete({facilityId: summaryFormObj.formId, complete: false});
+              if (!payload.facilities) {
+                payload['facilities'] = [];
+              }
+              payload.facilities.push({facilityId: summaryFormObj.formId, isFacilityComplete: false});
             }
             break;
           case 'CCOFSummary':
-            if(this.getNavByFundingId(summaryFormObj.formId)?.isCCOFComplete){
+            if (this.getNavByFundingId(summaryFormObj.formId)?.isCCOFComplete) {
               this.setNavBarFundingComplete({fundingId: summaryFormObj.formId, complete: false});
+              if (!payload.fundings) {
+                payload['fundings'] = [];
+              }
+              payload.fundings.push({basefundingId: summaryFormObj.formId, isCCOFComplete: false});
             }
             break;
-          case 'ECEWEOrgSummary':
-            if(this.isEceweComplete){
+          case 'ECEWESummary':
+            if (this.isEceweComplete) {
               this.setIsEceweComplete(false);
+              payload['isEceweComplete'] = false;
+
             }
-            break;
-          case 'ECEWEFacilitySummary':
-            this.setIsEceweComplete(false);
             break;
           case 'CCFRISummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isCCFRIComplete){
-              this.getNavByFacilityId(summaryFormObj.formId).isCCFRIComplete = false;
+            if (this.getNavByCCFRIId(summaryFormObj.formId)?.isCCFRIComplete) {
+              this.getNavByCCFRIId(summaryFormObj.formId).isCCFRIComplete = false;
+              if (!payload.ccfris) {
+                payload['ccfris'] = [];
+              }
+              const findIndex = payload.ccfris.findIndex(item => item.ccfriId === summaryFormObj.formId);
+              if (findIndex > -1) {
+                const item = payload.ccfris[findIndex];
+                item['isCCFRIComplete'] = false;
+              } else {
+                payload.ccfris.push({ccfriId: summaryFormObj.formId, isCCFRIComplete: false});
+              }
             }
             break;
           case 'RFISummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isRfiComplete){
+            if (this.getNavByFacilityId(summaryFormObj.formId)?.isRfiComplete) {
               this.getNavByFacilityId(summaryFormObj.formId).isRfiComplete = false;
+              const ccfriId = this.getNavByFacilityId(summaryFormObj.formId).ccfriApplicationId;
+              if (!payload.ccfris) {
+                payload['ccfris'] = [];
+              }
+              const findIndex = payload.ccfris.findIndex(item => item.ccfriId === ccfriId);
+              if (findIndex > -1) {
+                const item = payload.ccfris[findIndex];
+                item['isRfiComplete'] = false;
+              } else {
+                payload.ccfris.push({ccfriId: ccfriId, isRfiComplete: false});
+              }
             }
             break;
           case 'NMFSummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isNmfComplete){
+            if (this.getNavByFacilityId(summaryFormObj.formId)?.isNmfComplete) {
               this.getNavByFacilityId(summaryFormObj.formId).isNmfComplete = false;
+              const ccfriId = this.getNavByFacilityId(summaryFormObj.formId).ccfriApplicationId;
+              if (!payload.ccfris) {
+                payload['ccfris'] = [];
+              }
+              const findIndex = payload.ccfris.findIndex(item => item.ccfriId === ccfriId);
+              if (findIndex > -1) {
+                const item = payload.ccfris[findIndex];
+                item['isNmfComplete'] = false;
+              } else {
+                payload.ccfris.push({ccfriId: ccfriId, isNmfComplete: false});
+              }
             }
             break;
           case 'OrganizationSummary':
-            if(this.isOrganizationComplete){
+            if (this.isOrganizationComplete) {
               this.setIsOrganizationComplete(false);
+              payload['organizationId'] = summaryFormObj.formId;
+              payload['isOrganizationComplete'] = false;
             }
-
             break;
           case 'DocumentSummary':
-            if(this.isLicenseUploadComplete){
+            if (this.isLicenseUploadComplete) {
               this.setIsLicenseUploadComplete(false);
-              await this.updateLicenseCompleteStatus(false);
+              payload['isLicenseUploadComplete'] = false;
             }
             break;
           }
         }
-        await this.forceNavBarRefresh();
+        const keys = Object.keys(payload);
+        if (keys.length > 1) {
+          await this.updateApplicationStatus(payload);
+          await this.forceNavBarRefresh();
+        }
+
       }
     },
 
     async updateNavBarStatusToComplete(formObj) {
       console.info('updateNavBarStatusToComplete', formObj);
+      const payload = {};
       if (formObj) {
-        switch(formObj.formName){
+        if (!payload.applicationId) {
+          payload['applicationId'] = this.summaryModel?.application?.applicationId;
+        }
+        switch (formObj.formName) {
         case 'FacilityInformationSummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isFacilityComplete){
-            this.setNavBarFacilityComplete({ facilityId: formObj.formId, complete: true });
+          if (!this.getNavByFacilityId(formObj.formId)?.isFacilityComplete) {
+            this.setNavBarFacilityComplete({facilityId: formObj.formId, complete: true});
+            if (!payload.facilities) {
+              payload['facilities'] = [];
+            }
+            payload.facilities.push({facilityId: formObj.formId, isFacilityComplete: true});
           }
           break;
 
         case 'CCOFSummary':
-          if(!this.getNavByFundingId(formObj.formId)?.isCCOFComplete){
+          if (!this.getNavByFundingId(formObj.formId)?.isCCOFComplete) {
             this.setNavBarFundingComplete({fundingId: formObj.formId, complete: true});
+            if (!payload.fundings) {
+              payload['fundings'] = [];
+            }
+            payload.fundings.push({basefundingId: formObj.formId, isCCOFComplete: true});
+
           }
           break;
-        case 'ECEWEOrgSummary':
-          if(!this.isEceweComplete){
+        case 'ECEWESummary':
+          if (!this.isEceweComplete) {
             this.setIsEceweComplete(true);
+            payload['isEceweComplete'] = true;
           }
 
           break;
-        case 'ECEWEFacilitySummary':
-          this.setIsEceweComplete(true);
-          break;
         case 'CCFRISummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isCCFRIComplete){
-            this.getNavByFacilityId(formObj.formId).isCCFRIComplete = true;
+          if (this.getNavByCCFRIId(formObj.formId)?.isCCFRIComplete) {
+            this.getNavByCCFRIId(formObj.formId).isCCFRIComplete = true;
+            if (!payload.ccfris) {
+              payload['ccfris'] = [];
+            }
+            const findIndex = payload.ccfris.findIndex(item => item.ccfriId === formObj.formId);
+            if (findIndex > -1) {
+              const item = payload.ccfris[findIndex];
+              item['isCCFRIComplete'] = false;
+            } else {
+              payload.ccfris.push({ccfriId: formObj.formId, isCCFRIComplete: true});
+            }
           }
           break;
         case 'RFISummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isRfiComplete){
+          if (this.getNavByFacilityId(formObj.formId)?.isRfiComplete) {
             this.getNavByFacilityId(formObj.formId).isRfiComplete = true;
+            const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
+            if (!payload.ccfris) {
+              payload['ccfris'] = [];
+            }
+            const findIndex = payload.ccfris.findIndex(item => item.ccfriId === ccfriId);
+            if (findIndex > -1) {
+              const item = payload.ccfris[findIndex];
+              item['isRfiComplete'] = false;
+            } else {
+              payload.ccfris.push({ccfriId: ccfriId, isRfiComplete: true});
+            }
           }
           break;
         case 'NMFSummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isNmfComplete){
-            this.getNavByFacilityId(formObj.formId).isNmfComplete = true;
+          if (this.getNavByFacilityId(formObj.formId)?.isNmfComplete) {
+            this.getNavByFacilityId(formObj.formId).isNmfComplete = false;
+            const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
+            if (!payload.ccfris) {
+              payload['ccfris'] = [];
+            }
+            const findIndex = payload.ccfris.findIndex(item => item.ccfriId === ccfriId);
+            if (findIndex > -1) {
+              const item = payload.ccfris[findIndex];
+              item['isNmfComplete'] = true;
+            } else {
+              payload.ccfris.push({ccfriId: ccfriId, isNmfComplete: true});
+            }
           }
           break;
         case 'OrganizationSummary':
-          if(!this.isOrganizationComplete){
+          if (!this.isOrganizationComplete) {
             this.setIsOrganizationComplete(true);
+            payload['organizationId'] = formObj.formId;
+            payload['isOrganizationComplete'] = true;
+
           }
           break;
         case 'DocumentSummary':
-          if(!this.isLicenseUploadComplete){
+          if (!this.isLicenseUploadComplete) {
             this.setIsLicenseUploadComplete(true);
-            await this.updateLicenseCompleteStatus(true);
+            payload['isLicenseUploadComplete'] = true;
             break;
           }
 
         }
-        await this.forceNavBarRefresh();
+        const keys = Object.keys(payload);
+        if (keys.length > 1) {
+          await this.updateApplicationStatus(payload);
+          await this.forceNavBarRefresh();
+        }
       }
     },
   },
@@ -606,7 +711,12 @@ export default {
   },
   watch: {
     invalidSummaryForms: async function (newVal) {
-      await this.updateNavBarStatusToIncomplete(newVal);
+      if (this.completedFormDataObj) {
+        await this.updateNavBarStatusToComplete(this.completedFormDataObj);
+        this.completedFormDataObj = null;
+      } else {
+        await this.updateNavBarStatusToIncomplete(newVal);
+      }
     }
   },
 

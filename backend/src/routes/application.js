@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
 const { getRFIMedian, getRFIApplication, createRFIApplication, updateRFIApplication} = require('../components/rfiApplication');
 const { upsertParentFees, updateCCFRIApplication, renewCCOFApplication, getApplicationSummary } = require('../components/application');
-const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication} = require('../components/application');
+const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication,updateStatusForApplicationComponents} = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const { param, validationResult } = require('express-validator');
 
@@ -70,8 +70,8 @@ router.put('/ccfri/nmf/:nmfpfiid', passport.authenticate('jwt', {session: false}
     return updateNMFApplication(req, res);
   });
 
-/* CREATE or UPDATE parent fees for a specified age group and year. 
-  age group and year are defined in the payload   
+/* CREATE or UPDATE parent fees for a specified age group and year.
+  age group and year are defined in the payload
 */
 router.patch('/parentfee', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => {
   //validationResult(req).throw();
@@ -113,6 +113,12 @@ router.get('/summary/:applicationId', passport.authenticate('jwt', {session: fal
   param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
   return getApplicationSummary(req, res);
 });
+
+router.put('/status/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return updateStatusForApplicationComponents(req, res);
+  });
 
 module.exports = router;
 

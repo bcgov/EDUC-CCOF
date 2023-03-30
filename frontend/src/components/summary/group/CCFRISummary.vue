@@ -163,7 +163,7 @@ export default {
       route_facility: PATHS.group.facInfo+'/'+this.facilityId,
       formObj:{
         formName: 'CCFRISummary',
-        formId: this.facilityId,
+        formId: this.ccfri?.ccfriId,
       }
 
     };

@@ -1,13 +1,32 @@
 /* eslint-disable quotes */
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep, getLabelFromValue} = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES } = require('../util/constants');
+const {
+  getOperation,
+  postOperation,
+  patchOperationWithObjectId,
+  deleteOperationWithObjectId,
+  sleep,
+  getLabelFromValue
+} = require('./utils');
+const {
+  CCOF_APPLICATION_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  APPLICATION_STATUS_CODES,
+  CCOF_STATUS_CODES
+} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ECEWEApplicationMappings, ECEWEFacilityMappings, DeclarationMappings, UserProfileCCFRIMappings, ApplicationSummaryMappings, ApplicationSummaryCcfriMappings  } = require('../util/mapping/Mappings');
-const { getCCFRIClosureDates } = require('./facility');
-const { mapFundingObjectForFront } = require('./funding');
+const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
+const {
+  ECEWEApplicationMappings,
+  ECEWEFacilityMappings,
+  DeclarationMappings,
+  UserProfileCCFRIMappings,
+  ApplicationSummaryMappings,
+  ApplicationSummaryCcfriMappings, OrganizationFacilityMappings,CCOFApplicationFundingMapping,OrganizationMappings
+} = require('../util/mapping/Mappings');
+const {getCCFRIClosureDates} = require('./facility');
+const {mapFundingObjectForFront} = require('./funding');
 
 
 async function renewCCOFApplication(req, res) {
@@ -23,7 +42,7 @@ async function renewCCOFApplication(req, res) {
     log.info('Payload for renew is: ', payload.toJSON);
     let applicationGuid = await postOperation('ccof_applications', payload);
     //After the application is created, get the application guid
-    return res.status(HttpStatus.CREATED).json({ applicationId: applicationGuid });
+    return res.status(HttpStatus.CREATED).json({applicationId: applicationGuid});
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -34,11 +53,11 @@ async function renewCCOFApplication(req, res) {
 //creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
-  let retVal= [];
+  let retVal = [];
   try {
-    await Promise.all(body.map(async(facility) => {
+    await Promise.all(body.map(async (facility) => {
       let payload = {
-        'ccof_ccfrioptin' : facility.optInResponse,
+        'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
         'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
       };
@@ -62,7 +81,7 @@ async function updateCCFRIApplication(req, res) {
     })); //end for each
   } catch (e) {
     log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 
   return res.status(HttpStatus.OK).json(retVal);
@@ -80,11 +99,11 @@ async function upsertParentFees(req, res) {
 
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
-  body.forEach(async(feeGroup) => {
+  body.forEach(async (feeGroup) => {
 
     //only call the delete API if there is a GUID acossciated to that child care category fee group
-    if (feeGroup?.deleteMe && feeGroup?.parentFeeGUID ){
-      
+    if (feeGroup?.deleteMe && feeGroup?.parentFeeGUID) {
+
       try {
         let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
         log.info('delete feeGroup res:', response);
@@ -95,9 +114,7 @@ async function upsertParentFees(req, res) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
         //theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       }
-    }
-
-    else if (feeGroup?.feeFrequency ){
+    } else if (feeGroup?.feeFrequency) {
 
       let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
       let programYear = `/ccof_program_years(${feeGroup.programYear})`;
@@ -106,34 +123,34 @@ async function upsertParentFees(req, res) {
       // log.info(feeGroup.ccfriApplicationGuid);
 
       let payload = {
-        "ccof_frequency": feeGroup.feeFrequency,
-        "ccof_ChildcareCategory@odata.bind": childCareCategory,
-        "ccof_ProgramYear@odata.bind": programYear,
+        'ccof_frequency': feeGroup.feeFrequency,
+        'ccof_ChildcareCategory@odata.bind': childCareCategory,
+        'ccof_ProgramYear@odata.bind': programYear,
       };
 
       Object.assign(payload,
         {
-          "ccof_apr": feeGroup.aprFee,
-          "ccof_may": feeGroup.mayFee,
-          "ccof_jun": feeGroup.junFee,
-          "ccof_jul": feeGroup.julFee,
-          "ccof_aug": feeGroup.augFee,
-          "ccof_sep": feeGroup.sepFee,
-          "ccof_oct": feeGroup.octFee,
-          "ccof_nov": feeGroup.novFee,
-          "ccof_dec": feeGroup.decFee,
-          "ccof_jan": feeGroup.janFee,
-          "ccof_feb": feeGroup.febFee,
-          "ccof_mar": feeGroup.marFee,
+          'ccof_apr': feeGroup.aprFee,
+          'ccof_may': feeGroup.mayFee,
+          'ccof_jun': feeGroup.junFee,
+          'ccof_jul': feeGroup.julFee,
+          'ccof_aug': feeGroup.augFee,
+          'ccof_sep': feeGroup.sepFee,
+          'ccof_oct': feeGroup.octFee,
+          'ccof_nov': feeGroup.novFee,
+          'ccof_dec': feeGroup.decFee,
+          'ccof_jan': feeGroup.janFee,
+          'ccof_feb': feeGroup.febFee,
+          'ccof_mar': feeGroup.marFee,
         }
       );
-      let url =  `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
+      let url = `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
         let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-        theResponse.push( res.status(HttpStatus.CREATED).json(response));
+        theResponse.push(res.status(HttpStatus.CREATED).json(response));
       } catch (e) {
         //log.info(e);
-        theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+        theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
         hasError = true;
       }
     }
@@ -141,14 +158,14 @@ async function upsertParentFees(req, res) {
 
 
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
-  //so body[0].notes will always exist 
-  
+  //so body[0].notes will always exist
+
   let payload = {
-    "ccof_informationccfri" : body[0].notes,
-    "ccof_formcomplete" : body[0].ccof_formcomplete,
-    "ccof_has_rfi" : body[0].ccof_has_rfi,
-    "ccof_feecorrectccfri": body[0].existingFeesCorrect,
-    "ccof_chargefeeccfri": body[0].hasClosureFees
+    'ccof_informationccfri': body[0].notes,
+    'ccof_formcomplete': body[0].ccof_formcomplete,
+    'ccof_has_rfi': body[0].ccof_has_rfi,
+    'ccof_feecorrectccfri': body[0].existingFeesCorrect,
+    'ccof_chargefeeccfri': body[0].hasClosureFees
   };
 
   log.info(body[0].hasClosureFees);
@@ -157,11 +174,11 @@ async function upsertParentFees(req, res) {
     log.info('notesRes', response);
     theResponse.push(res.status(HttpStatus.CREATED).json(response));
   } catch (e) {
-    theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+    theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
     hasError = true;
   }
 
-  //dates array will always exist - even if blank. 
+  //dates array will always exist - even if blank.
   //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
   log.info(body[0].facilityClosureDates);
   try {
@@ -169,7 +186,7 @@ async function upsertParentFees(req, res) {
     //log.info('datesRes', response);
     theResponse.push(res.status(HttpStatus.CREATED).json(response));
   } catch (e) {
-    theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
+    theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
     hasError = true;
   }
 
@@ -180,60 +197,60 @@ async function upsertParentFees(req, res) {
   }
 }
 
-function formatTimeForBack(timeString){
+function formatTimeForBack(timeString) {
   if (timeString) {
-    return timeString +'T12:00:00-07:00';
+    return timeString + 'T12:00:00-07:00';
   }
   return timeString;
 }
 
 
-async function postClosureDates(dates, ccfriApplicationGuid, res){
-  let retVal= [];
+async function postClosureDates(dates, ccfriApplicationGuid, res) {
+  let retVal = [];
 
   //delete all the old closure dates from the application - otherwise we will get duplicates when we save
   let dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
 
   //don't bother trying to delete if there are no dates saved
-  if (dynamicsClosureDates.length > 0){
-    try{
+  if (dynamicsClosureDates.length > 0) {
+    try {
       await Promise.all(dynamicsClosureDates.map(async (date) => {
         await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
         //log.info(response);
       }));
-    }catch (e){
+    } catch (e) {
       log.info('something broke when deleting existing closure dates.');
       log.info(e);
       //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
   }
 
-  try{
+  try {
     //if the user selects an end date, create a start and end date. else, use the only date for start and end.
     await Promise.all(dates.map(async (date) => {
 
       let payload = {
-        "ccof_startdate": formatTimeForBack(date.formattedStartDate),
-        "ccof_paidclosure": date.feesPaidWhileClosed,
-        "ccof_enddate": date.formattedEndDate? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
-        "ccof_comment": date.closureReason,
-        "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${ccfriApplicationGuid})`
+        'ccof_startdate': formatTimeForBack(date.formattedStartDate),
+        'ccof_paidclosure': date.feesPaidWhileClosed,
+        'ccof_enddate': date.formattedEndDate ? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
+        'ccof_comment': date.closureReason,
+        'ccof_ApplicationCCFRI@odata.bind': `/ccof_applicationccfris(${ccfriApplicationGuid})`
       };
       let response = await postOperation('ccof_application_ccfri_closures', payload);
       retVal.push(response);
-      
+
     }));
     return retVal;
-  } catch (e){
+  } catch (e) {
     log.info(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 
 async function getECEWEApplication(req, res) {
   try {
-    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
+    let operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
     let eceweApp = await getOperation(operation);
     eceweApp = new MappableObjectForFront(eceweApp, ECEWEApplicationMappings);
     let forFrontFacilities = [];
@@ -250,7 +267,7 @@ async function updateECEWEApplication(req, res) {
   let application = req.body;
   application = new MappableObjectForBack(application, ECEWEApplicationMappings);
   application = application.toJSON();
-  application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin==0)?null:application.ccof_ecewe_employeeunion;
+  application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin == 0) ? null : application.ccof_ecewe_employeeunion;
   try {
     log.verbose('updateECEWEApplication: payload', application);
     let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
@@ -270,8 +287,8 @@ async function updateECEWEFacilityApplication(req, res) {
   try {
     for (let key in forBackFacilities) {
       // add join attributes for application and facility
-      forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications('+req.params.applicationId+')';
-      forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts('+forBackFacilities[key]._ccof_facility_value+')';
+      forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications(' + req.params.applicationId + ')';
+      forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts(' + forBackFacilities[key]._ccof_facility_value + ')';
       eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
       // remove attributes that are already used in payload join (above) and not needed.
       delete forBackFacilities[key].ccof_applicationeceweid;
@@ -280,7 +297,7 @@ async function updateECEWEFacilityApplication(req, res) {
       let facility = forBackFacilities[key];
       if (eceweApplicationId) {
         // send PATCH (update existing ECEWE facility)
-        response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId , facility);
+        response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId, facility);
       } else {
         // send POST (create a new ECEWE facility)
         let operation = 'ccof_applicationecewes';
@@ -297,7 +314,7 @@ async function updateECEWEFacilityApplication(req, res) {
 /* Get the user declaration for a given application id. */
 async function getDeclaration(req, res) {
   try {
-    let operation = 'ccof_applications('+req.params.applicationId+')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
+    let operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
     let declaration = await getOperation(operation);
     declaration = new MappableObjectForFront(declaration, DeclarationMappings);
     return res.status(HttpStatus.OK).json(declaration);
@@ -337,11 +354,77 @@ async function submitApplication(req, res) {
 function getFacilityInMap(map, facilityId) {
   let facility = map.get(facilityId);
   if (!facility) {
-    facility = { facilityId: facilityId};
+    facility = {facilityId: facilityId};
     map.set(facilityId, facility);
   }
   return facility;
 }
+
+async function updateStatusForApplicationComponents(req, res) {
+  const promises = [];
+  let request = req.body;
+  try {
+    if (request.organizationId && request.isOrganizationComplete !== null && request.isOrganizationComplete !== undefined) {
+      let organizationReq = {
+        isOrganizationComplete: request.isOrganizationComplete
+      };
+      organizationReq = (new MappableObjectForBack(organizationReq, OrganizationMappings)).toJSON();
+      promises.push(patchOperationWithObjectId('accounts', request.organizationId, organizationReq));
+    }
+
+    if (request.applicationId && ((request.isEceweComplete !== null && request.isEceweComplete !== undefined ) || ( request.isLicenseUploadComplete !== null && request.isLicenseUploadComplete !== undefined))) {
+      let applicationReq = {
+        isEceweComplete: request.isEceweComplete,
+        isLicenseUploadComplete: request.isLicenseUploadComplete
+      };
+      applicationReq = (new MappableObjectForBack(applicationReq, ECEWEApplicationMappings)).toJSON();
+      promises.push(patchOperationWithObjectId('ccof_applications', req.params.applicationId, applicationReq));
+    }
+    if (request.facilities) {
+      for (let facility of request.facilities) {
+        if (facility.facilityId && facility.isFacilityComplete !== null && facility.isFacilityComplete !== undefined) {
+          let facilityReq = {
+            isFacilityComplete: facility.isFacilityComplete
+          };
+          facilityReq = (new MappableObjectForBack(facilityReq, OrganizationFacilityMappings)).toJSON();
+          promises.push(patchOperationWithObjectId('accounts', facility.facilityId, facilityReq));
+        }
+      }
+    }
+    if (request.fundings) {
+      for (let funding of request.fundings) {
+        if (funding.basefundingId && funding.isCCOFComplete !== null && funding.isCCOFComplete !== undefined) {
+          let ccofBaseFundingReq = {
+            isCCOFComplete: funding.isCCOFComplete
+          };
+          ccofBaseFundingReq = (new MappableObjectForBack(ccofBaseFundingReq, CCOFApplicationFundingMapping)).toJSON();
+          promises.push(patchOperationWithObjectId('ccof_application_basefundings', funding.basefundingId, ccofBaseFundingReq));
+        }
+      }
+    }
+    if (request.ccfris) {
+      for (let ccfri of request.ccfris) {
+        if (ccfri.ccfriId && ((ccfri.isCCFRIComplete !== null && ccfri.isCCFRIComplete !== undefined) || (ccfri.isNmfComplete !== null && ccfri.isNmfComplete !== undefined) || (ccfri.isRfiComplete !== null && ccfri.isRfiComplete !== undefined))) {
+          let ccfriApplicationReq = {
+            isCCFRIComplete: ccfri.isCCFRIComplete,
+            isNmfComplete: ccfri.isNmfComplete,
+            isRfiComplete: ccfri.isRfiComplete
+          };
+          ccfriApplicationReq = (new MappableObjectForBack(ccfriApplicationReq, UserProfileCCFRIMappings)).toJSON();
+          promises.push(await patchOperationWithObjectId('ccof_applicationccfris', ccfri.ccfriId, ccfriApplicationReq));
+        }
+      }
+    }
+    const results = await Promise.all(promises); // array of promise resolution.
+    for (const result of results) {
+      result.status === 'rejected' ? console.error(result.reason) : console.info(result.value);
+    }
+    return res.sendStatus(HttpStatus.OK);
+  }catch (e){
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 
 async function getApplicationSummary(req, res) {
   try {
@@ -359,20 +442,23 @@ async function getApplicationSummary(req, res) {
     results.ccof_applicationccfri_Application_ccof_ap?.forEach(ccfri => {
       const mappedCCFRI = new MappableObjectForFront(ccfri, ApplicationSummaryCcfriMappings).data;
       getFacilityInMap(facilityMap, mappedCCFRI.facilityId).ccfri = mappedCCFRI;
-    })
+    });
 
     //map ECE-WE
     results.ccof_ccof_application_ccof_applicationecewe_application?.forEach(ecewe => {
       const mappedEcewe = new MappableObjectForFront(ecewe, ECEWEFacilityMappings).data;
       getFacilityInMap(facilityMap, mappedEcewe.facilityId).ecewe = mappedEcewe;
-    })
+    });
 
     //map CCOF Base funding if it exists
     results.ccof_application_basefunding_Application?.forEach(baseFunding => {
       const mappedBaseFunding = mapFundingObjectForFront(baseFunding);
       getFacilityInMap(facilityMap, mappedBaseFunding.facilityId).funding = mappedBaseFunding;
     });
-    return res.status(HttpStatus.OK).json({ application: applicationSummary, facilities: Array.from( facilityMap.values() ) });
+    return res.status(HttpStatus.OK).json({
+      application: applicationSummary,
+      facilities: Array.from(facilityMap.values())
+    });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -404,4 +490,5 @@ module.exports = {
   getDeclaration,
   submitApplication,
   getApplicationSummary,
+  updateStatusForApplicationComponents
 };

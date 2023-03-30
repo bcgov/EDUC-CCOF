@@ -335,10 +335,9 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
-      route_funding:PATHS.group.fundAmount+'/'+this.facilityId,
       formObj:{
         formName: 'CCOFSummary',
-        formId: this.facilityId,
+        formId: this.funding?.ccofBaseFundingId,
       }
 
     };

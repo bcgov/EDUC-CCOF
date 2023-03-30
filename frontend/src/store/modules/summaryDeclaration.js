@@ -165,6 +165,18 @@ export default {
         throw error;
       }
     },
+
+    async updateApplicationStatus({ commit, rootState },applicationObj) {
+      checkSession();
+      try {
+        console.log('Updating Application Status',applicationObj);
+        await ApiService.apiAxios.put('/api/application/status/'  + applicationObj.applicationId, applicationObj);
+      } catch (error) {
+        console.log(`Failed to update application status - ${error}`);
+        throw error;
+      }
+
+    }
   },
 
 };
