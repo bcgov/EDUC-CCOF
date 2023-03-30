@@ -37,11 +37,11 @@
       <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ml-3">
-            <span class="summary-label" >Licence Category</span>
+            <span class="summary-label" >Licence Categories</span>
           </v-col>
           <v-col  class="d-flex justify-start">
             <!-- change below value to :value -->
-            <v-text-field :value="this.licenseCategories" class="summary-value" dense flat solo hide-details readonly ></v-text-field>
+            <v-textarea :value="this.licenseCategories" class="summary-value" dense flat solo hide-details readonly no-resize rows="3"></v-textarea>
           </v-col>
         </v-row>
       </v-col>
@@ -230,7 +230,7 @@ export default {
     },
     licenseCategories: {
       type: String,
-      required: true,
+      required: false,
     }
 
 

@@ -26,7 +26,8 @@ export default {
     isValidForm: undefined,
     model: {},
     summaryModel: {},
-
+    isSummaryLoading: [],
+    isMainLoading: true,
   },
   getters: {
     isCCFRIComplete: (state) => {
@@ -55,6 +56,12 @@ export default {
     },
     summaryModel(state, value) {
       state.summaryModel = value;
+    },
+    isSummaryLoading(state, value) {
+      state.isSummaryLoading = value;
+    },
+    isMainLoading(state, value) {
+      state.isMainLoading = value;
     },
     isValidForm(state, value) {
       state.isValidForm = value;
@@ -93,6 +100,7 @@ export default {
     async loadSummary({ commit, rootState }) {
       checkSession();
       try {
+        commit('isMainLoading', true);
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + rootState.application.applicationId)).data;
         let summaryModel = {
           organization: undefined,
@@ -100,7 +108,15 @@ export default {
           facilities: payload.facilities,
           ecewe:undefined
         };
+        //TODO: add the following variables to each of the facilities object:  isNMFLoading = true, isRFILoading = true
+
         commit('summaryModel', summaryModel);
+        commit('isMainLoading', false);
+
+
+        let isSummaryLoading = new Array (payload.facilities.length).fill(true);
+
+        await commit('isSummaryLoading', isSummaryLoading );
 
         //new app only?
         if (!rootState.app.isRenewal && payload.application?.organizationId) {
@@ -120,11 +136,16 @@ export default {
           console.info('allDocuments', summaryModel['allDocuments'].length);
         }
 
-        //check for opt out - only call if opt in
-        for (const facility of summaryModel.facilities) {
 
-          if (facility.ccfri.ccfriOptInStatus == 1){
-            const index = summaryModel.facilities.indexOf(facility);
+        for (const facility of summaryModel.facilities) {
+          const index = summaryModel.facilities.indexOf(facility);
+          commit('summaryModel', summaryModel);
+
+
+
+          //check for opt out - only call API  if opt in
+          if (facility.ccfri?.ccfriOptInStatus == 1){
+
             let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
             summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
             if (facility.ccfri?.ccfriId) {
@@ -142,23 +163,33 @@ export default {
               commit('summaryModel', summaryModel);
               if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
                 summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
+                //summaryModel.faciliities[index].isNMFLoading=false
               commit('summaryModel', summaryModel);
-            }
-
-            //jb changed below to work with renewel apps
-            summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
-            commit('summaryModel', summaryModel);
-
-            if (!rootState.app.isRenewal) {
-              const allDocuments =summaryModel.allDocuments;
-              summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
-              commit('summaryModel', summaryModel);
-
             }
 
           }
 
-        }
+          //jb changed below to work with renewel apps
+          summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
+          commit('summaryModel', summaryModel);
+
+          if (!rootState.app.isRenewal) {
+            const allDocuments =summaryModel.allDocuments;
+            summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
+            commit('summaryModel', summaryModel);
+
+          }
+
+
+
+          isSummaryLoading.splice(index, 1, false);
+          await commit('isSummaryLoading', isSummaryLoading );
+
+
+
+
+        } // end FOR loop
+
         summaryModel.allDocuments = null;
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);

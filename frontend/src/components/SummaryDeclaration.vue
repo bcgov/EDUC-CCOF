@@ -22,9 +22,9 @@
               </v-col>
             </v-row>
             <v-expansion-panels focusable multiple variant="accordion" >
-              <v-row v-if="isProcessing">
+              <v-row v-if="isMainLoading">
                 <v-col>
-                  <v-skeleton-loader v-if="isProcessing" :loading="isProcessing"
+                  <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
                                      type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
                 </v-col>
               </v-row>
@@ -39,38 +39,47 @@
                     <ECEWESummary @isSummaryValid="isECEWEOrgFormComplete" :ecewe="this.summaryModel.ecewe" :ecewe-facility="null"></ECEWESummary>
                   </v-expansion-panel>
                 </div>
-                <div v-if="this.isFacilitiesAvailable">
-                  <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
-                    <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
-                      <FacilityInformationSummary :facility-info="facility?.facilityInfo"
-                                                  :facility-id="facility.facilityId"
-                                                  :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-                                                  :ecewe-status="facility?.ecewe?.optInOrOut"
-                                                  :license-categories="facility?.licenseCategories"
-                                                  @isSummaryValid="isFormComplete"></FacilityInformationSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <div v-if="!facility.funding"></div>
-                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"  :facilityId="facility.facilityId"></CCOFSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" :facility-id="facility.facilityId"></CCFRISummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
-                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
-                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <ECEWESummary @isSummaryValid="isECEWEFacilityFormComplete" :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <div v-if="!facility.funding"></div>
-                      <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete" :documents="facility.documents"></UploadedDocumentsSummary>
-                    </v-expansion-panel>
+
+                  <div v-for=" (facility , index) in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
+                    <!-- <div v-if="isSummaryLoading[index]"> -->
+
+
+                     <v-skeleton-loader v-if="isSummaryLoading[index]" :loading="isSummaryLoading[index]"
+                                     type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
+                    <!-- </div> -->
+                    <div v-else >
+                      <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
+                        <FacilityInformationSummary :facility-info="facility?.facilityInfo"
+                                                    :facility-id="facility.facilityId"
+                                                    :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
+                                                    :ecewe-status="facility?.ecewe?.optInOrOut"
+                                                    :license-categories="facility?.licenseCategories"
+                                                    @isSummaryValid="isFormComplete"></FacilityInformationSummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <div v-if="!facility.funding"></div>
+                        <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"  :facilityId="facility.facilityId"></CCOFSummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri" ></CCFRISummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
+                        <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp" :ccfriId="facility?.ccfri?.ccfriId"></RFISummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
+                        <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp" :ccfriId="facility?.ccfri?.ccfriId"
+                                    programYear="2023"></NMFSummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <ECEWESummary @isSummaryValid="isECEWEFacilityFormComplete" :ecewe="{}" :ecewe-facility="facility.ecewe"></ECEWESummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <div v-if="!facility.funding"></div>
+                        <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete" :documents="facility.documents"></UploadedDocumentsSummary>
+                      </v-expansion-panel>
+                    </div>
                   </div>
-                </div>
+
               </v-row>
             </v-expansion-panels>
 
@@ -309,13 +318,12 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('app', ['getNavByFacilityId','getNavByFundingId']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
-    ...mapState('summaryDeclaration', ['summaryModel']),
+    ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isOrganizationComplete','isLicenseUploadComplete','isEceweComplete']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -352,8 +360,7 @@ export default {
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete',  'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh',]),
+    ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsEceweComplete', 'setIsOrganizationComplete','setNavBarFacilityComplete','setNavBarFundingComplete','forceNavBarRefresh']),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
@@ -436,19 +443,19 @@ export default {
       let path = await this.getPreviousPath();
       await this.$router.push(path);
     },
-    async isFormComplete(formObj, isComplete) {
+    isFormComplete(formObj, isComplete) {
       const foundIndex = this.invalidSummaryForms.findIndex(item => item === formObj);
       if (foundIndex > -1) {
 
         if (isComplete) {
           this.invalidSummaryForms.splice(foundIndex, 1);
-          await this.updateNavBarStatusToComplete(formObj);
         }
       } else {
         if (!isComplete) {
           this.invalidSummaryForms.push(formObj);
         }
       }
+      console.info('isFormComplete', formObj, isComplete, this.invalidSummaryForms.length);
     },
 
     isECEWEFacilityFormComplete(formName, isComplete) {
@@ -457,113 +464,36 @@ export default {
     isECEWEOrgFormComplete(formName, isComplete) {
       this.isFormComplete('ECEWEOrgSummary', isComplete);
     },
-    async updateNavBarStatusToIncomplete(invalidSummaryForms) {
+    async updateNavBarStatus(invalidSummaryForms) {
       console.info('updateNavBarStatus', invalidSummaryForms);
       if (invalidSummaryForms.length > 0) {
         for(let summaryFormObj of invalidSummaryForms) {
           switch(summaryFormObj.formName){
           case 'FacilityInformationSummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isFacilityComplete){
-              this.setNavBarFacilityComplete({ facilityId: summaryFormObj.formId, complete: false });
-            }
+            this.setNavBarFacilityComplete(summaryFormObj.formId,false);
             break;
           case 'CCOFSummary':
-            if(this.getNavByFundingId(summaryFormObj.formId)?.isCCOFComplete){
-              this.setNavBarFundingComplete({fundingId: summaryFormObj.formId, complete: false});
-            }
+            this.setNavBarFundingComplete(summaryFormObj.formId,false);
             break;
           case 'ECEWEOrgSummary':
-            if(this.isEceweComplete){
-              this.setIsEceweComplete(false);
-            }
+            this.setIsEceweComplete(false);
             break;
           case 'ECEWEFacilitySummary':
             this.setIsEceweComplete(false);
             break;
           case 'CCFRISummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isCCFRIComplete){
-              this.getNavByFacilityId(summaryFormObj.formId).isCCFRIComplete = false;
-            }
             break;
           case 'RFISummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isRfiComplete){
-              this.getNavByFacilityId(summaryFormObj.formId).isRfiComplete = false;
-            }
             break;
           case 'NMFSummary':
-            if(this.getNavByFacilityId(summaryFormObj.formId)?.isNmfComplete){
-              this.getNavByFacilityId(summaryFormObj.formId).isNmfComplete = false;
-            }
             break;
           case 'OrganizationSummary':
-            if(this.isOrganizationComplete){
-              this.setIsOrganizationComplete(false);
-            }
-
+            this.setIsOrganizationComplete(false);
             break;
           case 'DocumentSummary':
-            if(this.isLicenseUploadComplete){
-              this.setIsLicenseUploadComplete(false);
-              await this.updateLicenseCompleteStatus(false);
-            }
+            this.setIsLicenseUploadComplete(false);
             break;
           }
-        }
-        await this.forceNavBarRefresh();
-      }
-    },
-
-    async updateNavBarStatusToComplete(formObj) {
-      console.info('updateNavBarStatusToComplete', formObj);
-      if (formObj) {
-        switch(formObj.formName){
-        case 'FacilityInformationSummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isFacilityComplete){
-            this.setNavBarFacilityComplete({ facilityId: formObj.formId, complete: true });
-          }
-          break;
-
-        case 'CCOFSummary':
-          if(!this.getNavByFundingId(formObj.formId)?.isCCOFComplete){
-            this.setNavBarFundingComplete({fundingId: formObj.formId, complete: true});
-          }
-          break;
-        case 'ECEWEOrgSummary':
-          if(!this.isEceweComplete){
-            this.setIsEceweComplete(true);
-          }
-
-          break;
-        case 'ECEWEFacilitySummary':
-          this.setIsEceweComplete(true);
-          break;
-        case 'CCFRISummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isCCFRIComplete){
-            this.getNavByFacilityId(formObj.formId).isCCFRIComplete = true;
-          }
-          break;
-        case 'RFISummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isRfiComplete){
-            this.getNavByFacilityId(formObj.formId).isRfiComplete = true;
-          }
-          break;
-        case 'NMFSummary':
-          if(!this.getNavByFacilityId(formObj.formId)?.isNmfComplete){
-            this.getNavByFacilityId(formObj.formId).isNmfComplete = true;
-          }
-          break;
-        case 'OrganizationSummary':
-          if(!this.isOrganizationComplete){
-            this.setIsOrganizationComplete(true);
-          }
-          break;
-        case 'DocumentSummary':
-          if(!this.isLicenseUploadComplete){
-            this.setIsLicenseUploadComplete(true);
-            await this.updateLicenseCompleteStatus(true);
-            break;
-          }
-
         }
         await this.forceNavBarRefresh();
       }
@@ -606,7 +536,7 @@ export default {
   },
   watch: {
     invalidSummaryForms: async function (newVal) {
-      await this.updateNavBarStatusToIncomplete(newVal);
+      await this.updateNavBarStatus(newVal);
     }
   },
 

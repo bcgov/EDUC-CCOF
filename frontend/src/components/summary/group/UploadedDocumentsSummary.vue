@@ -77,7 +77,8 @@ export default {
   },
   methods: {
     getLicenceDocumentFileName() {
-      return this.documents.find(doc => doc.documentType === 'Facility License').filename;
+      return  this.documents.find(doc => doc.documentType === 'Facility License')?.filename;
+
     },
     getSupportingDocuments() {
       this.supportingDocumentItems = this.documents.filter(doc => doc.documentType !== 'Facility License');
