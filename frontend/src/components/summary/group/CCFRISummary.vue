@@ -151,7 +151,7 @@ export default {
     },
     facilityId: {
       type: String,
-      required: true
+      required: false
     },
   },
   data() {

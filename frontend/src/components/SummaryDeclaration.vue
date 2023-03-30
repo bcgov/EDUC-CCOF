@@ -21,10 +21,10 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple variant="accordion">
-              <v-row v-if="isProcessing">
+            <v-expansion-panels focusable multiple variant="accordion" >
+              <v-row v-if="isMainLoading">
                 <v-col>
-                  <v-skeleton-loader v-if="isProcessing" :loading="isProcessing"
+                  <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
                                      type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
                 </v-col>
               </v-row>
@@ -316,11 +316,11 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId']),
+    ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber']),
-    ...mapState('summaryDeclaration', ['summaryModel']),
+    ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     isReadOnly() {
@@ -360,10 +360,7 @@ export default {
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('funding', ['updateFundingCompleteStatus']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
-    ...mapActions('facility', ['updateFacilityCompleteStatus']),
-    ...mapActions('organization', ['updateOrganizationCompleteStatus']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
@@ -454,6 +451,7 @@ export default {
         if (isComplete) {
           this.completedFormDataObj = formObj;
           this.invalidSummaryForms.splice(foundIndex, 1);
+          await this.updateNavBarStatusToComplete(formObj);
         }
       } else {
         if (!isComplete) {
