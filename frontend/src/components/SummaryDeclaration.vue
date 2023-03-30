@@ -40,8 +40,14 @@
                                   :ecewe-facility="null"></ECEWESummary>
                   </v-expansion-panel>
                 </div>
-                <div v-if="this.isFacilitiesAvailable">
-                  <div v-for="facility in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
+
+                  <div v-for=" (facility , index)  in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
+
+
+                    <v-skeleton-loader v-if="isSummaryLoading[index]" :loading="isSummaryLoading[index]"
+                                     type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
+
+                    <div v-else>
                     <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
                       <FacilityInformationSummary :facility-info="facility?.facilityInfo"
                                                   :facility-id="facility.facilityId"
@@ -78,6 +84,7 @@
                     </v-expansion-panel>
                   </div>
                 </div>
+
               </v-row>
             </v-expansion-panels>
 
