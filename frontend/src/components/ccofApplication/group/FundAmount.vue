@@ -267,10 +267,10 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="processing" :disabled="!model.isCCOFComplete" @click="next()">Next</v-btn>
-        <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
+      <v-row justify="space-around" class="stickyNavButtons">
+        <v-btn class="blueButton" x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn class="blueButton" x-large :loading="processing" :disabled="!model.isCCOFComplete" @click="next()">Next</v-btn>
+        <v-btn :disabled="isLocked" class="blueButton" x-large :loading="processing" @click="save(true)">Save</v-btn>
       </v-row>
 
     </v-container>

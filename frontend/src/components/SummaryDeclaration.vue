@@ -121,9 +121,9 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="space-around" class="mt-10">
-        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="primary" :loading="isProcessing" outlined x-large @click="submit()" :disabled="!isPageComplete() || isReadOnly">Submit</v-btn>
+      <v-row justify="space-around" no-gutters class="stickyNavButtons mt-10">
+        <v-btn class="blueButton" :loading="isProcessing" required x-large @click="previous()">Back</v-btn>
+        <v-btn class="blueButton" :loading="isProcessing" x-large @click="submit()" :disabled="!isPageComplete() || isReadOnly">Submit</v-btn>
       </v-row>
       <v-dialog
         v-model="dialog"

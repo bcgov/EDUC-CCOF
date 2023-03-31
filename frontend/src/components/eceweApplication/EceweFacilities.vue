@@ -128,10 +128,10 @@
       </div>
     </div>
     <v-row><v-col></v-col></v-row>
-    <v-row justify="space-around">
-      <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-      <v-btn color="secondary" :loading="isProcessing" :disabled="isNextBtnDisabled" outlined x-large @click="next()">Next</v-btn>
-      <v-btn color="primary" :loading="isProcessing" :disabled="isSaveBtnDisabled || isReadOnly" outlined x-large @click="saveFacilities()">Save</v-btn>
+    <v-row justify="space-around" no-gutters class="stickyNavButtons">
+      <v-btn class="blueButton" :loading="isProcessing" required x-large @click="previous()">Back</v-btn>
+      <v-btn class="blueButton" :loading="isProcessing" :disabled="isNextBtnDisabled" x-large @click="next()">Next</v-btn>
+      <v-btn class="blueButton" :loading="isProcessing" :disabled="isSaveBtnDisabled || isReadOnly" x-large @click="saveFacilities()">Save</v-btn>
     </v-row>
   </v-container>
 </template>

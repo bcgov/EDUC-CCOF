@@ -155,15 +155,14 @@
           </div>
         </v-card-text>
       </v-card>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="isProcessing" @click="previous()">
+      <v-row justify="space-around" no-gutters class="stickyNavButtons">
+        <v-btn class="blueButton" x-large :loading="isProcessing" @click="previous()">
           Back
         </v-btn>
-          <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="next()" :loading="isProcessing" :disabled="!isValidForm">
+        <v-btn class="blueButton" x-large @click="next()" :loading="isProcessing" :disabled="!isValidForm">
           Next
         </v-btn>
-        <v-btn color="primary" outlined x-large @click="save(true)" :disabled="isReadOnly" :loading="isProcessing">
+        <v-btn class="blueButton" x-large @click="save(true)" :disabled="isReadOnly" :loading="isProcessing">
           Save
         </v-btn>
       </v-row>

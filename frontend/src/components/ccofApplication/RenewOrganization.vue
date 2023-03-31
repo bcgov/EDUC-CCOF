@@ -100,9 +100,9 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'false')">Next</v-btn>
+      <v-row justify="space-around" no-gutters class="stickyNavButtons">
+        <v-btn class="blueButton" x-large @click="back()">Back</v-btn>
+        <v-btn class="blueButton" x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'false')">Next</v-btn>
       </v-row>
     </v-container>
   </v-form>

@@ -280,10 +280,10 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="space-around" class="mt-10">
-        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn :disabled="isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
+      <v-row justify="space-around" no-gutters class="stickyNavButtons mt-10">
+        <v-btn class="blueButton" :loading="isProcessing" required x-large @click="previous()">Back</v-btn>
+        <v-btn :disabled="!enableButtons" :loading="isProcessing" class="blueButton" x-large @click="next()">Next</v-btn>
+        <v-btn :disabled="isReadOnly" :loading="isProcessing" class="blueButton" x-large @click="saveECEWEApplication()">Save</v-btn>
       </v-row>
     </v-container>
   </v-form>

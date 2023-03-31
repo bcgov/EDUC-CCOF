@@ -31,8 +31,8 @@
       </v-card>
     </v-row>
 
-    <v-row justify="space-around">
-      <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+    <v-row justify="space-around" class="stickyNavButtons">
+      <v-btn class="blueButton" required x-large @click="previous()">Back</v-btn>
     </v-row>
   </v-container>
 </template>

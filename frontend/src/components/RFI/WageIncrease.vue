@@ -355,15 +355,12 @@
       </div>
 
     <v-row justify="space-around">
-          <v-btn color="info" outlined x-large @click="previous()">
-            Back</v-btn>
-            <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large @click="next()" :disabled="false">Next</v-btn>
-          <v-btn color="primary" outlined x-large>
-            Save</v-btn>
-        </v-row>
+      <v-btn class="blueButton" x-large @click="previous()">Back</v-btn>
+        <!--add form logic here to disable/enable button-->
+      <v-btn class="blueButton" x-large @click="next()" :disabled="false">Next</v-btn>
+      <v-btn class="blueButton" x-large>Save</v-btn>
+    </v-row>
         
-
   </v-container>
 </template>
 

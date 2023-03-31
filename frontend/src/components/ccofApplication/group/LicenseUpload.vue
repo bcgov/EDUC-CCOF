@@ -55,12 +55,12 @@
             </v-card>
         </v-row>
       </span>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="!isValidForm || nextButtonDisabled" :loading="isProcessing" outlined x-large
+      <v-row justify="space-around" class="stickyNavButtons">
+        <v-btn class="blueButton" required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
+        <v-btn class="blueButton" :disabled="!isValidForm || nextButtonDisabled" :loading="isProcessing" x-large
                @click="next()">Next
         </v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isValidForm || isLocked" @click="saveClicked()">
+        <v-btn class="blueButton" x-large :loading="isProcessing" :disabled="!isValidForm || isLocked" @click="saveClicked()">
           Save
         </v-btn>
       </v-row>

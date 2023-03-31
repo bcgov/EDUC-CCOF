@@ -84,12 +84,10 @@
 
       </LargeButtonContainer>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
-          Back</v-btn>
-          <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)" :disabled="isReadOnly">Save</v-btn>
+      <v-row justify="space-around" no-gutters class="stickyNavButtons">
+        <v-btn class="blueButton" x-large :loading="processing" @click="previous()">Back</v-btn>
+        <v-btn class="blueButton" x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
+        <v-btn class="blueButton" x-large :loading="processing" @click="save(true)" :disabled="isReadOnly">Save</v-btn>
       </v-row>
 
   </v-container>
