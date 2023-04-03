@@ -192,8 +192,8 @@
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <a :href="this.PATHS.family.orgInfo" v-if=" !getCCOFBaseFundingGuid() && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.family.fundAmount + '/' + getCCOFBaseFundingGuid()" v-else-if="getCCOFBaseFundingGuid() && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
               <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
               <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a> -->
             </v-col>
@@ -231,6 +231,10 @@ export default {
     licenseCategories: {
       type: String,
       required: false,
+    },
+    funding: {
+      type: Object,
+      required: false
     }
 
 
@@ -260,13 +264,6 @@ export default {
         return 'Opt-Out';
       } else {
         return '';
-      }
-    },
-    getCCOFBaseFundingGuid(){
-      for (const fac of this.navBarList){
-        if (fac.facilityId === this.facilityId){
-          return fac.ccofBaseFundingId; //this COULD be undefined, if user has filled nothing and tries to go to decleration so check for undefined above
-        }
       }
     },
   },

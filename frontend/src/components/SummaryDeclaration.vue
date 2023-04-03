@@ -50,6 +50,7 @@
                     <div v-else>
                     <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
                       <FacilityInformationSummary :facility-info="facility?.facilityInfo"
+                                                  :funding="facility?.funding"
                                                   :facility-id="facility.facilityId"
                                                   :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
                                                   :ecewe-status="facility?.ecewe?.optInOrOut"
