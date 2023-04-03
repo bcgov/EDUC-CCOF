@@ -27,11 +27,11 @@
         </LargeCard>
       </v-col>
     </v-row>
-    <v-row justify="space-around" class="pt-16">
-      <v-btn color="info" outlined required x-large to="/">Back</v-btn>
+    <v-row justify="space-around" class="stickyNavButtons pt-16">
+      <v-btn class="blueButton" required x-large to="/">Back</v-btn>
       <span/>
       <span/>
-    </v-row>    
+    </v-row>
   </v-container>
 </template>
 
