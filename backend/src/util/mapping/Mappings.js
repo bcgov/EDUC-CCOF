@@ -34,6 +34,7 @@ const FacilityMappings = [
   { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
   { back: 'ccof_facilityreceived_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
+  { back: 'accountnumber', front: 'facilityAccountNumber' },
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
@@ -47,7 +48,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_formcomplete', front: 'ccof_formcomplete' },
   { back: 'ccof_feecorrectccfri', front: 'existingFeesCorrect' },
   { back: 'ccof_chargefeeccfri', front: 'hasClosureFees' },
-  
+
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
 ];
@@ -161,7 +162,7 @@ const CCOFApplicationMappings = [
   { back: '_ccof_programyear_value', front: 'programYearId' }, //guid
   { back: 'ccof_multiagechildcare', front: 'isMultiAgeChildCare' }, //false,
   { back: 'ccof_providertype', front: 'providerTypeId' }, //100000000 Group
-  { back: 'ccof_consent', front: 'hasConset' },  // 1
+  { back: 'ccof_consent', front: 'hasConsent' },  // 1
 ];
 
 const CCOFApplicationFundingMapping = [
@@ -221,6 +222,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
   { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_application_basefundingid', front: 'ccofBaseFundingId' },
 
 ];
 
@@ -353,6 +355,55 @@ const SystemMessagesMappings = [
   { back: 'ccof_message', front: 'message' }
 ];
 
+const ApplicationSummaryMappings = [
+  // Application Details
+  { back: '_ccof_programyear_value', front: 'programYearId' }, //"cd63f67b-bd39-ed11-9db0-002248d53d53",
+  { back: '_ccof_organization_value', front: 'organizationId' }, //"45c35443-6a35-ed11-9db1-002248d53d53",
+  { back: 'ccof_applicationtype', front: 'applicationType' }, //100000002,
+  { back: 'ccof_applicationid', front: 'applicationId' }, //"ad483720-e1a7-ed11-aad0-000d3a09c3a2",
+  { back: 'ccof_name', front: 'name' }, //"APP-23005239",
+  { back: 'ccof_providertype', front: 'organizationProviderType' }, //100000001,
+  // Unsure if this is needed
+  // { back: 'ccof_familychildcare', front: 'isFamiliyChildCare' }, //false,
+  // { back: 'ccof_multiagechildcare', front: 'isMultiAgeChildCare' }, //false,
+  // { back: 'ccof_inhomemultiagechildcare', front: 'isHomeMultiAgeChildCare' }, //false,
+  // Declaration Details
+  { back: 'ccof_consent', front: 'hasConsent' }, //1,
+  { back: 'ccof_declarationastatus', front: 'declarationAStatus' }, //1,
+  { back: 'ccof_declarationbstatus', front: 'declarationBStatus' }, //1,
+  { back: 'ccof_submittedby', front: 'orgContactName' }, //"agree",
+  // ECE-WE Details
+  { back: 'ccof_ecewe_optin', front: 'optInECEWE' }, //1,
+  { back: 'ccof_ecewe_selecttheapplicablesector', front: 'applicableSector' }, //null,
+  { back: 'ccof_ecewe_confirmation', front: 'confirmation' }, //null,
+  { back: 'ccof_ecewe_employeeunion', front: 'belongsToUnion' }, //0,
+  { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' }, //null,
+  // Unlock Details
+  { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' }, //null,
+  { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' }, //null,
+  { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' }, //1,
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' }, //1,
+  { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' }, //null,
+  // Form Complete details
+  { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' }, //true,
+  { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' }, //true,
+  // Status codes
+  { back: 'ccof_ccofstatus', front: 'ccofStatus' }, //1,
+  { back: 'statuscode', front: 'applicationStatus' }, //3,
+];
+
+const ApplicationSummaryCcfriMappings = [
+  ...CCFRIFacilityMappings,
+  { back: 'ccof_applicationccfriid', front: 'ccfriId'}, // null,
+  { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'}, // null,
+  { back: 'ccof_has_nmf', front: 'hasNmf'}, // false,
+  { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'}, // null,
+  { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete'}, // false,
+  { back: 'ccof_has_rfi', front: 'hasRfi'}, // false,
+  { back: 'ccof_unlock_rfi', front: 'unlockRfi'}, // null,
+  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,
+]
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -379,5 +430,7 @@ module.exports = {
   OtherFundingProgramMappings,
   NMFApplicationMappings,
   IndigenousExpenseMappings,
-  SystemMessagesMappings
+  SystemMessagesMappings,
+  ApplicationSummaryMappings,
+  ApplicationSummaryCcfriMappings,
 };
