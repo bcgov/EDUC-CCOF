@@ -21,7 +21,7 @@ export default {
     supportingDocumentUploadComplete:false,
 
     //Lookup Table Details
-    programYearList: [],
+    programYearList: {},
     childCareCategoryList: [],
     organizationTypeList: [],
     fundingModelTypeList: [],
@@ -132,6 +132,13 @@ export default {
         return null;
       }
       return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+    },
+
+    getNavByCCFRIId: (state) => (ccfriId) => {
+      if (!ccfriId) {
+        return null;
+      }
+      return state.navBarList.find(item => item.ccfriApplicationId == ccfriId);
     },
 
     getNextNavByFacilityId: (state) => (facilityId) => {

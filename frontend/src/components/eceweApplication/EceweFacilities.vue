@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -34,6 +34,15 @@
         </span>
       </v-alert>
     </v-row>
+    <br>
+    <v-btn
+        class = "mx-0 justify-end"
+        @click="toggleAll()"
+        dark color='#003366'
+        :disabled="isReadOnly" 
+        > 
+        Opt in All Facilities
+      </v-btn>
     <div v-if="!isLoading">
       <div v-for="(facility, index) in this.uiFacilities" :key="(index)">
         <v-row justify="center" class="pa-4">
@@ -74,7 +83,7 @@
                   @click="uiFacilities[index].update=(uiFacilities[index].update==false)?true:false;"
                   color="#003366"
                   dark
-                  :disabled="isReadOnly"> 
+                  :disabled="isReadOnly">
                     Update
                 </v-btn>
               </v-col>
@@ -147,7 +156,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -159,13 +168,11 @@ export default {
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
+      //will only return true if set by a ministry user in dynamics
       if (this.unlockEcewe){
         return false;
       }
-      else if (this.applicationStatus === 'SUBMITTED'){
-        return true; 
-      }
-      return false;
+      return (this.applicationStatus === 'SUBMITTED');
     }
   },
   async beforeMount() {
@@ -192,6 +199,12 @@ export default {
     },
     toggleRadio(index) {
       this.uiFacilities[index].update = (this.uiFacilities[index].update==true)?false:true;
+    },
+    toggleAll(){
+      this.uiFacilities.forEach((fac, index) => {
+        this.toggleRadio(index);
+        this.uiFacilities[index].optInOrOut = 1 ;
+      });
     },
     previous() {
       return this.$router.push(PATHS.eceweEligibility);

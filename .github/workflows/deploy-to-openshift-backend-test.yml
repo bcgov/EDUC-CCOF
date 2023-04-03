@@ -45,7 +45,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Deploy Backend to TEST
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: test
 
     outputs:

@@ -4,6 +4,7 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
+            <v-card-title class="justify-center pb-0"><h3>Facility Information</h3></v-card-title>
             <v-container>
               <v-row>
                 <v-col>

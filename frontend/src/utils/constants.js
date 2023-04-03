@@ -38,6 +38,7 @@ export const ApiRoutes = Object.freeze({
   SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument',
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
+  APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages'
 });
 

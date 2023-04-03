@@ -4,7 +4,7 @@
       <span>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.programYearLabel }} Program Confirmation Form</span></h3></v-card-title>
+            <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.formattedProgramYear }} Program Confirmation Form</span></h3></v-card-title>
              <v-row flex >
               <caption class="licence-upload-hint pb-5">Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.</caption>
             </v-row>
@@ -82,7 +82,7 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'programYearLabel', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
+    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
 
     isLocked() {
@@ -94,14 +94,19 @@ export default {
       return false;
     },
     nextButtonDisabled() {
-      let deletedFileCount = this.getDeletedFileCount();
-      console.info(`deletedFileCount is ${deletedFileCount}`);
-      if (deletedFileCount === 0) {
-        return (this.navBarList?.length !== (this.fileMap.size+this.getUploadedLicenses.length));
-      } else {
-        let currentFileCount = (this.getUploadedLicenses.length - deletedFileCount) + this.fileMap.size;
-        return (this.navBarList?.length !== currentFileCount);
+      for (let navBarItem of this.navBarList) {
+        const facilityId = navBarItem.facilityId;
+        const uploadedLicenceCount = this.getUploadedLicenses.filter(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === facilityId).length;
+        const deletedLicenceCount = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
+        let fileMapLicencePerFacilityCount =  0;
+        if(this.fileMap.size > 0 && this.fileMap.get(facilityId)){
+          fileMapLicencePerFacilityCount = this.fileMap.get(facilityId)?.length;
+        }
+        if ((uploadedLicenceCount-deletedLicenceCount)+fileMapLicencePerFacilityCount === 0) {
+          return true; // disable next button if no licence is uploaded for any of the facility
+        }
       }
+      return false; // enable next button if at least 1 licence exists per facility
     },
   },
 
@@ -231,12 +236,7 @@ export default {
       const payload = {fileList,
         isLicenseUploadComplete:!this.nextButtonDisabled,
         applicationId: this.applicationId};
-
-      try {
-        await this.saveLicenseFiles(payload);
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
+      await this.saveLicenseFiles(payload);
     },
     async processLicenseFileDelete() {
       const deletedFiles = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid)).map(element => element.deletedDocument);
@@ -257,7 +257,6 @@ export default {
         map.set(this.currentrow, deepCloneObject(doc));
         this.fileMap = map;
         this.$refs.form.validate();
-        //this.fileMap.set(this.currentrow, deepCloneObject(doc));
       }
     },
     readFile(file) {
@@ -305,11 +304,6 @@ export default {
         this.fileMap?.clear();
       }
     },
-
-    getDeletedFileCount() {
-      const deletedFiles = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid)).map(element => element.deletedDocument);
-      return deletedFiles.length;
-    }
   }
 };
 </script>

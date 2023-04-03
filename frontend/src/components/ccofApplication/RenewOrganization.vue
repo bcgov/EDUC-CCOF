@@ -4,7 +4,7 @@
       <v-row justify="center">
         <div
           class="pa-10 text-h5"
-          v-text="`Child Care Operating Fund Program - ${futureYearLabel} Program Confirmation Form`" />
+          v-text="`Child Care Operating Funding Program - ${futureYearLabel} Program Confirmation Form`" />
       </v-row >
       <v-row justify="space-around">
         <v-card class="cc-top-level-card justify-center" width="800">
