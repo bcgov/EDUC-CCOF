@@ -51,7 +51,7 @@ export default {
       state.programYearId = userInfo.ccofProgramYearId;
       state.programYearLabel = userInfo.ccofProgramYearName;
       state.isRenewal = (userInfo.applicationType === 'RENEW');
-      state.formattedProgramYear = userInfo.ccofProgramYearName.replace(/[^\d/]/g, '');
+      state.formattedProgramYear = userInfo.ccofProgramYearName?.replace(/[^\d/]/g, '');
 
       state.unlockBaseFunding = userInfo.unlockBaseFunding;
       state.unlockDeclaration = userInfo.unlockDeclaration;
@@ -73,7 +73,7 @@ export default {
       commit('setCcofApplicationStatus', userInfo.ccofApplicationStatus);
       commit('setProgramYearId', userInfo.ccofProgramYearId);
       commit('setProgramYearLabel', userInfo.ccofProgramYearName);
-      commit('setFormattedProgramYear', userInfo.ccofProgramYearName.replace(/[^\d/]/g, '') );
+      commit('setFormattedProgramYear', userInfo.ccofProgramYearName?.replace(/[^\d/]/g, '') );
       commit('setIsRenewal', (userInfo.applicationType === 'RENEW'));
 
       commit('setUnlockBaseFunding', userInfo.unlockBaseFunding);
