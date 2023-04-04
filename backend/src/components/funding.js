@@ -111,4 +111,5 @@ async function getFunding(req, res) {
 module.exports = {
   updateFunding,
   getFunding,
+  mapFundingObjectForFront,
 };

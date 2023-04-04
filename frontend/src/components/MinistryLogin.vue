@@ -8,7 +8,7 @@
           <v-img
             :src="require('../assets/images/login-header-img-resized.jpg')"
             max-height="300"
-            max-width="1448" 
+            max-width="1448"
             class="align-end">
             <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85);">
               <span class="text-h4 white--text font-weight-bold" style="font-family:BCSans;">My ChildCareBC Services</span>
@@ -71,13 +71,13 @@
             </v-card-title>
             <v-card-text id="login_descriptor" class="pb-0">
               <p>
-                The ministry has made enhancements to the 
+                The ministry has made enhancements to the
                 <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
                 to help estimate additional child care fee savings that started on December 1, 2022.
               </p>
               <p>
                 Note: <br>
-                Child care providers with a CCFRI application in process, including open applications for a mid-term fee increase, 
+                Child care providers with a CCFRI application in process, including open applications for a mid-term fee increase,
                 will not appear in the search results. Check back as search results are updated regularly.
               </p>
             </v-card-text>
@@ -97,7 +97,7 @@
 
       <!-- This is where the form will go-->
       <v-row>
-        
+
       </v-row>
 
     </article>
