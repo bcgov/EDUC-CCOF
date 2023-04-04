@@ -259,12 +259,9 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="space-around" class="mt-10">
-        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn color="primary" :loading="isProcessing" outlined x-large @click="submit()"
-               :disabled="!isPageComplete() || isReadOnly">Submit
-        </v-btn>
-      </v-row>
+      <NavButton :isSubmitDisplayed="true" class="mt-10"
+        :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing" 
+        @previous="previous" @submit="submit"></NavButton>
       <v-dialog
         v-model="dialog"
         persistent
@@ -301,7 +298,7 @@
 import {PATHS} from '@/utils/constants';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
-
+import NavButton from '@/components/util/NavButton';
 import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
 import CCOFSummary from '@/components/summary/group/CCOFSummary';
 import ECEWESummary from '@/components/summary/group/ECEWESummary';
@@ -318,7 +315,7 @@ let model = {
 
 export default {
   components: {
-    OrganizationSummary, UploadedDocumentsSummary,
+    OrganizationSummary, UploadedDocumentsSummary, NavButton,
     NMFSummary, RFISummary, FacilityInformationSummary, CCOFSummary, CCFRISummary, ECEWESummary
   },
   mixins: [alertMixin],

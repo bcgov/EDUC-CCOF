@@ -88,6 +88,7 @@ input[type=number] {
   bottom: 0;
   padding: 10px 0px;
   background-color: lightgray;
+  z-index: 2;
 }
 
 @keyframes bone {
