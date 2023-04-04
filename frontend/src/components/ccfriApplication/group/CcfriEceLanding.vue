@@ -84,12 +84,9 @@
 
       </LargeButtonContainer>
 
-      <v-row justify="space-around" no-gutters class="stickyNavButtons">
-        <v-btn class="blueButton" x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn class="blueButton" x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-        <v-btn class="blueButton" x-large :loading="processing" @click="save(true)" :disabled="isReadOnly">Save</v-btn>
-      </v-row>
-
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
   </v-container>
 </template>
 
@@ -102,6 +99,7 @@ import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -212,7 +210,9 @@ export default {
         this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
     },
-
+    validateForm() {
+      this.$refs.isValidForm?.validate();
+    },
     async save(withAlert) {
       this.processing = true;
       let payload = [];
@@ -267,6 +267,6 @@ export default {
     this.$store.commit('ccfriApp/model', this.model);
     next();
   },
-  components: {LargeButtonContainer }
+  components: {LargeButtonContainer,NavButton}
 };
 </script>

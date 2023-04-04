@@ -84,11 +84,9 @@
           </v-card>
         </v-row>
       </span>
-      <v-row justify="space-around" class="stickyNavButtons">
-        <v-btn class="blueButton" required x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn class="blueButton" x-large :loading="processing" @click="next()" :disabled="!model.isFacilityComplete">Next</v-btn>
-        <v-btn :disabled="isLocked" class="blueButton" x-large :loading="processing" @click="saveClicked()">Save</v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isFacilityComplete" :isProcessing="processing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="saveClicked()"></NavButton>
     </v-container>
   </v-form>
 </template>

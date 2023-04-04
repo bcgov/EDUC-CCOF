@@ -27,11 +27,7 @@
         </LargeCard>
       </v-col>
     </v-row>
-    <v-row justify="space-around" class="stickyNavButtons pt-16">
-      <v-btn class="blueButton" required x-large to="/">Back</v-btn>
-      <span/>
-      <span/>
-    </v-row>
+    <NavButton :isNextDisplayed="false" :isSaveDisplayed="false" @previous="previous" class="pt-16"></NavButton>
   </v-container>
 </template>
 
@@ -51,7 +47,9 @@ export default {
   components: { LargeCard },
   methods: {
     ...mapMutations('organization', ['setOrganizationProviderType']),
-
+    async previous() {
+      this.$router.push(this.paths.home);
+    },
     toGroup() {
       this.setOrganizationProviderType('GROUP');
       this.$router.push(this.paths.group.orgInfo);

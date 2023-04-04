@@ -164,12 +164,9 @@
 
       </v-row>
 
-      <v-row justify="space-around" no-gutters class="stickyNavButtons">
-        <v-btn class="blueButton" x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn class="blueButton" x-large :disabled="!model.isCCOFComplete" :loading="processing" @click="next()">Next</v-btn>
-        <v-btn :disabled="isLocked" class="blueButton" x-large :loading="processing" @click="save(true)">Save</v-btn>
-      </v-row>
-
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isCCOFComplete" :isProcessing="processing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>

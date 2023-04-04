@@ -128,11 +128,9 @@
       </div>
     </div>
     <v-row><v-col></v-col></v-row>
-    <v-row justify="space-around" no-gutters class="stickyNavButtons">
-      <v-btn class="blueButton" :loading="isProcessing" required x-large @click="previous()">Back</v-btn>
-      <v-btn class="blueButton" :loading="isProcessing" :disabled="isNextBtnDisabled" x-large @click="next()">Next</v-btn>
-      <v-btn class="blueButton" :loading="isProcessing" :disabled="isSaveBtnDisabled || isReadOnly" x-large @click="saveFacilities()">Save</v-btn>
-    </v-row>
+    <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+      :isSaveDisabled="isSaveBtnDisabled || isReadOnly" :isNextDisabled="isNextBtnDisabled" :isProcessing="isProcessing" 
+      @previous="previous" @next="next" @validateForm="validateForm()" @save="saveFacilities(true)"></NavButton>
   </v-container>
 </template>
 
@@ -141,8 +139,10 @@
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -211,6 +211,9 @@ export default {
     },
     next() {
       this.$router.push(PATHS.supportingDocumentUpload);
+    },
+    validateForm() {
+      this.$refs.isValidForm?.validate();
     },
     async loadData() {
       if (this.isStarted) {

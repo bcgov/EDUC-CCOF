@@ -151,11 +151,9 @@
       TODO: document upload goes here!
     </LargeCard>
 
-    <v-row justify="space-around" no-gutters class="stickyNavButtons">
-      <v-btn class="blueButton" x-large @click="previous()">Back</v-btn>
-      <v-btn class="blueButton" x-large @click="next()" :disabled="false">Next</v-btn>
-      <v-btn class="blueButton" x-large>Save</v-btn>
-    </v-row>
+    <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="false" :isNextDisabled="false" :isProcessing="processing" 
+        @previous="previous" @next="next" @validateForm="validateForm()"></NavButton>
 
   </v-container>
 </template>
@@ -163,6 +161,7 @@
 <script>
 import LargeCard from '../../guiComponents/LargeCard.vue';
 import { PATHS } from '@/utils/constants';
+import NavButton from '@/components/util/NavButton';
 
 let model = { x: [] };
 
@@ -197,7 +196,7 @@ export default {
       this.$router.push(PATHS.addNewFees); //TODO: only goes to 'add fees' page. Add logic to check if fees exist (option1 in wireframes)
     },
   },
-  components: { LargeCard,}
+  components: { LargeCard, NavButton }
 };
 
 
