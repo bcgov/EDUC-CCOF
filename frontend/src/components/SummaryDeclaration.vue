@@ -13,6 +13,33 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         Text to inform user to sign Declaration at the end of page TBD
       </v-row>
+      <v-row v-if="!this.isSummaryComplete" justify="center">
+        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
+          <v-container class="pa-0">
+            <v-row>
+              <v-col class="pa-0">
+                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
+                  <v-icon
+                    x-large
+                    class="py-1 px-3 noticeAlertIcon">
+                    mdi-alert-octagon
+                  </v-icon>
+                  Incomplete Form
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="pb-0">
+                <div>
+                  <p>You will not be able to submit your application until it is complete.</p>
+                  <p>Incomplete sections will have a circle without a checkmark on the navigational panel to the left of
+                    the screen.Text TBD</p>
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-row>
       <div>
         <v-row class="d-flex justify-center">
           <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -21,7 +48,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple variant="accordion" >
+            <v-expansion-panels focusable multiple accordion>
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
@@ -34,10 +61,6 @@
                     <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
                                          :summary-model="this.summaryModel">
                     </OrganizationSummary>
-                  </v-expansion-panel>
-                  <v-expansion-panel variant="accordion">
-                    <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                  :ecewe-facility="null"></ECEWESummary>
                   </v-expansion-panel>
                 </div>
 
@@ -85,7 +108,12 @@
                     </v-expansion-panel>
                   </div>
                 </div>
-
+                <div v-if="!this.isRenewal">
+                <v-expansion-panel variant="accordion">
+                  <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
+                                :ecewe-facility="null"></ECEWESummary>
+                </v-expansion-panel>
+                </div>
               </v-row>
             </v-expansion-panels>
 
@@ -96,33 +124,6 @@
       <!---Declaration Start--->
       <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
         Funding Agreement Number: {{ fundingAgreementNumber }}
-      </v-row>
-      <v-row v-if="!this.isSummaryComplete" justify="center">
-        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
-            <v-row>
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <v-icon
-                    x-large
-                    class="py-1 px-3 noticeAlertIcon">
-                    mdi-alert-octagon
-                  </v-icon>
-                  Incomplete Form
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col class="pb-0">
-                <div>
-                  <p>You will not be able to submit your application until it is complete.</p>
-                  <p>Incomplete sections will have a circle without a checkmark on the navigational panel to the left of
-                    the screen.</p>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
       </v-row>
       <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -747,6 +748,8 @@ li {
   background-color: #E5E4E4;
 }
 
+
+
 .summary-label {
   color: grey;
   font-size: small;
@@ -760,5 +763,4 @@ li {
 .special {
   margin-top: 5vh !important;
 }
-
 </style>

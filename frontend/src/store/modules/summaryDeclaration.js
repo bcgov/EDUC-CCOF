@@ -197,7 +197,7 @@ export default {
       }
     },
 
-    async updateApplicationStatus({ commit, rootState },applicationObj) {
+    async updateApplicationStatus(applicationObj) {
       checkSession();
       try {
         console.log('Updating Application Status');

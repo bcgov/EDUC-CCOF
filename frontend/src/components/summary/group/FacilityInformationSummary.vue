@@ -1,6 +1,11 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
-<v-card>
+<v-card class="px-0">
+  <v-system-bar
+    color="grey"
+    dark
+  >
+  </v-system-bar>
   <v-row no-gutters class="d-flex flex-column">
     <v-row class="d-flex justify-start" >
       <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
@@ -78,7 +83,7 @@
       <span v-if="!isValidForm" style="color:#ff5252;">Facility Information has errors please check - Text TBD</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager  >
+    <v-expansion-panel-content eager class="exp-style" >
     <v-row no-gutters class="d-flex flex-column">
       <v-row class="d-flex justify-start">
         <v-col cols="8" lg="6" class="pb-0 pt-0">
