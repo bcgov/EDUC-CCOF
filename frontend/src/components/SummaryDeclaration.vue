@@ -11,7 +11,7 @@
         {{ this.userInfo.organizationName }}
       </v-row>
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
-        Text to inform user to sign Declaration at the end of page TBD
+        To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
       <v-row v-if="!this.isSummaryComplete" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
