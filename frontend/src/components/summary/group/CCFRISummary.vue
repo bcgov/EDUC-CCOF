@@ -188,7 +188,7 @@ export default {
       if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses.length){
         let childCareTypesArr = [];
 
-        const findChildCareTypes = ((yearToSearch) => {
+        const findChildCareTypes = ((yearToSearch, checkForMissingPrevFees = false) => {
 
           this.ccfri?.childCareLicenses.forEach((category) => {
 
@@ -200,6 +200,20 @@ export default {
               childCareTypesArr.push(found);
             }
             else {
+
+              if (checkForMissingPrevFees){
+
+                //check to see if childcarecat exists in last years CCFRI app.
+                let pastChildCareTypefound = this.ccfri?.prevYearCcfriApp.childCareTypes.find(prevChildCareCat => {
+                  return (prevChildCareCat.childCareCategoryId == category.childCareCategoryId && prevChildCareCat.programYearId == yearToSearch.programYearId );
+                });
+                if (pastChildCareTypefound){
+                  return;
+                }
+                //else we are missing fees from last year, for a child care category that the user has license for.
+                //This ususally happens when the facility has a new licesce for this year. Add the category to the summary
+              }
+
               let theCat = _.cloneDeep(category);
               theCat.programYear = yearToSearch.name;
               childCareTypesArr.push(theCat);
@@ -207,14 +221,17 @@ export default {
           });
         });
 
-
         findChildCareTypes(this.ccfri.currentYear);
 
         //only show last year fees if new app or previous year fees are incorrect
-        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 ){
+        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 || !this.ccfri.previousCcfriId ){
           findChildCareTypes(this.ccfri.prevYear);
         }
-        //_.sortBy(childCareTypesArr, 'orderNumber');
+
+        //check if we are missing any feed cards from the last year if previous fees are correct
+        else if (this.isRenewal &&  this.ccfri.existingFeesCorrect == 100000000 && this.ccfri.previousCcfriId){
+          findChildCareTypes(this.ccfri.prevYear, true);
+        }
 
         //age group asc
         childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);

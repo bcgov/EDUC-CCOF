@@ -183,6 +183,7 @@ export default {
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
+        const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
         console.log('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
@@ -204,8 +205,9 @@ export default {
 
 
 
-        //only display ALL previous year fee cards if it's the first time CCFRI application  -- OR prev fees are incorrect
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001){
+        //only display ALL previous year fee cards if it's the first time CCFRI application  -- OR prev fees are incorrect OR if prev CCFRI is not found
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001 || !prevCcfriApp){
+
           response.data.forEach(item => {
 
             //check for undefined here!
@@ -233,8 +235,7 @@ export default {
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
-        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){
-          const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
+        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
           console.log('prevCCFRI IS:' , prevCcfriApp);
 
           response.data.forEach(item => {

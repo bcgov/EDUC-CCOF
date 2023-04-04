@@ -206,7 +206,6 @@ export default {
           console.log(this.feeList);
 
 
-          //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
         } catch (error) {
           console.log(error);
