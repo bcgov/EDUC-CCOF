@@ -235,42 +235,40 @@ export default {
         else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000){
           const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
           console.log('prevCCFRI IS:' , prevCcfriApp);
-          if (prevCcfriApp) {
-            response.data.forEach(item => {
+          response.data.forEach(item => {
 
-              //check to see if childcarecat exists in last years CCFRI app.
-              let pastChildCareTypefound = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
-                return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId &&
-                  prevChildCareCat.programYearId == prevProgramYear.programYearId );
-              });
-
-              //check to see if we have saved data for this child care cat in the list
-              let foundChildCareCat = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
-                return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-                searchItem.programYearId == prevProgramYear.programYearId );
-              });
-
-              //if child care type in last years CCFRI fees not found, but license  add a card for that child care cat previous years fees
-              //this ensures we get 24 months of fees for a child care type that is new to the facility.
-              if (!pastChildCareTypefound && !foundChildCareCat) {
-                console.log('NOT FOUND!');
-                careTypes.push( {
-                  programYear: prevProgramYear.name,
-                  programYearId: prevProgramYear.programYearId,
-                  childCareCategory: item.childCareCategory,
-                  childCareCategoryId: item.childCareCategoryId,
-                  orderNumber : item.orderNumber
-                });
-              }
-
-              //not an else because (!pastChildCareTypefound && foundChildCareCat) is a possible event
-              else if (pastChildCareTypefound && foundChildCareCat){
-                console.log('adding delete flag for: ' , foundChildCareCat);
-                //past child care type with fees found AND our users choice marked prev fees as correct... delete the card
-                foundChildCareCat.deleteMe = true;
-              }
+            //check to see if childcarecat exists in last years CCFRI app.
+            let pastChildCareTypefound = prevCcfriApp.childCareTypes.find(prevChildCareCat => {
+              return (prevChildCareCat.childCareCategoryId == item.childCareCategoryId &&
+                prevChildCareCat.programYearId == prevProgramYear.programYearId );
             });
-          }
+
+            //check to see if we have saved data for this child care cat in the list
+            let foundChildCareCat = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+              searchItem.programYearId == prevProgramYear.programYearId );
+            });
+
+            //if child care type in last years CCFRI fees not found, but license  add a card for that child care cat previous years fees
+            //this ensures we get 24 months of fees for a child care type that is new to the facility.
+            if (!pastChildCareTypefound && !foundChildCareCat) {
+              console.log('NOT FOUND!');
+              careTypes.push( {
+                programYear: prevProgramYear.name,
+                programYearId: prevProgramYear.programYearId,
+                childCareCategory: item.childCareCategory,
+                childCareCategoryId: item.childCareCategoryId,
+                orderNumber : item.orderNumber
+              });
+            }
+
+            //not an else because (!pastChildCareTypefound && foundChildCareCat) is a possible event
+            else if (pastChildCareTypefound && foundChildCareCat){
+              console.log('adding delete flag for: ' , foundChildCareCat);
+              //past child care type with fees found AND our users choice marked prev fees as correct... delete the card
+              foundChildCareCat.deleteMe = true;
+            }
+          });
         }
 
 
