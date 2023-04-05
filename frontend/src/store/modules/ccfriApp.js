@@ -9,7 +9,7 @@ function getProgramYear(selectedGuid, programYearList){
 
   if(!programYear){
     //console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
-    throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ' + selectedGuid ;
+    throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ';
   }
 
   return programYear;
@@ -192,7 +192,6 @@ export default {
             return (searchItem.childCareCategoryId == item.childCareCategoryId &&
             searchItem.programYearId == ccofProgramYearId);
           });
-          console.log(`XXXXXXXXXX--   found: ${found} for childcare category: ${item.childCareCategoryId}, program year:${ccofProgramYearId}`);
           if (!found) {
             careTypes.push( {
               programYear: currProgramYear.name,
