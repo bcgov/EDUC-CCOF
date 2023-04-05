@@ -22,7 +22,7 @@ env:
 
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
-  BRANCH: "release-1.6.9a"
+  BRANCH: "release-1.6.10"
   APP_NAME_BACKEND: "backend"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
