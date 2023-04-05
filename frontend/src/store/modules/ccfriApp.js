@@ -204,7 +204,7 @@ export default {
 
 
         //only display ALL previous year fee cards if it's the first time CCFRI application  -- OR prev fees are incorrect
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001){
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000){
           response.data.forEach(item => {
 
             //check for undefined here!
