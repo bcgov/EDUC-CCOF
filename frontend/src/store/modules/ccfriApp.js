@@ -187,7 +187,6 @@ export default {
 
         //Always show the current year fee cards
         response.data.forEach(item => {
-          console.log('data is: ', JSON.stringify(response.data));
           let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
             return (searchItem.childCareCategoryId == item.childCareCategoryId &&
             searchItem.programYearId == ccofProgramYearId);
