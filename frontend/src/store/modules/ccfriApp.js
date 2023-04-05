@@ -183,7 +183,7 @@ export default {
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
-        const prevCcfriApp = state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
+        const prevCcfriApp = await state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
         console.log('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
@@ -204,9 +204,13 @@ export default {
         });
 
 
-
-        //only display ALL previous year fee cards if it's the first time CCFRI application  -- OR prev fees are incorrect OR if prev CCFRI is not found
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001 || !prevCcfriApp){
+        //|| !state.CCFRIFacilityModel.existingFeesCorrect
+        //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001 || !state.CCFRIFacilityModel.existingFeesCorrect || !prevCcfriApp){
+          console.log('in if');
+          console.log(!rootState.app.isRenewal );
+          console.log(state.CCFRIFacilityModel.existingFeesCorrect == 100000001);
+          console.log( !prevCcfriApp);
 
           response.data.forEach(item => {
 
