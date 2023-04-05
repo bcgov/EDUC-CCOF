@@ -207,11 +207,6 @@ export default {
         //|| !state.CCFRIFacilityModel.existingFeesCorrect
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001 || !state.CCFRIFacilityModel.existingFeesCorrect || !prevCcfriApp){
-          console.log('in if');
-          console.log(!rootState.app.isRenewal );
-          console.log(state.CCFRIFacilityModel.existingFeesCorrect == 100000001);
-          console.log( !prevCcfriApp);
-
           response.data.forEach(item => {
 
             //check for undefined here!
