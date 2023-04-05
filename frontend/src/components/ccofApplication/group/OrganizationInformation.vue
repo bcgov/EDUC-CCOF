@@ -97,7 +97,7 @@
       </span>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
         :isSaveDisabled="isLocked" :isNextDisabled="!isValidForm" :isProcessing="processing" 
-        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
+        @previous="back" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>

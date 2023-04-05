@@ -108,7 +108,7 @@
             </v-card-text>
           </v-card>
 
-        <NavButton :isNextDisplayed="true" :isSaveDisplayed="false"
+        <NavButton :isNextDisplayed="true"
           :isNextDisabled="!isFormValidAndLoaded()" :isProcessing="processing" 
           @previous="previous" @next="next" @validateForm="validateForm"></NavButton>
       </v-form>

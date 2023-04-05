@@ -31,7 +31,7 @@
       </v-card>
     </v-row>
 
-    <NavButton :isNextDisplayed="false" :isSaveDisplayed="false" @previous="previous"></NavButton>
+    <NavButton @previous="previous"></NavButton>
   </v-container>
 </template>
 

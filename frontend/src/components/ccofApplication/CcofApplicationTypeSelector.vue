@@ -27,7 +27,7 @@
         </LargeCard>
       </v-col>
     </v-row>
-    <NavButton :isNextDisplayed="false" :isSaveDisplayed="false" @previous="previous" class="pt-16"></NavButton>
+    <NavButton @previous="previous" class="pt-16"></NavButton>
   </v-container>
 </template>
 

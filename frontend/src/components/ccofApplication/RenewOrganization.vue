@@ -100,7 +100,7 @@
         </v-card>
       </v-row>
 
-      <NavButton :isNextDisplayed="true" :isSaveDisplayed="false"
+      <NavButton :isNextDisplayed="true"
           :isNextDisabled="!(fundingGroup == 'true' && bankingGroup == 'false')" :isProcessing="processing" 
           @previous="back" @next="next" @validateForm="validateForm"></NavButton>
 

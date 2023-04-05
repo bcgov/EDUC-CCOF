@@ -464,9 +464,6 @@
         <v-btn class="blueButton" x-large @click="next()" :disabled="false">Next</v-btn>
         <v-btn class="blueButton" x-large>Save</v-btn>
       </v-row>
-      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="false" :isNextDisabled="false" :isProcessing="false" 
-        @previous="previous" @next="next"></NavButton>
   </v-container>
 </template>
 
