@@ -184,11 +184,11 @@ export default {
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
         const prevCcfriApp = await state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
+
         console.log('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
         response.data.forEach(item => {
-
           let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
             return (searchItem.childCareCategoryId == item.childCareCategoryId &&
             searchItem.programYearId == ccofProgramYearId);
@@ -203,10 +203,8 @@ export default {
           }
         });
 
-
-        //|| !state.CCFRIFacilityModel.existingFeesCorrect
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect == 100000001 || !state.CCFRIFacilityModel.existingFeesCorrect || !prevCcfriApp){
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || !prevCcfriApp){
           response.data.forEach(item => {
 
             //check for undefined here!
@@ -229,14 +227,12 @@ export default {
           });
         }
 
-
         /*
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
-        else if (rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
+        else if (rootState.app.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
           console.log('prevCCFRI IS:' , prevCcfriApp);
-
           response.data.forEach(item => {
 
             //check to see if childcarecat exists in last years CCFRI app.
