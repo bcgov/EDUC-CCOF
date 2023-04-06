@@ -189,26 +189,24 @@ export default {
           } else {
             this.model.q1 = undefined;
           }
+          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data
 
-          if(this.CCFRIFacilityModel.previousCcfriId){
-            await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data
+          this.feeList = [];
 
-            this.feeList = [];
+          //only display last years child care fees
+          const prevYearGuid = this.previousProgramYearGuid;
+          this.CCFRIFacilityModel.childCareTypes.forEach(item => {
+            if (item.programYearId == prevYearGuid ){
+              this.feeList.push(item);
+            }
+          });
 
-            //only display last years child care fees
-            const prevYearGuid = this.previousProgramYearGuid;
-            this.CCFRIFacilityModel.childCareTypes.forEach(item => {
-              if (item.programYearId == prevYearGuid ){
-                this.feeList.push(item);
-              }
-            });
+          this.feeList.sort((a, b) => a.orderNumber - b.orderNumber);
 
-            this.feeList.sort((a, b) => a.orderNumber - b.orderNumber);
-
-            console.log(this.feeList);
+          console.log(this.feeList);
 
 
-          }
+          //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
         } catch (error) {
           console.log(error);
