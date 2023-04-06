@@ -259,7 +259,7 @@ export default {
           }
         }
       }
-
+      this.processing = false;
     },
   },
   mounted() {
