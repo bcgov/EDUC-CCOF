@@ -5,7 +5,7 @@
       <h4 style="color:#003466;">Organization Information
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
         <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">Organization Information has errors please check - Text TBD</span>
+        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view</span>
       </h4>
 
     </v-expansion-panel-header>
@@ -31,9 +31,6 @@
               </v-col>
               <v-col cols="12" class="d-flex justify-start">
                 <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address1" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
-              </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address2" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -128,12 +125,38 @@
             </v-row>
           </v-col>
         </v-row>
+        <v-row class="d-flex justify-start">
+          <v-col  cols="6" lg="4" class="pb-0 pt-0">
+            <v-row  no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start ml-3">
+                <span class="summary-label">Organization Street Address</span>
+              </v-col>
+              <v-col class="d-flex justify-start">
+                <v-text-field class="summary-value" :value="this.summaryModel?.organization?.address2" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="5" class="d-flex justify-start ml-3">
+                <span class="summary-label">City/Town</span>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-start">
+                <span class="summary-label">Postal Code</span>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-start">
+                <v-text-field class="summary-value" :value="this.summaryModel?.organization?.city2" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-start">
+                <v-text-field class="summary-value" :value="this.summaryModel?.organization?.postalCode2" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
       </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
             </v-col>
           </v-row>
         </v-col>

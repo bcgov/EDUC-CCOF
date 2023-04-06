@@ -1,6 +1,11 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
-<v-card>
+<v-card class="px-0">
+  <v-system-bar
+    color="grey"
+    dark
+  >
+  </v-system-bar>
   <v-row no-gutters class="d-flex flex-column">
     <v-row class="d-flex justify-start" >
       <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
@@ -75,10 +80,10 @@
       <h4 style="color:#003466;">Facility Information
       <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
       <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-      <span v-if="!isValidForm" style="color:#ff5252;">Facility Information has errors please check - Text TBD</span>
+      <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
       </h4>
     </v-expansion-panel-header>
-    <v-expansion-panel-content eager  >
+    <v-expansion-panel-content eager class="exp-style" >
     <v-row no-gutters class="d-flex flex-column">
       <v-row class="d-flex justify-start">
         <v-col cols="8" lg="6" class="pb-0 pt-0">
@@ -192,10 +197,10 @@
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a> -->
+              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a> -->
             </v-col>
           </v-row>
         </v-col>
