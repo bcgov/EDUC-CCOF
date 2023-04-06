@@ -32,9 +32,6 @@
               <v-col cols="12" class="d-flex justify-start">
                 <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address1" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
               </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address2" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
-              </v-col>
             </v-row>
           </v-col>
           <v-col cols="6" lg="4" class="pb-0 pt-0">
@@ -124,6 +121,32 @@
               </v-col>
               <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.incNumber" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row class="d-flex justify-start">
+          <v-col  cols="6" lg="4" class="pb-0 pt-0">
+            <v-row  no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start ml-3">
+                <span class="summary-label">Organization Street Address</span>
+              </v-col>
+              <v-col class="d-flex justify-start">
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.address2" dense flat solo hide-details readonly  :rules="rules.required" ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="5" class="d-flex justify-start ml-3">
+                <span class="summary-label">City/Town</span>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-start">
+                <span class="summary-label">Postal Code</span>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-start">
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.city2" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-start">
+                <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.organization?.postalCode2" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
