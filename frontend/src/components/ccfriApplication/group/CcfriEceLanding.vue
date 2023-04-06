@@ -260,9 +260,6 @@ export default {
         }
       }
 
-      //this gives time for Dynamics to connect a newly made CCFRI application with it's past CCFRI application.
-      await new Promise(r => setTimeout(r, 5000));
-      this.processing = false;
     },
   },
   mounted() {
