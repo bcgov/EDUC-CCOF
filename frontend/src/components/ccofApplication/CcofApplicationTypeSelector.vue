@@ -27,7 +27,7 @@
         </LargeCard>
       </v-col>
     </v-row>
-    <NavButton @previous="previous" class="pt-16"></NavButton>
+    <NavButton @previous="previous"></NavButton>
   </v-container>
 </template>
 

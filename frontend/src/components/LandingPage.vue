@@ -68,20 +68,19 @@
           <p>
             <a class='text-decoration-underline' href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
           </p>
-          <div v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">
-            <v-card class="elevation-0 mt-1 pa-1 py-2">
+          <div v-if="ccofRenewStatus === RENEW_STATUS_APPROVED || ccofRenewStatus === RENEW_STATUS_COMPLETE">
+            <v-card class="elevation-0">
               <v-row align="center" class="noticeInfo px-2" no-gutters>
                 <v-col :cols="12" md="2" align="center">
                   <v-icon x-large class="noticeInfoIcon">mdi-information</v-icon>
                 </v-col>
-                <v-col class="pl-2 py-1">
+                <v-col class="pl-2">
                   <span>View the individual Facility statuses in the <strong>Facility Information</strong> section below</span>
                 </v-col>
               </v-row>
             </v-card>
           </div>
-          <div v-else-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
-            <p class="text-h6 blueText">Status of the PCF: Submitted</p>
+          <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE" class="mt-4">
             <span>We will contact you if we require further information. You can view your latest submission from the button below.</span>
           </div>
         </template>

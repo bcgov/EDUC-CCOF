@@ -77,7 +77,6 @@ input[type=number] {
   background-color: rgba(0,0,0,.12) !important;
   color: rgba(0, 0, 0, 0.26) !important;
   box-shadow: none !important;
-  /* opacity: 0.2 !important; */
 }
 
 .blueButton {

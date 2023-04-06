@@ -40,7 +40,7 @@ export default {
       default: false
     },
   },
-  emits: ['previous', 'next', 'validateForm', 'save'],
+  emits: ['previous', 'next', 'validateForm', 'save', 'submit'],
   methods: {
     async previous() {
       this.$emit('previous');
