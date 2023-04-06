@@ -116,7 +116,7 @@
         </v-card>
       </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="processing" 
+        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="processing" 
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>

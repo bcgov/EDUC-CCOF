@@ -36,6 +36,7 @@
 import LargeCard from '@/components/guiComponents/LargeCard.vue';
 import { PATHS } from '@/utils/constants';
 import { mapMutations } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 
 export default {
   name: 'LandingPage',
@@ -44,7 +45,7 @@ export default {
       paths: PATHS
     };
   },
-  components: { LargeCard },
+  components: { LargeCard, NavButton },
   methods: {
     ...mapMutations('organization', ['setOrganizationProviderType']),
     async previous() {
