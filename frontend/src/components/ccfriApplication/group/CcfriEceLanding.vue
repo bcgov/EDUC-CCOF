@@ -166,8 +166,8 @@ export default {
     async previous() {
       console.log(this.ccfriOptInOrOut);
       console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
-    // let path = await this.getPreviousPath();
-    // this.$router.push(path);
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
