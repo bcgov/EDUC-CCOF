@@ -150,13 +150,20 @@ export default {
             summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
             if (facility.ccfri?.ccfriId) {
               let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
-              summaryModel.facilities[index].ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
-              summaryModel.facilities[index].ccfri.childCareTypes = ccfriResponse.childCareTypes;
-              summaryModel.facilities[index].ccfri.dates = ccfriResponse.dates;
+              facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
+              facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
+              facility.ccfri.dates = ccfriResponse.dates;
               const  ccofProgramYearId = rootState.application.programYearId;
               const programYearList = rootState.app.programYearList.list;
-              summaryModel.facilities[index].ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
-              summaryModel.facilities[index].ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
+              facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
+              facility.ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
+
+              //jb
+              //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
+              if (facility.ccfri.previousCcfriId){
+
+                facility.ccfri.prevYearCcfriApp = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)).data;
+              }
               if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
 
                 summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
