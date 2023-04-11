@@ -2,7 +2,7 @@
   <v-row justify="space-around" class="stickyNavButtons">
     <v-btn class="blueButton" x-large :loading="isProcessing" @click="previous()">Back</v-btn>
     <v-btn v-if='isNextDisplayed' :class="isNextDisabled ? 'disabledButton' : 'blueButton'" x-large :loading="isProcessing" @click="next()">Next</v-btn>
-    <v-btn v-if='isSaveDisplayed' class="blueButton" x-large :loading="isProcessing" :disabled="isSaveDisabled" @click="save(true)">Save</v-btn>
+    <v-btn v-if='isSaveDisplayed' class="blueButton" x-large :loading="isProcessing" :disabled="isSaveDisabled" @click="save()">Save</v-btn>
     <v-btn v-if='isSubmitDisplayed' class="blueButton" x-large :loading="isProcessing" :disabled="isSubmitDisabled" @click="submit()">Submit</v-btn>
   </v-row>
 </template>
