@@ -8,6 +8,7 @@ export default {
     programYearId: null,
     programYearLabel: null,
     isRenewal: false,
+    formattedProgramYear: null,
 
     unlockBaseFunding: false,
     unlockDeclaration: false,
@@ -29,6 +30,7 @@ export default {
     setProgramYearId(state, value) { state.programYearId = value; },
     setProgramYearLabel(state, value) { state.programYearLabel = value; },
     setIsRenewal(state, value) { state.isRenewal = value; },
+    setFormattedProgramYear(state, value) { state.formattedProgramYear = value; },
 
     setUnlockBaseFunding(state, value) { state.unlockBaseFunding = value; },
     setUnlockDeclaration(state, value) { state.unlockDeclaration = value; },
@@ -49,13 +51,14 @@ export default {
       state.programYearId = userInfo.ccofProgramYearId;
       state.programYearLabel = userInfo.ccofProgramYearName;
       state.isRenewal = (userInfo.applicationType === 'RENEW');
+      state.formattedProgramYear = userInfo.ccofProgramYearName?.replace(/[^\d/]/g, '');
 
       state.unlockBaseFunding = userInfo.unlockBaseFunding;
       state.unlockDeclaration = userInfo.unlockDeclaration;
       state.unlockEcewe = userInfo.unlockEcewe;
       state.unlockLicenseUpload = userInfo.unlockLicenseUpload;
       state.unlockSupportingDocuments = userInfo.unlockSupportingDocuments;
-  
+
       state.isEceweComplete = userInfo.isEceweComplete;
       state.isLicenseUploadComplete = userInfo.isLicenseUploadComplete;
       state.isOrganizationComplete = userInfo.isOrganizationComplete;
@@ -70,6 +73,7 @@ export default {
       commit('setCcofApplicationStatus', userInfo.ccofApplicationStatus);
       commit('setProgramYearId', userInfo.ccofProgramYearId);
       commit('setProgramYearLabel', userInfo.ccofProgramYearName);
+      commit('setFormattedProgramYear', userInfo.ccofProgramYearName?.replace(/[^\d/]/g, '') );
       commit('setIsRenewal', (userInfo.applicationType === 'RENEW'));
 
       commit('setUnlockBaseFunding', userInfo.unlockBaseFunding);
@@ -77,10 +81,10 @@ export default {
       commit('setUnlockEcewe', userInfo.unlockEcewe);
       commit('setUnlockLicenseUpload', userInfo.unlockLicenseUpload);
       commit('setUnlockSupportingDocuments', userInfo.unlockSupportingDocuments);
-    
+
       commit('setIsEceweComplete', userInfo.isEceweComplete);
       commit('setIsLicenseUploadComplete', userInfo.isLicenseUploadComplete);
-      commit('setIsOrganizationComplete', userInfo.isOrganizationComplete);      
+      commit('setIsOrganizationComplete', userInfo.isOrganizationComplete);
     },
 
   },

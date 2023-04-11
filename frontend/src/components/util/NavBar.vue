@@ -224,7 +224,7 @@ export default {
       });
       let declarationAccessible = this.areChildrenComplete(this.items);
       if (StaticConfig.DECB_VALIDATION_BYPASS && this.isDeclarationB()) {
-        declarationAccessible = true;  
+        declarationAccessible = true;
       }
       this.setCanSubmit(declarationAccessible);
       this.items.push(
@@ -246,7 +246,7 @@ export default {
       }
       return 'mdi-checkbox-blank-circle-outline';
     },
-    
+
     isDeclarationB() {
       if (this.programYearList?.list) {
         const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId );

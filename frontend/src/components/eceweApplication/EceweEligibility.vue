@@ -1,9 +1,9 @@
 <template>
   <v-form ref="form">
-    
+
     <v-container>
       <div class="row pt-4 justify-center">
-        <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }} Program Confirmation Form</span>
+        <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
       </div>
       <br>
       <div class="row pt-4 justify-center">
@@ -27,8 +27,8 @@
             </v-icon>
           </span>
           <span>
-            <strong>Note:</strong> Please ensure you have read and understand the full eligibility requirements 
-            outlined in the ECE Wage Enhancement Funding Guidelines. 
+            <strong>Note:</strong> Please ensure you have read and understand the full eligibility requirements
+            outlined in the ECE Wage Enhancement Funding Guidelines.
             All CCFRI-eligible facilities <strong><u>must</u></strong> first opt-in to CCFRI in order to be eligible for ECE-WE.
           </span>
         </v-alert>
@@ -47,7 +47,7 @@
                 v-model="model.optInECEWE"
                 :disabled="isReadOnly">
                 <template v-slot:label>
-                  <span class="radio-label" style="align-content: center;">For the {{programYearLabel}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
+                  <span class="radio-label" style="align-content: center;">For the {{formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
                 </template>
                 <div class="flex-center pt-2">
                   <v-radio
@@ -161,7 +161,7 @@
           </v-card>
         </v-card>
       </v-row>
-      
+
       <v-row v-if="(model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
@@ -248,7 +248,7 @@
                   Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
                 </v-row>
               </v-card>
-            </div>            
+            </div>
             <v-card v-if="model.fundingModel === fundingModelTypeList[1].id || model.fundingModel === fundingModelTypeList[2].id" width="100%">
               <v-row v-if="!isLoading" >
                 <v-col class="py-0">
@@ -288,9 +288,9 @@
     </v-container>
   </v-form>
 </template>
-  
+
 <script>
-  
+
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -308,7 +308,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('application', ['programYearLabel', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     facilities: {
       get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
@@ -324,7 +324,7 @@ export default {
       if (this.unlockEcewe) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
-        return true; 
+        return true;
       }
       return false;
     }
@@ -407,8 +407,8 @@ export default {
       this.isLoading = false;
     },
     optOutFacilities() {
-      //this was modified by JB to try and fix bugs with the checkmarks. 
-      //instead of running map - I update the facility and nav bar with the opt out status. 
+      //this was modified by JB to try and fix bugs with the checkmarks.
+      //instead of running map - I update the facility and nav bar with the opt out status.
 
       // this.facilities = this.facilities.map(facility => {
       //   if (facility.optInOrOut != 0) {
@@ -429,7 +429,7 @@ export default {
         this.updateQuestions();
         this.setEceweModel(this.model);
         await this.saveECEWE(this.enableButtons);
-        this.setIsEceweComplete(this.enableButtons); 
+        this.setIsEceweComplete(this.enableButtons);
         const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut === 1);
 
         //jb below
@@ -442,8 +442,8 @@ export default {
         if (this.model.fundingModel === this.fundingModelTypeList[0].id || optOutFacilities) {
           this.optOutFacilities();
         }
-        
-        //save the facilites reagrdless so ECE WE application is always created 
+
+        //save the facilites reagrdless so ECE WE application is always created
         await this.saveECEWEFacilities(showConfirmation);
         if (showConfirmation) {
           this.setSuccessAlert('Success! ECEWE application has been saved.');

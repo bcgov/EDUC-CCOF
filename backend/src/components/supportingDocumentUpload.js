@@ -15,22 +15,35 @@ async function saveDocument(req, res) {
   }
 }
 
+function mapDocument(fileInfo) {
+  const document = {};
+  document.filename = fileInfo.filename;
+  document.annotationid = fileInfo.annotationid;
+  document.documentType = fileInfo.subject;
+  document.ccof_facility = fileInfo['ApplicationFacilityDocument.ccof_facility'];
+  document.ccof_facility_name = fileInfo['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'];
+  document.ccof_application_facility_documentId = fileInfo['ApplicationFacilityDocument.ccof_application_facility_documentid'];
+  document.description = fileInfo.notetext;
+  return document;
+
+}
+
 async function getUploadedDocuments(req, res) {
   try {
     let response = await getApplicationDocument(req.params.applicationId);
+    const getAllFiles = req.query.allFiles || false;
     let documentFiles = [];
     if (response?.value?.length > 0) {
       for (let fileInfo of response?.value) {
-        if (fileInfo.subject !== 'Facility License') {
-          const document = {};
-          document.filename = fileInfo.filename;
-          document.annotationid = fileInfo.annotationid;
-          document.documentType = fileInfo.subject;
-          document.ccof_facility = fileInfo['ApplicationFacilityDocument.ccof_facility'];
-          document.ccof_facility_name = fileInfo['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'];
-          document.ccof_application_facility_documentId = fileInfo['ApplicationFacilityDocument.ccof_application_facility_documentid'];
-          documentFiles.push(document);
+        if(getAllFiles){
+          documentFiles.push(mapDocument(fileInfo));
         }
+        else{
+          if(fileInfo.subject !== 'Facility License') {
+            documentFiles.push(mapDocument(fileInfo));
+          }
+        }
+
       }
     }
     return res.status(HttpStatus.OK).json(documentFiles);
@@ -39,6 +52,28 @@ async function getUploadedDocuments(req, res) {
   }
 }
 
+async function getAllUploadedDocuments(req, res) {
+  try {
+    let response = await getApplicationDocument(req.params.applicationId);
+    let documentFiles = [];
+    if (response?.value?.length > 0) {
+      for (let fileInfo of response?.value) {
+        const document = {};
+        document.filename = fileInfo.filename;
+        document.annotationid = fileInfo.annotationid;
+        document.documentType = fileInfo.subject;
+        document.ccof_facility = fileInfo['ApplicationFacilityDocument.ccof_facility'];
+        document.ccof_facility_name = fileInfo['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'];
+        document.ccof_application_facility_documentId = fileInfo['ApplicationFacilityDocument.ccof_application_facility_documentid'];
+        document.description=fileInfo.notetext;
+        documentFiles.push(document);
+      }
+    }
+    return res.status(HttpStatus.OK).json(documentFiles);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 async function deleteUploadedDocuments(req, res) {
   try {
     let deletedDocuments = req.body;
