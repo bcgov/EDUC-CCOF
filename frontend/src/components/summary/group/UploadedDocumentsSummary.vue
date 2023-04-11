@@ -5,7 +5,7 @@
       <h4 style="color:#003466;">Uploaded Documents
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
         <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">Organization Information has errors please check - Text TBD</span>
+        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
@@ -42,7 +42,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.group.licenseUpload" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.group.licenseUpload" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
             </v-col>
           </v-row>
         </v-col>

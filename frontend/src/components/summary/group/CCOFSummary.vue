@@ -5,7 +5,7 @@
       <h4 style="color:#003466;">Child Care Operating Funding (CCOF)
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
         <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">CCOF Information has errors please check - Text TBD</span>
+        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
@@ -30,10 +30,45 @@
         </v-row>
         <v-row class="d-flex justify-start">
           <v-col cols="8" lg="6" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
+            <v-row v-if ="this.funding?.hasClosedMonth?.toUpperCase() == 'YES'" no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label pt-3">Are there months when ALL of the programs at this facility are closed for the entire month? </span>
-                <v-text-field placeholder="Required" :value="this.funding?.hasClosedMonth?.toUpperCase()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <span class="summary-label pt-3">Months where ALL of the programs at this facility are closed for the entire month: </span>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn1" class="d-flex justify-start">
+                <v-text-field  value="January" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn2" class="d-flex justify-start">
+                <v-text-field  value="February" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn3" class="d-flex justify-start">
+                <v-text-field  value="March" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn4" class="d-flex justify-start">
+                <v-text-field  value="April" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn5" class="d-flex justify-start">
+                <v-text-field  value="May" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn6" class="d-flex justify-start">
+                <v-text-field  value="June" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn7" class="d-flex justify-start">
+                <v-text-field  value="July" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn8" class="d-flex justify-start">
+                <v-text-field value="August" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn9" class="d-flex justify-start">
+                <v-text-field  value="September" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn10" class="d-flex justify-start">
+                <v-text-field  value="October" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4" v-if="this.funding?.closedIn11" class="d-flex justify-start">
+                <v-text-field  value="November" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+              <v-col cols="4"  v-if="this.funding?.closedIn12" class="d-flex justify-start">
+                <v-text-field value="December" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -269,11 +304,11 @@
             <v-col cols="12" class="d-flex justify-start">
 
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.group.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a> -->
+              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.group.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a> -->
             </v-col>
           </v-row>
         </v-col>
@@ -284,7 +319,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
             </v-col>
           </v-row>
         </v-col>

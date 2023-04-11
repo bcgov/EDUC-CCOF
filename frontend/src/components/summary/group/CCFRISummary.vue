@@ -5,7 +5,7 @@
       <h4 style="color:#003466;">Child Care Fee Reduction Initiative (CCFRI)
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
         <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">CCFRI Information has errors please check - Text TBD</span>
+        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
@@ -121,13 +121,13 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" v-if="!ccfri" class="d-flex justify-start">
-              <a :href="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
             </v-col>
             <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
-              <a :href="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
             </v-col>
             <v-col cols="12" v-else class="d-flex justify-start">
-              <a :href="PATHS.addNewFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
+              <a :href="PATHS.addNewFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
             </v-col>
           </v-row>
         </v-col>
@@ -188,7 +188,7 @@ export default {
       if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses.length){
         let childCareTypesArr = [];
 
-        const findChildCareTypes = ((yearToSearch) => {
+        const findChildCareTypes = ((yearToSearch, checkForMissingPrevFees = false) => {
 
           this.ccfri?.childCareLicenses.forEach((category) => {
 
@@ -200,6 +200,20 @@ export default {
               childCareTypesArr.push(found);
             }
             else {
+
+              if (checkForMissingPrevFees){
+
+                //check to see if childcarecat exists in last years CCFRI app.
+                let pastChildCareTypefound = this.ccfri?.prevYearCcfriApp.childCareTypes.find(prevChildCareCat => {
+                  return (prevChildCareCat.childCareCategoryId == category.childCareCategoryId && prevChildCareCat.programYearId == yearToSearch.programYearId );
+                });
+                if (pastChildCareTypefound){
+                  return;
+                }
+                //else we are missing fees from last year, for a child care category that the user has license for.
+                //This ususally happens when the facility has a new licesce for this year. Add the category to the summary
+              }
+
               let theCat = _.cloneDeep(category);
               theCat.programYear = yearToSearch.name;
               childCareTypesArr.push(theCat);
@@ -207,14 +221,17 @@ export default {
           });
         });
 
-
         findChildCareTypes(this.ccfri.currentYear);
 
         //only show last year fees if new app or previous year fees are incorrect
-        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 ){
+        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 || !this.ccfri.previousCcfriId ){
           findChildCareTypes(this.ccfri.prevYear);
         }
-        //_.sortBy(childCareTypesArr, 'orderNumber');
+
+        //check if we are missing any feed cards from the last year if previous fees are correct
+        else if (this.isRenewal &&  this.ccfri.existingFeesCorrect == 100000000 && this.ccfri.previousCcfriId){
+          findChildCareTypes(this.ccfri.prevYear, true);
+        }
 
         //age group asc
         childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);

@@ -11,91 +11,7 @@
         {{ this.userInfo.organizationName }}
       </v-row>
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
-        Text to inform user to sign Declaration at the end of page TBD
-      </v-row>
-      <div>
-        <v-row class="d-flex justify-center">
-          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-            <v-row class="d-flex justify-start">
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
-              </v-col>
-            </v-row>
-            <v-expansion-panels focusable multiple variant="accordion" >
-              <v-row v-if="isMainLoading">
-                <v-col>
-                  <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
-                                     type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
-                </v-col>
-              </v-row>
-              <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
-                <div v-if="!this.isRenewal">
-                  <v-expansion-panel variant="accordion">
-                    <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
-                                         :summary-model="this.summaryModel">
-                    </OrganizationSummary>
-                  </v-expansion-panel>
-                  <v-expansion-panel variant="accordion">
-                    <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                  :ecewe-facility="null"></ECEWESummary>
-                  </v-expansion-panel>
-                </div>
-
-                  <div v-for=" (facility , index)  in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
-
-
-                    <v-skeleton-loader v-if="isSummaryLoading[index]" :loading="isSummaryLoading[index]"
-                                     type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
-
-                    <div v-else>
-                    <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
-                      <FacilityInformationSummary :facility-info="facility?.facilityInfo"
-                                                  :funding="facility?.funding"
-                                                  :facility-id="facility.facilityId"
-                                                  :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-                                                  :ecewe-status="facility?.ecewe?.optInOrOut"
-                                                  :license-categories="facility?.licenseCategories"
-                                                  @isSummaryValid="isFormComplete"></FacilityInformationSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <div v-if="!facility.funding"></div>
-                      <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"
-                                   :facilityId="facility.facilityId"></CCOFSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri"
-                                    :facility-id="facility.facilityId"></CCFRISummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
-                      <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp"
-                                  :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
-                      <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp"
-                                  :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                    :ecewe-facility="facility.ecewe"></ECEWESummary>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <div v-if="!facility.funding"></div>
-                      <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete"
-                                                :documents="facility.documents"></UploadedDocumentsSummary>
-                    </v-expansion-panel>
-                  </div>
-                </div>
-
-              </v-row>
-            </v-expansion-panels>
-
-          </v-card>
-        </v-row>
-
-      </div>
-      <!---Declaration Start--->
-      <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
-        Funding Agreement Number: {{ fundingAgreementNumber }}
+        To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
       <v-row v-if="!this.isSummaryComplete" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -117,12 +33,101 @@
                 <div>
                   <p>You will not be able to submit your application until it is complete.</p>
                   <p>Incomplete sections will have a circle without a checkmark on the navigational panel to the left of
-                    the screen.</p>
+                    the screen.Text TBD</p>
                 </div>
               </v-col>
             </v-row>
           </v-container>
         </v-card>
+      </v-row>
+      <div>
+        <v-row class="d-flex justify-center">
+          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
+            <v-row class="d-flex justify-start">
+              <v-col class="pa-0">
+                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
+              </v-col>
+            </v-row>
+            <v-expansion-panels focusable multiple accordion>
+              <v-row v-if="isMainLoading">
+                <v-col>
+                  <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
+                                     type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
+                </v-col>
+              </v-row>
+              <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
+                <div v-if="!this.isRenewal">
+                  <v-expansion-panel variant="accordion">
+                    <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
+                                         :summary-model="this.summaryModel">
+                    </OrganizationSummary>
+                  </v-expansion-panel>
+                </div>
+
+                <div v-for=" (facility , index)  in this.summaryModel?.facilities" :key="facility?.facilityId" class="special">
+
+                  <v-skeleton-loader v-if="isSummaryLoading[index]" :loading="isSummaryLoading[index]"
+                                    type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"></v-skeleton-loader>
+
+                    <div v-else>
+                      <v-expansion-panel variant="accordion" v-if="facility?.facilityInfo">
+                        <FacilityInformationSummary :facility-info="facility?.facilityInfo"
+                                                    :funding="facility?.funding"
+                                                    :facility-id="facility.facilityId"
+                                                    :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
+                                                    :ecewe-status="facility?.ecewe?.optInOrOut"
+                                                    :license-categories="facility?.licenseCategories"
+                                                    @isSummaryValid="isFormComplete"></FacilityInformationSummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <div v-if="!facility.funding"></div>
+                        <div v-else>
+                          <CCOFSummaryFamily v-if="summaryModel?.application?.organizationProviderType == 'FAMILY'"
+                                    @isSummaryValid="isFormComplete" :funding="facility.funding"
+                                    :facilityId="facility.facilityId"></CCOFSummaryFamily>
+                          <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"
+                                    :facilityId="facility.facilityId"></CCOFSummary>
+                        </div>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri"
+                                      :facility-id="facility.facilityId"></CCFRISummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
+                        <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp"
+                                    :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
+                        <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp"
+                                    :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
+                                      :ecewe-facility="facility.ecewe"></ECEWESummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <div v-if="!facility.funding"></div>
+                        <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete"
+                                                  :documents="facility.documents"></UploadedDocumentsSummary>
+                      </v-expansion-panel>
+                    </div>
+                </div>
+                <div v-if="!this.isRenewal">
+                <v-expansion-panel variant="accordion">
+                  <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
+                                :ecewe-facility="null"></ECEWESummary>
+                </v-expansion-panel>
+                </div>
+              </v-row>
+            </v-expansion-panels>
+
+          </v-card>
+        </v-row>
+
+      </div>
+      <!---Declaration Start--->
+      <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
+        Funding Agreement Number: {{ fundingAgreementNumber }}
       </v-row>
       <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -307,6 +312,7 @@ import RFISummary from '@/components/summary/group/RFISummary';
 import NMFSummary from '@/components/summary/group/NMFSummary';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
+import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -315,9 +321,17 @@ let model = {
 
 export default {
   components: {
-    OrganizationSummary, UploadedDocumentsSummary, NavButton,
-    NMFSummary, RFISummary, FacilityInformationSummary, CCOFSummary, CCFRISummary, ECEWESummary
-  },
+    OrganizationSummary,
+    UploadedDocumentsSummary,
+    NMFSummary,
+    RFISummary,
+    FacilityInformationSummary,
+    CCOFSummary,
+    CCFRISummary,
+    ECEWESummary,
+    CCOFSummaryFamily,
+    NavButton
+},
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
@@ -744,6 +758,8 @@ li {
   background-color: #E5E4E4;
 }
 
+
+
 .summary-label {
   color: grey;
   font-size: small;
@@ -757,5 +773,4 @@ li {
 .special {
   margin-top: 5vh !important;
 }
-
 </style>
