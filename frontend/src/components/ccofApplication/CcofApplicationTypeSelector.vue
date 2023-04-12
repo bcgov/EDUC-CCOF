@@ -27,11 +27,7 @@
         </LargeCard>
       </v-col>
     </v-row>
-    <v-row justify="space-around" class="pt-16">
-      <v-btn color="info" outlined required x-large to="/">Back</v-btn>
-      <span/>
-      <span/>
-    </v-row>    
+    <NavButton @previous="previous"></NavButton>
   </v-container>
 </template>
 
@@ -40,6 +36,7 @@
 import LargeCard from '@/components/guiComponents/LargeCard.vue';
 import { PATHS } from '@/utils/constants';
 import { mapMutations } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 
 export default {
   name: 'LandingPage',
@@ -48,10 +45,12 @@ export default {
       paths: PATHS
     };
   },
-  components: { LargeCard },
+  components: { LargeCard, NavButton },
   methods: {
     ...mapMutations('organization', ['setOrganizationProviderType']),
-
+    async previous() {
+      this.$router.push(this.paths.home);
+    },
     toGroup() {
       this.setOrganizationProviderType('GROUP');
       this.$router.push(this.paths.group.orgInfo);

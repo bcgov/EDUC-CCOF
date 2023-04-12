@@ -31,9 +31,7 @@
       </v-card>
     </v-row>
 
-    <v-row justify="space-around">
-      <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
-    </v-row>
+    <NavButton @previous="previous"></NavButton>
   </v-container>
 </template>
 
@@ -41,8 +39,10 @@
 
 import { PATHS } from '@/utils/constants';
 import { mapState, mapMutations, mapActions } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   props: {
   },
   computed: {

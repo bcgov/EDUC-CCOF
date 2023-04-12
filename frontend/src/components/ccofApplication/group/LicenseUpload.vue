@@ -55,15 +55,9 @@
             </v-card>
         </v-row>
       </span>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" :disabled="!isValidForm || nextButtonDisabled" :loading="isProcessing" outlined x-large
-               @click="next()">Next
-        </v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isValidForm || isLocked" @click="saveClicked()">
-          Save
-        </v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="!isValidForm || isLocked" :isNextDisabled="!isValidForm || nextButtonDisabled" :isProcessing="isProcessing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="saveClicked()"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -74,9 +68,10 @@ import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import {deepCloneObject, getFileExtension} from '@/utils/common';
-
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   props: {},
   computed: {
@@ -182,6 +177,9 @@ export default {
       this.$refs.form.validate();
       let path = await this.getNextPath();
       this.$router.push(path);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async deleteFile(item) {
       this.licenseUploadData = this.licenseUploadData.map(element => {

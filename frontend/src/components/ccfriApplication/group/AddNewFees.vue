@@ -354,13 +354,10 @@
         </v-card-text>
       </v-card>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
-          Back</v-btn>
-          <!--!isValidForm-->
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="isFormComplete()==false">Next</v-btn>
-        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete()" :isProcessing="processing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
+      
       <v-dialog
         v-model="showRfiDialog"
         persistent
@@ -400,9 +397,10 @@ import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import { isEqual, cloneDeep } from 'lodash';
+import NavButton from '@/components/util/NavButton';
 
 export default {
-
+  components: { NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -567,6 +565,9 @@ export default {
         let path = await this.getNextPath();
         this.$router.push(path);
       }
+    },
+    validateForm() {
+      this.$refs.isValidForm?.validate();
     },
     isFormComplete(){
       //100000000 == YES

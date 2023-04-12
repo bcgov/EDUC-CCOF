@@ -280,11 +280,9 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="space-around" class="mt-10">
-        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn :disabled="isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
-      </v-row>
+      <NavButton class="mt-10" :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="saveECEWEApplication"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -294,8 +292,10 @@
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -361,6 +361,9 @@ export default {
       } else {
         this.$router.push(PATHS.eceweFacilities);
       }
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
@@ -454,8 +457,9 @@ export default {
         this.isProcessing = false;
       }
     }
-  }
+  },
 };
+
 </script>
 <style>
 .flex-center {

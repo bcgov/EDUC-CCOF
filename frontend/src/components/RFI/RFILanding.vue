@@ -1478,15 +1478,10 @@
         </div>
 
       </v-card>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
-        <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" :class="isFormComplete ? '' : 'disabledButton'" outlined x-large :loading="processing" @click="nextBtnClicked()">Next
-        </v-btn>
-        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true) ">Save
-        </v-btn>
-      </v-row>
 
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete" :isProcessing="processing" 
+        @previous="previous" @next="nextBtnClicked" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -1497,6 +1492,7 @@ import {deepCloneObject} from '@/utils/common';
 import {isEqual} from 'lodash';
 import rules from '@/utils/rules';
 import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload';
+import NavButton from '@/components/util/NavButton';
 
 let model = {
   expansionList: [],
@@ -1679,11 +1675,11 @@ export default {
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     async nextBtnClicked() {
-      this.$refs.form.validate();
-      if (this.isFormComplete) {
-        let path = await this.getNextPath();
-        this.$router.push(path);
-      }
+      let path = await this.getNextPath();
+      this.$router.push(path);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async previous() {
       let path = await this.getPreviousPath();
@@ -1879,7 +1875,7 @@ export default {
     },
   },
 
-  components: {RFIDocumentUpload}
+  components: {RFIDocumentUpload, NavButton}
 };
 
 
