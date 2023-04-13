@@ -1,4 +1,5 @@
 <template>
+  <v-form ref="form">
   <v-container>
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
@@ -64,7 +65,8 @@
                   v-model="uiFacilities[index].optInOrOut"
                   class="pt-0 my-0"
                   row
-                  :disabled="isReadOnly">
+                  :disabled="isReadOnly"
+                  :rules="rules.required">
                   <v-radio
                     @click="toggleRadio(index)"
                     label="Opt-In"
@@ -132,6 +134,7 @@
       :isSaveDisabled="isSaveBtnDisabled || isReadOnly" :isNextDisabled="isNextBtnDisabled" :isProcessing="isProcessing" 
       @previous="previous" @next="next" @validateForm="validateForm()" @save="saveFacilities(true)"></NavButton>
   </v-container>
+  </v-form>
 </template>
 
 <script>
@@ -140,12 +143,14 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import rules from '@/utils/rules';
 
 export default {
   components: { NavButton },
   mixins: [alertMixin],
   data() {
     return {
+      rules,
       uiFacilities: [],
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
@@ -213,7 +218,7 @@ export default {
       this.$router.push(PATHS.supportingDocumentUpload);
     },
     validateForm() {
-      this.$refs.isValidForm?.validate();
+      this.$refs.form?.validate();
     },
     async loadData() {
       if (this.isStarted) {
