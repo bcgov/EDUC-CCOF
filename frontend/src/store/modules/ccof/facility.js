@@ -24,7 +24,7 @@ export default {
     getFacilityById: (state) => (facilityId) => {
       return state.facilityStore[facilityId];
     },
-    // getCCFRIById: (state) => (ccfriId) => { 
+    // getCCFRIById: (state) => (ccfriId) => {
     //   return state.ccfriStore[ccfriId];
     // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
@@ -133,14 +133,14 @@ export default {
         }
       }
     },
-    async deleteFacility({ commit }, { facilityId }) {
+    async deleteFacility({ commit }, facilityObj) {
       checkSession();
 
-      await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityId);
+      await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityObj.facilityId, {data: facilityObj});
 
-      commit('deleteFromStore', facilityId);
-      commit('funding/deleteFromStore', facilityId, { root: true });
-      commit('app/deleteFromNavBarList', facilityId, { root: true });
+      commit('deleteFromStore', facilityObj.facilityId);
+      commit('funding/deleteFromStore', facilityObj.facilityId, { root: true });
+      commit('app/deleteFromNavBarList', facilityObj.facilityId, { root: true });
     },
     newFacility({ commit }) {
       commit('setFacilityId', null);

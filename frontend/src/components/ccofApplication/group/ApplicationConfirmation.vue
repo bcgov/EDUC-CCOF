@@ -11,7 +11,7 @@
             <ul style="list-style: none">
               <li v-for="item in navBarList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
-                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName)">
+                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
                   <v-icon>mdi-close-circle</v-icon>
                 </v-btn>
               </li>
@@ -79,12 +79,15 @@ export default {
       dialog: false,
       deleteFacilityName: undefined,
       deleteFacilityId: undefined,
-      processing: false
+      processing: false,
+      deleteCcfriId: undefined,
+      deleteEceweId: undefined,
+      deleteCcofBaseFundingId: undefined,
     };
   },
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('application', ['applicationStatus', 'applicationId']),
     ...mapState('organization', ['organizationProviderType']),
     isLocked() {
       return (this.applicationStatus === 'SUBMITTED');
@@ -97,6 +100,7 @@ export default {
     previous() {
       let navItem = this.navBarList[this.navBarList.length - 1];
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
+      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
     addAnotherFacility() {
       this.$router.push(PATHS.group.facInfo);
@@ -104,14 +108,20 @@ export default {
     async next() {
       this.$router.push(PATHS.group.licenseUpload);
     },
-    confirmDeleteApplication(facilityId, facilityName) {
+    confirmDeleteApplication(facilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
       this.dialog = true;
+      this.deleteCcfriId = ccfriId;
+      this.deleteEceweId = eceweId;
+      this.deleteCcofBaseFundingId = ccofBaseFundingId;
     },
     async deleteApplication() {
       this.processing = true;
-      await this.deleteFacility({ facilityId: this.deleteFacilityId });
+      console.log(this.deleteFacilityId);
+      console.log(this.deleteCcfriId);
+      console.log(this.applicationId);
+      await this.deleteFacility({ facilityId: this.deleteFacilityId , ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;
     }

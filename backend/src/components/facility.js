@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId, getApplicationDocument, deleteDocument} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
@@ -315,10 +315,55 @@ async function updateFacility(req, res) {
 }
 
 async function deleteFacility(req, res) {
+  log.info(req.params);
+  log.info(req.body);
   let { facilityId } = req.params;
+  let { ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
   log.verbose('deleting facility', facilityId);
-  await deleteOperationWithObjectId('accounts', facilityId);
-  log.verbose('facility deleted successfully', facilityId);
+
+  log.info(ccfriId);
+  if (ccfriId){
+    log.info('deleting facilitys CCFRI application', facilityId);
+    //await deleteOperationWithObjectId('ccof_applicationccfris', ccfriId);
+    log.info('ccfri DELETE succcesssz!');
+  }
+
+  log.info(eceweId);
+  if (eceweId){
+    log.info('deleting facilitys eceweId application', eceweId);
+    //await deleteOperationWithObjectId('ccof_applicationecewes', eceweId);
+    log.info(' eceweId succcesssz!');
+  }
+
+  log.info(ccofBaseFundingId);
+  if (ccofBaseFundingId){
+    log.info('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
+    //await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
+    log.info(' ccofBaseFundingId succcesssz!');
+  }
+
+
+  //delete any associated documents to the facility.
+
+  let organizationUploadedDocuments = await getApplicationDocument(applicationId);
+
+  //log.info(organizationUploadedDocuments);
+
+  organizationUploadedDocuments = organizationUploadedDocuments.value;
+  log.info(organizationUploadedDocuments);
+  organizationUploadedDocuments.forEach(async (document)  =>{
+    if (document['ApplicationFacilityDocument.ccof_facility'] == facilityId){
+      log.verbose('deleting document ' +  document.filename );
+      await deleteDocument(document.annotationid);
+    }
+  });
+
+  log.info(organizationUploadedDocuments);
+
+
+
+  //await deleteOperationWithObjectId('accounts', facilityId);
+  log.info('facility deleted successfully', facilityId);
   return res.status(HttpStatus.OK).end();
 }
 
