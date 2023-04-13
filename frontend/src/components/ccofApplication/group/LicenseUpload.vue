@@ -34,7 +34,7 @@
                 </div>
                 <v-file-input v-else
                               color="#003366"
-                              :rules="fileRules"
+                              :rules="[...fileRules, ...rules.required]"
                               prepend-icon="mdi-file-upload"
                               class="pt-0"
                               @click:clear="deleteFile(item)"
