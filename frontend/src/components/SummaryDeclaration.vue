@@ -29,11 +29,10 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="pb-0">
-                <div>
+              <v-col class="pb-0 pr-3 justify-center">
+                <div >
                   <p>You will not be able to submit your application until it is complete.</p>
-                  <p>Incomplete sections will have a circle without a checkmark on the navigational panel to the left of
-                    the screen.Text TBD</p>
+                  <p>Incomplete sections are marked with a red exclamation point.</p>
                 </div>
               </v-col>
             </v-row>

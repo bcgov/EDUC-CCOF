@@ -71,7 +71,7 @@ export default {
       return state.ccfriStore[ccfriId];
     },
     getClosureDateLength: (state) => {
-      return state.CCFRIFacilityModel.dates.length;
+      return state.CCFRIFacilityModel?.dates?.length;
     },
     getCCFRIMedianById: (state) => (ccfriId) => {
       return state.ccfriMedianStore[ccfriId];
