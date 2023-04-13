@@ -22,7 +22,7 @@ env:
 
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
-  BRANCH: "main"
+  BRANCH: ${{GITHUB_REF}}
   APP_NAME_BACKEND: "backend"
   APP_FOLDER: "backend"
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
