@@ -115,7 +115,7 @@ export default {
       return value === 1;
     },
     isFundingModelRequired(value){
-      return value === 0;
+      return value != 0;
     },
     getSectorValue(value) {
       if (value === 100000001) {
