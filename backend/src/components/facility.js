@@ -315,30 +315,24 @@ async function updateFacility(req, res) {
 }
 
 async function deleteFacility(req, res) {
-  log.info(req.params);
-  log.info(req.body);
   let { facilityId } = req.params;
   let { ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
-  log.verbose('deleting facility', facilityId);
+  log.info('deleting facility', facilityId);
 
-  log.info(ccfriId);
   if (ccfriId){
     log.verbose('deleting facilitys CCFRI application', facilityId);
     await deleteOperationWithObjectId('ccof_applicationccfris', ccfriId);
   }
 
-  log.info(eceweId);
   if (eceweId){
     log.verbose('deleting facilitys eceweId application', eceweId);
     await deleteOperationWithObjectId('ccof_applicationecewes', eceweId);
   }
 
-  log.info(ccofBaseFundingId);
   if (ccofBaseFundingId){
     log.verbose('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
-    await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
+    //await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
   }
-
 
   //delete any associated documents to the facility.
   let organizationUploadedDocuments = await getApplicationDocument(applicationId);
@@ -352,8 +346,7 @@ async function deleteFacility(req, res) {
     await deleteOperationWithObjectId ( 'ccof_application_facility_documents', document['ApplicationFacilityDocument.ccof_application_facility_documentid']);
   }
 
-
-  //await deleteOperationWithObjectId('accounts', facilityId);
+  await deleteOperationWithObjectId('accounts', facilityId);
   log.info('facility deleted successfully', facilityId);
   return res.status(HttpStatus.OK).end();
 }
