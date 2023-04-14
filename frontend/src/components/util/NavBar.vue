@@ -223,7 +223,7 @@ export default {
 
       });
       let declarationAccessible = this.areChildrenComplete(this.items);
-      if (StaticConfig.DECB_VALIDATION_BYPASS && this.isDeclarationB()) {
+      if (StaticConfig.DECB_VALIDATION_BYPASS && this.isDeclarationB() && this.unlockDeclaration) {
         declarationAccessible = true;
       }
       this.setCanSubmit(declarationAccessible);
