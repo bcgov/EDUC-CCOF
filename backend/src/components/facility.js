@@ -323,43 +323,34 @@ async function deleteFacility(req, res) {
 
   log.info(ccfriId);
   if (ccfriId){
-    log.info('deleting facilitys CCFRI application', facilityId);
-    //await deleteOperationWithObjectId('ccof_applicationccfris', ccfriId);
-    log.info('ccfri DELETE succcesssz!');
+    log.verbose('deleting facilitys CCFRI application', facilityId);
+    await deleteOperationWithObjectId('ccof_applicationccfris', ccfriId);
   }
 
   log.info(eceweId);
   if (eceweId){
-    log.info('deleting facilitys eceweId application', eceweId);
-    //await deleteOperationWithObjectId('ccof_applicationecewes', eceweId);
-    log.info(' eceweId succcesssz!');
+    log.verbose('deleting facilitys eceweId application', eceweId);
+    await deleteOperationWithObjectId('ccof_applicationecewes', eceweId);
   }
 
   log.info(ccofBaseFundingId);
   if (ccofBaseFundingId){
-    log.info('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
-    //await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
-    log.info(' ccofBaseFundingId succcesssz!');
+    log.verbose('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
+    await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
   }
 
 
   //delete any associated documents to the facility.
-
   let organizationUploadedDocuments = await getApplicationDocument(applicationId);
-
-  //log.info(organizationUploadedDocuments);
-
   organizationUploadedDocuments = organizationUploadedDocuments.value;
-  log.info(organizationUploadedDocuments);
-  organizationUploadedDocuments.forEach(async (document)  =>{
-    if (document['ApplicationFacilityDocument.ccof_facility'] == facilityId){
-      log.verbose('deleting document ' +  document.filename );
-      await deleteDocument(document.annotationid);
-    }
-  });
 
-  log.info(organizationUploadedDocuments);
+  const document = organizationUploadedDocuments.find((document) => document['ApplicationFacilityDocument.ccof_facility'] == facilityId);
 
+  //if at least 1 document exists for the facility, get the parent 'folder' GUID. Deleteing the parent entity removes all documents associated with the facility.
+  if (document){
+    log.verbose('deleting all documents associated with ' +  document['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'] );
+    await deleteOperationWithObjectId ( 'ccof_application_facility_documents', document['ApplicationFacilityDocument.ccof_application_facility_documentid']);
+  }
 
 
   //await deleteOperationWithObjectId('accounts', facilityId);

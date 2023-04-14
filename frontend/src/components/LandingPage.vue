@@ -7,19 +7,19 @@
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
       <p v-if="organizationName">Organization Name: {{ organizationName }}</p>
     </div>
-    
+
     <div class="pb-12 text-h4 text-center">
       What would you like to do?
     </div>
-    
-    <v-row class="" align="stretch" justify="space-around"> 
+
+    <v-row class="" align="stretch" justify="space-around">
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>
           <p class="text-h6" v-if="isCCOFApproved">
             Child Care Operating Funding <strong>(CCOF)</strong>
           </p>
           <p class="text-h6" v-else>
-            Apply for Child Care Operating Funding <strong>(CCOF)</strong> including: 
+            Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:
           </p>
           <div v-if="!isCCOFApproved">
             <v-container class="px-0"  v-for="item in ccofNewApplicationText" :key="item.infoTitle" fluid >
@@ -50,7 +50,7 @@
           <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
             <p class="text-h5 blueText">Status: Incomplete</p>
             <v-btn dark class="blueButton" @click="continueApplication()">Continue Application</v-btn>
-          </div>   
+          </div>
           <div v-else>
             <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Approved</p>
             <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
@@ -88,7 +88,7 @@
             Report changes to your licence or service
           </p>
           <p>
-            You must notify the Child Care Operating Funding program within two business days of any change to your facility licence 
+            You must notify the Child Care Operating Funding program within two business days of any change to your facility licence
             or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
           </p>
         </template>
@@ -103,7 +103,7 @@
             Submit Enrolment Reports or monthly ECE reports to receive funding
           </p>
           <p>
-            If you are expecting a new licence or change to your licence or service details, 
+            If you are expecting a new licence or change to your licence or service details,
             contact the Child Care Operating Funding program before submitting your next enrolment report or monthly ECE report.
           </p>
         </template>
@@ -117,12 +117,12 @@
       <v-row v-if="navBarList?.length > 2" no-gutters>
         <v-col class="col-12 col-md-6 px-4 mt-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
-            Update when data comes in from the API 
+            Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
             .-->
-          <v-text-field 
+          <v-text-field
             clearable
-            filled 
+            filled
             label="Filter by Facility Name "
             v-model="input"
             :bind="input">
@@ -140,13 +140,13 @@
               <br>
               <p class="blueText">
                 Child Care Fee Reduction Initiative (CCFRI) Status:
-                <strong v-if="ccfriOptInStatus === 0"> OPTED OUT </strong> 
-                <strong v-else> {{ccfriStatus}} </strong> 
+                <strong v-if="ccfriOptInStatus === 0"> OPTED OUT </strong>
+                <strong v-else> {{ccfriStatus}} </strong>
               </p>
               <br>
               <p class="blueText">
-                Early Childhood Educator Wage Enhancement (ECE-WE) Status: 
-                <strong v-if="eceweOptInStatus === 0"> OPTED OUT </strong> 
+                Early Childhood Educator Wage Enhancement (ECE-WE) Status:
+                <strong v-if="eceweOptInStatus === 0"> OPTED OUT </strong>
                 <strong v-else> {{eceweStatus}} </strong>
               </p>
             </v-card-text>
@@ -156,10 +156,10 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-card>  
+    </v-card>
     <p class="text-center mt-4 font-weight-bold">
       Note: For assistance completing your Program Confirmation Form, contact the program at 1-888-338-6622 (Option 2).
-    </p> 
+    </p>
   </v-container>
 </template>
 <script>
@@ -210,13 +210,13 @@ export default {
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
 
     this.getAllMessagesVuex();
-  },  
+  },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['futureYearLabel']),
     ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
-    ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 
+    ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
@@ -236,7 +236,7 @@ export default {
       //     || this.navBarList[i].eceweStatus === 'DRAFT' || this.navBarList[i].ccfriStatus === 'DRAFT'
       //     || this.navBarList[i].eceweStatus === 'ACTION_REQUIRED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED'
       //     || this.navBarList[i].eceweStatus === 'SUBMITTED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED') {
-      //     enabled = false; 
+      //     enabled = false;
       //     i = navBarLength;  //Can't break a foreach in javascript, so end the for loop.
       //   }
       // }
@@ -244,7 +244,7 @@ export default {
       return enabled;
     },
     isWithinRenewDate() {
-      let isEnabled = (this.userInfo.serverTime > this.programYearList?.future?.intakeStart 
+      let isEnabled = (this.userInfo.serverTime > this.programYearList?.future?.intakeStart
         && this.userInfo.serverTime < this.programYearList?.future?.intakeEnd);
       console.log('isWithinRenewDate: ', isEnabled);
       return isEnabled;
@@ -301,7 +301,7 @@ export default {
       }
     },
     isOrganizationUnlock() {
-      return ((this.unlockBaseFunding && (this.applicationType === 'NEW')) 
+      return ((this.unlockBaseFunding && (this.applicationType === 'NEW'))
         || this.unlockDeclaration || this.unlockEcewe || this.unlockLicenseUpload || this.unlockSupportingDocuments
         || (this.unlockCCFRIList.length > 0 || this.unlockNMFList.length > 0 || this.unlockRFIList.length > 0));
     },
@@ -354,7 +354,7 @@ export default {
         this.$router.push(PATHS.group.orgInfo);
       } else if (this.organizationProviderType === 'FAMILY') {
         this.$router.push(PATHS.family.orgInfo);
-      } else { 
+      } else {
         this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
       }
     },
@@ -388,13 +388,13 @@ export default {
     },
     goToNMF(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(PATHS.NMF + '/' + ccfriApplicationId); 
+        this.$router.push(PATHS.NMF + '/' + ccfriApplicationId);
       else
         this.$router.push(PATHS.NMF + '/' + this.unlockNMFList[0]);
     },
     goToRFI(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + ccfriApplicationId); 
+        this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + ccfriApplicationId);
       else
         this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + this.unlockRFIList[0]);
     },
@@ -422,11 +422,11 @@ export default {
       }
     },
     actionRequiredOrganizationRoute() {
-      if (this.unlockLicenseUpload) 
+      if (this.unlockLicenseUpload)
         this.goToLicenseUpload();
-      else if (this.unlockBaseFunding && (this.applicationType === 'NEW')) 
+      else if (this.unlockBaseFunding && (this.applicationType === 'NEW'))
         this.goToCCOFFunding();
-      else if (this.unlockEcewe) 
+      else if (this.unlockEcewe)
         this.goToECEWE();
       else if (this.unlockSupportingDocuments)
         this.goToSupportingDocumentUpload();
@@ -468,12 +468,12 @@ export default {
     },
     isNMFUnlock(ccfriApplicationId) {
       return (this.applicationStatus === 'SUBMITTED' && this.unlockNMFList.includes(ccfriApplicationId));
-    },  
+    },
     isRFIUnlock(ccfriApplicationId) {
       return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
     },
   },
-  
+
   components: { SmallCard, MessagesToolbar}
 };
 </script>
