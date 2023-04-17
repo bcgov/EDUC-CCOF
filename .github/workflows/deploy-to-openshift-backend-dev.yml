@@ -22,6 +22,7 @@ env:
 
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
+  #grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
   APP_NAME_BACKEND: "backend"
   APP_FOLDER: "backend"
@@ -53,14 +54,6 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
-    - name: Get ref by env var
-      run: echo "Ref $GITHUB_REF"
-    - name: Get event_name by env var
-      run: echo "Event name $GITHUB_EVENT_NAME"
-    - name: Get ref
-      run: echo "Ref ${{ github.ref }}"
-    - name: Get Branch Name
-      run: echo "Branch Name ${{ github.ref_name }}"
     - name: Check for required secrets
       uses: actions/github-script@v4
       with:
@@ -146,8 +139,6 @@ jobs:
     - name: Deploy
       run: |
         set -eux
-        echo "Ref ${{ github.ref }}"
-        echo "Branch Name ${{ github.ref_name }}"
         # Login to OpenShift and select project
         oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
