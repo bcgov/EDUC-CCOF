@@ -144,6 +144,7 @@ jobs:
     - name: Deploy
       run: |
         set -eux
+        echo "Ref ${{ github.ref }}"
         # Login to OpenShift and select project
         oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
