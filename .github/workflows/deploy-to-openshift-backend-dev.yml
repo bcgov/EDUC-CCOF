@@ -53,6 +53,12 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
+    - name: Get ref by env var
+      run: echo "Ref $GITHUB_REF"
+    - name: Get event_name by env var
+      run: echo "Event name $GITHUB_EVENT_NAME"
+    - name: Get ref
+      run: echo "Ref ${{ github.ref }}"
     - name: Check for required secrets
       uses: actions/github-script@v4
       with:
