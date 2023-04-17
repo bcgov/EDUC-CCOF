@@ -49,6 +49,8 @@ import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
+import ReportChange from '@/components/requestChanges/ReportChanges';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -436,6 +438,16 @@ const router = new VueRouter({
       path: '/token-expired',
       name: 'backend-session-expired',
       component: BackendSessionExpired
+    },
+    {
+      path: PATHS.reportChange,
+      name: 'reportChange',
+      component: ReportChange,
+      meta: {
+        pageTitle: 'Report Changes',
+        showNavBar: true,
+        requiresAuth: true,
+      }
     },
   ]
 });
