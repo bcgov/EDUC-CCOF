@@ -4,8 +4,10 @@ import formatTime from '@/utils/formatTime';
 import {mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isNullOrBlank} from '@/utils/common';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   computed: {
     ...mapState('funding', ['fundingModel']),
@@ -43,6 +45,9 @@ export default {
       let nextPath = await this.getNextPath();
       console.log('next path: ', nextPath);
       this.$router.push(nextPath);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async save(isSave) {
       this.processing = true;

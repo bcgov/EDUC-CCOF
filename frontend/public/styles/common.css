@@ -42,7 +42,7 @@ input[type=number] {
 }
 
 .noticeInfoIcon {
-  color:#313132 !important;
+  color:#003366 !important;
 }
 .noticeInfo {
   font-size:medium;
@@ -74,7 +74,22 @@ input[type=number] {
 }
 
 .disabledButton {
-  opacity: 0.26 !important;
+  background-color: rgba(0,0,0,.12) !important;
+  color: rgba(0, 0, 0, 0.26) !important;
+  box-shadow: none !important;
+}
+
+.blueButton {
+  color: white !important;
+  background-color: #003366 !important;
+}
+
+.stickyNavButtons {
+  position: sticky;
+  bottom: 0;
+  padding: 10px 0px;
+  background-color: lightgray;
+  z-index: 2;
 }
 
 @keyframes bone {

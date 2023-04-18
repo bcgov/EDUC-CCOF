@@ -1,98 +1,93 @@
 <template>
-    <v-container>
+  <v-container>
 
-      <div class="row pt-4 justify-center">
+    <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
-      </div>
-      <br>
-      <div class="row pt-4 justify-center">
+    </div>
+    <br>
+    <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
-      </div>
-      <br>
-      <div class="row pt-4 justify-center">
+    </div>
+    <br>
+    <div class="row pt-4 justify-center">
       <span class="text-h5">Confirm CCFRI participation for each facility.</span>
-      </div>
+    </div>
+    <v-btn
+      class = "mx-0 justify-end"
+      @click="toggleAll()"
+      dark color='#003366'
+      :disabled="applicationStatus === 'SUBMITTED'"
+      >
+      Opt in All Facilities
+    </v-btn>
+      <LargeButtonContainer>
 
-      <v-btn
-        class = "mx-0 justify-end"
-        @click="toggleAll()"
-        dark color='#003366'
-        :disabled="applicationStatus === 'SUBMITTED'"
-        >
-        Opt in All Facilities
-      </v-btn>
-        <LargeButtonContainer>
 
-          <v-form ref="isValidForm" value="false" v-model="isValidForm">
+        <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
-          <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
+        <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
-          <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12 " min-width="500px"
-            rounded
-            tiled
-            exact tile
-            :ripple="false"
-            v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
-            <v-card-text>
-              <v-row>
-                <v-col cols="" class="col-12 col-md-7">
-                  <p class="text--primary "><strong> Facility Name: {{facilityName}}</strong></p>
-                  <p class="text--primary"> License: {{licenseNumber}}</p>
-                  <strong> <p class="text--primary  " >Opt In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
-                </v-col>
-                <v-col cols="" class="d-flex align-center col-12 col-md-5"
-                  v-if="!showOptStatus[index]"
+        <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12 " min-width="500px"
+          rounded
+          tiled
+          exact tile
+          :ripple="false"
+          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
+          <v-card-text>
+            <v-row>
+              <v-col cols="" class="col-12 col-md-7">
+                <p class="text--primary "><strong> Facility Name: {{facilityName}}</strong></p>
+                <p class="text--primary"> License: {{licenseNumber}}</p>
+                <strong> <p class="text--primary  " >Opt In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
+              </v-col>
+              <v-col cols="" class="d-flex align-center col-12 col-md-5"
+                v-if="!showOptStatus[index]"
+              >
+
+                <v-btn
+                class = "my-10 mx-14 justify-end"
+                @click="toggle(index)"
+                :showOptStatus = "showOptStatus[index]"
+                dark color='#003366'
+                :rules = "rules"
+                :disabled="isReadOnly"
                 >
-
-                  <v-btn
-                  class = "my-10 mx-14 justify-end"
-                  @click="toggle(index)"
-                  :showOptStatus = "showOptStatus[index]"
-                  dark color='#003366'
-                  :rules = "rules"
-                  :disabled="isReadOnly"
+                  UPDATE
+                </v-btn>
+              </v-col>
+              <v-col v-else cols="" class="d-flex align-center col-12 col-md-5"
+              >
+                <v-row>
+                  <v-radio-group
+                    v-model="ccfriOptInOrOut[index]"
+                    class = "mx-12"
+                    :rules = "rules"
                   >
-                    UPDATE
-                  </v-btn>
-                </v-col>
-                <v-col v-else cols="" class="d-flex align-center col-12 col-md-5"
-                >
-                  <v-row>
-                    <v-radio-group
-                      v-model="ccfriOptInOrOut[index]"
-                      class = "mx-12"
-                      :rules = "rules"
-                    >
-                      <v-radio
-                        label="Opt In"
-                        value="1"
+                    <v-radio
+                      label="Opt In"
+                      value="1"
 
-                      ></v-radio>
-                      <v-radio
-                        label="Opt Out"
-                        value="0"
+                    ></v-radio>
+                    <v-radio
+                      label="Opt Out"
+                      value="0"
 
-                      ></v-radio>
-                    </v-radio-group>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-form>
+                    ></v-radio>
+                  </v-radio-group>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-form>
 
 
-        </LargeButtonContainer>
+      </LargeButtonContainer>
 
-        <v-row justify="space-around">
-          <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
-            Back</v-btn>
-            <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-          <v-btn color="primary" outlined x-large :loading="processing" @click="save(true)" :disabled="isReadOnly">Save</v-btn>
-        </v-row>
-
-    </v-container>
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
+  </v-container>
 </template>
 
 <script>
@@ -104,6 +99,7 @@ import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -145,6 +141,15 @@ export default {
   },
   beforeMount: function() {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
+
+    this.navBarList.forEach((fac, index) => {
+      if (fac.ccfriOptInStatus){
+        this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
+      }
+      else {
+        this.$set(this.ccfriOptInOrOut, index, undefined);
+      }
+    });
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
@@ -159,21 +164,32 @@ export default {
       });
     },
     async previous() {
+      console.log(this.ccfriOptInOrOut);
+      console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
       let path = await this.getPreviousPath();
       this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
-      const allFacilitiesComplete = this.navBarList.every((fac) => {
-        return (fac.ccfriApplicationId);
-      });
-      if (!allFacilitiesComplete){
-        return allFacilitiesComplete;
+      const radioButtonsIncomplete = Object.values(this.ccfriOptInOrOut).includes(undefined);
+
+      let allOptStatusIncomplete = false;
+      for (const element of this.navBarList) {
+        if (element.ccfriOptInStatus == null){
+          allOptStatusIncomplete = true;
+          break;
+        }
       }
+
+      //if all opt in status is incomplete, disable next button
+      if (allOptStatusIncomplete && radioButtonsIncomplete){
+        return false;
+      }
+
       return this.isValidForm;
     },
-    next() {
-      this.save(false);
+    async next() {
+      await this.save(false);
 
       let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
 
@@ -194,13 +210,15 @@ export default {
         this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
     },
-
+    validateForm() {
+      this.$refs.isValidForm?.validate();
+    },
     async save(withAlert) {
       this.processing = true;
       let payload = [];
 
       for (let i = 0; i < this.navBarList.length; i++) {
-        //change this to only send payloads with value chosen --- don't send undefined
+      //change this to only send payloads with value chosen --- don't send undefined
 
         if (!ccfriOptInOrOut[i]){
           continue;
@@ -241,7 +259,6 @@ export default {
       }
       this.processing = false;
     },
-
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
@@ -250,7 +267,6 @@ export default {
     this.$store.commit('ccfriApp/model', this.model);
     next();
   },
-  components: {LargeButtonContainer }
+  components: {LargeButtonContainer,NavButton}
 };
 </script>
-

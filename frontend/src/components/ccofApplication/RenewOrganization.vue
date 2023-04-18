@@ -100,10 +100,10 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'false')">Next</v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true"
+          :isNextDisabled="!(fundingGroup == 'true' && bankingGroup == 'false')" :isProcessing="processing" 
+          @previous="back" @next="next" @validateForm="validateForm"></NavButton>
+
     </v-container>
   </v-form>
 </template>
@@ -112,8 +112,10 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   data() {
     return {
       rules,
@@ -144,6 +146,9 @@ export default {
       this.processing = true;
       await this.renewApplication();
       this.$router.push(PATHS.group.licenseUpload);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     back() {
       this.$router.push(PATHS.home);
