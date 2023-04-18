@@ -1,18 +1,54 @@
 <template>
-  <div style="display: none">
-    <a id="logout_href" :href='routes.SESSION_EXPIRED'/>
-  </div>
+  <v-container>
+    <div style="display: none">
+      <a id="logout_href" :href='routes.SESSION_EXPIRED' />
+    </div>
+    <v-dialog v-model="dialog" persistent max-width="525px">
+      <v-card>
+        <v-container class="pt-0">
+          <v-row>
+            <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+              <v-card-title class="white--text">Session Time-out</v-card-title>
+            </v-col>
+            <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: center;">
+              <p class="pt-4">Due to inactivity, you will be logged out of your current session in {{ timerCount }} seconds.
+                Please click on the "Stay logged in" button to continue with this session.</p>
+              <p><v-btn color="primary" @click="clicked()">Stay logged in</v-btn>
+              </p>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
 <script>
-import {AuthRoutes} from '@/utils/constants';
+import { AuthRoutes } from '@/utils/constants';
 import ApiService from '@/common/apiService';
-import {mapGetters} from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+
+function getTokenExpiredTime(jwtToken) {
+  const now = Date.now().valueOf();
+  const jwtPayload = jwtToken.split('.')[1];
+  const payload = JSON.parse(window.atob(jwtPayload));
+  // console.log(`getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${((payload.exp * 1000) - now )}]`);
+  return ((payload.exp * 1000) - now );
+}
 
 export default {
   data() {
     return {
-      routes: AuthRoutes
+      routes: AuthRoutes,
+      dialog: false,
+      timerCount: -1,
     };
   },
   async mounted() {
@@ -20,20 +56,33 @@ export default {
 
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapGetters('auth', ['isAuthenticated', 'jwtToken'])
   },
   methods: {
-
+    ...mapActions('auth', ['getJwtToken']),
     async checkAndLogoutUserOnSessionExpiry() {
       if (this.isAuthenticated) {
         try {
-          const response = await ApiService.apiAxios
-            .get(AuthRoutes.SESSION_REMAINING_TIME);
+          const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
           if (response.data > 0) {
-            const timeOutValue = parseInt(response.data) + 200; // add 200 ms
-            setTimeout(() => {
-              this.checkAndLogoutUserOnSessionExpiry();
-            }, timeOutValue);
+            let timeOutValue = parseInt(response.data); // add 200 ms
+            const tokenExpire = getTokenExpiredTime(this.jwtToken);
+            console.log('remaining time - timeout: ', timeOutValue);
+            console.log('token expire - timeout: ', tokenExpire);
+            if (timeOutValue > tokenExpire) {
+              timeOutValue = tokenExpire;
+              console.log(`Using token expire time of [${timeOutValue}]`);
+            } else {
+              console.log(`Using session expire time of [${timeOutValue}]`);
+            }
+
+            if (timeOutValue < 130000) {
+              this.showDialog();
+            } else {
+              setTimeout(() => {
+                this.checkAndLogoutUserOnSessionExpiry();
+              }, timeOutValue - 120000);
+            }
           } else {
             window.location = document.getElementById('logout_href').href;
           }
@@ -42,6 +91,30 @@ export default {
         }
       }
 
+    },
+    async clicked() {
+      this.dialog = false;
+      this.timerCount = -1;
+      await this.getJwtToken();
+      this.checkAndLogoutUserOnSessionExpiry();
+    },
+    showDialog() {
+      this.timerCount = 60;
+      this.dialog = true;
+    }
+  },
+  watch: {
+    timerCount: {
+      handler(value) {
+        if (value > 0) {
+          setTimeout(() => {
+            this.timerCount--;
+          }, 1000);
+        } else if (value === 0) {
+          window.location = document.getElementById('logout_href').href;
+        }
+      },
+      immediate: true // This ensures the watcher is triggered upon creation
     }
   }
 };
