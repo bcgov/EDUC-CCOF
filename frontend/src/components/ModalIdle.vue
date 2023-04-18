@@ -76,12 +76,12 @@ export default {
               console.log(`Using session expire time of [${timeOutValue}]`);
             }
 
-            if (timeOutValue < 130000) {
+            if (timeOutValue < 190000) {
               this.showDialog();
             } else {
               setTimeout(() => {
                 this.checkAndLogoutUserOnSessionExpiry();
-              }, timeOutValue - 120000);
+              }, timeOutValue - 180000);
             }
           } else {
             window.location = document.getElementById('logout_href').href;
@@ -99,7 +99,7 @@ export default {
       this.checkAndLogoutUserOnSessionExpiry();
     },
     showDialog() {
-      this.timerCount = 60;
+      this.timerCount = 120;
       this.dialog = true;
     }
   },
