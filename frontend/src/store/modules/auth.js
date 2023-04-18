@@ -125,9 +125,6 @@ export default {
       } else {
         userInfoRes = await ApiService.getUserInfo();
       }
-
-
-
       commit('setUserInfo', userInfoRes.data);
       commit('application/setFromUserInfo', userInfoRes.data, { root: true });
       commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });

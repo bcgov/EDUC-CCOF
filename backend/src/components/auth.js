@@ -114,6 +114,7 @@ const auth = {
 
     const privateKey = config.get('tokenGenerate:privateKey');
     const uiToken = jsonwebtoken.sign({}, privateKey, signOptions);
+    log.verbose('Generated JWT', uiToken);
     return uiToken;
   },
 
