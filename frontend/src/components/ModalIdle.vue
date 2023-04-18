@@ -18,9 +18,8 @@
           </v-row>
           <v-row>
             <v-col cols="12" style="text-align: center;">
-              <p class="pt-4">Due to inactivity, you will be logged out of your current session in {{timerCount}} seconds. Please
-                click on the "Stay logged in" button to continue with this session. Your current changes will be
-                auto-saved if you resume this session.</p>
+              <p class="pt-4">Due to inactivity, you will be logged out of your current session in {{ timerCount }} seconds.
+                Please click on the "Stay logged in" button to continue with this session.</p>
               <p><v-btn color="primary" @click="clicked()">Stay logged in</v-btn>
               </p>
             </v-col>
@@ -34,7 +33,15 @@
 <script>
 import { AuthRoutes } from '@/utils/constants';
 import ApiService from '@/common/apiService';
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+
+function getTokenExpiredTime(jwtToken) {
+  const now = Date.now().valueOf();
+  const jwtPayload = jwtToken.split('.')[1];
+  const payload = JSON.parse(window.atob(jwtPayload));
+  // console.log(`getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${((payload.exp * 1000) - now )}]`);
+  return ((payload.exp * 1000) - now );
+}
 
 export default {
   data() {
@@ -49,19 +56,28 @@ export default {
 
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapGetters('auth', ['isAuthenticated', 'jwtToken'])
   },
   methods: {
+    ...mapActions('auth', ['getJwtToken']),
     async checkAndLogoutUserOnSessionExpiry() {
       if (this.isAuthenticated) {
         try {
           console.log('attemping to make session remaining call');
-          const response = await ApiService.apiAxios
-            .get(AuthRoutes.SESSION_REMAINING_TIME);
-            console.log('get session remaining time', response.data);
+          const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
+          console.log('get session remaining time', response.data);
           if (response.data > 0) {
-            const timeOutValue = parseInt(response.data); // add 200 ms
+            let timeOutValue = parseInt(response.data); // add 200 ms
+            const tokenExpire = getTokenExpiredTime(this.jwtToken);
             console.log('modalIdle.vue - timeout: ', timeOutValue);
+            console.log('token expire - timeout: ', tokenExpire);
+            if (timeOutValue > tokenExpire) {
+              timeOutValue = tokenExpire;
+              console.log(`Using token expire time of [${timeOutValue}]`);
+            } else {
+              console.log(`Using session expire time of [${timeOutValue}]`);
+            }
+
             if (timeOutValue < 130000) {
               console.log('timeout less than 500');
               this.showDialog();
@@ -82,28 +98,8 @@ export default {
     async clicked() {
       this.dialog = false;
       this.timerCount = -1;
+      await this.getJwtToken();
       this.checkAndLogoutUserOnSessionExpiry();
-      // try {
-      //     await ApiService.apiAxios.get(AuthRoutes.REFRESH);
-      //     const response = await ApiService.apiAxios
-      //       .get(AuthRoutes.SESSION_REMAINING_TIME);
-      //     if (response.data > 0) {
-      //       const timeOutValue = parseInt(response.data) - 500; // add 200 ms
-      //       console.log('modalIdle.vue - timeout: ', timeOutValue);
-      //       if (timeOutValue < 500) {
-      //         this.showDialog();
-      //       } else {
-      //         setTimeout(() => {
-      //           this.checkAndLogoutUserOnSessionExpiry();
-      //         }, timeOutValue);
-      //       }
-      //     } else {
-      //       window.location = document.getElementById('logout_href').href;
-      //     }
-      //   } catch (e) {
-      //     window.location = document.getElementById('logout_href').href;
-      //   }
-
     },
     showDialog() {
       this.timerCount = 60;
