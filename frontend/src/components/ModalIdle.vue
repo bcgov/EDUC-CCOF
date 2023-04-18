@@ -76,7 +76,6 @@ export default {
               console.log(`Using session expire time of [${timeOutValue}]`);
             }
 
-
             if (timeOutValue < 190000) {
               this.showDialog();
             } else {
