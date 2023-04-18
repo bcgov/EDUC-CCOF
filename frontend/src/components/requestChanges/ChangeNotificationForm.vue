@@ -12,48 +12,42 @@
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
       <v-container>
-        <v-row justify="space-around">
+        <v-row class="justify-space-around ">
 
-          <SmallCard  class= "col-lg-6 " :disable="false">
-            <template #content class="px-10">
-              <p class="text-h6 text-center">What changes do you want to make?</p>
-              <p class="px-2">
-                Changes <strong> require an updated </strong> <i>Community Care And Assisted Living Act</i> License to be attached.
+          <v-col class="col-lg-6 ">
+
+            <v-row>
+              <v-col class="col-lg-10 ">
+              <p class="px-2 text--primary"><strong> For all changes other than "Adding a new facility(s) to your Organization, please download the change notification form by clicking on the button below."</strong>
               </p>
-              <v-card  to="#"
-                class="px-5  mt-10 pa-0 rounded-lg  col-12 bg-blue-lighten-3 "
-                elevation="4"
-                rounded
-                tiled
-                exact tile
-                :ripple="false"
-                color="#e5f7ff"
-                >
-                <v-card-text class="bg-blue-lighten-3">
-                  <v-row>
-                      <p class="text-h6 blueText"> Add a New facility to an existing organization </p>
-                      <p class="text  " > This will navigate you through a CCOF Application process. Please have your Facility, CCFRI, and ECE-WE information ready.</p>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </template>
-          </SmallCard>
-
-          <SmallCard  class= "col-lg-6 " :disable="false">
-            <template #content class="px-10">
-              <p class="text-h6 text-center">Report changes to your License or service</p>
-              <p class="px-2">
-                Please have your <i>Community Care And Assisted Living Act</i> license (if required) and other supporting documents ready.
+                <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >Download a Change Notification Form</v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="col-lg-10 ">
+              <p class="px-2 text--primary"><strong> Please upload the Change Notification Form in the Dropbox below once you have filled out the form.</strong>
               </p>
-            </template>
-              <template #button class="ma-0 pa-0 ">
-                <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeForm()" >Upload a Change Notification Form</v-btn>
-                </v-row>
-              </template>
+                <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >upload box here</v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="col-lg-10 ">
+              <p class="px-2 text--primary"><strong> Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
+              </p>
+              <SupportingDocumentUpload></SupportingDocumentUpload>
+                <!-- <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >upload box here</v-btn> -->
+              </v-col>
+            </v-row>
 
-          </SmallCard>
+            <p class="px-2 ml-6 text--primary"> For any other changes, please call the office at 123-456-7890
+              </p>
 
+
+
+          </v-col>
+          <v-col class="col-lg-6 ">
+            col 2
+          </v-col>
 
         </v-row>
 
@@ -79,6 +73,7 @@ import { mapState, mapMutations, mapActions } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
+import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 
 
 let ccfriOptInOrOut = {};
@@ -140,9 +135,6 @@ export default {
     next() {
       this.$router.push(PATHS.home);
     },
-    goToChangeForm(){
-      this.$router.push(PATHS.changeNotificationForm);
-    }
   },
   mounted() {
     this.model = this.$store.state.ccfriApp.model ?? model;
@@ -151,12 +143,15 @@ export default {
     this.$store.commit('ccfriApp/model', this.model);
     next();
   },
-  components: { SmallCard }
+  components: { SupportingDocumentUpload }
 };
 </script>
 <style scoped>
 .blueBorder{
   border-top: 5px solid #003366 !important;
+}
+.boarder{
+  border: 5px solid #003366 !important;
 }
 .blueButton {
   background-color: #003366 !important;
