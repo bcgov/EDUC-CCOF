@@ -50,6 +50,7 @@ import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
+import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
 
 Vue.prototype.moment = moment;
 
@@ -445,6 +446,16 @@ const router = new VueRouter({
       component: ReportChange,
       meta: {
         pageTitle: 'Report Changes',
+        showNavBar: true,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.changeNotificationForm,
+      name: 'changeNotificationForm',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
         showNavBar: true,
         requiresAuth: true,
       }
