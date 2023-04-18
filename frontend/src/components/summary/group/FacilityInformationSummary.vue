@@ -75,7 +75,7 @@
 </v-card>
 
 <!-- JB here to make this work with renewels-->
-    <v-form ref="informationSummaryForm" v-model="isValidForm" v-if="!this.isRenewal">
+    <v-form ref="informationSummaryForm" v-model="isValidForm" v-if="!this.isRenewal && this.providerType == 'GROUP'">
     <v-expansion-panel-header>
       <h4 style="color:#003466;">Facility Information
       <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
@@ -207,6 +207,77 @@
       </v-row>
     </v-expansion-panel-content>
     </v-form>
+
+    <v-form ref="informationSummaryForm" v-model="isValidForm" v-else-if="!this.isRenewal && this.providerType == 'FAMILY'">
+    <v-expansion-panel-header>
+      <h4 style="color:#003466;">Facility Information
+      <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
+      <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+      <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
+      </h4>
+    </v-expansion-panel-header>
+    <v-expansion-panel-content eager class="exp-style" >
+    <v-row no-gutters class="d-flex flex-column mt-3">
+      <v-row class="d-flex justify-start">
+        <v-col cols="8" lg="6" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start ml-3">
+              <span class="summary-label" >Facility Name (as it appears on the Community Care Assisted Living Act Licence)</span>
+            </v-col>
+            <v-col  class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="this.facilityInfo.facilityName" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="8" lg="6" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start ml-3">
+              <span class="summary-label">Postal Code</span>
+            </v-col>
+            <v-col cols="12" class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.postalCode" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="d-flex justify-start">
+        <v-col cols="8" lg="6" class="pb-0 pt-0">
+          <v-row  no-gutters class="d-flex justify-start pt-2">
+            <v-col cols="10" class="d-flex justify-start ml-3">
+              <span class="summary-label">Facility Licence Number</span>
+            </v-col>
+            <v-col cols="10" class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.licenseNumber" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="6" lg="4" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start pt-2 flex-column">
+            <v-col cols="10" class="d-flex justify-start ml-3">
+              <span class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</span>
+            </v-col>
+            <v-col class="d-flex justify-start">
+               <v-text-field placeholder="Required" class="summary-value" :value="this.facilityInfo?.licenseEffectiveDate"  dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-row>
+      <v-row v-if="!isValidForm" class="d-flex justify-start">
+        <v-col cols="6" lg="4" class="pb-0 pt-0">
+          <v-row  no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
+              <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
+              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a> -->
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-expansion-panel-content>
+    </v-form>
   </v-row>
 </template>
 
@@ -239,6 +310,10 @@ export default {
     },
     funding: {
       type: Object,
+      required: false
+    },
+    providerType: {
+      type: String,
       required: false
     }
 
