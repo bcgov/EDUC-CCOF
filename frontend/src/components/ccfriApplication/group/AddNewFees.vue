@@ -355,7 +355,7 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing" 
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
       
       <v-dialog
