@@ -63,13 +63,11 @@ export default {
     async checkAndLogoutUserOnSessionExpiry() {
       if (this.isAuthenticated) {
         try {
-          console.log('attemping to make session remaining call');
           const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
-          console.log('get session remaining time', response.data);
           if (response.data > 0) {
             let timeOutValue = parseInt(response.data); // add 200 ms
             const tokenExpire = getTokenExpiredTime(this.jwtToken);
-            console.log('modalIdle.vue - timeout: ', timeOutValue);
+            console.log('remaining time - timeout: ', timeOutValue);
             console.log('token expire - timeout: ', tokenExpire);
             if (timeOutValue > tokenExpire) {
               timeOutValue = tokenExpire;
@@ -79,7 +77,6 @@ export default {
             }
 
             if (timeOutValue < 130000) {
-              console.log('timeout less than 500');
               this.showDialog();
             } else {
               setTimeout(() => {

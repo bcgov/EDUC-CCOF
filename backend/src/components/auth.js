@@ -16,7 +16,6 @@ const auth = {
   isTokenExpired(token) {
     const now = Date.now().valueOf() / 1000;
     const payload = jsonwebtoken.decode(token);
-    console.log(`isToken expired: token ${payload['exp']}, expired: ${ (!!payload['exp'] && payload['exp'] < (now + 30))}`)
     return (!!payload['exp'] && payload['exp'] < (now + 30)); // Add 30 seconds to make sure , edge case is avoided and token is refreshed.
   },
 
@@ -53,8 +52,7 @@ const auth = {
         }
       );
 
-      // log.info('renew', utils.prettyStringify(response.data));
-      log.info(`-------------------Renew: Expires in: [${response.data.expires_in}], Refresh expires: [${response.data.refresh_expires_in}]`)
+      log.verbose('renew', utils.prettyStringify(response.data));
       if (response && response.data && response.data.access_token && response.data.refresh_token) {
         result.jwt = response.data.access_token;
         result.refreshToken = response.data.refresh_token;
@@ -116,7 +114,6 @@ const auth = {
 
     const privateKey = config.get('tokenGenerate:privateKey');
     const uiToken = jsonwebtoken.sign({}, privateKey, signOptions);
-    log.verbose('---------------------------------Generated JWT');
     return uiToken;
   },
 

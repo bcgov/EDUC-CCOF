@@ -11,7 +11,7 @@ function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
-  console.log(`Local test of JSON token: [${payload.exp}], with date: [${(new Date(payload.exp * 1000))}] is expired: [${payload.exp <= now}]`);
+  // console.log(`Local test of JSON token: [${payload.exp}], with date: [${(new Date(payload.exp * 1000))}] is expired: [${payload.exp <= now}]`);
   return payload.exp <= now;
 }
 
@@ -110,10 +110,8 @@ export default {
       context.commit('setLoginError');
     },
     logout(context) {
-      console.log('Logout called');
       context.commit('setJwtToken');
       context.commit('setUserInfo');
-      // router.push(AuthRoutes.LOGOUT);
     },
     async getUserInfo({state, commit}){
       //This method is called by the router.
@@ -144,7 +142,6 @@ export default {
       commit('setIsUserInfoLoaded', true);
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
-
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken(context) {
