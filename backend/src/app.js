@@ -31,9 +31,7 @@ const fundingRouter = require('./routes/funding');
 const messageRouter = require('./routes/message');
 const licenseUploadRouter = require('./routes/licenseUpload');
 const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
-
-//const userprofileRouter = require('./routes/userprofile');
-
+const changeRequestRouter = require('./routes/changeRequest');
 
 const promMid = require('express-prometheus-middleware');
 
@@ -170,6 +168,8 @@ apiRouter.use('/group/funding', fundingRouter);
 apiRouter.use('/messages', messageRouter);
 apiRouter.use('/licenseUpload', licenseUploadRouter);
 apiRouter.use('/supportingDocument', supportingDocumentUploadRouter);
+apiRouter.use('/changeRequest', changeRequestRouter);
+
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
