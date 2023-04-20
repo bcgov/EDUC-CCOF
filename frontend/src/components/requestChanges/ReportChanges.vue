@@ -2,7 +2,7 @@
   <v-container>
 
     <div class="row pt-4 justify-center text-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }}</span>
+    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -66,9 +66,6 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
-
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-
       </v-row>
 
   </v-container>
@@ -105,7 +102,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus', 'programYearLabel', 'applicationId']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {

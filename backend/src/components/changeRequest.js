@@ -34,7 +34,9 @@ function mapChangeRequestForBack(data, changeType) {
     changeRequestForBack.ccof_provider_type = 100000000; //New facilities are only available for GROUP provider types
   }
   return changeRequestForBack;
+
 }
+
 
 function mapOrganizationObjectForFront(data) {
   return new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
@@ -60,16 +62,13 @@ async function createChangeRequest(req, res, changeType) {
   log.info('createChangeRequest called');
   try {
     let changeRequest = req.body;
-    changeRequest = mapChangeRequestForBack(changeRequest, changeType);
+    changeRequest = mapOrganizationForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
     let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
     const payload = await getOperation(operation);
     let changeActionId = undefined;
     if (payload && payload.ccof_change_action_change_request?.length > 0) {
       changeActionId = payload.ccof_change_action_change_request[0].ccof_change_actionid;
-    }
-    if (changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
-
     }
     return res.status(HttpStatus.CREATED).json({
       changeRequestId: changeRequestId,
@@ -81,42 +80,9 @@ async function createChangeRequest(req, res, changeType) {
   }
 }
 
-function buildNewFacilityPayload(req) {
-  let facility = req.body;
-
-  facility = mapFacilityObjectForBack(facility);
-  facility['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
-  facility['parentaccountid@odata.bind'] = `/accounts(${req.body.organizationId})`,
-  facility['ccof_ccof_change_request_new_facility_facility'] = [
-    {
-      'ccof_change_action@odata.bind': `/ccof_change_actions(${req.params.changeActionId})`,
-    }
-  ];
-
-  return facility;
-}
-
-
-async function createChangeRequestFacility(req, res) {
-  let facility = buildNewFacilityPayload(req);
-  try {
-    const facilityGuid = await postOperation('accounts', facility);
-    //After the 'ChangeActionNewFacility' entity is created, grab the guid
-    let operation = 'accounts(' + facilityGuid + ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode)';
-    let payload = await getOperation(operation);
-    let changeRequestNewFacilityId = undefined;
-    if ( payload?.ccof_ccof_change_request_new_facility_facility?.length > 0) {
-      changeRequestNewFacilityId = payload.ccof_ccof_change_request_new_facility_facility[0].ccof_change_request_new_facilityid;
-    }
-    return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid, changeRequestNewFacilityId: changeRequestNewFacilityId});
-  } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-  }
-}
 
 module.exports = {
   getChangeRequest,
   createChangeRequest,
-  createChangeRequestFacility,
   CHANGE_REQUEST_TYPES,
 };
