@@ -344,22 +344,26 @@ export default {
     },
   },
   methods: {
-    ...mapState('app',['isRenewal']),
-    ...mapMutations('app', ['setIsRenewal']),
+    ...mapState('app',['isRenewal','navBarStatus']),
+    ...mapMutations('app', ['setIsRenewal','setNavBarStatus']),
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {
       this.setIsRenewal(true);
+      this.setNavBarStatus('APPLICATION');
       this.$router.push(PATHS.group.renewOrganization);
     },
     continueRenewal() {
+      this.setNavBarStatus('APPLICATION');
       this.goToLicenseUpload();
     },
     newApplication() {
       this.setIsRenewal(false);
+      this.setNavBarStatus('APPLICATION');
       this.$router.push(PATHS.selectApplicationType);
     },
     continueApplication() {
       this.setIsRenewal(false);
+      this.setNavBarStatus('APPLICATION');
       console.log('continueApplication .organizationProviderType', this.organizationProviderType);
       if (this.organizationProviderType === 'GROUP') {
         this.$router.push(PATHS.group.orgInfo);
@@ -419,6 +423,7 @@ export default {
       this.$router.push(PATHS.summaryDeclaration);
     },
     viewApplication(type) {
+      this.setNavBarStatus('APPLICATION');
       if (type === 'NEW') {
         this.goToCCOFOrganizationInfo();
       } else {
@@ -433,6 +438,7 @@ export default {
       }
     },
     actionRequiredOrganizationRoute() {
+      this.setNavBarStatus('APPLICATION');
       if (this.unlockLicenseUpload)
         this.goToLicenseUpload();
       else if (this.unlockBaseFunding && (this.applicationType === 'NEW'))
