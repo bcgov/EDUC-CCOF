@@ -13,6 +13,7 @@ export default {
     isLicenseUploadComplete: false,
     ccofApplicationComplete: false,
     ccofConfirmationEnabled: false,
+    navBarStatus:'',
 
     //Notification Details
     alertNotificationText: '',
@@ -27,9 +28,7 @@ export default {
     fundingModelTypeList: [],
     lookupInfo: null,
     forceNavBarRefresh: 1,
-    logoutTimerEnabled: false,
-    logoutTime: undefined,
-    logoutCounter: 120,
+
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
@@ -115,15 +114,9 @@ export default {
     setSupportingDocumentUploadComplete: (state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
     },
-    setLogoutTimerEnabled: (state, value) => {
-      state.logoutTimerEnabled = value;
-    },
-    setLogoutTime: (state, value) => {
-      state.logoutTime = value;
-    },
-    setLogoutCounter: (state, value) => {
-      state.logoutCounter = value;
-    },
+    setNavBarStatus:(state, navBarStatus) => {
+      state.navBarStatus = navBarStatus;
+    }
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
@@ -184,7 +177,8 @@ export default {
         return state.navBarList[index - 1];
       }
       return null;
-    }
+    },
+
   },
   actions: {
     async getLookupInfo({ commit }) {
