@@ -30,6 +30,9 @@
                 color="#e5f7ff"
                 >
                 <v-card-text class="bg-blue-lighten-3">
+                  <v-card-actions>
+                    <v-btn class="blueButton" @click="routeToFacilityAdd">Add a new facility</v-btn>
+                  </v-card-actions>
                   <v-row>
                       <p class="text-h6 blueText"> Add a New facility to an existing organization </p>
                       <p class="text  " > This will navigate you through a CCOF Application process. Please have your Facility, CCFRI, and ECE-WE information ready.</p>
@@ -118,7 +121,7 @@ export default {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
     async previous() {
       let path = await this.getPreviousPath();
@@ -136,6 +139,10 @@ export default {
     },
     next() {
       this.$router.push(PATHS.home);
+    },
+    routeToFacilityAdd(){
+      this.setNavBarStatus('RC_NEW_FACILITY');
+      this.$router.push(PATHS.group.facInfo);
     },
     goToChangeForm(){
       this.$router.push(PATHS.changeNotificationForm);

@@ -6,8 +6,7 @@ const { ChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings
 
 const HttpStatus = require('http-status-codes');
 
-const { errorResponse, minify, getHttpHeader, getOperationWithObjectId, getOperation, postOperation } = require('./utils');
-const { ApiError } = require('./error');
+const { getOperationWithObjectId, getOperation, postOperation } = require('./utils');
 
 const CHANGE_REQUEST_TYPES = Object.freeze({
   NEW_FACILITY: 'NEW_FACILITY',
@@ -17,10 +16,10 @@ const CHANGE_REQUEST_TYPES = Object.freeze({
 
 function mapOrganizationForBack(data, changeType) {
   let changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
-  changeRequestForBack['ccof_program_year@odata.bind'] = `/ccof_program_years(${data.programYearId})`
+  changeRequestForBack['ccof_program_year@odata.bind'] = `/ccof_program_years(${data.programYearId})`;
   delete changeRequestForBack._ccof_program_year_value;
 
-  changeRequestForBack['ccof_Application@odata.bind'] = `/ccof_applications(${data.applicationId})`
+  changeRequestForBack['ccof_Application@odata.bind'] = `/ccof_applications(${data.applicationId})`;
   delete changeRequestForBack._ccof_application_value;
 
 
