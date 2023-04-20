@@ -12,6 +12,7 @@
       What would you like to do?
     </div>
 
+
     <v-row class="" align="stretch" justify="space-around">
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>
