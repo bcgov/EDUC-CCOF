@@ -2,7 +2,7 @@
   <v-container>
 
     <div class="row pt-4 justify-center text-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }}</span>
+    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -60,9 +60,6 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
-
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-
       </v-row>
 
   </v-container>
@@ -100,7 +97,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus', 'programYearLabel', 'applicationId']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
+    ...mapState('reportChanges', ['requestChangeId, unsubmittedDocuments']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
@@ -123,25 +121,11 @@ export default {
       this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
-    isPageComplete() {
-      const allFacilitiesComplete = this.navBarList.every((fac) => {
-        return (fac.ccfriApplicationId);
-      });
-      if (!allFacilitiesComplete) {
-        return allFacilitiesComplete;
-      }
-      return this.isValidForm;
-    },
-    next() {
-      this.$router.push(PATHS.home);
-    },
-  },
-  mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
-    next();
+    beforeRouteLeave(_to, _from, next) {
+      //this.$store.commit('ccfriApp/model', this.model);
+      //TODO: update with fields from page
+      next();
+    }
   },
   components: { SupportingDocumentUpload }
 };
