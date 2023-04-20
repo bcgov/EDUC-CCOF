@@ -31,51 +31,54 @@ function mapOrganizationForBack(data, changeType) {
   ];
   return changeRequestForBack;
 
+}
 
-  function mapOrganizationObjectForFront(data) {
-    return new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+
+function mapOrganizationObjectForFront(data) {
+  return new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+}
+
+// get Change Request
+async function getChangeRequest(req, res) {
+  log.info('get changeRequest called');
+
+  try {
+    let changeRequest = await getOperationWithObjectId('ccof_change_requests', req.params.changeRequestId);
+    changeRequest = mapOrganizationObjectForFront(changeRequest);
+
+    return res.status(HttpStatus.OK).json(changeRequest);
+  } catch (e) {
+    console.log('e', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
+}
 
-  // get Change Request
-  async function getChangeRequest(req, res) {
-    log.info('get changeRequest called');
-
-    try {
-      let changeRequest = await getOperationWithObjectId('ccof_change_requests', req.params.changeRequestId);
-      changeRequest = mapOrganizationObjectForFront(changeRequest);
-
-      return res.status(HttpStatus.OK).json(changeRequest);
-    } catch (e) {
-      console.log('e', e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+// create Change Request
+async function createChangeRequest(req, res, changeType) {
+  log.info('createChangeRequest called');
+  try {
+    let changeRequest = req.body;
+    changeRequest = mapOrganizationForBack(changeRequest, changeType);
+    const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
+    let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
+    const payload = await getOperation(operation);
+    let changeActionId = undefined;
+    if (payload && payload.ccof_change_action_change_request?.length > 0) {
+      changeActionId = payload.ccof_change_action_change_request[0].ccof_change_actionid;
     }
+    return res.status(HttpStatus.CREATED).json({
+      changeRequestId: changeRequestId,
+      changeActionId: changeActionId,
+    });
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
+}
 
-  // create Change Request
-  async function createChangeRequest(req, res, changeType) {
-    log.info('createChangeRequest called');
-    try {
-      let changeRequest = req.body;
-      changeRequest = mapOrganizationForBack(changeRequest, changeType);
-      const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
-      let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
-      const payload = await getOperation(operation);
-      let changeActionId = undefined;
-      if (payload && payload.ccof_change_action_change_request?.length > 0) {
-        changeActionId = payload.ccof_change_action_change_request[0].ccof_change_actionid;
-      }
-      return res.status(HttpStatus.CREATED).json({
-        changeRequestId: changeRequestId,
-        changeActionId: changeActionId,
-      });
-    } catch (e) {
-      log.error('error', e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-    }
-  }
 
-  module.exports = {
-    getChangeRequest,
-    createChangeRequest,
-    CHANGE_REQUEST_TYPES,
-  };
+module.exports = {
+  getChangeRequest,
+  createChangeRequest,
+  CHANGE_REQUEST_TYPES,
+};
