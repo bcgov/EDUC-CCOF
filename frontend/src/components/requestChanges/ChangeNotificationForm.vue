@@ -114,7 +114,7 @@ export default {
 
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('reportChanges', ['createChangeRequest']),
     async previous() {

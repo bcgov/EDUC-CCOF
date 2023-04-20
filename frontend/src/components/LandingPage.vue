@@ -83,7 +83,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isCCOFApproved">
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" >
         <template #content>
           <p class="text-h6">
             Report changes to your licence or service
@@ -341,11 +341,13 @@ export default {
     ...mapMutations('app', ['setIsRenewal','setNavBarStatus']),
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {
+      this.setNavBarStatus('APPLICATION');
       this.setIsRenewal(true);
       this.setNavBarStatus('APPLICATION');
       this.$router.push(PATHS.group.renewOrganization);
     },
     goToReportChange(){
+      this.setNavBarStatus('REPORT_CHANGE');
       this.$router.push(PATHS.reportChange);
     },
     continueRenewal() {
