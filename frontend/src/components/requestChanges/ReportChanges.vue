@@ -2,7 +2,7 @@
   <v-container>
 
     <div class="row pt-4 justify-center text-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }}</span>
+    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -30,6 +30,9 @@
                 color="#e5f7ff"
                 >
                 <v-card-text class="bg-blue-lighten-3">
+                  <v-card-actions>
+                    <v-btn class="blueButton" @click="routeToFacilityAdd">Add a new facility</v-btn>
+                  </v-card-actions>
                   <v-row>
                       <p class="text-h6 blueText"> Add a New facility to an existing organization </p>
                       <p class="text  " > This will navigate you through a CCOF Application process. Please have your Facility, CCFRI, and ECE-WE information ready.</p>
@@ -66,9 +69,6 @@
       <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
-
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-
       </v-row>
 
   </v-container>
@@ -105,7 +105,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus', 'programYearLabel', 'applicationId']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
@@ -121,7 +121,7 @@ export default {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
     async previous() {
       let path = await this.getPreviousPath();
@@ -139,6 +139,10 @@ export default {
     },
     next() {
       this.$router.push(PATHS.home);
+    },
+    routeToFacilityAdd(){
+      this.setNavBarStatus('RC_NEW_FACILITY');
+      this.$router.push(PATHS.group.facInfo);
     },
     goToChangeForm(){
       this.$router.push(PATHS.changeNotificationForm);

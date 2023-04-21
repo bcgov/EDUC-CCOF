@@ -480,6 +480,7 @@ router.beforeEach((to, _from, next) => {
           if (error.response?.status == '401') {
             next('unauthorized');
           } else {
+            console.log('An error occurred.', error);
             next('error');
           }
         });

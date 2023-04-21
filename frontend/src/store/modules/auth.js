@@ -11,6 +11,7 @@ function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
+  // console.log(`Local test of JSON token: [${payload.exp}], with date: [${(new Date(payload.exp * 1000))}] is expired: [${payload.exp <= now}]`);
   return payload.exp <= now;
 }
 
@@ -111,7 +112,6 @@ export default {
     logout(context) {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
-      // router.push(AuthRoutes.LOGOUT);
     },
     async getUserInfo({state, commit}){
       //This method is called by the router.
@@ -125,9 +125,6 @@ export default {
       } else {
         userInfoRes = await ApiService.getUserInfo();
       }
-      
-        
-        
       commit('setUserInfo', userInfoRes.data);
       commit('application/setFromUserInfo', userInfoRes.data, { root: true });
       commit('app/bulkAddToNavNBar', userInfoRes.data.facilityList, { root: true });
@@ -143,7 +140,6 @@ export default {
       commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
 
-    
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken(context) {
       context.commit('setError', false);

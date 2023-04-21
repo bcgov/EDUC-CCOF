@@ -2,7 +2,7 @@
   <v-container>
 
     <div class="row pt-4 justify-center text-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ programYearLabel }}</span>
+    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
     <br>
     <div class="row pt-4 justify-center">
@@ -47,6 +47,7 @@
           </v-col>
           <v-col class="col-lg-6 ">
             col 2
+            {{ this.changeActionId }}
           </v-col>
 
         </v-row>
@@ -55,15 +56,13 @@
     </v-form>
 
 
-
-
-      <v-row justify="space-around">
+    <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete" :isProcessing="processing"
+        @previous="previous" @next="nextBtnClicked" @validateForm="validateForm()" @save="save(true)"></NavButton>
+      <!-- <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
-
-        <v-btn color="secondary" outlined x-large :loading="processing" @click="next()" :disabled="(!isPageComplete() )">Next</v-btn>
-
-      </v-row>
+      </v-row> -->
 
   </v-container>
 </template>
@@ -74,6 +73,7 @@ import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
+import NavButton from '@/components/util/NavButton';
 
 
 let ccfriOptInOrOut = {};
@@ -100,7 +100,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus', 'programYearLabel', 'applicationId']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
+    ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
@@ -108,42 +109,38 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
-    unlockedFacilities() {
-      return this.navBarList.some(facility => facility.unlockCcfri);
-    },
   },
   beforeMount: function () {
-    this.showOptStatus = new Array(this.navBarList.length).fill(false);
+
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
+    ...mapActions('reportChanges', ['createChangeRequest']),
     async previous() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
     },
-    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
-    isPageComplete() {
-      const allFacilitiesComplete = this.navBarList.every((fac) => {
-        return (fac.ccfriApplicationId);
-      });
-      if (!allFacilitiesComplete) {
-        return allFacilitiesComplete;
+    async save(showNotification){
+      try{
+        await this.createChangeRequest();
+        if (showNotification) {
+          this.setSuccessAlert('Success! Request for Information has been saved.');
+        }
       }
-      return this.isValidForm;
+      catch (error)  {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      }
+
     },
-    next() {
-      this.$router.push(PATHS.home);
-    },
+    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
+    beforeRouteLeave(_to, _from, next) {
+      //this.$store.commit('ccfriApp/model', this.model);
+      //TODO: update with fields from page
+      next();
+    }
   },
-  mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
-    next();
-  },
-  components: { SupportingDocumentUpload }
+  components: { SupportingDocumentUpload, NavButton }
 };
 </script>
 <style scoped>

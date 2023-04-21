@@ -76,6 +76,7 @@
                                                     :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
                                                     :ecewe-status="facility?.ecewe?.optInOrOut"
                                                     :license-categories="facility?.licenseCategories"
+                                                    :providerType="summaryModel?.application?.organizationProviderType"
                                                     @isSummaryValid="isFormComplete"></FacilityInformationSummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
@@ -264,7 +265,7 @@
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
-        :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing" 
+        :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
         @previous="previous" @submit="submit"></NavButton>
       <v-dialog
         v-model="dialog"

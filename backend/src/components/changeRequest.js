@@ -8,8 +8,7 @@ const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = 
 
 const HttpStatus = require('http-status-codes');
 
-const { errorResponse, minify, getHttpHeader, getOperationWithObjectId, getOperation, postOperation } = require('./utils');
-const { ApiError } = require('./error');
+const { getOperationWithObjectId, getOperation, postOperation } = require('./utils');
 
 const CHANGE_REQUEST_TYPES = Object.freeze({
   NEW_FACILITY: 'NEW_FACILITY',
@@ -19,10 +18,10 @@ const CHANGE_REQUEST_TYPES = Object.freeze({
 
 function mapChangeRequestForBack(data, changeType) {
   let changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
-  changeRequestForBack['ccof_program_year@odata.bind'] = `/ccof_program_years(${data.programYearId})`
+  changeRequestForBack['ccof_program_year@odata.bind'] = `/ccof_program_years(${data.programYearId})`;
   delete changeRequestForBack._ccof_program_year_value;
 
-  changeRequestForBack['ccof_Application@odata.bind'] = `/ccof_applications(${data.applicationId})`
+  changeRequestForBack['ccof_Application@odata.bind'] = `/ccof_applications(${data.applicationId})`;
   delete changeRequestForBack._ccof_application_value;
 
   changeRequestForBack['ccof_change_action_change_request'] = [
@@ -36,7 +35,7 @@ function mapChangeRequestForBack(data, changeType) {
   return changeRequestForBack;
 }
 
-function mapOrganizationObjectForFront(data) {
+function mapChangeRequestObjectForFront(data) {
   return new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
 }
 
@@ -46,7 +45,7 @@ async function getChangeRequest(req, res) {
 
   try {
     let changeRequest = await getOperationWithObjectId('ccof_change_requests', req.params.changeRequestId);
-    changeRequest = mapOrganizationObjectForFront(changeRequest);
+    changeRequest = mapChangeRequestObjectForFront(changeRequest);
 
     return res.status(HttpStatus.OK).json(changeRequest);
   } catch (e) {
@@ -67,9 +66,6 @@ async function createChangeRequest(req, res, changeType) {
     let changeActionId = undefined;
     if (payload && payload.ccof_change_action_change_request?.length > 0) {
       changeActionId = payload.ccof_change_action_change_request[0].ccof_change_actionid;
-    }
-    if (changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
-
     }
     return res.status(HttpStatus.CREATED).json({
       changeRequestId: changeRequestId,

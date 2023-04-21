@@ -12,6 +12,7 @@
       What would you like to do?
     </div>
 
+
     <v-row class="" align="stretch" justify="space-around">
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>
@@ -29,7 +30,7 @@
               <v-card color="#B3E5FF" class="mt-1 pa-1 py-2" outlined v-if="ccofStatus === CCOF_STATUS_NEW" style="border: 1px solid #5fbbeb;">
                 <v-row align="center" no-gutters>
                   <v-col :cols="12" lg="1" align="center">
-                    <v-icon class="noticeInfoIcon" aria-hidden="false" size="40">
+                    <v-icon color="#003366" aria-hidden="false" size="40">
                       mdi-information
                     </v-icon>
                   </v-col>
@@ -68,19 +69,9 @@
           <p>
             <a class='text-decoration-underline' href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
           </p>
-          <div v-if="ccofRenewStatus === RENEW_STATUS_APPROVED || ccofRenewStatus === RENEW_STATUS_COMPLETE">
-            <v-card class="elevation-0">
-              <v-row align="center" class="noticeInfo px-2" no-gutters>
-                <v-col :cols="12" md="2" align="center">
-                  <v-icon x-large class="noticeInfoIcon">mdi-information</v-icon>
-                </v-col>
-                <v-col class="pl-2">
-                  <span>View the individual Facility statuses in the <strong>Facility Information</strong> section below</span>
-                </v-col>
-              </v-row>
-            </v-card>
-          </div>
-          <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE" class="mt-4">
+          <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the PCF: Approved</div>
+          <div v-else-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
+            <p class="text-h6 blueText">Status of the PCF: Submitted</p>
             <span>We will contact you if we require further information. You can view your latest submission from the button below.</span>
           </div>
         </template>
@@ -92,7 +83,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isCCOFApproved">
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" >
         <template #content>
           <p class="text-h6">
             Report changes to your licence or service
@@ -103,7 +94,7 @@
           </p>
         </template>
         <template #button>
-          <v-btn href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/report-changes" :color='buttonColor(!isCCOFApproved)' dark>Report a change</v-btn>
+          <v-btn  @click="goToReportChange()" :color='buttonColor(!isCCOFApproved)' dark>Report a change</v-btn>
         </template>
       </SmallCard>
 
@@ -344,22 +335,30 @@ export default {
     },
   },
   methods: {
-    ...mapState('app',['isRenewal']),
-    ...mapMutations('app', ['setIsRenewal']),
+    ...mapState('app',['isRenewal','navBarStatus']),
+    ...mapMutations('app', ['setIsRenewal','setNavBarStatus']),
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {
+      this.setNavBarStatus('APPLICATION');
       this.setIsRenewal(true);
       this.$router.push(PATHS.group.renewOrganization);
     },
+    goToReportChange(){
+      this.setNavBarStatus('REPORT_CHANGE');
+      this.$router.push(PATHS.reportChange);
+    },
     continueRenewal() {
+      this.setNavBarStatus('APPLICATION');
       this.goToLicenseUpload();
     },
     newApplication() {
       this.setIsRenewal(false);
+      this.setNavBarStatus('APPLICATION');
       this.$router.push(PATHS.selectApplicationType);
     },
     continueApplication() {
       this.setIsRenewal(false);
+      this.setNavBarStatus('APPLICATION');
       console.log('continueApplication .organizationProviderType', this.organizationProviderType);
       if (this.organizationProviderType === 'GROUP') {
         this.$router.push(PATHS.group.orgInfo);
@@ -419,6 +418,7 @@ export default {
       this.$router.push(PATHS.summaryDeclaration);
     },
     viewApplication(type) {
+      this.setNavBarStatus('APPLICATION');
       if (type === 'NEW') {
         this.goToCCOFOrganizationInfo();
       } else {
@@ -433,6 +433,7 @@ export default {
       }
     },
     actionRequiredOrganizationRoute() {
+      this.setNavBarStatus('APPLICATION');
       if (this.unlockLicenseUpload)
         this.goToLicenseUpload();
       else if (this.unlockBaseFunding && (this.applicationType === 'NEW'))
