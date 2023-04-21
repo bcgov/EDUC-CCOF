@@ -321,6 +321,7 @@ module.exports = {
   updateFacility,
   getLicenseCategories,
   updateFacilityLicenseType,
-  getCCFRIClosureDates
+  getCCFRIClosureDates,
+  mapFacilityObjectForBack,
 };
 
