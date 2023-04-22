@@ -20,7 +20,7 @@
               <p class="px-2">
                 Changes <strong> require an updated </strong> <i>Community Care And Assisted Living Act</i> License to be attached.
               </p>
-              <v-card  to="#"
+              <v-card
                 class="px-5  mt-10 pa-0 rounded-lg  col-12 bg-blue-lighten-3 "
                 elevation="4"
                 rounded
@@ -31,7 +31,7 @@
                 >
                 <v-card-text class="bg-blue-lighten-3">
                   <v-card-actions>
-                    <v-btn class="blueButton" @click="routeToFacilityAdd">Add a new facility</v-btn>
+                    <v-btn class="blueButton" @click="routeToFacilityAdd()">Add a new facility</v-btn>
                   </v-card-actions>
                   <v-row>
                       <p class="text-h6 blueText"> Add a New facility to an existing organization </p>
