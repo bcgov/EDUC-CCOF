@@ -39,7 +39,8 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
-  SYSTEM_MESSAGES: baseRoot + '/public/systemMessages'
+  SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
+  CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
 });
 
 export const PAGE_TITLES = Object.freeze({
