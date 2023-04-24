@@ -169,10 +169,7 @@ export default {
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
       const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
 
-      if (lastProgramYear?.name.slice(-2) == 'FY'){
-        return lastProgramYear?.name.slice(0, -2);
-      }
-      return lastProgramYear?.name;
+      return lastProgramYear?.name.replace(/[^\d/]/g, '');
     }
   },
   watch: {
