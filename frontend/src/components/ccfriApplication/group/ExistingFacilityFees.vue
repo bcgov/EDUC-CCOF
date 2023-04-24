@@ -109,7 +109,7 @@
           </v-card>
 
         <NavButton :isNextDisplayed="true"
-          :isNextDisabled="!isFormValidAndLoaded()" :isProcessing="processing" 
+          :isNextDisabled="!isFormValidAndLoaded()" :isProcessing="processing"
           @previous="previous" @next="next" @validateForm="validateForm"></NavButton>
       </v-form>
   </v-container>
@@ -168,7 +168,8 @@ export default {
     previousProgramYearLabel(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
       const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
-      return lastProgramYear?.name;
+
+      return lastProgramYear?.name.replace(/[^\d/]/g, '');
     }
   },
   watch: {
