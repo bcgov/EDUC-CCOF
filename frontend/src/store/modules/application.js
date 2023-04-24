@@ -20,7 +20,8 @@ export default {
     isLicenseUploadComplete: false,
     isOrganizationComplete: false,
 
-
+    changeRequestId: null,
+    changeActionId: null,
   },
   mutations: {
     setApplicationId(state, value) { state.applicationId = value; },
@@ -41,6 +42,9 @@ export default {
     setIsEceweComplete(state, value) { state.isEceweComplete = value; },
     setIsLicenseUploadComplete(state, value) { state.isLicenseUploadComplete = value; },
     setIsOrganizationComplete(state, value) { state.isLicenseUploadComplete = value; },
+    setChangeRequestId(state, value) { state.changeRequestId = value; },
+    setChangeActionId(state, value) { state.changeActionId = value; },
+
 
     setFromUserInfo(state, userInfo) {
       console.log('setFromUserInfo called: ', userInfo);
