@@ -3,7 +3,9 @@ import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
+  console.log(licenseCategories, 'og LIc');
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
+  console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
   let categories = lookupCategories.filter(item => uniqueLicenseCategories.includes(item.ccof_license_categoryid)).map(a => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -141,39 +143,34 @@ export default {
           const index = summaryModel.facilities.indexOf(facility);
           commit('summaryModel', summaryModel);
 
+          let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+          summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
 
+          //check for opt out - no need for more calls if opt-out
+          if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
+            let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
+            facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
+            facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
+            facility.ccfri.dates = ccfriResponse.dates;
+            const  ccofProgramYearId = rootState.application.programYearId;
+            const programYearList = rootState.app.programYearList.list;
+            facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
+            facility.ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
 
-          //check for opt out - only call API  if opt in
-          if (facility.ccfri?.ccfriOptInStatus == 1){
+            //jb
+            //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
+            if (facility.ccfri.previousCcfriId){
 
-            let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
-            summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
-            if (facility.ccfri?.ccfriId) {
-              let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
-              facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
-              facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
-              facility.ccfri.dates = ccfriResponse.dates;
-              const  ccofProgramYearId = rootState.application.programYearId;
-              const programYearList = rootState.app.programYearList.list;
-              facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
-              facility.ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
-
-              //jb
-              //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
-              if (facility.ccfri.previousCcfriId){
-
-                facility.ccfri.prevYearCcfriApp = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)).data;
-              }
-              if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
-
-                summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
-              commit('summaryModel', summaryModel);
-              if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
-                summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
-                //summaryModel.faciliities[index].isNMFLoading=false
-              commit('summaryModel', summaryModel);
+              facility.ccfri.prevYearCcfriApp = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)).data;
             }
+            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
 
+              summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
+            commit('summaryModel', summaryModel);
+            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
+              summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
+              //summaryModel.faciliities[index].isNMFLoading=false
+            commit('summaryModel', summaryModel);
           }
 
           //jb changed below to work with renewel apps
@@ -184,17 +181,10 @@ export default {
             const allDocuments =summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
             commit('summaryModel', summaryModel);
-
           }
-
-
 
           isSummaryLoading.splice(index, 1, false);
           await commit('isSummaryLoading', isSummaryLoading );
-
-
-
-
         } // end FOR loop
 
         summaryModel.allDocuments = null;
