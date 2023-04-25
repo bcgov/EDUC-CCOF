@@ -29,7 +29,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="4" class="pb-0 pt-0">
+      <v-col v-if="ecewe?.optInECEWE == 1" cols="6" lg="4" class="pb-0 pt-0">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start">
             <span class="summary-label pt-3">Do any of the ECE employees at any facility in your organization belong to a union</span>
@@ -39,19 +39,27 @@
       </v-col>
     </v-row>
       <v-row v-if="!facilityInformationExists()" class="d-flex justify-start">
-        <v-col v-if="isApplicableSectorRequired(ecewe?.belongsToUnion)" cols="6" lg="4" class="pb-0 pt-0">
+        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 " cols="6" lg="4" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <span class="summary-label pt-3">Applicable Sector :</span>
+              <span class="summary-label pt-3">Applicable Sector:</span>
               <v-text-field placeholder="Required"  :value="this.getSectorValue(ecewe?.applicableSector)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
-        <v-col v-if="isFundingModelRequired(ecewe?.belongsToUnion)" cols="6" lg="4" class="pb-0 pt-0">
+        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.applicableSector == 100000000"  cols="6" lg="4" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Funding model:</span>
               <v-text-field placeholder="Required"  :value="this.getFundingModel(ecewe?.fundingModel)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col v-else-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.applicableSector == 100000001"  cols="6" lg="4" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
+              <span class="summary-label pt-3">I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement.</span>
+              <v-text-field placeholder="Required"  :value="this.getYesNoValue(ecewe?.confirmation)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -110,12 +118,6 @@ export default {
       }else{
         return null;
       }
-    },
-    isApplicableSectorRequired(value){
-      return value === 1;
-    },
-    isFundingModelRequired(value){
-      return value != 0;
     },
     getSectorValue(value) {
       if (value === 100000001) {
