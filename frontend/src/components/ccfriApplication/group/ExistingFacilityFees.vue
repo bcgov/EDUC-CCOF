@@ -34,7 +34,7 @@
               <br>
               <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{previousProgramYearLabel}} are as follows:
+                Our records show this facility's parent fees for <strong > January {{previousProgramYearLabel}} </strong> to <strong> March {{previousProgramYearLabel}} </strong> are as follows:
               </p>
               <br>
               <v-simple-table v-if="feeList.length > 0">
@@ -169,7 +169,8 @@ export default {
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
       const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
 
-      return lastProgramYear?.name.replace(/[^\d/]/g, '');
+      //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
+      return lastProgramYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
     }
   },
   watch: {
