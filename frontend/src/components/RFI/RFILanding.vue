@@ -1390,7 +1390,7 @@
             <p>Fee increases may be considered under this exception if:</p>
             <ul>
               <li>the facility has historically provided care to underserved populations including Indigenous or
-                low-income families at significantly below the regional median range of fees for their area or at no fee:
+                low-income families at significantly below the regional median range of fees for their area or at no fee;
               </li>
               <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
               <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
@@ -1480,7 +1480,7 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete" :isProcessing="processing"
         @previous="previous" @next="nextBtnClicked" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
