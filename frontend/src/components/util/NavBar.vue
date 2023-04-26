@@ -115,6 +115,7 @@ export default {
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('app', ['getNavbarStatus']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -181,7 +182,7 @@ export default {
       isCCOFGroupComplete = false;
 
       this.items = [];
-      switch(this.navBarStatus){
+      switch(this.getNavbarStatus){
       case 'APPLICATION':
         this.buildApplicationNavBar();
         break;

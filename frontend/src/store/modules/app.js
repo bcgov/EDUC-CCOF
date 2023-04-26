@@ -116,6 +116,7 @@ export default {
     },
     setNavBarStatus:(state, navBarStatus) => {
       state.navBarStatus = navBarStatus;
+      window.sessionStorage.setItem('navBarStatus', navBarStatus); // set it in session.
     }
   },
   getters: {
@@ -178,6 +179,10 @@ export default {
       }
       return null;
     },
+
+    getNavbarStatus: (state) => {
+      return state.navBarStatus? state.navBarStatus : window.sessionStorage.getItem('navBarStatus'); // get it from session.
+    }
 
   },
   actions: {
