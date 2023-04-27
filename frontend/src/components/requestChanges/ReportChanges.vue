@@ -121,7 +121,7 @@ export default {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus','bulkAddToNavNBar']),
     ...mapActions('navBar', ['getPreviousPath']),
     async previous() {
       let path = await this.getPreviousPath();
@@ -142,6 +142,7 @@ export default {
     },
     routeToFacilityAdd(){
       this.setNavBarStatus('RC_NEW_FACILITY');
+      this.bulkAddToNavNBar([]);
       this.$router.push(PATHS.group.facInfo);
     },
     goToChangeForm(){
