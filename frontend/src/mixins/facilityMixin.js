@@ -3,9 +3,10 @@ import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isEmpty} from 'lodash';
-
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
@@ -82,6 +83,9 @@ export default {
       } else {
         this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
       }
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async saveClicked() {
       await this.save(true);

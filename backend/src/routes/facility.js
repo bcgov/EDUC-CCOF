@@ -32,13 +32,13 @@ router.get('/:facilityId/licenseCategories', passport.authenticate('jwt', {sessi
     return getLicenseCategories(req, res);
   });
 
-  
+
 
 
 /**
  * Get Facility details for CCFRI Application (less detailed)
  */
-//i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out 
+//i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out
 router.get('/ccfri/:ccfriId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
@@ -49,7 +49,7 @@ router.get('/ccfri/:ccfriId', passport.authenticate('jwt', {session: false}),isV
  * Create a new Facility
  */
 router.post('/', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  checkSchema(facilitySchema)], (req, res) => { 
+  checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);
 });
@@ -70,7 +70,7 @@ router.put('/:facilityId', passport.authenticate('jwt', {session: false}),isVali
  * Submit a complete application
  */
 router.post('/:facilityId/submit', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  checkSchema(facilitySchema)], (req, res) => { 
+  checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);
 });

@@ -107,9 +107,9 @@
                     <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursTo12hr" label="Facility hours of operation To" v-bind="attrs" v-on="on" />
                   </template>
                   <v-time-picker v-if="model.menu2" v-model="model.hoursTo" full-width @click:minute="$refs.menu2.save(model.hoursTo); model.hoursTo12hr = formatTime(model.hoursTo)" :allowed-minutes="allowedStep" />
-
-                  <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursTo12hr" label="Facility hours of operation To" />
                 </v-menu>
+                  <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursTo12hr" label="Facility hours of operation To" />
+
               </v-col>
             </v-row>
           </v-container>
@@ -164,12 +164,9 @@
 
       </v-row>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :disabled="!model.isCCOFComplete" :loading="processing" @click="next()">Next</v-btn>
-        <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
-      </v-row>
-
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isCCOFComplete" :isProcessing="processing"
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>

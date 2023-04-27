@@ -2,8 +2,10 @@ import alertMixin from '@/mixins/alertMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions, mapMutations, mapState } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   computed: {
     ...mapState('app', ['organizationTypeList', 'navBarList']),
@@ -72,6 +74,9 @@ export default {
     },
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async next() {
       let path = await this.getNextPath();

@@ -155,18 +155,9 @@
           </div>
         </v-card-text>
       </v-card>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="isProcessing" @click="previous()">
-          Back
-        </v-btn>
-          <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" outlined x-large @click="next()" :loading="isProcessing" :disabled="!isValidForm">
-          Next
-        </v-btn>
-        <v-btn color="primary" outlined x-large @click="save(true)" :disabled="isReadOnly" :loading="isProcessing">
-          Save
-        </v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isValidForm" :isProcessing="isProcessing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -175,6 +166,7 @@
 
 import alertMixin from '@/mixins/alertMixin';
 import { mapActions, mapState, mapMutations } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 
 let model = { x: [],  };
 
@@ -241,6 +233,9 @@ export default {
       let path = await this.getNextPath();
       this.$router.push(path);
     },
+    validateForm() {
+      this.$refs.isValidForm?.validate();
+    },
     previous() {
       this.$router.back();
     },
@@ -267,7 +262,7 @@ export default {
       this.isProcessing = false;
     }
   },
-  components: { }
+  components: { NavButton }
 };
 
 

@@ -22,7 +22,8 @@ env:
 
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
-  BRANCH: "main"
+  #grabs the branch name from github dynamically
+  BRANCH: ${{ github.ref_name }}
   APP_NAME_BACKEND: "backend"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}

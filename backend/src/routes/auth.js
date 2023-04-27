@@ -7,7 +7,6 @@ const auth = require('../components/auth');
 const log = require('../components/logger');
 const {v4: uuidv4} = require('uuid');
 const {getUserGuid} = require('../components/utils');
-// const {setupUserAndRedirect} = require('../components/user');
 
 const {
   body,
@@ -81,7 +80,6 @@ router.get('/logout', async (req, res, next) => {
       retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_district_user');
     } else {
       retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/logout');
-      
     }
     log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
     res.redirect(config.get('siteMinder_logout_endpoint') + retUrl );
