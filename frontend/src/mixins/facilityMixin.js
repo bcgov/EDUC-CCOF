@@ -1,6 +1,6 @@
 import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapActions, mapState, mapMutations, } from 'vuex';
+import {mapActions, mapState, mapMutations, mapGetters,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isEmpty} from 'lodash';
 import NavButton from '@/components/util/NavButton';
@@ -14,8 +14,19 @@ export default {
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
+    ...mapGetters('app', ['getNavbarStatus']),
     isLocked() {
-      return (this.applicationStatus === 'SUBMITTED');
+
+      switch(this.getNavbarStatus){
+      case 'APPLICATION':
+        return (this.applicationStatus === 'SUBMITTED');
+      case 'RC_NEW_FACILITY':
+        //TODO - find change request application status and based on that return the value.
+        return false;
+      case 'REPORT_CHANGE':
+        return false;
+      }
+
     }
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -60,7 +71,7 @@ export default {
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
     ...mapMutations('app', ['setNavBarFacilityComplete']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
@@ -110,7 +121,7 @@ export default {
       if (!this.$route.params.urlGuid && isSave) {
         this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
       }
-      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });      
+      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
       this.processing = false;
     },
 
