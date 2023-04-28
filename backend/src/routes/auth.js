@@ -123,15 +123,6 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
   if (req?.user && req.user?.jwtFrontend && req.user?.refreshToken) {
-    if (req.session?.passport?.user?._json) {
-      const correlationID = uuidv4();
-      req.session.correlationID = correlationID;
-      const correlation = {
-        user_guid: getUserGuid(req),
-        correlation_id: correlationID
-      };
-      log.info('created correlation id and stored in session', correlation);
-    }
     const responseJson = {
       jwtFrontend: req.user.jwtFrontend
     };

@@ -102,7 +102,7 @@
                 Total number of children</span>
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-text-field 
+              <v-text-field
                 id="totNumberOfChildren"
                 @change="updateNumberOfChildSubForms"
                 @keypress="numberFilter"
@@ -176,7 +176,7 @@
                     id="childAgeCategory"
                     style="font-size:16px !important"
                     v-model="child.childAgeCategory"
-                    :items="childAgeCategoryList"
+                    :items="filteredChildAgeCategoryList"
                     @change="setApprovedParentFee(child.childAgeCategory, child.number-1)"
                     outlined
                     dense
@@ -223,7 +223,7 @@
               </v-row>
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
-  <!-- ******************************************************************************************************************************************************** -->          
+  <!-- ******************************************************************************************************************************************************** -->
               <v-row v-if="child.careSchedule == 'Part Time'">
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
@@ -244,10 +244,10 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
+
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -258,16 +258,16 @@
                     </v-card>
 
                     <v-spacer></v-spacer>
-                    
+
                     <v-card>
-                      <v-toolbar 
+                      <v-toolbar
                         color="#431782"
                       >
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Tuesday</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                  
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[1]"
@@ -281,7 +281,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -291,7 +291,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-                    
+
                     <v-card max-width="">
                       <v-toolbar
                         color="#431782"
@@ -300,7 +300,7 @@
                       <v-toolbar-title>Wednesday</v-toolbar-title>
                       <v-spacer></v-spacer>
                     </v-toolbar>
-                      
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[2]"
@@ -314,7 +314,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -347,7 +347,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -379,7 +379,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -410,7 +410,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -442,7 +442,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -662,7 +662,7 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-text-field
-                    id="partTimeFee" 
+                    id="partTimeFee"
                     @keypress="currencyFilter"
                     @change="truncateLeadingZerosDecimals(child.number)"
                     v-model="child.partTimeFee"
@@ -777,6 +777,21 @@
 
 import FacilitySearch from './FacilitySearch.vue';
 
+const CHILDCARE_TYPE_0_TO_18 = '0 - 18 Months';
+const CHILDCARE_TYPE_18_TO_36 = '18 - 36 Months';
+const CHILDCARE_TYPE_3_TO_K = '3 Years to Kindergarten';
+const CHILDCARE_TYPE_SCHOOL_CARE_K = 'Before & After School (Kindergarten Only)';
+const CHILDCARE_TYPE_SCHOOL_CARE_1 = 'Before & After School (Grade 1+)';
+const CHILDCARE_TYPE_PRESCHOOL = 'Pre-school';
+
+const CHILD_CARE_CATEGORY_LIST = [
+  CHILDCARE_TYPE_0_TO_18,
+  CHILDCARE_TYPE_18_TO_36,
+  CHILDCARE_TYPE_3_TO_K,
+  CHILDCARE_TYPE_SCHOOL_CARE_K,
+  CHILDCARE_TYPE_SCHOOL_CARE_1,
+  CHILDCARE_TYPE_PRESCHOOL
+];
 export default {
   components: { FacilitySearch },
   props: {},
@@ -785,6 +800,7 @@ export default {
       isParent: false,
       isProvider: false,
       childAgeCategory: '',
+      categoriesToRemove: [],
       childIndex: '',
       selectedFacility: [],
       skipApprovedFeeValidation: false,
@@ -797,6 +813,7 @@ export default {
       approvedFeesByCategory: [],
       totalNumberOfChildren: '1',
       children: null,
+      childCareCategoryFilter: [],
       form: {
         firstName: '',
         lastName: '',
@@ -832,7 +849,6 @@ export default {
         'Licensed Group',
         'Licensed Family'
       ],
-      childAgeCategoryList: [],
       rulesTypeOfCare: [
         (v) => !!v || 'Type of care is required'
       ],
@@ -852,7 +868,11 @@ export default {
       ],
     };
   },
-  computed: {},
+  computed: {
+    filteredChildAgeCategoryList() {
+      return CHILD_CARE_CATEGORY_LIST.filter(el => !this.categoriesToRemove.includes(el) && !(this.form.typeOfCare === 'Licensed Family' && el === CHILDCARE_TYPE_PRESCHOOL ));
+    }
+  },
   methods: {
     display2Decimals(val) {
       if (val != undefined) {
@@ -872,7 +892,9 @@ export default {
     setSelectedFacility(e) {
       this.resetForm();
       this.selectedFacility = e;
-      this.form.typeOfCare = (this.selectedFacility.accountNumber.charAt(0) == 'F') ? 'Licensed Family' : 'Licensed Group';
+      if (this.selectedFacility.careType) {
+        this.form.typeOfCare = this.selectedFacility.careType === 'F' ? 'Licensed Family' : 'Licensed Group';
+      }
       this.filterChildsAgeCategory();
     },
     rulesApprovedFee(v) {
@@ -1080,8 +1102,8 @@ export default {
           actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
           if (!isChildFullTime) {
             /**
-                                     * PART TIME RATE Reduction Calculation
-                                     */
+            * PART TIME RATE Reduction Calculation
+            */
             let partTimeNumberOfDays = 0;
             let fullTimeNumberOfDays = 0;
             // Determine number of part time and full time days entered in the parttime care schedule component...
@@ -1197,8 +1219,13 @@ export default {
     /* When a faclity is selected, the following will remove any child age category types from the
        drop list which do not have defined rates for the faclity. */
     filterChildsAgeCategory() {
-      this.childAgeCategoryList = this.getChildAgeCategoryList();
-      if (this.selectedFacility.approvedFeesByChildAgeCategory != undefined) {
+      if (this.selectedFacility.approvedFeesByChildAgeCategory) {
+        // if there are approved fees by categories, only show the categories with fees in the dropdown
+        // let's remove from the childAgeCategoryList instead of add to it in case
+        // the list coming back from the server is not in our favoured order.
+        const returnedCategories = this.selectedFacility.approvedFeesByChildAgeCategory.map(el => el.childCareCategory);
+        let removeList = CHILD_CARE_CATEGORY_LIST.filter( el => !returnedCategories.includes(el));
+
         for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
           if (this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJan == null &&
               this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeFeb == null &&
@@ -1213,18 +1240,16 @@ export default {
               this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeDev == null &&
               this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJan == null
           ) {
-            let removeItem = this.selectedFacility.approvedFeesByChildAgeCategory[i].childCareCategory;
-            this.childAgeCategoryList = this.childAgeCategoryList.filter(function(e) { return e !== removeItem;});
+            removeList.push(this.selectedFacility.approvedFeesByChildAgeCategory[i].childCareCategory);
           }
         }
+        this.categoriesToRemove = removeList;
+      } else {
+        // no approved fees, so show the whole list
+        this.categoriesToRemove = [];
       }
     },
-    getChildAgeCategoryList: function() {
-      return ['0 - 18 Months',
-        '18 - 36 Months',
-        '3 Years to Kindergarten',
-        'Before & After School (Kindergarten Only)'];
-    },
+
     setApprovedParentFee(childsAgeCategory, childIndex) {
       if (this.selectedFacility !== null && this.selectedFacility !== undefined && this.selectedFacility.facilityId !== undefined) {
         this.approvedFeesByCategory = this.getApprovedRatesByMonth(childsAgeCategory);
@@ -1323,7 +1348,7 @@ export default {
     },
     decimalExists: function(n) {
       if (n != null &&  n != undefined) {
-        return (n - Math.floor(n)) !== 0; 
+        return (n - Math.floor(n)) !== 0;
       }
     }
   },
@@ -1332,18 +1357,21 @@ export default {
       this.newChild(1)
     ];
     this.setDefaultForMonthPicker();
-    this.childAgeCategoryList = this.getChildAgeCategoryList();
     this.results = [];
     this.GROUP_REDUCTION_RATES = new Map();
-    this.GROUP_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 900, fullTime19: 47.3684, fullTime20: 45, partTime19: 23.6842, partTime20: 22.5, rateFloor: 350 });
-    this.GROUP_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 900, fullTime19: 47.3684, fullTime20: 45, partTime19: 23.6842, partTime20: 22.5, rateFloor: 350 });
-    this.GROUP_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 545, fullTime19: 28.6842, fullTime20: 27.25, partTime19: 14.3421, partTime20: 13.625, rateFloor: 100 });
-    this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16, partTime19: 8.4211, partTime20: 8, rateFloor: 100 });
+    this.GROUP_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 900, fullTime20: 45, rateFloor: 350 });
+    this.GROUP_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 900, fullTime20: 45, rateFloor: 350 });
+    this.GROUP_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 545, fullTime20: 27.25, rateFloor: 100 });
+    this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 100 });
+    this.GROUP_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 115, fullTime20: 5.75, rateFloor: 0 });
+    this.GROUP_REDUCTION_RATES.set('Pre-school', { monthlyRate: 95, fullTime20: 4.75, rateFloor: 0 });
     this.FAMILY_REDUCTION_RATES = new Map();
-    this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30, partTime19: 15.7895, partTime20: 15, rateFloor: 200 });
-    this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime19: 31.5789, fullTime20: 30, partTime19: 15.7895, partTime20: 15, rateFloor: 200 });
-    this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime19: 26.3158, fullTime20: 25, partTime19: 13.1579, partTime20: 12.5, rateFloor: 60 });
-    this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime19: 16.8421, fullTime20: 16, partTime19: 8.4211, partTime20: 8, rateFloor: 60 });
+    this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
+    this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
+    this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime20: 25, rateFloor: 60 });
+    this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 60 });
+    this.FAMILY_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 145, fullTime20: 7.25, rateFloor: 0 });
+    this.FAMILY_REDUCTION_RATES.set('Pre-school', { monthlyRate: 95, fullTime20: 4.75, rateFloor: 0 });
   },
   updated() {
     this.skipApprovedFeeValidation = false;

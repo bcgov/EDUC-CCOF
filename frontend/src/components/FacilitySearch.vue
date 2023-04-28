@@ -192,9 +192,9 @@ export default {
       this.toggleSelection(facility.facilityName);
       this.searchCriteria = facility.facilityName;
       this.facilityResult = this.getFacility(facility.facilityId).then(() => {
-        this.facilityResult.accountNumber = facility.accountNumber;
+        this.facilityResult.careType = facility.careType;
         // Pass (as an event) the selected facilty  value to the parent component.
-        this.$emit('selectedFacility', this.facilityResult);      
+        this.$emit('selectedFacility', this.facilityResult);
       });
       this.dialog = false;
     },

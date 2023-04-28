@@ -31,8 +31,7 @@ const fundingRouter = require('./routes/funding');
 const messageRouter = require('./routes/message');
 const licenseUploadRouter = require('./routes/licenseUpload');
 const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
-
-//const userprofileRouter = require('./routes/userprofile');
+const connectRedis = require('connect-redis');
 
 
 const promMid = require('express-prometheus-middleware');
@@ -62,22 +61,52 @@ const logStream = {
   }
 };
 
-const cookie = {
-  secure: true,
-  httpOnly: true,
-  maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
-};
-if ('local' === config.get('environment')) {
-  cookie.secure = false;
+if ('TODO-local' === config.get('environment')) {
+  const cookie = {
+    secure: true,
+    httpOnly: true,
+    maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+  };
+  if ('local' === config.get('environment')) {
+    cookie.secure = false;
+  }
+  //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
+  app.use(session({
+    name: 'ccof_cookie',
+    secret: config.get('oidc:clientSecret'),
+    resave: false,
+    saveUninitialized: true,
+    cookie: cookie,
+  }));
+
+} else {
+  const Redis = require('./util/redis/redis-client');
+  Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
+  const RedisStore = connectRedis(session);
+  const dbSession = new RedisStore({
+    client: Redis.getRedisClient(),
+    prefix: 'ccof-sess:',
+  });
+
+  const cookie = {
+    secure: true,
+    httpOnly: true,
+    maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+  };
+  if ('local' === config.get('environment')) {
+    cookie.secure = false;
+  }
+  //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
+  app.use(session({
+    name: 'ccof_cookie',
+    secret: config.get('oidc:clientSecret'),
+    resave: false,
+    saveUninitialized: true,
+    cookie: cookie,
+    store: dbSession
+  }));
+
 }
-//sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-app.use(session({
-  name: 'ccof_cookie',
-  secret: config.get('oidc:clientSecret'),
-  resave: false,
-  saveUninitialized: true,
-  cookie: cookie
-}));
 app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
