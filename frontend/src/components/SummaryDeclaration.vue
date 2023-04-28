@@ -145,6 +145,7 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
+                <!-- and LOCKED -->
                 <div v-show="!this.isRenewal">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                     I certify that I have read and understand the following requirements:</p>
@@ -177,6 +178,7 @@
                     amount received under the child care grant.
                   </p>
                 </div>
+                 <!-- show for new org after ministry unlocks -->
                 <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
