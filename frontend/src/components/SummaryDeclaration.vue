@@ -12,7 +12,7 @@
       </v-row>
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
-      </v-row>
+      </v-row>git a
       <v-row v-if="!this.isSummaryComplete" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
@@ -358,7 +358,7 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      return (this.invalidSummaryForms.length < 1);
+      return (this.invalidSummaryForms.length < 1 && this.model.agreeConsentCertify == 1);
     },
 
   },
@@ -383,7 +383,7 @@ export default {
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
-      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || this.canSubmit) {
+      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit &&this.model.agreeConsentCertify)) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;
