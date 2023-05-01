@@ -49,8 +49,10 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="!this.isRenewal">
-                  <p>I hereby confirm that the information I have provided in this application is complete and accurate. I certify that I have read and understand the following requirements:</p>
+                <div v-show="!this.isRenewal && !this.organizationAccountNumber">
+                  <!--NEW APP SUBMIT-->
+                  <p>I hereby confirm that the information I have provided in this application is complete and accurate.
+                    I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
                     <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
                     <li>Each facility must be in compliance with the Community Care and Assisted Living Act and Child Care Licensing
@@ -68,14 +70,23 @@
                     amount received under the child care grant.
                   </p>
                 </div>
-                <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
-                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
-                  <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
+                 <!-- show for new org after ministry unlocks -->
+                <div v-show="(this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) ">
+                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
+                    information provided is true and complete to the best of my knowledge and belief.</p>
+                  <p>I consent to the Ministry contacting other branches within the Ministry and other Province
+                    ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
-                <div v-show="this.model.declarationBStatus == 1 && this.isRenewal">
-                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information provided is true and complete to the best of my knowledge and belief.</p>
-                  <p>I consent to the Ministry contacting other branches within the Ministry and other Province ministries to validate the accuracy of any information that I have provided.</p>
-                  <p>By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby confirm that I have carefully read this Form and the corresponding terms and conditions of the Child Care Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:</p>
+                <div v-show="(this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber)">
+                  <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
+                    information provided is true and complete to the best of my knowledge and belief.</p>
+                  <p>I consent to the Ministry contacting other branches within the Ministry and other Province
+                    ministries to validate the accuracy of any information that I have provided.</p>
+                  <p>By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby
+                    confirm that I have carefully read this Form and the corresponding terms and conditions of the Child
+                    Care Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms
+                    and conditions. I further confirm that by clicking “I agree” below, I represent and warrant
+                    that:</p>
 
                   <ol type="a" style="padding-top:10px;">
                     <li>I am the authorized representative and signing authority of the Provider as named in the CCOF Agreement (the Provider);</li>
@@ -173,13 +184,14 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapState('app', ['programYearList', 'navBarList']),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('organization', ['fundingAgreementNumber']),
+    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
     ...mapState('application', ['programYearLabel', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
-      } if (!this.canSubmit) {
+      }
+      if (!this.canSubmit) {
         return true;
       } else if (this.unlockDeclaration) {
         return false;
@@ -287,7 +299,7 @@ export default {
       this.model = this.$store.state.summaryDeclaration.model ?? model;
     }
 
-    if (this.isRenewal) {
+    if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
 
