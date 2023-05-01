@@ -384,7 +384,7 @@ export default {
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
-      if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
+      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || this.canSubmit) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;

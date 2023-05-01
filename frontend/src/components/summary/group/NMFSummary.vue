@@ -17,12 +17,12 @@
               <span class="summary-label pt-3"> Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021 (e.g. New Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-start">
-              <v-text-field placeholder="Required" :value="this.nmfApp?.supportNeeds" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-text-field placeholder="Required" :value="this.nmfApp?.supportNeeds " class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="10">
-            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details no-resize rows="3" readonly :rules="rules.required"></v-textarea>
+            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds== 'Yes'" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details no-resize rows="3" readonly :rules="rules.required"></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
