@@ -358,7 +358,7 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      return (this.invalidSummaryForms.length < 1);
+      return (this.invalidSummaryForms.length < 1 );
     },
 
   },
@@ -383,7 +383,7 @@ export default {
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
-      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || this.canSubmit) {
+      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit &&this.model.agreeConsentCertify)) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;

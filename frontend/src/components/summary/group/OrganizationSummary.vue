@@ -34,7 +34,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="4" class="pb-0 pt-0">
+          <v-col cols="6" lg="4" class="pb-0 pt-0" v-if="this.summaryModel.application.organizationProviderType == 'GROUP'">
             <v-row  no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">Organization Contact Name</span>
@@ -44,7 +44,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="4" class="pb-0 pt-0">
+          <v-col cols="6" lg="4" class="pb-0 pt-0" v-if="this.summaryModel.application.organizationProviderType == 'GROUP'">
             <v-row no-gutters class="d-flex justify-start flex-column">
               <v-col cols="10" class="d-flex justify-start ml-3">
                 <span class="summary-label">Position</span>
@@ -97,10 +97,20 @@
           <v-col cols="6" lg="4" class="pb-0 pt-0">
             <v-row  no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label ml-3">Type of Organization</span>
+                <span class="summary-label ml-3">Provider Type</span>
               </v-col>
               <v-col class="d-flex justify-start">
                 <v-text-field placeholder="Required" class="summary-value" :value="this.summaryModel?.application?.organizationProviderType" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="6" lg="4" class="pb-0 pt-0">
+            <v-row  no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-label ml-3">Type of Organization</span>
+              </v-col>
+              <v-col class="d-flex justify-start">
+                <v-text-field placeholder="Required" class="summary-value" :value="getOrgTypeString()" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -114,7 +124,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="4" lg="3" class="pb-0 pt-0">
+          <v-col cols="4" lg="3" class="pb-0 pt-0" v-if="this.summaryModel?.organization?.organizationType == 100000000 || this.summaryModel?.organization?.organizationType == 100000002 ">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3 ">
                 <span class="summary-label">Incorporation Number</span>
@@ -156,7 +166,8 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <router-link :to="PATHS.group.orgInfo" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="this.PATHS.family.orgInfo" v-if=" this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="PATHS.group.orgInfo" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -185,6 +196,28 @@ export default {
   },
   computed:{
     ...mapState('auth', ['userInfo']),
+  },
+  methods:{
+    getOrgTypeString(){
+      switch(this.summaryModel?.organization?.organizationType) {
+      case !this.summaryModel?.organization?.organizationType:
+        return '';
+      case 100000000:
+        return 'Non-Profit Society';
+      case 100000001:
+        return 'Public Institution(college/university)';
+      case 100000002:
+        return 'Registered Company';
+      case 100000003:
+        return 'Local Government';
+      case 100000004:
+        return 'First Nations Government';
+      case 100000005:
+        return 'Sole Proprietorship or Partnership';
+      default:
+        return '';
+      }
+    },
   },
   data() {
     return {
