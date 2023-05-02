@@ -61,57 +61,43 @@ const logStream = {
   }
 };
 
-if ('TODO-local' === config.get('environment')) {
-  const cookie = {
-    secure: true,
-    httpOnly: true,
-    maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
-  };
-  if ('local' === config.get('environment')) {
-    cookie.secure = false;
-  }
-  //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-  app.use(session({
-    name: 'ccof_cookie',
-    secret: config.get('oidc:clientSecret'),
-    resave: false,
-    saveUninitialized: true,
-    cookie: cookie,
-  }));
-
-} else {
-  const Redis = require('./util/redis/redis-client');
-  Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
-  const RedisStore = connectRedis(session);
-  const dbSession = new RedisStore({
-    client: Redis.getRedisClient(),
-    prefix: 'ccof-sess:',
-  });
-
-  const cookie = {
-    secure: true,
-    httpOnly: true,
-    maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
-  };
-  if ('local' === config.get('environment')) {
-    cookie.secure = false;
-  }
-  //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-  app.use(session({
-    name: 'ccof_cookie',
-    secret: config.get('oidc:clientSecret'),
-    resave: false,
-    saveUninitialized: true,
-    cookie: cookie,
-    store: dbSession
-  }));
-
+const dbSession = getRedisDbSession();
+const cookie = {
+  secure: true,
+  httpOnly: true,
+  maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+};
+if ('local' === config.get('environment')) {
+  cookie.secure = false;
 }
+//sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
+app.use(session({
+  name: 'ccof_cookie',
+  secret: config.get('oidc:clientSecret'),
+  resave: false,
+  saveUninitialized: true,
+  cookie: cookie,
+  store: dbSession
+}));
+
 app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
 app.use(passport.session());
 
+function getRedisDbSession() {
+  if (config.get('redis:use')) {
+    const Redis = require('./util/redis/redis-client');
+    Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
+    const RedisStore = connectRedis(session);
+    const dbSession = new RedisStore({
+      client: Redis.getRedisClient(),
+      prefix: 'ccof-sess:',
+    });
+    return dbSession;
+  }
+  return undefined;
+}
 
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, clientId, clientSecret) {
   passport.use(strategyName, new OidcStrategy({

@@ -3,7 +3,7 @@
 const axios = require('axios');
 const log = require('./logger');
 const config = require('../config/index');
-const cacheHelper = 'TODO-local' === config.get('environment')? require('../util/redis/local-cache-helper') : require('../util/redis/cache-helper');
+const cacheHelper = config.get('redis:use')? require('../util/redis/cache-helper') : require('../util/redis/local-cache-helper');
 const { errorResponse, minify, HttpStatus, getHttpHeader, getOperation } = require('./utils');
 const {ApiError} = require('./error');
 

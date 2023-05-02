@@ -210,10 +210,11 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-select
-                    id="careSchedule"
+                    :id="'careSchedule-' + child.number"
                     v-model="child.careSchedule"
                     :items="['Full Time', 'Part Time']"
                     outlined
+                    v-bind:disabled="isPartTimeDisabled(child.number)"
                     dense
                     required
                     :rules="rulesCaresSchedule"
@@ -238,7 +239,7 @@
                           v-model="child.selectedCareType[0]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -249,7 +250,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -273,7 +274,7 @@
                           v-model="child.selectedCareType[1]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -283,7 +284,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -306,7 +307,7 @@
                           v-model="child.selectedCareType[2]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -316,7 +317,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -339,7 +340,7 @@
                           v-model="child.selectedCareType[3]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -349,7 +350,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -371,7 +372,7 @@
                           v-model="child.selectedCareType[4]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -381,7 +382,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -402,7 +403,7 @@
                           v-model="child.selectedCareType[5]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -412,7 +413,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -434,7 +435,7 @@
                           v-model="child.selectedCareType[6]"
                           active-class="purple--text"
                         >
-                          <div v-for="(item, index) in careTypes" v-bind:key="item.type">
+                          <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
                             <v-list-item>
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
@@ -444,7 +445,7 @@
                             </v-list-item>
 
                             <v-divider
-                              v-if="index < careTypes.length - 1"
+                              v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
                             ></v-divider>
                           </div>
@@ -576,7 +577,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Select whether parent fees are charged daily, weekly, or monthly.</span>
+                    <span>Select whether parent fees are charged daily or monthly.</span>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -792,6 +793,18 @@ const CHILD_CARE_CATEGORY_LIST = [
   CHILDCARE_TYPE_SCHOOL_CARE_1,
   CHILDCARE_TYPE_PRESCHOOL
 ];
+
+const CARE_TYPES = [
+  { type: 'No Care' },
+  { type: 'Half Day' },
+  { type: 'Full Day' }
+];
+
+const CARE_TYPES_PRESCHOOL = [
+  { type: 'No Care' },
+  { type: 'Half Day' }
+];
+
 export default {
   components: { FacilitySearch },
   props: {},
@@ -821,11 +834,11 @@ export default {
         careProviderSearch: '',
         typeOfCare: ''
       },
-      careTypes: [
-        { type: 'No Care' },
-        { type: 'Half Day' },
-        { type: 'Full Day' }
-      ],
+      // careTypes: [
+      //   { type: 'No Care' },
+      //   { type: 'Half Day' },
+      //   { type: 'Full Day' }
+      // ],
       numberOfBusinessDaysByMonth: [
         { month: 'January', days: 20 },
         { month: 'February', days: 19 },
@@ -842,7 +855,6 @@ export default {
       ],
       parentFeeFrequencyList: [
         'Daily',
-        'Weekly',
         'Monthly'
       ],
       typeOfCareList: [
@@ -896,6 +908,12 @@ export default {
         this.form.typeOfCare = this.selectedFacility.careType === 'F' ? 'Licensed Family' : 'Licensed Group';
       }
       this.filterChildsAgeCategory();
+    },
+    isPartTimeDisabled(index) {
+      return this.children[index - 1].childAgeCategory === CHILDCARE_TYPE_PRESCHOOL;
+    },
+    getCareTypes(index) {
+      return this.children[index - 1].childAgeCategory === CHILDCARE_TYPE_PRESCHOOL ? CARE_TYPES_PRESCHOOL : CARE_TYPES;
     },
     rulesApprovedFee(v) {
       if (!this.skipApprovedFeeValidation) {
@@ -1296,6 +1314,9 @@ export default {
         }
         this.children[childIndex].showMonthSelector = true;
       }
+      if (childsAgeCategory === CHILDCARE_TYPE_PRESCHOOL) {
+        this.children[childIndex].careSchedule = 'Part Time';
+      }
     },
     setRatesForMonths(childIndex) {
       if (this.selectedFacility.approvedFeesByChildAgeCategory != undefined) {
@@ -1364,14 +1385,14 @@ export default {
     this.GROUP_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 545, fullTime20: 27.25, rateFloor: 100 });
     this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 100 });
     this.GROUP_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 115, fullTime20: 5.75, rateFloor: 0 });
-    this.GROUP_REDUCTION_RATES.set('Pre-school', { monthlyRate: 95, fullTime20: 4.75, rateFloor: 0 });
+    this.GROUP_REDUCTION_RATES.set('Pre-school', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
     this.FAMILY_REDUCTION_RATES = new Map();
     this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
     this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime20: 25, rateFloor: 60 });
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 60 });
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 145, fullTime20: 7.25, rateFloor: 0 });
-    this.FAMILY_REDUCTION_RATES.set('Pre-school', { monthlyRate: 95, fullTime20: 4.75, rateFloor: 0 });
+    this.FAMILY_REDUCTION_RATES.set('Pre-school', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
   },
   updated() {
     this.skipApprovedFeeValidation = false;
