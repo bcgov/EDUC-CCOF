@@ -202,25 +202,18 @@ export default {
       switch(this.summaryModel?.organization?.organizationType) {
       case !this.summaryModel?.organization?.organizationType:
         return '';
-        break;
       case 100000000:
         return 'Non-Profit Society';
-        break;
       case 100000001:
         return 'Public Institution(college/university)';
-        break;
       case 100000002:
         return 'Registered Company';
-        break;
       case 100000003:
         return 'Local Government';
-        break;
       case 100000004:
         return 'First Nations Government';
-        break;
       case 100000005:
         return 'Sole Proprietorship or Partnership';
-        break;
       default:
         return '';
       }
