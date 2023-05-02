@@ -53,8 +53,10 @@
 
         </v-row>
 
+        <v-skeleton-loader v-if="this.processing" :loading="this.processing"
+                                    type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
 
-        <v-row>
+        <v-row v-else>
           <v-col class= "col-lg-10 mt-3">
             <h2>Change History</h2>
             <v-row>
@@ -68,6 +70,7 @@
                 <h4>Submission Date</h4>
               </v-col>
             </v-row>
+            <!--TODO: ADD skeleton loader and isLoaded var-->
             <v-row v-for=" (changeRequest, index) in changeActionStore" :key="index">
               <v-col class= "col-lg-3">
                 <h4></h4>
@@ -83,7 +86,7 @@
                   <v-btn class= "">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
-                  <v-btn class= "">Delete</v-btn>
+                  <v-btn class= "" @click="deleteRequest(changeRequest.changeActions.changeRequestId)">Delete</v-btn>
                 </v-col>
             </v-row>
           </v-col>
@@ -100,7 +103,6 @@
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
       </v-row>
-
   </v-container>
 </template>
 
@@ -136,11 +138,12 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
+
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['loadChangeRequest']),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest']),
     async previous() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
@@ -158,11 +161,18 @@ export default {
     },
     goToChangeForm(){
       this.$router.push(PATHS.changeNotificationForm);
+    },
+    async deleteRequest(requestId){
+      this.processing = true;
+      await this.deleteChangeRequest(requestId);
+      this.processing = false;
     }
   },
   async mounted() {
+    this.processing = true;
     console.log(this.applicationId);
     await this.loadChangeRequest(this.applicationId);
+    this.processing = false;
   },
   beforeRouteLeave(_to, _from, next) {
     //this.$store.commit('ccfriApp/model', this.model);

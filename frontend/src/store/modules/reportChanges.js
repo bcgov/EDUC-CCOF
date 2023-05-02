@@ -71,8 +71,6 @@ export default {
         throw e;
       }
     },
-
-
     async createChangeRequest({ state, commit, rootState }) {
 
       checkSession();
@@ -94,7 +92,22 @@ export default {
         throw error;
       }
 
-    }
+    },
+    async deleteChangeRequest({state, getters, commit}, changeRequestId) {
+      console.log('trying to delete req for: ', changeRequestId);
+
+      checkSession();
+
+      try {
+        console.log('');
+        let response = await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
+        console.log(response);
+        delete state.changeActionStore[changeRequestId];
+      } catch(e) {
+        console.log(`Failed to delete change reqz with error - ${e}`);
+        throw e;
+      }
+    },
   },
 
 };
