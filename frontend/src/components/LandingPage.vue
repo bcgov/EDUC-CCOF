@@ -12,7 +12,7 @@
       What would you like to do?
     </div>
 
-
+<v-btn @click="goToReportChange()">MAKE A CC CHANGE</v-btn>
     <v-row class="" align="stretch" justify="space-around">
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>

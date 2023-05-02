@@ -12,34 +12,27 @@
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
       <v-container>
+
+        <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row justify="space-around">
+
 
           <SmallCard  class= "col-lg-6 " :disable="false">
             <template #content class="px-10">
-              <p class="text-h6 text-center">What changes do you want to make?</p>
+              <p class="text-h6 text-center "> Add a New facility to an existing organization </p>
               <p class="px-2">
-                Changes <strong> require an updated </strong> <i>Community Care And Assisted Living Act</i> License to be attached.
+                This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE information ready.
               </p>
-              <v-card
-                class="px-5  mt-10 pa-0 rounded-lg  col-12 bg-blue-lighten-3 "
-                elevation="4"
-                rounded
-                tiled
-                exact tile
-                :ripple="false"
-                color="#e5f7ff"
-                >
-                <v-card-text class="bg-blue-lighten-3">
-                  <v-card-actions>
-                    <v-btn class="blueButton" @click="routeToFacilityAdd()">Add a new facility</v-btn>
-                  </v-card-actions>
-                  <v-row>
-                      <p class="text-h6 blueText"> Add a New facility to an existing organization </p>
-                      <p class="text  " > This will navigate you through a CCOF Application process. Please have your Facility, CCFRI, and ECE-WE information ready.</p>
-                  </v-row>
-                </v-card-text>
-              </v-card>
+              <p class="px-2">
+                You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> license.
+              </p>
             </template>
+              <template #button class="ma-0 pa-0 ">
+                <v-row justify="space-around">
+                  <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" >Add new facility</v-btn>
+                </v-row>
+              </template>
+
           </SmallCard>
 
           <SmallCard  class= "col-lg-6 " :disable="false">
@@ -59,6 +52,43 @@
 
 
         </v-row>
+
+
+        <v-row>
+          <v-col class= "col-lg-10 mt-3">
+            <h2>Change History</h2>
+            <v-row>
+            <v-col class= "col-lg-3">
+                <h4>Change Requests</h4>
+              </v-col>
+              <v-col class= "col-lg-3">
+                <h4>Status</h4>
+              </v-col>
+              <v-col class= "col-lg-3">
+                <h4>Submission Date</h4>
+              </v-col>
+            </v-row>
+            <v-row v-for=" (changeRequest, index) in changeActionStore" :key="index">
+              <v-col class= "col-lg-3">
+                <h4></h4>
+                {{changeRequest.changeActions.changeType}}
+              </v-col>
+              <v-col class= "col-lg-3">
+                {{changeRequest.changeActions.status}}
+              </v-col>
+              <v-col class= "col-lg-3">
+                Date
+              </v-col>
+                <v-col class= "col-lg-2">
+                  <v-btn class= "">Continue</v-btn>
+                </v-col>
+                <v-col class= "col-lg-1">
+                  <v-btn class= "">Delete</v-btn>
+                </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+
 
       </v-container>
     </v-form>
@@ -81,20 +111,12 @@ import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 
 
-let ccfriOptInOrOut = {};
-let textInput = '' ;
-let model = { x: [], ccfriOptInOrOut, textInput };
+
 export default {
   name: 'ReportChange',
   mixins: [alertMixin],
   data() {
     return {
-      buttonTitles: [
-        {
-          title: '1. Legal Name or Organization Name',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        },
-      ],
       isUnlocked: false,
       isValidForm: false,
       processing: false,
@@ -107,35 +129,25 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
+    ...mapState('reportChanges', ['changeActionStore',]),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
-    unlockedFacilities() {
-      return this.navBarList.some(facility => facility.unlockCcfri);
-    },
-  },
-  beforeMount: function () {
-    this.showOptStatus = new Array(this.navBarList.length).fill(false);
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
+    ...mapActions('reportChanges', ['loadChangeRequest']),
     async previous() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete() {
-      const allFacilitiesComplete = this.navBarList.every((fac) => {
-        return (fac.ccfriApplicationId);
-      });
-      if (!allFacilitiesComplete) {
-        return allFacilitiesComplete;
-      }
-      return this.isValidForm;
+
     },
     next() {
       this.$router.push(PATHS.home);
@@ -148,11 +160,12 @@ export default {
       this.$router.push(PATHS.changeNotificationForm);
     }
   },
-  mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
+  async mounted() {
+    console.log(this.applicationId);
+    await this.loadChangeRequest(this.applicationId);
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
+    //this.$store.commit('ccfriApp/model', this.model);
     next();
   },
   components: { SmallCard }

@@ -402,7 +402,12 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_has_rfi', front: 'hasRfi'}, // false,
   { back: 'ccof_unlock_rfi', front: 'unlockRfi'}, // null,
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,
-]
+];
+
+const ChangeRequestMappings = [
+  { back: 'ccof_change_requestid', front: 'changeRequestId'}, // null,
+  //{ back: '', front: ''}, // null,
+];
 
 module.exports = {
   OrganizationMappings,
@@ -433,4 +438,5 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
+  ChangeRequestMappings
 };

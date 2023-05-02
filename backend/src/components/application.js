@@ -23,10 +23,14 @@ const {
   DeclarationMappings,
   UserProfileCCFRIMappings,
   ApplicationSummaryMappings,
-  ApplicationSummaryCcfriMappings, OrganizationFacilityMappings,CCOFApplicationFundingMapping,OrganizationMappings
+  ApplicationSummaryCcfriMappings, OrganizationFacilityMappings,CCOFApplicationFundingMapping,OrganizationMappings,
+  //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
+
+
+const { ChangeRequestMappings, ChangeActionRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 
 
 async function renewCCOFApplication(req, res) {
@@ -480,6 +484,34 @@ function checkKey(key, obj) {
   return false;
 }
 
+async function getChangeRequest(req, res){
+
+  try {
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${req.params.applicationId}`;
+    let changeRequests = await getOperation(operation);
+    changeRequests = changeRequests.value;
+
+    log.verbose(changeRequests);
+
+    changeRequests.forEach((request, index )=> {
+
+      let changeActions = new MappableObjectForFront(request.ccof_change_action_change_request[0], ChangeActionRequestMappings).toJSON();
+      let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
+
+      req.changeActions = changeActions;
+      log.verbose('mapped req', req);
+      changeRequests[index] = req;
+
+    });
+
+    return res.status(HttpStatus.OK).json(changeRequests);
+  } catch (e) {
+    log.error('An error occurred while getting change request', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -490,5 +522,6 @@ module.exports = {
   getDeclaration,
   submitApplication,
   getApplicationSummary,
-  updateStatusForApplicationComponents
+  updateStatusForApplicationComponents,
+  getChangeRequest
 };
