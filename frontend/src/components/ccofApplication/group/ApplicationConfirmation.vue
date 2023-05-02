@@ -38,7 +38,7 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapState, mapMutations, mapActions } from 'vuex';
+import {mapState, mapMutations, mapActions, mapGetters} from 'vuex';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -48,8 +48,17 @@ export default {
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
     ...mapState('application', ['applicationStatus']),
+    ...mapGetters('app', ['getNavbarStatus']),
     isLocked() {
-      return (this.applicationStatus === 'SUBMITTED');
+      switch(this.getNavbarStatus) {
+      case 'APPLICATION':
+        return (this.applicationStatus === 'SUBMITTED');
+      case 'RC_NEW_FACILITY':
+        //TODO - find change request application status and based on that return the value.
+        return false;
+      case 'REPORT_CHANGE':
+        return false;
+      }
     }
   },
   methods: {

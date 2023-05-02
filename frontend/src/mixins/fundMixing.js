@@ -1,7 +1,7 @@
 import {ORGANIZATION_PROVIDER_TYPES} from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
-import {mapActions, mapState, mapMutations} from 'vuex';
+import {mapActions, mapState, mapMutations, mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isNullOrBlank} from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
@@ -13,12 +13,22 @@ export default {
     ...mapState('funding', ['fundingModel']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('app', ['familyLicenseCategory']),
+    ...mapGetters('app', ['getNavbarStatus']),
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
     isLocked() {
-      if (this.unlockBaseFunding) {
+      switch(this.getNavbarStatus) {
+      case 'APPLICATION':
+        if (this.unlockBaseFunding) {
+          return false;
+        }
+        return (this.applicationStatus === 'SUBMITTED');
+      case 'RC_NEW_FACILITY':
+        //TODO - find change request application status and based on that return the value.
+        return false;
+      case 'REPORT_CHANGE':
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+
     }
   },
   data() {
