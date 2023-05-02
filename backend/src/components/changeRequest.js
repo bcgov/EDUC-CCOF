@@ -8,7 +8,7 @@ const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = 
 
 const HttpStatus = require('http-status-codes');
 
-const { getOperationWithObjectId, getOperation, postOperation } = require('./utils');
+const { getOperationWithObjectId, getOperation, postOperation, deleteOperationWithObjectId } = require('./utils');
 
 const CHANGE_REQUEST_TYPES = Object.freeze({
   NEW_FACILITY: 'NEW_FACILITY',
@@ -110,9 +110,26 @@ async function createChangeRequestFacility(req, res) {
   }
 }
 
+async function deleteChangeRequest(req, res){
+
+  let { changeRequestId } = req.params;
+  log.verbose(changeRequestId);
+
+  try{
+    await deleteOperationWithObjectId('ccof_change_requests', changeRequestId);
+    return res.status(HttpStatus.OK).end();
+  }catch(e){
+    log.info(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+
+
+
+}
 module.exports = {
   getChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
   CHANGE_REQUEST_TYPES,
+  deleteChangeRequest
 };

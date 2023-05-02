@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES } = require('../components/changeRequest');
+const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 module.exports = router;
@@ -63,4 +63,13 @@ router.post('/documents', //passport.authenticate('jwt', {session: false}),isVal
     validationResult(req).throw();
     return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
   });
+
+
+router.delete('/:changeRequestId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return deleteChangeRequest(req, res);
+  });
+
+
 module.exports = router;
