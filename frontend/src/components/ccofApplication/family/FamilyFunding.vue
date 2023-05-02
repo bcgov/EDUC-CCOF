@@ -11,7 +11,7 @@
                   <v-skeleton-loader class="mx-auto" max-width="300" type="text@3"/>
                 </div>
 
-                <v-radio-group :disabled="isLocked" v-model="model.familyLicenseType" label="License type" v-show="!loading">
+                <v-radio-group :disabled="isLocked" :rules="rules.required" v-model="model.familyLicenseType" label="License type" v-show="!loading">
                   <v-radio label="Family child care" value="7" />
                   <v-radio label="In-Home Multi-Age Child Care" value="6" />
                   <v-radio label="Multi-Age Care" value="5" />
