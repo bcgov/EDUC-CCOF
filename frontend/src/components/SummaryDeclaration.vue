@@ -131,7 +131,7 @@
       </v-row>
       <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">Declaration</v-card-title>
@@ -261,7 +261,7 @@
                 />
               </v-col>
             </v-row>
-          </v-container>
+
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
