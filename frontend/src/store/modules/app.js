@@ -115,7 +115,7 @@ export default {
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
-    futureYearLabel: state => state.programYearList?.future?.name,
+    renewalYearLabel: state => state.programYearList?.renewal?.name?.replace(/[^\d/]/g, ''),
     childCareCategoryList: state => state.childCareCategoryList,
     organizationTypeList: state => state.organizationTypeList,
     fundingModelTypeList: state => state.fundingModelTypeList,
