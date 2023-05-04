@@ -13,7 +13,7 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
-      <v-row v-if="!this.isSummaryComplete" justify="center">
+      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
@@ -58,7 +58,7 @@
                 <div v-if="!this.isRenewal">
                   <v-expansion-panel variant="accordion">
                     <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
-                                         :summary-model="this.summaryModel">
+                                         :summary-model="this.summaryModel" :isProcessing="isProcessing">
                     </OrganizationSummary>
                   </v-expansion-panel>
                 </div>
@@ -103,7 +103,7 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                      :ecewe-facility="facility.ecewe"></ECEWESummary>
+                                      :ecewe-facility="facility.ecewe" :isProcessing="isProcessing"></ECEWESummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <div v-if="!facility.funding"></div>
@@ -115,7 +115,7 @@
                 <div v-if="!this.isRenewal">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                :ecewe-facility="null"></ECEWESummary>
+                                :ecewe-facility="null" :isProcessing="isProcessing"></ECEWESummary>
                 </v-expansion-panel>
                 </div>
               </v-row>
@@ -383,7 +383,7 @@ export default {
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
-      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit &&this.model.agreeConsentCertify)) {
+      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;
