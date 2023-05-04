@@ -58,6 +58,7 @@ function parseProgramYear(value) {
     current: undefined,
     future: undefined,
     previous: undefined,
+    renewal: undefined,
     list: []
   };
   value.forEach(item => {
@@ -73,6 +74,7 @@ function parseProgramYear(value) {
   });
   programYears.previous = programYears.list.find(p => p.programYearId == programYears.current.previousYearId);
   programYears.list.sort((a,b) => { return b.order - a.order; } );
+  programYears.renewal = programYears.future ? programYears.future:  programYears.list[0];
   return programYears;
 }
 
@@ -91,7 +93,7 @@ async function getLicenseCategory() {
 
 async function getLookupInfo(req, res) {
   /**
-   * Look ups from Dynamics365. 
+   * Look ups from Dynamics365.
    * status code values are:
    * 1 - Current
    * 2 - Inactive
@@ -127,7 +129,7 @@ async function getSystemMessages(req, res) {
     let currentTime = (new Date()).toISOString();
     systemMessages = [];
     let resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
-    resData?.value.forEach(message => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));    
+    resData?.value.forEach(message => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));
     lookupCache.put('systemMessages', systemMessages, 60 * 60 * 1000);
   }
   return res.status(HttpStatus.OK).json(systemMessages);

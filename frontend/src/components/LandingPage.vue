@@ -59,7 +59,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
+      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.renewalYearLabel}`" :disable="!isRenewEnabled">
         <template #content>
           <p class="text-h6">Renew my Funding Agreement</p>
           <p>
@@ -223,7 +223,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['futureYearLabel']),
+    ...mapGetters('app', ['renewalYearLabel']),
     ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
@@ -254,8 +254,8 @@ export default {
       return enabled;
     },
     isWithinRenewDate() {
-      let isEnabled = (this.userInfo.serverTime > this.programYearList?.future?.intakeStart
-        && this.userInfo.serverTime < this.programYearList?.future?.intakeEnd);
+      let isEnabled = (this.userInfo.serverTime > this.programYearList?.renewal?.intakeStart
+        && this.userInfo.serverTime < this.programYearList?.renewal?.intakeEnd);
       console.log('isWithinRenewDate: ', isEnabled);
       return isEnabled;
     },
@@ -266,7 +266,8 @@ export default {
         } else if (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') {
           let isEnabled = this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
-            && this.programYearId == this.programYearList?.current?.programYearId;
+            && this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
+            && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
           return isEnabled;
         }
       }
