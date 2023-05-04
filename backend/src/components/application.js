@@ -17,6 +17,7 @@ const {
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
+const {CHANGE_REQUEST_TYPES } = require('../components/changeRequest');
 const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
@@ -492,12 +493,14 @@ async function getChangeRequest(req, res){
     changeRequests = changeRequests.value;
 
     log.verbose(changeRequests);
+    //ccof_changetype: changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE ? 100000013 : 100000005
 
     changeRequests.forEach((request, index )=> {
 
       let changeActions = new MappableObjectForFront(request.ccof_change_action_change_request[0], ChangeActionRequestMappings).toJSON();
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
 
+      changeActions.changeType = changeActions.changeType == 100000013 ? CHANGE_REQUEST_TYPES.PDF_CHANGE : CHANGE_REQUEST_TYPES.NEW_FACILITY;
       req.changeActions = changeActions;
       log.verbose('mapped req', req);
       changeRequests[index] = req;
