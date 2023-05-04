@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form">
+  <v-form ref="form3">
 
     <v-container>
       <div class="row pt-4 justify-center">
@@ -38,11 +38,11 @@
           <v-container>
             <v-row v-if="isLoading">
               <v-col>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+                <v-skeleton-loader type="text@1"></v-skeleton-loader>
+                <v-skeleton-loader type="actions"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" justify="center">
+            <v-row v-else justify="center">
               <v-radio-group
                 v-model="model.optInECEWE"
                 :disabled="isReadOnly"
@@ -67,7 +67,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="(this.model.optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(this.model.optInECEWE == 1)" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -101,7 +101,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1)" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -287,7 +287,7 @@
         </v-card>
       </v-row>
       <NavButton class="mt-10" :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveECEWEApplication"></NavButton>
     </v-container>
   </v-form>
@@ -339,6 +339,7 @@ export default {
   },
   async mounted() {
     try {
+      this.isLoading = true;
       this.setFundingModelTypes({...this.fundingModelTypeList});
       this.setApplicationId(this.applicationId);
       await this.loadData();
@@ -347,8 +348,10 @@ export default {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
       this.initECEWEFacilities(this.navBarList);
+      this.isLoading = false;
     } catch(error) {
       console.log (error);
+      this.isLoading = false;
     }
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -371,7 +374,8 @@ export default {
       }
     },
     validateForm() {
-      this.$refs.form?.validate();
+      console.log('ValidateForm called')
+      this.$refs.form3?.validate();
     },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
@@ -406,7 +410,6 @@ export default {
         return;
       }
       if (this.applicationId) {
-        this.isLoading = true;
         try {
           await this.loadECEWE();
         } catch (error) {
@@ -415,7 +418,6 @@ export default {
         }
         this.setIsStarted(true);
       }
-      this.isLoading = false;
     },
     optOutFacilities() {
       //this was modified by JB to try and fix bugs with the checkmarks.
