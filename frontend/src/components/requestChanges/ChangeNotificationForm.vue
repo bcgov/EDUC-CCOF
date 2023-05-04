@@ -34,8 +34,8 @@
               <v-col class="col-lg-10 ">
               <p class="px-2 text--primary"><strong> Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
               </p>
-              <SupportingDocumentUpload></SupportingDocumentUpload>
-                <!-- <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >upload box here</v-btn> -->
+
+                <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >upload box here</v-btn>
               </v-col>
             </v-row>
 
