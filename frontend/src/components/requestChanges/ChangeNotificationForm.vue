@@ -143,8 +143,7 @@ export default {
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
     async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+      this.$router.push(PATHS.reportChange);
     },
     async save(showNotification){
       try{
