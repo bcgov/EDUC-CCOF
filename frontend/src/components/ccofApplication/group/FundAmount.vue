@@ -113,7 +113,7 @@
 
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCare36()]" v-model.number="model.maxGroupChildCare36" label="Maximum Number for Group Child Care (36 months to School Age)" />
+                <v-text-field :disabled="isLocked" type="number" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCare36()]" v-model.number="model.maxGroupChildCare36" label="Maximum Number for Group Child Care (30 months to School Age)" />
               </v-col>
             </v-row>
             <v-row>
@@ -238,7 +238,7 @@
                   <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (School Age / School age care on School Grounds)" />
@@ -253,7 +253,7 @@
                   <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareUnder36Months4OrMore" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (School Age/ School age care on School Grounds)" />
