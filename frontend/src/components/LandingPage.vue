@@ -298,7 +298,7 @@ export default {
         console.log(this.applicationStatus);
         if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
-        } else if (this.programYearId == this.programYearList.current?.programYearId) {
+        } else if (this.programYearId == this.programYearList.renewal?.previousYearId) {
           return this.RENEW_STATUS_NEW;
         } else if (this.isOrganizationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
