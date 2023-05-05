@@ -442,7 +442,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.reportChange,
-      name: 'report-change',
+      name: 'Report Change',
       component: ReportChange,
       meta: {
         pageTitle: 'Report Changes',

@@ -73,6 +73,8 @@ export default {
         throw e;
       }
     },
+
+    //TODO: add it to the store
     async createChangeRequest({ state, commit, rootState }) {
 
       checkSession();
@@ -85,7 +87,7 @@ export default {
         //commit('setLoadedFacilities', {...state.facilities});
 
         let response = await ApiService.apiAxios.post('http://localhost:8080/api/changeRequest/documents', payload);
-        commit('setChangeActionId', response.data.changeActionId);
+
         commit('setChangeRequestId', response.data.changeRequestId);
         console.log(response);
         return response;

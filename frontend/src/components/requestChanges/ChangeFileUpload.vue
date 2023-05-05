@@ -106,11 +106,11 @@ export default {
       type: Object,
       required: true
     },
-    rFIType: {
+    changeType: {
       type: String,
       required: true
     },
-    rFIDocuments: {
+    changeActionDocuments: {
       type: Array,
       required: true
     },
@@ -130,7 +130,7 @@ export default {
 
   },
   watch: {
-    rFIDocuments: {
+    changeActionDocuments: {
       handler: function (val) {
         this.uploadedRFITypeDocuments = val;
       }
@@ -211,7 +211,7 @@ export default {
           const clonedDoc = deepCloneObject(doc);
           const obj = {
             id: this.currentrow,
-            documentType: this.rFIType,
+            documentType: this.changeType,
             ...clonedDoc
           };
           this.$emit('addRFIDocument', obj);
@@ -263,7 +263,7 @@ export default {
     async createTable() {
       this.isLoading = true;
       try {
-        this.uploadedRFITypeDocuments = this.rFIDocuments;
+        this.uploadedRFITypeDocuments = this.changeActionDocuments;
       } catch (e) {
         console.error(e);
       } finally {
@@ -279,8 +279,8 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.rFIType + (this.uploadedRFITypeDocuments.length + 1);
-      addObj.documentType = this.rFIType;
+      addObj.id = this.changeType + (this.uploadedRFITypeDocuments.length + 1);
+      addObj.documentType = this.changeType;
       this.editItem(addObj);
       this.$emit('addRFIRow', addObj);
     },

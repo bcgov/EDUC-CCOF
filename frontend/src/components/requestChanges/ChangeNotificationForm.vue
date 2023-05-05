@@ -47,7 +47,7 @@
           </v-col>
           <v-col class="col-lg-6 ">
             col 2
-            {{ this.changeActionId }}
+
           </v-col>
 
         </v-row>
@@ -57,8 +57,8 @@
 
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete" :isProcessing="processing"
-        @previous="previous" @next="nextBtnClicked" @validateForm="validateForm()" @save="save(true)"></NavButton>
+        :isSaveDisabled="isReadOnly" :isNextDisabled="true" :isProcessing="processing"
+        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
       <!-- <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
@@ -148,7 +148,10 @@ export default {
     },
     async save(showNotification){
       try{
-        await this.createChangeRequest();
+        if (!this.$route.params.urlGuid){
+          await this.createChangeRequest();
+        }
+        //else - PATCH to the existing change request TODO
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
         }
