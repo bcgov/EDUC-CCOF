@@ -19,6 +19,7 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     }
+
   },
   data() {
     return {
