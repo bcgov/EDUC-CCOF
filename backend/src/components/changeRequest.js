@@ -8,7 +8,7 @@ const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = 
 
 const HttpStatus = require('http-status-codes');
 
-const { getOperationWithObjectId, getOperation, postOperation, deleteOperationWithObjectId } = require('./utils');
+const { getOperationWithObjectId, getOperation, postOperation, deleteOperationWithObjectId, getChangeActionDocument } = require('./utils');
 
 const CHANGE_REQUEST_TYPES = Object.freeze({
   NEW_FACILITY: 'NEW_FACILITY',
@@ -92,13 +92,29 @@ async function deleteChangeRequest(req, res){
     log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
-
-
-
 }
+
+//TODO: need some mapping here prob but lets figure out Sukanyas component first
+async function getChangeRequestDocs(req, res){
+
+  let { changeRequestId } = req.params;
+  log.verbose(changeRequestId);
+
+  try{
+    let response = await getChangeActionDocument(changeRequestId);
+
+    log.verbose(response.value);
+    return res.status(HttpStatus.OK).json(response.value);
+  }catch(e){
+    log.info(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
+
 module.exports = {
   getChangeRequest,
   createChangeRequest,
   CHANGE_REQUEST_TYPES,
-  deleteChangeRequest
+  deleteChangeRequest,
+  getChangeRequestDocs
 };

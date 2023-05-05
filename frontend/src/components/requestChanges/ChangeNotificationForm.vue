@@ -99,6 +99,31 @@ export default {
       ],
     };
   },
+  watch: {
+    //get facilityID from here and then set it !
+    '$route.params.urlGuid': {
+      async handler() {
+        if (this.$route.params.urlGuid){
+          window.scrollTo(0,0);
+          //load the docs
+          //set a flag that exists/
+
+          try {
+            await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+
+          } catch (error) {
+            console.log(error);
+            this.setFailureAlert('An error occured while getting.');
+
+          }
+        }
+
+
+      },
+      immediate: true,
+      deep: true
+    },
+  },
   computed: {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments']),
@@ -116,7 +141,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['createChangeRequest']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
     async previous() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
@@ -140,7 +165,7 @@ export default {
       next();
     }
   },
-  components: { SupportingDocumentUpload, NavButton }
+  components: { NavButton }
 };
 </script>
 <style scoped>
