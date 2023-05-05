@@ -442,7 +442,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.reportChange,
-      name: 'reportChange',
+      name: 'report-change',
       component: ReportChange,
       meta: {
         pageTitle: 'Report Changes',
@@ -452,7 +452,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.changeNotificationForm,
-      name: 'changeNotificationForm',
+      name: 'change-notification-form',
       component: ChangeNotificationForm,
       meta: {
         pageTitle: 'Change Notification Form',
@@ -460,6 +460,17 @@ const router = new VueRouter({
         requiresAuth: true,
       }
     },
+    {
+      path: PATHS.changeNotificationForm + '/:urlGuid',
+      name: 'change-notification-form-guid',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: true,
+        requiresAuth: true,
+      }
+    },
+
   ]
 });
 

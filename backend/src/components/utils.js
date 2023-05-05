@@ -236,6 +236,19 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
   }
 }
 
+async function getChangeActionDocument(changeActionId){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeActionDocument?changeactionId=' + changeActionId;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error(' get Change Action Document Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
+
+
 function getHttpHeader() {
   let headers = null;
   if ('local' === config.get('environment')) {
@@ -308,6 +321,7 @@ const utils = {
   getApplicationDocument,
   deleteDocument,
   sleep,
+  getChangeActionDocument
 };
 
 module.exports = utils;

@@ -83,7 +83,7 @@
                 Date
               </v-col>
                 <v-col class= "col-lg-2">
-                  <v-btn class= "">Continue</v-btn>
+                  <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId)">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
                   <v-btn class= "" @click="deleteRequest(changeRequest.changeActions.changeRequestId)">Delete</v-btn>
@@ -159,8 +159,14 @@ export default {
       this.setNavBarStatus('RC_NEW_FACILITY');
       this.$router.push(PATHS.group.facInfo);
     },
-    goToChangeForm(){
-      this.$router.push(PATHS.changeNotificationForm);
+    goToChangeForm(changeActionId = null){
+      if (!changeActionId){
+        this.$router.push(PATHS.changeNotificationForm);
+      }
+      else{
+        this.$router.push(PATHS.changeNotificationForm + '/' + changeActionId);
+      }
+
     },
     async deleteRequest(requestId){
       this.processing = true;

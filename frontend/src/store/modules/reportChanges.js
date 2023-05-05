@@ -6,6 +6,8 @@ import {deepCloneObject} from '@/utils/common';
 
 
 //TODO : remove unneeded state vars after restructure
+
+//change REQUEST guid is what we need for saving and loading. Change action guid does...?
 export default {
   namespaced: true,
   state: {
@@ -26,9 +28,9 @@ export default {
     model(state, value) {
       state.model = value;
     },
-    addChangeActionToStore: (state, {changeActionId, model} ) => {
-      if (changeActionId) {
-        state.changeActionStore[changeActionId] = model;
+    addChangeActionToStore: (state, {changeRequestId, model} ) => {
+      if (changeRequestId) {
+        state.changeActionStore[changeRequestId] = model;
       }
     },
     setChangeRequestId: (state, changeRequestId) => {
@@ -54,7 +56,7 @@ export default {
         if (!isEmpty(response.data)) {
 
           response.data.forEach(element => {
-            commit('addChangeActionToStore', {changeActionId: element.changeRequestId, model: element});
+            commit('addChangeActionToStore', {changeRequestId: element.changeRequestId, model: element});
           });
 
 
@@ -105,6 +107,35 @@ export default {
         delete state.changeActionStore[changeRequestId];
       } catch(e) {
         console.log(`Failed to delete change reqz with error - ${e}`);
+        throw e;
+      }
+    },
+
+    //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID. idk why
+    //change action id will return arr of docs
+    async loadChangeRequestDocs({getters, commit}, changeActionId) {
+      console.log('loading change req DOCS for: ', changeActionId);
+
+      checkSession();
+
+      try {
+        console.log('');
+        let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + 'documents/' + changeActionId);
+        console.log(response);
+        if (!isEmpty(response.data)) {
+
+
+
+          //commit('setLoadedModel', deepCloneObject(response.data));
+        }
+        // else {
+
+        //   commit('addRfiToStore', {ccfriId: ccfriId, model: rfi});
+        //   commit('setRfiModel', rfi);
+        //   commit('setLoadedModel', deepCloneObject(rfi));
+        // }
+      } catch(e) {
+        console.log(`Failed to get load change reqz with error - ${e}`);
         throw e;
       }
     },

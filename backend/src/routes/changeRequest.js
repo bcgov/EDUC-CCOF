@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest } = require('../components/changeRequest');
+const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest, getChangeRequestDocs } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 module.exports = router;
@@ -36,6 +36,8 @@ router.get('/:changeRequestId', //passport.authenticate('jwt', {session: false})
     return getChangeRequest(req, res);
   });
 
+
+
 /**
  * Create the change Request
  */
@@ -56,6 +58,16 @@ router.post('/newFacility/:changeActionId', //passport.authenticate('jwt', {sess
 
 
 /**
+ * Get Change Requests Documents
+ */
+router.get('/documents/:changeRequestId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return getChangeRequestDocs(req, res);
+  });
+
+
+/**
  * Create the change request upload document
  */
 router.post('/documents', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
@@ -64,6 +76,10 @@ router.post('/documents', //passport.authenticate('jwt', {session: false}),isVal
     return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
   });
 
+
+/**
+ * Delete a change request
+ */
 
 router.delete('/:changeRequestId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('changeRequestId', 'URL param: [changeRequestId] is required').not().isEmpty()], (req, res) => {
