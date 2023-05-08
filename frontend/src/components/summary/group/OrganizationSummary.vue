@@ -4,8 +4,8 @@
     <v-expansion-panel-header>
       <h4 style="color:#003466;">Organization Information
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
-        <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view</span>
+        <v-icon v-if="!isValidForm && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+        <span v-if="!isValidForm && !this.isProcessing" style="color:#ff5252;">Your form is missing required information. Click here to view</span>
       </h4>
 
     </v-expansion-panel-header>
@@ -192,7 +192,11 @@ export default {
     summaryModel: {
       type: Object,
       required: true
-    }
+    },
+    isProcessing: {
+      type: Boolean,
+      required: false
+    },
   },
   computed:{
     ...mapState('auth', ['userInfo']),
