@@ -164,16 +164,21 @@
                 <v-text-field :readonly="!isLocked" :disabled="isLocked" type="number" outlined v-bind:value="(model.monday || 0) + (model.tusday || 0) + (model.wednesday || 0) + (model.thursday || 0) + (model.friday || 0)" label="Total" />
               </v-col>
             </v-row>
-
-            <v-row>
-              <v-col>
-                <v-radio-group :disabled="isLocked" row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
-                  <v-radio label="Yes" value="yes" />
-                  <v-radio label="No" value="no" />
-                </v-radio-group>
-              </v-col>
-            </v-row>
           </v-container>
+        </v-card>
+         
+
+        <v-card class="cc-top-level-card" width="1200">
+          <v-container>
+            <v-row>
+            <v-col>
+              <v-radio-group :disabled="isLocked" row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
+                <v-radio label="Yes" value="yes" />
+                <v-radio label="No" value="no" />
+              </v-radio-group>
+            </v-col>
+          </v-row>
+        </v-container>
 
           <v-card-title v-show="model.isSchoolProperty === 'yes'">Group Child Care (School Age Care on School Grounds)</v-card-title>
 
