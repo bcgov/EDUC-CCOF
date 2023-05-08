@@ -135,8 +135,8 @@
           </v-container>
         </v-card>
 
-        <v-card class="cc-top-level-card" width="1200">
-          <v-card-title>Preschool</v-card-title>
+        <v-card v-show="model.maxPreschool > 0" class="cc-top-level-card" width="1200">
+          <v-card-title >Preschool</v-card-title>
 
           <v-container>
             <v-row>
@@ -167,7 +167,6 @@
           </v-container>
         </v-card>
          
-
         <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
