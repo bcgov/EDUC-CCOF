@@ -145,7 +145,7 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="!this.isRenewal">
+                <div v-show="!this.isRenewal && !this.organizationAccountNumber">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                     I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
@@ -177,13 +177,14 @@
                     amount received under the child care grant.
                   </p>
                 </div>
-                <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
+                 <!-- show for new org after ministry unlocks -->
+                <div v-show="(this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) ">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
-                <div v-show="this.model.declarationBStatus == 1 && this.isRenewal">
+                <div v-show="(this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber)">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -338,7 +339,7 @@ export default {
     ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('organization', ['fundingAgreementNumber']),
+    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
@@ -701,7 +702,7 @@ export default {
       this.model = this.$store.state.summaryDeclaration.model ?? model;
     }
 
-    if (this.isRenewal) {
+    if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
 
