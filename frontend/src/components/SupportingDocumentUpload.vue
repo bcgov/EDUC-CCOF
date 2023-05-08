@@ -17,6 +17,8 @@
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
             The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
+
+            {{ uploadedDocuments }}
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
@@ -116,7 +118,7 @@
         </v-card>
       </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing" 
+        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
@@ -368,7 +370,8 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.uploadedDocuments.length + 1;
+      addObj.id = Math.random() * 10;
+      //addObj.id = this.uploadedDocuments.length + 1;
       this.uploadedDocuments.unshift(addObj);
       this.editItem(addObj);
     },
