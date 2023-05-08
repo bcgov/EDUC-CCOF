@@ -331,7 +331,7 @@ export default {
     ECEWESummary,
     CCOFSummaryFamily,
     NavButton
-},
+  },
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
