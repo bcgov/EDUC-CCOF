@@ -10,8 +10,11 @@ export default {
     ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
     isLocked() {
+      if (this.unlockBaseFunding) {
+        return false;
+      }
       return (this.applicationStatus === 'SUBMITTED');
     }
   },
@@ -23,13 +26,13 @@ export default {
       loading: false,
       isValidForm: true,
       businessId: this.businessId,
-      
+
     };
   },
   async mounted() {
     console.log('org mounted called');
     this.businessId = this.userInfo.userName;
-  
+
     if (this.isStarted) {
       console.log('org mounted called2');
       this.model = { ...this.organizationModel };
@@ -80,7 +83,7 @@ export default {
     async back() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
-    },    
+    },
     async save(showNotification) {
       this.processing = true;
       this.setIsStarted(true);

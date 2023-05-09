@@ -47,8 +47,11 @@ export default {
   },
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
     isLocked() {
+      if (this.unlockBaseFunding) {
+        return false;
+      }
       return (this.applicationStatus === 'SUBMITTED');
     }
   },
