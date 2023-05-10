@@ -146,6 +146,7 @@
                 outlined
                 required
                 :rules="rulesTypeOfCare"
+                @change="setTypeOfCare(form.typeOfCare)"
                 dense>
               </v-select>
             </v-col>
@@ -783,7 +784,7 @@ const CHILDCARE_TYPE_18_TO_36 = '18 - 36 Months';
 const CHILDCARE_TYPE_3_TO_K = '3 Years to Kindergarten';
 const CHILDCARE_TYPE_SCHOOL_CARE_K = 'Before & After School (Kindergarten Only)';
 const CHILDCARE_TYPE_SCHOOL_CARE_1 = 'Before & After School (Grade 1+)';
-const CHILDCARE_TYPE_PRESCHOOL = 'Pre-school';
+const CHILDCARE_TYPE_PRESCHOOL = 'Preschool';
 
 const CHILD_CARE_CATEGORY_LIST = [
   CHILDCARE_TYPE_0_TO_18,
@@ -1267,7 +1268,14 @@ export default {
         this.categoriesToRemove = [];
       }
     },
-
+    setTypeOfCare(typeOfCare) {
+      if (typeOfCare === 'Licensed Family') {
+        this.children.forEach(child => {
+          if (child.childAgeCategory === CHILDCARE_TYPE_PRESCHOOL) {
+            child.childAgeCategory = undefined;
+          }})
+      }
+    },
     setApprovedParentFee(childsAgeCategory, childIndex) {
       if (this.selectedFacility !== null && this.selectedFacility !== undefined && this.selectedFacility.facilityId !== undefined) {
         this.approvedFeesByCategory = this.getApprovedRatesByMonth(childsAgeCategory);
@@ -1385,14 +1393,14 @@ export default {
     this.GROUP_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 545, fullTime20: 27.25, rateFloor: 100 });
     this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 100 });
     this.GROUP_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 115, fullTime20: 5.75, rateFloor: 0 });
-    this.GROUP_REDUCTION_RATES.set('Pre-school', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
+    this.GROUP_REDUCTION_RATES.set('Preschool', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
     this.FAMILY_REDUCTION_RATES = new Map();
     this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
     this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
     this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime20: 25, rateFloor: 60 });
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 60 });
     this.FAMILY_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 145, fullTime20: 7.25, rateFloor: 0 });
-    this.FAMILY_REDUCTION_RATES.set('Pre-school', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
+    this.FAMILY_REDUCTION_RATES.set('Preschool', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
   },
   updated() {
     this.skipApprovedFeeValidation = false;

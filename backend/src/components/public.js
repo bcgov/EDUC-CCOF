@@ -18,7 +18,7 @@ CHILD_AGE_CATEGORY_TYPES.set('18-36', '18 - 36 Months');
 CHILD_AGE_CATEGORY_TYPES.set('3Y-K', '3 Years to Kindergarten');
 CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only)');
 CHILD_AGE_CATEGORY_TYPES.set('OOSC-G', 'Before & After School (Grade 1+)');
-CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Pre-school');
+CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Preschool');
 
 
 // Get facilities which match user search critiera via query param (i.e. facility/city).
