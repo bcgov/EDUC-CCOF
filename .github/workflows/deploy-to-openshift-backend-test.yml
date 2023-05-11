@@ -22,7 +22,8 @@ env:
 
   APP_NAME: 'ccof'
   REPO_NAME: "educ-ccof"
-  BRANCH: "release-1-6-10"
+  #grabs the branch name from github dynamically
+  BRANCH: ${{ github.ref_name }}
   APP_NAME_BACKEND: "backend"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
@@ -45,7 +46,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Deploy Backend to TEST
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: test
 
     outputs:
