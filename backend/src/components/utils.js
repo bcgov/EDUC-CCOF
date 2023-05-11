@@ -248,6 +248,22 @@ async function getChangeActionDocument(changeActionId){
   }
 }
 
+async function postChangeActionDocument(payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeActionDocument';
+  log.info('postChangeActionDocument Url', url);
+  if (log.isDebugEnabled()) {
+    log.debug(`postChangeActionDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postChangeActionDocument', response);
+    return response.data;
+  } catch (e) {
+    log.error('postOperation Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+  }
+}
+
 
 function getHttpHeader() {
   let headers = null;
@@ -321,7 +337,8 @@ const utils = {
   getApplicationDocument,
   deleteDocument,
   sleep,
-  getChangeActionDocument
+  getChangeActionDocument,
+  postChangeActionDocument,
 };
 
 module.exports = utils;

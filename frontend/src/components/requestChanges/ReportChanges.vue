@@ -83,7 +83,7 @@
                 Date
               </v-col>
                 <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId)">Continue</v-btn>
+                  <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId, changeRequest.changeActions.changeRequestId)">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
                   <v-btn class= "" @click="deleteRequest(changeRequest.changeActions.changeRequestId)">Delete</v-btn>
@@ -143,7 +143,8 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest']),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', ]),
+    ...mapMutations('reportChanges', ['setChangeRequestId']),
     async previous() {
       let path = await this.getPreviousPath();
       this.$router.push(path);
@@ -159,11 +160,13 @@ export default {
       this.setNavBarStatus('RC_NEW_FACILITY');
       this.$router.push(PATHS.group.facInfo);
     },
-    goToChangeForm(changeActionId = null){
+    goToChangeForm(changeActionId = null,  changeRequestId = null){
       if (!changeActionId){
         this.$router.push(PATHS.changeNotificationForm);
       }
       else{
+        console.log('THIS IS THE ID U LOOK FOR', changeRequestId);
+        this.setChangeRequestId(changeRequestId);
         this.$router.push(PATHS.changeNotificationForm + '/' + changeActionId);
       }
 

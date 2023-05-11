@@ -36,13 +36,13 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
-  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument',
+  SUPPORTING_DOCUMENT_UPLOAD:baseRoot + '/supportingDocument',
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
-  CHANGE_REQUEST: baseRoot + '/changeRequest/',
+  CHANGE_REQUEST: baseRoot + '/changeRequest',
 });
 
 export const PAGE_TITLES = Object.freeze({

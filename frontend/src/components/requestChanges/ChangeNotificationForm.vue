@@ -14,7 +14,7 @@
       <v-container>
         <v-row class="justify-space-around ">
 
-          <v-col class="col-lg-6 ">
+          <v-col class="col-lg-8 ">
 
             <v-row>
               <v-col class="col-lg-10 ">
@@ -27,7 +27,12 @@
               <v-col class="col-lg-10 ">
               <p class="px-2 text--primary"><strong> Please upload the Change Notification Form in the Dropbox below once you have filled out the form.</strong>
               </p>
-                <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >upload box here</v-btn>
+
+                <ChangeFileUpload
+                :changeType="changeTypeForm"
+                :uploadedDocuments="changeActionDocuments"
+                @addRow="addNewRowToUploadedDocuments"
+                ></ChangeFileUpload>
               </v-col>
             </v-row>
             <v-row>
@@ -35,7 +40,10 @@
               <p class="px-2 text--primary"><strong> Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
               </p>
 
-                <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >upload box here</v-btn>
+              <ChangeFileUpload
+                :changeType="changeTypeSupportingDoc"
+                @addRow="addNewRowToUploadedDocuments"
+                ></ChangeFileUpload>
               </v-col>
             </v-row>
 
@@ -45,7 +53,7 @@
 
 
           </v-col>
-          <v-col class="col-lg-6 ">
+          <v-col class="col-lg-4 ">
             col 2
 
           </v-col>
@@ -74,6 +82,7 @@ import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 import NavButton from '@/components/util/NavButton';
+import ChangeFileUpload from './ChangeFileUpload.vue';
 
 
 let ccfriOptInOrOut = {};
@@ -84,12 +93,10 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      buttonTitles: [
-        {
-          title: '1. Legal Name or Organization Name',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        },
-      ],
+      changeTypeForm: 'NOTIFICATION_FORM',
+      changeTypeSupportingDoc: 'SUPPORTING_DOC',
+      changeActionDocuments: [{},],
+      uploadedDocuments: [],
       isUnlocked: false,
       isValidForm: false,
       processing: false,
@@ -141,7 +148,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments']),
     async previous() {
       this.$router.push(PATHS.reportChange);
     },
@@ -150,7 +157,12 @@ export default {
         if (!this.$route.params.urlGuid){
           await this.createChangeRequest();
         }
-        //else - PATCH to the existing change request TODO
+        else{
+          await this.saveUploadedDocuments();
+          //else - PATCH to the existing change request TODO!!
+          this.setSuccessAlert('U PAtched');
+        }
+
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
         }
@@ -165,9 +177,20 @@ export default {
       //this.$store.commit('ccfriApp/model', this.model);
       //TODO: update with fields from page
       next();
-    }
+    },
+    addNewRowToUploadedDocuments(item) {
+      switch (item.documentType) {
+      case 'change_form':
+        this.rfiDocumentsEC.unshift(item);
+        break;
+      case 'supporting_doc':
+        this.changeActionDocuments.unshift(item);
+        break;
+      }
+      this.uploadedDocuments.unshift(item);
+    },
   },
-  components: { NavButton }
+  components: { NavButton, ChangeFileUpload }
 };
 </script>
 <style scoped>
