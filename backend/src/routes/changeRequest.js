@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest, getChangeRequestDocs } = require('../components/changeRequest');
+const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 module.exports = router;
@@ -68,12 +68,21 @@ router.get('/documents/:changeRequestId', //passport.authenticate('jwt', {sessio
 
 
 /**
- * Create the change request upload document
+ * Create the change request TODO: Rename this to something better
  */
 router.post('/documents', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [checkSchema(documentChangeRequestSchema)], (req, res) => {
     validationResult(req).throw();
     return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
+  });
+
+/**
+ * Save uploaded document
+ */
+router.post('/documentUpload', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  (req, res) => {
+    //validationResult(req).throw();
+    return saveChangeRequestDocs(req, res);
   });
 
 

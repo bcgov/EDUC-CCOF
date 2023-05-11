@@ -15,6 +15,7 @@ export default {
     unsubmittedDocuments: [],
     model: {},
     changeActionStore : {},
+    uploadedDocuments: []
 
 
   },
@@ -23,6 +24,7 @@ export default {
     changeActions: state => state.changeActions,
     changeRequestId: state => state.changeRequestId,
     unsubmittedDocuments: state => state.unsubmittedDocuments,
+    getUploadedDocuments: state => state.uploadedDocuments,
   },
   mutations: {
     model(state, value) {
@@ -39,9 +41,14 @@ export default {
     setUnsubmittedDocuments: (state, unsubmittedDocuments) => {
       state.unsubmittedDocuments = unsubmittedDocuments || [];
     },
-    setUploadedDocument: (state, document) => {
-      state.unsubmittedDocuments = [...state.unsubmittedDocuments, document];
+    setUploadedDocument: (state, documents) => {
+      state.uploadedDocuments = documents;
     },
+
+    // setUploadedDocument: (state, document) => {
+    //   state.unsubmittedDocuments = [...state.unsubmittedDocuments, document];
+    // },
+    //    this is what sukanya had, orig. Changing above for now, leaving for ref.
   },
   actions: {
     async loadChangeRequest({getters, commit}, applicationId) {
@@ -122,23 +129,39 @@ export default {
 
       try {
         console.log('');
-        let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + 'documents/' + changeActionId);
-        console.log(response);
+        let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/documents/' + changeActionId);
+        console.log(response.data);
+
+        commit('setUploadedDocument', response.data);
         if (!isEmpty(response.data)) {
 
 
 
           //commit('setLoadedModel', deepCloneObject(response.data));
         }
-        // else {
+         else {
 
-        //   commit('addRfiToStore', {ccfriId: ccfriId, model: rfi});
-        //   commit('setRfiModel', rfi);
+
+        commit('setUploadedDocument', response.data);
         //   commit('setLoadedModel', deepCloneObject(rfi));
-        // }
+         }
       } catch(e) {
         console.log(`Failed to get load change reqz with error - ${e}`);
         throw e;
+      }
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    async saveUploadedDocuments({state},payload) {
+      let ppayload = {};
+      console.log('save uploaded documents called');
+      try {
+        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + '/documentUpload', ppayload);
+        console.log('save uploaded documents called');
+        return response;
+      } catch (error) {
+        console.error(error);
+        throw error;
       }
     },
   },
