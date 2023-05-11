@@ -134,8 +134,8 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group :disabled="isLocked" row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
-                  <v-radio label="Yes" value="yes" />
+                <v-radio-group required :rules="rules.required" :disabled="isLocked" row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
+                  <v-radio  label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
               </v-col>
