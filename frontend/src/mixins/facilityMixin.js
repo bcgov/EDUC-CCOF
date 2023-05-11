@@ -63,6 +63,13 @@ export default {
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
     ...mapMutations('app', ['setNavBarFacilityComplete']),
+    isSameAddressChecked() {
+      if (!this.model.isSameAsMailing) {
+        this.model.address2 = '';
+        this.model.city2 = '';
+        this.model.postalCode2 = '';
+      } 
+    },
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
@@ -94,6 +101,11 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
+      if (this.model.isSameAsMailing) {
+        this.model.address2 = this.model.address1;
+        this.model.city2 = this.model.city1;
+        this.model.postalCode2 = this.model.postalCode1;
+      }
       if (!this.isGroup()) {// For Family, we will need to set the postal code from organization.
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
