@@ -13,7 +13,7 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
-      <v-row v-if="!this.isSummaryComplete" justify="center">
+      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0">
             <v-row>
@@ -58,7 +58,7 @@
                 <div v-if="!this.isRenewal">
                   <v-expansion-panel variant="accordion">
                     <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
-                                         :summary-model="this.summaryModel">
+                                         :summary-model="this.summaryModel" :isProcessing="isProcessing">
                     </OrganizationSummary>
                   </v-expansion-panel>
                 </div>
@@ -103,7 +103,7 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                      :ecewe-facility="facility.ecewe"></ECEWESummary>
+                                      :ecewe-facility="facility.ecewe" :isProcessing="isProcessing"></ECEWESummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <div v-if="!facility.funding"></div>
@@ -115,7 +115,7 @@
                 <div v-if="!this.isRenewal">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                :ecewe-facility="null"></ECEWESummary>
+                                :ecewe-facility="null" :isProcessing="isProcessing"></ECEWESummary>
                 </v-expansion-panel>
                 </div>
               </v-row>
@@ -131,7 +131,7 @@
       </v-row>
       <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">Declaration</v-card-title>
@@ -145,7 +145,7 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="!this.isRenewal">
+                <div v-show="!this.isRenewal && !this.organizationAccountNumber">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                     I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
@@ -177,13 +177,14 @@
                     amount received under the child care grant.
                   </p>
                 </div>
-                <div v-show="this.model.declarationAStatus == 1 && this.isRenewal">
+                 <!-- show for new org after ministry unlocks -->
+                <div v-show="(this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) ">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
-                <div v-show="this.model.declarationBStatus == 1 && this.isRenewal">
+                <div v-show="(this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber)">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -261,7 +262,7 @@
                 />
               </v-col>
             </v-row>
-          </v-container>
+
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
@@ -331,14 +332,14 @@ export default {
     ECEWESummary,
     CCOFSummaryFamily,
     NavButton
-},
+  },
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('organization', ['fundingAgreementNumber']),
+    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
@@ -358,7 +359,7 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      return (this.invalidSummaryForms.length < 1);
+      return (this.invalidSummaryForms.length < 1 );
     },
 
   },
@@ -383,7 +384,7 @@ export default {
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
-      if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
+      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;
@@ -701,7 +702,7 @@ export default {
       this.model = this.$store.state.summaryDeclaration.model ?? model;
     }
 
-    if (this.isRenewal) {
+    if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
 

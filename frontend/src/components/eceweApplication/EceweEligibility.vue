@@ -287,7 +287,7 @@
         </v-card>
       </v-row>
       <NavButton class="mt-10" :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveECEWEApplication"></NavButton>
     </v-container>
   </v-form>
@@ -339,6 +339,7 @@ export default {
   },
   async mounted() {
     try {
+      this.isLoading = true;
       this.setFundingModelTypes({...this.fundingModelTypeList});
       this.setApplicationId(this.applicationId);
       await this.loadData();
@@ -347,8 +348,10 @@ export default {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
       this.initECEWEFacilities(this.navBarList);
+      this.isLoading = false;
     } catch(error) {
       console.log (error);
+      this.isLoading = false;
     }
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -406,7 +409,6 @@ export default {
         return;
       }
       if (this.applicationId) {
-        this.isLoading = true;
         try {
           await this.loadECEWE();
         } catch (error) {
@@ -415,7 +417,6 @@ export default {
         }
         this.setIsStarted(true);
       }
-      this.isLoading = false;
     },
     optOutFacilities() {
       //this was modified by JB to try and fix bugs with the checkmarks.

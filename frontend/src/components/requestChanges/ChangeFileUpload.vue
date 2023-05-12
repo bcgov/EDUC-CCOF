@@ -43,7 +43,7 @@
               </v-col>
             </template>
 
-            <template v-slot:item.facilityName="{ item }">
+            <!-- <template v-slot:item.facilityName="{ item }">
               <v-col flex>
               <div v-if="item?.annotationid">
                 <span> {{ item?.ccof_facility_name }} </span>
@@ -59,7 +59,7 @@
                         :rules="selectRules"
               ></v-select>
               </v-col>
-            </template>
+            </template> -->
 
 
             <template v-slot:item.document="{ item }">

@@ -19,7 +19,7 @@ export default {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
-    supportingDocumentUploadComplete:false,
+    supportingDocumentUploadComplete: false,
 
     //Lookup Table Details
     programYearList: {},
@@ -28,11 +28,13 @@ export default {
     fundingModelTypeList: [],
     lookupInfo: null,
     forceNavBarRefresh: 1,
-
+    logoutTimerEnabled: false,
+    logoutTime: undefined,
+    logoutCounter: 120,
   },
   mutations: {
     setLookupInfo: (state, lookupInfo) => {
-      if(lookupInfo){
+      if (lookupInfo) {
         state.lookupInfo = lookupInfo;
       } else {
         state.lookupInfo = null;
@@ -84,20 +86,20 @@ export default {
         state.navBarList = facilityList;
       }
     },
-    setNavBarFacilityComplete: (state, {facilityId, complete} ) => {
+    setNavBarFacilityComplete: (state, { facilityId, complete }) => {
       let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
       if (navBarItem) {
         navBarItem.isFacilityComplete = complete;
       }
     },
-    setNavBarFundingComplete: (state, {fundingId, complete} ) => {
+    setNavBarFundingComplete: (state, { fundingId, complete }) => {
       let navBarItem = state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
       if (navBarItem) {
         navBarItem.isCCOFComplete = complete;
       }
     },
     addToNavBarList: (state, payload) => {
-      state.navBarList.push (payload);
+      state.navBarList.push(payload);
     },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
@@ -111,21 +113,31 @@ export default {
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
     },
-    setSupportingDocumentUploadComplete:(state, supportingDocumentUploadComplete) => {
+    setSupportingDocumentUploadComplete: (state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
     },
     setNavBarStatus:(state, navBarStatus) => {
       state.navBarStatus = navBarStatus;
       window.sessionStorage.setItem('navBarStatus', navBarStatus); // set it in session.
-    }
+    },
+    setLogoutTimerEnabled: (state, value) => {
+      state.logoutTimerEnabled = value;
+    },
+    setLogoutTime: (state, value) => {
+      state.logoutTime = value;
+    },
+    setLogoutCounter: (state, value) => {
+      state.logoutCounter = value;
+    },
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
-    futureYearLabel: state => state.programYearList?.future?.name,
+    renewalYearLabel: state => state.programYearList?.renewal?.name?.replace(/[^\d/]/g, ''),
     childCareCategoryList: state => state.childCareCategoryList,
     organizationTypeList: state => state.organizationTypeList,
     fundingModelTypeList: state => state.fundingModelTypeList,
     lookupInfo: state => state.lookupInfo,
+    logoutCounter: state => state.logoutCounter < 0 ? 0 : state.logoutCounter,
 
     getNavByFacilityId: (state) => (facilityId) => {
       if (!facilityId) {
@@ -195,6 +207,25 @@ export default {
         commit('setFundingModelTypeList', lookupInfo.data?.fundingModelType);
       }
     },
-
+    async startCounter({ state, commit }) {
+      const d = new Date();
+      const time = d.getTime() + (1000 * 120); //add 120 secons to current time
+      commit('setLogoutTime', time);
+      commit('setLogoutTimerEnabled', true);
+      let logoutCount = Math.floor((state.logoutTime - new Date().getTime() ) / 1000);
+      commit('setLogoutCounter', (logoutCount));
+      while (state.logoutCounter > 0 && state.logoutTimerEnabled) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (state.logoutTimerEnabled) {
+          let logoutCount = Math.floor((state.logoutTime - new Date().getTime() ) / 1000);
+          commit('setLogoutCounter', (logoutCount));
+        }
+      }
+      commit('setLogoutTimerEnabled', false);
+    },
+    stopCounter({ commit }) {
+      commit('setLogoutCounter', 120);
+      commit('setLogoutTimerEnabled', false);
+    }
   },
 };
