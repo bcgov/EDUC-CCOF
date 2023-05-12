@@ -16,7 +16,8 @@ const OrganizationMappings = [
   { back: 'ccof_typeoforganization', front: 'organizationType' },
   // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
-  // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
+  { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing'}
+  { back: 'ccof_providername', front: 'nameOfCareProvider' },
   // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
 
