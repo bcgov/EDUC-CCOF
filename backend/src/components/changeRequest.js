@@ -113,11 +113,13 @@ async function getChangeRequestDocs(req, res){
 
 async function saveChangeRequestDocs(req, res) {
   try {
-    // let documents = req.body;
-    // for (let document of documents) {
-    //   await postChangeActionDocument(document);
-    // }
-    return res.status(HttpStatus.OK);
+    let documents = req.body;
+    log.info(documents);
+    for (let document of documents) {
+      await postChangeActionDocument(document);
+    }
+    log.info('HIIIIIIIIIIIIIIIIIII FROM SAVE');
+    return res.status(HttpStatus.CREATED).json('hi');
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }

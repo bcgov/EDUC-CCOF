@@ -130,7 +130,7 @@ export default {
       try {
         console.log('');
         let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/documents/' + changeActionId);
-        console.log(response.data);
+        //console.log(response.data);
 
         commit('setUploadedDocument', response.data);
         if (!isEmpty(response.data)) {
@@ -152,11 +152,13 @@ export default {
     },
 
     // eslint-disable-next-line no-unused-vars
-    async saveUploadedDocuments({state},payload) {
-      let ppayload = {};
+    async saveUploadedDocuments({state, rootState}, payload) {
+
+      console.log('this is the payload:');
+      console.log(payload);
       console.log('save uploaded documents called');
       try {
-        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + '/documentUpload', ppayload);
+        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + '/documentUpload', payload);
         console.log('save uploaded documents called');
         return response;
       } catch (error) {
