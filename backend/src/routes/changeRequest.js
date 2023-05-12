@@ -27,6 +27,10 @@ const documentChangeRequestSchema = {
   }
 };
 
+const test = {
+
+};
+
 /**
  * Get Change Requests
  */
@@ -80,8 +84,8 @@ router.post('/documents', //passport.authenticate('jwt', {session: false}),isVal
  * Save uploaded document
  */
 router.post('/documentUpload', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
-  (req, res) => {
-    //validationResult(req).throw();
+  [checkSchema(documentChangeRequestSchema)], (req, res) => {
+    validationResult(req).throw();
     return saveChangeRequestDocs(req, res);
   });
 

@@ -116,6 +116,10 @@
         </v-card>
       </v-row>
 
+
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="false" :isNextDisabled="true" :isProcessing="false"
+        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -144,6 +148,8 @@ export default {
   computed: {
     //...mapState('reportChanges', ['uploadedDocuments']),
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
+
+    ...mapState('reportChanges', ['changeRequestId']),
 
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
@@ -199,13 +205,7 @@ export default {
       isValidForm: false,
       currentrow: null,
       headers: [
-        {
-          text: 'Facility Name',
-          align: 'left',
-          sortable: false,
-          value: 'facilityName',
-          class: 'table-header'
-        },
+
         {
           text: 'Document',
           align: 'left',
@@ -237,10 +237,10 @@ export default {
       uploadedDocuments: [],
       editedIndex: -1,
       editedItem: {
-        selectFacility: '',
+        ccof_change_requestid: '',
       },
       defaultItem: {
-        selectFacility: '',
+        ccof_change_requestid: '',
       },
       selectRules: [v => !!v || 'This is required']
 
@@ -267,8 +267,10 @@ export default {
 
       try {
 
-        await this.processDocumentFileDelete();
+       // await this.processDocumentFileDelete();
+       console.log('uploaded D in save', this.uploadedDocuments);
         const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
+        console.log('newFilesAdded', newFilesAdded);
         if (newFilesAdded.length > 0) {
           await this.processDocumentFilesSave(newFilesAdded);
           this.fileMap?.clear();
@@ -288,9 +290,8 @@ export default {
       const payload = [];
       for (const file of newFilesAdded) {
         const obj = {
-          ccof_applicationid: this.applicationId,
-          ccof_facility: file.selectFacility?.facilityId,
-          subject: 'SUPPORTING',
+          ccof_change_requestid: this.changeRequestId,
+          subject: this.changeType,
           notetext: file.description,
           ...this.fileMap.get(String(file.id))
         };
@@ -350,6 +351,7 @@ export default {
         }
 
         this.uploadedDocuments = this.getUploadedDocuments.filter(el=> el.subject == this.changeType);
+        console.log('uploaded D', this.uploadedDocuments);
       } catch (e) {
         console.error(e);
       } finally {
