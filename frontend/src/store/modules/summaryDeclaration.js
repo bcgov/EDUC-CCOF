@@ -195,6 +195,7 @@ export default {
       }
     },
 
+    // eslint-disable-next-line no-empty-pattern
     async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
