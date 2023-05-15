@@ -168,6 +168,74 @@
             </v-row>
           </v-col>
         </v-row>
+        <v-row class="d-flex justify-start">
+          <v-col cols="12" lg="12" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-label">For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended hours of child care:</span>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row class="d-flex justify-start">
+          <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-value pt-1">Type of Service</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
+                <span class="summary-label">Family Child Care (Under 36 months)</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
+                <span class="summary-label">Family Child Care (30 Months to School Age)</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
+                <span class="summary-label">Family Child Care (School Age/ School Age Care on School Grounds)</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start pb-2 pt-3">
+                <span class="summary-label">Multi-Age Child Care</span>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="5" class="d-flex justify-start">
+                <span class="summary-value"><b>4 hours or less </b>extended child care</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-end">
+                <v-text-field   :value="this.funding?.extendedChildCareUnder36Months4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex">
+                <v-text-field   :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field   :value="this.funding?.extendedChildCareSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.multiAgeCare4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="5" class="d-flex justify-start">
+                <span class="summary-value"><b>More than 4 hours</b> extended child care</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.extendedChildCareUnder36Months4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.extendedChildCareSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.multiAgeCare4more" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
       </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
