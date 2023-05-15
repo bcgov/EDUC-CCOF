@@ -82,7 +82,8 @@ export default {
     },
     async updateDeclaration({ commit, state, rootState}, reLockPayload) {
       checkSession();
-      let payload = { agreeConsentCertify:state.model.agreeConsentCertify,
+      let payload = { 
+        agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
         declarationBStatus:state.model?.declarationBStatus };
@@ -194,7 +195,7 @@ export default {
       }
     },
 
-    async updateApplicationStatus(applicationObj) {
+    async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
         console.log('Updating Application Status');
