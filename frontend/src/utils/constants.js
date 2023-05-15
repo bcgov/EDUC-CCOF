@@ -36,13 +36,13 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
-  SUPPORTING_DOCUMENT_UPLOAD:baseRoot + '/supportingDocument',
+  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument',
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
-  CHANGE_REQUEST: baseRoot + '/changeRequest',
+  CHANGE_REQUEST: baseRoot + '/changeRequest/',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -56,6 +56,8 @@ export const PAGE_TITLES = Object.freeze({
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload'
 });
+
+export const CHANGE_URL_PREFIX = '/report-change';
 
 export const PATHS = {
   home: '/',
@@ -90,8 +92,14 @@ export const PATHS = {
   summaryDeclaration:  '/summary-declaration',
   messagesPage: '/messages',
   supportingDocumentUpload: '/supporting-document-upload',
-  reportChange: '/report-change/landing',
-  changeNotificationForm: '/report-change/change-notification-form'
+
+  reportChange: {
+    landing: `${CHANGE_URL_PREFIX}/landing`,
+    notificationForm: `${CHANGE_URL_PREFIX}/report-change/change-notification-form`,
+    facInfo: `${CHANGE_URL_PREFIX}/group/facility`,
+    fundAmount: `${CHANGE_URL_PREFIX}/group/funding`,
+
+  }
 };
 
 export const NAV_BAR_GROUPS = {
