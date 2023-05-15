@@ -441,7 +441,7 @@ const router = new VueRouter({
       component: BackendSessionExpired
     },
     {
-      path: PATHS.reportChange,
+      path: PATHS.reportChange.landing,
       name: 'Report Change',
       component: ReportChange,
       meta: {
@@ -451,7 +451,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.changeNotificationForm,
+      path: PATHS.reportChange.notificationForm,
       name: 'change-notification-form',
       component: ChangeNotificationForm,
       meta: {
@@ -461,7 +461,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.changeNotificationForm + '/:urlGuid',
+      path: PATHS.reportChange.notificationForm + '/:urlGuid',
       name: 'change-notification-form-guid',
       component: ChangeNotificationForm,
       meta: {
@@ -470,7 +470,50 @@ const router = new VueRouter({
         requiresAuth: true,
       }
     },
-
+    {
+      path: PATHS.reportChange.facInfo + '/:urlGuid',
+      name: 'Report Change Facility Guid',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.reportChange.facInfo,
+      name: 'Report Change Facility',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.reportChange.fundAmount,
+      name: 'Change Request Funding',
+      component: FamilyFunding,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: PATHS.reportChange.fundAmount + '/:urlGuid',
+      name: 'Change Request Funding GUID',
+      component: FamilyFunding,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
   ]
 });
 

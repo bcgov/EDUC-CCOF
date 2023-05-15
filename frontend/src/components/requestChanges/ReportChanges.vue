@@ -141,7 +141,7 @@ export default {
 
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh','setNavBarStatus']),
+    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', ]),
     ...mapMutations('reportChanges', ['setChangeRequestId']),
@@ -157,17 +157,16 @@ export default {
       this.$router.push(PATHS.home);
     },
     routeToFacilityAdd(){
-      this.setNavBarStatus('RC_NEW_FACILITY');
-      this.$router.push(PATHS.group.facInfo);
+      this.$router.push(PATHS.reportChange.facInfo);
     },
     goToChangeForm(changeActionId = null,  changeRequestId = null){
       if (!changeActionId){
-        this.$router.push(PATHS.changeNotificationForm);
+        this.$router.push(PATHS.reportChange.notificationForm);
       }
       else{
         console.log('THIS IS THE ID U LOOK FOR', changeRequestId);
         this.setChangeRequestId(changeRequestId);
-        this.$router.push(PATHS.changeNotificationForm + '/' + changeActionId);
+        this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
       }
 
     },

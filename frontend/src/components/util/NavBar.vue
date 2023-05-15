@@ -87,6 +87,7 @@
 import { mapState, mapGetters, mapMutations } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
 import StaticConfig from '../../common/staticConfig';
+import { CHANGE_URL_PREFIX } from '../../utils/constants';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -109,13 +110,12 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete', 'programYearList','navBarStatus']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete', 'programYearList']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId']),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['getNavbarStatus']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -176,23 +176,33 @@ export default {
         return item.icon === 'mdi-check-circle' || item.icon === 'mdi-information' || item.icon === 'mdi-home';
       });
     },
+    isChangeRequest() {
+      return this.$route.path?.startsWith(CHANGE_URL_PREFIX);
+    },
     buildNavBar(){
       positionIndex = 0;
       navBarId = 0;
       isCCOFGroupComplete = false;
 
       this.items = [];
-      switch(this.getNavbarStatus){
-      case 'APPLICATION':
-        this.buildApplicationNavBar();
-        break;
-      case 'RC_NEW_FACILITY':
+      console.log('is change request: ', this.isChangeRequest());
+      console.log('is change request: ', this.$route.path);
+      if (this.isChangeRequest()) {
         this.buildNewFacilityNavBar();
-        break;
-      case 'REPORT_CHANGE':
-        this.buildReportChangeNavBar();
-        break;
+      } else {
+        this.buildApplicationNavBar();
       }
+      // switch(this.getNavbarStatus){
+      // case 'APPLICATION':
+      //   this.buildApplicationNavBar();
+      //   break;
+      // case 'RC_NEW_FACILITY':
+      //   this.buildNewFacilityNavBar();
+      //   break;
+      // case 'REPORT_CHANGE':
+      //   this.buildReportChangeNavBar();
+      //   break;
+      // }
     },
 
     addLandingPageToNavBar() {
@@ -492,24 +502,24 @@ export default {
       return retval;
     },
 
-    addNewFacilityToCCOFNavbar() {
+    addNewFacilityToCCOFNavbar(isChangeRequest) {
       return {
         title: 'Facility',
         id: null,
-        link: {name: 'Facility Information'},
+        link: {name: isChangeRequest? 'Report Change Facility' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };
-    }, addNewFundingToCCOFNavbar() {
+    }, addNewFundingToCCOFNavbar(isChangeRequest) {
       return {
         title: 'Funding',
-        link: {name: 'Funding Amount'},
+        link: {name: isChangeRequest? 'Change Request Funding' : 'Funding Amount'},
         isAccessible: this.isNewFundingStarted,
         icon: this.getCheckbox(false),
-        isActive: 'Funding Amount' === this.$route.name,
+        isActive: isChangeRequest? 'Change Request Funding' === this.$route.name : 'Funding Amount' === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++
       };
@@ -538,10 +548,10 @@ export default {
     getAddNewFacilityCCOFNavigation(){
       let items = [];
       items.push(
-        this.addNewFacilityToCCOFNavbar(),
-        this.addNewFundingToCCOFNavbar(),
-        this.addNewFacilityDecisionToCCOFNavbar(),
-        this.addLicenceUploadToCCOFNavbar()
+        this.addNewFacilityToCCOFNavbar(true),
+        this.addNewFundingToCCOFNavbar(true),
+        this.addNewFacilityDecisionToCCOFNavbar(true),
+        this.addLicenceUploadToCCOFNavbar(true)
       );
       isCCOFGroupComplete = this.areChildrenComplete(items);
       let retval =   {
@@ -597,8 +607,8 @@ export default {
       } else {
         //No new facilities, setup a blank template
         items.push(
-          this.addNewFacilityToCCOFNavbar(),
-          this.addNewFundingToCCOFNavbar(),
+          this.addNewFacilityToCCOFNavbar(false),
+          this.addNewFundingToCCOFNavbar(false),
         );
       }
       items.push(

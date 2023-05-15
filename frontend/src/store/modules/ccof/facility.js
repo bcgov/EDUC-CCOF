@@ -57,10 +57,11 @@ export default {
     // }
   },
   actions: {
-    async saveFacility({ state, commit, rootState }) {
+    async saveFacility({ state, commit, rootState }, isChangeRequest) {
 
       checkSession();
-
+      console.log('state model: ', state.facilityModel);
+      console.log('loaded model: ', state.loadedModel);
       if (isEqual(state.facilityModel, state.loadedModel)) {
         console.info('no model changes');
         return;
@@ -86,15 +87,15 @@ export default {
           throw error;
         }
       } else {
-        // else create a new facility
-        if (rootState.app.navBarStatus === 'RC_NEW_FACILITY') {
-
+        console.log('creating change request?', isChangeRequest);
+        // else create a new facility.  If is a change request, hit the change request endpoint
+        if (isChangeRequest) {
           try {
             if (!rootState.application.changeActionId) {
               const changeRequestPayload = {
                 applicationId: rootState.application.applicationId,
                 programYearId: rootState.application.programYearId
-              }
+              };
               const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
               commit('application/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('application/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
@@ -116,6 +117,7 @@ export default {
             throw error;
           }
         } else {
+          console.log('trying new facility', this.$route.path);
           try {
             let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
             commit('setFacilityId', response.data?.facilityId);

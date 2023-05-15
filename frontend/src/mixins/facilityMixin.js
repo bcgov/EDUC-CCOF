@@ -1,4 +1,4 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES, CHANGE_URL_PREFIX} from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -15,6 +15,9 @@ export default {
     ...mapState('application', ['applicationStatus']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     isLocked() {
+      if (this.$route.path?.startsWith(CHANGE_URL_PREFIX)) {
+        return false;
+      }
       return (this.applicationStatus === 'SUBMITTED');
     }
   },
@@ -60,7 +63,7 @@ export default {
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
     ...mapMutations('app', ['setNavBarFacilityComplete']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
@@ -97,10 +100,11 @@ export default {
         }
         this.model.postalCode = this.organizationModel.postalCode1;
       }
+      console.log('setting facility 123');
       this.setFacilityModel({ ...this.model });
       this.processing = true;
       try {
-        await this.saveFacility();
+        await this.saveFacility(this.$route.path?.startsWith(CHANGE_URL_PREFIX));
         if (isSave) {
           this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
         }
@@ -108,9 +112,9 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       if (!this.$route.params.urlGuid && isSave) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
+        this.$router.push(`${this.$route.path}/${this.facilityId}`);
       }
-      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });      
+      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
       this.processing = false;
     },
 
