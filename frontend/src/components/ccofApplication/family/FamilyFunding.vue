@@ -11,7 +11,7 @@
                   <v-skeleton-loader class="mx-auto" max-width="300" type="text@3"/>
                 </div>
 
-                <v-radio-group :disabled="isLocked" v-model="model.familyLicenseType" label="License type" v-show="!loading">
+                <v-radio-group :disabled="isLocked" required :rules="rules.required"  v-model="model.familyLicenseType" label="License type" v-show="!loading">
                   <v-radio label="Family child care" value="7" />
                   <v-radio label="In-Home Multi-Age Child Care" value="6" />
                   <v-radio label="Multi-Age Care" value="5" />
@@ -107,9 +107,9 @@
                     <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursTo12hr" label="Facility hours of operation To" v-bind="attrs" v-on="on" />
                   </template>
                   <v-time-picker v-if="model.menu2" v-model="model.hoursTo" full-width @click:minute="$refs.menu2.save(model.hoursTo); model.hoursTo12hr = formatTime(model.hoursTo)" :allowed-minutes="allowedStep" />
-
-                  <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursTo12hr" label="Facility hours of operation To" />
                 </v-menu>
+                  <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursTo12hr" label="Facility hours of operation To" />
+
               </v-col>
             </v-row>
           </v-container>
@@ -161,11 +161,50 @@
 
           </v-container>
         </v-card>
+        <v-card class="cc-top-level-card" width="1200">
+          <v-card-subtitle>Write the maximum <strong>number of spaces</strong> you offer extended hours of child care
+            for
+            each type of service</v-card-subtitle>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Family Child Care (under 36 months)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Family Child Care (36 months to School Age)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Family Child Care (School Age / School age care on School Grounds)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4OrLess" :rules="rules.notRequired" label="Multi-Age Care" />
+                </v-row>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareUnder36Months4OrMore" :rules="rules.notRequired" label="Family Child Care (under 36 months)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Family Child Care (36 months to School Age)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrMore" :rules="rules.notRequired" label="Family Child Care (School Age/ School age care on School Grounds)" />
+                </v-row>
+                <v-row class="padded-row">
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4more" :rules="rules.notRequired" label="Multi-Age Care" />
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
 
       </v-row>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isLocked" :isNextDisabled="!model.isCCOFComplete" :isProcessing="processing" 
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isCCOFComplete" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>

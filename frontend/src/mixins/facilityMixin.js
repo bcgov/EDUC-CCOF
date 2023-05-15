@@ -12,10 +12,13 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     isLocked() {
       if (this.$route.path?.startsWith(CHANGE_URL_PREFIX)) {
+        return false;
+      }
+      if (this.unlockBaseFunding) {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');

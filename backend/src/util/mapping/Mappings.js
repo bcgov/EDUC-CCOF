@@ -209,14 +209,14 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maxnoofweeksperyearextendedhoursoffered', front: 'maxWeeksPerYearExtended' },
 
 
-  { back: 'ccof_under36months4hoursoflessextendedcc', front: 'groupChildCareUnder36Months4OrLess' },
-  { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'groupChildCare36MonthsToSchoolAge4OrLess' },
-  { back: 'ccof_schoolageonground4hoursoflessextendedcc', front: 'groupChildCareSchoolAge4OrLess' },
+  { back: 'ccof_under36months4hoursoflessextendedcc', front: 'extendedChildCareUnder36Months4OrLess' },
+  { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'extendedChildCare36MonthsToSchoolAge4OrLess' },
+  { back: 'ccof_schoolageonground4hoursoflessextendedcc', front: 'extendedChildCareSchoolAge4OrLess' },
   { back: 'ccof_multiagechildcare4hoursoflessextendedcc', front: 'multiAgeCare4OrLess' },
 
-  { back: 'ccof_under36monthsmorethan4hourextendedcc', front: 'groupChildCareUnder36Months4OrMore' },
-  { back: 'ccof_30monthtoschoolagemorethan4hourextended', front: 'groupChildCare36MonthsToSchoolAge4OrMore' },
-  { back: 'ccof_schoolageongroundmorethan4hrextendedcc', front: 'groupChildCareSchoolAge4OrMore' },
+  { back: 'ccof_under36monthsmorethan4hourextendedcc', front: 'extendedChildCareUnder36Months4OrMore' },
+  { back: 'ccof_30monthtoschoolagemorethan4hourextended', front: 'extendedChildCare36MonthsToSchoolAge4OrMore' },
+  { back: 'ccof_schoolageongroundmorethan4hrextendedcc', front: 'extendedChildCareSchoolAge4OrMore' },
   { back: 'ccof_multiagechildcaremorethan4hourextendedcc', front: 'multiAgeCare4more' },
 
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
