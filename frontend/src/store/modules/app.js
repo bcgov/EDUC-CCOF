@@ -115,8 +115,6 @@ export default {
     setSupportingDocumentUploadComplete: (state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
     },
-<<<<<<< HEAD
-=======
     setNavBarStatus:(state, navBarStatus) => {
       state.navBarStatus = navBarStatus;
       window.sessionStorage.setItem('navBarStatus', navBarStatus); // set it in session.
@@ -130,7 +128,6 @@ export default {
     setLogoutCounter: (state, value) => {
       state.logoutCounter = value;
     },
->>>>>>> 7173b87b2c748a616dc79ccc02df2ac1a6aa4870
   },
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,

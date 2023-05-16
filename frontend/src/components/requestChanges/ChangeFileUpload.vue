@@ -8,6 +8,8 @@
           </v-card-title> -->
           <h2 class="text-center">
             {{ changeType == 'NOTIFICATION_FORM' ? 'Change Notification Form Upload' : 'Supporting Documents Upload'}}
+
+            {{testUploadedDocs}}
           </h2>
           <v-row justify="center" class="text-h5 py-4" style="color:#003466;">
             {{this.userInfo.organizationName}}
@@ -17,10 +19,12 @@
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
             The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
+
+            {{  }}
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
-            :items="uploadedDocuments"
+            :items="filteredDocs"
             class="elevation-1"
             hide-default-header
             hide-default-footer
@@ -117,9 +121,9 @@
       </v-row>
 
 
-      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+      <!-- <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
         :isSaveDisabled="false" :isNextDisabled="true" :isProcessing="false"
-        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
+        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton> -->
     </v-container>
   </v-form>
 </template>
@@ -142,60 +146,15 @@ export default {
       type: String,
       required: true
     },
-
-  },
-
-  computed: {
-    //...mapState('reportChanges', ['uploadedDocuments']),
-    ...mapGetters('reportChanges', ['getUploadedDocuments']),
-
-    ...mapState('reportChanges', ['changeRequestId']),
-
-    ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('navBar', ['canSubmit']),
-    ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
-    isLocked() {
-      if (this.unlockSupportingDocuments) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
+    testUploadedDocs: {
+      type: Array,
+      required: true
     },
-    isSaveDisabled(){
-      const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
-      return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
-    },
-    isNextEnabled() {
-      return this.isValidForm && this.canSubmit;
-    }
 
   },
-
-  async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
-    this.fileRules = [
-      v => !!v || 'This is required',
-      value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
-    ];
-    await this.mapFacilityData();
-    await this.createTable();
-
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    if(!this.isLocked){
-      await this.save(false);
-    }
-    next();
-  },
-
   data() {
     return {
+      filteredDocs : [],
       isLoading: false,
       isProcessing: false,
       rules,
@@ -234,7 +193,7 @@ export default {
       fileInputError: [],
       fileMap: new Map(),
       fileRules: [],
-      uploadedDocuments: [],
+      //uploadedDocuments: [],
       editedIndex: -1,
       editedItem: {
         ccof_change_requestid: '',
@@ -247,6 +206,56 @@ export default {
     };
   },
 
+  computed: {
+    //...mapState('reportChanges', ['uploadedDocuments']),
+    ...mapGetters('reportChanges', ['getUploadedDocuments']),
+
+    ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments']),
+
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('facility', ['facilityModel', 'facilityId']),
+    ...mapState('app', ['navBarList']),
+    ...mapState('navBar', ['canSubmit']),
+    ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
+    isLocked() {
+      if (this.unlockSupportingDocuments) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
+    isSaveDisabled(){
+      const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
+      return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
+    },
+    isNextEnabled() {
+      return this.isValidForm && this.canSubmit;
+    }
+
+  },
+
+  async mounted() {
+    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
+
+    this.fileRules = [
+      v => !!v || 'This is required',
+      value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
+      value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
+      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
+    ];
+    await this.mapFacilityData();
+    await this.createTable();
+
+    //this.testUploadedDocs.push('test');
+    //console.log('tsetttt', this.testUploadedDocs);
+  },
+  async beforeRouteLeave(_to, _from, next) {
+    if(!this.isLocked){
+      await this.save(false);
+    }
+    next();
+  },
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments', ]),
     ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
@@ -346,12 +355,15 @@ export default {
     async createTable() {
       this.isLoading = true;
       try {
-        if(this.$route.params.urlGuid){
-          await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-        }
+        // if(this.$route.params.urlGuid){
+        //   await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+        // }
 
-        this.uploadedDocuments = this.getUploadedDocuments.filter(el=> el.subject == this.changeType);
-        console.log('uploaded D', this.uploadedDocuments);
+        console.log('uploaded Dd', this.uploadedDocuments);
+        console.log(this.changeType);
+        //filter based on subject so the user can visually see a difference between the two uplaod boxes
+        this.filteredDocs = this.uploadedDocuments.filter(el=> el.subject == this.changeType);
+        console.log('filtered D', this.filteredDocs);
       } catch (e) {
         console.error(e);
       } finally {
@@ -360,7 +372,7 @@ export default {
       }
     },
     editItem(item) {
-      this.editedIndex = this.uploadedDocuments.indexOf(item);
+      this.editedIndex = this.filteredDocs.indexOf(item);
       this.editedItem = Object.assign({}, item);
     },
 
@@ -382,8 +394,9 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.uploadedDocuments.length + 1;
-      this.uploadedDocuments.unshift(addObj);
+      addObj.id = this.filteredDocs.length + 1;
+      this.filteredDocs.unshift(addObj);
+      this.testUploadedDocs.unshift(addObj); //this is the prop from parent, might not do anything, idk this point
       this.editItem(addObj);
     },
     updateDescription(item) {
