@@ -158,7 +158,7 @@ export default {
       console.log(payload);
       console.log('save uploaded documents called');
       try {
-        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + '/documentUpload', payload);
+        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + 'documentUpload', payload);
         console.log('save uploaded documents called');
         return response;
       } catch (error) {

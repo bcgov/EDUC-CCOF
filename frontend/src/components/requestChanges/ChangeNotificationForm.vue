@@ -12,7 +12,8 @@
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
       <v-container>
-        <v-row class="justify-space-around ">
+        <v-skeleton-loader v-if="isLoading" max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
+        <v-row v-else class="justify-space-around ">
 
           <v-col class="col-lg-8 ">
 
@@ -30,7 +31,7 @@
 
                 <ChangeFileUpload
                 :changeType="changeTypeForm"
-                :uploadedDocuments="changeActionDocuments"
+                :testUploadedDocs="toUpload"
                 @addRow="addNewRowToUploadedDocuments"
                 ></ChangeFileUpload>
               </v-col>
@@ -42,6 +43,7 @@
 
               <ChangeFileUpload
                 :changeType="changeTypeSupportingDoc"
+                :testUploadedDocs="[]"
                 @addRow="addNewRowToUploadedDocuments"
                 ></ChangeFileUpload>
               </v-col>
@@ -76,7 +78,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
@@ -93,9 +95,11 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      isLoading: false,
       changeTypeForm: 'NOTIFICATION_FORM',
       changeTypeSupportingDoc: 'SUPPORTING_DOC',
-      changeActionDocuments: [{},],
+      toUpload : [],
+      changeActionDocuments: [{}],
       uploadedDocuments: [],
       isUnlocked: false,
       isValidForm: false,
@@ -111,6 +115,7 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         if (this.$route.params.urlGuid){
+          this.isLoading = true;
           window.scrollTo(0,0);
           //load the docs
           //set a flag that exists/
@@ -118,11 +123,15 @@ export default {
           try {
             await this.loadChangeRequestDocs(this.$route.params.urlGuid);
 
+            this.changeActionDocuments = this.getUploadedDocuments;
+
           } catch (error) {
             console.log(error);
             this.setFailureAlert('An error occured while getting.');
 
           }
+
+          this.isLoading = false;
         }
 
 
@@ -131,7 +140,14 @@ export default {
       deep: true
     },
   },
+  async mounted(){
+    if(this.$route.params.urlGuid){
+      await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+    }
+  },
   computed: {
+    ...mapGetters('reportChanges', ['getUploadedDocuments']),
+
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
@@ -148,7 +164,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments']),
     async previous() {
       this.$router.push(PATHS.reportChange);
     },
