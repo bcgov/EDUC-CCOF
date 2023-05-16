@@ -40,8 +40,8 @@
         class = "mx-0 justify-end"
         @click="toggleAll()"
         dark color='#003366'
-        :disabled="isReadOnly" 
-        > 
+        :disabled="isReadOnly"
+        >
         Opt in All Facilities
       </v-btn>
     <div v-if="!isLoading">
@@ -131,7 +131,7 @@
     </div>
     <v-row><v-col></v-col></v-row>
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-      :isSaveDisabled="isSaveBtnDisabled || isReadOnly" :isNextDisabled="isNextBtnDisabled" :isProcessing="isProcessing" 
+      :isSaveDisabled="isSaveBtnDisabled || isReadOnly" :isNextDisabled="isNextBtnDisabled" :isProcessing="isProcessing"
       @previous="previous" @next="next" @validateForm="validateForm()" @save="saveFacilities(true)"></NavButton>
   </v-container>
   </v-form>

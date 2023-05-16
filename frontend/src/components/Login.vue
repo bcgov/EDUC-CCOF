@@ -8,7 +8,7 @@
           <v-img
             :src="require('../assets/images/login-header-img-resized.jpg')"
             max-height="300"
-            max-width="1448" 
+            max-width="1448"
             class="align-end">
             <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85);">
               <span class="text-h4 white--text font-weight-bold" style="font-family:BCSans;">My ChildCareBC Services</span>
@@ -44,14 +44,14 @@
         </v-card>
       </div>
       <p class="pt-4">
-        <strong>NOTE:</strong> The information collected through My ChildCareBC Services is collected 
-        under the authority of the <i>Freedom of Information and Protection of Privacy Act</i> (FOIPPA) 
-        and the <i>Child Care BC Act</i> (SBC 2001, c. 4) and will be used for the purpose of administering 
-        the Child Care Operating Funding Program, which includes the Child Care Fee Reduction Initiative 
-        and the Early Childhood Educator (ECE) Wage Enhancement for successfully enrolled applicants. 
-        Personal information is protected from unauthorized use and disclosure in accordance with FOIPPA. 
-        Any questions or concerns about the collection of this information can be directed to the Director, 
-        Child Care Operating Funding Program, PO Box 9965 Stn Prov Govt, Victoria BC V8W 9R4, 
+        <strong>NOTE:</strong> The information collected through My ChildCareBC Services is collected
+        under the authority of the <i>Freedom of Information and Protection of Privacy Act</i> (FOIPPA)
+        and the <i>Child Care BC Act</i> (SBC 2001, c. 4) and will be used for the purpose of administering
+        the Child Care Operating Funding Program, which includes the Child Care Fee Reduction Initiative
+        and the Early Childhood Educator (ECE) Wage Enhancement for successfully enrolled applicants.
+        Personal information is protected from unauthorized use and disclosure in accordance with FOIPPA.
+        Any questions or concerns about the collection of this information can be directed to the Director,
+        Child Care Operating Funding Program, PO Box 9965 Stn Prov Govt, Victoria BC V8W 9R4,
         Phone: in Greater Victoria: 250 356-6501, outside of Greater Victoria, Toll Free: 1 888 338-6622 (option 2).
       </p>
       <v-row>
@@ -107,13 +107,13 @@
             </v-card-title>
             <v-card-text id="login_descriptor" class="pb-0">
               <p>
-                The ministry has made enhancements to the 
+                The ministry has made enhancements to the
                 <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
                 to help estimate additional child care fee savings that started on December 1, 2022.
               </p>
               <p>
                 Note: <br>
-                Child care providers with a CCFRI application in process, including open applications for a mid-term fee increase, 
+                Child care providers with a CCFRI application in process, including open applications for a mid-term fee increase,
                 will not appear in the search results. Check back as search results are updated regularly.
               </p>
             </v-card-text>
@@ -133,7 +133,7 @@
 
       <!-- This is where the form will go-->
       <v-row>
-        
+
       </v-row>
 
     </article>

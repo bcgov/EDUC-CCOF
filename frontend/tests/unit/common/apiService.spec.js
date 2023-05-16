@@ -10,7 +10,7 @@ describe('apiService.js', () => {
   afterEach(() => {
     spy.mockClear();
   });
-  
+
   it('Set and Delete Auth header', () => {
     ApiService.setAuthHeader('randomToken');
     expect(ApiService.apiAxios.defaults.headers.common['Authorization']).toBe('Bearer randomToken');

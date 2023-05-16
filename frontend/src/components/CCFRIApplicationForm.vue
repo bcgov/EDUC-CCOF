@@ -88,7 +88,7 @@
        <v-toolbar color="red" absolute right class="hidden-md-and-up" @click.stop="drawer = !drawer">
 
                         <v-toolbar-side-icon
-                            
+
                             @click.stop="drawer = !drawer"
                         ></v-toolbar-side-icon>
                     </v-toolbar>

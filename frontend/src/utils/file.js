@@ -1,7 +1,7 @@
 /**
  * Converting bytes to human readable values (KB, MB, GB, TB, PB, EB, ZB, YB)
- * @param {*} bytes 
- * @param {*} decimals 
+ * @param {*} bytes
+ * @param {*} decimals
  */
 
 export function humanFileSize(bytes, decimals = 2) {
@@ -21,7 +21,7 @@ export function humanFileSize(bytes, decimals = 2) {
  * "name.txt"                    -->   "txt"
  * ".htpasswd"                   -->   ""
  * "name.with.many.dots.myext"   -->   "myext"
- * @param {*} fileName 
+ * @param {*} fileName
  */
 export function getFileExtension(fileName) {
   return fileName.slice((fileName.lastIndexOf('.') - 1 >>> 0) + 2);

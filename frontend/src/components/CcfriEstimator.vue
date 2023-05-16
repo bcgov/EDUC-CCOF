@@ -102,7 +102,7 @@
                 Total number of children</span>
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-text-field 
+              <v-text-field
                 id="totNumberOfChildren"
                 @change="updateNumberOfChildSubForms"
                 @keypress="numberFilter"
@@ -223,7 +223,7 @@
               </v-row>
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
-  <!-- ******************************************************************************************************************************************************** -->          
+  <!-- ******************************************************************************************************************************************************** -->
               <v-row v-if="child.careSchedule == 'Part Time'">
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
@@ -244,10 +244,10 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
+
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -258,16 +258,16 @@
                     </v-card>
 
                     <v-spacer></v-spacer>
-                    
+
                     <v-card>
-                      <v-toolbar 
+                      <v-toolbar
                         color="#431782"
                       >
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Tuesday</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                  
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[1]"
@@ -281,7 +281,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -291,7 +291,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-                    
+
                     <v-card max-width="">
                       <v-toolbar
                         color="#431782"
@@ -300,7 +300,7 @@
                       <v-toolbar-title>Wednesday</v-toolbar-title>
                       <v-spacer></v-spacer>
                     </v-toolbar>
-                      
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[2]"
@@ -314,7 +314,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -347,7 +347,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -379,7 +379,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -410,7 +410,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -442,7 +442,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -662,7 +662,7 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-text-field
-                    id="partTimeFee" 
+                    id="partTimeFee"
                     @keypress="currencyFilter"
                     @change="truncateLeadingZerosDecimals(child.number)"
                     v-model="child.partTimeFee"
@@ -1323,7 +1323,7 @@ export default {
     },
     decimalExists: function(n) {
       if (n != null &&  n != undefined) {
-        return (n - Math.floor(n)) !== 0; 
+        return (n - Math.floor(n)) !== 0;
       }
     }
   },

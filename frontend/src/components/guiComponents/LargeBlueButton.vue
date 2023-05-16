@@ -6,7 +6,7 @@
 
     <slot></slot>
   </v-btn>
-  
+
 </template>
 
 <style>
@@ -14,7 +14,7 @@
 .bigButton {
   min-width: 550px !important;
   background-color: #336799 !important;
-  
+
 }
 
 </style>

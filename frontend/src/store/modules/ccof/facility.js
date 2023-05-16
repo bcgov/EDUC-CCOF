@@ -24,7 +24,7 @@ export default {
     getFacilityById: (state) => (facilityId) => {
       return state.facilityStore[facilityId];
     },
-    // getCCFRIById: (state) => (ccfriId) => { 
+    // getCCFRIById: (state) => (ccfriId) => {
     //   return state.ccfriStore[ccfriId];
     // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
