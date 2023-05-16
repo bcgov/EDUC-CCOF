@@ -167,7 +167,7 @@
           </v-container>
         </v-card>
 
-        <v-card v-show="model.maxGroupChildCareSchool > 0" class="cc-top-level-card" width="1200">
+        <v-card v-if="model.maxGroupChildCareSchool > 0" class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
             <v-col>
