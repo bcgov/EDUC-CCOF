@@ -30,6 +30,7 @@
               </p>
 
                 <ChangeFileUpload
+                ref="childRef"
                 :changeType="changeTypeForm"
                 :testUploadedDocs="toUpload"
                 @addRow="addNewRowToUploadedDocuments"
@@ -42,6 +43,7 @@
               </p>
 
               <ChangeFileUpload
+                ref="childRef2"
                 :changeType="changeTypeSupportingDoc"
                 :testUploadedDocs="[]"
                 @addRow="addNewRowToUploadedDocuments"
@@ -174,9 +176,12 @@ export default {
           await this.createChangeRequest();
         }
         else{
-          await this.saveUploadedDocuments();
-          //else - PATCH to the existing change request TODO!!
-          this.setSuccessAlert('U PAtched');
+          //call the save in the child component that will save the newly added documents
+          await this.$refs.childRef.save();
+          await this.$refs.childRef2.save();
+          //await this.saveUploadedDocuments();
+          //else -
+          this.setSuccessAlert('U savveed');
         }
 
         if (showNotification) {

@@ -153,13 +153,19 @@ export default {
 
     // eslint-disable-next-line no-unused-vars
     async saveUploadedDocuments({state, rootState}, payload) {
-
+      console.log('save uploaded documents called');
       console.log('this is the payload:');
       console.log(payload);
-      console.log('save uploaded documents called');
+
+      //testing the endpoint
+      // let obj = [{
+      //   "ccof_change_requestid":"04cb1f2f-82eb-ed11-a7c6-000d3a09d699",
+      //   "filename":"smallPinkPixels.jpg",
+      //   "subject":"NOTIFICATION_FORM",
+      //   "documentbody":"iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAPSURBVBhXY/i/7uT/dScBEa0E7bj5DnsAAAAASUVORK5CYII=",
+      // }];
       try {
-        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + 'documentUpload', payload);
-        console.log('save uploaded documents called');
+        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + '/documentUpload', payload);
         return response;
       } catch (error) {
         console.error(error);

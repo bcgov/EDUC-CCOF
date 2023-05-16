@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+
 const isValidBackendToken = auth.isValidBackendToken();
 const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
@@ -27,9 +28,6 @@ const documentChangeRequestSchema = {
   }
 };
 
-const test = {
-
-};
 
 /**
  * Get Change Requests
@@ -80,14 +78,18 @@ router.post('/documents', //passport.authenticate('jwt', {session: false}),isVal
     return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
   });
 
+
+
 /**
  * Save uploaded document
  */
 router.post('/documentUpload', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
-  [checkSchema(documentChangeRequestSchema)], (req, res) => {
-    validationResult(req).throw();
+  (req, res) => {
+    //validationResult(req).throw();
     return saveChangeRequestDocs(req, res);
   });
+
+
 
 
 /**

@@ -114,7 +114,7 @@ async function getChangeRequestDocs(req, res){
 async function saveChangeRequestDocs(req, res) {
   try {
     let documents = req.body;
-    log.info(documents);
+    //log.info(documents);
     for (let document of documents) {
       await postChangeActionDocument(document);
     }

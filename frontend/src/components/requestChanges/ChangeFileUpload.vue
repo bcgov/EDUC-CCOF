@@ -8,8 +8,6 @@
           </v-card-title> -->
           <h2 class="text-center">
             {{ changeType == 'NOTIFICATION_FORM' ? 'Change Notification Form Upload' : 'Supporting Documents Upload'}}
-
-            {{testUploadedDocs}}
           </h2>
           <v-row justify="center" class="text-h5 py-4" style="color:#003466;">
             {{this.userInfo.organizationName}}
@@ -24,7 +22,7 @@
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
-            :items="filteredDocs"
+            :items="getFilteredDocs"
             class="elevation-1"
             hide-default-header
             hide-default-footer
@@ -199,7 +197,8 @@ export default {
         ccof_change_requestid: '',
       },
       defaultItem: {
-        ccof_change_requestid: '',
+        ccof_change_requestid: this.changeRequestId,
+        subject : this.changeType
       },
       selectRules: [v => !!v || 'This is required']
 
@@ -217,6 +216,9 @@ export default {
     ...mapState('app', ['navBarList']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
+    getFilteredDocs(){
+      return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
+    },
     isLocked() {
       if (this.unlockSupportingDocuments) {
         return false;
@@ -257,8 +259,13 @@ export default {
     next();
   },
   methods: {
-    ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments', ]),
+    //...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments', ]),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments']),
     ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
+
+    gatherDocs(){
+      this.$emit('onSaveDocs', this.filteredDocs);
+    },
     previous() {
       this.$router.push(PATHS.eceweFacilities);
     },
@@ -272,22 +279,32 @@ export default {
       await this.save();
     },
     async save(showConfirmation = true) {
+
+      console.log('saving from child component!');
+      //console.log('filtered D save from this component is: ', this.filteredDocs);
+
       this.isProcessing = true;
 
+      console.log('filemap : ', this.fileMap);
+      console.log('filemap : ', this.fileMap.size);
+
       try {
-
+        //await this.saveUploadedDocuments();
        // await this.processDocumentFileDelete();
-       console.log('uploaded D in save', this.uploadedDocuments);
-        const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
-        console.log('newFilesAdded', newFilesAdded);
-        if (newFilesAdded.length > 0) {
-          await this.processDocumentFilesSave(newFilesAdded);
-          this.fileMap?.clear();
-        }
+        //console.log('uploaded D in save', this.uploadedDocuments);
 
-        if (showConfirmation) {
-          await this.createTable();
-          this.setSuccessAlert('Changes Successfully Saved');
+        if (this.fileMap.size > 0){
+          const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
+          console.log('newFilesAdded', newFilesAdded);
+          if (newFilesAdded.length > 0) {
+            await this.processDocumentFilesSave(newFilesAdded);
+            this.fileMap?.clear();
+          }
+
+          if (showConfirmation) {
+            await this.createTable();
+            this.setSuccessAlert('Changes Successfully Saved');
+          }
         }
       } catch (e) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
@@ -355,15 +372,13 @@ export default {
     async createTable() {
       this.isLoading = true;
       try {
-        // if(this.$route.params.urlGuid){
-        //   await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-        // }
 
-        console.log('uploaded Dd', this.uploadedDocuments);
+
+        //console.log('uploaded Dd', this.uploadedDocuments);
         console.log(this.changeType);
         //filter based on subject so the user can visually see a difference between the two uplaod boxes
         this.filteredDocs = this.uploadedDocuments.filter(el=> el.subject == this.changeType);
-        console.log('filtered D', this.filteredDocs);
+        //console.log('filtered D', this.filteredDocs);
       } catch (e) {
         console.error(e);
       } finally {
@@ -394,9 +409,9 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.filteredDocs.length + 1;
-      this.filteredDocs.unshift(addObj);
-      this.testUploadedDocs.unshift(addObj); //this is the prop from parent, might not do anything, idk this point
+      addObj.id = Math.floor(Math.random() * 1000000); //TODO: i think this where we need UUID
+      this.uploadedDocuments.unshift(addObj);
+      //this.testUploadedDocs.unshift(addObj); //this is the prop from parent, might not do anything, idk this point
       this.editItem(addObj);
     },
     updateDescription(item) {
