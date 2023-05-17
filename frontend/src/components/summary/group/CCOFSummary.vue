@@ -213,7 +213,7 @@
             </v-col>
           </v-row>
         </span>
-          <v-row v-if="this.funding?.maxGroupChildCareSchool > 0" >
+        <v-row v-if="this.funding?.maxGroupChildCareSchool > 0" >
           <v-col cols="4" lg="3" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
@@ -222,7 +222,7 @@
               </v-col>
             </v-row>
           </v-col>
-          </v-row>
+        </v-row>
         <v-row class="d-flex justify-start">
           <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start pt-2">
