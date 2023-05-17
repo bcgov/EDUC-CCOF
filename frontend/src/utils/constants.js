@@ -95,7 +95,7 @@ export const PATHS = {
 
   reportChange: {
     landing: `${CHANGE_URL_PREFIX}/landing`,
-    notificationForm: `${CHANGE_URL_PREFIX}/report-change/change-notification-form`,
+    notificationForm: `${CHANGE_URL_PREFIX}/change-notification-form`,
     facInfo: `${CHANGE_URL_PREFIX}/group/facility`,
     fundAmount: `${CHANGE_URL_PREFIX}/group/funding`,
 
