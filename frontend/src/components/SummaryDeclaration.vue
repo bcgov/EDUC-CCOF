@@ -614,7 +614,7 @@ export default {
         if (val) {
           setTimeout(() => {
             const keys = Object.keys(this.payload);
-            console.log('calling after 1 second')
+            console.log('calling after 1 second');
             if (keys.length > 1) {
               console.log('sending updates to server');
               this.updateApplicationStatus(this.payload);
