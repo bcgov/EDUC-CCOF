@@ -12,8 +12,8 @@
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
       <v-container>
-        <v-skeleton-loader v-if="isLoading" max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
-        <v-row v-else class="justify-space-around ">
+        <!-- <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader> -->
+        <v-row  class="justify-space-around ">
 
           <v-col class="col-lg-8 ">
 
@@ -28,8 +28,9 @@
               <v-col class="col-lg-10 ">
               <p class="px-2 text--primary"><strong> Please upload the Change Notification Form in the Dropbox below once you have filled out the form.</strong>
               </p>
-
+              <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
                 <ChangeFileUpload
+                v-show="!isLoading"
                 ref="childRef"
                 :changeType="changeTypeForm"
 
@@ -41,8 +42,9 @@
               <v-col class="col-lg-10 ">
               <p class="px-2 text--primary"><strong> Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
               </p>
-
+              <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
               <ChangeFileUpload
+              v-show="!isLoading"
                 ref="childRef2"
                 :changeType="changeTypeSupportingDoc"
 
@@ -185,32 +187,43 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments']),
-    ...mapMutations('reportChanges', ['setChangeRequestId']),
+    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments',]),
+    ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
     async previous() {
       this.$router.push(PATHS.reportChange);
     },
-    async save(showNotification){
+    async save(showNotification = false){
+      this.isLoading = true;
       try{
         if (!this.$route.params.urlGuid){
           await this.createChangeRequest();
         }
         else{
           //call the save in the child component that will save the newly added documents
-          await this.$refs.childRef.save();
-          await this.$refs.childRef2.save();
-          //await this.saveUploadedDocuments();
+          await this.$refs.childRef.save(false);
+          //await new Promise(r => setTimeout(r, 5000));
+          await this.$refs.childRef2.save(false);
+
+
+          console.log('saving in children COMPLETE');
+
+          await this.loadChangeRequestDocs(this.$route.params.urlGuid);
           //else -
           this.setSuccessAlert('U savveed');
         }
+
+
 
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
         }
       }
       catch (error)  {
+        console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+
+      this.isLoading = false;
 
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.

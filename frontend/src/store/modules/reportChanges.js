@@ -172,6 +172,18 @@ export default {
         throw error;
       }
     },
+
+    //we can use the Supporting Doc route here because dynamics doc delete works off annotation ID - it does not have a different endpoint
+    async deleteDocuments({state}, deletedFiles){
+      console.log('DELETE files payload:' , deletedFiles);
+      try {
+        await ApiService.apiAxios.delete(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, { data: deletedFiles} );
+        console.log('delete uploaded documents called');
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
   },
 
 };

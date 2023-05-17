@@ -246,9 +246,6 @@ export default {
     ];
     await this.mapFacilityData();
     await this.createTable();
-
-    //this.testUploadedDocs.push('test');
-    //console.log('tsetttt', this.testUploadedDocs);
   },
   async beforeRouteLeave(_to, _from, next) {
     if(!this.isLocked){
@@ -258,8 +255,8 @@ export default {
   },
   methods: {
     //...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments', ]),
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments']),
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments']),
+    //...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
 
     gatherDocs(){
       this.$emit('onSaveDocs', this.filteredDocs);
@@ -273,9 +270,6 @@ export default {
     validateForm() {
       this.$refs.form?.validate();
     },
-    async saveClicked() {
-      await this.save();
-    },
     async save(showConfirmation = true) {
 
       console.log('saving from child component!');
@@ -284,11 +278,11 @@ export default {
       this.isProcessing = true;
 
       console.log('filemap : ', this.fileMap);
-      console.log('filemap : ', this.fileMap.size);
+      console.log('filemap : ', this.fileMap.size > 0);
 
       try {
         //await this.saveUploadedDocuments();
-       // await this.processDocumentFileDelete();
+        await this.processDocumentFileDelete();
         //console.log('uploaded D in save', this.uploadedDocuments);
 
         if (this.fileMap.size > 0){
@@ -304,8 +298,13 @@ export default {
             this.setSuccessAlert('Changes Successfully Saved');
           }
         }
+
+        else {
+          console.log('returning...');
+          return;
+        }
       } catch (e) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        this.setFailureAlert('error in CHILD');
       } finally {
         this.isProcessing = false;
       }
