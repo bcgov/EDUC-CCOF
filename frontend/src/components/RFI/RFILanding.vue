@@ -1607,7 +1607,7 @@ export default {
       if (this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1 && this.model.expenseList.length == 0) {
         done = false;
       }
-      if (this.model.q3 === 1 && this.model.fundingList.length == 0) {
+      if (this.model.q3 === 1 && this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1  && this.model.fundingList.length == 0) {
         done = false;
       }
       if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {

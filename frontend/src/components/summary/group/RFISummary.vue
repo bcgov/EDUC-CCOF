@@ -18,13 +18,13 @@
               <v-col class="col-6 py-0">
                 <v-row no-gutters>
                   <span class="summary-label pt-3">Is your fee increase due to an exceptional circumstance?</span>
-                  <v-text-field placeholder="Required" class="summary-value" :value="rfiApp?.exceptionalCircumstances === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.exceptionalCircumstances)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
               <v-col class="col-6 py-0" v-if="rfiApp?.exceptionalCircumstances">
                 <v-row no-gutters>
                   <span class="summary-label pt-3">Does the exceptional circumstance occur within 6 months of the fee increase?</span>
-                  <v-text-field placeholder="Required" class="summary-value" :value="rfiApp?.circumstanceOccurWithin6Month === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.circumstanceOccurWithin6Month)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
             </v-row>
@@ -98,7 +98,7 @@
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants) for any of the expenses you listed?</span>
-                  <v-text-field placeholder="Required" class=" summary-value" :value="rfiApp?.q3 === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class=" summary-value" :value="getValueString(rfiApp?.q3)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
               <v-col class="col-12" v-if="rfiApp?.q3">
@@ -167,7 +167,7 @@
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is your fee increase due to a wage increase for Direct Care Staff?</span>
-                  <v-text-field placeholder="Required" class="summary-value" :value="rfiApp?.feeIncreaseDueToWage === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.feeIncreaseDueToWage)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
             </v-row>
@@ -177,25 +177,25 @@
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?</span>
-                  <v-text-field placeholder="Required" class="summary-value" :value="rfiApp?.increaseInWriting === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.increaseInWriting)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?</span>
-                  <v-text-field placeholder="Required" class="summary-value" :value="rfiApp?.isBargainingAgreement === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.isBargainingAgreement)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Has the facility lost or been unable to hire Direct Care Staff due to current wages?</span>
-                  <v-text-field placeholder="Required" class=" summary-value" :value="rfiApp?.lossOfCareStaff === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class=" summary-value" :value="getValueString(rfiApp?.lossOfCareStaff)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is this creating challenges in maintaining the staff-to-child ratios required under the facility licence?</span>
-                  <v-text-field placeholder="Required" class=" summary-value" :value="rfiApp?.healthAndSafetyConcerns === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class=" summary-value" :value="getValueString(rfiApp?.healthAndSafetyConcerns)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
             </v-row>
@@ -313,7 +313,7 @@
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is your fee increase due to expanding or extending the hours of child care service available for all enrolled children?</span>
-                  <v-text-field placeholder="Required" class=" summary-value" :value="rfiApp?.feeIncreaseExtendedHours === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class=" summary-value" :value="getValueString(rfiApp?.feeIncreaseExtendedHours)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
             </v-row>
@@ -452,7 +452,7 @@
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is your fee increase due to an increased connection to Indigenous community, culture, or language for all enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous peoples?</span>
-                  <v-text-field placeholder="Required" class=" summary-value" :value="rfiApp?.IndigenousConnection === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class=" summary-value" :value="getValueString(rfiApp?.IndigenousConnection)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
             </v-row>
@@ -538,7 +538,7 @@
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label">Does this Facility meet all the above criteria?</span>
                   <br>
-                  <v-text-field placeholder="Required" class=" summary-value col-12" :value="rfiApp?.underservedPop === 1 ? 'YES' : 'NO'" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  <v-text-field placeholder="Required" class=" summary-value col-12" :value="getValueString(rfiApp?.underservedPop)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
             </v-row>
@@ -613,6 +613,18 @@ export default {
         formId: this.facilityId,
       }
     };
+  },
+  methods: {
+    getValueString(val){
+      if (val === 1){
+        return 'YES';
+      }
+      else if (val === 0){
+        return 'NO';
+      }
+
+      return val;
+    }
   },
   watch: {
     isLoadingComplete: {
