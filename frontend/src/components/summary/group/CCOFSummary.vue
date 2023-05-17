@@ -211,16 +211,18 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="4" lg="3" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-1">Is the facility located on school property?</span>
-                  <v-text-field placeholder="Required" :value="this.funding?.isSchoolProperty?.toUpperCase()" class="summary-value ml-n5" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-col>
           </v-row>
         </span>
+          <v-row v-if="this.funding?.maxGroupChildCareSchool > 0" >
+          <v-col cols="4" lg="3" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-label pt-1">Is the facility located on school property?</span>
+                <v-text-field placeholder="Required" :value="this.funding?.isSchoolProperty?.toUpperCase()" class="summary-value ml-n5" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+          </v-row>
         <v-row class="d-flex justify-start">
           <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start pt-2">
