@@ -191,6 +191,26 @@
           </v-row>
         </v-col>
       </v-row>
+      <v-row class="d-flex justify-start">
+        <v-col cols="12" lg="12" class="pb-0 pt-0">
+          <v-row  no-gutters class="d-flex justify-start pt-2">
+            <v-col cols="12" class="d-flex justify-start ml-3">
+              <span class="summary-label">Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?</span>
+            </v-col>
+            <v-col cols="12" class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="yesNoFacilityLabel" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row v-if="this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY'"  no-gutters class="d-flex justify-start pt-2">
+            <v-col cols="10" class="d-flex justify-start ml-3">
+              <span class="summary-label">Facility Name</span>
+            </v-col>
+            <v-col cols="10" class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.fundingFacility" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
@@ -258,6 +278,26 @@
             </v-col>
             <v-col class="d-flex justify-start">
                <v-text-field placeholder="Required" class="summary-value" :value="this.facilityInfo?.licenseEffectiveDate"  dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="d-flex justify-start">
+        <v-col cols="12" lg="12" class="pb-0 pt-0">
+          <v-row  no-gutters class="d-flex justify-start pt-2">
+            <v-col cols="10" class="d-flex justify-start ml-3">
+              <span class="summary-label">Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?</span>
+            </v-col>
+            <v-col cols="10" class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.hasReceivedFunding?.toUpperCase()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row v-if="this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YES'"  no-gutters class="d-flex justify-start pt-2">
+            <v-col cols="10" class="d-flex justify-start ml-3">
+              <span class="summary-label">Facility Name</span>
+            </v-col>
+            <v-col cols="10" class="d-flex justify-start">
+               <v-text-field placeholder="Required" :value="this.facilityInfo?.fundingFacility" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -331,7 +371,13 @@ export default {
   computed: {
     ...mapState('application', ['isRenewal',]),
     ...mapState('app', ['navBarList',]),
-    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete',])
+    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete',]),
+    yesNoFacilityLabel() {
+      if (this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY') {
+        return 'YES AS FACILITY';
+      }
+      return this.facilityInfo?.hasReceivedFunding?.toUpperCase();
+    }
   },
   methods: {
     getOptInOptOut(status) {
