@@ -74,9 +74,9 @@
                 </v-col>
               </v-row>
 
-              <v-row v-show="model.hasReceivedFunding === 'yesFacility'">
+              <v-row v-if="model.hasReceivedFunding === 'yesFacility'">
                 <v-col>
-                  <v-text-field :disabled="isLocked" outlined required v-model="model.fundingFacility" :rules="model.hasReceivedFunding === 'yesFacility' ? rules.notRequired : []" label="Facility Name" />
+                  <v-text-field :disabled="isLocked" outlined required v-model="model.fundingFacility" :rules="rules.required" label="Facility Name" />
                 </v-col>
               </v-row>
 
@@ -85,7 +85,7 @@
         </v-row>
       </span>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isLocked" :isNextDisabled="!model.isFacilityComplete" :isProcessing="processing" 
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isFacilityComplete" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveClicked()"></NavButton>
     </v-container>
   </v-form>
