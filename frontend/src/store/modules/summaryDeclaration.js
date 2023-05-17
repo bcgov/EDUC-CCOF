@@ -30,6 +30,7 @@ export default {
     summaryModel: {},
     isSummaryLoading: [],
     isMainLoading: true,
+    isLoadingComplete: false,
   },
   getters: {
     isCCFRIComplete: (state) => {
@@ -68,6 +69,9 @@ export default {
     isValidForm(state, value) {
       state.isValidForm = value;
     },
+    isLoadingComplete(state, value) {
+      state.isLoadingComplete = value;
+    }
   },
   actions: {
     async loadDeclaration({ commit, rootState }) {
@@ -82,7 +86,7 @@ export default {
     },
     async updateDeclaration({ commit, state, rootState}, reLockPayload) {
       checkSession();
-      let payload = { 
+      let payload = {
         agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
@@ -189,6 +193,7 @@ export default {
         } // end FOR loop
 
         summaryModel.allDocuments = null;
+        await commit('isLoadingComplete', true );
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
