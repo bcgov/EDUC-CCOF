@@ -32,7 +32,7 @@
                 <ChangeFileUpload
                 ref="childRef"
                 :changeType="changeTypeForm"
-                :testUploadedDocs="toUpload"
+
                 @addRow="addNewRowToUploadedDocuments"
                 ></ChangeFileUpload>
               </v-col>
@@ -45,7 +45,7 @@
               <ChangeFileUpload
                 ref="childRef2"
                 :changeType="changeTypeSupportingDoc"
-                :testUploadedDocs="[]"
+
                 @addRow="addNewRowToUploadedDocuments"
                 ></ChangeFileUpload>
               </v-col>
@@ -100,9 +100,6 @@ export default {
       isLoading: false,
       changeTypeForm: 'NOTIFICATION_FORM',
       changeTypeSupportingDoc: 'SUPPORTING_DOC',
-      toUpload : [],
-      changeActionDocuments: [{}],
-      uploadedDocuments: [],
       isUnlocked: false,
       isValidForm: false,
       processing: false,
@@ -136,6 +133,11 @@ export default {
           this.isLoading = false;
         }
 
+        //set it to empty so in case the user navigates to a fresh request, the store does not show the previously loaded documents
+        else{
+          this.setUploadedDocument([]);
+        }
+
 
       },
       immediate: true,
@@ -145,13 +147,30 @@ export default {
   async mounted(){
     if(this.$route.params.urlGuid){
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+
+      if(!this.changeRequestId){
+        await this.loadChangeRequest(this.applicationId);
+        let q = Object.values(this.changeActionStore);
+        q = q.find(element => element.changeActions.changeActionId == this.$route.params.urlGuid).changeRequestId;
+
+        this.setChangeRequestId(q);
+
+        //IF there isn't a match... what should we do? TODO
+
+        // for(const element in this.changeActionStore){
+        //   if (element.changeActions.changeActionId == this.$route.params.urlGuid){
+        //     q = element.changeActions.changeRequestId == this.$route.params.urlGuid
+        //   }
+        // }
+        console.log(q, 'this is q');
+      }
     }
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
 
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments']),
+    ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments', 'changeRequestId', 'changeActionStore']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
@@ -166,7 +185,8 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments']),
+    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments']),
+    ...mapMutations('reportChanges', ['setChangeRequestId']),
     async previous() {
       this.$router.push(PATHS.reportChange);
     },

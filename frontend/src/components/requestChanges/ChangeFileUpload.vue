@@ -17,8 +17,6 @@
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
             The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
-
-            {{  }}
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
@@ -144,10 +142,10 @@ export default {
       type: String,
       required: true
     },
-    testUploadedDocs: {
-      type: Array,
-      required: true
-    },
+    // testUploadedDocs: {
+    //   type: Array,
+    //   required: true
+    // },
 
   },
   data() {
@@ -321,7 +319,13 @@ export default {
           notetext: file.description,
           ...this.fileMap.get(String(file.id))
         };
-        payload.push(obj);
+
+        //only add objects from this component to the payload
+        //each child componenet sends it's own save payload to Dynamics
+        if(obj.filename){
+          payload.push(obj);
+        }
+
       }
       try {
         await this.saveUploadedDocuments(payload);
