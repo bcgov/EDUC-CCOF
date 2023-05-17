@@ -3,7 +3,6 @@ import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
-  console.log(licenseCategories, 'og LIc');
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
@@ -147,9 +146,13 @@ export default {
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
           commit('summaryModel', summaryModel);
-
-          let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
-          summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+          let facilityLicenseResponse = undefined;
+          try {
+            facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+            summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+          } catch(categoryError) {
+            console.log('error, unable to get childcare category for provider: ', facility.facilityId );
+          }
 
           //check for opt out - no need for more calls if opt-out
           if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {

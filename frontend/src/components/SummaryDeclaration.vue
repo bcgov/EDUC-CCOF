@@ -57,7 +57,7 @@
               <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
                 <div v-if="!this.isRenewal">
                   <v-expansion-panel variant="accordion">
-                    <OrganizationSummary @isSummaryValid="isFormComplete" :program-year="this.formattedProgramYear"
+                    <OrganizationSummary @isSummaryValid="isFormComplete" :programYear="this.formattedProgramYear"
                                          :summary-model="this.summaryModel" :isProcessing="isProcessing">
                     </OrganizationSummary>
                   </v-expansion-panel>
