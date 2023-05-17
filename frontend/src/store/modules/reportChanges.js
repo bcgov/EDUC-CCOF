@@ -88,7 +88,7 @@ export default {
       let payload = {
         'applicationId': rootState.application.applicationId,
         'programYearId': rootState.application.programYearId,
-        'providerType': 100000000
+        'providerType': 100000000 // TO DO: get this from the app
       };
       try {
         //commit('setLoadedFacilities', {...state.facilities});
@@ -97,7 +97,7 @@ export default {
 
         commit('setChangeRequestId', response.data.changeRequestId);
         console.log(response);
-        return response;
+        return response.data;
       } catch (error) {
         console.info(`Failed to create a change notification  - ${error}`);
         throw error;

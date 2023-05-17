@@ -195,22 +195,19 @@ export default {
     async save(showNotification = false){
       this.isLoading = true;
       try{
-        if (!this.$route.params.urlGuid){
-          await this.createChangeRequest();
-        }
-        else{
-          //call the save in the child component that will save the newly added documents
-          await this.$refs.childRef.save(false);
-          //await new Promise(r => setTimeout(r, 5000));
-          await this.$refs.childRef2.save(false);
+
+        //call the save in the child component that will save the newly added documents
+        //each child runs it's own save, because they are unaware of what has changed in the sibling component. If I have time, will change this to be more efficeint (one call to dynamics)
+        await this.$refs.childRef.save(false);
+        await this.$refs.childRef2.save(false);
 
 
-          console.log('saving in children COMPLETE');
+        console.log('saving in children COMPLETE');
 
-          await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-          //else -
-          this.setSuccessAlert('U savveed');
-        }
+        await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+        //else -
+        this.setSuccessAlert('U savveed');
+
 
 
 

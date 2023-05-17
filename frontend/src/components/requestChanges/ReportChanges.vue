@@ -143,7 +143,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', ]),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId']),
     async previous() {
       let path = await this.getPreviousPath();
@@ -159,12 +159,17 @@ export default {
     routeToFacilityAdd(){
       this.$router.push(PATHS.reportChange.facInfo);
     },
-    goToChangeForm(changeActionId = null,  changeRequestId = null){
+    async goToChangeForm(changeActionId = null,  changeRequestId = null){
+
+      //create the change action first, then push it
       if (!changeActionId){
-        this.$router.push(PATHS.reportChange.notificationForm);
+        let newReq = await this.createChangeRequest();
+        //console.log('newREQ', newReq.changeRequestId);
+        //changeRequestId = newReq.changeRequestId;
+        this.$router.push(PATHS.reportChange.notificationForm + '/' + newReq.changeActionId);
       }
       else{
-        console.log('THIS IS THE ID U LOOK FOR', changeRequestId);
+        //console.log('THIS IS THE ID U LOOK FOR', changeRequestId);
         this.setChangeRequestId(changeRequestId);
         this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
       }
