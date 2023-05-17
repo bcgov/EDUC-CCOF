@@ -140,85 +140,87 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row class="d-flex justify-start">
-          <v-col cols="12" lg="12" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start pt-2">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Preschool sessions your facility offers per day:</span>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row class="d-flex justify-start pt-2">
-          <v-col cols="2" lg="1" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Monday</span>
-              </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.funding?.monday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="2" lg="1" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Tuesday</span>
-              </v-col>
-              <v-col class="d-flex justify-left">
-                <v-text-field placeholder="Required" :value="this.funding?.tusday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="2" lg="1" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Wednesday</span>
-              </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.funding?.wednesday" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="2" lg="1" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Thursday</span>
-              </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.funding?.thursday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="2" lg="1" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Friday</span>
-              </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.funding?.friday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="2" lg="1" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">Total</span>
-              </v-col>
-              <v-col class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.calculateTotal()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4" lg="3" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label pt-1">Is the facility located on school property?</span>
-                <v-text-field placeholder="Required" :value="this.funding?.isSchoolProperty?.toUpperCase()" class="summary-value ml-n5" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <span v-if="this.funding?.maxPreschool > 0">
+          <v-row class="d-flex justify-start">
+            <v-col cols="12" lg="12" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start pt-2">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Preschool sessions your facility offers per day:</span>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row class="d-flex justify-start pt-2">
+            <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Monday</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <v-text-field placeholder="Required" :value="this.funding?.monday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Tuesday</span>
+                </v-col>
+                <v-col class="d-flex justify-left">
+                  <v-text-field placeholder="Required" :value="this.funding?.tusday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Wednesday</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <v-text-field placeholder="Required" :value="this.funding?.wednesday" class="summary-value" dense flat solo hide-details readonly required :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Thursday</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <v-text-field placeholder="Required" :value="this.funding?.thursday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Friday</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <v-text-field placeholder="Required" :value="this.funding?.friday" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label">Total</span>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <v-text-field placeholder="Required" :value="this.calculateTotal()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="4" lg="3" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label pt-1">Is the facility located on school property?</span>
+                  <v-text-field placeholder="Required" :value="this.funding?.isSchoolProperty?.toUpperCase()" class="summary-value ml-n5" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </span>
         <v-row class="d-flex justify-start">
           <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start pt-2">
