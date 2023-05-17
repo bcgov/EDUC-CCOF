@@ -102,6 +102,7 @@ export default {
   },
   computed: {
     ...mapState('application', ['formattedProgramYear']),
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
   },
   data() {
     return {
@@ -163,17 +164,15 @@ export default {
       }
     }
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val && !this.facilityInformationExists()) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },
-
 };
 </script>
 <style scoped>

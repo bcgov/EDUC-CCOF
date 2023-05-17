@@ -281,7 +281,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('summaryDeclaration', ['summaryModel',]),
+    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete']),
     ...mapState('app', ['navBarList',]),
   },
   data() {
@@ -296,17 +296,16 @@ export default {
 
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
+
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
-  },
-};
+  },};
 </script>
 <style scoped>
 .summary-label {

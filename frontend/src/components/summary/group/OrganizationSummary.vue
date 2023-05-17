@@ -200,6 +200,7 @@ export default {
   },
   computed:{
     ...mapState('auth', ['userInfo']),
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
   },
   methods:{
     getOrgTypeString(){
@@ -235,16 +236,13 @@ export default {
       }
     };
   },
-  mounted() {
-    this.$refs.organizationSummaryForm.validate();
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
-
     }
   },
 };

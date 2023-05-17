@@ -54,11 +54,14 @@
 <script>
 import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
+import {mapState} from 'vuex';
 
 export default {
   name: 'UploadedDocumentsSummary',
+  computed: {
+    ...mapState('summaryDeclaration', ['isLoadingComplete',])
+  },
   props: {
-
     documents: {
       type: Array,
       default: () => []
@@ -66,12 +69,13 @@ export default {
   },
   mounted() {
     this.getSupportingDocuments();
-    this.$emit('isSummaryValid',this.formObj, this.isValidForm);
   },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },
