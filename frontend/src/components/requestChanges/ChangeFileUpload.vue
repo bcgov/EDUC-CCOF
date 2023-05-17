@@ -335,6 +335,7 @@ export default {
     async processDocumentFileDelete() {
       if (this.uploadedDocuments?.deletedItems?.length > 0) {
         await this.deleteDocuments(this.uploadedDocuments.deletedItems);
+        this.uploadedDocuments.deletedItems = [];
       }
     },
     async selectFile(file) {

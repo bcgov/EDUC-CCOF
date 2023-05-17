@@ -71,7 +71,7 @@
 
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="true" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="true" :isProcessing="isLoading"
         @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
       <!-- <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
