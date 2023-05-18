@@ -83,7 +83,7 @@
                 Date
               </v-col>
                 <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId, changeRequest.changeActions.changeRequestId)">Continue</v-btn>
+                  <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId, changeRequest.changeActions.changeRequestId, changeRequest.changeActions.changeType)">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
                   <v-btn class= "" @click="deleteRequest(changeRequest.changeActions.changeRequestId)">Delete</v-btn>
@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
@@ -130,6 +130,7 @@ export default {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('reportChanges', ['changeActionStore',]),
+    ...mapGetters('reportChanges', ['firstFacilityId']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
@@ -141,7 +142,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('navBar', ['getPreviousPath']),
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest', 'getChangeRequestFacility' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId']),
     async previous() {
       this.$router.push(PATHS.home);
@@ -156,7 +157,7 @@ export default {
     routeToFacilityAdd(){
       this.$router.push(PATHS.reportChange.facInfo);
     },
-    async goToChangeForm(changeActionId = null,  changeRequestId = null){
+    async goToChangeForm(changeActionId = null,  changeRequestId = null, changeType = null){
 
       //create the change action first, then push it
       if (!changeActionId){
@@ -166,9 +167,14 @@ export default {
         this.$router.push(PATHS.reportChange.notificationForm + '/' + newReq.changeActionId);
       }
       else{
-        //console.log('THIS IS THE ID U LOOK FOR', changeRequestId);
-        this.setChangeRequestId(changeRequestId);
-        this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
+        console.log('THIS IS THE ID U LOOK FOR', changeType);
+        if (changeType === 'NEW_FACILITY') {
+          await this.getChangeRequestFacility(changeActionId);
+          this.$router.push(`${PATHS.reportChange.base}/${changeActionId}/facility/${this.firstFacilityId}`);
+        } else {
+          this.setChangeRequestId(changeRequestId);
+          this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
+        }
       }
 
     },

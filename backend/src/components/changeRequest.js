@@ -2,7 +2,7 @@
 
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, ChangeActionFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 const { mapFacilityObjectForBack } = require('./facility');
 const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 
@@ -42,7 +42,6 @@ function mapChangeRequestObjectForFront(data) {
 // get Change Request
 async function getChangeRequest(req, res) {
   log.info('get changeRequest called');
-
   try {
     let changeRequest = await getOperationWithObjectId('ccof_change_requests', req.params.changeRequestId);
     changeRequest = mapChangeRequestObjectForFront(changeRequest);
@@ -155,6 +154,25 @@ async function saveChangeRequestDocs(req, res) {
   }
 }
 
+async function getNewFacilitiesChangeAction(req, res) {
+  try {
+    const operation = `ccof_change_actions(${req.params.changeActionId})?$expand=ccof_change_request_new_facility_change_act`
+    const changeAction = await getOperation(operation);
+    let changeActionFacilities  = [];
+    changeAction.ccof_change_request_new_facility_change_act?.forEach( request=> {
+      changeActionFacilities.push(new MappableObjectForFront(request, ChangeActionFacilityMappings).data);
+    });
+    let retVal = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).data;
+    console.log(JSON.stringify(changeAction));
+    retVal.newFacilities = changeActionFacilities;
+    return res.status(HttpStatus.OK).json(retVal);
+  } catch (e) {
+    console.log('e', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+
+}
+
 module.exports = {
   getChangeRequest,
   createChangeRequest,
@@ -163,4 +181,5 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
+  getNewFacilitiesChangeAction,
 };

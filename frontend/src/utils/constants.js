@@ -98,6 +98,7 @@ export const PATHS = {
     notificationForm: `${CHANGE_URL_PREFIX}/change-notification-form`,
     facInfo: `${CHANGE_URL_PREFIX}/group/facility`,
     fundAmount: `${CHANGE_URL_PREFIX}/group/funding`,
+    base: `${CHANGE_URL_PREFIX}`,
 
   }
 };

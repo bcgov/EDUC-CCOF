@@ -15,9 +15,8 @@ export default {
     unsubmittedDocuments: [],
     model: {},
     changeActionStore : {},
-    uploadedDocuments: []
-
-
+    uploadedDocuments: [],
+    currentChangeActionNewFacility: {},
   },
   getters: {
     changeActionStore: state => state.changeActionStore,
@@ -25,6 +24,13 @@ export default {
     changeRequestId: state => state.changeRequestId,
     unsubmittedDocuments: state => state.unsubmittedDocuments,
     getUploadedDocuments: state => state.uploadedDocuments,
+    firstFacilityId: state => {
+      if (state.currentChangeActionNewFacility?.newFacilities?.length > 0) {
+        return state.currentChangeActionNewFacility.newFacilities[0].facilityId;
+      }
+      return null;
+    }
+
   },
   mutations: {
     model(state, value) {
@@ -43,6 +49,9 @@ export default {
     },
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
+    },
+    setCurrentChangeActionNewFacility: (state, value) => {
+      state.currentChangeActionNewFacility = value;
     },
 
     // setUploadedDocument: (state, document) => {
@@ -182,6 +191,16 @@ export default {
       } catch (error) {
         console.error(error);
         throw error;
+      }
+    },
+    async getChangeRequestFacility({commit}, changeActionId) {
+      checkSession();
+      try {
+        let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/newFacility/' + changeActionId);
+        commit('setCurrentChangeActionNewFacility', response.data);
+      } catch(e) {
+        console.log(`Failed to get load change reqz with error - ${e}`);
+        throw e;
       }
     }
   },

@@ -1,6 +1,7 @@
 'use strict';
 
 import {getDateFormatter} from '@/utils/format';
+import { CHANGE_URL_PREFIX } from '@/utils/constants';
 import {LocalDate} from '@js-joda/core';
 import {isPlainObject} from 'lodash';
 const clone = require('rfdc')();
@@ -12,6 +13,10 @@ export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
     console.error(`Error is ${e}`);
   }
 };
+
+export function isChangeRequest(url) {
+  return url?.startsWith(CHANGE_URL_PREFIX) ? true : false;
+}
 
 export function setEmptyInputParams(params, ...excludedParams) {
   Object.keys(params).forEach(key => {

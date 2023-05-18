@@ -471,13 +471,14 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.facInfo + '/:urlGuid',
+      path:  PATHS.reportChange.base + '/:changeActionGuid/facility/:urlGuid',
+      // path:  '/report-change/:changeActionId/facility/:facilityId', // PATHS.reportChange.base + ':changeActionGuid/facility/:urlGuid',
       name: 'Report Change Facility Guid',
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information',
         requiresAuth: true,
-        showNavBar: false,
+        showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },

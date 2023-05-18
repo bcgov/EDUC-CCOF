@@ -14,9 +14,20 @@ const ChangeActionRequestMappings = [
   { back: 'ccof_change_actionid', front: 'changeActionId'}, // 6,
   { back: 'ccof_changetype', front: 'changeType'}, // 6,
   { back: '_ccof_change_request_value', front: 'changeRequestId'}, // 6,
+  { back: 'ccof_name', front: 'name'}, // 6,
+
+];
+
+const ChangeActionFacilityMappings = [
+  { back: 'statuscode', front: 'status'},
+  { back: '_ccof_ecewe_value', front: 'eceweId'},
+  { back: '_ccof_ccfri_value', front: 'ccfriId'},
+  { back: 'ccof_name', front: 'name'},
+  { back: '_ccof_facility_value', front: 'facilityId'},
 ];
 
 module.exports = {
   ChangeRequestMappings,
-  ChangeActionRequestMappings
+  ChangeActionRequestMappings,
+  ChangeActionFacilityMappings,
 };

@@ -85,9 +85,8 @@
 <script>
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
-import { NAV_BAR_GROUPS } from '@/utils/constants';
+import { NAV_BAR_GROUPS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import StaticConfig from '../../common/staticConfig';
-import { CHANGE_URL_PREFIX } from '../../utils/constants';
 
 let positionIndex = 0;
 let navBarId = 0;
