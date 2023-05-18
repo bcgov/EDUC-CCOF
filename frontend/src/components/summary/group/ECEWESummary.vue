@@ -43,7 +43,7 @@
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Applicable Sector:</span>
-              <v-textarea placeholder="Required"  :value="this.getSectorValue(ecewe?.applicableSector)" class="summary-value" dense flat solo hide-details readonly no-resize rows="auto" :rules="rules.required" ></v-textarea>
+              <v-textarea placeholder="Required"  :value="this.getSectorValue(ecewe?.applicableSector)" class="summary-value" dense flat solo hide-details readonly no-resize rows="2" :rules="rules.required" ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
@@ -51,7 +51,7 @@
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Funding model:</span>
-              <v-textarea placeholder="Required"  :value="this.getFundingModel(ecewe?.fundingModel)" class="summary-value" dense flat solo hide-details readonly no-resize rows="auto" :rules="rules.required" ></v-textarea>
+              <v-textarea placeholder="Required"  :value="this.getFundingModel(ecewe?.fundingModel)" class="summary-value" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
             </v-col>
           </v-row>
           <v-row no-gutters class="d-flex justify-start" v-if="ecewe?.fundingModel === fundingModelTypeList[1].id || ecewe?.fundingModel === fundingModelTypeList[2].id"> 
