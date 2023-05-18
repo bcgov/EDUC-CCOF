@@ -37,7 +37,8 @@ const FacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
-  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+  { back: 'ccof_everreceivedfundingundertheccofprogram', front: 'hasReceivedFunding'}
+  
 ];
 
 const CCFRIFacilityMappings = [
