@@ -94,7 +94,8 @@
           </p>
         </template>
         <template #button>
-          <v-btn  @click="goToReportChange()" :color='buttonColor(!isCCOFApproved)' dark>Report a change</v-btn>
+          <!-- TODO: change back this logic for button color - was previously  :color='buttonColor(!isCCOFApproved) -->
+          <v-btn  @click="goToReportChange()" :color='buttonColor(isCCOFApproved)' dark>Report a change</v-btn>
         </template>
       </SmallCard>
 
