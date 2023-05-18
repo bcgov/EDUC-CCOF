@@ -85,9 +85,13 @@
 
 import rules from '@/utils/rules';
 import {PATHS} from '@/utils/constants';
+import {mapState} from 'vuex';
 
 export default {
   name: 'NMFSummary',
+  computed: {
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+  },
   data() {
     return {
       PATHS,
@@ -99,13 +103,12 @@ export default {
       }
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },

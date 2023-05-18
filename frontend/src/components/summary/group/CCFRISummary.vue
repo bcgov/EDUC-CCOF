@@ -168,24 +168,24 @@ export default {
 
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },
   computed:{
     ...mapState('application', ['isRenewal',]),
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
     ccfriChildCareTypes() {
 
 
       //if the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
       //this checks for all licenses available for the facility, and displays what is missing to the user.
-      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses.length){
+      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses?.length){
         let childCareTypesArr = [];
 
         const findChildCareTypes = ((yearToSearch, checkForMissingPrevFees = false) => {

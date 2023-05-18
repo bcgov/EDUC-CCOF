@@ -3,7 +3,6 @@ import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
-  console.log(licenseCategories, 'og LIc');
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
@@ -30,6 +29,7 @@ export default {
     summaryModel: {},
     isSummaryLoading: [],
     isMainLoading: true,
+    isLoadingComplete: false,
   },
   getters: {
     isCCFRIComplete: (state) => {
@@ -68,6 +68,9 @@ export default {
     isValidForm(state, value) {
       state.isValidForm = value;
     },
+    isLoadingComplete(state, value) {
+      state.isLoadingComplete = value;
+    }
   },
   actions: {
     async loadDeclaration({ commit, rootState }) {
@@ -82,7 +85,8 @@ export default {
     },
     async updateDeclaration({ commit, state, rootState}, reLockPayload) {
       checkSession();
-      let payload = { agreeConsentCertify:state.model.agreeConsentCertify,
+      let payload = {
+        agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
         declarationBStatus:state.model?.declarationBStatus };
@@ -142,9 +146,13 @@ export default {
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
           commit('summaryModel', summaryModel);
-
-          let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
-          summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+          let facilityLicenseResponse = undefined;
+          try {
+            facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+            summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+          } catch(categoryError) {
+            console.log('error, unable to get childcare category for provider: ', facility.facilityId );
+          }
 
           //check for opt out - no need for more calls if opt-out
           if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
@@ -188,13 +196,15 @@ export default {
         } // end FOR loop
 
         summaryModel.allDocuments = null;
+        await commit('isLoadingComplete', true );
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
       }
     },
 
-    async updateApplicationStatus(applicationObj) {
+    // eslint-disable-next-line no-empty-pattern
+    async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
         console.log('Updating Application Status');
