@@ -98,6 +98,9 @@ export default {
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
         }
+        if (this.model.hasReceivedFunding !== 'yesFacility') {
+          this.model.fundingFacility = '';
+        }
         this.model.postalCode = this.organizationModel.postalCode1;
       }
       this.setFacilityModel({ ...this.model });

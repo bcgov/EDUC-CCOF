@@ -35,9 +35,9 @@ function mapFacilityObjectForBack(data) {
   }
 
   if (data.hasReceivedFunding === 'no') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
-  } else if (data.hasReceivedFunding === 'yes') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
+  } else if (data.hasReceivedFunding === 'yes') {
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
   } else if (data.hasReceivedFunding === 'yesFacility') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000002;
   } else if (data.hasReceivedFunding) {
@@ -60,9 +60,9 @@ function mapFacilityObjectForFront(data) {
   let obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
 
   //TODO: map this if it is returned from dynamics
-  if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
+  if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
     obj.hasReceivedFunding = 'no';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
     obj.hasReceivedFunding = 'yes';
   } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000002) {
     obj.hasReceivedFunding = 'yesFacility';
