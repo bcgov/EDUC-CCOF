@@ -213,14 +213,28 @@
             </v-col>
           </v-row>
         </span>
-        <v-row v-if="this.funding?.maxGroupChildCareSchool > 0" >
-          <v-col cols="4" lg="3" class="pb-0 pt-0">
+        <v-row v-if="this.funding?.maxGroupChildCareSchool > 0" class="pb-0 pt-0">
+          <v-col cols="6" lg="6" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
+              <v-col cols="6" class="d-flex justify-start">
                 <span class="summary-label pt-1">Is the facility located on school property?</span>
+              </v-col>
+              <v-col cols="6" class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.funding?.isSchoolProperty?.toUpperCase()" class="summary-value ml-n5" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
             </v-row>
+            <span v-if="this.funding?.maxGroupChildCareSchool > 0 && this.funding?.isSchoolProperty?.toUpperCase() === 'YES'">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label pt-1">Please indicate each service that your facility offers:</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <v-text-field placeholder="Required" :value="schoolPropertyLabel" class="summary-value ml-n5 pl-2" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                </v-col>
+              </v-row>
+            </span>
           </v-col>
         </v-row>
         <v-row class="d-flex justify-start">
@@ -359,6 +373,22 @@ export default {
   computed: {
     ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete',]),
     ...mapState('app', ['navBarList',]),
+    schoolPropertyLabel() {
+      const arr = [];
+      if (this.funding?.beforeSchool) {
+        arr.push('BEFORE SCHOOL');
+      }
+      if (this.funding?.afterSchool) {
+        arr.push('AFTER SCHOOL');
+      }
+      if (this.funding?.beforeKindergarten) {
+        arr.push('BEFORE KINDERGARTEN');
+      }
+      if (this.funding?.afterKindergarten) {
+        arr.push('AFTER KINDERGARTEN');
+      }
+      return String(arr);
+    }
   },
   data() {
     return {
