@@ -97,12 +97,9 @@
     </v-form>
 
 
-
-
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
-          Back</v-btn>
-      </v-row>
+    <NavButton :isNextDisplayed="false" :isSaveDisplayed="false"
+         :isNextDisabled="true" :isProcessing="processing"
+        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
   </v-container>
 </template>
 
@@ -111,6 +108,7 @@ import { mapState, mapMutations, mapActions } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
+import NavButton from '../util/NavButton.vue';
 
 
 
@@ -146,8 +144,7 @@ export default {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId']),
     async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+      this.$router.push(PATHS.home);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete() {
@@ -191,7 +188,7 @@ export default {
     //this.$store.commit('ccfriApp/model', this.model);
     next();
   },
-  components: { SmallCard }
+  components: { SmallCard, NavButton }
 };
 </script>
 <style scoped>

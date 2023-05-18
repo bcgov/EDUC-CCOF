@@ -446,7 +446,7 @@ const router = new VueRouter({
       component: ReportChange,
       meta: {
         pageTitle: 'Report Changes',
-        showNavBar: true,
+        showNavBar: false,
         requiresAuth: true,
       }
     },
@@ -456,7 +456,7 @@ const router = new VueRouter({
       component: ChangeNotificationForm,
       meta: {
         pageTitle: 'Change Notification Form',
-        showNavBar: true,
+        showNavBar: false,
         requiresAuth: true,
       }
     },
@@ -466,7 +466,7 @@ const router = new VueRouter({
       component: ChangeNotificationForm,
       meta: {
         pageTitle: 'Change Notification Form',
-        showNavBar: true,
+        showNavBar: false,
         requiresAuth: true,
       }
     },
@@ -477,7 +477,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: 'Facility Information',
         requiresAuth: true,
-        showNavBar: true,
+        showNavBar: false,
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },

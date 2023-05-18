@@ -70,7 +70,7 @@
     </v-form>
 
 
-    <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+    <NavButton :isNextDisplayed="false" :isSaveDisplayed="true"
         :isSaveDisabled="isReadOnly" :isNextDisabled="true" :isProcessing="isLoading"
         @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
       <!-- <v-row justify="space-around">
@@ -190,7 +190,7 @@ export default {
     ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments',]),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
     async previous() {
-      this.$router.push(PATHS.reportChange);
+      this.$router.push(PATHS.reportChange.landing);
     },
     async save(showNotification = false){
       this.isLoading = true;
