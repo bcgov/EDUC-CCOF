@@ -8,7 +8,7 @@ Vue.use(Vuetify);
 export default new Vuetify({
   theme: {
     light: true,
-    dark: false 
+    dark: false
   },
   icons: {
     iconfont: 'fa',

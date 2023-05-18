@@ -1,8 +1,8 @@
 <template>
   <v-container>
 
-    <LargeCard 
-      title="Exceptional Circumstances" 
+    <LargeCard
+      title="Exceptional Circumstances"
       subtitle="As outlined in the Funding Guidelines, exceptional circumstances are expenses that are:"
     >
       <ul>
@@ -33,7 +33,7 @@
     </LargeCard>
 
     <LargeCard
-      title="Direct Care Staff Wages Increases" 
+      title="Direct Care Staff Wages Increases"
       subtitle="Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you are required to apply for ECE-WE prior to being approved for a fee increase."
     >
       <p>
@@ -58,7 +58,7 @@
     </LargeCard>
 
     <LargeCard
-      title="Priority Service Expansion: Increase in hours of Operation" 
+      title="Priority Service Expansion: Increase in hours of Operation"
     >
       <p>Is your fee increase due to an increase in hours/days of operation in order to provide care during expanded, extended, and/or non-traditional hours?</p>
       <v-radio-group
@@ -79,7 +79,7 @@
     </LargeCard>
 
     <LargeCard
-      title="Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language" 
+      title="Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language"
     >
       <p>Is your fee increase due to an increased connection to Indigenous community, culture, or language in an Indigenous Facility or Organization?</p>
 
@@ -113,10 +113,10 @@
     </LargeCard>
 
     <LargeCard
-      title="Affordable Child Care for Underserved Populations" 
+      title="Affordable Child Care for Underserved Populations"
       subtitle="To be considered under this policy, the Facility must meet all of the following criteria as outlined in the Funding Guidelines:"
     >
-      
+
       <ul>
         <li>
           Has historcally provided care to underserved populations-including Indigenous or low-income populations-at significantely below the regional median range of fees for their area or at no fee;
@@ -152,7 +152,7 @@
     </LargeCard>
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="false" :isNextDisabled="false" :isProcessing="processing" 
+        :isSaveDisabled="false" :isNextDisabled="false" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()"></NavButton>
 
   </v-container>
@@ -176,7 +176,7 @@ export default {
       q3: '',
       q4: '',
       q5 : '',
-     
+
     };
   },
   mounted() {
@@ -189,7 +189,7 @@ export default {
     next();
   },
   computed: {
-    
+
   },
   methods : {
     previous() {

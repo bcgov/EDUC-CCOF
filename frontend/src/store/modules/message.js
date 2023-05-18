@@ -14,7 +14,7 @@ export default {
   getters: {
     allMessages: state => state.allMessages,
     unreadMessageCount(state) {
-      if (state.unreadMessageCount > 0) 
+      if (state.unreadMessageCount > 0)
         return state.unreadMessageCount;
       else
         return '0';
@@ -34,7 +34,7 @@ export default {
     },
     hasBroadcastingMessage() {
       return false;
-    } 
+    }
   },
   mutations: {
     setAllMessages: (state, allMessages) => { state.allMessages = allMessages; },
@@ -45,7 +45,7 @@ export default {
 
     updateUnreadMessagesCount(state) {
       if (state.allMessages) {
-        state.unreadMessageCount = state.allMessages.filter(message => !message.isRead).length; 
+        state.unreadMessageCount = state.allMessages.filter(message => !message.isRead).length;
       }
     },
 
@@ -56,7 +56,7 @@ export default {
             if (message.messageId === updatedMessage.messageId)
               message.isRead = updatedMessage.isRead;
           });
-        }      
+        }
       } catch (error) {
         console.log(error);
       }
@@ -65,7 +65,7 @@ export default {
 
   actions: {
     async getAllMessages({ commit }, organizationId) {
-      if (!localStorage.getItem('jwtToken')) { 
+      if (!localStorage.getItem('jwtToken')) {
         console.log('unable to get Messages data because you are not logged in');
         throw 'unable to get Messages data because you are not logged in';
       }
@@ -84,7 +84,7 @@ export default {
     },
 
     async updateMessage({ commit }, messageId) {
-      if (!localStorage.getItem('jwtToken')) { 
+      if (!localStorage.getItem('jwtToken')) {
         console.log('unable to update Messages data because you are not logged in');
         throw 'unable to update Messages data because you are not logged in';
       }
@@ -99,7 +99,7 @@ export default {
           let payload = {
             'lastopenedtime': (new Date()).toISOString(),
           };
-          await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);    
+          await ApiService.apiAxios.put(ApiRoutes.MESSAGE + '/' + messageId, payload);
         } catch (error) {
           console.log(`Failed to update existing Message - ${error}`);
           throw error;

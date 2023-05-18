@@ -44,7 +44,7 @@ export default {
         checkSession();
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
-        payload.isEceweComplete = isFormComplete; 
+        payload.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
         return response;
@@ -56,7 +56,7 @@ export default {
     async saveECEWEFacilities({ state, commit }) {
       if (isEqual(state.loadedFacilities, state.facilities)) {
         return;
-      }      
+      }
       checkSession();
       let payload = JSON.parse(JSON.stringify(state.facilities));
       try {

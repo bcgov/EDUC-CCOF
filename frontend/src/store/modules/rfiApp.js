@@ -96,9 +96,9 @@ export default {
         rfiPayloadModel.indigenousExpenseList = undefined;
       }
 
-      
+
       commit('setLoadedModel', deepCloneObject(state.rfiModel));
-      
+
       if (state.rfiModel?.rfiId) {
         // has a rfi ID, so update the data
         try {

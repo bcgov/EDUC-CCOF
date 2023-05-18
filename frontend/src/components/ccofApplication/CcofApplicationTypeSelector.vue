@@ -7,9 +7,9 @@
       <p class="px-10 text-h6">
         If you select the incorrect provider type, you will need to contact the program at 1 (888) 338-6622 (Option 2).
         <br>
-        If you are unsure which type to select, you can view a PDF version of the 
+        If you are unsure which type to select, you can view a PDF version of the
         <a class="text-decoration-underline" href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1320_ccof_family_application.pdf">family form</a>
-        and the 
+        and the
         <a class="text-decoration-underline" href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1321_ccof_group_application.pdf">group form</a>.
       </p>
     </v-row>

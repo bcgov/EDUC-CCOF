@@ -87,7 +87,7 @@ export default {
       console.log(`Failed to get from Nodejs getLookups API - ${e}`);
       throw e;
     }
-  },  
+  },
 
   async getConfig(configName) {
     try {

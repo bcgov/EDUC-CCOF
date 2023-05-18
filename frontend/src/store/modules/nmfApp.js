@@ -16,15 +16,15 @@ export default {
     setLoadedModel: (state, value) => { state.loadedModel = value; },
     addNmfToStore: (state, {ccfriId, model} ) => {
       if (ccfriId) {
-        state.nmfStore[ccfriId] = model;  
+        state.nmfStore[ccfriId] = model;
       }
     },
   },
   getters: {
-    getByCcfriId: (state) => (ccfriId) => { 
+    getByCcfriId: (state) => (ccfriId) => {
       return state.nmfStore[ccfriId];
     },
-  },  
+  },
 
   actions: {
     async loadNmf({getters, commit}, ccfriId) {
@@ -45,7 +45,7 @@ export default {
           throw e;
         }
       }
-    },    
+    },
     async saveNmf({ state, commit }, ccfriId) {
 
       checkSession();

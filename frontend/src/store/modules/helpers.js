@@ -7,7 +7,7 @@ export async function getData(apiMethod, queryParam) {
     throw e;
   }
 }
-  
+
 export async function postData(apiMethod, _context, info){
   try {
     const response = await apiMethod(info);

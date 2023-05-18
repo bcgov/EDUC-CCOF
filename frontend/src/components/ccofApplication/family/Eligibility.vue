@@ -47,7 +47,7 @@
       </v-row>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isLocked" :isNextDisabled="!model.isFacilityComplete" :isProcessing="processing" 
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isFacilityComplete" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveClicked()"></NavButton>
     </v-container>
   </v-form>

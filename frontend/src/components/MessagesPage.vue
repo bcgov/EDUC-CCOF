@@ -4,7 +4,7 @@
       <Spinner style="width: 100%"></Spinner>
     </v-row>
     <v-row fluid class="mx-4" v-else>
-      <v-row> 
+      <v-row>
         <v-col id="messages-summary" fluid class="pa-0" :cols="4">
           <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0" >
             <v-data-table
@@ -99,17 +99,17 @@ export default {
   created() {
     this.getAllMessagesVuex();
   },
-  
+
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('message', ['allMessages']),
-    buttonSize () {      
+    buttonSize () {
       const size = {xs:'large',sm:'large',md:'large',lg:'x-large',xl:'x-large'}[this.$vuetify.breakpoint.name];
       return size ? { [size]: true } : {};
     }
   },
   methods: {
-    
+
     ...mapActions('message', ['updateMessage','getAllMessages']),
 
     rowClickHandler(item,row) {
@@ -129,7 +129,7 @@ export default {
     goToHomePage() {
       this.$router.push(PATHS.home);
     },
-    
+
     async getAllMessagesVuex() {
       try {
         if (!this.allMessages) {
@@ -150,7 +150,7 @@ export default {
       case 'xl': return '78vh';
       default: return '70vh';
       }
-    }    
+    }
   },
 
   components: { Spinner }
@@ -158,7 +158,7 @@ export default {
 </script>
 
 <style>
-  html { 
+  html {
     overflow-y: auto;
   }
   .read {

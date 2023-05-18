@@ -31,14 +31,14 @@
         </v-toolbar-title>
       </v-row>
     <div v-if="isAuthenticated && dataReady" class="mt-6">
-      <v-btn 
+      <v-btn
         id="mail_box_button" @click="goToMessagePage()"
         color="#003366" rounded dark class="mr-5 elevation-0"
       >
         <v-badge
           color="red"
           :content="unreadMessageCount"
-          bottom right 
+          bottom right
           overlap offset-x="20" offset-y="20"
         >
           <v-icon aria-hidden="false" size="40" color='white'>
@@ -46,7 +46,7 @@
           </v-icon>
         </v-badge>
       </v-btn>
-      
+
       <v-menu name="user_options" offset-y>
         <template v-slot:activator="{ on }">
           <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
@@ -110,11 +110,11 @@ export default {
         if (
           err.name !== 'NavigationDuplicated' &&
           !err.message.includes('Avoided redundant navigation to current location')
-        ) 
+        )
           console.log(err);
       });
     },
-    
+
   }
 };
 </script>
