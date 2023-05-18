@@ -119,14 +119,12 @@
         "error",
         2
       ],
-      "quotes": [
-        "error",
-        "single"
-      ],
+      "quotes": "off",
       "semi": [
         "error",
         "always"
-      ]
+      ],
+      "no-trailing-spaces": ["error"]
     }
   },
   "jest": {
