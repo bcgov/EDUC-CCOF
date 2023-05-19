@@ -21,7 +21,7 @@
               <v-col class="col-lg-10 ">
               <p class="px-2 text--primary"><strong> For all changes other than "Adding a new facility(s) to your Organization, please download the change notification form by clicking on the button below."</strong>
               </p>
-                <v-btn dark class="blueButton mb-10 ml-2" @click="'/'" >Download a Change Notification Form</v-btn>
+                 <v-btn dark class="blueButton mb-10 ml-2" >Download a Change Notification Form</v-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -60,7 +60,7 @@
 
           </v-col>
           <v-col class="col-lg-4 ">
-            col 2
+
 
           </v-col>
 
@@ -192,6 +192,9 @@ export default {
     async previous() {
       this.$router.push(PATHS.reportChange.landing);
     },
+    async form() {
+      this.$router.push('http://localhost:8082/publiccf1345_cc_operating_program_funding_agreement_change_notification.pdf');
+    },
     async save(showNotification = false){
       this.isLoading = true;
       try{
@@ -206,7 +209,7 @@ export default {
 
         await this.loadChangeRequestDocs(this.$route.params.urlGuid);
         //else -
-        this.setSuccessAlert('U savveed');
+        // this.setSuccessAlert('U savveed');
 
 
 

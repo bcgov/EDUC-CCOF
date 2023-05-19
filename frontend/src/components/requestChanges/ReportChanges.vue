@@ -77,7 +77,7 @@
                 {{changeRequest.changeActions.changeType}}
               </v-col>
               <v-col class= "col-lg-3">
-                {{changeRequest.changeActions.status}}
+                {{changeRequest.changeActions.status == 1? 'ACTIVE' : 'INACTIVE'}}
               </v-col>
               <v-col class= "col-lg-3">
                 Date
@@ -157,6 +157,8 @@ export default {
       this.$router.push(PATHS.reportChange.facInfo);
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
+
+      this.processing = true;
 
       //create the change action first, then push it
       if (!changeActionId){
