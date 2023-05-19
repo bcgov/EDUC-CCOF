@@ -54,7 +54,7 @@
               <v-textarea placeholder="Required"  :value="this.getFundingModel(ecewe?.fundingModel)" class="summary-value" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
             </v-col>
           </v-row>
-          <v-row no-gutters class="d-flex justify-start" v-if="ecewe?.fundingModel === fundingModelTypeList[1].id || ecewe?.fundingModel === fundingModelTypeList[2].id"> 
+          <v-row no-gutters class="d-flex justify-start" v-if="ecewe?.fundingModel === fundingModelTypeList[1].id || ecewe?.fundingModel === fundingModelTypeList[2].id">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement.</span>
               <v-text-field placeholder="Required"  :value="this.getYesNoValue(ecewe?.confirmation)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>

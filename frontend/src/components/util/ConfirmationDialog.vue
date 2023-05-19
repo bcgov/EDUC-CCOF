@@ -15,7 +15,7 @@
       <v-card-text :class="[options.messagePadding, { 'black--text': !options.dark }]">
         {{ message }}
         <slot name="message"></slot>
-        <v-divider v-if="options.divider" class="mt-1"/>              
+        <v-divider v-if="options.divider" class="mt-1"/>
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>

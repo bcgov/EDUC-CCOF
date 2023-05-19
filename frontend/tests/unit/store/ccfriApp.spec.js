@@ -6,7 +6,6 @@ import ccfriAppStore from '@/store/modules/ccfriApp';
 import MockAdapter from 'axios-mock-adapter';
 import { ApiRoutes } from '@/utils/constants.js';
 import flushPromises from 'flush-promises';
-import { cloneDeep } from 'lodash';
 
 const mockAxios = new MockAdapter(ApiService.apiAxios);
 
@@ -23,7 +22,7 @@ describe('ccfriApp.js', () => {
     localVue.use(Vuex);
 
     // store = new Vuex.Store(cloneDeep(ccfriApp));
-// rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000
+    // rootState.app.isRenewal  && state.CCFRIFacilityModel.existingFeesCorrect == 100000000
 
     const state = { // your root state for the test
       app: {
@@ -76,14 +75,14 @@ describe('ccfriApp.js', () => {
       application: {
         programYearId: 'de676989-be6b-ed11-81ac-0022483c5cdf'
       }
-    }
+    };
 
     store = new Vuex.Store({
       state,
       modules: {
         ccfriApp: ccfriAppStore
       }
-    })
+    });
   });
   afterEach(() => {
     spy.mockClear();

@@ -13,18 +13,18 @@
           <v-container>
             <v-row>
               <v-col cols=8>
-                <v-text-field 
+                <v-text-field
                   outlined
                   required v-model="businessBCeId"
                   id="businessBCeId-field"
                   :rules="rules.required"
-                  label="Business BCeID" 
+                  label="Business BCeID"
                   v-on:keydown.enter="setBCeID();"
                   />
               </v-col>
               <v-col cols=2>
                 <v-btn color="primary" outlined x-large :loading="processing" @click="setBCeID()" :disabled="!businessBCeId">Search</v-btn>
-              </v-col>              
+              </v-col>
             </v-row>
           </v-container>
         </v-card>
@@ -78,7 +78,7 @@ export default {
         } else {
           this.setFailureAlert('An error occurred while trying to load BCeID');
         }
-      }   
+      }
     }
   }
 };

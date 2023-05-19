@@ -2,7 +2,6 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import {isEmpty} from 'lodash';
-import {deepCloneObject} from '@/utils/common';
 
 
 //TODO : remove unneeded state vars after restructure
@@ -139,12 +138,12 @@ export default {
 
           //commit('setLoadedModel', deepCloneObject(response.data));
         }
-         else {
+        else {
 
 
-        commit('setUploadedDocument', response.data);
+          commit('setUploadedDocument', response.data);
         //   commit('setLoadedModel', deepCloneObject(rfi));
-         }
+        }
       } catch(e) {
         console.log(`Failed to get load change reqz with error - ${e}`);
         throw e;

@@ -15,12 +15,12 @@ describe('Login.vue', () => {
   let wrapper;
   let store;
   let router;
-  
+
   beforeEach(() => {
     Vue.use(VueRouter);
     Vue.use(Vuetify);
     Vue.use(Vuex);
-    
+
     router = new VueRouter();
     store = new Vuex.Store({
       modules: { auth }

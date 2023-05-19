@@ -2,7 +2,7 @@
         min-height="230"
         rounded
         tiled
-        exact 
+        exact
         tile
         :ripple="false"
       >
@@ -14,8 +14,8 @@
         </div>
         <br>
         <div class="px-md-12 px-7">
-          
-          
+
+
         </div>
         </v-card-text>
 </v-card>

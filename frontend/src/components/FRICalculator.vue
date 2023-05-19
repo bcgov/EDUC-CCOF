@@ -51,7 +51,7 @@
                 Total number of children
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-text-field 
+              <v-text-field
                 @change="updateNumberOfChildSubForms"
                 @keypress="numberFilter"
                 v-model="totalNumberOfChildren"
@@ -189,12 +189,12 @@
               </v-row>
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
-  <!-- ******************************************************************************************************************************************************** -->          
+  <!-- ******************************************************************************************************************************************************** -->
               <v-row v-if="child.careSchedule == 'Part Time'">
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
                   <v-card style="">
-                    <v-toolbar 
+                    <v-toolbar
                         color="grey lighten-3"
                         >
                         <v-spacer></v-spacer>
@@ -212,10 +212,10 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
+
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -226,16 +226,16 @@
                     </v-card>
 
                     <v-spacer></v-spacer>
-                    
+
                     <v-card>
-                      <v-toolbar 
+                      <v-toolbar
                         color="grey lighten-3"
                       >
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Tuesday</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                  
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[1]"
@@ -249,7 +249,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -259,7 +259,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-                    
+
                     <v-card max-width="">
                       <v-toolbar
                         color="grey lighten-3"
@@ -268,7 +268,7 @@
                       <v-toolbar-title>Wednesday</v-toolbar-title>
                       <v-spacer></v-spacer>
                     </v-toolbar>
-                      
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[2]"
@@ -282,7 +282,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -315,7 +315,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -347,7 +347,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -379,7 +379,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -411,7 +411,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -499,7 +499,7 @@
                 <v-col class="py-0">
                   <v-divider></v-divider>
                 </v-col>
-              </v-row>              
+              </v-row>
               <v-row>
                 <v-col cols="5" style="padding-bottom:0px;padding-top:16px;">
                   <div style="padding-left:24px;color:#7B7C7E;font-family:BCSans;font-weight:600;font-size:16px">
@@ -543,7 +543,7 @@
               </v-row>
               <v-row v-show="showParentFeeApprovedFor">
                 <!-- <v-col cols="12" style="padding-top:0px;">
-                  <div style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:BCSans;font-size:16px"> 
+                  <div style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:BCSans;font-size:16px">
                     Parent Fee Approved for {{form.careProviderSearch}}: ${{(results === undefined || results.length == 0) ? '' : results[child.number-1].actualParentFeePerChild}}
                   </div>
                 </v-col> -->
@@ -627,9 +627,9 @@
           </div>
           <v-row>
             <v-col>
-              
+
             </v-col>
-          </v-row>        
+          </v-row>
         </div>
         </v-card>
         </v-col>
@@ -653,7 +653,7 @@ export default {
       results: null,
       showEstimatorResults: false,
       showParentFeeApprovedFor: false,
-      showPartTimeCareSchedule: false,      
+      showPartTimeCareSchedule: false,
       careTypes: [
         {type: 'No Care'},
         {type: 'Half Day'},
@@ -711,7 +711,7 @@ export default {
       // ],
       rulesCaresSchedule: [
         (v) => !!v || 'Care schedule is required'
-      ],      
+      ],
       rulesChildsAgeCategory: [
         (v) => !!v || 'Child\'s age category is required'
       ],
@@ -770,7 +770,7 @@ export default {
     },
     newChild(number) {
       return {
-        number: number, 
+        number: number,
         childAgeCategory: '',
         approvedFee: '',
         partTimeFee: '',
@@ -820,7 +820,7 @@ export default {
       }
       // console.log('getPartTimeMonthlyParentFee-Unable to determine feeFrequency:' + feeFrequency);
       return null;
-    },    
+    },
 
     estimateTheBenefit() {
       if (this.$refs.form.validate() == true) {
@@ -832,16 +832,16 @@ export default {
         // const result = this.numberOfBusinessDaysByMonth.find(c => c.month === this.form.month);
         // var numberOfDaysForMonth = result.days;
         var numberOfDaysForMonth = 20; // hardcode to 20 as per new requirements
-        
+
         //for (child in this.form.children) {
-        for (var i = 0; i < this.children.length; i++) { 
+        for (var i = 0; i < this.children.length; i++) {
         // Get the rate table info based on the provided type of child care and childs age category...
           if (this.form.typeOfCare === 'Licensed Group') {
             rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           } else if (this.form.typeOfCare === 'Licensed Family') {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
-        
+
           // Determine daily rate before fee reduction based on frequency of fee...
           var parentRate;
           var isChildFullTime = this.isFullTime(this.children[i]);
@@ -865,7 +865,7 @@ export default {
             break;
           }
           // console.log('daily parent rates i: ' + dailyRate);
-        
+
           // Determine the daily rates for partTime and fulltime based on the number of days in month...
           let partTimeRateFromTable;
           let fullTimeRateFromTable;
@@ -877,7 +877,7 @@ export default {
             fullTimeRateFromTable = rateTableInfo.fullTime20;
           }
 
-       
+
           let partTimeTotal;
           let partTimeDailyRate;
           let fullTimeTotal;
@@ -905,7 +905,7 @@ export default {
             totalRateReduction = Math.min(totalRateReduction, monthlyParentFee);
 
             reductionAmountPerChild = totalRateReduction;
-            
+
             if (this.children[i].partTimeFee) {
               monthlyParentFee = this.getFullTimeMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
             }
@@ -935,7 +935,7 @@ export default {
             fullTimeDailyRate = ((dailyRate - 10) > fullTimeRateFromTable) ? fullTimeRateFromTable : (dailyRate - 10);
             // console.log('fullTimeDailyRate' + fullTimeDailyRate);
             fullTimeTotal = fullTimeDailyRate * fullTimeNumberOfDays;
-          
+
             totalRateReduction = partTimeTotal+fullTimeTotal;
             let rateReductionFloor = this.getReductionFloor(rateTableInfo.rateFloor, fullTimeNumberOfDays, partTimeNumberOfDays);
             let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee, partTimeNumberOfDays + fullTimeNumberOfDays, this.children[i].parentFeeFrequency);
@@ -949,7 +949,7 @@ export default {
             //Make sure it's not more than the parent fee
             totalRateReduction = Math.min(totalRateReduction, monthlyParentFee);
 
-            
+
 
             let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 7);
             // console.log('part time fee floor: ' + partTimeFeeFloor);
@@ -982,10 +982,10 @@ export default {
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             }
           }
-        
+
           // Determine the reduction amount per this.form.children[i]...
           // actualParentFeePerChild = Math.max(0, actualParentFeePerChild);
- 
+
           // Update the results
           this.results.push({number: i+1, reductionAmountPerChild: Math.round(reductionAmountPerChild), actualParentFeePerChild: Math.round(actualParentFeePerChild)});
         }
@@ -1011,7 +1011,7 @@ export default {
     numberFilter: function(evt) {
       evt = (evt) ? evt : window.event;
       let expect = evt.target.value.toString() + evt.key.toString();
-      
+
       if (!/^[0-9]*$/.test(expect)) {
         evt.preventDefault();
       } else {
@@ -1021,7 +1021,7 @@ export default {
     currencyFilter: function(evt) {
       evt = (evt) ? evt : window.event;
       let expect = evt.target.value.toString() + evt.key.toString();
-      
+
       if (!/^[0-9]*\.?[0-9]*$/.test(expect)) {
         evt.preventDefault();
       } else {

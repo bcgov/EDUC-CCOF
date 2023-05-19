@@ -48,5 +48,5 @@ export default {
       return getNavBarAtPositionIndex(state.navBarItems, (index - 1))?.link;
     },
 
-  },  
+  },
 };
