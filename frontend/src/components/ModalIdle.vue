@@ -18,7 +18,7 @@
           </v-row>
           <v-row>
             <v-col cols="12" style="text-align: center;">
-              <p class="pt-4">Due to inactivity, you will be logged out of your current session in {{ timerCount }} seconds.
+              <p class="pt-4">Due to inactivity, you will be logged out of your current session in {{ logoutCounter }} seconds.
                 Please click on the "Stay logged in" button to continue with this session.</p>
               <p><v-btn color="primary" @click="clicked()">Stay logged in</v-btn>
               </p>
@@ -47,8 +47,7 @@ export default {
   data() {
     return {
       routes: AuthRoutes,
-      dialog: false,
-      timerCount: -1,
+      dialog: false
     };
   },
   async mounted() {
@@ -56,10 +55,12 @@ export default {
 
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'jwtToken'])
+    ...mapGetters('auth', ['isAuthenticated', 'jwtToken']),
+    ...mapGetters('app', ['logoutCounter']),
   },
   methods: {
-    ...mapActions('auth', ['getJwtToken']),
+    ...mapActions('auth', ['getJwtToken' ]),
+    ...mapActions('app', ['startCounter', 'stopCounter']),
     async checkAndLogoutUserOnSessionExpiry() {
       if (this.isAuthenticated) {
         try {
@@ -93,25 +94,23 @@ export default {
 
     },
     async clicked() {
+      this.stopCounter();
+      // this.startCounter();
+
       this.dialog = false;
-      this.timerCount = -1;
       await this.getJwtToken();
       this.checkAndLogoutUserOnSessionExpiry();
     },
     showDialog() {
-      this.timerCount = 120;
+      this.startCounter();
       this.dialog = true;
     }
   },
   watch: {
-    timerCount: {
+    logoutCounter: {
       handler(value) {
-        if (value > 0) {
-          setTimeout(() => {
-            this.timerCount--;
-          }, 1000);
-        } else if (value === 0) {
-          window.location = document.getElementById('logout_href').href;
+        if (value <= 0) {
+          window.location = this.routes.SESSION_EXPIRED;
         }
       },
       immediate: true // This ensures the watcher is triggered upon creation

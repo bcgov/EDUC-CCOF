@@ -62,7 +62,7 @@
               <span class="summary-label pt-3">Please tell us anything else you'd like us to know about how your facility's business case supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding Guidelines.</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-left">
-              <v-textarea placeholder="Required" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
+              <v-textarea label="--" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly no-resize rows="3" ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
@@ -85,9 +85,13 @@
 
 import rules from '@/utils/rules';
 import {PATHS} from '@/utils/constants';
+import {mapState} from 'vuex';
 
 export default {
   name: 'NMFSummary',
+  computed: {
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+  },
   data() {
     return {
       PATHS,
@@ -99,13 +103,12 @@ export default {
       }
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },

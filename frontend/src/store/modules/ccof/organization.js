@@ -59,7 +59,7 @@ export default {
         let currentProgramYearIntakeEnd = rootState.app.programYearList.current?.intakeEnd;
         let programYear = rootState.app.programYearList.current;
         if (serverTime > currentProgramYearIntakeEnd)
-          programYear = rootState.app.programYearList.future;
+          programYear = rootState.app.programYearList.renewal;
         payload.programYearId = programYear.programYearId;
         commit('application/setProgramYearId', programYear.programYearId, { root: true });
         commit('application/setProgramYearLabel', programYear.name, { root: true });
@@ -83,7 +83,7 @@ export default {
 
       let payload = {
         providerType: state.organizationProviderType,
-        programYearId: rootState.app.programYearList.future.programYearId,
+        programYearId: rootState.app.programYearList.renewal.programYearId,
         organizationId: state.organizationId,
       };
       console.log('renewApplication, payload', payload);
@@ -92,7 +92,7 @@ export default {
         commit('organization/setIsStarted', false, { root: true });
         commit('eceweApp/setIsStarted', false, { root: true });
         commit('auth/setIsUserInfoLoaded', false, { root: true });
-  
+
         // commit('setApplicationId', response.data?.applicationId);
         // commit('setApplicationStatus', 'DRAFT');
         // commit('setApplicationType', 'RENEW');
