@@ -26,7 +26,9 @@ async function getOrganization(req, res) {
 function mapOrganizationForBack(data) {
   let organizationForBack = new MappableObjectForBack(data, OrganizationMappings).toJSON();
 
+  
   if (organizationForBack.ccof_facilitystartdate) {
+    facilityForBack.ccof_facilitystartdate = formatTimeForBack(facilityForBack.ccof_facilitystartdate);
     organizationForBack.ccof_facilitystartdate = `${organizationForBack.ccof_facilitystartdate}-01-01`;
   }
 
