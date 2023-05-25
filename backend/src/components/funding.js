@@ -97,6 +97,7 @@ async function getFunding(req, res) {
   try {
     log.info('get operation: ', `ccof_application_basefundings(${req.params.fundId})`);
     let funding = await getOperationWithObjectId('ccof_application_basefundings', req.params.fundId);
+    log.info(funding, 'funding from dynamics');
     let model = mapFundingObjectForFront(funding);
     if (funding._ccof_licensetypes_value) {
       let categories = await getLicenseCategory();

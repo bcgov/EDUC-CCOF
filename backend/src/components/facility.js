@@ -27,10 +27,18 @@ function buildNewFacilityPayload(req) {
   return facility;
 }
 
+function formatTimeForBack(timeString) {
+  if (timeString) {
+    return timeString + 'T12:00:00-07:00';
+  }
+  return timeString;
+}
+
 function mapFacilityObjectForBack(data) {
   let facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
 
   if (facilityForBack.ccof_facilitystartdate) {
+    facilityForBack.ccof_facilitystartdate = formatTimeForBack(facilityForBack.ccof_facilitystartdate);
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
 
