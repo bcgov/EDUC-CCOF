@@ -12,43 +12,29 @@ export default {
   namespaced: true,
   state: {
     changeRequestId: undefined,
-    unsubmittedDocuments: [],
-    model: {},
-    changeActionStore : {},
+    changeRequestStore : {},
     uploadedDocuments: []
 
 
   },
   getters: {
-    changeActionStore: state => state.changeActionStore,
+    changeRequestStore: state => state.changeRequestStore,
     changeActions: state => state.changeActions,
     changeRequestId: state => state.changeRequestId,
-    unsubmittedDocuments: state => state.unsubmittedDocuments,
     getUploadedDocuments: state => state.uploadedDocuments,
   },
   mutations: {
-    model(state, value) {
-      state.model = value;
-    },
-    addChangeActionToStore: (state, {changeRequestId, model} ) => {
+    addChangeRequestToStore: (state, {changeRequestId, model} ) => {
       if (changeRequestId) {
-        state.changeActionStore[changeRequestId] = model;
+        state.changeRequestStore[changeRequestId] = model;
       }
     },
     setChangeRequestId: (state, changeRequestId) => {
       state.changeRequestId = changeRequestId;
     },
-    setUnsubmittedDocuments: (state, unsubmittedDocuments) => {
-      state.unsubmittedDocuments = unsubmittedDocuments || [];
-    },
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
     },
-
-    // setUploadedDocument: (state, document) => {
-    //   state.unsubmittedDocuments = [...state.unsubmittedDocuments, document];
-    // },
-    //    this is what sukanya had, orig. Changing above for now, leaving for ref.
   },
   actions: {
     async loadChangeRequest({getters, commit}, applicationId) {
@@ -61,22 +47,14 @@ export default {
         let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationId);
         console.log(response);
         if (!isEmpty(response.data)) {
-
           response.data.forEach(element => {
-            commit('addChangeActionToStore', {changeRequestId: element.changeRequestId, model: element});
+            commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
           });
-
-
-          //commit('setLoadedModel', deepCloneObject(response.data));
         }
-        // else {
 
-        //   commit('addRfiToStore', {ccfriId: ccfriId, model: rfi});
-        //   commit('setRfiModel', rfi);
-        //   commit('setLoadedModel', deepCloneObject(rfi));
-        // }
+        console.log('No change requests found.');
       } catch(e) {
-        console.log(`Failed to get load change reqz with error - ${e}`);
+        console.log(`Failed to get load change req with error - ${e}`);
         throw e;
       }
     },
@@ -88,18 +66,16 @@ export default {
       let payload = {
         'applicationId': rootState.application.applicationId,
         'programYearId': rootState.application.programYearId,
-        'providerType': 100000000 // TO DO: get this from the app
+        'providerType': rootState.organization.organizationProviderType == 'GROUP' ?  100000000 : 100000001,
       };
       try {
-        //commit('setLoadedFacilities', {...state.facilities});
-
         let response = await ApiService.apiAxios.post('http://localhost:8080/api/changeRequest/documents', payload);
 
         commit('setChangeRequestId', response.data.changeRequestId);
         console.log(response);
         return response.data;
       } catch (error) {
-        console.info(`Failed to create a change notification  - ${error}`);
+        console.info(`Failed to create a change request  - ${error}`);
         throw error;
       }
 
@@ -110,17 +86,16 @@ export default {
       checkSession();
 
       try {
-        console.log('');
         let response = await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
         console.log(response);
-        delete state.changeActionStore[changeRequestId];
+        delete state.changeRequestStore[changeRequestId];
       } catch(e) {
-        console.log(`Failed to delete change reqz with error - ${e}`);
+        console.log(`Failed to delete change req with error - ${e}`);
         throw e;
       }
     },
 
-    //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID. idk why
+    //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.
     //change action id will return arr of docs
     async loadChangeRequestDocs({getters, commit}, changeActionId) {
       console.log('loading change req DOCS for: ', changeActionId);
@@ -128,25 +103,12 @@ export default {
       checkSession();
 
       try {
-        console.log('');
         let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/documents/' + changeActionId);
         //console.log(response.data);
 
         commit('setUploadedDocument', response.data);
-        if (!isEmpty(response.data)) {
-
-
-
-          //commit('setLoadedModel', deepCloneObject(response.data));
-        }
-         else {
-
-
-        commit('setUploadedDocument', response.data);
-        //   commit('setLoadedModel', deepCloneObject(rfi));
-         }
       } catch(e) {
-        console.log(`Failed to get load change reqz with error - ${e}`);
+        console.log(`Failed to get load req docs with error - ${e}`);
         throw e;
       }
     },

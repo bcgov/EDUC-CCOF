@@ -128,7 +128,7 @@ export default {
 
           } catch (error) {
             console.log(error);
-            this.setFailureAlert('An error occured while getting.');
+            this.setFailureAlert('An error occured while loading documents.');
 
           }
 
@@ -150,21 +150,22 @@ export default {
     if(this.$route.params.urlGuid){
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
 
+      //the user refershed the page. Reload the store so we can have the needed changeRequestID
       if(!this.changeRequestId){
-        await this.loadChangeRequest(this.applicationId);
-        let q = Object.values(this.changeActionStore);
-        q = q.find(element => element.changeActions.changeActionId == this.$route.params.urlGuid).changeRequestId;
+        try{
+          await this.loadChangeRequest(this.applicationId);
+        }
+        catch(error){
+          this.setFailureAlert('An error occurred while loading a change request. Please try again later.');
+        }
 
-        this.setChangeRequestId(q);
+        let changeReqId = Object.values(this.changeRequestStore).find(element => element.changeActions.changeActionId == this.$route.params.urlGuid).changeRequestId;
+        this.setChangeRequestId(changeReqId);
 
         //IF there isn't a match... what should we do? TODO
 
-        // for(const element in this.changeActionStore){
-        //   if (element.changeActions.changeActionId == this.$route.params.urlGuid){
-        //     q = element.changeActions.changeRequestId == this.$route.params.urlGuid
-        //   }
-        // }
-        console.log(q, 'this is q');
+
+        //console.log(changeReqId, 'this is changeReqId');
       }
     }
   },
@@ -172,7 +173,7 @@ export default {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
 
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments', 'changeRequestId', 'changeActionStore']),
+    ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments', 'changeRequestId', 'changeRequestStore']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
@@ -205,7 +206,7 @@ export default {
         await this.$refs.childRef2.save(false);
 
 
-        console.log('saving in children COMPLETE');
+       // console.log('saving in children COMPLETE');
 
         await this.loadChangeRequestDocs(this.$route.params.urlGuid);
         //else -

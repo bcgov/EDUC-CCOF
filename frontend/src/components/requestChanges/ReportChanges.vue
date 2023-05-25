@@ -71,7 +71,7 @@
               </v-col>
             </v-row>
             <!--TODO: ADD skeleton loader and isLoaded var-->
-            <v-row v-for=" (changeRequest, index) in changeActionStore" :key="index">
+            <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
               <v-col class= "col-lg-3">
                 <h4></h4>
                 {{changeRequest.changeActions.changeType}}
@@ -129,7 +129,7 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
-    ...mapState('reportChanges', ['changeActionStore',]),
+    ...mapState('reportChanges', ['changeRequestStore',]),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
@@ -162,9 +162,16 @@ export default {
 
       //create the change action first, then push it
       if (!changeActionId){
-        let newReq = await this.createChangeRequest();
-        //console.log('newREQ', newReq.changeRequestId);
-        //changeRequestId = newReq.changeRequestId;
+
+        let newReq;
+        try{
+          newReq = await this.createChangeRequest();
+        }
+        catch(error){
+          console.log('unable to create a new Req');
+          this.setFailureAlert('An error occurred while creating a change request Please try again later.');
+        }
+
         this.$router.push(PATHS.reportChange.notificationForm + '/' + newReq.changeActionId);
       }
       else{
@@ -176,7 +183,13 @@ export default {
     },
     async deleteRequest(requestId){
       this.processing = true;
-      await this.deleteChangeRequest(requestId);
+      try{
+        await this.deleteChangeRequest(requestId);
+      }
+      catch(error){
+        this.setFailureAlert('An error occurred while deleting a change request Please try again later.');
+      }
+
       this.processing = false;
     }
   },
