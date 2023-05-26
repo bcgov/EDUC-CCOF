@@ -1,7 +1,7 @@
 {
     "_comment": "browsers should accept: edge -private, firefox -private-window, chrome -incognito",
     "browsers": [
-        "chrome: --incognito --no-sandbox --disable-dev-shm-usage"
+        "chrome: --incognito --disable-dev-shm-usage --window-size=1280,1280"
     ],
     "browserInitTimeout": 360000,
     "reporter": "list",
