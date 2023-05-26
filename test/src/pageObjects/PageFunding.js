@@ -14,7 +14,7 @@ class PageFunding {
       { time:'Facility hours of operation To'},
       'Maximum Licensed Capacity',
       'Maximum Number for Group Child Care (under 36 months)',
-      'Maximum Number for Group Child Care (36 months to School Age)',
+      'Maximum Number for Group Child Care (30 months to School Age)',
       'Maximum Number for Preschool',
       'Maximum Number for Group Child Care (School Age / School age care on School Grounds)',
       'Maximum Multi-Age Child Care',
