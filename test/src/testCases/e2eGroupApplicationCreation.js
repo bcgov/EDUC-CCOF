@@ -44,7 +44,7 @@ fixture `e2e Test Happy Path`
     await userSetup.deleteUserOrganizationSetup(config.get('bceid_credentials:username'));
   })
   .beforeEach(async t => {
-    await t.maximizeWindow();
+    // await t.maximizeWindow();
     await t.setTestSpeed(1);
   });
 
