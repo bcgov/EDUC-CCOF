@@ -2,12 +2,13 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import {isEmpty} from 'lodash';
-import {deepCloneObject} from '@/utils/common';
 
 
-//TODO : remove unneeded state vars after restructure
-
-//change REQUEST guid is what we need for saving and loading. Change action guid does...?
+/*
+change REQUEST guid is what we need for saving and loading.
+A change request can have MANY change actions.
+IE: one change request to add a new facility, may have multiple change ACTIONS to add a facility.
+*/
 export default {
   namespaced: true,
   state: {
@@ -37,7 +38,7 @@ export default {
     },
   },
   actions: {
-    async loadChangeRequest({getters, commit, rootState}, ) {
+    async loadChangeRequest({commit, rootState}, ) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
       console.log('loading change req for: ', rootState.application.applicationId);
@@ -62,7 +63,7 @@ export default {
     },
 
     //TODO: add it to the store
-    async createChangeRequest({ state, commit, rootState }) {
+    async createChangeRequest({commit, rootState }) {
 
       checkSession();
       let payload = {
@@ -82,7 +83,7 @@ export default {
       }
 
     },
-    async deleteChangeRequest({state, getters, commit}, changeRequestId) {
+    async deleteChangeRequest({state}, changeRequestId) {
       console.log('trying to delete req for: ', changeRequestId);
 
       checkSession();
@@ -99,7 +100,7 @@ export default {
 
     //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.
     //change action id will return arr of docs
-    async loadChangeRequestDocs({getters, commit}, changeActionId) {
+    async loadChangeRequestDocs({commit}, changeActionId) {
       console.log('loading change req DOCS for: ', changeActionId);
 
       checkSession();
@@ -116,7 +117,7 @@ export default {
     },
 
     // eslint-disable-next-line no-unused-vars
-    async saveUploadedDocuments({state, rootState}, payload) {
+    async saveUploadedDocuments(payload) {
       console.log('save uploaded documents called');
       console.log('this is the payload:');
       console.log(payload);
@@ -138,7 +139,7 @@ export default {
     },
 
     //we can use the Supporting Doc route here because dynamics doc delete works off annotation ID - it does not have a different endpoint
-    async deleteDocuments({state}, deletedFiles){
+    async deleteDocuments(deletedFiles){
       console.log('DELETE files payload:' , deletedFiles);
       try {
         await ApiService.apiAxios.delete(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, { data: deletedFiles} );

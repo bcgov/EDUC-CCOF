@@ -10,8 +10,7 @@ import ErrorPage from '@/components/ErrorPage.vue';
 import LoginError from '@/components/LoginError.vue';
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import authStore from './store/modules/auth';
-import reportChangeStore from './store/modules/reportChanges';
-import applicationStore from './store/modules/application';
+
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';

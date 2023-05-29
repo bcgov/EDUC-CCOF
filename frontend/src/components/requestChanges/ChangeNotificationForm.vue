@@ -85,15 +85,10 @@
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import SmallCard from '../guiComponents/SmallCard.vue';
-import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
 
 
-let ccfriOptInOrOut = {};
-let textInput = '' ;
-let model = { x: [], ccfriOptInOrOut, textInput };
 export default {
   name: 'ReportChange',
   mixins: [alertMixin],
@@ -123,24 +118,19 @@ export default {
 
           try {
             await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-
             this.changeActionDocuments = this.getUploadedDocuments;
 
           } catch (error) {
             console.log(error);
             this.setFailureAlert('An error occured while loading documents.');
-
           }
 
           this.isLoading = false;
         }
-
         //set it to empty so in case the user navigates to a fresh request, the store does not show the previously loaded documents
         else{
           this.setUploadedDocument([]);
         }
-
-
       },
       immediate: true,
       deep: true
@@ -163,9 +153,6 @@ export default {
         this.setChangeRequestId(changeReqId);
 
         //IF there isn't a match... what should we do? TODO
-
-
-        //console.log(changeReqId, 'this is changeReqId');
       }
     }
   },
@@ -196,22 +183,11 @@ export default {
     async save(showNotification = false){
       this.isLoading = true;
       try{
-
         //call the save in the child component that will save the newly added documents
         //each child runs it's own save, because they are unaware of what has changed in the sibling component. If I have time, will change this to be more efficeint (one call to dynamics)
         await this.$refs.childRef.save(false);
         await this.$refs.childRef2.save(false);
-
-
-       // console.log('saving in children COMPLETE');
-
         await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-        //else -
-        // this.setSuccessAlert('U savveed');
-
-
-
-
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
         }
@@ -220,9 +196,7 @@ export default {
         console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
-
       this.isLoading = false;
-
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     beforeRouteLeave(_to, _from, next) {

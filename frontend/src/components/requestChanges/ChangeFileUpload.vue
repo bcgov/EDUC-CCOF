@@ -123,17 +123,15 @@
 
 <script>
 
-import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import { deepCloneObject, getFileExtension } from '@/utils/common';
-import NavButton from '@/components/util/NavButton';
 
 export default {
   mixins: [alertMixin],
-  components: { NavButton },
+  components: {  },
   props: {
     changeType: {
       type: String,
