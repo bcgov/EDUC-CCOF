@@ -153,7 +153,7 @@ export default {
       //the user refershed the page. Reload the store so we can have the needed changeRequestID
       if(!this.changeRequestId){
         try{
-          await this.loadChangeRequest(this.applicationId);
+          await this.loadChangeRequest();
         }
         catch(error){
           this.setFailureAlert('An error occurred while loading a change request. Please try again later.');
@@ -171,10 +171,8 @@ export default {
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments', 'changeRequestId', 'changeRequestStore']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
@@ -187,7 +185,6 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
-    ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments',]),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
     async previous() {

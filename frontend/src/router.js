@@ -10,6 +10,8 @@ import ErrorPage from '@/components/ErrorPage.vue';
 import LoginError from '@/components/LoginError.vue';
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import authStore from './store/modules/auth';
+import reportChangeStore from './store/modules/reportChanges';
+import applicationStore from './store/modules/application';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
@@ -527,6 +529,11 @@ router.beforeEach((to, _from, next) => {
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
             next(PATHS.impersonate);
           } else {
+            if (to.fullPath.includes('report-change')){
+              //should we check if the change store exists or just load all the time?
+              console.log('\n loading the change store');
+              store.dispatch('reportChanges/loadChangeRequest');
+            }
             next();
           }
         }).catch((error) => {

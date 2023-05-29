@@ -37,14 +37,16 @@ export default {
     },
   },
   actions: {
-    async loadChangeRequest({getters, commit}, applicationId) {
-      console.log('loading change req for: ', applicationId);
+    async loadChangeRequest({getters, commit, rootState}, ) {
+
+      //is it better/ worse to load from route state vs. passing in application ID?
+      console.log('loading change req for: ', rootState.application.applicationId);
 
       checkSession();
 
       try {
         console.log('');
-        let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationId);
+        let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootState.application.applicationId);
         console.log(response);
         if (!isEmpty(response.data)) {
           response.data.forEach(element => {
@@ -52,7 +54,7 @@ export default {
           });
         }
 
-        console.log('No change requests found.');
+        console.log('No change requests found.'); //it says this when I load from the router... but then it is actually loaded. Timing issue?
       } catch(e) {
         console.log(`Failed to get load change req with error - ${e}`);
         throw e;

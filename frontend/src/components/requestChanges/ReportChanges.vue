@@ -117,7 +117,6 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      isUnlocked: false,
       isValidForm: false,
       processing: false,
       loading: false,
@@ -128,7 +127,6 @@ export default {
   },
   computed: {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('reportChanges', ['changeRequestStore',]),
     isReadOnly() {
       if (this.unlockedFacilities) {
@@ -139,14 +137,12 @@ export default {
 
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
-    ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId']),
     async previous() {
       this.$router.push(PATHS.home);
     },
-    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
+
     isPageComplete() {
 
     },
@@ -175,7 +171,6 @@ export default {
         this.$router.push(PATHS.reportChange.notificationForm + '/' + newReq.changeActionId);
       }
       else{
-        //console.log('THIS IS THE ID U LOOK FOR', changeRequestId);
         this.setChangeRequestId(changeRequestId);
         this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
       }
@@ -196,7 +191,7 @@ export default {
   async mounted() {
     this.processing = true;
     console.log(this.applicationId);
-    await this.loadChangeRequest(this.applicationId);
+    await this.loadChangeRequest();
     this.processing = false;
   },
   beforeRouteLeave(_to, _from, next) {
