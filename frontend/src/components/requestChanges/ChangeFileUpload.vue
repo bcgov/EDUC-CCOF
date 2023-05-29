@@ -117,9 +117,6 @@
       </v-row>
 
 
-      <!-- <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="false" :isNextDisabled="true" :isProcessing="false"
-        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton> -->
     </v-container>
   </v-form>
 </template>
@@ -142,11 +139,6 @@ export default {
       type: String,
       required: true
     },
-    // testUploadedDocs: {
-    //   type: Array,
-    //   required: true
-    // },
-
   },
   data() {
     return {
@@ -189,7 +181,6 @@ export default {
       fileInputError: [],
       fileMap: new Map(),
       fileRules: [],
-      //uploadedDocuments: [],
       editedIndex: -1,
       editedItem: {
         ccof_change_requestid: '',
@@ -204,35 +195,16 @@ export default {
   },
 
   computed: {
-    //...mapState('reportChanges', ['uploadedDocuments']),
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-
     ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments']),
-
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('navBar', ['canSubmit']),
-    ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
+    ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     getFilteredDocs(){
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
     isLocked() {
-      if (this.unlockSupportingDocuments) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
+      return (this.applicationStatus === 'SUBMITTED');
     },
-    isSaveDisabled(){
-      const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
-      return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
-    },
-    isNextEnabled() {
-      return this.isValidForm && this.canSubmit;
-    }
-
   },
 
   async mounted() {
@@ -244,8 +216,6 @@ export default {
       value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
       value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
     ];
-    await this.mapFacilityData();
-    await this.createTable();
   },
   async beforeRouteLeave(_to, _from, next) {
     if(!this.isLocked){
@@ -254,26 +224,10 @@ export default {
     next();
   },
   methods: {
-    //...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments', ]),
     ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments']),
-    //...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs']),
-
-    gatherDocs(){
-      this.$emit('onSaveDocs', this.filteredDocs);
-    },
-    previous() {
-      this.$router.push(PATHS.eceweFacilities);
-    },
-    next() {
-      this.$router.push(PATHS.summaryDeclaration);
-    },
-    validateForm() {
-      this.$refs.form?.validate();
-    },
     async save(showConfirmation = true) {
 
       console.log('saving from child component!');
-      //console.log('filtered D save from this component is: ', this.filteredDocs);
 
       this.isProcessing = true;
 
@@ -281,9 +235,7 @@ export default {
       console.log('filemap : ', this.fileMap.size > 0);
 
       try {
-        //await this.saveUploadedDocuments();
         await this.processDocumentFileDelete();
-        //console.log('uploaded D in save', this.uploadedDocuments);
 
         if (this.fileMap.size > 0){
           const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
@@ -294,7 +246,6 @@ export default {
           }
 
           if (showConfirmation) {
-            await this.createTable();
             this.setSuccessAlert('Changes Successfully Saved');
           }
         }
@@ -373,28 +324,10 @@ export default {
     handleFileReadErr() {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
-    async createTable() {
-      this.isLoading = true;
-      try {
-
-
-        //console.log('uploaded Dd', this.uploadedDocuments);
-        console.log(this.changeType);
-        //filter based on subject so the user can visually see a difference between the two uplaod boxes
-        this.filteredDocs = this.uploadedDocuments.filter(el=> el.subject == this.changeType);
-        //console.log('filtered D', this.filteredDocs);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        this.isLoading = false;
-        this.fileMap?.clear();
-      }
-    },
     editItem(item) {
       this.editedIndex = this.filteredDocs.indexOf(item);
       this.editedItem = Object.assign({}, item);
     },
-
     deleteItem(item) {
       const index = this.uploadedDocuments.indexOf(item);
       if (item.annotationid) {
@@ -421,15 +354,6 @@ export default {
     updateDescription(item) {
       const index = this.uploadedDocuments.indexOf(item);
       this.uploadedDocuments[index].description = item.description;
-    },
-    async mapFacilityData() {
-      for (let facilityInfo of this.navBarList) {
-        const facility = {};
-        facility.facilityId = facilityInfo.facilityId;
-        facility.facilityName = facilityInfo.facilityName;
-        facility.licenseNumber = facilityInfo.licenseNumber;
-        this.facilityNames.push(facility);
-      }
     },
   }
 };
