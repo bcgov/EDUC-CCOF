@@ -131,11 +131,7 @@
                     <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                   </v-card>
                 </template>
-                <span>
-                      Licensed group child care takes place in a community-based<br/>
-                      facility or centre. Licensed family child care takes place<br/>
-                      in the child care provider's personal residence.
-                </span>
+                <span v-html="careTypeToolTip"/>
               </v-tooltip>
             </v-col>
             <v-col cols="4" class="pb-0">
@@ -169,7 +165,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Parents can ask their child care provider if they are unsure<br/>which age category to select.</span>
+                    <span v-html="ageCategoryToolTip"/>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -191,42 +187,10 @@
                   <v-divider></v-divider>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="5" class="estimator-label">
-                  <span style="color: #313131">
-                    Full or part time
-                  </span>
-                </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
-                  <v-tooltip top color="#68449A">
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-card v-on="on" class="tooltip">
-                      <v-icon class="pt-1" small color="white">mdi-help</v-icon>
-                    </v-card>
-                  </template>
-                    <span>For part time care estimates, please select the typical schedule of<br/>
-                          half days (4 hours or less) and full days (more than 4 hours). The<br/>
-                          maximum benefit rates for CCFRI are based on 5 full days per week<br/> (full time care).</span>
-                  </v-tooltip>
-                </v-col>
-                <v-col cols="4" class="pb-0">
-                  <v-select
-                    :id="'careSchedule-' + child.number"
-                    v-model="child.careSchedule"
-                    :items="['Full Time', 'Part Time']"
-                    outlined
-                    v-bind:disabled="isPartTimeDisabled(child.number)"
-                    dense
-                    required
-                    :rules="rulesCaresSchedule"
-                  >
-                  </v-select>
-                </v-col>
-              </v-row>
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
   <!-- ******************************************************************************************************************************************************** -->
-              <v-row v-if="child.careSchedule == 'Part Time'">
+              <v-row>
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
                   <v-card>
@@ -578,7 +542,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Select whether parent fees are charged daily or monthly.</span>
+                    <span v-html="feeFrequencyToolTip"/>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -614,7 +578,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                    </template>
-                    <span>Enter the facility's highest full-time parent fee approved by the Ministry,<br/> before the fee reduction is applied. Child care providers can reference this<br/> information on their approved Program Confirmation Form. Parents<br/> can use Optional Facility Search above or ask their child care provider if<br/> they are unsure which fee to enter.</span>
+                    <span v-html="approvedFeeToolTip"/>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -659,7 +623,7 @@
                       <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Enter the parent fee before any reductions or benefits are<br/> applied. This fee may be different from the CCFRI-approved<br/> full-time parent fee if it is a part-time fee, discounted fee,<br/> or inclusive of optional fees.</span>
+                    <span v-html="actualParentFeeToolTip"/>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -822,7 +786,6 @@ export default {
       FAMILY_REDUCTION_RATES: null,
       results: null,
       showEstimatorResults: false,
-      showPartTimeCareSchedule: false,
       loading: false,
       approvedFeesByCategory: [],
       totalNumberOfChildren: '1',
@@ -879,6 +842,35 @@ export default {
   computed: {
     filteredChildAgeCategoryList() {
       return CHILD_CARE_CATEGORY_LIST.filter(el => !this.categoriesToRemove.includes(el) && !(this.form.typeOfCare === 'Licensed Family' && el === CHILDCARE_TYPE_PRESCHOOL ));
+    },
+    /** TOOL TIPS */
+    careTypeToolTip() {
+      // eslint-disable-next-line
+      return "Licensed group child care takes place in a community-based<br/>facility or centre. Licensed family child care takes place<br/>in the child care provider's personal residence.";
+    },
+    ageCategoryToolTip() {
+      // eslint-disable-next-line
+      return "Parents can ask their child care provider if they are unsure<br/>which age category to select.";
+    },
+    feeFrequencyToolTip() {
+      // eslint-disable-next-line
+      return "Select whether parent fees are charged daily or monthly.";
+    },
+    approvedFeeToolTip() {
+      if (this.isParent) {
+        // eslint-disable-next-line
+        return "Enter the facility's highest approved full-time parent fee before any fee reduction.<br>Providers are required to give parents this information in writing.<br><br>If you are unsure what fee to enter, use the \"Optional Facility Search\" above, or refer<br>to the written information given to you by your provider.";
+        // return "Enter the facility's highest full-time parent fee approved by the Ministry,<br/> before the fee reduction is applied. Child care providers can reference this<br/> information on their approved Program Confirmation Form. Parents<br/> can use Optional Facility Search above or ask their child care provider if<br/> they are unsure which fee to enter."
+      }
+      return 'hi';
+    },
+    actualParentFeeToolTip() {
+      // eslint-disable-next-line
+      return "Enter the parent fee before any reductions or benefits are<br/> applied. This fee may be different from the CCFRI-approved<br/> full-time parent fee if it is a part-time fee, discounted fee,<br/> or inclusive of optional fees.";
+    },
+    resultsToolTip() {
+      // eslint-disable-next-line
+      return "If you see an inconsistency, contact your provider. If the inconsistency remains, call the Child Care Operating Funding Program at 1-888-338-6622 (Option 2)."
     }
   },
   methods: {
@@ -904,9 +896,6 @@ export default {
         this.form.typeOfCare = this.selectedFacility.careType === 'F' ? 'Licensed Family' : 'Licensed Group';
       }
       this.filterChildsAgeCategory();
-    },
-    isPartTimeDisabled(index) {
-      return this.children[index - 1].childAgeCategory === CHILDCARE_TYPE_PRESCHOOL;
     },
     getCareTypes(index) {
       return this.children[index - 1].childAgeCategory === CHILDCARE_TYPE_PRESCHOOL ? CARE_TYPES_PRESCHOOL : CARE_TYPES;
@@ -981,9 +970,9 @@ export default {
         approvedFee: '',
         partTimeFee: '',
         parentFeeFrequency: 'Monthly',
-        careSchedule: 'Full Time',
+        careSchedule: 'Part Time',
         showMonthSelector: false,
-        selectedCareType: [], // This captures the index of the careTypes selected mon through sunday.
+        selectedCareType: [2,2,2,2,2,0,0], // This captures the index of the careTypes selected mon through sunday.
         isActive: false,
         btnDisabled: true,
         clicked: false,
@@ -1015,8 +1004,9 @@ export default {
       return count;
     },
     getReductionFloor(rateTableInfo, daysFullTime, daysPartTime) {
-      console.log('rate table: ', JSON.stringify(rateTableInfo));
-      return (daysFullTime * rateTableInfo.fullTimeDailyRateFloor) + (daysPartTime * rateTableInfo.partTimeDailyRateFloor);
+      let maxRateFloor = rateTableInfo.fullTimeDailyRateFloor * 20; // rateFloor cannot exceed 5 days a week, full time
+      let rateFloor = (daysFullTime * rateTableInfo.fullTimeDailyRateFloor) + (daysPartTime * rateTableInfo.partTimeDailyRateFloor);
+      return Math.min(maxRateFloor, rateFloor);
     },
     getFullTimeMonthlyParentFee(fee, feeFrequency) {
       if (feeFrequency === 'Daily') {
@@ -1127,13 +1117,16 @@ export default {
           console.log(`Full time number of days: [${fullTimeNumberOfDays}], Part time number of days: [${partTimeNumberOfDays}]`);
           daysOfCare = partTimeNumberOfDays + fullTimeNumberOfDays;
           console.log('reductionAmountPerChild ' + reductionAmountPerChild);
-          let dailyPartTimeReductionamount = reductionAmountPerChild / 20; // 20 days per month.
-          let partTimeHalfDayReductionAmount = dailyPartTimeReductionamount * partTimeNumberOfDays / (isPreschool? 1 : 2);
-          console.log('partTimeHalfDayReductionAmount: ' + partTimeHalfDayReductionAmount + 'part time number of days ' + partTimeNumberOfDays + ' daily reduction amount ' + dailyPartTimeReductionamount);
+          let reductionAmountPerChildPerDay = reductionAmountPerChild / 20; // 20 days per month.
+          let partTimeHalfDayReductionAmount = reductionAmountPerChildPerDay * partTimeNumberOfDays / (isPreschool? 1 : 2);
+          console.log('partTimeHalfDayReductionAmount: ' + partTimeHalfDayReductionAmount + 'part time number of days ' + partTimeNumberOfDays + ' daily reduction amount ' + reductionAmountPerChildPerDay);
           // partTimeDailyRate = ((dailyParentRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyParentRate - 5);
-          let partTimeFullDayReductionAmount = dailyPartTimeReductionamount * fullTimeNumberOfDays;
+          let partTimeFullDayReductionAmount = reductionAmountPerChildPerDay * fullTimeNumberOfDays;
           console.log('partTimeFullDayReductionAmount: ' + partTimeFullDayReductionAmount);
           totalRateReduction = partTimeHalfDayReductionAmount + partTimeFullDayReductionAmount;
+          //max total reduction cannot exceed full time daily reduction
+
+          //totalRateReduction = Math.min(totalRateReduction, reductionAmountPerChild); //TODO: see if we need this?
           let rateReductionFloor = this.getReductionFloor(rateTableInfo, fullTimeNumberOfDays, partTimeNumberOfDays);
           let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee, this.children[i].parentFeeFrequency);
           //Make sure it's at least the Rate Floor amount
@@ -1312,9 +1305,9 @@ export default {
         }
         this.children[childIndex].showMonthSelector = true;
       }
-      if (childsAgeCategory === CHILDCARE_TYPE_PRESCHOOL) {
-        this.children[childIndex].careSchedule = 'Part Time';
-      }
+      // if (childsAgeCategory === CHILDCARE_TYPE_PRESCHOOL) {
+      //   this.children[childIndex].careSchedule = 'Part Time';
+      // }
     },
     setRatesForMonths(childIndex) {
       if (this.selectedFacility.approvedFeesByChildAgeCategory != undefined) {
