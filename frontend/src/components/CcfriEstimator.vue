@@ -972,7 +972,7 @@ export default {
         parentFeeFrequency: 'Monthly',
         careSchedule: 'Part Time',
         showMonthSelector: false,
-        selectedCareType: [2,2,2,2,2,0,0], // This captures the index of the careTypes selected mon through sunday.
+        selectedCareType: [2,2,2,2,2], // This captures the index of the careTypes selected mon through sunday.
         isActive: false,
         btnDisabled: true,
         clicked: false,
