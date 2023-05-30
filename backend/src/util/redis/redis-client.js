@@ -14,12 +14,14 @@ const Redis = {
     if ('local' === config.get('environment')) {
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
-        port: config.get('redis:port')
+        port: config.get('redis:port'),
+        password: config.get('redis:password')
       });
     } else {
       redisClient = new IOREDIS.Cluster([{
         host: config.get('redis:host'),
-        port: config.get('redis:port')
+        port: config.get('redis:port'),
+        password: config.get('redis:password')
       }]);
     }
     redisClient.on('error', (error) => {
