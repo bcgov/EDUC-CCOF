@@ -186,6 +186,7 @@ export default {
         this.$refs.searchCriteriaOnDialogue.resetValidation();
       } else if (ref == 'searchCriteria') {
         this.$refs.searchCriteria.resetValidation();
+        this.$emit('resetTypeOfCare');
       }
     },
     rowSelected(facility) {
