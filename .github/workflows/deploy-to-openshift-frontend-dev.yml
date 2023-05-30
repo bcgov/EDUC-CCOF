@@ -95,7 +95,7 @@ jobs:
             core.info(`✅ All the required secrets are set`);
           }
 
-    - name: Check out repository with branch:  ${{ env.BRANCH }}
+    - name: Check out repository with branch [${{ env.BRANCH }}]
       uses: actions/checkout@v2
       with:
         ref: ${{ env.BRANCH }}
