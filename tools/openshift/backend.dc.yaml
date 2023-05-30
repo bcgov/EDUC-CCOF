@@ -130,7 +130,7 @@ objects:
 #       name: "${APP_NAME}-backend"
 #       weight: 100
 #     wildcardPolicy: None
-- apiVersion: autoscaling/v2beta2
+- apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:
     name: "${APP_NAME}-backend-cpu-autoscaler"
