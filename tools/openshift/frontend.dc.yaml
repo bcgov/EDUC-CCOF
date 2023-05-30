@@ -123,7 +123,7 @@
   #       name: "${APP_NAME}-frontend-${BRANCH}"
   #       weight: 100
   #     wildcardPolicy: None
-  - apiVersion: autoscaling/v2beta1
+  - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
       name: "${APP_NAME}-frontend-${BRANCH}-cpu-autoscaler"
@@ -136,10 +136,12 @@
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
       metrics:
-        - type: Resource
-          resource:
-            name: cpu
-            targetAverageUtilization: 90
+     - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 90
   parameters:
   - name: REPO_NAME
     description: Application repository name
