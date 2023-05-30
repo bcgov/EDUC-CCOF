@@ -75,7 +75,7 @@ spec:
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: redis-data
-              mountPath: /var/lib/redis/data
+              mountPath: /data
           terminationMessagePolicy: File
           image: artifacts.developer.gov.bc.ca/docker-remote/redis:6.0.9-alpine
       restartPolicy: Always
@@ -83,7 +83,6 @@ spec:
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
----
 apiVersion: v1
 kind: Service
 metadata:
