@@ -15,13 +15,18 @@ const Redis = {
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
+        password: config.get('redis:password')
       });
     } else {
-      // redisClient = new IOREDIS.Cluster([{ TODO: get clustering to work
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
-      }]);
+        password: config.get('redis:password')
+      });
+      // redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
+      //   host: config.get('redis:host'),
+      //   port: config.get('redis:port'),
+      // }]);
     }
     redisClient.on('error', (error) => {
       log.error(`error occurred in redis client. ${error}`);
