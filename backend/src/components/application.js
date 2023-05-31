@@ -31,7 +31,7 @@ const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
 
 
-const { ChangeRequestMappings, ChangeActionRequestMappings } = require('../util/mapping/ChangeRequestMappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 
 
 async function renewCCOFApplication(req, res) {
@@ -485,6 +485,13 @@ function checkKey(key, obj) {
   return false;
 }
 
+async function getFacilityChangeData(changeActionId){
+  //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
+  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let newFacData = await getOperation(newFacOperation);
+  return new MappableObjectForFront(newFacData.value[0], NewFacilityMappings).toJSON();
+}
+
 async function getChangeRequest(req, res){
 
   try {
@@ -492,22 +499,33 @@ async function getChangeRequest(req, res){
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
+    let payload = [];
+
     log.verbose(changeRequests);
-    //ccof_changetype: changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE ? 100000013 : 100000005
+    await Promise.all(changeRequests.map(async (request) => {
 
-    changeRequests.forEach((request, index )=> {
-
+      //jb- will need to change below to handle more than a 1 to 1 relationship
       let changeActions = new MappableObjectForFront(request.ccof_change_action_change_request[0], ChangeActionRequestMappings).toJSON();
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
+      let facilityData;
+      //todo: make this more robust for additional change types
 
-      changeActions.changeType = changeActions.changeType == 100000013 ? CHANGE_REQUEST_TYPES.PDF_CHANGE : CHANGE_REQUEST_TYPES.NEW_FACILITY;
+      if (changeActions.changeType == 100000013){
+        changeActions.changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
+      }
+      else{
+        changeActions.changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
+        facilityData = await getFacilityChangeData(changeActions.changeActionId);
+      }
       req.changeActions = changeActions;
-      log.verbose('mapped req', req);
-      changeRequests[index] = req;
+      payload.push({...req , ...facilityData});
 
-    });
+    }));
 
-    return res.status(HttpStatus.OK).json(changeRequests);
+
+    log.info('final payload', payload);
+
+    return res.status(HttpStatus.OK).json(payload);
   } catch (e) {
     log.error('An error occurred while getting change request', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

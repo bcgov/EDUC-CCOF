@@ -51,6 +51,7 @@ export default {
         console.log(response);
         if (!isEmpty(response.data)) {
           response.data.forEach(element => {
+            element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
             commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
           });
         }

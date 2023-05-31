@@ -69,6 +69,13 @@
               <v-col class= "col-lg-3">
                 <h4>Submission Date</h4>
               </v-col>
+              <v-col class= "col-lg-2">
+
+              </v-col>
+
+              <v-col class= "col-lg-1">
+
+              </v-col>
             </v-row>
             <!--TODO: ADD skeleton loader and isLoaded var-->
             <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
@@ -80,7 +87,7 @@
                 {{changeRequest.changeActions.status == 1? 'ACTIVE' : 'INACTIVE'}}
               </v-col>
               <v-col class= "col-lg-3">
-                Date
+                {{ changeRequest.createdOnDate }}
               </v-col>
                 <v-col class= "col-lg-2">
                   <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId, changeRequest.changeActions.changeRequestId)">Continue</v-btn>
