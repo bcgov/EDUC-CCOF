@@ -13,7 +13,7 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   APPLICATION_STATUS_CODES,
   CCOF_STATUS_CODES,
-  CHANGE_REQUEST_TYPE
+  CHANGE_REQUEST_TYPES
 } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -516,11 +516,11 @@ async function getChangeRequest(req, res){
 
         //todo: add in logic for other change types, when required.
         switch(mappedChangeAction.changeType){
-        case CHANGE_REQUEST_TYPE.PDF_CHANGE:
-          log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPE.PDF_CHANGE));
+        case CHANGE_REQUEST_TYPES.PDF_CHANGE:
+          log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPES.PDF_CHANGE));
           mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE;
           break;
-        case CHANGE_REQUEST_TYPE.NEW_FACILITY:
+        case CHANGE_REQUEST_TYPES.NEW_FACILITY:
           mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
           mappedChangeAction.facilityData = await getFacilityChangeData(mappedChangeAction.changeActionId);
           break;
