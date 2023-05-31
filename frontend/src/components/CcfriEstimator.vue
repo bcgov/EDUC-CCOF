@@ -978,7 +978,7 @@ export default {
         parentFeeFrequency: 'Monthly',
         careSchedule: 'Part Time',
         showMonthSelector: false,
-        selectedCareType: [2,2,2,2,2], // This captures the index of the careTypes selected mon through sunday.
+        selectedCareType: [], // This captures the index of the careTypes selected mon through sunday.
         isActive: false,
         btnDisabled: true,
         clicked: false,
@@ -1093,7 +1093,8 @@ export default {
             /**
             * PART TIME RATE Reduction Calculation
             */
-          if (isChildFullTime === 'maybe') {
+          if (isChildFullTime) { //TODO do we need this
+          // if (isChildFullTime === 'Maybe') { //TODO do we need this
             daysOfCare = NUMBER_OF_DAYS_PER_MONTH;
             let monthlyParentFee = this.children[i].parentFeeFrequency === 'Daily' ? parentRate * NUMBER_OF_DAYS_PER_MONTH : parentRate;
             console.log('monthly parent fee: ', monthlyParentFee);

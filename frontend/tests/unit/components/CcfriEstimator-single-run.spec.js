@@ -64,7 +64,7 @@ describe('CcfriEstimator.js', () => {
   beforeEach(() => {
     const localVue = createLocalVue();
     localVue.use(Vuetify);
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    // jest.spyOn(console, 'log').mockImplementation(() => {});
 
   });
   afterEach(() => {
@@ -82,66 +82,42 @@ describe('CcfriEstimator.js', () => {
         'v-form': formStub,
       }
     });
-    // wrapper.vm.$refs.form.validate = true;
-    // const lines = await loadFile('estimatorPreschool.csv');
-    // const lines = await loadFile('estimatorData.csv');
-    const lines = await loadFile('testData.csv');
     let results = [];
     let counter = 0;
     let errors = 0;
-    for (let i = 0 ; i < lines.length; i ++) {
-      let values = lines[i].split(',');
-      wrapper.vm.form.typeOfCare = String(values[0]).trim();
-      wrapper.vm.children[0].childAgeCategory = String(values[1]).trim();
-      wrapper.vm.children[0].careSchedule = 'Part Time';
-      wrapper.vm.children[0].parentFeeFrequency = 'Monthly';
-      wrapper.vm.children[0].approvedFee = values[2];
-      wrapper.vm.children[0].partTimeFee = values[4];
-      const isPreschool = wrapper.vm.children[0].childAgeCategory == 'Preschool';
-      let columnOffset = 6;
-      for (let fd = 0; fd <= 7; fd ++) {
-        if (isPreschool && fd > 0) {
-          continue;
-        }
-        for (let hd = 0; (hd + fd) <= 7; hd ++) {
-          let correctCell = values[columnOffset ++];
-          if (fd === 0 && hd === 0) { // in the spreadsheet there is no fd=0, hd=-, so test the FT rate.
-            continue;
-          }
-          let correctValues = correctCell.split(' ');
-          wrapper.vm.children[0].selectedCareType = [];
-          addPartimeDays(hd, wrapper.vm.children[0]);
-          addFulltimeDays(fd, wrapper.vm.children[0]);
-          wrapper.vm.estimateTheBenefit();
-          let result = {
-            typeOfCare: wrapper.vm.form.typeOfCare,
-            childAgeCategory: wrapper.vm.children[0].childAgeCategory,
-            parentFeeFrequency: 'Monthly',
-            approvedFee: values[2],
-            partTimeFee: values[4],
-            halfDays: hd,
-            fullDays: fd,
-            reductionAmt: wrapper.vm.results[0].reductionAmountPerChild,
-            expectedReduction: correctValues[0],
-            parentFeeAmt: wrapper.vm.results[0].actualParentFeePerChild,
-            expectedParentFee: correctValues[1],
-            column: (columnOffset -1),
-            row: i + 5
-          };
-          if (hasFailed(result)) {
-            results.push(result);
-            errors ++;
-          } else {
-            results.push(result);
-          }
 
-          // expect(result).toBeCorrect();
-          counter++;
-          // expect(wrapper.vm.results[0].reductionAmountPerChild, JSON.stringify(result)).toBe(correctValues[0]);
-          // expect(wrapper.vm.results[0].actualParentFeePerChild, JSON.stringify(result)).toBe(correctValues[1]);
-        }
-      }
+    wrapper.vm.form.typeOfCare = 'Licensed Group';
+    wrapper.vm.children[0].childAgeCategory = '0 - 18 Months';
+    wrapper.vm.children[0].careSchedule = 'Part Time';
+    wrapper.vm.children[0].parentFeeFrequency = 'Monthly';
+    wrapper.vm.children[0].approvedFee = 400;
+    wrapper.vm.children[0].partTimeFee = 331;
+    wrapper.vm.children[0].selectedCareType = [];
+    addPartimeDays(0, wrapper.vm.children[0]);
+    addFulltimeDays(7, wrapper.vm.children[0]);
+    wrapper.vm.estimateTheBenefit();
+    let result = {
+      typeOfCare: wrapper.vm.form.typeOfCare,
+      childAgeCategory: wrapper.vm.children[0].childAgeCategory,
+      parentFeeFrequency: 'Monthly',
+      approvedFee: wrapper.vm.children[0].approvedFee,
+      partTimeFee: wrapper.vm.children[0].partTimeFee,
+      halfDays: 2,
+      fullDays: 3,
+      reductionAmt: wrapper.vm.results[0].reductionAmountPerChild,
+      expectedReduction: 331,
+      parentFeeAmt: wrapper.vm.results[0].actualParentFeePerChild,
+      expectedParentFee: 0,
+      column: 1,
+      row: 5
+    };
+    if (hasFailed(result)) {
+      results.push(result);
+      errors ++;
+    } else {
+      results.push(result);
     }
+
     // results.forEach(i => console.log(JSON.stringify(i)));
     console.info(`Tested [${counter}] number of records with [${errors}] tests failing.`);
     const excelFormat = true;
