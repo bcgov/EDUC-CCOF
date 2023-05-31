@@ -10,7 +10,7 @@ const HttpStatus = require('http-status-codes');
 
 const { getOperationWithObjectId, getOperation, postOperation, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 
-const CHANGE_REQUEST_TYPES = Object.freeze({
+const CHANGE_REQUEST_TYPES_FRONT = Object.freeze({
   NEW_FACILITY: 'NEW_FACILITY',
   PDF_CHANGE: 'PDF_CHANGE',
 });
@@ -26,10 +26,10 @@ function mapChangeRequestForBack(data, changeType) {
 
   changeRequestForBack['ccof_change_action_change_request'] = [
     {
-      ccof_changetype: changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE ? 100000013 : 100000005
+      ccof_changetype: changeType === CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE ? 100000013 : 100000005
     }
   ];
-  if (changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
+  if (changeType === CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY) {
     changeRequestForBack.ccof_provider_type = 100000000; //New facilities are only available for GROUP provider types
   }
   return changeRequestForBack;
@@ -159,7 +159,7 @@ module.exports = {
   getChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
-  CHANGE_REQUEST_TYPES,
+  CHANGE_REQUEST_TYPES_FRONT,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,

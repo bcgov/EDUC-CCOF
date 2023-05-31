@@ -12,19 +12,23 @@ const {
   CCOF_APPLICATION_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   APPLICATION_STATUS_CODES,
-  CCOF_STATUS_CODES
+  CCOF_STATUS_CODES,
+  CHANGE_REQUEST_TYPE
 } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
-const {CHANGE_REQUEST_TYPES } = require('../components/changeRequest');
+const {CHANGE_REQUEST_TYPES_FRONT } = require('../components/changeRequest');
 const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
   UserProfileCCFRIMappings,
   ApplicationSummaryMappings,
-  ApplicationSummaryCcfriMappings, OrganizationFacilityMappings,CCOFApplicationFundingMapping,OrganizationMappings,
+  ApplicationSummaryCcfriMappings,
+  OrganizationFacilityMappings,
+  CCOFApplicationFundingMapping,
+  OrganizationMappings,
   //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
@@ -493,7 +497,6 @@ async function getFacilityChangeData(changeActionId){
 }
 
 async function getChangeRequest(req, res){
-
   try {
     let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${req.params.applicationId}`;
     let changeRequests = await getOperation(operation);
@@ -507,41 +510,28 @@ async function getChangeRequest(req, res){
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
 
       //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
-      let changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
+      req.changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
+
         let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
 
-        //todo: make this more robust for additional change types. add in types to constants file
-        if (mappedChangeAction.changeType == 100000013){
-          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
-        }
-        else if (mappedChangeAction.changeType == 100000005){
-          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
+        //todo: add in logic for other change types, when required.
+        switch(mappedChangeAction.changeType){
+        case CHANGE_REQUEST_TYPE.PDF_CHANGE:
+          log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPE.PDF_CHANGE));
+          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE;
+          break;
+        case CHANGE_REQUEST_TYPE.NEW_FACILITY:
+          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
           mappedChangeAction.facilityData = await getFacilityChangeData(mappedChangeAction.changeActionId);
+          break;
         }
-
         return mappedChangeAction;
       }));
 
-      log.info('CHA CHA CHA', changeActions);
-
-
-
-      // //todo: make this more robust for additional change types
-      // if (changeActions.changeType == 100000013){
-      //   changeActions.changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
-      // }
-      // else{
-      //   changeActions.changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
-      //   req.facilityData = await getFacilityChangeData(changeActions.changeActionId);
-      // }
-      req.changeActions = changeActions;
       payload.push(req);
-
     }));
 
-
     log.info('final payload', payload);
-
     return res.status(HttpStatus.OK).json(payload);
   } catch (e) {
     log.error('An error occurred while getting change request', e);
