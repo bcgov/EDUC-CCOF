@@ -192,6 +192,25 @@
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
   <!-- ******************************************************************************************************************************************************** -->
               <v-row>
+                <v-col cols="5" class="estimator-label">
+                  <span style="color: #313131">
+                    Care Schedule
+                  </span>
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
+                  <v-tooltip top color="#68449A">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card v-on="on" class="tooltip">
+                      <v-icon class="pt-1" small color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span v-html="getCareScheduleToolTip(child.number)"/>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                </v-col>
+              </v-row>
+              <v-row>
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
                   <v-card>
@@ -666,11 +685,27 @@
           <div v-show="showEstimatorResults">
             <v-card-title style="color:white;font-style:normal;font-weight:700;font-family:BCSans;font-size:20px;padding-top:8px;padding-bottom:8px;background-color:#431782;">Results</v-card-title>
             <v-row>
-              <v-col cols="12">
-                <div style="padding-left:24px;color:#313131;font-family:BCSans;font-weight:500;font-size:16px">
-                  Based on the information you have provided, you may be eligible for the following monthly ChildCareBC fee reduction:
-                </div>
+              <v-col cols="1"/>
+              <v-col cols="10">
+                <v-row >
+                  <v-col cols="1" style="padding-bottom:0px;padding-top:10px;padding-left:0px">
+                    <v-tooltip top color="#68449A">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-card v-bind="attrs" v-on="on" class="tooltip">
+                          <v-icon class="pt-1" small color="white">mdi-information-variant</v-icon>
+                        </v-card>
+                      </template>
+                      <span v-html="resultsToolTip"/>
+                    </v-tooltip>
+                  </v-col>
+                  <v-col cols="11" class="px-0">
+                    <div style="margin-left:-20px;color:#313131;font-family:BCSans;font-weight:500;font-size:16px">
+                      Based on the information you have provided, you may be eligible for the following monthly ChildCareBC fee reduction:
+                    </div>
+                  </v-col>
+                </v-row>
               </v-col>
+              <v-col cols="1"/>
             </v-row>
 
             <v-row>
@@ -722,7 +757,7 @@
             </v-row>
             <v-row>
               <v-col cols="12" class="text-center">
-                For additional funding support, find out more about <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/child-care-funding/child-care-benefit" target="_blank" style="color:#0FC3ED"><u>Affordable Child Care Benefit.</u></a>
+                Families earning up to $111,000 may be eligible for the Affordable Child Care Benefit (ACCB).  <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Click here for the ACCB Estimator.</u></a>
               </v-col>
             </v-row>
           </div>
@@ -762,13 +797,13 @@ const CHILD_CARE_CATEGORY_LIST = [
 
 const CARE_TYPES = [
   { type: 'No Care' },
-  { type: 'Half Day' },
-  { type: 'Full Day' }
+  { type: '4 hours or Less' },
+  { type: 'More than 4 hours' }
 ];
 
 const CARE_TYPES_PRESCHOOL = [
   { type: 'No Care' },
-  { type: 'Half Day' }
+  { type: '4 hours or Less' }
 ];
 
 export default {
@@ -845,7 +880,7 @@ export default {
     filteredChildAgeCategoryList() {
       return CHILD_CARE_CATEGORY_LIST.filter(el => !this.categoriesToRemove.includes(el) && !(this.form.typeOfCare === 'Licensed Family' && el === CHILDCARE_TYPE_PRESCHOOL ));
     },
-    /** TOOL TIPS */
+    /** TOOL TIPS TOOLTIPS*/
     careTypeToolTip() {
       // eslint-disable-next-line
       return "Licensed group child care takes place in a community-based<br/>facility or centre. Licensed family child care takes place<br/>in the child care provider's personal residence.";
@@ -862,17 +897,26 @@ export default {
       if (this.isParent) {
         // eslint-disable-next-line
         return "Enter the facility's highest approved full-time parent fee before any fee reduction.<br>Providers are required to give parents this information in writing.<br><br>If you are unsure what fee to enter, use the \"Optional Facility Search\" above, or refer<br>to the written information given to you by your provider.";
-        // return "Enter the facility's highest full-time parent fee approved by the Ministry,<br/> before the fee reduction is applied. Child care providers can reference this<br/> information on their approved Program Confirmation Form. Parents<br/> can use Optional Facility Search above or ask their child care provider if<br/> they are unsure which fee to enter."
       }
-      return 'hi';
+      // eslint-disable-next-line
+      return "Enter the facility's highest full-time parent fee approved by the Ministry<br>before any fee reduction.<br><br>Child care providers can reference this information on their approved<br>Program Confirmation Form.";
+
     },
     actualParentFeeToolTip() {
+      if (this.isParent) {
+        // eslint-disable-next-line
+        return "Enter the parent fee before any reductions or benefits are applied. Providers<br>are required to give parents this information in writing.<br><br>This fee may differ from the approved full-time parent fee if it is a part-time<br>fee, discounted fee or inclusive of optional fees.";
+      }
       // eslint-disable-next-line
-      return "Enter the parent fee before any reductions or benefits are<br/> applied. This fee may be different from the CCFRI-approved<br/> full-time parent fee if it is a part-time fee, discounted fee,<br/> or inclusive of optional fees.";
+      return "Enter the parent fee before any reductions or benefits are applied. Providers<br>are required to give parents this information in writing.<br><br>This fee may differ from the approved full-time parent fee if it is a part-time<br>fee, discounted fee or inclusive of optional fees.";
     },
     resultsToolTip() {
+      if (this.isParent) {
+        // eslint-disable-next-line
+        return "If you see an inconsistency, contact your provider. If the inconsistency<br>remains, call the Child Care Operating Funding Program at 1-888-338-6622<br>(Option 2).";
+      }
       // eslint-disable-next-line
-      return "If you see an inconsistency, contact your provider. If the inconsistency remains, call the Child Care Operating Funding Program at 1-888-338-6622 (Option 2)."
+      return "If you see an inconsistency, contact the Child Care Operating Funding<br>Program at 1-888-338-6622 (Option 2)."
     }
   },
   methods: {
@@ -902,6 +946,36 @@ export default {
         this.isTypeOfCareDisabled = true;
       }
       this.filterChildsAgeCategory();
+    },
+    getCareScheduleToolTip(index) {
+      if (this.isParent) {
+        switch (this.children[index - 1].childAgeCategory) {
+        case CHILDCARE_TYPE_PRESCHOOL:
+          // eslint-disable-next-line
+          return "Preschool care is only CCFRI-eligible for 4 hours or less.";
+        case CHILDCARE_TYPE_SCHOOL_CARE_K:
+        case CHILDCARE_TYPE_SCHOOL_CARE_1:
+          // eslint-disable-next-line
+          return "Select the amount of time you are able to access child care, not the amount<br>of time your child is actually in care. For example, if your child has access to<br>5 hours of care but attends care for 3 hours, select \"More than 4 hours.\"";
+        default:
+          // eslint-disable-next-line
+          return "Maximum funding is based on five days of more than 4 hours of care.";
+        }
+      } else {
+        switch (this.children[index - 1].childAgeCategory) {
+        case CHILDCARE_TYPE_PRESCHOOL:
+          // eslint-disable-next-line
+          return "Preschool care is only CCFRI-eligible for 4 hours or less.";
+        case CHILDCARE_TYPE_SCHOOL_CARE_K:
+        case CHILDCARE_TYPE_SCHOOL_CARE_1:
+          // eslint-disable-next-line
+          return "Select the amount of time the child has access to care, not the amount of<br>time the child is actually in care. For example, if the child has access to 5<br>hours of care but attends care for 3 hours, select \"More than 4 hours.\"";
+        default:
+          // eslint-disable-next-line
+          return "For part-time care estimates, select the typical schedule of half days (4 hours<br>or less) and full days (more than 4 hours). The maximum benefit rates for<br>CCFRI are based on 5 full days per week (full-time care).";
+        }
+
+      }
     },
     getCareTypes(index) {
       return this.children[index - 1].childAgeCategory === CHILDCARE_TYPE_PRESCHOOL ? CARE_TYPES_PRESCHOOL : CARE_TYPES;
@@ -1099,7 +1173,7 @@ export default {
             let monthlyParentFee = this.children[i].parentFeeFrequency === 'Daily' ? parentRate * NUMBER_OF_DAYS_PER_MONTH : parentRate;
             console.log('monthly parent fee: ', monthlyParentFee);
             totalRateReduction = fullTimeDailyRate * NUMBER_OF_DAYS_PER_MONTH;
-            totalRateReduction = Math.max(totalRateReduction, rateTableInfo.fullTimeDailyRateFloor);
+            totalRateReduction = Math.max(totalRateReduction, rateTableInfo.fullTimeDailyRateFloor * NUMBER_OF_DAYS_PER_MONTH);
             totalRateReduction = Math.min(totalRateReduction, monthlyParentFee);
             reductionAmountPerChild = totalRateReduction;
             if (this.children[i].partTimeFee) {

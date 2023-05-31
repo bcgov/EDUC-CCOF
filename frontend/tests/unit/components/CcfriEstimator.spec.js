@@ -84,8 +84,8 @@ describe('CcfriEstimator.js', () => {
     });
     // wrapper.vm.$refs.form.validate = true;
     // const lines = await loadFile('estimatorPreschool.csv');
-    // const lines = await loadFile('estimatorData.csv');
-    const lines = await loadFile('testData.csv');
+    const lines = await loadFile('estimatorData.csv');
+    // const lines = await loadFile('testData.csv');
     let results = [];
     let counter = 0;
     let errors = 0;
