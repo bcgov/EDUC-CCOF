@@ -78,22 +78,25 @@
               </v-col>
             </v-row>
             <!--TODO: ADD skeleton loader and isLoaded var-->
+            <!--TODO: Change action data taken from first index! needs improvement -->
             <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
               <v-col class= "col-lg-3">
                 <h4></h4>
-                {{changeRequest.changeActions.changeType}}
+
+                <!--TODO: ADD a function that maps these values-->
+                {{changeRequest.changeActions[0].changeType == 'PDF_CHANGE' ? 'CHANGE FORM' : 'NEW FACILITY'}}
               </v-col>
               <v-col class= "col-lg-3">
-                {{changeRequest.changeActions.status == 1? 'ACTIVE' : 'INACTIVE'}}
+                {{changeRequest.changeActions[0].status == 1? 'ACTIVE' : 'INACTIVE'}}
               </v-col>
               <v-col class= "col-lg-3">
                 {{ changeRequest.createdOnDate }}
               </v-col>
                 <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="goToChangeForm(changeRequest.changeActions.changeActionId, changeRequest.changeActions.changeRequestId)">Continue</v-btn>
+                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId)">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
-                  <v-btn class= "" @click="deleteRequest(changeRequest.changeActions.changeRequestId)">Delete</v-btn>
+                  <v-btn class= "" @click="deleteRequest(changeRequest.changeActions[0].changeRequestId)">Delete</v-btn>
                 </v-col>
             </v-row>
           </v-col>
@@ -112,7 +115,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -158,6 +161,15 @@ export default {
     },
     routeToFacilityAdd(){
       this.$router.push(PATHS.reportChange.facInfo);
+    },
+    continueButton(changeType, changeActionId = null,  changeRequestId = null){
+      if (changeType == 'PDF_CHANGE'){
+        this.goToChangeForm(changeActionId, changeRequestId);
+      }
+      else if (changeType == 'NEW_FACILITY'){
+        this.setChangeRequestId(changeRequestId);
+        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilityData.facilityId);
+      }
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 

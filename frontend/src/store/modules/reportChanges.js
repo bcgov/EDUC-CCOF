@@ -55,8 +55,6 @@ export default {
             commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
           });
         }
-
-        console.log('No change requests found.'); //it says this when I load from the router... but then it is actually loaded. Timing issue?
       } catch(e) {
         console.log(`Failed to get load change req with error - ${e}`);
         throw e;

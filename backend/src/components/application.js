@@ -504,21 +504,38 @@ async function getChangeRequest(req, res){
     log.verbose(changeRequests);
     await Promise.all(changeRequests.map(async (request) => {
 
-      //jb- will need to change below to handle more than a 1 to 1 relationship
-      let changeActions = new MappableObjectForFront(request.ccof_change_action_change_request[0], ChangeActionRequestMappings).toJSON();
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
-      let facilityData;
-      //todo: make this more robust for additional change types
 
-      if (changeActions.changeType == 100000013){
-        changeActions.changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
-      }
-      else{
-        changeActions.changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
-        facilityData = await getFacilityChangeData(changeActions.changeActionId);
-      }
+      //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
+      let changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
+        let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
+
+        //todo: make this more robust for additional change types. add in types to constants file
+        if (mappedChangeAction.changeType == 100000013){
+          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
+        }
+        else if (mappedChangeAction.changeType == 100000005){
+          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
+          mappedChangeAction.facilityData = await getFacilityChangeData(mappedChangeAction.changeActionId);
+        }
+
+        return mappedChangeAction;
+      }));
+
+      log.info('CHA CHA CHA', changeActions);
+
+
+
+      // //todo: make this more robust for additional change types
+      // if (changeActions.changeType == 100000013){
+      //   changeActions.changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
+      // }
+      // else{
+      //   changeActions.changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
+      //   req.facilityData = await getFacilityChangeData(changeActions.changeActionId);
+      // }
       req.changeActions = changeActions;
-      payload.push({...req , ...facilityData});
+      payload.push(req);
 
     }));
 

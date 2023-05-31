@@ -19,7 +19,7 @@ CHILD_AGE_CATEGORY_ORDER.set('PRE', 6);
 
 
 
-//Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API 
+//Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API
 
 const ACCOUNT_TYPE = Object.freeze({
   FACILITY: 100000001,
@@ -64,7 +64,7 @@ const OPTIN_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
-  APPROVED: 3, 
+  APPROVED: 3,
   DRAFT: 2,
   SUBMITTED: 1,
   NOT_APPROVED: 4,

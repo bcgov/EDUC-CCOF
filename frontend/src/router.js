@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, CHANGE_URL_PREFIX } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -472,7 +472,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.facInfo + '/:urlGuid',
+      path: CHANGE_URL_PREFIX + '/:urlGuid' + '/facility' + '/:urlGuid',
       name: 'Report Change Facility Guid',
       component: FacilityInformation,
       meta: {
