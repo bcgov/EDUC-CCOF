@@ -17,9 +17,9 @@ fixture `Child Care Estimator Test`
     await pageEstimator.addChildren(t, totChildren);
     log.info(totChildren, ' children added.');
 
-    let typeOfCare = 'Licensed Group';
-    await pageEstimator.typeOfCare(t, typeOfCare);
-    log.info(typeOfCare, ' selected.');
+    let typeOfCareToSelect = 'Licensed Group';
+    await pageEstimator.typeOfCare(t, typeOfCareToSelect);
+    log.info(typeOfCareToSelect, ' selected.');
 
     let childAgeCategory = '0 - 18 Months';
     await pageEstimator.childAgeCategory(t, childAgeCategory);
@@ -28,5 +28,13 @@ fixture `Child Care Estimator Test`
     let feeFrequency = 'Daily';
     await pageEstimator.parentFeeFrequency(t, feeFrequency);
     log.info(feeFrequency, ' selected.');
+
+    let fullTimeParentFee = 1000;
+    await pageEstimator.fullTimeParentFee(t, fullTimeParentFee);
+    log.info(fullTimeParentFee, ' dollars.')
+
+    let partTimeFee = 500;
+    await pageEstimator.partTimeFee(t, partTimeFee);
+    log.info(partTimeFee, ' dollars.')
 
   });
