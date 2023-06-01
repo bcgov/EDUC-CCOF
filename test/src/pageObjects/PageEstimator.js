@@ -100,12 +100,17 @@ class PageEstimator {
 
       async fullTimeParentFee (t, value) {
         await t.typeText(this.fullTimeParentFeeField, value.toString(), {replace: true})
-        .expect(this.fullTimeParentFeeField.value).eql('1000');
+        .expect(this.fullTimeParentFeeField.value).eql(value.toString());
       }
 
       async partTimeFee (t, value) {
         await t.typeText(this.partTimeFeeField, value.toString(), {replace: true})
-        .expect(this.partTimeFeeField.value).eql('500');
+        .expect(this.partTimeFeeField.value).eql(value.toString());
+      }
+
+      async estiamteSavings (t) {
+        await t.click(this.estimateYourSavingsBtn)
+        .expect(Selector('div').withExactText('Results')).ok({ timeout: 1000 });
       }
 }
 

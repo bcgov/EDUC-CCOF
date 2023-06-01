@@ -1,70 +1,79 @@
 import log from "npmlog";
-const config = require('../utils/configLoader');
-const validation = require('../utils/validation');
 import PageEstimator from '../pageObjects/PageEstimator';
 
+const fs = require('fs');
+const path = require('path');
+const config = require('../utils/configLoader');
+const validation = require('../utils/validation');
 const pageEstimator = new PageEstimator();
+const data = loadFile('estimatorData.csv');
 
-fixture `Child Care Estimator Test`
+fixture`Child Care Estimator Test`
   .page(`${config.get('url')}/ccfri-estimator`).after(async t => {
+  });
+
+data.forEach(line => {
+  let values = line.split(',');
+  let columnOffset = 6;
+  test('Childcare Estimator Test (Monthly) ', async t => {
+    for (let fd = 0; fd <= 7; fd++) {
+      let childAgeCareCategory = String(values[1]).trim();
+      let isPreschool = childAgeCareCategory === 'Preschool' ? true : false;
+      if (isPreschool && fd > 0) {
+        continue;
+      }
+
+      for (let hd = 0; (hd + fd) <= 7; hd++) {
+        log.info(`full time days = ${fd} and part time days = ${hd}`);
+        let correctCell = values[columnOffset++];
+        let correctValues = correctCell.split(' ');
+        if (fd === 0 && hd === 0) { // in the spreadsheet there is no fd=0, hd=-, so test the FT rate.
+          continue;
+        }
+
+        await pageEstimator.parentSelect(t);
+
+        let totChildren = 1;
+        await pageEstimator.addChildren(t, totChildren);
+
+        let typeOfCare = String(values[0]).trim();;
+        await pageEstimator.typeOfCare(t, typeOfCare);
+
+        await pageEstimator.childAgeCategory(t, childAgeCareCategory);
+
+        await pageEstimator.careSchedule(t, hd, fd);
+
+        await pageEstimator.parentFeeFrequency(t, 'Monthly');
+
+        let approvedFee = values[2];
+        await pageEstimator.fullTimeParentFee(t, approvedFee);
+
+        let actualFee = values[4];
+        await pageEstimator.partTimeFee(t, actualFee);
+
+        // * number of days of care * 4 (number of weeks in a month)
+        let dailychildCareSavings = correctValues[0];
+        // let monthlyChildCareSavingsHD = dailychildCareSavings * hd * 4;
+        // let monthlyChildCareSavingsFD = dailychildCareSavings * fd * 4;
+        // let totalSavings = monthlyChildCareSavingsFD + monthlyChildCareSavingsHD;
+        // let childCareSavings = '$' + dailychildCareSavings + '/day ($' + totalSavings + '/month)';
+
+        let estimatedParentFee = correctValues[1];
+        // let monthlysEtimatedParentFeeHD = estimatedParentFee * hd * 4;
+        // let monthlyEtimatedParentFeeFD = estimatedParentFee * fd * 4;
+        // let totalEstimatedFees = monthlysEtimatedParentFeeHD + monthlyEtimatedParentFeeFD;
+        // let parentFeeReduction = '$' + estimatedParentFee + '/day ($' + totalEstimatedFees + '/month)';
+        await pageEstimator.estimateSavings(t, dailychildCareSavings, estimatedParentFee);
+      }
+    }
+  })
 });
 
-  test ('Childcare Estimator Test', async t => {
-    await pageEstimator.parentSelect(t);
-    log.info('Parent Selected.');
-
-<<<<<<< HEAD
-    let totChildren = 1;
-=======
-    let totChildren = 2;
->>>>>>> 40c34eb (initial commit of estimation testing pages)
-    await pageEstimator.addChildren(t, totChildren);
-    log.info(totChildren, ' children added.');
-
-<<<<<<< HEAD
-    let typeOfCare = 'Licensed Group';
-    await pageEstimator.typeOfCare(t, typeOfCare);
-    log.info(typeOfCare, ' selected');
-=======
-    let typeOfCareToSelect = 'Licensed Group';
-    await pageEstimator.typeOfCare(t, typeOfCareToSelect);
-    log.info(typeOfCareToSelect, ' selected.');
->>>>>>> b151c43 (fixed some selector issues)
-
-<<<<<<< HEAD
-    let noCare = 5 ;
-    let fourOrLess = 1;
-    let moreThanFour = 1;
-    await pageEstimator.careSchedule(t, noCare, fourOrLess, moreThanFour);
-    log.info(noCare, ' is the number of No care.')
-    log.info(fourOrLess, ' is the number of Four hours or less.')
-    log.info(moreThanFour, ' is the number of Four hours or more.')
-
-=======
->>>>>>> 40c34eb (initial commit of estimation testing pages)
-    let feeFrequency = 'Daily';
-    await pageEstimator.parentFeeFrequency(t, feeFrequency);
-    log.info(feeFrequency, ' selected.');
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b151c43 (fixed some selector issues)
-    let fullTimeParentFee = 1000;
-    await pageEstimator.fullTimeParentFee(t, fullTimeParentFee);
-    log.info(fullTimeParentFee, ' dollars.')
-
-    let partTimeFee = 500;
-    await pageEstimator.partTimeFee(t, partTimeFee);
-    log.info(partTimeFee, ' dollars.')
-
-<<<<<<< HEAD
-    let childCareSavings = '$0/month';
-    let parentFeeReduction = '$500/month';
-    await pageEstimator.estiamteSavings(t, childCareSavings, parentFeeReduction);
-    log.info('Estimate your savings selected.');
-=======
->>>>>>> 40c34eb (initial commit of estimation testing pages)
-=======
->>>>>>> b151c43 (fixed some selector issues)
-  });
+function loadFile(fileName) {
+  let file = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), { encoding: "utf8" });
+  let lines = file.split('\n');
+  lines.shift(); // remove the first 2 lines which are headers
+  lines.shift();
+  log.info(lines.length, ' is the the number of lines.');
+  return lines;
+}
