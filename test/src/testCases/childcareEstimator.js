@@ -19,7 +19,11 @@ fixture `Child Care Estimator Test`
 
     let typeOfCare = 'Licensed Group';
     await pageEstimator.typeOfCare(t, typeOfCare);
-    log.info(typeOfCare, ' selected');
+    log.info(typeOfCare, ' selected.');
+
+    let childAgeCategory = '0 - 18 Months';
+    await pageEstimator.childAgeCategory(t, childAgeCategory);
+    log.info(childAgeCategory, ' selected.')
 
     let feeFrequency = 'Daily';
     await pageEstimator.parentFeeFrequency(t, feeFrequency);

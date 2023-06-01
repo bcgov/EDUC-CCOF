@@ -118,6 +118,7 @@ function getSelectOption(labelName, selectedName) {
   return Selector('label').withText(labelName).parent().parent().nextSibling().find('label').withText(selectedName).prevSibling();
 }
 
+
 async function mapFieldsFromFile(t, fields, fileName, callback) {
   let data = fs.readFileSync(path.join(__dirname, '..', 'data', `${fileName}`), 'utf-8');
   let lines = data.split('\n');
@@ -159,10 +160,14 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
       for (n; n < options.length; n++){
         await t.click(getSelectOption(fields[index].select, options[n]));
       }
-
     } else {
-
-      await t.typeText(getTextField(fields[index]), lines[index], { replace: true });
+      const fieldElement = getTextField(fields[index]);
+      await t.expect(fieldElement.exists).ok({timeout:50000});
+      if(lines[index]=== ""){
+        await removeContent(t, fieldElement);
+      }else{
+        await t.typeText(fieldElement, lines[index], { replace: true });
+      }
     }
   }
 
