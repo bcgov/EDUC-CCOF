@@ -41,11 +41,11 @@ async function getFacilities(req, res) {
           facilityName: item.name,
           careType: item.accountnumber?.charAt(0),
           city: item.address1_city
-        }
+        };
       }));
     }
-      return res.status(200).json(results);
-    } catch (e) {
+    return res.status(200).json(results);
+  } catch (e) {
     log.error('searchFacility Error', e.response ? e.response.status : e.message);
     return errorResponse(res);
   }
@@ -60,7 +60,7 @@ async function getFacility(req, res) {
     if (!results) {
       results = {};
       const facilityId = await cacheHelper.getGuidD(guidd);
-      const operation = `accounts(${facilityId})?$select=accountid,address1_city,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,_ccof_facility_value,_ccof_programyear_value,_ccof_childcarecategory_value,ccof_frequency,ccof_availability,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar;$filter=(statuscode eq 1 and Microsoft.Dynamics.CRM.In(PropertyName='ccof_availability',PropertyValues=['100000001','100000002']));$orderby= _ccof_programyear_value desc),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)`
+      const operation = `accounts(${facilityId})?$select=accountid,address1_city,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,_ccof_facility_value,_ccof_programyear_value,_ccof_childcarecategory_value,ccof_frequency,ccof_availability,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar;$filter=(statuscode eq 1 and Microsoft.Dynamics.CRM.In(PropertyName='ccof_availability',PropertyValues=['100000001','100000002']) and Microsoft.Dynamics.CRM.In(PropertyName='ccof_frequency',PropertyValues=['100000000','100000002']));$orderby= _ccof_programyear_value desc),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)`
       const payLoad = await getOperation(operation);
 
       results.facilityId = payLoad.accountnumber?.charAt(0);

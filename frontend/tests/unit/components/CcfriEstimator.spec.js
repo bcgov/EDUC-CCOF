@@ -70,6 +70,10 @@ describe('CcfriEstimator.js', () => {
   afterEach(() => {
   });
 
+  let results = [];
+  let counter = 0;
+  let errors = 0;
+
   it('Test CCfri Estimator', async () => {
     const formStub = {
       render: () => {},
@@ -86,17 +90,20 @@ describe('CcfriEstimator.js', () => {
     // const lines = await loadFile('estimatorPreschool.csv');
     const lines = await loadFile('estimatorData.csv');
     // const lines = await loadFile('testData.csv');
-    let results = [];
-    let counter = 0;
-    let errors = 0;
+
     for (let i = 0 ; i < lines.length; i ++) {
-      let values = lines[i].split(',');
+      processOneLine(lines[i], 'Monthly', i);
+      processOneLine(lines[i], 'Daily', i);
+    }
+
+    function processOneLine(line, frequency, index) {
+      let values = line.split(',');
       wrapper.vm.form.typeOfCare = String(values[0]).trim();
       wrapper.vm.children[0].childAgeCategory = String(values[1]).trim();
       wrapper.vm.children[0].careSchedule = 'Part Time';
-      wrapper.vm.children[0].parentFeeFrequency = 'Monthly';
-      wrapper.vm.children[0].approvedFee = values[2];
-      wrapper.vm.children[0].partTimeFee = values[4];
+      wrapper.vm.children[0].parentFeeFrequency = frequency;
+      wrapper.vm.children[0].approvedFee = frequency === 'Monthly' ? values[2] : values[3];
+      wrapper.vm.children[0].partTimeFee = frequency === 'Monthly' ? values[4] : values[5];
       const isPreschool = wrapper.vm.children[0].childAgeCategory == 'Preschool';
       let columnOffset = 6;
       for (let fd = 0; fd <= 7; fd ++) {
@@ -116,9 +123,9 @@ describe('CcfriEstimator.js', () => {
           let result = {
             typeOfCare: wrapper.vm.form.typeOfCare,
             childAgeCategory: wrapper.vm.children[0].childAgeCategory,
-            parentFeeFrequency: 'Monthly',
-            approvedFee: values[2],
-            partTimeFee: values[4],
+            parentFeeFrequency: frequency,
+            approvedFee: wrapper.vm.children[0].approvedFee,
+            partTimeFee: wrapper.vm.children[0].partTimeFee,
             halfDays: hd,
             fullDays: fd,
             reductionAmt: wrapper.vm.results[0].reductionAmountPerChild,
@@ -126,7 +133,7 @@ describe('CcfriEstimator.js', () => {
             parentFeeAmt: wrapper.vm.results[0].actualParentFeePerChild,
             expectedParentFee: correctValues[1],
             column: (columnOffset -1),
-            row: i + 5
+            row: index + 5
           };
           if (hasFailed(result)) {
             results.push(result);
@@ -141,6 +148,7 @@ describe('CcfriEstimator.js', () => {
           // expect(wrapper.vm.results[0].actualParentFeePerChild, JSON.stringify(result)).toBe(correctValues[1]);
         }
       }
+
     }
     // results.forEach(i => console.log(JSON.stringify(i)));
     console.info(`Tested [${counter}] number of records with [${errors}] tests failing.`);
