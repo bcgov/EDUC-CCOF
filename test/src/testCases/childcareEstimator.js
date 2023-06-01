@@ -13,7 +13,7 @@ fixture `Child Care Estimator Test`
     await pageEstimator.parentSelect(t);
     log.info('Parent Selected.');
 
-    let totChildren = 2;
+    let totChildren = 1;
     await pageEstimator.addChildren(t, totChildren);
     log.info(totChildren, ' children added.');
 
@@ -37,4 +37,6 @@ fixture `Child Care Estimator Test`
     await pageEstimator.partTimeFee(t, partTimeFee);
     log.info(partTimeFee, ' dollars.')
 
+    await pageEstimator.estiamteSavings(t);
+    log.info('Estimate your savings selected.');
   });

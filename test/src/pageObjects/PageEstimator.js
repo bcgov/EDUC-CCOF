@@ -1,5 +1,4 @@
 import { Selector } from 'testcafe';
-import log from "npmlog";
 const config = require('../utils/configLoader');
 const { getTextFieldById, mapFieldsFromFile, getButton } = require('../utils/selectors');
 
@@ -7,8 +6,12 @@ class PageEstimator {
     constructor() {
         this.parentBtn = getButton('Parent');
         this.totNumberOfChildren = getTextFieldById('#totNumberOfChildren');
+        this.typeOfCareSelector = getTextFieldById('#typeOfCare');
+        this.childAgeCategorySelector = getTextFieldById('#childAgeCategory');
+        this.parentFeeFrequencySelector = getTextFieldById('#parentFeeFrequency');
         this.fullTimeParentFeeField = getTextFieldById('#approvedFee');
         this.partTimeFeeField = getTextFieldById('#partTimeFee');
+        this.estimateYourSavingsBtn = getButton('Estimate your savings');
       }
 
       async parentSelect (t) {
@@ -18,38 +21,43 @@ class PageEstimator {
 
       async addChildren (t, value) {
         await t.typeText(this.totNumberOfChildren, value.toString(), {replace: true})
-        .expect(this.totNumberOfChildren.value).eql('2');
+        .expect(this.totNumberOfChildren.value).eql(value.toString());
       }
 
       async typeOfCare (t, option) {
-        const typeOfCare = Selector('#typeOfCare');
         const typeOfCareSelect = Selector('#list-39');
-        await t.click(typeOfCare).wait(10000)
-        .expect(typeOfCareSelect.exists).ok();
+        await t.click(this.typeOfCareSelector)
+        .expect(typeOfCareSelect.exists).ok()
+        .click(typeOfCareSelect.withText(option));
       }
       
       async childAgeCategory (t, option) {
-        const childAgeCategory = Selector('#childAgeCategory');
         const childAgeCategorySelect = Selector('#list-62');
-        await t.click(childAgeCategory).wait(1000)
-        .expect(childAgeCategorySelect.exists).ok();
+        await t.click(this.childAgeCategorySelector)
+        .expect(childAgeCategorySelect.exists).ok()
+        .click(childAgeCategorySelect.withText(option));
       }
 
       async parentFeeFrequency (t, option) {
-        const parentFeeFrequency = Selector('#parentFeeFrequency');
         const parentFeeFrequencySelect = Selector('#list-138');
-        await t.click(parentFeeFrequency).wait(1000)
-              .expect(parentFeeFrequencySelect.exists).ok();
+        await t.click(this.parentFeeFrequencySelector)
+              .expect(parentFeeFrequencySelect.exists).ok()
+              .click(parentFeeFrequencySelect.withText(option));
       }
 
       async fullTimeParentFee (t, value) {
         await t.typeText(this.fullTimeParentFeeField, value.toString(), {replace: true})
-        .expect(this.fullTimeParentFeeField.value).eql('1000');
+        .expect(this.fullTimeParentFeeField.value).eql(value.toString());
       }
 
       async partTimeFee (t, value) {
         await t.typeText(this.partTimeFeeField, value.toString(), {replace: true})
-        .expect(this.partTimeFeeField.value).eql('500');
+        .expect(this.partTimeFeeField.value).eql(value.toString());
+      }
+
+      async estiamteSavings (t) {
+        await t.click(this.estimateYourSavingsBtn)
+        .expect(Selector('div').withExactText('Results')).ok({ timeout: 1000 });
       }
 }
 
