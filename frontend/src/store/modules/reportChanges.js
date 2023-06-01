@@ -64,6 +64,8 @@ export default {
     //TODO: add it to the store
     async createChangeRequest({commit, rootState }) {
 
+      console.log('creating a change REQ');
+
       checkSession();
       let payload = {
         'applicationId': rootState.application.applicationId,
@@ -116,7 +118,7 @@ export default {
     },
 
     // eslint-disable-next-line no-unused-vars
-    async saveUploadedDocuments(payload) {
+    async saveUploadedDocuments({state}, payload ){
       console.log('save uploaded documents called');
       console.log('this is the payload:');
       console.log(payload);

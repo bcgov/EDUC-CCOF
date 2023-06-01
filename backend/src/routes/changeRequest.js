@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 
 const isValidBackendToken = auth.isValidBackendToken();
-const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs } = require('../components/changeRequest');
+const { getChangeRequest, createChangeRequest, createChangeRequestFacility, CHANGE_REQUEST_TYPES_FRONT, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 module.exports = router;
@@ -46,7 +46,7 @@ router.get('/:changeRequestId', //passport.authenticate('jwt', {session: false})
 router.post('/newFacility', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [checkSchema(newFacilityChangeRequestSchema)], (req, res) => {
     validationResult(req).throw();
-    return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    return createChangeRequest(req, res, CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY);
   });
 
 /**
@@ -75,7 +75,7 @@ router.get('/documents/:changeRequestId', //passport.authenticate('jwt', {sessio
 router.post('/documents', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [checkSchema(documentChangeRequestSchema)], (req, res) => {
     validationResult(req).throw();
-    return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
+    return createChangeRequest(req, res, CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE);
   });
 
 
