@@ -25,4 +25,12 @@ fixture `Child Care Estimator Test`
     await pageEstimator.parentFeeFrequency(t, feeFrequency);
     log.info(feeFrequency, ' selected.');
 
+    let fullTimeParentFee = 1000;
+    await pageEstimator.fullTimeParentFee(t, fullTimeParentFee);
+    log.info(fullTimeParentFee, ' dollars.')
+
+    let partTimeFee = 500;
+    await pageEstimator.partTimeFee(t, partTimeFee);
+    log.info(partTimeFee, ' dollars.')
+
   });
