@@ -97,6 +97,16 @@ class PageEstimator {
         .expect(Selector('div').withExactText(childCareSavings)).ok({ timeout: 1000 })
         .expect(Selector('div').withExactText(parentFeeReduction)).ok({ timeout: 1000 });
       }
+
+      async fullTimeParentFee (t, value) {
+        await t.typeText(this.fullTimeParentFeeField, value.toString(), {replace: true})
+        .expect(this.fullTimeParentFeeField.value).eql('1000');
+      }
+
+      async partTimeFee (t, value) {
+        await t.typeText(this.partTimeFeeField, value.toString(), {replace: true})
+        .expect(this.partTimeFeeField.value).eql('500');
+      }
 }
 
 export default PageEstimator;

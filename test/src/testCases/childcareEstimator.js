@@ -21,9 +21,15 @@ fixture `Child Care Estimator Test`
     await pageEstimator.addChildren(t, totChildren);
     log.info(totChildren, ' children added.');
 
+<<<<<<< HEAD
     let typeOfCare = 'Licensed Group';
     await pageEstimator.typeOfCare(t, typeOfCare);
     log.info(typeOfCare, ' selected');
+=======
+    let typeOfCareToSelect = 'Licensed Group';
+    await pageEstimator.typeOfCare(t, typeOfCareToSelect);
+    log.info(typeOfCareToSelect, ' selected.');
+>>>>>>> b151c43 (fixed some selector issues)
 
 <<<<<<< HEAD
     let noCare = 5 ;
@@ -41,6 +47,9 @@ fixture `Child Care Estimator Test`
     log.info(feeFrequency, ' selected.');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b151c43 (fixed some selector issues)
     let fullTimeParentFee = 1000;
     await pageEstimator.fullTimeParentFee(t, fullTimeParentFee);
     log.info(fullTimeParentFee, ' dollars.')
@@ -49,10 +58,13 @@ fixture `Child Care Estimator Test`
     await pageEstimator.partTimeFee(t, partTimeFee);
     log.info(partTimeFee, ' dollars.')
 
+<<<<<<< HEAD
     let childCareSavings = '$0/month';
     let parentFeeReduction = '$500/month';
     await pageEstimator.estiamteSavings(t, childCareSavings, parentFeeReduction);
     log.info('Estimate your savings selected.');
 =======
 >>>>>>> 40c34eb (initial commit of estimation testing pages)
+=======
+>>>>>>> b151c43 (fixed some selector issues)
   });
