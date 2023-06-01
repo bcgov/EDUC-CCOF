@@ -13,7 +13,11 @@ fixture `Child Care Estimator Test`
     await pageEstimator.parentSelect(t);
     log.info('Parent Selected.');
 
+<<<<<<< HEAD
     let totChildren = 1;
+=======
+    let totChildren = 2;
+>>>>>>> 40c34eb (initial commit of estimation testing pages)
     await pageEstimator.addChildren(t, totChildren);
     log.info(totChildren, ' children added.');
 
@@ -21,6 +25,7 @@ fixture `Child Care Estimator Test`
     await pageEstimator.typeOfCare(t, typeOfCare);
     log.info(typeOfCare, ' selected');
 
+<<<<<<< HEAD
     let noCare = 5 ;
     let fourOrLess = 1;
     let moreThanFour = 1;
@@ -29,10 +34,13 @@ fixture `Child Care Estimator Test`
     log.info(fourOrLess, ' is the number of Four hours or less.')
     log.info(moreThanFour, ' is the number of Four hours or more.')
 
+=======
+>>>>>>> 40c34eb (initial commit of estimation testing pages)
     let feeFrequency = 'Daily';
     await pageEstimator.parentFeeFrequency(t, feeFrequency);
     log.info(feeFrequency, ' selected.');
 
+<<<<<<< HEAD
     let fullTimeParentFee = 1000;
     await pageEstimator.fullTimeParentFee(t, fullTimeParentFee);
     log.info(fullTimeParentFee, ' dollars.')
@@ -45,4 +53,6 @@ fixture `Child Care Estimator Test`
     let parentFeeReduction = '$500/month';
     await pageEstimator.estiamteSavings(t, childCareSavings, parentFeeReduction);
     log.info('Estimate your savings selected.');
+=======
+>>>>>>> 40c34eb (initial commit of estimation testing pages)
   });
