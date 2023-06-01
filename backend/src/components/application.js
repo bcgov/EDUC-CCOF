@@ -493,6 +493,7 @@ async function getFacilityChangeData(changeActionId){
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
   let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
+  log.info(newFacData, 'new fac data before mapping');
   return new MappableObjectForFront(newFacData.value[0], NewFacilityMappings).toJSON();
 }
 

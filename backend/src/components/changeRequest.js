@@ -148,8 +148,7 @@ async function saveChangeRequestDocs(req, res) {
     for (let document of documents) {
       await postChangeActionDocument(document);
     }
-    log.info('HIIIIIIIIIIIIIIIIIII FROM SAVE');
-    return res.status(HttpStatus.CREATED).json('hi');
+    return res.status(HttpStatus.CREATED).json();
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
