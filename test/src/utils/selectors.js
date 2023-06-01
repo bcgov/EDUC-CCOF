@@ -11,6 +11,10 @@ function getTextField(labelName) {
   return Selector('label', {timeout: 10000}).withExactText(labelName).nextSibling();
 }
 
+function getTextFieldById(idName) {
+  return Selector(idName);
+}
+
 function getTextFieldWithDivHeading(labelName, heading) {
   return Selector('div', {timeout: 10000}).withExactText(heading).nextSibling().find('label').withExactText(labelName).nextSibling();
 }
@@ -171,6 +175,7 @@ async function mapFieldsFromFile(t, fields, fileName, callback) {
 const selectors = {
   getButton,
   getTextField,
+  getTextFieldById,
   getTextFieldWithDivHeading,
   mapFieldsFromFile,
   getRadioOption,
