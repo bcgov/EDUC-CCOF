@@ -25,6 +25,14 @@ fixture `Child Care Estimator Test`
     await pageEstimator.childAgeCategory(t, childAgeCategory);
     log.info(childAgeCategory, ' selected.')
 
+    let noCare = 2;
+    let fourOrLess = 2;
+    let moreThanFour = 3;
+    await pageEstimator.careSchedule(t, noCare, fourOrLess, moreThanFour);
+    log.info(noCare, ' is the number of No care.')
+    log.info(fourOrLess, ' is the number of Four hours or less.')
+    log.info(moreThanFour, ' is the number of Four hours or more.')
+
     let feeFrequency = 'Daily';
     await pageEstimator.parentFeeFrequency(t, feeFrequency);
     log.info(feeFrequency, ' selected.');
@@ -37,6 +45,8 @@ fixture `Child Care Estimator Test`
     await pageEstimator.partTimeFee(t, partTimeFee);
     log.info(partTimeFee, ' dollars.')
 
-    await pageEstimator.estiamteSavings(t);
+    let childCareSavings = '$0/month';
+    let parentFeeReduction = '$500/month';
+    await pageEstimator.estiamteSavings(t, childCareSavings, parentFeeReduction);
     log.info('Estimate your savings selected.');
   });
