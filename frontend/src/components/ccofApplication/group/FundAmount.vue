@@ -6,7 +6,25 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" v-model.number="model.maxDaysPerWeek" label="Maximum number of days per week you provide child care" />
+                <!-- <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" 
+                  v-model.number="model.maxDaysPerWeek" @input="model.maxDaysPerWeek = model.maxDaysPerWeek ? model.maxDaysPerWeek : null" 
+                  label="Maximum number of days per week you provide child care" /> -->
+
+                <!-- <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" 
+                  v-model.number="model.maxDaysPerWeek" v-input-number 
+                  label="Maximum number of days per week you provide child care" /> -->
+
+                <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" 
+                  v-model.number="model.maxDaysPerWeek" @input="model.maxDaysPerWeek = model.maxDaysPerWeek ? model.maxDaysPerWeek : null" 
+                  label="Maximum number of days per week you provide child care" />
+
+                <!-- <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" 
+                :value="model.maxDaysPerWeek" @input="model.maxDaysPerWeek = model.maxDaysPerWeek ? model.maxDaysPerWeek : null" 
+                label="Maximum number of days per week you provide child care" /> -->
+
+                <!-- <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" 
+                  v-model.number="model.maxDaysPerWeek = model.maxDaysPerWeek ? model.maxDaysPerWeek : null" 
+                  label="Maximum number of days per week you provide child care" /> -->
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field :disabled="isLocked" type="number" min="0" max="52" outlined required :rules="[...rules.required, rules.min(0), rules.max(52)]" v-model.number="model.maxWeeksPerYear" label="Maximum of weeks per year you provide child care" />
