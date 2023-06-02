@@ -26,23 +26,29 @@ class PageEstimator {
 
       async typeOfCare (t, option) {
         const typeOfCareSelect = Selector('#list-39');
+        const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
         await t.click(this.typeOfCareSelector)
         .expect(typeOfCareSelect.exists).ok()
-        .click(typeOfCareSelect.withText(option));
+        .expect(optionToSelect.exists).ok()
+        .click(optionToSelect);
       }
       
       async childAgeCategory (t, option) {
         const childAgeCategorySelect = Selector('#list-62');
+        const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
         await t.click(this.childAgeCategorySelector)
         .expect(childAgeCategorySelect.exists).ok()
-        .click(childAgeCategorySelect.withText(option));
+        .expect(optionToSelect.exists).ok()
+        .click(optionToSelect.withText(option));
       }
 
       async parentFeeFrequency (t, option) {
         const parentFeeFrequencySelect = Selector('#list-138');
+        const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
         await t.click(this.parentFeeFrequencySelector)
               .expect(parentFeeFrequencySelect.exists).ok()
-              .click(parentFeeFrequencySelect.withText(option));
+              .expect(optionToSelect.exists).ok()
+              .click(optionToSelect.withText(option));
       }
 
       async fullTimeParentFee (t, value) {
@@ -57,7 +63,8 @@ class PageEstimator {
 
       async estiamteSavings (t) {
         await t.click(this.estimateYourSavingsBtn)
-        .expect(Selector('div').withExactText('Results')).ok({ timeout: 1000 });
+        .expect(Selector('div').withExactText('$0/month')).ok({ timeout: 1000 })
+        .expect(Selector('div').withExactText('$500/month')).ok({ timeout: 1000 });
       }
 }
 
