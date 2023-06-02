@@ -43,10 +43,40 @@ class PageEstimator {
         .click(optionToSelect.withText(option));
       }
 
+      async careSchedule (t, noCare, fourOrLess, moreThanFour) {
+        const calendarTable = Selector('div').withAttribute('role', 'list');
+        const noCareToSelectList = Selector('div').withAttribute('role', 'option').withExactText('No care');
+        const fourHoursOrLessToSelectList = Selector('div').withAttribute('role', 'option').withExactText('4 hours or less');
+        const moreThanFourToSelectList = Selector('div').withAttribute('role', 'option').withExactText('More than 4 hours');
+        await t.expect(calendarTable.count).eql(7)
+              .expect(noCareToSelectList.count).eql(7);
+
+        const noCareColumns = noCare;
+        for (let i = 0; i < noCareColumns; i++) {
+          log.info(i, ' number of passes for no care.')
+          const noCareToSelect = noCareToSelectList.nth(i);
+          await t.click(noCareToSelect);
+        }
+
+        const addPartTimeColumns = noCare+fourOrLess;
+        for (let i = noCare; i < addPartTimeColumns; i++) {
+          log.info(i, ' number of passes for less than 4');
+          const fourHoursOrLessToSelect = fourHoursOrLessToSelectList.nth(i);
+          await t.click(fourHoursOrLessToSelect);
+        }
+
+        const addMoreThanFourColumns = addPartTimeColumns+moreThanFour;
+        for (let i = addPartTimeColumns ; i < addMoreThanFourColumns; i++) {
+          log.info(i, ' number of passes for More than 4.');
+          const moreThanFourToSelect = moreThanFourToSelectList.nth(i);
+          await t.click(moreThanFourToSelect);
+        }
+      }
+
       async parentFeeFrequency (t, option) {
         const parentFeeFrequencySelect = Selector('#list-138');
         const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
-        await t.click(this.parentFeeFrequencySelector)
+        await t.click(this.parentFeeFrequencySelector).debug()
               .expect(parentFeeFrequencySelect.exists).ok()
               .expect(optionToSelect.exists).ok()
               .click(optionToSelect.withText(option));
@@ -62,10 +92,10 @@ class PageEstimator {
         .expect(this.partTimeFeeField.value).eql(value.toString());
       }
 
-      async estiamteSavings (t) {
+      async estiamteSavings (t, childCareSavings, parentFeeReduction) {
         await t.click(this.estimateYourSavingsBtn)
-        .expect(Selector('div').withExactText('$0/month')).ok({ timeout: 1000 })
-        .expect(Selector('div').withExactText('$500/month')).ok({ timeout: 1000 });
+        .expect(Selector('div').withExactText(childCareSavings)).ok({ timeout: 1000 })
+        .expect(Selector('div').withExactText(parentFeeReduction)).ok({ timeout: 1000 });
       }
 }
 
