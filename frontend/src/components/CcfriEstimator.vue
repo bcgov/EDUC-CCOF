@@ -16,22 +16,24 @@
           </v-img>
         </v-col>
       </v-row>
-      <v-card class="elevation-0">
-        <v-col class="py-2">
-          <v-row class="py-0 noticeInfo" align="center">
-            <v-col :cols="12" align="center" md="1">
-              <v-icon
-                x-large
-                class="py-1 noticeInfoIcon">
-                mdi-information
-              </v-icon>
-            </v-col>
-            <v-col>
-              Thank you for your patience while we update fees as some fees may be in the process of being updated. Please check back as updates occur daily or if you have questions about the fees a facility is approved for, call the contact centre at 1-888-338-6622 (Option 2).
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-card>
+      <v-row justify="center">
+        <v-card class="elevation-0"  max-width="1448">
+          <v-col class="py-2">
+            <v-row class="py-0 noticeInfo" align="center">
+              <v-col :cols="12" align="center" md="1">
+                <v-icon
+                  x-large
+                  class="py-1 noticeInfoIcon">
+                  mdi-information
+                </v-icon>
+              </v-col>
+              <v-col>
+                Thank you for your patience while we update fees for the 2023/24 year. Please check back as updates occur daily or if you have questions about the fees a facility is approved for, call the contact centre at 1-888-338-6622 (Option 2).
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-card>
+      </v-row>
       <v-row justify="center">
         <v-col cols="12" class="pt-1" align="center">
           <v-card elevation="0" color="#7B2EE5" max-width="1448">
