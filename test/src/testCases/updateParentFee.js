@@ -4,8 +4,11 @@ import PageParentFee from '../pageObjects/PageParentFee';
 import PageAlert from '../pageObjects/PageAlert';
 
 const config = require('../utils/configLoader');
+<<<<<<< HEAD
 import { Selector } from 'testcafe';
 
+=======
+>>>>>>> 7934b70e8214b5f93c2b1984b8470f1ec0b564f7
 
 
 const login = new PageLogin();
@@ -37,8 +40,12 @@ test('Update Parent Fee Test', async t => {
   await t.click(parentFee.saveButton).wait(3000);
   await t.expect(alert.success.exists).ok();
   await t.click(parentFee.nextButton);
+<<<<<<< HEAD
   await parentFee.updateParentFeeFromFile(t, 'test2', 'facility-parentfee.txt')
 
   await t.expect(parentFee.nextButton.hasAttribute('disabled')).ok();
+=======
+
+>>>>>>> 7934b70e8214b5f93c2b1984b8470f1ec0b564f7
 });
 

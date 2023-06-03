@@ -17,6 +17,7 @@ fixture `Child Care Estimator Test`
     await pageEstimator.addChildren(t, totChildren);
     log.info(totChildren, ' children added.');
 
+<<<<<<< HEAD
     let typeOfCare = 'Licensed Group';
     await pageEstimator.typeOfCare(t, typeOfCare);
     log.info(typeOfCare, ' selected');
@@ -24,6 +25,19 @@ fixture `Child Care Estimator Test`
     let noCare = 5 ;
     let fourOrLess = 1;
     let moreThanFour = 1;
+=======
+    let typeOfCareToSelect = 'Licensed Group';
+    await pageEstimator.typeOfCare(t, typeOfCareToSelect);
+    log.info(typeOfCareToSelect, ' selected.');
+
+    let childAgeCategory = '0 - 18 Months';
+    await pageEstimator.childAgeCategory(t, childAgeCategory);
+    log.info(childAgeCategory, ' selected.')
+
+    let noCare = 2;
+    let fourOrLess = 2;
+    let moreThanFour = 3;
+>>>>>>> 7934b70e8214b5f93c2b1984b8470f1ec0b564f7
     await pageEstimator.careSchedule(t, noCare, fourOrLess, moreThanFour);
     log.info(noCare, ' is the number of No care.')
     log.info(fourOrLess, ' is the number of Four hours or less.')
