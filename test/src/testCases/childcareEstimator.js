@@ -21,9 +21,9 @@ fixture `Child Care Estimator Test`
     await pageEstimator.typeOfCare(t, typeOfCare);
     log.info(typeOfCare, ' selected');
 
-    let noCare = 2;
-    let fourOrLess = 2;
-    let moreThanFour = 3;
+    let noCare = 5 ;
+    let fourOrLess = 1;
+    let moreThanFour = 1;
     await pageEstimator.careSchedule(t, noCare, fourOrLess, moreThanFour);
     log.info(noCare, ' is the number of No care.')
     log.info(fourOrLess, ' is the number of Four hours or less.')
