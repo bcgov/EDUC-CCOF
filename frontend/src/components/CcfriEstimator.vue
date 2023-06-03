@@ -16,6 +16,22 @@
           </v-img>
         </v-col>
       </v-row>
+      <v-card class="elevation-0">
+        <v-col class="py-2">
+          <v-row class="py-0 noticeInfo" align="center">
+            <v-col :cols="12" align="center" md="1">
+              <v-icon
+                x-large
+                class="py-1 noticeInfoIcon">
+                mdi-information
+              </v-icon>
+            </v-col>
+            <v-col>
+              Thank you for your patience while we update fees as some fees may be in the process of being updated. Please check back as updates occur daily or if you have questions about the fees a facility is approved for, call the contact centre at 1-888-338-6622 (Option 2).
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-card>
       <v-row justify="center">
         <v-col cols="12" class="pt-1" align="center">
           <v-card elevation="0" color="#7B2EE5" max-width="1448">
@@ -102,7 +118,7 @@
                 Total number of children</span>
             </v-col>
             <v-col cols="4" class="pb-0">
-              <v-text-field 
+              <v-text-field
                 id="totNumberOfChildren"
                 @change="updateNumberOfChildSubForms"
                 @keypress="numberFilter"
@@ -223,7 +239,7 @@
               </v-row>
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
-  <!-- ******************************************************************************************************************************************************** -->          
+  <!-- ******************************************************************************************************************************************************** -->
               <v-row v-if="child.careSchedule == 'Part Time'">
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
@@ -244,10 +260,10 @@
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
-                  
+
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -258,16 +274,16 @@
                     </v-card>
 
                     <v-spacer></v-spacer>
-                    
+
                     <v-card>
-                      <v-toolbar 
+                      <v-toolbar
                         color="#431782"
                       >
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Tuesday</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                  
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[1]"
@@ -281,7 +297,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -291,7 +307,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-                    
+
                     <v-card max-width="">
                       <v-toolbar
                         color="#431782"
@@ -300,7 +316,7 @@
                       <v-toolbar-title>Wednesday</v-toolbar-title>
                       <v-spacer></v-spacer>
                     </v-toolbar>
-                      
+
                       <v-list>
                         <v-list-item-group
                           v-model="child.selectedCareType[2]"
@@ -314,7 +330,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -347,7 +363,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -379,7 +395,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -410,7 +426,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -442,7 +458,7 @@
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-                  
+
                             <v-divider
                               v-if="index < careTypes.length - 1"
                               :key="index"
@@ -662,7 +678,7 @@
                 </v-col>
                 <v-col cols="4" class="pb-0">
                   <v-text-field
-                    id="partTimeFee" 
+                    id="partTimeFee"
                     @keypress="currencyFilter"
                     @change="truncateLeadingZerosDecimals(child.number)"
                     v-model="child.partTimeFee"
@@ -1323,7 +1339,7 @@ export default {
     },
     decimalExists: function(n) {
       if (n != null &&  n != undefined) {
-        return (n - Math.floor(n)) !== 0; 
+        return (n - Math.floor(n)) !== 0;
       }
     }
   },
