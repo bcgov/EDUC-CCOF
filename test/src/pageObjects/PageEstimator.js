@@ -76,7 +76,7 @@ class PageEstimator {
       async parentFeeFrequency (t, option) {
         const parentFeeFrequencySelect = Selector('#list-138');
         const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
-        await t.click(this.parentFeeFrequencySelector).debug()
+        await t.click(this.parentFeeFrequencySelector)
               .expect(parentFeeFrequencySelect.exists).ok()
               .expect(optionToSelect.exists).ok()
               .click(optionToSelect.withText(option));
