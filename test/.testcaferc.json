@@ -19,28 +19,17 @@
     "selectorTimeout": 20000,
     "disableMultipleWindows": true,
     "clientScripts": [
-<<<<<<< HEAD
         {
             "module": "@testing-library/dom/dist/@testing-library/dom.umd.js"
         }
     ],
-=======
-        {
-        "module": "@testing-library/dom/dist/@testing-library/dom.umd.js"
-    }
-],
->>>>>>> 7934b70e8214b5f93c2b1984b8470f1ec0b564f7
     "screenshots": {
-    "path": "src/screenshots",
-    "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${TEST}.png",
-    "takeOnFails": false,
-    "fullPage": false
-},
-"filter": {
-    "testGrep": ".*"
+        "path": "src/screenshots",
+        "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${TEST}.png",
+        "takeOnFails": false,
+        "fullPage": false
+    },
+    "filter": {
+        "testGrep": ".*"
+    }
 }
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> 7934b70e8214b5f93c2b1984b8470f1ec0b564f7
