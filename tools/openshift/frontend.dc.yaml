@@ -126,7 +126,7 @@
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
-      name: "${APP_NAME}-frontend-${BRANCH}-cpu-autoscaler"
+      name: "${APP_NAME}-frontend-cpu-autoscaler"
     spec:
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
