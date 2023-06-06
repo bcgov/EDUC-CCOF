@@ -63,18 +63,30 @@ fixture `Child Care Estimator Test`
           //await pageEstimator.parentFeeFrequency(t, feeFrequency);
           log.info(feeFrequency, ' selected.');
 
-          let fullTimeParentFee = values[3];
-          //await pageEstimator.fullTimeParentFee(t, fullTimeParentFee);
-          log.info(fullTimeParentFee, ' dollars.')
+          let approvedFee = values[3];
+          //await pageEstimator.fullTimeParentFee(t, approvedFee);
+          log.info(approvedFee, ' dollars.')
 
-          let partTimeFee = values[5];
-          //await pageEstimator.partTimeFee(t, partTimeFee);
-          log.info(partTimeFee, ' dollars.')
+          let actualFee = values[5];
+          //await pageEstimator.partTimeFee(t, actualFee);
+          log.info(actualFee, ' dollars.')
 
-          let childCareSavings = '$0/month';
-          let parentFeeReduction = '$500/month';
+          // * number of days of care * 4 (number of weeks in a month)
+          let dailychildCareSavings = correctValues[0]/20;
+          let monthlyChildCareSavingsHD = dailychildCareSavings * hd * 4;
+          let monthlyChildCareSavingsFD = dailychildCareSavings * fd * 4;
+          let totalSavings = monthlyChildCareSavingsFD + monthlyChildCareSavingsHD;
+          let childCareSavings = '$'+dailychildCareSavings+'/day ($'+ totalSavings +'/month)';
+
+          let estimatedParentFee = correctValues[1]/20;
+          let monthlysEtimatedParentFeeHD = estimatedParentFee * hd * 4;
+          let monthlyEtimatedParentFeeFD = estimatedParentFee * fd * 4;
+          let totalEstimatedFees = monthlysEtimatedParentFeeHD + monthlyEtimatedParentFeeFD;
+          let parentFeeReduction = '$'+estimatedParentFee+'/day ($'+totalEstimatedFees+'/month)';
           //await pageEstimator.estiamteSavings(t, childCareSavings, parentFeeReduction);
-          log.info('Estimate your savings selected.');
+          log.info(childCareSavings, ' is your Estimated child care savings.');
+          log.info(parentFeeReduction, ' is your Estimated parent fee after reduction.');
+
         
         }
       }
