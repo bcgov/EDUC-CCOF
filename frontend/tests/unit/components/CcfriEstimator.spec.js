@@ -86,9 +86,23 @@ describe('CcfriEstimator.js', () => {
         'v-form': formStub,
       }
     });
+
+    const CHILD_CATEGORY_MAP = {
+      '0-18':'0 - 18 Months',
+      '18-36': '18 - 36 Months',
+      '3-k': '3 Years to Kindergarten',
+      'Before and After Kinder':  'Before & After School (Kindergarten Only)',
+      'OOSC-G': 'Before & After School (Grade 1+)',
+      'Preschool': 'Preschool'
+    };
+
+    const CARE_TYPE_MAP = {
+      'Group': 'Licensed Group',
+      'Family': 'Licensed Family'
+    };
     // wrapper.vm.$refs.form.validate = true;
     // const lines = await loadFile('estimatorPreschool.csv');
-    const lines = await loadFile('estimatorData.csv');
+    const lines = await loadFile('estimator-data-v2.csv');
     // const lines = await loadFile('testData.csv');
 
     for (let i = 0 ; i < lines.length; i ++) {
@@ -96,10 +110,28 @@ describe('CcfriEstimator.js', () => {
       processOneLine(lines[i], 'Daily', i);
     }
 
+    function getChildCategory(childCat) {
+      childCat = String(childCat).trim();
+      const retVal = CHILD_CATEGORY_MAP[childCat];
+      if (!retVal) {
+        throw `Cannot find child category for value: [${childCat}]`;
+      }
+      return retVal;
+    }
+
+    function getCareType(careType) {
+      careType = String(careType).trim();
+      const retVal = CARE_TYPE_MAP[careType];
+      if (!retVal) {
+        throw `Cannot find Care Type for value: [${careType}]`;
+      }
+      return retVal;
+    }
+
     function processOneLine(line, frequency, index) {
       let values = line.split(',');
-      wrapper.vm.form.typeOfCare = String(values[0]).trim();
-      wrapper.vm.children[0].childAgeCategory = String(values[1]).trim();
+      wrapper.vm.form.typeOfCare = getCareType(values[0]);
+      wrapper.vm.children[0].childAgeCategory = getChildCategory(values[1]);
       wrapper.vm.children[0].careSchedule = 'Part Time';
       wrapper.vm.children[0].parentFeeFrequency = frequency;
       wrapper.vm.children[0].approvedFee = frequency === 'Monthly' ? values[2] : values[3];
