@@ -15,17 +15,17 @@
         <!-- <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader> -->
         <v-row  class="justify-space-around ">
 
-          <v-col class="col-lg-8 ">
+          <v-col class="col-lg-7 ">
 
             <v-row>
-              <v-col class="col-lg-10 ">
+              <v-col class="col-lg-12 ">
               <p class="px-2 text--primary"><strong> For all changes other than "Adding a new facility(s) to your Organization, please download the change notification form by clicking on the button below."</strong>
               </p>
                  <v-btn dark class="blueButton mb-10 ml-2" >Download a Change Notification Form</v-btn>
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="col-lg-10 ">
+              <v-col class="col-lg-12 ">
               <p class="px-2 text--primary"><strong> Please upload the Change Notification Form in the Dropbox below once you have filled out the form.</strong>
               </p>
               <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
@@ -39,7 +39,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="col-lg-10 ">
+              <v-col class="col-lg-12 ">
               <p class="px-2 text--primary"><strong> Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
               </p>
               <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
@@ -52,18 +52,101 @@
                 ></ChangeFileUpload>
               </v-col>
             </v-row>
+            <!-- <p class="px-2 ml-6 text--primary"> For any other changes, please call the office at 123-456-7890
+              </p> -->
 
-            <p class="px-2 ml-6 text--primary"> For any other changes, please call the office at 123-456-7890
+          </v-col>
+          <v-col class="col-lg-4 boarder">
+            <v-row>
+              <v-col class="col-lg-12 ">
+              <p class="px-2 text--primary"><strong>Supporting Documents</strong>
               </p>
+              <br>
+              <v-row class="pa-6 pt-2 text-body-2">
+               <v-list-item-title>Legal or organization name change</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item>Proof of name change document
+                        <br> (e.g. marriage certificate, resumption of surname certificate, BC Corporate Registry "Notice of Name Change")
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
 
+               <v-list-item-title>Group organization mailing address change</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item>CCALA Licence
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
 
+               <v-list-item-title>Group facility address change</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item> <a href="#"> Group application form </a>
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
 
+               <v-list-item-title>Family facility mailing address change</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item> <a href="#"> Family application form </a>
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
+
+                <v-list-item-title>Family name change</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item>CCALA Licence
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
+
+                <v-list-item-title>License change</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item>CCALA Licence
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
+
+                <v-list-item-title>New facility license</v-list-item-title>
+                <v-list>
+                  <ul>
+                    <li>
+                      <v-list-item>Family or group CCOF application form
+                      </v-list-item>
+                    </li>
+                  </ul>
+                </v-list>
+
+                <v-list-item-title> For more information <a href="#">visit the Child Care Operating Fund website</a></v-list-item-title>
+                <v-list>
+                  <v-list-item> Greater Victoria area: <a href="tel:+2503656501"> +1 250 365-6501</a>
+                  </v-list-item>
+                  <v-list-item> Outside Greater Victoria (toll free): <a href="tel:+18883386622">1 888 338-6622</a>
+                  </v-list-item>
+                  <v-list-item> Email: <a href="email+MCF.CCOF@gov.bc.ca"> MCF.CCOF@gov.bc.ca</a>
+                  </v-list-item>
+                </v-list>
+              </v-row>
+              </v-col>
+            </v-row>
           </v-col>
-          <v-col class="col-lg-4 ">
-
-
-          </v-col>
-
         </v-row>
 
       </v-container>
@@ -224,7 +307,7 @@ export default {
   border-top: 5px solid #003366 !important;
 }
 .boarder{
-  border: 5px solid #003366 !important;
+  border-left: 1px solid #efefef !important;
 }
 .blueButton {
   background-color: #003366 !important;
