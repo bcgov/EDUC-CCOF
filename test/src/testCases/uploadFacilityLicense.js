@@ -13,7 +13,6 @@ const upload = new PageUploadLicense();
 const acceptFile = ["jpg", "jpeg", "png", "pdf", "docx", "doc", "xls", "xlsx", "heic"];
 const facilityName = "test2";
 
-
 fixture `Upload License Tests`
   .page(`${config.get('url')}/login`)
   .beforeEach(async t => {

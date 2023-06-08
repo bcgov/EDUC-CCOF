@@ -69,16 +69,6 @@ class PageEstimator {
     }
   }
 
-<<<<<<< HEAD
-      async parentFeeFrequency (t, option) {
-        const parentFeeFrequencySelect = Selector('#list-138');
-        const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
-        await t.click(this.parentFeeFrequencySelector).debug()
-              .expect(parentFeeFrequencySelect.exists).ok()
-              .expect(optionToSelect.exists).ok()
-              .click(optionToSelect.withText(option));
-      }
-=======
   async parentFeeFrequency(t, option) {
     const parentFeeFrequencySelect = Selector('div').withAttribute('tabindex', '-1');
     const optionToSelect = Selector('div').withAttribute('role', 'option').withExactText(option)
@@ -87,7 +77,6 @@ class PageEstimator {
       .expect(optionToSelect.exists).ok()
       .click(optionToSelect.withText(option));
   }
->>>>>>> dcca4fb (initial successful testcafe suite for estimates)
 
   async fullTimeParentFee(t, value) {
     await t.typeText(this.fullTimeParentFeeField, value.toString(), { replace: true })
