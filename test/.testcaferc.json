@@ -1,7 +1,7 @@
 {
     "_comment": "browsers should accept: edge -private, firefox -private-window, chrome -incognito",
     "browsers": [
-        "chrome: --incognito --disable-dev-shm-usage --window-size=1280,1280"
+        "chrome: --incognito --disable-dev-shm-usage --window-size=1920,1080"
     ],
     "browserInitTimeout": 360000,
     "reporter": "list",
@@ -25,9 +25,9 @@
     ],
     "screenshots": {
         "path": "src/screenshots",
-        "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${TEST}.png",
-        "takeOnFails": false,
-        "fullPage": false
+        "pathPattern": "${DATE}/test-${TEST_INDEX}/${TEST}.png",
+        "takeOnFails": true,
+        "fullPage": true
     },
     "filter": {
         "testGrep": ".*"
