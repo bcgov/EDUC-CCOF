@@ -1219,6 +1219,9 @@ export default {
     filterChildsAgeCategory() {
       this.childAgeCategoryList = this.getChildAgeCategoryList();
       if (this.selectedFacility.approvedFeesByChildAgeCategory != undefined) {
+        const returnedCategories = this.selectedFacility.approvedFeesByChildAgeCategory.map(el => el.childCareCategory);
+        this.childAgeCategoryList = this.childAgeCategoryList.filter( el => returnedCategories.includes(el));
+
         for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
           if (this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeJan == null &&
               this.selectedFacility.approvedFeesByChildAgeCategory[i].approvedFeeFeb == null &&
