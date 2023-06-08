@@ -48,8 +48,8 @@
                   mdi-alert-circle
                 </v-icon>
               </v-col>
-              <v-col cols="10" class="pt-7 text-left" style="font-size:14px;color:white;margin-left:-18px;">
-                The estimation provided in this service is <strong><u>not</u></strong> a guarantee of payments. The estimation does not take into account all of your circumstances and <strong><u>should be used as a guide only.</u></strong>
+              <v-col cols="10" class="pt-7 text-left" style="font-size:16px;color:white;margin-left:-18px;">
+                The estimation provided in this service is <strong><u>not</u></strong> a guarantee of payments. The estimation does not take into account all of your circumstances and <strong><u>should be used as a guide only</u>. Note:</strong> None of the information entered on the estimator is recorded or retained.
               </v-col>
             </v-row>
             <v-row>
@@ -87,7 +87,7 @@
                     We recommend you use the 'Optional Facility Search' to find your child care provider. If you cannot find your provider, contact them directly for the <strong>approved full-time parent fee before fee reduction is applied.</strong>
                   </div>
                   <div v-show="isProvider">
-                    You may use the 'Optional Facility Search' to find your facility. If you cannot find your facility, reference your facility's Program Confirmation Form for <strong>your approved full-time parent fee before fee reduction is applied.</strong>
+                    You may use the 'Optional Facility Search' to find your facility. If you cannot find your facility in the search, reference your facility's Program Confirmation Form on <a href="https://mychildcareservices.gov.bc.ca/login" target="_blank"><u style="color:#0FC3ED">My ChildCareBC Services</u></a> for <strong>your approved full-time parent fees before fee reduction is applied</strong>.
                   </div>
                 </v-col>
               </v-row>
@@ -214,7 +214,7 @@
               <v-row>
                 <v-col cols="5" class="estimator-label">
                   <span style="color: #313131">
-                    Care Schedule
+                    Weekly care schedule
                   </span>
                 </v-col>
                 <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
@@ -776,9 +776,12 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" class="text-center">
-                Families earning up to $111,000 may be eligible for the Affordable Child Care Benefit (ACCB).  <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Click here for the ACCB Estimator.</u></a>
+              <v-col cols="1"/>
+              <v-col cols="10" class="pb-4">
+                Families earning up to $111,000 may be eligible for the Affordable Child Care Benefit (ACCB).  <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Click here for the ACCB Estimator.</u></a><br><br>
+                <span v-html="resultsBottomText"/>
               </v-col>
+              <v-col cols="1"/>
             </v-row>
           </div>
         </v-card>
@@ -916,7 +919,7 @@ export default {
     approvedFeeToolTip() {
       if (this.isParent) {
         // eslint-disable-next-line
-        return "Enter the facility's highest approved full-time parent fee before any fee reduction.<br>Providers are required to give parents this information in writing.<br><br>If you are unsure what fee to enter, use the \"Optional Facility Search\" above, or refer<br>to the written information given to you by your provider.";
+        return "Enter the facility's highest approved full-time parent<br>fee before any fee reduction. Providers are required<br>to give parents this information in writing.<br><br>You can use the optional facility search above or ask<br>your child care provider if you are unsure which fee<br>to enter.";
       }
       // eslint-disable-next-line
       return "Enter the facility's highest full-time parent fee approved by the Ministry<br>before any fee reduction.<br><br>Child care providers can reference this information on their approved<br>Program Confirmation Form.";
@@ -925,18 +928,26 @@ export default {
     actualParentFeeToolTip() {
       if (this.isParent) {
         // eslint-disable-next-line
-        return "Enter the parent fee before any reductions or benefits are applied. Providers<br>are required to give parents this information in writing.<br><br>This fee may differ from the approved full-time parent fee if it is a part-time<br>fee, discounted fee or inclusive of optional fees.";
+        return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information to parents in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees.<br>For example, the provider may offer a reduced fee for families with other<br>siblings at the facility.";
       }
       // eslint-disable-next-line
-      return "Enter the parent fee before any reductions or benefits are applied. Providers<br>are required to give parents this information in writing.<br><br>This fee may differ from the approved full-time parent fee if it is a part-time<br>fee, discounted fee or inclusive of optional fees.";
+      return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information to parents in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.";
     },
     resultsToolTip() {
       if (this.isParent) {
         // eslint-disable-next-line
-        return "If you see an inconsistency, contact your provider. If the inconsistency<br>remains, call the Child Care Operating Funding Program at 1-888-338-6622<br>(Option 2).";
+        return "If the calculation below does not match your<br>expected result, contact your child care provider. If<br>the inconsistency remains, call the Child Care<br>Operating Funding Program at 1-888-338-6622<br>(Option 2).";
       }
       // eslint-disable-next-line
-      return "If you see an inconsistency, contact the Child Care Operating Funding<br>Program at 1-888-338-6622 (Option 2)."
+      return "If the calculation below does not match your<br>expected result, contact the Child Care Operating<br>Funding Program at 1-888-338-6622 (Option 2)."
+    },
+    resultsBottomText() {
+      if (this.isParent) {
+        // eslint-disable-next-line
+        return "If the calculation does not match your expected result, contact your child care provider. If the inconsistency remains, call the Child Care Operating Funding Program at 1-888-338-6622 (Option 2)."
+      }
+      // eslint-disable-next-line
+      return "If the calculation does not match your expected result, contact the Child Care Operating Funding Program at 1-888-338-6622 (Option 2)."
     }
   },
   methods: {
@@ -975,14 +986,14 @@ export default {
         switch (this.children[index - 1].childAgeCategory) {
         case CHILDCARE_TYPE_PRESCHOOL:
           // eslint-disable-next-line
-          return "Preschool care is only CCFRI-eligible for 4 hours or less.";
+          return "Licensed preschool care is only funded for 4 hours or less.";
         case CHILDCARE_TYPE_SCHOOL_CARE_K:
         case CHILDCARE_TYPE_SCHOOL_CARE_1:
           // eslint-disable-next-line
-          return "Select the amount of time you are able to access child care, not the amount<br>of time your child is actually in care. For example, if your child has access to<br>5 hours of care but attends care for 3 hours, select \"More than 4 hours.\"";
+          return "Select the amount of time your child has access to a child<br>care space, not the amount of time your child attends the space.<br><br>For example, select \"more than 4 hours\" if your child<br>attends care for one hour in the morning and two hours in<br>the afternoon, but you are able to use the space for longer<br>than 4 hours.";
         default:
           // eslint-disable-next-line
-          return "Maximum funding is based on five days of more than 4 hours of care.";
+          return "Select your typical care schedule. Maximum funding for<br>CCFRI is based on five days of more than 4 hours of care<br>(full time care).";
         }
       } else {
         switch (this.children[index - 1].childAgeCategory) {
