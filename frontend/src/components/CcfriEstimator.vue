@@ -1393,7 +1393,7 @@ export default {
     filterChildsAgeCategory() {
       if (this.selectedFacility.approvedFeesByChildAgeCategory) {
         // if there are approved fees by categories, only show the categories with fees in the dropdown
-        // let's remove from the childAgeCategoryList instead of add to it in case
+        // let's remove from the childAgeCategoryList instead of adding to it in case
         // the list coming back from the server is not in our favoured order.
         const returnedCategories = this.selectedFacility.approvedFeesByChildAgeCategory.map(el => el.childCareCategory);
         let removeList = CHILD_CARE_CATEGORY_LIST.filter( el => !returnedCategories.includes(el));
