@@ -756,7 +756,7 @@
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                           <div class="d-flex">
-                          <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;">
+                          <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;" :id="`reduction-amt-${String(result.number)}`">
                             {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.reductionAmountPerChild/20))+'/day ($'+display2Decimals((result.reductionAmountPerChild / 20 * result.daysOfCare))+'/month)' : ''}}
                             {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.reductionAmountPerChild/4))+'/week ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
                             {{result.feeFrequency=='Monthly'? '$'+(display2Decimals(result.reductionAmountPerChild))+'/month' : ''}}
@@ -764,7 +764,7 @@
                       </div>
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
-                        <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px">
+                        <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px"  :id="`parent-fee-amt-${String(result.number)}`">
                           {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.actualParentFeePerChild/20))+'/day ($'+display2Decimals((result.actualParentFeePerChild / 20 * result.daysOfCare))+'/month)' : ''}}
                           {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.actualParentFeePerChild/4))+'/week ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
                           {{result.feeFrequency=='Monthly'? '$'+display2Decimals(result.actualParentFeePerChild)+'/month' : ''}}
@@ -778,8 +778,9 @@
             <v-row>
               <v-col cols="1"/>
               <v-col cols="10" class="pb-4">
-                Families earning up to $111,000 may be eligible for the Affordable Child Care Benefit (ACCB).  <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Click here for the ACCB Estimator.</u></a><br><br>
                 <span v-html="resultsBottomText"/>
+                <br><br>
+                <span>Families earning up to $111,000 may be eligible for the Affordable Child Care Benefit (ACCB).  <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Click here for the ACCB Estimator.</u></a></span>
               </v-col>
               <v-col cols="1"/>
             </v-row>
