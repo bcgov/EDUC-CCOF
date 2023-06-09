@@ -90,6 +90,10 @@ class PageEstimator {
 
   async estimateSavings(t, childCareSavings, parentFeeReduction) {
     log.info('Expected values: ', childCareSavings, parentFeeReduction);
+
+    const savings = Selector('div').withText(childCareSavings);
+    log.info (savings.innerText, savings.textContent);
+
     await t.click(this.estimateYourSavingsBtn)
       .expect(Selector('div').withText(childCareSavings).exists).ok()
       .expect(Selector('div').withText(parentFeeReduction).exists).ok();
