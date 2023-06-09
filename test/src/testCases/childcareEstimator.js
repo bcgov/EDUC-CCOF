@@ -6,7 +6,7 @@ const path = require('path');
 const config = require('../utils/configLoader');
 const validation = require('../utils/validation');
 const pageEstimator = new PageEstimator();
-const data = loadFile('estimatorData.csv');
+const data = loadFile('local_estimatorData.csv');
 
 fixture`Child Care Estimator Test`
   .page(`${config.get('url')}/ccfri-estimator`).after(async t => {
