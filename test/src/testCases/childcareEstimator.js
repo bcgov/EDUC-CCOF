@@ -24,7 +24,7 @@ data.forEach(line => {
       }
 
       for (let hd = 0; (hd + fd) <= 7; hd++) {
-        log.info(`full time days = ${fd} and part time days = ${hd}`);
+        //log.info(`full time days = ${fd} and part time days = ${hd}`);
         let correctCell = values[columnOffset++];
         let correctValues = correctCell.split(' ');
         if (fd === 0 && hd === 0) { // in the spreadsheet there is no fd=0, hd=-, so test the FT rate.
@@ -74,6 +74,5 @@ function loadFile(fileName) {
   let lines = file.split('\n');
   lines.shift(); // remove the first 2 lines which are headers
   lines.shift();
-  log.info(lines.length, ' is the the number of lines.');
   return lines;
 }

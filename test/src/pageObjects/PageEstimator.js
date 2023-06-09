@@ -88,17 +88,31 @@ class PageEstimator {
       .expect(this.partTimeFeeField.value).eql(value.toString());
   }
 
-  async estimateSavings(t, childCareSavings, parentFeeReduction) {
-    log.info('Expected values: ', childCareSavings, parentFeeReduction);
+  async estimateSavings(t, expectedChildCareSavings, expectedParentFeeAfterRreduction) {
 
-    const savings = Selector('div').withText(childCareSavings);
-    log.info (savings.innerText, savings.textContent);
+    const childCareSavings = Selector('#reduction-amt-1');
+    const parentFeeAfterReduction = Selector('#parent-fee-amt-1');
 
     await t.click(this.estimateYourSavingsBtn)
-      .expect(Selector('div').withText(childCareSavings).exists).ok()
-      .expect(Selector('div').withText(parentFeeReduction).exists).ok();
-  }
+      .expect(childCareSavings.exists).ok()
+      .expect(parentFeeAfterReduction.exists).ok();
 
+    const childCareSavingsArray = (await childCareSavings.innerText).split('/');
+    const childCareSavingsActual = childCareSavingsArray[0].replace('$', '');
+
+    const parentFeeAfterReductionArray = (await parentFeeAfterReduction.innerText).split('/');
+    const parentFeeAfterReductionActual = parentFeeAfterReductionArray[0].replace('$', '');
+
+    await t.expect(isWithinAcceptedRange(expectedChildCareSavings, childCareSavingsActual)).ok()
+          .expect(isWithinAcceptedRange(expectedParentFeeAfterRreduction, parentFeeAfterReductionActual)).ok();
+    
+  }
+  
+}
+
+function isWithinAcceptedRange(expected, actual) {
+  log.info(actual, expected);
+  return (Math.abs(actual - expected) < 1);
 }
 
 export default PageEstimator;
