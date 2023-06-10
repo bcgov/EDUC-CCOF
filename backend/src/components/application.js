@@ -37,6 +37,16 @@ const {mapFundingObjectForFront} = require('./funding');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 
+async function updateChangeRequestNewFacility(changeRequestFacilityId, payload){
+  try{
+    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestFacilityId, payload);
+    return response;
+  }
+  catch(e){
+    log.error('error', e);
+    return e.data ? e.data : e?.status;
+  }
+}
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
@@ -68,13 +78,14 @@ async function updateCCFRIApplication(req, res) {
       let payload = {
         'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
+        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
-      //log.info(payload);
+      log.info('patch ccfri payload' , payload);
 
       let response = undefined;
       if (facility.ccfriApplicationId) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
+        log.info('CCFRI RESP!!!!!!!' , response);
         retVal.push(response);
       } else {
         response = await postOperation('ccof_applicationccfris', payload);
@@ -84,6 +95,20 @@ async function updateCCFRIApplication(req, res) {
           ccfriApplicationId: response,
           ccof_ccfrioptin: facility.optInResponse,
         });
+      }
+
+      //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
+      if(facility.changeRequestFacilityId){
+        let resp = await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
+          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId})`}
+        );
+        retVal.push(resp);
+      }
+      else{
+        let resp = await updateChangeRequestNewFacility(response,
+          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${response})`}
+        );
+        retVal.push(resp);
       }
       await sleep(100); //slow down the hits to dynamics.
       //log.info('res data:' , response);
@@ -523,7 +548,7 @@ async function getChangeRequest(req, res){
           break;
         case CHANGE_REQUEST_TYPES.NEW_FACILITY:
           mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
-          mappedChangeAction.facilityData = await getFacilityChangeData(mappedChangeAction.changeActionId);
+          mappedChangeAction = {...mappedChangeAction, ...await getFacilityChangeData(mappedChangeAction.changeActionId)};
           break;
         }
         return mappedChangeAction;
