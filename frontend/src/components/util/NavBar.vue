@@ -110,12 +110,13 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete', 'programYearList']),
+    ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete', 'programYearList', ]),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('reportChanges', ['getChangeRequestFacilities']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -160,7 +161,8 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit']),
+    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', ]),
+    ...mapMutations('app', ['filterNavBar', ]),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
@@ -188,6 +190,7 @@ export default {
       console.log('is change request: ', this.isChangeRequest());
       console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest()) {
+        console.log('calling new Fac build nav bar');
         this.buildNewFacilityNavBar();
       } else {
         this.buildApplicationNavBar();
@@ -297,10 +300,13 @@ export default {
     },
 
     buildNewFacilityNavBar(){
+      console.log('building new FAC nav barr');
+
       this.addLandingPageToNavBar();
+      //this.items.push(this.getCCOFNavigation());//JB
       this.items.push(this.getAddNewFacilityCCOFNavigation());
-      this.items.push(this.getCCFRINavigation());
-      this.items.push(this.getECEWENavigation());
+      this.items.push(this.getAddNewCCFRINavigation()); //JB
+      this.items.push(this.getAddNewECEWENavigation());
       this.addSupportingDocumentsToNavbar();
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
@@ -325,6 +331,80 @@ export default {
     },
     isExpanded(groupName) {
       return (groupName === this.navBarGroup);
+    },
+    getAddNewCCFRINavigation(){
+      let items = [];
+      items.push(
+        {
+          title: 'Opt in / Opt out',
+          link: { name: 'change-request-ccfri-home'},
+          isAccessible: true, //Change - when newFacilityCCOF is complete
+          icon: this.getCheckbox(this.isCCFRIOptInComplete()),
+          isActive: 'change-request-ccfri-home' === this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++
+        },
+
+      );
+      if (this.navBarList?.length > 0) {
+        this.navBarList?.forEach((item) => {
+          //new facility only needs add new fees
+          if (item.ccfriOptInStatus == 1) { //only show if Opted In
+            items.push(
+              {
+                title: 'Parent Fees',
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'change-request-ccfri-add-fees-guid', params: {changeRecGuid: 'ea4336ac-d6ff-ed11-8f6d-000d3a09d499', urlGuid: item.ccfriApplicationId}},
+                isAccessible: this.applicationStatus==='SUBMITTED' ? true: this.isCCFRIOptInComplete(),
+                icon:  this.getCheckbox(item.isCCFRIComplete),
+                isActive: 'change-request-ccfri-add-fees-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                position: positionIndex++,
+                navBarId: navBarId++
+              },
+            );
+            if (item.hasRfi || item.unlockRfi) {
+              items.push(
+                {
+                  title: 'Parent Fee Increase – RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}},
+                  isAccessible: true,
+                  icon: this.getCheckbox(item.isRfiComplete),
+                  isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
+            if (item.unlockNmf || item.hasNmf) {
+              items.push(
+                {
+                  title: 'Parent Fee - RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
+                  isAccessible: true,
+                  icon:  this.getCheckbox(item.isNmfComplete),
+                  isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
+          }
+        });
+      }
+      let retval =   {
+        title: NAV_BAR_GROUPS.CCFRI,
+        isAccessible: true,
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
+        items: items,
+        navBarId: navBarId++
+      };
+      return retval;
     },
     getCCFRINavigation(){
       let items = [];
@@ -546,12 +626,78 @@ export default {
       };
     },
     getAddNewFacilityCCOFNavigation(){
+      //orig- what rob had below
+      // let items = [];
+      // items.push(
+      //   this.addNewFacilityToCCOFNavbar(true),
+      //   this.addNewFundingToCCOFNavbar(true),
+      //   this.addNewFacilityDecisionToCCOFNavbar(true),
+      //   this.addLicenceUploadToCCOFNavbar(true)
+      // );
+      // isCCOFGroupComplete = this.areChildrenComplete(items);
+      // let retval =   {
+      //   title: NAV_BAR_GROUPS.CCOF,
+      //   isAccessible: true,
+      //   icon: this.getCheckbox(isCCOFGroupComplete),
+      //   expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
+      //   items: items,
+      //   navBarId: navBarId++
+      // };
+      // return retval;
+
+      //end rob
       let items = [];
+      //don't think we should show org info for new facilty ? that's a diff change request
+      // items.push(
+      //   {
+      //     title: 'Organization',
+      //     link: { name: 'Group Organization Information' },
+      //     isAccessible: true,
+      //     icon: this.getCheckbox(this.isOrganizationComplete),
+      //     isActive: 'Group Organization Information' === this.$route.name,
+      //     position: positionIndex++,
+      //     navBarId: navBarId++
+      //   }
+      // );
+      if (this.navBarList?.length > 0) {
+        this.navBarList?.forEach((item) => {
+          items.push(
+            {
+              title: 'Facility',
+              subTitle: item.facilityName,
+              id: item.facilityId,
+              link: { name: 'change-request-facility-information-guid', params: {changeRecGuid: 'ea4336ac-d6ff-ed11-8f6d-000d3a09d499', urlGuid: item.facilityId}},
+              isAccessible: true,
+              icon: this.getCheckbox(item.isFacilityComplete),
+              isActive: 'change-request-facility-information-guid' === this.$route.name && this.$route.params.urlGuid === item.facilityId,
+              position: positionIndex++,
+              navBarId: navBarId++
+            },
+            //funding doesn't work right, wait until Viet is done integration before trying again
+            {
+              title: 'Funding',
+              subTitle: item.facilityName,
+              link: { name: 'change-request-funding-guid', params: {changeRecGuid: 'ea4336ac-d6ff-ed11-8f6d-000d3a09d499', urlGuid: item.ccofBaseFundingId}},
+              isAccessible: true,
+              icon: this.getCheckbox(item.isCCOFComplete),
+              isActive: 'change-request-funding-guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId,
+              position: positionIndex++,
+              navBarId: navBarId++
+            },
+          );
+        });
+      } else {
+        //No new facilities, setup a blank template
+        items.push(
+          this.addNewFacilityToCCOFNavbar(false),
+          this.addNewFundingToCCOFNavbar(false),
+        );
+      }
       items.push(
-        this.addNewFacilityToCCOFNavbar(true),
-        this.addNewFundingToCCOFNavbar(true),
-        this.addNewFacilityDecisionToCCOFNavbar(true),
-        this.addLicenceUploadToCCOFNavbar(true)
+        this.addNewFacilityDecisionToCCOFNavbar()
+      );
+      items.push(
+        this.addLicenceUploadToCCOFNavbar()
       );
       isCCOFGroupComplete = this.areChildrenComplete(items);
       let retval =   {
@@ -563,7 +709,6 @@ export default {
         navBarId: navBarId++
       };
       return retval;
-
     },
     getCCOFNavigation() {
       let items = [];
@@ -648,6 +793,41 @@ export default {
           isAccessible: this.isEceweComplete,
           icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
           isActive: 'ECEWE Facilities' === this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++
+        },
+      );
+      let retval =   {
+        title: NAV_BAR_GROUPS.ECEWE,
+        isAccessible: true,
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.ECEWE),
+        items: items,
+        navBarId: navBarId++
+      };
+      return retval;
+    },
+    getAddNewECEWENavigation(){
+      //ece-we still pulls from full application, so shows previous answers
+      let items = [];
+      items.push(
+        {
+          title: 'Eligibility',
+          link: { name: 'change-request-ECEWE-Eligibility'},
+          isAccessible: true, //change this when change req logic more complete
+          icon: this.getCheckbox(this.isEceweComplete),
+          isActive: 'change-request-ECEWE-Eligibility' === this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++
+        },
+      );
+      items.push(
+        {
+          title: 'Facility',
+          link: { name: 'change-request-ECEWE-Facilities'},
+          isAccessible: this.isEceweComplete,
+          icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
+          isActive: 'change-request-ECEWE-Facilities' === this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
         },
