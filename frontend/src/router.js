@@ -496,7 +496,7 @@ const router = new VueRouter({
     {
       path: PATHS.reportChange.fundAmount,
       name: 'Change Request Funding',
-      component: FamilyFunding,
+      component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
@@ -507,7 +507,7 @@ const router = new VueRouter({
     {
       path: PATHS.reportChange.fundAmount + '/:urlGuid',
       name: 'Change Request Funding GUID',
-      component: FamilyFunding,
+      component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
@@ -515,6 +515,28 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.CCOF
       }
     },
+    // {
+    //   path: PATHS.reportChange.fundAmount,
+    //   name: 'Change Request Funding',
+    //   component: FamilyFunding,
+    //   meta: {
+    //     pageTitle: 'Information to Determine Funding amounts',
+    //     requiresAuth: true,
+    //     showNavBar: true,
+    //     navBarGroup: NAV_BAR_GROUPS.CCOF
+    //   }
+    // },
+    // {
+    //   path: PATHS.reportChange.fundAmount + '/:urlGuid',
+    //   name: 'Change Request Funding GUID',
+    //   component: FamilyFunding,
+    //   meta: {
+    //     pageTitle: 'Information to Determine Funding amounts',
+    //     requiresAuth: true,
+    //     showNavBar: true,
+    //     navBarGroup: NAV_BAR_GROUPS.CCOF
+    //   }
+    // },
   ]
 });
 
