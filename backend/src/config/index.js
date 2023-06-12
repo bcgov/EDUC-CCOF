@@ -69,7 +69,9 @@ nconf.defaults({
     use: process.env.USE_REDIS,
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASSWORD
+    password: process.env.REDIS_PASSWORD,
+    clustered: process.env.REDIS_USE_CLUSTERED,
+    facilityTTL: process.env.REDIS_FACILITY_TTL
   }
 
 });

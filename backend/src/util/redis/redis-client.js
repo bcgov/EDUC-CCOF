@@ -11,22 +11,18 @@ const Redis = {
     const IOREDIS = require('ioredis');
     const config = require('../../config');
     const log = require('../../components/logger');
-    if ('dev' === config.get('environment')) {
-      redisClient = new IOREDIS({
+    if (config.get('redis:clustered')) {
+      redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
         host: config.get('redis:host'),
         port: config.get('redis:port'),
         password: config.get('redis:password')
-      });
+      }]);
     } else {
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
         password: config.get('redis:password')
       });
-      // redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
-      //   host: config.get('redis:host'),
-      //   port: config.get('redis:port'),
-      // }]);
     }
     redisClient.on('error', (error) => {
       log.error(`error occurred in redis client. ${error}`);

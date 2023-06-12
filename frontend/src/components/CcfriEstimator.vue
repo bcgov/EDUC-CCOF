@@ -1133,7 +1133,7 @@ export default {
       }
     },
     getPartTimeMonthlyParentFee(fee, feeFrequency) {
-      console.log(`fee frequency: ${feeFrequency}  and fee: ${fee}`);
+      console.log(`fee frequency: [${feeFrequency}] and fee: [${fee}]`);
       switch (feeFrequency) {
       case 'Daily':
         return fee * 20;
@@ -1188,10 +1188,10 @@ export default {
           let totalRateReduction;
           if (isPreschool) { // For preschool no need to subtract by full time daily rate as it's only part time
             fullTimeDailyRate = (dailyParentRate -7 > rateTableInfo.partTimeDailyRate) ? rateTableInfo.partTimeDailyRate : (dailyParentRate - 7);
-            console.log('is PRESCHOOL');
+            console.log(`PRESCHOOL - full time daily rate [${fullTimeDailyRate}], We may be using rate table with rate: ${rateTableInfo.partTimeDailyRate}`);
           } else {
             fullTimeDailyRate = ((dailyParentRate - 10) > rateTableInfo.fullTimeDailyRate) ? rateTableInfo.fullTimeDailyRate : (dailyParentRate - 10);
-            console.log('is NOT preschool');
+            console.log(`NOT preschol - full time daily rate [${fullTimeDailyRate}] We may be using rate table with rate: ${rateTableInfo.partTimeDailyRate}`);
           }
 
           let reductionAmountPerChild = fullTimeDailyRate * 20;
@@ -1267,7 +1267,7 @@ export default {
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             }
 
-            console.log(`actualParentFeePerChild [${actualParentFeePerChild}], reductionAmountPerChild: [${reductionAmountPerChild}], monthly fee: [${monthlyParentFee}]`);
+            console.log(`FULL TIME: actualParentFeePerChild [${actualParentFeePerChild}], reductionAmountPerChild: [${reductionAmountPerChild}], monthly fee: [${monthlyParentFee}]`);
 
             //END FULL TIME
           } else {
@@ -1290,7 +1290,7 @@ export default {
             console.log('reductionAmountPerChild ' + reductionAmountPerChild);
             let reductionAmountPerChildPerDay = reductionAmountPerChild / 20; // 20 days per month.
             let partTimeHalfDayReductionAmount = reductionAmountPerChildPerDay * partTimeNumberOfDays / (isPreschool? 1 : 2);
-            console.log('partTimeHalfDayReductionAmount: ' + partTimeHalfDayReductionAmount + 'part time number of days ' + partTimeNumberOfDays + ' daily reduction amount ' + reductionAmountPerChildPerDay);
+            console.log('partTimeHalfDayReductionAmount: ' + partTimeHalfDayReductionAmount + ', part time number of days ' + partTimeNumberOfDays + ', daily reduction amount ' + reductionAmountPerChildPerDay);
             // partTimeDailyRate = ((dailyParentRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyParentRate - 5);
             let partTimeFullDayReductionAmount = reductionAmountPerChildPerDay * fullTimeNumberOfDays;
             console.log('partTimeFullDayReductionAmount: ' + partTimeFullDayReductionAmount);
@@ -1309,7 +1309,13 @@ export default {
             //Make sure it's not more than the parent fee
             totalRateReduction = Math.min(totalRateReduction, monthlyParentFee);
             let partTimeFeeFloor = (fullTimeNumberOfDays * 10) + (partTimeNumberOfDays * 7);
-            partTimeFeeFloor = Math.min(partTimeFeeFloor, 200); //Fee floor should not be more than $200 / month
+            if (isPreschool) {
+              partTimeFeeFloor = Math.min(partTimeFeeFloor, 140); //Fee floor should not be more than $140 / month for preschool
+            } else {
+              partTimeFeeFloor = Math.min(partTimeFeeFloor, 200); //Fee floor should not be more than $200 / month
+            }
+
+
             console.log('part time fee floor: ' + partTimeFeeFloor);
 
 
@@ -1332,7 +1338,7 @@ export default {
               console.log('monthlyParentFee < partTimeFeeFloor');
               console.log('partTimeFeeFloor ' + partTimeFeeFloor);
               console.log('Rate floor ' + rateReductionFloor);
-              console.log('(monthlyParentFee - totalRateReduction) ' + (monthlyParentFee - totalRateReduction));
+              console.log(`monthly parent fee: [${monthlyParentFee}], total rate reduction [${totalRateReduction}], (monthlyParentFee - totalRateReduction): [${(monthlyParentFee - totalRateReduction)}]`)
               let changeRateBy = Math.min(totalRateReduction - rateReductionFloor, partTimeFeeFloor - (monthlyParentFee - totalRateReduction));
               console.log('change rate by: ' + changeRateBy);
               reductionAmountPerChild = totalRateReduction - changeRateBy;
@@ -1347,6 +1353,8 @@ export default {
               reductionAmountPerChild = totalRateReduction;
               actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
             }
+            console.log(`PART TIME actualParentFeePerChild [${actualParentFeePerChild}], reductionAmountPerChild: [${reductionAmountPerChild}], monthly fee: [${monthlyParentFee}]`);
+
           }
 
           // }

@@ -1,5 +1,7 @@
 'use strict';
 const Redis = require('./redis-client');
+const config = require('../../config/index');
+
 const log = require('../../components/logger');
 const GUID_E = 'CCOF_GUID_HASH_E';
 const GUID_D = 'CCOF_GUID_HASH_D';
@@ -48,9 +50,13 @@ const cacheHelper = {
     }
   },
   async setFacility(guidd, facility) {
+    const facilityTTL = config.get('redis:facilityTTL');
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
       await redisClient.hset(FACILITY_D, guidd, JSON.stringify(facility));
+      if (facilityTTL > 0) {
+        await redisClient.expire(FACILITY_D, facilityTTL, 'NX');
+      }
     } else {
       log.error('Redis client is not available, this should not have happened');
     }
