@@ -38,6 +38,12 @@ const cacheHelper = {
   async getFacility(guidd) {
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
+      const facilityTTL = config.get('redis:facilityTTL');
+      console.verbose('facility TTL: ', facilityTTL);
+      if (facilityTTL > 0) {
+        await redisClient.expire(FACILITY_D, facilityTTL, 'NX');
+      }
+
       const retVal = await redisClient.hget(FACILITY_D, guidd);
       if (retVal) {
         log.verbose(`found facilityd for guidd[${guidd}], with data: ${retVal}`);
@@ -50,13 +56,9 @@ const cacheHelper = {
     }
   },
   async setFacility(guidd, facility) {
-    const facilityTTL = config.get('redis:facilityTTL');
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
       await redisClient.hset(FACILITY_D, guidd, JSON.stringify(facility));
-      if (facilityTTL > 0) {
-        await redisClient.expire(FACILITY_D, facilityTTL, 'NX');
-      }
     } else {
       log.error('Redis client is not available, this should not have happened');
     }

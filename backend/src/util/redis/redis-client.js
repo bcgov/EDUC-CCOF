@@ -12,12 +12,14 @@ const Redis = {
     const config = require('../../config');
     const log = require('../../components/logger');
     if (config.get('redis:clustered') == true) {
+      log.info('using CLUSTERED Redis implementation');
       redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
         host: config.get('redis:host'),
         port: config.get('redis:port'),
         password: config.get('redis:password')
       }]);
     } else {
+      log.info('using STANDALONE Redis implementation');
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
