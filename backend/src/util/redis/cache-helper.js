@@ -38,7 +38,7 @@ const cacheHelper = {
   async getFacility(guidd) {
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
-      const facilityTTL = config.get('redis:facilityTTL');
+      const facilityTTL = Number(config.get('redis:facilityTTL'));
       log.verbose('facility TTL: ', facilityTTL);
       if (facilityTTL > 0) {
         await redisClient.expire(FACILITY_D, facilityTTL, 'NX');
