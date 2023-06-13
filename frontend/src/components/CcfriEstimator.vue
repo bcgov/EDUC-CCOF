@@ -756,18 +756,20 @@
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
                           <div class="d-flex">
-                          <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;" :id="`reduction-amt-${String(result.number)}`">
-                            {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.reductionAmountPerChild/20))+'/day ($'+display2Decimals((result.reductionAmountPerChild / 20 * result.daysOfCare))+'/month)' : ''}}
-                            {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.reductionAmountPerChild/4))+'/week ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
-                            {{result.feeFrequency=='Monthly'? '$'+(display2Decimals(result.reductionAmountPerChild))+'/month' : ''}}
-                          </div>
-                      </div>
+                            <div style="padding-left:12px;color:#431782;font-family:BCSans;font-weight:bold;font-size:15px;" :id="`reduction-amt-${String(result.number)}`">
+                              {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.reductionAmountPerChild/20))+'/day ($'+display2Decimals((result.reductionAmountPerChild / 20 * result.daysOfCare))+'/month)' : ''}}
+                              {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.reductionAmountPerChild/4))+'/week ($'+display2Decimals(result.reductionAmountPerChild)+'/month)' : ''}}
+                              {{result.feeFrequency=='Monthly'? '$'+(display2Decimals(result.reductionAmountPerChild))+'/month' : ''}}
+                            </div>
+                        </div>
                       </v-col>
                         <v-col cols="5" class="pl-2" style="padding-bottom:2px;padding-top:2px">
-                        <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px"  :id="`parent-fee-amt-${String(result.number)}`">
-                          {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.actualParentFeePerChild/20))+'/day ($'+display2Decimals((result.actualParentFeePerChild / 20 * result.daysOfCare))+'/month)' : ''}}
-                          {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.actualParentFeePerChild/4))+'/week ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
-                          {{result.feeFrequency=='Monthly'? '$'+display2Decimals(result.actualParentFeePerChild)+'/month' : ''}}
+                          <div class="d-flex">
+                          <div style="padding-left:12px;color:#0483AF;font-family:BCSans;font-weight:bold;font-size:15px"  :id="`parent-fee-amt-${String(result.number)}`">
+                            {{result.feeFrequency=='Daily'? '$'+(display2Decimals(result.actualParentFeePerChild/20))+'/day ($'+display2Decimals((result.actualParentFeePerChild / 20 * result.daysOfCare))+'/month)' : ''}}
+                            {{result.feeFrequency=='Weekly'? '$'+(display2Decimals(result.actualParentFeePerChild/4))+'/week ($'+display2Decimals(result.actualParentFeePerChild)+'/month)' : ''}}
+                            {{result.feeFrequency=='Monthly'? '$'+display2Decimals(result.actualParentFeePerChild)+'/month' : ''}}
+                          </div>
                         </div>
                       </v-col>
                     </v-row>
@@ -929,10 +931,10 @@ export default {
     actualParentFeeToolTip() {
       if (this.isParent) {
         // eslint-disable-next-line
-        return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information to parents in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees.<br>For example, the provider may offer a reduced fee for families with other<br>siblings at the facility.";
+        return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.";
       }
       // eslint-disable-next-line
-      return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information to parents in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.";
+      return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.";
     },
     resultsToolTip() {
       if (this.isParent) {
@@ -1338,7 +1340,7 @@ export default {
               console.log('monthlyParentFee < partTimeFeeFloor');
               console.log('partTimeFeeFloor ' + partTimeFeeFloor);
               console.log('Rate floor ' + rateReductionFloor);
-              console.log(`monthly parent fee: [${monthlyParentFee}], total rate reduction [${totalRateReduction}], (monthlyParentFee - totalRateReduction): [${(monthlyParentFee - totalRateReduction)}]`)
+              console.log(`monthly parent fee: [${monthlyParentFee}], total rate reduction [${totalRateReduction}], (monthlyParentFee - totalRateReduction): [${(monthlyParentFee - totalRateReduction)}]`);
               let changeRateBy = Math.min(totalRateReduction - rateReductionFloor, partTimeFeeFloor - (monthlyParentFee - totalRateReduction));
               console.log('change rate by: ' + changeRateBy);
               reductionAmountPerChild = totalRateReduction - changeRateBy;
