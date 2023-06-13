@@ -168,7 +168,7 @@ export default {
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
-        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilityId);
+        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilityData.facilityId);
       }
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){

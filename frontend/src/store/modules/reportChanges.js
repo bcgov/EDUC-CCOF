@@ -14,8 +14,8 @@ export default {
   state: {
     changeRequestId: undefined,
     changeRequestStore : {},
-    uploadedDocuments: [],
-    newFacilityList: [], //may not need this now
+    uploadedDocuments: []
+
 
   },
   getters: {
@@ -23,7 +23,6 @@ export default {
     changeActions: state => state.changeActions,
     changeRequestId: state => state.changeRequestId,
     getUploadedDocuments: state => state.uploadedDocuments,
-    getChangeRequestFacilities: state => state.newFacilityList,
   },
   mutations: {
     addChangeRequestToStore: (state, {changeRequestId, model} ) => {
@@ -37,9 +36,6 @@ export default {
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
     },
-    setNewFacilityList:(state, newFacilityList) => {
-      state.newFacilityList = newFacilityList;
-    }//may not need this now
   },
   actions: {
     async loadChangeRequest({commit, rootState}, ) {
@@ -50,32 +46,14 @@ export default {
       checkSession();
 
       try {
+        console.log('');
         let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootState.application.applicationId);
-        //console.log(response);
-
-        let newFacList = [];
+        console.log(response);
         if (!isEmpty(response.data)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
             commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
-
-            //in the future we may not want to assume a new facility change is not the first of the array?
-
-            element.changeActions.forEach((changeAction) => {
-              if (changeAction.changeType == "NEW_FACILITY"){
-                newFacList.push(changeAction); //we may not need this now
-
-                //set New Facility change request ID in nav bar so we can filter by it.
-                //we may not need to set it here, depends what Hoang is doing on dynamics side.
-                commit('app/setNavBarFacilityChangeRequest', {facilityId: changeAction.facilityId, changeRequestFacilityId: changeAction.changeRequestFacilityId}, { root: true });
-
-              }
-            });
-
           });
-
-          commit('setNewFacilityList', newFacList);
-          //may not need this either
         }
       } catch(e) {
         console.log(`Failed to get load change req with error - ${e}`);

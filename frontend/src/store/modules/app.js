@@ -1,5 +1,4 @@
 import ApiService from '@/common/apiService';
-import { deepCloneObject } from '../../utils/common';
 
 export default {
   namespaced: true,
@@ -9,7 +8,6 @@ export default {
     showNavBar: false,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     navBarList: [], //holds the generated nav bar
-    origNavBarList: [], //JB TESTING
     isRenewal: false,
     isOrganizationComplete: false,
     isLicenseUploadComplete: false,
@@ -34,28 +32,6 @@ export default {
     logoutCounter: 120,
   },
   mutations: {
-    filterNavBar: (state, isChangeRequest) => {
-      console.log('Filtering');
-      console.log('is change request filter true?' , isChangeRequest);
-
-      //state.origNavBarList = deepCloneObject(state.navBarList);
-      //filter the nav bar so only facilites with change requests are shown. Look for newFacChangeId?
-
-      state.navBarList = state.origNavBarList.filter(navBarItem => {
-        console.log(navBarItem);
-        console.log(navBarItem?.ccofBaseFundingStatus);
-        return  isChangeRequest? navBarItem.ccofBaseFundingStatus != "SUBMITTED" : navBarItem.ccofBaseFundingStatus == "SUBMITTED";
-        //TEMP using ccofApplicationSubmitted until we get the NewFacilityChangeRequestGUID back in Provider Profile
-      });
-
-    },
-    setNavBarFacilityChangeRequest: (state, { facilityId, changeRequestFacilityId }) => {
-      console.log('setting new fac ID!');
-      let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
-      if (navBarItem) {
-        navBarItem.changeRequestFacilityId = changeRequestFacilityId;
-      }
-    },
     setLookupInfo: (state, lookupInfo) => {
       if (lookupInfo) {
         state.lookupInfo = lookupInfo;
@@ -107,8 +83,6 @@ export default {
     bulkAddToNavNBar: (state, facilityList) => {
       if (facilityList) {
         state.navBarList = facilityList;
-        //so when we filter we can always revert back to the original list;
-        state.origNavBarList = deepCloneObject(facilityList);
       }
     },
     setNavBarFacilityComplete: (state, { facilityId, complete }) => {
