@@ -446,7 +446,7 @@ const router = new VueRouter({
       component: ReportChange,
       meta: {
         pageTitle: 'Report Changes',
-        showNavBar: true,
+        showNavBar: false,
         requiresAuth: true,
       }
     },
@@ -482,7 +482,18 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + '/facility' + '/:urlGuid',
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility',
+      name: 'existing-change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility/:urlGuid',
       name: 'change-request-facility-information-guid',
       component: FacilityInformation,
       meta: {
@@ -509,6 +520,17 @@ const router = new VueRouter({
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facilityConfirmation',
+      name: 'change-request-new-facility-confirmation',
+      component: ApplicationConfirmation,
+      meta: {
+        pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
@@ -567,19 +589,10 @@ router.beforeEach((to, _from, next) => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
       }else {
-        store.dispatch('auth/getUserInfo').then(async() => {
+        store.dispatch('auth/getUserInfo').then(() => {
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
             next(PATHS.impersonate);
           } else {
-            if (to.fullPath.includes('report-change')){
-              //should we check if the change store exists or just load all the time?
-              console.log('\n loading the change store');
-              await store.dispatch('reportChanges/loadChangeRequest');
-              store.commit('app/filterNavBar', true);
-            }
-            else{
-              store.commit('app/filterNavBar', false);
-            }
             next();
           }
         }).catch((error) => {

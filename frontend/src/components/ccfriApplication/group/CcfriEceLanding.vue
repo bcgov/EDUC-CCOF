@@ -133,7 +133,7 @@ export default {
         return false;
       }
       else
-      return (this.applicationStatus === 'SUBMITTED');
+        return (this.applicationStatus === 'SUBMITTED');
     },
     unlockedFacilities(){
       return this.navBarList.some(facility => facility.unlockCcfri);
