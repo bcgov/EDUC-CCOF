@@ -9,7 +9,7 @@
 
           <v-row justify="center" style="padding-top: 2em;">
             <ul style="list-style: none">
-              <li v-for="item in navBarList" :key="item.facilityId" style="">
+              <li v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
               </li>
             </ul>
@@ -37,9 +37,10 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -53,6 +54,13 @@ export default {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');
+    },
+    facilityList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
     }
   },
   methods: {
@@ -63,10 +71,18 @@ export default {
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
     addAnotherFacility() {
-      this.$router.push(PATHS.group.facInfo);
+      if (isChangeRequest(this)) {
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/facility`);
+      } else {
+        this.$router.push(PATHS.group.facInfo);
+      }
     },
     async next() {
-      this.$router.push(PATHS.group.licenseUpload);
+      if (isChangeRequest(this)) {
+        this.$router.push(PATHS.group.licenseUpload);
+      } else {
+        this.$router.push(PATHS.group.licenseUpload);
+      }
     }
   },
   mounted() {

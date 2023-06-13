@@ -1,4 +1,5 @@
 import { PATHS, ORGANIZATION_PROVIDER_TYPES, CHANGE_URL_PREFIX} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
 import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -12,10 +13,10 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'changeRequestId']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     isLocked() {
-      if (this.$route.path?.startsWith(CHANGE_URL_PREFIX)) {
+      if (isChangeRequest(this)) {
         return false;
       }
       if (this.unlockBaseFunding) {
@@ -107,7 +108,7 @@ export default {
       this.setFacilityModel({ ...this.model });
       this.processing = true;
       try {
-        await this.saveFacility(this.$route.path?.startsWith(CHANGE_URL_PREFIX));
+        await this.saveFacility({ isChangeRequest: isChangeRequest(this), changeRequestId: this.$route.params.changeRecGuid });
         if (isSave) {
           this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
         }
@@ -115,7 +116,11 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       if (!this.$route.params.urlGuid && isSave) {
-        this.$router.push(`${this.$route.path}/${this.facilityId}`);
+        if (isChangeRequest(this)) {
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/facility/${this.facilityId}`);
+        } else {
+          this.$router.push(`${this.$route.path}/${this.facilityId}`);
+        }
       }
       this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
       this.processing = false;

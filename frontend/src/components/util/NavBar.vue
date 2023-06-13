@@ -120,6 +120,10 @@ export default {
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
+    newFacilityNavBarList() {
+      return this.navBarList.filter(el=> el.changeRequestId == this.$route.params.changeRecGuid);
+    },
+
     navWidth () {
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -162,7 +166,6 @@ export default {
   },
   methods: {
     ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', ]),
-    ...mapMutations('app', ['filterNavBar', ]),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
@@ -195,17 +198,6 @@ export default {
       } else {
         this.buildApplicationNavBar();
       }
-      // switch(this.getNavbarStatus){
-      // case 'APPLICATION':
-      //   this.buildApplicationNavBar();
-      //   break;
-      // case 'RC_NEW_FACILITY':
-      //   this.buildNewFacilityNavBar();
-      //   break;
-      // case 'REPORT_CHANGE':
-      //   this.buildReportChangeNavBar();
-      //   break;
-      // }
     },
 
     addLandingPageToNavBar() {
@@ -581,7 +573,6 @@ export default {
       };
       return retval;
     },
-
     addNewFacilityToCCOFNavbar(isChangeRequest) {
       return {
         title: 'Facility',
@@ -593,7 +584,8 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++
       };
-    }, addNewFundingToCCOFNavbar(isChangeRequest) {
+    },
+    addNewFundingToCCOFNavbar(isChangeRequest) {
       return {
         title: 'Funding',
         link: {name: isChangeRequest? 'Change Request Funding' : 'Funding Amount'},
@@ -603,10 +595,10 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++
       };
-    }, addNewFacilityDecisionToCCOFNavbar() {
+    }, addNewFacilityConfirmationToCCOFNavbar() {
       return {
         title: 'Add Facility',
-        link: {name: 'Application Confirmation'},
+        link: { name: 'change-request-new-facility-confirmation', params: {changeRecGuid: this.$route.params.changeRecGuid}},
         isAccessible: this.ccofConfirmationEnabled,
         icon: 'mdi-information',
         isActive: 'Application Confirmation' === this.$route.name,
@@ -659,8 +651,9 @@ export default {
       //     navBarId: navBarId++
       //   }
       // );
-      if (this.navBarList?.length > 0) {
-        this.navBarList?.forEach((item) => {
+      console.log('changeRecGuid::::::::', this.$route.params.changeRecGuid);
+      if (this.newFacilityNavBarList?.length > 0 && this.$route.params.changeRecGuid) {
+        this.newFacilityNavBarList?.forEach((item) => {
           items.push(
             {
               title: 'Facility',
@@ -694,7 +687,7 @@ export default {
         );
       }
       items.push(
-        this.addNewFacilityDecisionToCCOFNavbar()
+        this.addNewFacilityConfirmationToCCOFNavbar()
       );
       items.push(
         this.addLicenceUploadToCCOFNavbar()

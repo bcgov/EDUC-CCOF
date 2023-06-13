@@ -57,7 +57,7 @@ export default {
     // }
   },
   actions: {
-    async saveFacility({ state, commit, rootState }, isChangeRequest) {
+    async saveFacility({ state, commit, rootState }, { isChangeRequest, changeRequestId }) {
 
       checkSession();
       console.log('state model: ', state.facilityModel);
@@ -91,7 +91,17 @@ export default {
         // else create a new facility.  If is a change request, hit the change request endpoint
         if (isChangeRequest) {
           try {
-            if (!rootState.application.changeActionId) {
+            console.log('changeRequestId: ', changeRequestId);
+            let changeActionId;
+            if (changeRequestId) {
+              let item = rootState.reportChanges.changeRequestStore[changeRequestId];
+              console.log('item is: ', item);
+              // let's assume a it's a 1 to 1 mapping from Change Request to change Action.
+              if (item?.changeActions?.length > 0) {
+                changeActionId = item.changeActions[0].changeActionId;
+              }
+            }
+            if (!changeActionId) {
               const changeRequestPayload = {
                 applicationId: rootState.application.applicationId,
                 programYearId: rootState.application.programYearId
@@ -100,7 +110,7 @@ export default {
               commit('application/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('application/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
             }
-            let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${rootState.application.changeActionId}`, payload);
+            let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`, payload);
             commit('setFacilityId', response.data?.facilityId);
             commit('app/addToNavBarList', {
               facilityName: state.facilityModel.facilityName,
@@ -108,6 +118,8 @@ export default {
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
               ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
               licenseNumber: state.facilityModel.licenseNumber,
+              changeRequestId: rootState.application.changeRequestId,
+              changeActionId: rootState.application.changeActionId,
             }, { root: true });
             commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
 
@@ -146,9 +158,7 @@ export default {
         commit('setFacilityModel', facilityModel);
         commit('setLoadedModel', facilityModel);
       } else {
-
         checkSession();
-
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
           commit('addFacilityToStore', { facilityId: facilityId, facilityModel: response.data });
