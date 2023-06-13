@@ -13,7 +13,8 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'changeRequestId']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
+    ...mapState('reportChanges', ['changeRequestId']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     isLocked() {
       if (isChangeRequest(this)) {
@@ -86,9 +87,18 @@ export default {
       let navBar = this.$store.getters['app/getNavByFacilityId'](this.facilityId);
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
+        if (isChangeRequest(this)) {
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/group/funding/${navBar.ccofBaseFundingId}`);
+        }
+        else {
+          this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
+        } 
       } else {
-        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
+        if (isChangeRequest(this)) {
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/group/funding/`);
+        } else {
+          this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
+        }
       }
     },
     validateForm() {

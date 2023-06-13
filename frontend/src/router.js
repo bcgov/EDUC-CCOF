@@ -504,9 +504,9 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.group.fundAmount,
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.reportChange.fundAmount,
       name: 'change-request-funding',
-      component: FamilyFunding,
+      component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
@@ -515,9 +515,9 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.group.fundAmount + '/:urlGuid',
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.reportChange.fundAmount + '/:urlGuid',
       name: 'change-request-funding-guid',
-      component: FamilyFunding,
+      component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
