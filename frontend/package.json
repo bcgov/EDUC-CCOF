@@ -30,7 +30,6 @@
     "core-js": "^2.6.12",
     "cron": "^1.8.2",
     "cryptico-js": "^1.1.0",
-    "csv-writer": "^1.6.0",
     "dotenv": "^8.2.0",
     "faker": "4.1.0",
     "glob-all": "^3.1.0",
@@ -82,7 +81,8 @@
     "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-jest": "^3.0.7",
     "vue-template-compiler": "^2.6.12",
-    "vuetify-loader": "^1.6.0"
+    "vuetify-loader": "^1.6.0",
+    "csv-writer": "^1.6.0"
   },
   "browserslist": [
     "> 1%",
