@@ -1190,7 +1190,7 @@ export default {
             console.log(`PRESCHOOL - full time daily rate [${reductionAmountPerChildPerDay}], We may be using rate table with rate: ${rateTableInfo.partTimeDailyRate}`);
           } else {
             reductionAmountPerChildPerDay = ((dailyParentRate - 10) > rateTableInfo.fullTimeDailyRate) ? rateTableInfo.fullTimeDailyRate : (dailyParentRate - 10);
-            console.log(`NOT preschol - full time daily rate [${reductionAmountPerChildPerDay}] We may be using rate table with rate: ${rateTableInfo.partTimeDailyRate}`);
+            console.log(`NOT preschol - full time daily rate [${reductionAmountPerChildPerDay}] We may be using rate table with rate: ${rateTableInfo.fullTimeDailyRate}`);
           }
 
           // let reductionAmountPerChild = fullTimeDailyRate * 20;

@@ -163,6 +163,7 @@ describe('CcfriEstimator.js', () => {
             partTimeFee: wrapper.vm.children[0].partTimeFee,
             halfDays: hd,
             fullDays: fd,
+            days: (hd + fd),
             reductionAmt: wrapper.vm.results[0].reductionAmountMonthly,
             reductionAmtDaily: wrapper.vm.results[0].reductionAmountDaily,
             expectedReduction: correctValues[0],
@@ -210,6 +211,7 @@ describe('CcfriEstimator.js', () => {
         { id: 'parentFeeAmtDaily', title: 'PARENT_FEE_DAILY'},
         { id: 'expectedParentFee', title: 'EXP_PARENT_FEE'},
         { id: 'result', title: 'RESULT'},
+        { id: 'days', title: 'DAYS'},
       ],
     });
     writer.writeRecords(results).then(() => {
