@@ -3,6 +3,7 @@ import CcfriEstimator from '@/components/CcfriEstimator';
 import Vuetify from 'vuetify';
 const fs = require('fs');
 const path = require('path');
+const csvWriter = require('csv-writer');
 
 import flushPromises from 'flush-promises';
 
@@ -18,10 +19,12 @@ function addFulltimeDays(days, child) {
 }
 
 function hasFailed(result) {
-  // if (result.column > 37) {
-  //   return false;
-  // }
-  return (Math.abs(result.reductionAmt - result.expectedReduction) > 1) || (Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1);
+  if (result.parentFeeFrequency == 'Monthly') {
+    return (Math.abs(result.reductionAmt - result.expectedReduction) > 1) || (Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1);
+  } else {
+    return (Math.abs(result.reductionAmt - result.expectedReduction) > 1) || (Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1);
+  }
+
 }
 
 async function loadFile(fileName) {
@@ -160,17 +163,21 @@ describe('CcfriEstimator.js', () => {
             partTimeFee: wrapper.vm.children[0].partTimeFee,
             halfDays: hd,
             fullDays: fd,
-            reductionAmt: wrapper.vm.results[0].reductionAmountPerChild,
+            reductionAmt: wrapper.vm.results[0].reductionAmountMonthly,
+            reductionAmtDaily: wrapper.vm.results[0].reductionAmountDaily,
             expectedReduction: correctValues[0],
-            parentFeeAmt: wrapper.vm.results[0].actualParentFeePerChild,
+            parentFeeAmt: wrapper.vm.results[0].parentFeeMonthly,
+            parentFeeAmtDaily: wrapper.vm.results[0].parentFeeDaily,
             expectedParentFee: correctValues[1],
             column: (columnOffset -1),
-            row: index + 5
+            row: index + 5,
           };
           if (hasFailed(result)) {
+            result.result = 'FAIL',
             results.push(result);
             errors ++;
           } else {
+            result.result = 'PASS',
             results.push(result);
           }
 
@@ -184,19 +191,43 @@ describe('CcfriEstimator.js', () => {
     }
     // results.forEach(i => console.log(JSON.stringify(i)));
     console.info(`Tested [${counter}] number of records with [${errors}] tests failing.`);
-    const excelFormat = true;
-    if (excelFormat) {
-      console.info('ROW, COLUMN, TYPE_OF_CARE, CHILD_AGE_CATEGORY, APPROVED_FEE, YOUR_FEE, FREQUENCY, HALF_DAYS, FULL_DAYS, REDUCTION_AMNT, REDUCTION_EXPECTED_AMT, PARENT_FEE, EXPECTED_PARENT_FEE');
-      results.forEach(received => {
-        console.info(`${received.row},${received.column},${received.typeOfCare},${received.childAgeCategory},${received.approvedFee},${received.partTimeFee},${received.parentFeeFrequency},${received.halfDays},${received.fullDays},${received.reductionAmt},${received.expectedReduction},${received.parentFeeAmt},${received.expectedParentFee}`);
-      });
-    } else {
-      results.forEach(received => {
-        console.info(`Row/Col  [${received.row}/${received.column}]   typeOfCare [${received.typeOfCare}]    AgeCat [${received.childAgeCategory}]  approvedFee [${received.approvedFee}]  partTimeFee [${received.partTimeFee}]   feeFrequency [${received.parentFeeFrequency}]\n
-        halfDays [${received.halfDays}]   fullDays [${received.fullDays}]  reductionAmt/Exp [${received.reductionAmt}] / [${received.expectedReduction}]  parentFeeAmt/Exp [${received.parentFeeAmt}] / [${received.expectedParentFee}]`);
-      });
+    const writer = csvWriter.createObjectCsvWriter({
+      path: path.join(__dirname, '../../../results.csv'),
+      header: [
+        { id: 'column', title: 'COLUMN'},
+        { id: 'row', title: 'ROW'},
+        { id: 'typeOfCare', title: 'TYPE_OF_CARE'},
+        { id: 'childAgeCategory', title: 'AGE_CATEGORY'},
+        { id: 'parentFeeFrequency', title: 'FREQUENCY'},
+        { id: 'approvedFee', title: 'APPROVED_FREE'},
+        { id: 'partTimeFee', title: 'PARENT_FEE'},
+        { id: 'halfDays', title: 'HD'},
+        { id: 'fullDays', title: 'FD'},
+        { id: 'reductionAmt', title: 'REDUCTION_AMT_MONTHLY'},
+        { id: 'reductionAmtDaily', title: 'REDUCTION_AMT_DAILY'},
+        { id: 'expectedReduction', title: 'EXP_REDUCTION_AMT'},
+        { id: 'parentFeeAmt', title: 'PARENT_FEE_MONTHLY'},
+        { id: 'parentFeeAmtDaily', title: 'PARENT_FEE_DAILY'},
+        { id: 'expectedParentFee', title: 'EXP_PARENT_FEE'},
+        { id: 'result', title: 'RESULT'},
+      ],
+    });
+    writer.writeRecords(results).then(() => {
+      console.info('Done!: ', path.join(__dirname, '../../../results.csv'));
+    });
+    // const excelFormat = true;
+    // if (excelFormat) {
+    //   console.info('ROW, COLUMN, TYPE_OF_CARE, CHILD_AGE_CATEGORY, APPROVED_FEE, YOUR_FEE, FREQUENCY, HALF_DAYS, FULL_DAYS, REDUCTION_AMNT, REDUCTION_EXPECTED_AMT, PARENT_FEE, EXPECTED_PARENT_FEE');
+    //   results.forEach(received => {
+    //     console.info(`${received.row},${received.column},${received.typeOfCare},${received.childAgeCategory},${received.approvedFee},${received.partTimeFee},${received.parentFeeFrequency},${received.halfDays},${received.fullDays},${received.reductionAmt},${received.expectedReduction},${received.parentFeeAmt},${received.expectedParentFee}`);
+    //   });
+    // } else {
+    //   results.forEach(received => {
+    //     console.info(`Row/Col  [${received.row}/${received.column}]   typeOfCare [${received.typeOfCare}]    AgeCat [${received.childAgeCategory}]  approvedFee [${received.approvedFee}]  partTimeFee [${received.partTimeFee}]   feeFrequency [${received.parentFeeFrequency}]\n
+    //     halfDays [${received.halfDays}]   fullDays [${received.fullDays}]  reductionAmt/Exp [${received.reductionAmt}] / [${received.expectedReduction}]  parentFeeAmt/Exp [${received.parentFeeAmt}] / [${received.expectedParentFee}]`);
+    //   });
 
-    }
+    // }
     await flushPromises();
   });
 
