@@ -778,9 +778,7 @@
             <v-row>
               <v-col cols="1"/>
               <v-col cols="10" class="pb-4">
-                <span v-html="resultsBottomText"/>
-                <br><br>
-                <span>Families earning up to $111,000 may be eligible for the Affordable Child Care Benefit (ACCB).  <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Click here for the ACCB Estimator.</u></a></span>
+                <span>Families earning up to $111,000 may be eligible for the <a href="https://www.myfamilyservices.gov.bc.ca/s/estimator" target="_blank" style="color:#0FC3ED"><u>Affordable Child Care Benefit (ACCB)</u></a>.</span>
               </v-col>
               <v-col cols="1"/>
             </v-row>
@@ -942,14 +940,6 @@ export default {
       // eslint-disable-next-line
       return "If the calculation below does not match your<br>expected result, contact the Child Care Operating<br>Funding Program at 1-888-338-6622 (Option 2)."
     },
-    resultsBottomText() {
-      if (this.isParent) {
-        // eslint-disable-next-line
-        return "If the calculation does not match your expected result, contact your child care provider. If the inconsistency remains, call the Child Care Operating Funding Program at 1-888-338-6622 (Option 2)."
-      }
-      // eslint-disable-next-line
-      return "If the calculation does not match your expected result, contact the Child Care Operating Funding Program at 1-888-338-6622 (Option 2)."
-    }
   },
   methods: {
     display2Decimals(val) {
