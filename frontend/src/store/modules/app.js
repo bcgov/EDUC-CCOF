@@ -32,6 +32,13 @@ export default {
     logoutCounter: 120,
   },
   mutations: {
+    setNavBarFacilityChangeRequest: (state, { facilityId, changeRequestFacilityId }) => {
+      console.log('setting new fac ID!');
+      let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
+      if (navBarItem) {
+        navBarItem.changeRequestFacilityId = changeRequestFacilityId;
+      }
+    },
     setLookupInfo: (state, lookupInfo) => {
       if (lookupInfo) {
         state.lookupInfo = lookupInfo;

@@ -3,6 +3,8 @@
 import {getDateFormatter} from '@/utils/format';
 import {LocalDate} from '@js-joda/core';
 import {isPlainObject} from 'lodash';
+import { CHANGE_URL_PREFIX} from '@/utils/constants';
+
 const clone = require('rfdc')();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
   const formatter = getDateFormatter(pattern);
@@ -35,4 +37,8 @@ export function getFileExtension(fileName) {
 }
 export function isNullOrBlank(value) {
   return value === null || value === undefined || value === '';
+}
+
+export function isChangeRequest(vueForm) {
+  return vueForm?.$route?.path?.startsWith(CHANGE_URL_PREFIX);
 }

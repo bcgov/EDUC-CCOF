@@ -349,7 +349,6 @@ const router = new VueRouter({
         requiresAuth: true,
       }
     },
-
     {
       path: PATHS.ccfriRequestMoreInfo + '/:urlGuid',
       name: 'ccfri-request-info',
@@ -472,19 +471,30 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:urlGuid' + '/facility' + '/:urlGuid',
-      name: 'Report Change Facility Guid',
-      component: FacilityInformation,
-      meta: {
-        pageTitle: 'Facility Information',
-        requiresAuth: true,
-        showNavBar: false,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
-      }
-    },
-    {
       path: PATHS.reportChange.facInfo,
-      name: 'Report Change Facility',
+      name: 'change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility',
+      name: 'existing-change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility/:urlGuid',
+      name: 'change-request-facility-information-guid',
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information',
@@ -494,8 +504,8 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.fundAmount,
-      name: 'Change Request Funding',
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.group.fundAmount,
+      name: 'change-request-funding',
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
@@ -505,14 +515,69 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.fundAmount + '/:urlGuid',
-      name: 'Change Request Funding GUID',
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.group.fundAmount + '/:urlGuid',
+      name: 'change-request-funding-guid',
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facilityConfirmation',
+      name: 'change-request-new-facility-confirmation',
+      component: ApplicationConfirmation,
+      meta: {
+        pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + PATHS.ccfriHome,
+      name: 'change-request-ccfri-home',
+      component: CcfriEceLandingPage,
+      meta: {
+        pageTitle: 'CCFRI Home',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' +  PATHS.addNewFees + '/:urlGuid',
+      name: 'change-request-ccfri-add-fees-guid',
+      component: AddNewFees,
+      meta: {
+        pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + PATHS.eceweEligibility,
+      name: 'change-request-ECEWE-Eligibility',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + PATHS.eceweFacilities,
+      name: 'change-request-ECEWE-Facilities',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
   ]
@@ -528,11 +593,6 @@ router.beforeEach((to, _from, next) => {
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
             next(PATHS.impersonate);
           } else {
-            if (to.fullPath.includes('report-change')){
-              //should we check if the change store exists or just load all the time?
-              console.log('\n loading the change store');
-              store.dispatch('reportChanges/loadChangeRequest');
-            }
             next();
           }
         }).catch((error) => {

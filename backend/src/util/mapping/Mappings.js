@@ -35,6 +35,7 @@ const FacilityMappings = [
   { back: 'ccof_facilityreceived_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
+  { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',

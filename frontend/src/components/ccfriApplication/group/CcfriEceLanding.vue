@@ -85,7 +85,7 @@
       </LargeButtonContainer>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
   </v-container>
 </template>
@@ -132,7 +132,8 @@ export default {
       if (this.unlockedFacilities) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      else
+        return (this.applicationStatus === 'SUBMITTED');
     },
     unlockedFacilities(){
       return this.navBarList.some(facility => facility.unlockCcfri);
@@ -219,7 +220,6 @@ export default {
 
       for (let i = 0; i < this.navBarList.length; i++) {
       //change this to only send payloads with value chosen --- don't send undefined
-
         if (!ccfriOptInOrOut[i]){
           continue;
         }
@@ -229,7 +229,11 @@ export default {
             applicationID : this.applicationId, //CCOF BASE application ID
             facilityID : this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
-            ccfriApplicationId: this.navBarList[i].ccfriApplicationId
+            ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
+            //changeRequestFacilityId: 'f34336ac-d6ff-ed11-8f6d-000d3a09d499'
+            //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
+            //so it can be linked in the backend. It works with the above hardcoded guid ^
+            //I did not implement fully because it sounds like we might get that info back from profiderProfile
           });
         }
       }//end for loop
