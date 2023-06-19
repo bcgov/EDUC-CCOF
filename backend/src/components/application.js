@@ -338,6 +338,17 @@ async function updateECEWEFacilityApplication(req, res) {
         response = await postOperation(operation, facility);
         facilities[key].eceweApplicationId = response;
       }
+
+      //if this is a new facility change request, link ECEWE application to the New Facility Change Request
+      if (facility.changeRequestFacilityId) {
+        await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
+          {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${facility.eceweApplicationId})`}
+        );
+      } else {
+        await updateChangeRequestNewFacility(response,
+          {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${response})`}
+        );
+      }
     }
     return res.status(HttpStatus.OK).json({facilities: facilities});
   } catch (e) {

@@ -1,4 +1,4 @@
-import {ORGANIZATION_PROVIDER_TYPES} from '@/utils/constants';
+import {ORGANIZATION_PROVIDER_TYPES, CHANGE_URL_PREFIX} from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
 import {mapActions, mapState, mapMutations} from 'vuex';
@@ -18,7 +18,7 @@ export default {
       if (this.unlockBaseFunding) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      return (this.applicationStatus === 'SUBMITTED' && !this.$route.path?.startsWith(CHANGE_URL_PREFIX));
     }
   },
   data() {

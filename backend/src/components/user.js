@@ -5,8 +5,8 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
-const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES} = require('../util/constants');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
 
@@ -128,6 +128,21 @@ async function getUserProfile(userGuid, userName) {
   }
 }
 
+function findChangeRequestNewFacility(changeRequestList, facilityId) {
+  for (const changeRequest of changeRequestList) {
+    let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter(item => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    for (const changeActionNewFacility of changeActionNewFacilityList) {
+      let result = changeActionNewFacility?.ccof_change_request_new_facility_change_act.find(item => item['_ccof_facility_value'] === facilityId);
+      if (result) {
+        result['ccof_change_requestid'] = changeRequest?.ccof_change_requestid;
+        result = new MappableObjectForFront(result, UserProfileChangeRequestNewFacilityMappings).data;
+        return result;
+      }
+    };
+  };
+  return null;
+}
+
 function parseFacilityData(userResponse) {
   let facilityMap  = new Map(userResponse.facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
@@ -139,11 +154,15 @@ function parseFacilityData(userResponse) {
       eceweInfo = new MappableObjectForFront(eceweInfo, UserProfileECEWEMappings).data;
       let baseFunding = userResponse.application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
       baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
+      let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
+      let changeRequestNewFacility = findChangeRequestNewFacility(changeRequestList, key);
       map.set(key, {
         ...value,
         ...ccfriInfo,
         ...eceweInfo,
-        ...baseFunding});        
+        ...baseFunding,
+        ...changeRequestNewFacility
+      });        
     });
   }
   let facilityList = [];

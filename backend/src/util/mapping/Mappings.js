@@ -314,6 +314,12 @@ const UserProfileECEWEMappings = [
   { back: '_ccof_facility_value', front: 'eceweFacilityId' },
 ];
 
+const UserProfileChangeRequestNewFacilityMappings = [
+  { back: 'ccof_change_requestid', front: 'changeRequestId' },
+  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
+  { back: '_ccof_change_action_value', front: 'changeActionId' },
+];
+
 const ProgramYearMappings = [
   { back: 'ccof_program_yearid', front: 'programYearId' },
   { back: 'ccof_name', front: 'name' },
@@ -439,5 +445,6 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
-  ChangeRequestMappings
+  ChangeRequestMappings,
+  UserProfileChangeRequestNewFacilityMappings
 };
