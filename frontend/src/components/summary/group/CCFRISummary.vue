@@ -20,7 +20,7 @@
         <v-row v-else-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
           <div v-for=" (ccType, index) in ccfriChildCareTypes" :key="index">
             <v-row class="d-flex justify-start">
-              <v-col cols="6" lg="6" class="pb-1 pt-1 ml-2">
+              <v-col cols="12" lg="12" class="pb-1 pt-1 ml-2">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label pt-3" v-if="!!ccType.programYear && !!ccType.childCareCategory">Parent Fees
@@ -103,9 +103,9 @@
             </v-row>
           </div>
           <v-row class="d-flex justify-start ml-0">
-            <v-col cols="6" lg="6" class="pb-2 pt-2">
+            <v-col cols="12" lg="612" class="pb-2 pt-2">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="6" class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label">Do you charge parent fees at this facility to any closures on business days
                     (other than statutory holidays)</span>
                   <v-text-field placeholder="Required" :value="this.getClosureFees(this.ccfri.hasClosureFees)"
@@ -114,14 +114,13 @@
               </v-row>
 
               <v-row v-if="this.ccfri.hasClosureFees == 100000000">
-                <v-row v-for="(obj, index) in this.ccfri.dates" :key="index">
+                <v-row v-for="(obj, index) in   this.ccfri.dates  " :key="index">
                   <v-col class="col-md-3 col-12">
                     <v-menu v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40"
                       transition="scale-transition" offset-y min-width="auto">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-text-field placeholder="Required" :disabled="isReadOnly" outlined :rules="rules"
-                          v-model="obj.formattedStartDate" label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs"
-                          v-on="on">
+                        <v-text-field placeholder="Required" outlined :rules="rules" v-model="obj.formattedStartDate"
+                          label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
                         </v-text-field>
                       </template>
                     </v-menu>
@@ -131,25 +130,23 @@
                     <v-menu v-model="obj.calendarMenu2" :close-on-content-click="false" :nudge-right="40"
                       transition="scale-transition" offset-y min-width="auto">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-text-field placeholder="Required" :disabled="isReadOnly" outlined required
-                          v-model="obj.formattedEndDate" label="Select End Date (YYYY-MM-DD)" readonly :rules="rules"
-                          v-bind="attrs" v-on="on">
+                        <v-text-field placeholder="Required" outlined required readonly v-model="obj.formattedEndDate"
+                          label="Select End Date (YYYY-MM-DD)" :rules="rules" v-bind="attrs" v-on="on">
                         </v-text-field>
                       </template>
                     </v-menu>
                   </v-col>
 
                   <v-col class="col-md-3 col-12 ">
-                    <v-text-field placeholder="Required" :disabled="isReadOnly" v-model="obj.closureReason"
-                      label="Closure Reason" outlined clearable :rules="rules"></v-text-field>
+                    <v-text-field placeholder="Required" readonly v-model="obj.closureReason" label="Closure Reason"
+                      outlined clearable :rules="rules"></v-text-field>
                   </v-col>
 
-                  <v-col class="col-md-2 col-12">
-                    <v-radio-group placeholder="Required" disabled="isReadOnly" row v-model="obj.feesPaidWhileClosed"
-                      label="Did parents pay for this closure?" :rules="dateRules">
-                      <v-radio label="Yes" :value=1></v-radio>
-                      <v-radio label="No" :value=0></v-radio>
-                    </v-radio-group>
+                  <v-col class="col-md-3 col-12">
+                    <v-text-field placeholder="Required" readonly row label="Did parents pay for this closure?"
+                      :value="obj.feesPaidWhileClosed === 1 ? 'Yes' : 'No'" :rules="dateRules">{{ obj.feesPaidWhileClosed
+                        === 1 ?
+                        'Yes' : 'No' }}</v-text-field>
                   </v-col>
 
                 </v-row> <!-- end v for-->
@@ -158,7 +155,7 @@
           </v-row>
 
           <v-row no-gutters class="d-flex justify-start">
-            <v-col cols="6" class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
               <v-text-field placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)"
                 class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
