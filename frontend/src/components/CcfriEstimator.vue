@@ -712,7 +712,7 @@
                     <v-tooltip top color="#68449A">
                       <template v-slot:activator="{ on, attrs }">
                         <v-card v-bind="attrs" v-on="on" class="tooltip">
-                          <v-icon class="pt-1" small color="white">mdi-information-variant</v-icon>
+                          <v-icon class="pt-1" small color="white">mdi-help</v-icon>
                         </v-card>
                       </template>
                       <span v-html="resultsToolTip"/>
