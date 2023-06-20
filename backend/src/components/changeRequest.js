@@ -4,11 +4,11 @@ const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 const { mapFacilityObjectForBack } = require('./facility');
-const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
 
-const { getOperationWithObjectId, getOperation, postOperation, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
+const { getOperationWithObjectId, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument, getLabelFromValue } = require('./utils');
 
 const CHANGE_REQUEST_TYPES_FRONT = Object.freeze({
   NEW_FACILITY: 'NEW_FACILITY',
@@ -86,26 +86,56 @@ function buildNewFacilityPayload(req) {
   facility['ccof_ccof_change_request_new_facility_facility'] = [
     {
       'ccof_change_action@odata.bind': `/ccof_change_actions(${req.params.changeActionId})`,
+    },
+  ];
+  facility['ccof_application_basefunding_Facility'] = [
+    {
+      'ccof_Application@odata.bind': `/ccof_applications(${req.body.applicationId})`,
     }
   ];
 
   return facility;
 }
 
+async function updateChangeRequestNewFacility(changeRequestFacilityId, payload){
+  try{
+    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestFacilityId, payload);
+    return response;
+  }
+  catch(e){
+    log.error('error', e);
+    return e.data ? e.data : e?.status;
+  }
+}
 
 async function createChangeRequestFacility(req, res) {
   let facility = buildNewFacilityPayload(req);
   try {
     const facilityGuid = await postOperation('accounts', facility);
     //After the 'ChangeActionNewFacility' entity is created, grab the guid
-    let operation = 'accounts(' + facilityGuid + ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode)';
+    let operation = 'accounts(' + facilityGuid + ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode),ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
     let payload = await getOperation(operation);
+    console.log(payload);
     let changeRequestNewFacilityId = undefined;
+    let ccofBaseFundingId = undefined;
+    let ccofBaseFundingStatus = undefined;
+    if ( payload?.ccof_application_basefunding_Facility?.length > 0) {
+      ccofBaseFundingId = payload.ccof_application_basefunding_Facility[0].ccof_application_basefundingid;
+      ccofBaseFundingStatus = getLabelFromValue(payload.ccof_application_basefunding_Facility[0].statuscode, CCOF_STATUS_CODES);
+    }
     if ( payload?.ccof_ccof_change_request_new_facility_facility?.length > 0) {
       changeRequestNewFacilityId = payload.ccof_ccof_change_request_new_facility_facility[0].ccof_change_request_new_facilityid;
     }
-    return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid, changeRequestNewFacilityId: changeRequestNewFacilityId});
+    if (ccofBaseFundingId && changeRequestNewFacilityId) {
+      await updateChangeRequestNewFacility(changeRequestNewFacilityId, 
+        {
+          "ccof_CCOF@odata.bind": `/ccof_application_basefundings(${ccofBaseFundingId})`
+        }
+      );
+    }
+    return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid, changeRequestNewFacilityId: changeRequestNewFacilityId, ccofBaseFundingId: ccofBaseFundingId, ccofBaseFundingStatus: ccofBaseFundingStatus});
   } catch (e) {
+    console.log(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }

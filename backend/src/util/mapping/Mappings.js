@@ -274,6 +274,8 @@ const UserProfileFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+  { back: 'ccof_facilitystatus_formatted', front: 'facilityStatus'},
+
 ];
 const UserProfileBaseFundingMappings = [
   //base funding
@@ -312,6 +314,12 @@ const UserProfileECEWEMappings = [
   { back: 'ccof_optintoecewe', front: 'eceweOptInStatus' },
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'eceweFacilityId' },
+];
+
+const UserProfileChangeRequestNewFacilityMappings = [
+  { back: 'ccof_change_requestid', front: 'changeRequestId' },
+  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
+  { back: '_ccof_change_action_value', front: 'changeActionId' },
 ];
 
 const ProgramYearMappings = [
@@ -439,5 +447,6 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
-  ChangeRequestMappings
+  ChangeRequestMappings,
+  UserProfileChangeRequestNewFacilityMappings
 };

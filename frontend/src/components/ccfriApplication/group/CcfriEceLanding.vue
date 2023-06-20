@@ -32,7 +32,7 @@
           tiled
           exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
+          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in filteredNavBarList" :key="facilityId">
           <v-card-text>
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
@@ -100,6 +100,8 @@ import { PATHS } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
+
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -127,23 +129,29 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
-
+    filteredNavBarList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
+    },
     isReadOnly(){
-      if (this.unlockedFacilities) {
+      if (this.unlockedFacilities || isChangeRequest(this)) {
         return false;
       }
       else
         return (this.applicationStatus === 'SUBMITTED');
     },
     unlockedFacilities(){
-      return this.navBarList.some(facility => facility.unlockCcfri);
+      return this.filteredNavBarList.some(facility => facility.unlockCcfri);
     },
 
   },
   beforeMount: function() {
-    this.showOptStatus = new Array(this.navBarList.length).fill(false);
+    this.showOptStatus = new Array(this.filteredNavBarList.length).fill(false);
 
-    this.navBarList.forEach((fac, index) => {
+    this.navBarList.forEach((fac, index) => { //TODO: validate this code
       if (fac.ccfriOptInStatus){
         this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
       }
@@ -159,7 +167,7 @@ export default {
       this.$set(this.showOptStatus, index, true);
     },
     toggleAll(){
-      this.navBarList.forEach((fac, index) => {
+      this.filteredNavBarList.forEach((fac, index) => {
         this.toggle(index);
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
@@ -175,7 +183,7 @@ export default {
       const radioButtonsIncomplete = Object.values(this.ccfriOptInOrOut).includes(undefined);
 
       let allOptStatusIncomplete = false;
-      for (const element of this.navBarList) {
+      for (const element of this.filteredNavBarList) {
         if (element.ccfriOptInStatus == null){
           allOptStatusIncomplete = true;
           break;
@@ -192,7 +200,7 @@ export default {
     async next() {
       await this.save(false);
 
-      let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
+      let firstOptInFacility = this.filteredNavBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
 
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){

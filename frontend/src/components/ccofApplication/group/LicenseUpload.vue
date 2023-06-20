@@ -10,7 +10,7 @@
             </v-row>
             <v-data-table v-if="!isLoading"
                           :headers="headers"
-                          :items="licenseUploadData"
+                          :items="filteredLicenseUploadData"
                           class="elevation-1"
                           hide-default-header
                           hide-default-footer
@@ -56,7 +56,7 @@
         </v-row>
       </span>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isValidForm || isLocked" :isNextDisabled="!isValidForm || nextButtonDisabled" :isProcessing="isProcessing" 
+        :isSaveDisabled="!isValidForm || isLocked" :isNextDisabled="!isValidForm || nextButtonDisabled" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveClicked()"></NavButton>
     </v-container>
   </v-form>
@@ -67,7 +67,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import {deepCloneObject, getFileExtension} from '@/utils/common';
+import {deepCloneObject, getFileExtension, isChangeRequest} from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -79,9 +79,15 @@ export default {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
-
+    filteredLicenseUploadData() {
+      if (isChangeRequest(this)) {
+        return this.licenseUploadData.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.licenseUploadData.filter(el => !el.changeRequestId);
+      }
+    },
     isLocked() {
-      if (this.unlockLicenseUpload) {
+      if (this.unlockLicenseUpload || isChangeRequest(this)) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
@@ -89,10 +95,16 @@ export default {
       return false;
     },
     nextButtonDisabled() {
-      for (let navBarItem of this.navBarList) {
+      let facilityList;
+      if (isChangeRequest(this)) {
+        facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        facilityList = this.navBarList.filter(el => !el.changeRequestId);
+      }
+      for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
         const uploadedLicenceCount = this.getUploadedLicenses.filter(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === facilityId).length;
-        const deletedLicenceCount = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
+        const deletedLicenceCount = this.filteredLicenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
         let fileMapLicencePerFacilityCount =  0;
         if(this.fileMap.size > 0 && this.fileMap.get(facilityId)){
           fileMapLicencePerFacilityCount = this.fileMap.get(facilityId)?.length;

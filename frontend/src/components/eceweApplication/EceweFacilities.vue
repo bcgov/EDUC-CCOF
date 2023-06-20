@@ -50,12 +50,12 @@
           <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
             <v-row>
               <v-col cols="12" class="d-flex">
-                <span>{{navBarList[index].facilityAccountNumber}}</span>
+                <span>{{uiFacilities[index].facilityAccountNumber}}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="5" class="flex-column">
-                <span>{{navBarList[index].facilityName}}</span>
+                <span>{{uiFacilities[index].facilityName}}</span>
               </v-col>
               <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
                   Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
@@ -144,6 +144,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -162,6 +163,7 @@ export default {
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('reportChanges', ['changeRequestId', 'newFacilityList']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -169,7 +171,31 @@ export default {
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
     },
     facilities: {
-      get() { return this.$store.state.eceweApp.facilities; },
+      get() {
+        if (isChangeRequest(this)) {
+          let selectedFacility = [];
+          this.newFacilityList.forEach(f => {
+            if (f.changeRequestId === this.changeRequestId) {
+              selectedFacility.push(f.facilityId);
+            }
+          });
+          console.log('-----------> THIS IS selectedFacility ');
+          console.log(selectedFacility);
+          console.log('FACILITIES = ');
+          console.log(this.navBarList.filter(f => selectedFacility.includes(f.facilityId)));
+          // let foundhere = this.navBarList.filter((fac) => {
+          //   console.log(fac.changeRequestId);
+          //   console.log(fac.changeRequestId == this.changeRequestId);
+          // });
+          // this.$store.state.eceweApp.facilities.filter((fac) => {
+          //   console.log(fac);
+          //   console.log(fac.changeRequestId == this.changeRequestId);
+          // });
+          // return this.navBarList.find(f => f.changeRequestId === this.changeRequestId);
+          return this.navBarList.filter(f => selectedFacility.includes(f.facilityId));
+        }
+        return this.$store.state.eceweApp.facilities;
+      },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
@@ -200,6 +226,7 @@ export default {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       copyFacilities.forEach(element => element.update = element.optInOrOut == null);
       this.uiFacilities = copyFacilities;
+      console.log(this.uiFacilities);
       this.setLoadedFacilities([...this.facilities]);
     },
     toggleRadio(index) {

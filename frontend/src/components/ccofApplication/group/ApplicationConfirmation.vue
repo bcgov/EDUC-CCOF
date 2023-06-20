@@ -50,6 +50,9 @@ export default {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
     isLocked() {
+      if (isChangeRequest(this)) {
+        return false;
+      }
       if (this.unlockBaseFunding) {
         return false;
       }
@@ -57,7 +60,7 @@ export default {
     },
     facilityList() {
       if (isChangeRequest(this)) {
-        return this.navBarList.filter(el => el.changeRequestId);
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         return this.navBarList.filter(el => !el.changeRequestId);
       }
