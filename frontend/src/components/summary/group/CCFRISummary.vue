@@ -98,30 +98,25 @@
                 <v-col class="col-md-3 col-12"><span class="summary-label">Did parents pay for this closure?</span></v-col>
                 <v-row v-for="(obj, index) in   this.ccfri.dates  " :key="index">
                   <v-col class="col-md-3 col-12">
-                    <v-menu v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40"
-                      transition="scale-transition" offset-y min-width="auto">
+                    <v-menu v-model="obj.calendarMenu1" :nudge-right="40" min-width="auto">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-text-field placeholder="Required" dense flat solo hide-details :rules="rules.required" v-model="obj.formattedStartDate"
-                          label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                        <v-text-field placeholder="Required" dense flat solo hide-details :rules="rules.required" v-model="obj.formattedStartDate" readonly v-bind="attrs" v-on="on">
                         </v-text-field>
                       </template>
                     </v-menu>
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
-                    <v-menu v-model="obj.calendarMenu2" :close-on-content-click="false" :nudge-right="40"
-                      transition="scale-transition" offset-y min-width="auto">
+                    <v-menu v-model="obj.calendarMenu2" :nudge-right="40" min-width="auto">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-text-field placeholder="Required" outlidense flat solo hide-detailsned required readonly v-model="obj.formattedEndDate"
-                          label="Select End Date (YYYY-MM-DD)" :rules="rules.required" v-bind="attrs" v-on="on">
+                        <v-text-field placeholder="Required" dense flat solo hide-details required readonly v-model="obj.formattedEndDate" :rules="rules.required" v-bind="attrs" v-on="on">
                         </v-text-field>
                       </template>
                     </v-menu>
                   </v-col>
 
                   <v-col class="col-md-3 col-12 ">
-                    <v-text-field placeholder="Required" readonly v-model="obj.closureReason"
-                    dense flat solo hide-details :rules="rules.required"></v-text-field>
+                    <v-text-field placeholder="Required" readonly v-model="obj.closureReason" dense flat solo hide-details :rules="rules.required"></v-text-field>
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
