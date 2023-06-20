@@ -181,9 +181,9 @@
 </template>
 <script>
 import _ from 'lodash';
-import { PATHS } from '@/utils/constants';
+import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapState } from 'vuex';
+import {mapState} from 'vuex';
 
 
 export default {
@@ -203,8 +203,8 @@ export default {
       PATHS,
       rules,
       isValidForm: true,
-      route_facility: PATHS.group.facInfo + '/' + this.facilityId,
-      formObj: {
+      route_facility: PATHS.group.facInfo+'/'+this.facilityId,
+      formObj:{
         formName: 'CCFRISummary',
         formId: this.ccfri?.ccfriId,
       }
@@ -220,7 +220,7 @@ export default {
       },
     }
   },
-  computed: {
+  computed:{
     ...mapState('application', ['isRenewal',]),
     ...mapState('summaryDeclaration', ['isLoadingComplete']),
     ccfriChildCareTypes() {
@@ -228,7 +228,7 @@ export default {
 
       //if the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
       //this checks for all licenses available for the facility, and displays what is missing to the user.
-      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses?.length) {
+      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses?.length){
         let childCareTypesArr = [];
 
         const findChildCareTypes = ((yearToSearch, checkForMissingPrevFees = false) => {
@@ -239,18 +239,18 @@ export default {
               return (searchItem.childCareCategoryId == category.childCareCategoryId && searchItem.programYearId == yearToSearch.programYearId);
             });
 
-            if (found) {
+            if (found){
               childCareTypesArr.push(found);
             }
             else {
 
-              if (checkForMissingPrevFees) {
+              if (checkForMissingPrevFees){
 
                 //check to see if childcarecat exists in last years CCFRI app.
                 let pastChildCareTypefound = this.ccfri?.prevYearCcfriApp.childCareTypes.find(prevChildCareCat => {
-                  return (prevChildCareCat.childCareCategoryId == category.childCareCategoryId && prevChildCareCat.programYearId == yearToSearch.programYearId);
+                  return (prevChildCareCat.childCareCategoryId == category.childCareCategoryId && prevChildCareCat.programYearId == yearToSearch.programYearId );
                 });
-                if (pastChildCareTypefound) {
+                if (pastChildCareTypefound){
                   return;
                 }
                 //else we are missing fees from last year, for a child care category that the user has license for.
@@ -267,12 +267,12 @@ export default {
         findChildCareTypes(this.ccfri.currentYear);
 
         //only show last year fees if new app or previous year fees are incorrect
-        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 || !this.ccfri.previousCcfriId) {
+        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 || !this.ccfri.previousCcfriId ){
           findChildCareTypes(this.ccfri.prevYear);
         }
 
         //check if we are missing any feed cards from the last year if previous fees are correct
-        else if (this.isRenewal && this.ccfri.existingFeesCorrect == 100000000 && this.ccfri.previousCcfriId) {
+        else if (this.isRenewal &&  this.ccfri.existingFeesCorrect == 100000000 && this.ccfri.previousCcfriId){
           findChildCareTypes(this.ccfri.prevYear, true);
         }
 
@@ -280,7 +280,7 @@ export default {
         childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);
 
         //sort by program year
-        return childCareTypesArr.sort((a, b) => {
+        return  childCareTypesArr.sort((a, b) =>{
           const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase
           const nameB = b.programYear.toUpperCase(); // ignore upper and lowercase
           if (nameA < nameB) {
@@ -304,19 +304,19 @@ export default {
     getClosureFees(value) {
       if (value === 100000000) {
         return 'Yes';
-      } else if (value === 100000001) {
+      } else if(value === 100000001) {
         return 'No';
       }
     },
-    generateProgYearText(programYear, childCareCategory) {
-      if (programYear && childCareCategory) {
-        return 'Parent Fees ' + programYear + ': ' + childCareCategory + ':';
+    generateProgYearText(programYear,childCareCategory){
+      if(programYear && childCareCategory){
+        return 'Parent Fees '+programYear+': '+childCareCategory+':';
       }
       return null;
     },
-    generateFeeFrequencyText(feeFrequency) {
-      if (feeFrequency) {
-        return 'Your <b>highest' + feeFrequency.toLowerCase() + 'parent fee before CCFRI is applied</b> in every month below.';
+    generateFeeFrequencyText(feeFrequency){
+      if(feeFrequency){
+        return 'Your <b>highest' +feeFrequency.toLowerCase()  +'parent fee before CCFRI is applied</b> in every month below.';
       }
       return null;
     },
@@ -353,16 +353,13 @@ export default {
   font-size: small;
   font-style: initial;
 }
-
-.summary-value-small {
+.summary-value-small{
   color: black;
   font-size: small;
   font-weight: bold
 }
-
 >>>::placeholder {
-  color: #ff5252 !important;
+  color: #ff5252!important;
   opacity: 1;
 }
 </style>
-
