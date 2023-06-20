@@ -143,39 +143,22 @@
           </v-col>
         </v-row>
 
-        <v-row v-else class="d-flex flex-column">
-          <v-col cols="6" lg="6" class="pb-2 pt-2 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="6" class="d-flex justify-start">
-                <span cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
-                <v-text-field cols="6" placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)"
-                  class="summary-value " flat solo hide-details readonly :rules="rules.required"></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-
-        </v-row>
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" v-if="!ccfri" class="d-flex justify-start">
-                <router-link :to="PATHS.ccfriHome"> <span style="color:#ff5252; text-underline: black"><u>To add this
-                      information, click here. This will bring you to a different page.</u></span></router-link>
-              </v-col>
-              <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
-                <router-link :to="PATHS.currentFees + '/' + ccfri?.ccfriId"> <span
-                    style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring
-                      you to a different page.</u></span></router-link>
-              </v-col>
-              <v-col cols="12" v-else class="d-flex justify-start">
-                <router-link :to="PATHS.addNewFees + '/' + ccfri?.ccfriId"> <span
-                    style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring
-                      you to a different page.</u></span></router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-expansion-panel-content>
+      <v-row v-if="!isValidForm" class="d-flex justify-start">
+        <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
+          <v-row  no-gutters class="d-flex justify-start">
+            <v-col cols="12" v-if="!ccfri" class="d-flex justify-start">
+              <router-link :to="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+            </v-col>
+            <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
+              <router-link :to="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+            </v-col>
+            <v-col cols="12" v-else class="d-flex justify-start">
+              <router-link :to="PATHS.addNewFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-expansion-panel-content>
     </v-form>
   </v-row>
 </template>
