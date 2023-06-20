@@ -10,7 +10,7 @@
       <v-row>
         <v-col cols="12" class="pt-0 pb-2" align="center">
           <v-img
-            :src="require('../assets/images/estimator image.jpg')"
+            :src="require('../assets/images/estimator_image.jpg')"
             max-height="300"
             max-width="1448" >
           </v-img>
