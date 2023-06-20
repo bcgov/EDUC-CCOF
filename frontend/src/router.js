@@ -254,6 +254,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/licenseUpload',
+      name: 'Change Request Licence Upload',
+      component: LicenseUpload,
+      meta: {
+        pageTitle: 'Licence Upload',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.group.renewOrganization,
       name: 'Renew Organization',
       component: RenewOrganization,
@@ -504,18 +515,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.reportChange.fundAmount,
-      name: 'change-request-funding',
-      component: GroupFundAmount,
-      meta: {
-        pageTitle: 'Information to Determine Funding amounts',
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
-      }
-    },
-    {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.reportChange.fundAmount + '/:urlGuid',
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/funding/:urlGuid',
       name: 'change-request-funding-guid',
       component: GroupFundAmount,
       meta: {
@@ -537,7 +537,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + PATHS.ccfriHome,
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/ccfriApplication',
       name: 'change-request-ccfri-home',
       component: CcfriEceLandingPage,
       meta: {
@@ -559,7 +559,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + PATHS.eceweEligibility,
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.eceweEligibility,
       name: 'change-request-ECEWE-Eligibility',
       component: EceweEligibility,
       meta: {
@@ -570,7 +570,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + PATHS.eceweFacilities,
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.eceweFacilities,
       name: 'change-request-ECEWE-Facilities',
       component: EceweFacilities,
       meta: {

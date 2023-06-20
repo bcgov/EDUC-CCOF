@@ -247,7 +247,8 @@ export default {
       if (this.unlockedFacilities) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      // return (this.applicationStatus === 'SUBMITTED');
+      return false;
     },
   },
   beforeMount: function () {

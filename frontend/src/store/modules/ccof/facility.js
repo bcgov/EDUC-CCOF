@@ -60,8 +60,8 @@ export default {
     async saveFacility({ state, commit, rootState }, { isChangeRequest, changeRequestId }) {
 
       checkSession();
-      console.log('state model: ', state.facilityModel);
-      console.log('loaded model: ', state.loadedModel);
+      console.log('saveFacility- state model: ', state.facilityModel);
+      console.log('saveFacility- loaded model: ', state.loadedModel);
       if (isEqual(state.facilityModel, state.loadedModel)) {
         console.info('no model changes');
         return;
@@ -90,8 +90,8 @@ export default {
         console.log('creating change request?', isChangeRequest);
         // else create a new facility.  If is a change request, hit the change request endpoint
         if (isChangeRequest) {
+          console.log('changeRequestId: ', changeRequestId);
           try {
-            console.log('changeRequestId: ', changeRequestId);
             let changeActionId;
             if (changeRequestId) {
               let item = rootState.reportChanges.changeRequestStore[changeRequestId];
@@ -107,8 +107,8 @@ export default {
                 programYearId: rootState.application.programYearId
               };
               const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
-              commit('application/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
-              commit('application/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
+              commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
+              commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
               changeActionId = changeRequestResponse.data?.changeActionId;
             }
             let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`, payload);
@@ -119,8 +119,9 @@ export default {
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
               ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
               licenseNumber: state.facilityModel.licenseNumber,
-              changeRequestId: rootState.application.changeRequestId,
-              changeActionId: rootState.application.changeActionId,
+              changeRequestId: rootState.reportChanges.changeRequestId,
+              changeActionId: rootState.reportChanges.changeActionId,
+              facilityStatus: 'New',
             }, { root: true });
             commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
 
@@ -130,7 +131,7 @@ export default {
             throw error;
           }
         } else {
-          console.log('trying new facility', this.$route.path);
+          console.log('trying new facility');
           try {
             let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
             commit('setFacilityId', response.data?.facilityId);
@@ -140,6 +141,7 @@ export default {
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
               ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
               licenseNumber: state.facilityModel.licenseNumber,
+              facilityStatus: 'New',
             }, { root: true });
             commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
 

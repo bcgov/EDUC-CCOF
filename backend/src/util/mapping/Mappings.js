@@ -274,6 +274,8 @@ const UserProfileFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+  { back: 'ccof_facilitystatus_formatted', front: 'facilityStatus'},
+
 ];
 const UserProfileBaseFundingMappings = [
   //base funding
