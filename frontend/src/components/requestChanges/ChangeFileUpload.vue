@@ -201,7 +201,7 @@ export default {
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
     isLocked() {
-      return (this.applicationStatus === 'SUBMITTED');
+      return false; // (this.applicationStatus === 'SUBMITTED');
     },
   },
 

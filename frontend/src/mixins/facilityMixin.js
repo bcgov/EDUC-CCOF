@@ -88,17 +88,18 @@ export default {
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
         if (isChangeRequest(this)) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/group/funding/${navBar.ccofBaseFundingId}`);
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/funding/${navBar.ccofBaseFundingId}`);
         }
         else {
           this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
-        } 
-      } else {
-        if (isChangeRequest(this)) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/group/funding/`);
-        } else {
-          this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
         }
+      } else {
+        console.log('error, should never get here');
+        // if (isChangeRequest(this)) {
+        //   this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/group/funding/`);
+        // } else {
+        //   this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
+        // }
       }
     },
     validateForm() {
@@ -114,7 +115,6 @@ export default {
         }
         this.model.postalCode = this.organizationModel.postalCode1;
       }
-      console.log('setting facility 123');
       this.setFacilityModel({ ...this.model });
       this.processing = true;
       try {

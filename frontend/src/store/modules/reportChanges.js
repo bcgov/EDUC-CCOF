@@ -13,6 +13,7 @@ export default {
   namespaced: true,
   state: {
     changeRequestId: undefined,
+    changeActionId: undefined,
     changeRequestStore : {},
     uploadedDocuments: [],
     newFacilityList: [], //may not need this now
@@ -34,6 +35,10 @@ export default {
     setChangeRequestId: (state, changeRequestId) => {
       state.changeRequestId = changeRequestId;
     },
+    setChangeActionId: (state, changeActionId) => {
+      state.changeActionId = changeActionId;
+    },
+
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
     },
