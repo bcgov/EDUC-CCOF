@@ -208,6 +208,40 @@
                   <v-divider></v-divider>
                 </v-col>
               </v-row>
+              <v-row>
+                <v-col cols="5" class="estimator-label">
+                  <span style="color: #313131">
+                    Parent fee frequency
+                  </span>
+                </v-col>
+                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
+                  <v-tooltip top color="#68449A">
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-card v-on="on" class="tooltip">
+                      <v-icon class="pt-1" small color="white">mdi-help</v-icon>
+                    </v-card>
+                  </template>
+                    <span v-html="feeFrequencyToolTip"/>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="4" class="pb-0">
+                  <v-select
+                    id="parentFeeFrequency"
+                    v-model="child.parentFeeFrequency"
+                    :items="parentFeeFrequencyList"
+                    required
+                    :rules="rulesParentFeeFrequency"
+                    @change="onChangeParentFeeFrequency(child.number-1)"
+                    outlined
+                    dense>
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0">
+                  <v-divider></v-divider>
+                </v-col>
+              </v-row>
   <!-- ******************************************************************************************************************************************************** -->
   <!-- **** CHILD X: PART TIME CARE SCHEDULE ****************************************************************************************************************** -->
   <!-- ******************************************************************************************************************************************************** -->
@@ -245,7 +279,7 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -280,7 +314,7 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -313,14 +347,13 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
                                 </v-list-item-content>
                               </template>
                             </v-list-item>
-
                             <v-divider
                               v-if="index < getCareTypes(child.number).length - 1"
                               :key="index"
@@ -346,7 +379,7 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -378,7 +411,7 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -409,7 +442,7 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -441,7 +474,7 @@
                           active-class="purple--text"
                         >
                           <div v-for="(item, index) in getCareTypes(child.number)" v-bind:key="item.type">
-                            <v-list-item>
+                            <v-list-item :disabled="isScheduleDisabled(child, index)">
                               <template v-slot:default="{ active }">
                                 <v-list-item-content>
                                   <v-list-item-title v-text="item.type"></v-list-item-title>
@@ -459,6 +492,21 @@
                     </v-card>
                     <v-spacer></v-spacer>
                   </div>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols=9 class="text-left">
+                  <div v-if="child.parentFeeFrequency=='Daily' && child.childAgeCategory !='Preschool'" style="padding-left: 30px; padding-top: 12px">
+                    To estimate for a daily parent fee frequency, days with care must have the same amount of hours.
+                  </div>
+                </v-col>
+                <v-col cols=3 class="text-right">
+                  <v-btn style="color:white;font-family:BCSans;font-weight:600;font-family:BCSans;font-size:16px;padding-left:40px;padding-right:40px; margin-right:40px !important"
+                        class="ma-2"
+                        color="#0483AF"
+                        @click="clearSchedule(child)">
+                        Clear schedule
+                  </v-btn>
                 </v-col>
               </v-row>
               <v-row>
@@ -565,40 +613,6 @@
                 </v-col>
               </v-row>
               <v-row v-if="child.showMonthSelector">
-                <v-col class="py-0">
-                  <v-divider></v-divider>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="5" class="estimator-label">
-                  <span style="color: #313131">
-                    Parent fee frequency
-                  </span>
-                </v-col>
-                <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:0px">
-                  <v-tooltip top color="#68449A">
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-card v-on="on" class="tooltip">
-                      <v-icon class="pt-1" small color="white">mdi-help</v-icon>
-                    </v-card>
-                  </template>
-                    <span v-html="feeFrequencyToolTip"/>
-                  </v-tooltip>
-                </v-col>
-                <v-col cols="4" class="pb-0">
-                  <v-select
-                    id="parentFeeFrequency"
-                    v-model="child.parentFeeFrequency"
-                    :items="parentFeeFrequencyList"
-                    required
-                    :rules="rulesParentFeeFrequency"
-                    @change="onChangeParentFeeFrequency(child.number-1)"
-                    outlined
-                    dense>
-                  </v-select>
-                </v-col>
-              </v-row>
-              <v-row>
                 <v-col class="py-0">
                   <v-divider></v-divider>
                 </v-col>
@@ -720,7 +734,7 @@
                   </v-col>
                   <v-col cols="11" class="px-0">
                     <div style="margin-left:-20px;color:#313131;font-family:BCSans;font-weight:500;font-size:16px">
-                      Based on the information you have provided, you may be eligible for the following monthly ChildCareBC fee reduction:
+                      Based on the information you have provided, you may be eligible for the following ChildCareBC fee reduction:
                     </div>
                   </v-col>
                 </v-row>
@@ -1115,7 +1129,7 @@ export default {
       return rateFloor;
     },
     getFullTimeMonthlyParentFee(fee, feeFrequency) {
-      console.log(`getFullTimeMonthlyParentFee : ${feeFrequency}  and value is ${feeFrequency === 'Daily'}`);
+      // console.log(`getFullTimeMonthlyParentFee : ${feeFrequency}  and value is ${feeFrequency === 'Daily'}`);
       if (feeFrequency === 'Daily') {
         return fee * 20;
       } else {
@@ -1123,11 +1137,27 @@ export default {
       }
     },
     getPartTimeMonthlyParentFee(fee, feeFrequency, daysOfCare) {
-      console.log(`fee frequency: [${feeFrequency}] and fee: [${fee}] with Days of Care [${daysOfCare}]`);
+      // console.log(`fee frequency: [${feeFrequency}] and fee: [${fee}] with Days of Care [${daysOfCare}]`);
       if (feeFrequency === 'Daily') {
         return fee * daysOfCare;
       } else {
         return fee;
+      }
+    },
+    clearSchedule(child) {
+      child.selectedCareType = [];
+    },
+    isScheduleDisabled(child, partTimeIndex) {
+      //partTimeIndex = 0 for no care, 1 for half days, 2 for full days.
+      if (child.parentFeeFrequency == 'Monthly' || child.childAgeCategory == CHILDCARE_TYPE_PRESCHOOL) {
+        return false;
+      } else {
+        if (partTimeIndex == 1) {
+          return child.selectedCareType.includes(2);
+        } else if (partTimeIndex == 2) {
+          return child.selectedCareType.includes(1);
+        }
+        return false; // when part time index = 0
       }
     },
     estimateTheBenefit() { ///NOSONAR
@@ -1144,32 +1174,11 @@ export default {
           } else {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
-          // Determine daily rate before fee reduction based on frequency of fee...
-          // let parentRate;
-          // const isChildFullTime = this.isFullTime(this.children[i]);
           // console.log('Is child fulltime: ', isChildFullTime);
-
-
-          /** this piece commented out
-          if ( isChildFullTime && this.children[i].partTimeFee && (+this.children[i].partTimeFee < +this.children[i].approvedFee)) {
-            //If child is full time and parent fee is less than approved fee, use the parent fee
-            parentRate = this.children[i].partTimeFee;
-          }
-          else {
-            parentRate = this.children[i].approvedFee;
-          }
-           */
-
 
           let parentRate = this.children[i].approvedFee; //TODO - added this
           const dailyParentRate = this.children[i].parentFeeFrequency === 'Daily' ? parentRate : (parentRate / NUMBER_OF_DAYS_PER_MONTH);
-          console.log('daily parent rate is: ' + dailyParentRate);
-          // Determine the daily rates for partTime and fulltime based on the number of days in month...
-
-
-          // let fullTimeRateFromTable = rateTableInfo.fullTimeDailyRate;
-          // let partTimeTotal;
-          // let fullTimeTotal;
+          // console.log('daily parent rate is: ' + dailyParentRate);
           let reductionAmountPerChildPerDay;  // use to be  fullTimeDailyRate;
 
           const isPreschool = (this.children[i].childAgeCategory === CHILDCARE_TYPE_PRESCHOOL);
@@ -1177,10 +1186,10 @@ export default {
 
           if (isPreschool) { // For preschool no need to subtract by full time daily rate as it's only part time
             reductionAmountPerChildPerDay = (dailyParentRate - 7 > rateTableInfo.partTimeDailyRate) ? rateTableInfo.partTimeDailyRate : (dailyParentRate - 7);
-            console.log(`PRESCHOOL - full time daily rate [${reductionAmountPerChildPerDay}], We may be using rate table with rate: ${rateTableInfo.partTimeDailyRate}`);
+            // console.log(`PRESCHOOL - full time daily rate [${reductionAmountPerChildPerDay}], We may be using rate table with rate: ${rateTableInfo.partTimeDailyRate}`);
           } else {
             reductionAmountPerChildPerDay = ((dailyParentRate - 10) > rateTableInfo.fullTimeDailyRate) ? rateTableInfo.fullTimeDailyRate : (dailyParentRate - 10);
-            console.log(`NOT preschol - full time daily rate [${reductionAmountPerChildPerDay}] We may be using rate table with rate: ${rateTableInfo.fullTimeDailyRate}`);
+            // console.log(`NOT preschol - full time daily rate [${reductionAmountPerChildPerDay}] We may be using rate table with rate: ${rateTableInfo.fullTimeDailyRate}`);
           }
 
           // let reductionAmountPerChild = fullTimeDailyRate * 20;
@@ -1192,30 +1201,18 @@ export default {
           let partTimeNumberOfDays = this.children[i].selectedCareType.filter(el => el == 1).length;
           let fullTimeNumberOfDays = this.children[i].selectedCareType.filter(el => el == 2).length;
 
-          // const count = this.children[i].selectedCareType.filter(el => el == 1).length;
-          // // Determine number of part time and full time days entered in the parttime care schedule component...
-          // for (let j = 0; j < this.children[i].selectedCareType.length; j++) {
-          //   if (this.children[i].selectedCareType[j] == 1) {
-          //     partTimeNumberOfDays = partTimeNumberOfDays + 1;
-          //   }
-          //   else if (this.children[i].selectedCareType[j] == 2) {
-          //     fullTimeNumberOfDays = fullTimeNumberOfDays + 1;
-          //   }
-          // }
           // multiply by 4 since there are decided on 4 weeks / month
           partTimeNumberOfDays = partTimeNumberOfDays * 4;
           fullTimeNumberOfDays = fullTimeNumberOfDays * 4;
-          console.log(`Full time number of days: [${fullTimeNumberOfDays}], Part time number of days: [${partTimeNumberOfDays}]`);
+          // console.log(`Full time number of days: [${fullTimeNumberOfDays}], Part time number of days: [${partTimeNumberOfDays}]`);
           daysOfCare = partTimeNumberOfDays + fullTimeNumberOfDays;
-          console.log('reductionAmountPerChildPerDay ' + reductionAmountPerChildPerDay);
-          // let reductionAmountPerChildPerDay = reductionAmountPerChild / 20; // 20 days per month.
+          // console.log('reductionAmountPerChildPerDay ' + reductionAmountPerChildPerDay);
           let halfDayReductionAmountPerMonth = reductionAmountPerChildPerDay * partTimeNumberOfDays / (isPreschool? 1 : 2);
-          console.log('halfDayReductionAmountPerMonth: ' + halfDayReductionAmountPerMonth + ', part time number of days ' + partTimeNumberOfDays + ', daily reduction amount ' + reductionAmountPerChildPerDay);
-          // partTimeDailyRate = ((dailyParentRate - 5) > partTimeRateFromTable) ? partTimeRateFromTable : (dailyParentRate - 5);
+          // console.log('halfDayReductionAmountPerMonth: ' + halfDayReductionAmountPerMonth + ', part time number of days ' + partTimeNumberOfDays + ', daily reduction amount ' + reductionAmountPerChildPerDay);
           let fullDayReductionAmountPerMonth = reductionAmountPerChildPerDay * fullTimeNumberOfDays;
-          console.log('fullDayReductionAmountPerMonth: ' + fullDayReductionAmountPerMonth);
+          // console.log('fullDayReductionAmountPerMonth: ' + fullDayReductionAmountPerMonth);
           let totalMonthlyRateReduction = halfDayReductionAmountPerMonth + fullDayReductionAmountPerMonth;
-          console.log('totalMonthlyRateReduction ', totalMonthlyRateReduction);
+          // console.log('totalMonthlyRateReduction ', totalMonthlyRateReduction);
           //max total reduction cannot exceed full time daily reduction
 
           //totalRateReduction = Math.min(totalRateReduction, reductionAmountPerChild); //TODO: see if we need this?
@@ -1224,14 +1221,11 @@ export default {
           let monthlyParentFee = this.getPartTimeMonthlyParentFee(this.children[i].partTimeFee ? this.children[i].partTimeFee: this.children[i].approvedFee, this.children[i].parentFeeFrequency, daysOfCare);
 
 
-          console.log('monthlyParentFee ', monthlyParentFee);
+          // console.log('monthlyParentFee ', monthlyParentFee);
           //Make sure it's at least the Rate Floor amount
           totalMonthlyRateReduction = Math.max(totalMonthlyRateReduction, rateReductionFloor);
-          console.log(`totalMonthlyRateReduction: [${totalMonthlyRateReduction}] after applying Reduction Rate floor of [${rateReductionFloor}]`);
+          // console.log(`totalMonthlyRateReduction: [${totalMonthlyRateReduction}] after applying Reduction Rate floor of [${rateReductionFloor}]`);
 
-          //Make sure it's not over the max rate allowed ammount
-          //****************** NOT DOING THIS ANYMORE */
-          //totalMonthlyRateReduction = Math.min(totalMonthlyRateReduction, rateTableInfo.maxMonthlyRate);
           //Make sure it's not more than the parent fee
           totalMonthlyRateReduction = Math.min(totalMonthlyRateReduction, monthlyParentFee);
           // parentFeeFloor - the minimum the parent should pay
@@ -1242,43 +1236,33 @@ export default {
             parentFeeFloor = Math.min(parentFeeFloor, 200); //Fee floor should not be more than $200 / month
           }
 
-
-          console.log('parent fee floor: ' + parentFeeFloor);
-
-
-          // if (isChildFullTime) { //TODO do we need this
-          //   totalRateReduction = Math.min((fullTimeDailyRate * NUMBER_OF_DAYS_PER_MONTH), totalRateReduction);
-          // }
-
-          console.log('Total Rate reduction before applying floors: ', totalMonthlyRateReduction);
-
           //Make sure to apply minimum reduction Rate fee
           //Then apply minumum parent rate fee if possible
           if (totalMonthlyRateReduction <= rateReductionFloor) {
             // if rate reduction is already at floor, cannot reduce rate reduction
-            console.log('totalRateReduction is already less than rateReductionFloor');
+            // console.log('totalRateReduction is already less than rateReductionFloor');
             actualParentFeePerChild = monthlyParentFee - totalMonthlyRateReduction;
           }
           else if ((monthlyParentFee - totalMonthlyRateReduction) < parentFeeFloor) {
             //Parent fees are below fee floor, decrease rate reduction fee
-            console.log('monthlyParentFee < parentFeeFloor');
-            console.log('partTimeFeeFloor ' + parentFeeFloor);
-            console.log('Rate floor ' + rateReductionFloor);
-            console.log(`monthly parent fee: [${monthlyParentFee}], total rate reduction [${totalMonthlyRateReduction}], (monthlyParentFee - totalRateReduction): [${(monthlyParentFee - totalMonthlyRateReduction)}]`);
+            // console.log('monthlyParentFee < parentFeeFloor');
+            // console.log('partTimeFeeFloor ' + parentFeeFloor);
+            // console.log('Rate floor ' + rateReductionFloor);
+            // console.log(`monthly parent fee: [${monthlyParentFee}], total rate reduction [${totalMonthlyRateReduction}], (monthlyParentFee - totalRateReduction): [${(monthlyParentFee - totalMonthlyRateReduction)}]`);
             let changeRateBy = Math.min(totalMonthlyRateReduction - rateReductionFloor, parentFeeFloor - (monthlyParentFee - totalMonthlyRateReduction));
-            console.log('change rate by: ' + changeRateBy);
+            // console.log('change rate by: ' + changeRateBy);
             totalMonthlyRateReduction = totalMonthlyRateReduction - changeRateBy;
             actualParentFeePerChild = monthlyParentFee - totalMonthlyRateReduction;
           }
           else {
             // parent fee above fee floor, rate reduction above rate floor
-            console.log('else');
-            console.log('Rate floor: ' + rateReductionFloor);
-            console.log('Fee floor: ' + parentFeeFloor);
-            console.log('totalMonthlyRateReduction: ' + totalMonthlyRateReduction);
+            // console.log('else');
+            // console.log('Rate floor: ' + rateReductionFloor);
+            // console.log('Fee floor: ' + parentFeeFloor);
+            // console.log('totalMonthlyRateReduction: ' + totalMonthlyRateReduction);
             actualParentFeePerChild = monthlyParentFee - totalMonthlyRateReduction;
           }
-          console.log(`PART TIME actualParentFeePerChild [${actualParentFeePerChild}], totalMonthlyRateReduction: [${totalMonthlyRateReduction}], monthly fee: [${monthlyParentFee}]`);
+          // console.log(`PART TIME actualParentFeePerChild [${actualParentFeePerChild}], totalMonthlyRateReduction: [${totalMonthlyRateReduction}], monthly fee: [${monthlyParentFee}]`);
 
 
 
@@ -1288,12 +1272,12 @@ export default {
           // Update the results
           this.results.push({ number: i + 1,
             reductionAmountMonthly: this.display2Decimals(totalMonthlyRateReduction),
-            reductionAmountDaily: this.display2Decimals(totalMonthlyRateReduction / daysOfCare),
+            reductionAmountDaily: daysOfCare == 0 ? 0 : this.display2Decimals(totalMonthlyRateReduction / daysOfCare),
             parentFeeMonthly: this.display2Decimals(actualParentFeePerChild),
-            parentFeeDaily: this.display2Decimals(actualParentFeePerChild / daysOfCare) ,
+            parentFeeDaily: daysOfCare == 0 ? 0 : this.display2Decimals(actualParentFeePerChild / daysOfCare) ,
             feeFrequency: this.children[i].parentFeeFrequency,
             daysOfCare: daysOfCare });
-          console.log('Results ', JSON.stringify(this.results));
+          // console.log('Results ', JSON.stringify(this.results));
         }
       }
     },
@@ -1445,6 +1429,7 @@ export default {
     onChangeParentFeeFrequency (childIndex) {
       this.children[childIndex].approvedFee = undefined;
       this.children[childIndex].isActive = false;
+      this.children[childIndex].selectedCareType = [];
     },
     getApprovedRatesByMonth: function(childAgeCategory) {
       for (let i in this.selectedFacility.approvedFeesByChildAgeCategory) {
@@ -1487,21 +1472,6 @@ export default {
     ];
     this.setDefaultForMonthPicker();
     this.results = [];
-    // this.GROUP_REDUCTION_RATES = new Map();
-    // this.GROUP_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 900, fullTime20: 45, rateFloor: 350 });
-    // this.GROUP_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 900, fullTime20: 45, rateFloor: 350 });
-    // this.GROUP_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 545, fullTime20: 27.25, rateFloor: 100 });
-    // this.GROUP_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 100 });
-    // this.GROUP_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 115, fullTime20: 5.75, rateFloor: 0 });
-    // this.GROUP_REDUCTION_RATES.set('Preschool', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
-    // this.FAMILY_REDUCTION_RATES = new Map();
-    // this.FAMILY_REDUCTION_RATES.set('0 - 18 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
-    // this.FAMILY_REDUCTION_RATES.set('18 - 36 Months', { monthlyRate: 600, fullTime20: 30, rateFloor: 200 });
-    // this.FAMILY_REDUCTION_RATES.set('3 Years to Kindergarten', { monthlyRate: 500, fullTime20: 25, rateFloor: 60 });
-    // this.FAMILY_REDUCTION_RATES.set('Before & After School (Kindergarten Only)', { monthlyRate: 320, fullTime20: 16, rateFloor: 60 });
-    // this.FAMILY_REDUCTION_RATES.set('Before & After School (Grade 1+)', { monthlyRate: 145, fullTime20: 7.25, rateFloor: 0 });
-    // this.FAMILY_REDUCTION_RATES.set('Preschool', { monthlyRate: 190, fullTime20: 9.5, rateFloor: 0 });
-
 
     this.GROUP_REDUCTION_RATES = new Map();
     this.GROUP_REDUCTION_RATES.set('0 - 18 Months', { maxMonthlyRate: 900, fullTimeDailyRate: 45, partTimeDailyRate: 22.5, fullTimeDailyRateFloor: 17.5, partTimeDailyRateFloor: 8.75 });
