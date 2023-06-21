@@ -11,7 +11,7 @@ const Redis = {
     const IOREDIS = require('ioredis');
     const config = require('../../config');
     const log = require('../../components/logger');
-    if (config.get('redis:clustered') == true) {
+    if (config.get('redis:clustered') == 'true') {
       log.info('using CLUSTERED Redis implementation');
       redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
         host: config.get('redis:host'),

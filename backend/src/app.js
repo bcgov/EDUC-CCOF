@@ -86,7 +86,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 function getRedisDbSession() {
-  if (config.get('redis:use')) {
+  if (config.get('redis:use') == 'true') {
     const Redis = require('./util/redis/redis-client');
     Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
     const RedisStore = connectRedis(session);
