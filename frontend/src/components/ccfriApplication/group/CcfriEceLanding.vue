@@ -16,7 +16,7 @@
       class = "mx-0 justify-end"
       @click="toggleAll()"
       dark color='#003366'
-      :disabled="applicationStatus === 'SUBMITTED'"
+      :disabled="isReadOnly"
       >
       Opt in All Facilities
     </v-btn>
@@ -96,7 +96,7 @@
 
 import { mapState, mapMutations, mapActions } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -173,10 +173,10 @@ export default {
       });
     },
     async previous() {
-      console.log(this.ccfriOptInOrOut);
-      console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+      console.log(this.filteredNavBarList);
+      // console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
+      // let path = await this.getPreviousPath();
+      // this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
@@ -204,10 +204,15 @@ export default {
 
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){
+        //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
       //if application locked, send to add new fees
-      else if (this.isReadOnly) {
+      else if (isChangeRequest(this) ) {
+        this.$router.push({path : `${CHANGE_URL_PREFIX}/${firstOptInFacility.changeRequestId}${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+      }
+      //if application locked, send to add new fees
+      else if (this.isReadOnly ) {
         this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
       //if CCFRI is being renewed, go to page that displays fees
@@ -226,19 +231,19 @@ export default {
       this.processing = true;
       let payload = [];
 
-      for (let i = 0; i < this.navBarList.length; i++) {
+      for (let i = 0; i < this.filteredNavBarList.length; i++) {
       //change this to only send payloads with value chosen --- don't send undefined
         if (!ccfriOptInOrOut[i]){
           continue;
         }
-        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
+        if (this.filteredNavBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
+          this.filteredNavBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
           payload.push( {
             applicationID : this.applicationId, //CCOF BASE application ID
-            facilityID : this.navBarList[i].facilityId,
+            facilityID : this.filteredNavBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
-            ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
-            //changeRequestFacilityId: 'f34336ac-d6ff-ed11-8f6d-000d3a09d499'
+            ccfriApplicationId: this.filteredNavBarList[i].ccfriApplicationId,
+            changeRequestFacilityId: this.filteredNavBarList[i].changeRequestNewFacilityId? this.filteredNavBarList[i].changeRequestNewFacilityId : undefined,
             //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
             //so it can be linked in the backend. It works with the above hardcoded guid ^
             //I did not implement fully because it sounds like we might get that info back from profiderProfile

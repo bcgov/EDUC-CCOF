@@ -85,7 +85,7 @@ async function updateCCFRIApplication(req, res) {
       let response = undefined;
       if (facility.ccfriApplicationId) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
-        log.info('CCFRI RESP!!!!!!!' , response);
+        //log.info('CCFRI RESP!!!!!!!' , response);
         retVal.push(response);
       } else {
         response = await postOperation('ccof_applicationccfris', payload);
@@ -101,12 +101,6 @@ async function updateCCFRIApplication(req, res) {
       if(facility.changeRequestFacilityId){
         let resp = await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
           {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId})`}
-        );
-        retVal.push(resp);
-      }
-      else{
-        let resp = await updateChangeRequestNewFacility(response,
-          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${response})`}
         );
         retVal.push(resp);
       }
