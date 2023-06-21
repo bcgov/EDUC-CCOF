@@ -16,14 +16,12 @@ const Redis = {
       redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
         host: config.get('redis:host'),
         port: config.get('redis:port'),
-        password: config.get('redis:password')
       }]);
     } else {
       log.info('using STANDALONE Redis implementation');
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
-        password: config.get('redis:password')
       });
     }
     redisClient.on('error', (error) => {
