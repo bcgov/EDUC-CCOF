@@ -4,6 +4,7 @@ import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
+  console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
   let categories = lookupCategories.filter(item => uniqueLicenseCategories.includes(item.ccof_license_categoryid)).map(a => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -28,6 +29,7 @@ export default {
     summaryModel: {},
     isSummaryLoading: [],
     isMainLoading: true,
+    isLoadingComplete: false,
   },
   getters: {
     isCCFRIComplete: (state) => {
@@ -66,6 +68,9 @@ export default {
     isValidForm(state, value) {
       state.isValidForm = value;
     },
+    isLoadingComplete(state, value) {
+      state.isLoadingComplete = value;
+    }
   },
   actions: {
     async loadDeclaration({ commit, rootState }) {
@@ -80,7 +85,8 @@ export default {
     },
     async updateDeclaration({ commit, state, rootState}, reLockPayload) {
       checkSession();
-      let payload = { agreeConsentCertify:state.model.agreeConsentCertify,
+      let payload = {
+        agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
         declarationBStatus:state.model?.declarationBStatus };
@@ -126,7 +132,7 @@ export default {
           commit('summaryModel', summaryModel);
         }
         //new app only (i think this if block could be part of the one above?)
-        if (!rootState.app.isRenewal && payload.application?.organizationId) {
+        if (payload.application?.organizationId) {
           const config={
             params: {
               allFiles: true
@@ -140,71 +146,65 @@ export default {
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
           commit('summaryModel', summaryModel);
-
-
-
-          //check for opt out - only call API  if opt in
-          if (facility.ccfri?.ccfriOptInStatus == 1){
-
-            let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+          let facilityLicenseResponse = undefined;
+          try {
+            facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
             summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
-            if (facility.ccfri?.ccfriId) {
-              let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
-              facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
-              facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
-              facility.ccfri.dates = ccfriResponse.dates;
-              const  ccofProgramYearId = rootState.application.programYearId;
-              const programYearList = rootState.app.programYearList.list;
-              facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
-              facility.ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
+          } catch(categoryError) {
+            console.log('error, unable to get childcare category for provider: ', facility.facilityId );
+          }
 
-              //jb
-              //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
-              if (facility.ccfri.previousCcfriId){
+          //check for opt out - no need for more calls if opt-out
+          if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
+            let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
+            facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
+            facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
+            facility.ccfri.dates = ccfriResponse.dates;
+            const  ccofProgramYearId = rootState.application.programYearId;
+            const programYearList = rootState.app.programYearList.list;
+            facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
+            facility.ccfri.prevYear = getProgramYear(summaryModel.facilities[index].ccfri.currentYear.previousYearId, programYearList);
 
-                facility.ccfri.prevYearCcfriApp = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)).data;
-              }
-              if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
+            //jb
+            //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
+            if (facility.ccfri.previousCcfriId){
 
-                summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
-              commit('summaryModel', summaryModel);
-              if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
-                summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
-                //summaryModel.faciliities[index].isNMFLoading=false
-              commit('summaryModel', summaryModel);
+              facility.ccfri.prevYearCcfriApp = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)).data;
             }
+            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
 
+              summaryModel.facilities[index].rfiApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')).data;
+            commit('summaryModel', summaryModel);
+            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
+              summaryModel.facilities[index].nmfApp = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')).data;
+              //summaryModel.faciliities[index].isNMFLoading=false
+            commit('summaryModel', summaryModel);
           }
 
           //jb changed below to work with renewel apps
           summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
           commit('summaryModel', summaryModel);
 
-          if (!rootState.app.isRenewal) {
+          if (summaryModel.allDocuments && summaryModel.allDocuments.length > 0) {
             const allDocuments =summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
             commit('summaryModel', summaryModel);
-
           }
-
-
 
           isSummaryLoading.splice(index, 1, false);
           await commit('isSummaryLoading', isSummaryLoading );
-
-
-
-
         } // end FOR loop
 
         summaryModel.allDocuments = null;
+        await commit('isLoadingComplete', true );
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
       }
     },
 
-    async updateApplicationStatus(applicationObj) {
+    // eslint-disable-next-line no-empty-pattern
+    async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
         console.log('Updating Application Status');

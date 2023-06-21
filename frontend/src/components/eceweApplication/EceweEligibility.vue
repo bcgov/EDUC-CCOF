@@ -45,7 +45,8 @@
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
                 v-model="model.optInECEWE"
-                :disabled="isReadOnly">
+                :disabled="isReadOnly"
+                :rules="rules.required">
                 <template v-slot:label>
                   <span class="radio-label" style="align-content: center;">For the {{formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
                 </template>
@@ -78,7 +79,8 @@
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
                 v-model="model.belongsToUnion"
-                :disabled="isReadOnly">
+                :disabled="isReadOnly"
+                :rules="rules.required">
                 <template v-slot:label>
                   <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
                 </template>
@@ -111,7 +113,8 @@
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
                 v-model="model.applicableSector"
-                :disabled="isReadOnly">
+                :disabled="isReadOnly"
+                :rules="rules.required">
                 <template v-slot:label>
                   <div class="radio-label text-center">Select the applicable sector:</div>
                 </template>
@@ -154,7 +157,8 @@
                   v-model="model.confirmation"
                   :value="1"
                   label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
-                  :disabled="isReadOnly">
+                  :disabled="isReadOnly"
+                  :rules="rules.required">
                 </v-checkbox>
               </v-col>
             </v-row>
@@ -183,6 +187,7 @@
                   v-model="model.fundingModel"
                   row
                   :disabled="isReadOnly"
+                  :rules="rules.required"
                   class="mt-0">
                 <v-row justify="center">
                   <v-col class="pt-7">
@@ -272,7 +277,8 @@
                     v-model="model.confirmation"
                     :value="1"
                     label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
-                    :disabled="isReadOnly">
+                    :disabled="isReadOnly"
+                    :rules="rules.required">
                   </v-checkbox>
                 </v-col>
               </v-row>
@@ -280,11 +286,9 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row justify="space-around" class="mt-10">
-        <v-btn color="info" :loading="isProcessing" outlined required x-large @click="previous()">Back</v-btn>
-        <v-btn :disabled="!enableButtons" :loading="isProcessing" color="secondary" outlined x-large @click="next()">Next</v-btn>
-        <v-btn :disabled="isReadOnly" :loading="isProcessing" color="primary" outlined x-large @click="saveECEWEApplication()">Save</v-btn>
-      </v-row>
+      <NavButton class="mt-10" :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="saveECEWEApplication"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -294,11 +298,15 @@
 import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
+import rules from '@/utils/rules';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   data() {
     return {
+      rules,
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
@@ -331,6 +339,7 @@ export default {
   },
   async mounted() {
     try {
+      this.isLoading = true;
       this.setFundingModelTypes({...this.fundingModelTypeList});
       this.setApplicationId(this.applicationId);
       await this.loadData();
@@ -339,8 +348,10 @@ export default {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
       this.initECEWEFacilities(this.navBarList);
+      this.isLoading = false;
     } catch(error) {
       console.log (error);
+      this.isLoading = false;
     }
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -361,6 +372,9 @@ export default {
       } else {
         this.$router.push(PATHS.eceweFacilities);
       }
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
@@ -395,7 +409,6 @@ export default {
         return;
       }
       if (this.applicationId) {
-        this.isLoading = true;
         try {
           await this.loadECEWE();
         } catch (error) {
@@ -404,7 +417,6 @@ export default {
         }
         this.setIsStarted(true);
       }
-      this.isLoading = false;
     },
     optOutFacilities() {
       //this was modified by JB to try and fix bugs with the checkmarks.
@@ -454,8 +466,9 @@ export default {
         this.isProcessing = false;
       }
     }
-  }
+  },
 };
+
 </script>
 <style>
 .flex-center {

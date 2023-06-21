@@ -34,7 +34,7 @@
               <br>
               <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
-                Our Records show this facilites' fees for {{previousProgramYearLabel}} are as follows:
+                Our records show this facility's parent fees for <strong > January {{previousProgramYearLabel}} </strong> to <strong> March {{previousProgramYearLabel}} </strong> are as follows:
               </p>
               <br>
               <v-simple-table v-if="feeList.length > 0">
@@ -108,15 +108,9 @@
             </v-card-text>
           </v-card>
 
-
-          <v-row justify="space-around">
-          <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
-            Back</v-btn>
-            <!--add form logic here to disable/enable button-->
-          <v-btn color="secondary" outlined x-large  :loading="processing" @click="next()" :disabled="!isFormValidAndLoaded()">Next</v-btn>
-          <!-- <v-btn color="primary" outlined x-large :loading="processing" @click="updateCCFRI()">
-            Save</v-btn> -->
-        </v-row>
+        <NavButton :isNextDisplayed="true"
+          :isNextDisabled="!isFormValidAndLoaded()" :isProcessing="processing"
+          @previous="previous" @next="next" @validateForm="validateForm"></NavButton>
       </v-form>
   </v-container>
 
@@ -128,8 +122,10 @@
 import { PATHS } from '@/utils/constants';
 import { mapState, mapActions, mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -171,8 +167,10 @@ export default {
     },
     previousProgramYearLabel(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
-      const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
-      return lastProgramYear?.name;
+      //const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
+
+      //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
+      return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
     }
   },
   watch: {
@@ -253,6 +251,9 @@ export default {
 
       //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
 
+    },
+    validateForm() {
+      this.$refs.isValidForm?.validate();
     },
   },
 };

@@ -29,7 +29,7 @@
               <v-card color="#B3E5FF" class="mt-1 pa-1 py-2" outlined v-if="ccofStatus === CCOF_STATUS_NEW" style="border: 1px solid #5fbbeb;">
                 <v-row align="center" no-gutters>
                   <v-col :cols="12" lg="1" align="center">
-                    <v-icon color="#003366" aria-hidden="false" size="40">
+                    <v-icon class="noticeInfoIcon" aria-hidden="false" size="40">
                       mdi-information
                     </v-icon>
                   </v-col>
@@ -59,7 +59,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.futureYearLabel}`" :disable="!isRenewEnabled">
+      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.renewalYearLabel}`" :disable="!isRenewEnabled">
         <template #content>
           <p class="text-h6">Renew my Funding Agreement</p>
           <p>
@@ -68,9 +68,19 @@
           <p>
             <a class='text-decoration-underline' href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
           </p>
-          <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the PCF: Approved</div>
-          <div v-else-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
-            <p class="text-h6 blueText">Status of the PCF: Submitted</p>
+          <div v-if="ccofRenewStatus === RENEW_STATUS_APPROVED || ccofRenewStatus === RENEW_STATUS_COMPLETE">
+            <v-card class="elevation-0">
+              <v-row align="center" class="noticeInfo px-2" no-gutters>
+                <v-col :cols="12" md="2" align="center">
+                  <v-icon x-large class="noticeInfoIcon">mdi-information</v-icon>
+                </v-col>
+                <v-col class="pl-2">
+                  <span>View the individual Facility statuses in the <strong>Facility Information</strong> section below</span>
+                </v-col>
+              </v-row>
+            </v-card>
+          </div>
+          <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE" class="mt-4">
             <span>We will contact you if we require further information. You can view your latest submission from the button below.</span>
           </div>
         </template>
@@ -213,7 +223,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['futureYearLabel']),
+    ...mapGetters('app', ['renewalYearLabel']),
     ...mapState('app', ['navBarList', 'programYearList']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
@@ -244,8 +254,8 @@ export default {
       return enabled;
     },
     isWithinRenewDate() {
-      let isEnabled = (this.userInfo.serverTime > this.programYearList?.future?.intakeStart
-        && this.userInfo.serverTime < this.programYearList?.future?.intakeEnd);
+      let isEnabled = (this.userInfo.serverTime > this.programYearList?.renewal?.intakeStart
+        && this.userInfo.serverTime < this.programYearList?.renewal?.intakeEnd);
       console.log('isWithinRenewDate: ', isEnabled);
       return isEnabled;
     },
@@ -256,7 +266,8 @@ export default {
         } else if (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') {
           let isEnabled = this.isCCFRIandECEWEComplete
             && this.isWithinRenewDate
-            && this.programYearId == this.programYearList?.current?.programYearId;
+            && this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
+            && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
           return isEnabled;
         }
       }
@@ -287,7 +298,7 @@ export default {
         console.log(this.applicationStatus);
         if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
-        } else if (this.programYearId == this.programYearList.current?.programYearId) {
+        } else if (this.programYearId == this.programYearList.renewal?.previousYearId && this.isWithinRenewDate) {
           return this.RENEW_STATUS_NEW;
         } else if (this.isOrganizationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
@@ -334,6 +345,7 @@ export default {
     },
   },
   methods: {
+    ...mapState('app',['isRenewal']),
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {

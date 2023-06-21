@@ -4,7 +4,7 @@
       <v-row justify="center">
         <div
           class="pa-10 text-h5"
-          v-text="`Child Care Operating Funding Program - ${futureYearLabel} Program Confirmation Form`" />
+          v-text="`Child Care Operating Funding Program - ${renewalYearLabel} Program Confirmation Form`" />
       </v-row >
       <v-row justify="space-around">
         <v-card class="cc-top-level-card justify-center" width="800">
@@ -22,7 +22,7 @@
                     label="No"
                     value="false"/>
                 </v-radio-group>
-              </v-col>                
+              </v-col>
             </v-row>
             <v-row>
               <v-card width="100%" class="mx-3" v-if="fundingGroup == 'false'">
@@ -41,7 +41,7 @@
                   </v-col>
                 </v-row>
                 <v-card-text>
-                  Once these changes have been processed, you may complete your {{futureYearLabel}} Program Confirmation Form.<br><br>
+                  Once these changes have been processed, you may complete your {{renewalYearLabel}} Program Confirmation Form.<br><br>
                   Submit the Change Notification Form:<br>
                   <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf">
                   https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf
@@ -70,7 +70,7 @@
                   label="No"
                   value="false"/>
               </v-radio-group>
-            </v-col>                
+            </v-col>
           </v-row>
           <v-row>
             <v-card width="100%" class="mx-3" v-if="bankingGroup == 'true'">
@@ -89,7 +89,7 @@
                 </v-col>
               </v-row>
               <v-card-text>
-                Once these changes have been processed, you may complete your {{futureYearLabel}} Program Confirmation Form.<br><br>
+                Once these changes have been processed, you may complete your {{renewalYearLabel}} Program Confirmation Form.<br><br>
                 Update your banking information:
                 <br><a href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf">
                 https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a>
@@ -100,10 +100,10 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large @click="back()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large @click="next()" :loading="processing" :disabled="!(fundingGroup == 'true' && bankingGroup == 'false')">Next</v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true"
+          :isNextDisabled="!(fundingGroup == 'true' && bankingGroup == 'false')" :isProcessing="processing"
+          @previous="back" @next="next" @validateForm="validateForm"></NavButton>
+
     </v-container>
   </v-form>
 </template>
@@ -112,8 +112,10 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   data() {
     return {
       rules,
@@ -122,9 +124,9 @@ export default {
       fundingGroup: undefined,
       bankingGroup: undefined,
     };
-  },  
+  },
   computed: {
-    ...mapGetters('app', ['futureYearLabel']),
+    ...mapGetters('app', ['renewalYearLabel']),
     ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId']),
     ...mapState('app', ['programYearList']),
   },
@@ -134,8 +136,8 @@ export default {
     if (this.applicationStatus == 'DRAFT'
       && this.applicationType == 'RENEW'
       && this.ccofApplicationStatus == 'NEW'
-      && this.programYearId == this.programYearList.future?.programYearId) {
-      this.$router.push(PATHS.group.licenseUpload);  
+      && this.programYearId == this.programYearList.renewal?.programYearId) {
+      this.$router.push(PATHS.group.licenseUpload);
     }
   },
   methods: {
@@ -145,10 +147,13 @@ export default {
       await this.renewApplication();
       this.$router.push(PATHS.group.licenseUpload);
     },
+    validateForm() {
+      this.$refs.form?.validate();
+    },
     back() {
       this.$router.push(PATHS.home);
     },
-    
+
   },
 };
 </script>
@@ -159,5 +164,5 @@ export default {
   border-top: 5px solid #003366 !important;
 }
 
-  
+
 </style>

@@ -4,8 +4,8 @@
     <v-expansion-panel-header>
       <h4 style="color:#003466;">Early Childhood Educator-Wage Enhancement (ECE-WE)
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
-        <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
+        <v-icon v-if="!isValidForm && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+        <span v-if="!isValidForm && !this.isProcessing" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
@@ -21,7 +21,7 @@
         </v-col>
       </v-row>
     <v-row v-if="!facilityInformationExists()" class="d-flex justify-start">
-      <v-col cols="6" lg="4" class="pb-0 pt-0">
+      <v-col cols="12" lg="6" class="pb-0 pt-0">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start ">
             <span class="summary-label pt-2">For the {{this.formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization</span>
@@ -29,7 +29,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="6" lg="4" class="pb-0 pt-0">
+      <v-col v-if="ecewe?.optInECEWE == 1" cols="12" lg="6" class="pb-0 pt-0">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start">
             <span class="summary-label pt-3">Do any of the ECE employees at any facility in your organization belong to a union</span>
@@ -39,29 +39,43 @@
       </v-col>
     </v-row>
       <v-row v-if="!facilityInformationExists()" class="d-flex justify-start">
-        <v-col v-if="isApplicableSectorRequired(ecewe?.belongsToUnion)" cols="6" lg="4" class="pb-0 pt-0">
+        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 " cols="12" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <span class="summary-label pt-3">Applicable Sector :</span>
-              <v-text-field placeholder="Required"  :value="this.getSectorValue(ecewe?.applicableSector)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <span class="summary-label pt-3">Applicable Sector:</span>
+              <v-textarea placeholder="Required"  :value="this.getSectorValue(ecewe?.applicableSector)" class="summary-value" dense flat solo hide-details readonly no-resize rows="2" :rules="rules.required" ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
-        <v-col v-if="isFundingModelRequired(ecewe?.belongsToUnion)" cols="6" lg="4" class="pb-0 pt-0">
+        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.applicableSector == 100000000" cols="12" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Funding model:</span>
-              <v-text-field placeholder="Required"  :value="this.getFundingModel(ecewe?.fundingModel)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-textarea placeholder="Required"  :value="this.getFundingModel(ecewe?.fundingModel)" class="summary-value" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="d-flex justify-start" v-if="ecewe?.fundingModel === fundingModelTypeList[1].id || ecewe?.fundingModel === fundingModelTypeList[2].id"> 
+            <v-col cols="12" class="d-flex justify-start">
+              <span class="summary-label pt-3">I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement.</span>
+              <v-text-field placeholder="Required"  :value="this.getYesNoValue(ecewe?.confirmation)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col v-else-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.applicableSector == 100000001" cols="12" lg="6" class="pb-0 pt-0">
+          <v-row no-gutters class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
+              <span class="summary-label pt-3">I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement.</span>
+              <v-text-field placeholder="Required"  :value="this.getYesNoValue(ecewe?.confirmation)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
     </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
-        <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
+        <v-col cols="12" lg="6" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="getRoutingPath()" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <router-link :to="getRoutingPath()" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -87,9 +101,15 @@ export default {
       type: Object,
       required: false
     },
+    isProcessing: {
+      type: Boolean,
+      required: false
+    },
   },
   computed: {
     ...mapState('application', ['formattedProgramYear']),
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+    ...mapState('app', ['fundingModelTypeList']),
   },
   data() {
     return {
@@ -110,12 +130,6 @@ export default {
       }else{
         return null;
       }
-    },
-    isApplicableSectorRequired(value){
-      return value === 1;
-    },
-    isFundingModelRequired(value){
-      return value === 0;
     },
     getSectorValue(value) {
       if (value === 100000001) {
@@ -157,17 +171,15 @@ export default {
       }
     }
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val && !this.facilityInformationExists()) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },
-
 };
 </script>
 <style scoped>

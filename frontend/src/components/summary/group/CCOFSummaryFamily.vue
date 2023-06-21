@@ -138,32 +138,101 @@
             </v-row>
           </v-col>
         </v-row>
+        <span v-if="this.funding?.isExtendedHours?.toUpperCase() === 'YES'">
+          <v-row class="d-flex justify-start">
+            <v-col cols="6" lg="6" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
+                  <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
+                  <span class="summary-label">Maximum number of days per week you offer extended hours of child care</span>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
+                  <span class="summary-label">Maximum number of weeks per year you offer extended hours of child care</span>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="4" lg="4" class="pb-0 pt-3">
+              <v-row no-gutters class="d-flex justify-start">
 
-        <v-row class="d-flex justify-start">
-          <v-col cols="4" lg="4" class="pb-0 pt-0">
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxCapacityExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxDaysPerWeekExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxWeeksPerYearExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </span>
+        <v-row class="d-flex justify-start mt-2">
+          <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
-                <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
-              </v-col>
-              <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
-                <span class="summary-label">Maximum number of days per week you offer extended hours of child care</span>
-              </v-col>
-              <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                <span class="summary-label">Maximum number of weeks per year you offer extended hours of child care</span>
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-label">For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended hours of child care:</span>
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="4" lg="4" class="pb-0 pt-3">
+        </v-row>
+        <v-row class="d-flex justify-start">
+          <v-col cols="4" lg="4" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
-
-              <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.maxCapacityExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-value pt-1">Type of Service</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
+                <span class="summary-label">Family Child Care (Under 36 months)</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
+                <span class="summary-label">Family Child Care (30 Months to School Age)</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
+                <span class="summary-label">Family Child Care (School Age/ School Age Care on School Grounds)</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-start pb-2 pt-3">
+                <span class="summary-label">Multi-Age Child Care</span>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="5" class="d-flex justify-start">
+                <span class="summary-value"><b>4 hours or less </b>extended child care</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-end">
+                <v-text-field   :value="this.funding?.extendedChildCareUnder36Months4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex">
+                <v-text-field   :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.maxDaysPerWeekExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field   :value="this.funding?.extendedChildCareSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.maxWeeksPerYearExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field  :value="this.funding?.multiAgeCare4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="5" class="d-flex justify-start">
+                <span class="summary-value"><b>More than 4 hours</b> extended child care</span>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.extendedChildCareUnder36Months4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.extendedChildCareSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-center">
+                <v-text-field  :value="this.funding?.multiAgeCare4more" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -175,11 +244,8 @@
             <v-col cols="12" class="d-flex justify-start">
 
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <a :href="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.group.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP'"> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a>
-              <!-- <a :href="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>Click here to fix the issue(s)- Text TBD</u></span></a> -->
+              <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -216,7 +282,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('summaryDeclaration', ['summaryModel',]),
+    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete']),
     ...mapState('app', ['navBarList',]),
   },
   data() {
@@ -231,17 +297,16 @@ export default {
 
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
+
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
-  },
-};
+  },};
 </script>
 <style scoped>
 .summary-label {

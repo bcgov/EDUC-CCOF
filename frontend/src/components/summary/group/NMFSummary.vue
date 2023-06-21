@@ -17,12 +17,12 @@
               <span class="summary-label pt-3"> Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021 (e.g. New Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-start">
-              <v-text-field placeholder="Required" :value="this.nmfApp?.supportNeeds" class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              <v-text-field placeholder="Required" :value="this.nmfApp?.supportNeeds " class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="10">
-            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details no-resize rows="3" readonly :rules="rules.required"></v-textarea>
+            <v-textarea placeholder="Required" v-if="this.nmfApp?.supportNeeds== 'Yes'" :value="this.nmfApp?.supportNeedsComments" class="" dense flat solo hide-details no-resize rows="3" readonly :rules="rules.required"></v-textarea>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-start">
@@ -62,7 +62,7 @@
               <span class="summary-label pt-3">Please tell us anything else you'd like us to know about how your facility's business case supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding Guidelines.</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-left">
-              <v-textarea placeholder="Required" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly no-resize rows="3" :rules="rules.required" ></v-textarea>
+              <v-textarea label="--" :value="this.nmfApp?.otherComments" class="" dense flat solo hide-details readonly no-resize rows="3" ></v-textarea>
             </v-col>
           </v-row>
         </v-col>
@@ -72,7 +72,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.NMF + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <router-link :to="PATHS.NMF + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -85,9 +85,13 @@
 
 import rules from '@/utils/rules';
 import {PATHS} from '@/utils/constants';
+import {mapState} from 'vuex';
 
 export default {
   name: 'NMFSummary',
+  computed: {
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+  },
   data() {
     return {
       PATHS,
@@ -99,13 +103,12 @@ export default {
       }
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },

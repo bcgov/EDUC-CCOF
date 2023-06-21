@@ -42,7 +42,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <a :href="PATHS.group.licenseUpload" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></a>
+              <router-link :to="PATHS.group.licenseUpload" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -54,11 +54,14 @@
 <script>
 import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
+import {mapState} from 'vuex';
 
 export default {
   name: 'UploadedDocumentsSummary',
+  computed: {
+    ...mapState('summaryDeclaration', ['isLoadingComplete',])
+  },
   props: {
-
     documents: {
       type: Array,
       default: () => []
@@ -66,12 +69,13 @@ export default {
   },
   mounted() {
     this.getSupportingDocuments();
-    this.$emit('isSummaryValid',this.formObj, this.isValidForm);
   },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },

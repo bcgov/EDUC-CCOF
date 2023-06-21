@@ -3,7 +3,24 @@ import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { deepCloneObject } from '../../utils/common';
 
+function isLocked(applicationStatus, navBarList, facilityId){
 
+  console.log(facilityId, 'faccccc');
+  let currentFac = navBarList.find((element) =>{
+    return element.facilityId == facilityId;
+  });
+
+  console.log('currentFAC in store', currentFac);
+  //if submitted, lock er up. If unlock CCFRI - unlock
+  if (currentFac.unlockCcfri){
+    return false;
+  }
+  else if (applicationStatus === 'SUBMITTED'){
+    return true;
+  }
+  return false;
+
+}
 function getProgramYear(selectedGuid, programYearList){
   const programYear = programYearList.find(({ programYearId }) =>  programYearId == selectedGuid );
 
@@ -71,7 +88,7 @@ export default {
       return state.ccfriStore[ccfriId];
     },
     getClosureDateLength: (state) => {
-      return state.CCFRIFacilityModel.dates.length;
+      return state.CCFRIFacilityModel?.dates?.length;
     },
     getCCFRIMedianById: (state) => (ccfriId) => {
       return state.ccfriMedianStore[ccfriId];
@@ -185,6 +202,8 @@ export default {
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
         const prevCcfriApp = await state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
 
+        console.log(prevCcfriApp, 'in upper try');
+
         console.log('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
@@ -204,7 +223,13 @@ export default {
         });
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || !prevCcfriApp){
+        //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.app.navBarList, state.loadedModel.facilityId)) ){
+          console.log(rootState.app.isRenewal);
+          console.log(state.CCFRIFacilityModel.existingFeesCorrect);
+          console.log(prevCcfriApp);
+
+          console.log('show all the cards');
           response.data.forEach(item => {
 
             //check for undefined here!
@@ -274,6 +299,7 @@ export default {
         //this handles the edge case of a user entering fees for CCFRI then going back to CCOF
         //and removing that child care type for new applications
         state.CCFRIFacilityModel.childCareTypes.forEach((childCareCat) => {
+          console.log('deleteing');
           let found = response.data.find(searchItem => {
             return (searchItem.childCareCategoryId == childCareCat.childCareCategoryId);
           });
@@ -315,5 +341,3 @@ export default {
     },
   }
 };
-
-//

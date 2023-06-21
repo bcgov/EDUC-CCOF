@@ -115,11 +115,9 @@
           </v-card>
         </v-card>
       </v-row>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined required x-large :loading="isProcessing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="isProcessing" :disabled="!isNextEnabled" @click="next()">Next</v-btn>
-        <v-btn color="primary" outlined x-large :loading="isProcessing" :disabled="!isSaveDisabled || isLocked" @click="saveClicked()">Save</v-btn>
-      </v-row>
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing" 
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -132,11 +130,11 @@ import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import { deepCloneObject, getFileExtension } from '@/utils/common';
+import NavButton from '@/components/util/NavButton';
 
 export default {
   mixins: [alertMixin],
-  components: {
-  },
+  components: { NavButton },
   props: {},
 
   computed: {
@@ -251,7 +249,9 @@ export default {
     next() {
       this.$router.push(PATHS.summaryDeclaration);
     },
-
+    validateForm() {
+      this.$refs.form?.validate();
+    },
     async saveClicked() {
       await this.save();
     },

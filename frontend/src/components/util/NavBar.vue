@@ -111,7 +111,7 @@ export default {
   computed: {
     ...mapState('app', ['pageTitle', 'navBarGroup', 'navBarList', 'isLicenseUploadComplete', 'isRenewal', 'forceNavBarRefresh', 'isOrganizationComplete', 'programYearList']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId']),
-    ...mapState('organization', ['organizationProviderType']),
+    ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('auth', ['userInfo']),
@@ -223,7 +223,7 @@ export default {
 
       });
       let declarationAccessible = this.areChildrenComplete(this.items);
-      if (StaticConfig.DECB_VALIDATION_BYPASS && this.isDeclarationB()) {
+      if (StaticConfig.DECB_VALIDATION_BYPASS && this.isDeclarationB() && this.unlockDeclaration) {
         declarationAccessible = true;
       }
       this.setCanSubmit(declarationAccessible);
@@ -253,7 +253,7 @@ export default {
         const serverTime = new Date(this.userInfo.serverTime);
         if (programYear) {
           let declarationBStart = new Date(programYear.declarationbStart);
-          return (serverTime >= declarationBStart);
+          return ((serverTime >= declarationBStart) && this.organizationAccountNumber);
         }
       }
       return false;

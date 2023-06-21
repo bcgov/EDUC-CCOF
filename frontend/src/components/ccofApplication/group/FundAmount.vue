@@ -113,7 +113,7 @@
 
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCare36()]" v-model.number="model.maxGroupChildCare36" label="Maximum Number for Group Child Care (36 months to School Age)" />
+                <v-text-field :disabled="isLocked" type="number" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCare36()]" v-model.number="model.maxGroupChildCare36" label="Maximum Number for Group Child Care (30 months to School Age)" />
               </v-col>
             </v-row>
             <v-row>
@@ -135,8 +135,8 @@
           </v-container>
         </v-card>
 
-        <v-card class="cc-top-level-card" width="1200">
-          <v-card-title>Preschool</v-card-title>
+        <v-card v-if="model.maxPreschool > 0" class="cc-top-level-card" width="1200">
+          <v-card-title >Preschool</v-card-title>
 
           <v-container>
             <v-row>
@@ -164,16 +164,20 @@
                 <v-text-field :readonly="!isLocked" :disabled="isLocked" type="number" outlined v-bind:value="(model.monday || 0) + (model.tusday || 0) + (model.wednesday || 0) + (model.thursday || 0) + (model.friday || 0)" label="Total" />
               </v-col>
             </v-row>
-
-            <v-row>
-              <v-col>
-                <v-radio-group :disabled="isLocked" row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
-                  <v-radio label="Yes" value="yes" />
-                  <v-radio label="No" value="no" />
-                </v-radio-group>
-              </v-col>
-            </v-row>
           </v-container>
+        </v-card>
+
+        <v-card v-if="model.maxGroupChildCareSchool > 0" class="cc-top-level-card" width="1200">
+          <v-container>
+            <v-row>
+            <v-col>
+              <v-radio-group :disabled="isLocked" row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
+                <v-radio label="Yes" value="yes" />
+                <v-radio label="No" value="no" />
+              </v-radio-group>
+            </v-col>
+          </v-row>
+        </v-container>
 
           <v-card-title v-show="model.isSchoolProperty === 'yes'">Group Child Care (School Age Care on School Grounds)</v-card-title>
 
@@ -204,7 +208,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group :disabled="isLocked" row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
+                <v-radio-group required :rules="rules.required" :disabled="isLocked" row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7pm or overnight)?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -235,13 +239,13 @@
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (School Age / School age care on School Grounds)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (School Age / School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4OrLess" :rules="rules.notRequired" label="Multi-Age Care" />
@@ -250,13 +254,13 @@
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareUnder36Months4OrMore" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareUnder36Months4OrMore" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (36 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.groupChildCareSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (School Age/ School age care on School Grounds)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (School Age/ School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4more" :rules="rules.notRequired" label="Multi-Age Care" />
@@ -267,12 +271,9 @@
         </v-card>
       </v-row>
 
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
-        <v-btn color="secondary" outlined x-large :loading="processing" :disabled="!model.isCCOFComplete" @click="next()">Next</v-btn>
-        <v-btn :disabled="isLocked" color="primary" outlined x-large :loading="processing" @click="save(true)">Save</v-btn>
-      </v-row>
-
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isLocked" :isNextDisabled="!model.isCCOFComplete" :isProcessing="processing"
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>

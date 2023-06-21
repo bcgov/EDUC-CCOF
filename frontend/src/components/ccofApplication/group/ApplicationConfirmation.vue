@@ -72,6 +72,7 @@
 
 import { PATHS } from '@/utils/constants';
 import { mapState, mapMutations, mapActions } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 
 export default {
   data() {
@@ -90,6 +91,9 @@ export default {
     ...mapState('application', ['applicationStatus', 'applicationId']),
     ...mapState('organization', ['organizationProviderType']),
     isLocked() {
+      if (this.unlockBaseFunding) {
+        return false;
+      }
       return (this.applicationStatus === 'SUBMITTED');
     }
   },

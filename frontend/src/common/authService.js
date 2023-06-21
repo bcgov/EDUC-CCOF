@@ -24,7 +24,6 @@ export default {
       if(response && response.data && response.data.error){
         return {error: response.data.error_description};
       }
-      
       return response.data;
     } catch (e) {
       console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console

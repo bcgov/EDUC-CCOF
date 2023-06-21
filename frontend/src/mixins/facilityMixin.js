@@ -3,17 +3,21 @@ import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isEmpty} from 'lodash';
-
+import NavButton from '@/components/util/NavButton';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     isLocked() {
+      if (this.unlockBaseFunding) {
+        return false;
+      }
       return (this.applicationStatus === 'SUBMITTED');
     }
   },
@@ -59,7 +63,7 @@ export default {
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
     ...mapMutations('app', ['setNavBarFacilityComplete']),
-    isGroup() { 
+    isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
@@ -82,6 +86,9 @@ export default {
       } else {
         this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
       }
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async saveClicked() {
       await this.save(true);
@@ -106,7 +113,7 @@ export default {
       if (!this.$route.params.urlGuid && isSave) {
         this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
       }
-      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });      
+      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
       this.processing = false;
     },
 

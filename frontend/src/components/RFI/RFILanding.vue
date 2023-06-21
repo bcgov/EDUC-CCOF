@@ -1390,7 +1390,7 @@
             <p>Fee increases may be considered under this exception if:</p>
             <ul>
               <li>the facility has historically provided care to underserved populations including Indigenous or
-                low-income families at significantly below the regional median range of fees for their area or at no fee:
+                low-income families at significantly below the regional median range of fees for their area or at no fee;
               </li>
               <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
               <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
@@ -1478,15 +1478,10 @@
         </div>
 
       </v-card>
-      <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">Back</v-btn>
-        <!--add form logic here to disable/enable button-->
-        <v-btn color="secondary" :class="isFormComplete ? '' : 'disabledButton'" outlined x-large :loading="processing" @click="nextBtnClicked()">Next
-        </v-btn>
-        <v-btn color="primary" :disabled="isReadOnly" outlined x-large :loading="processing" @click="save(true) ">Save
-        </v-btn>
-      </v-row>
 
+      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isFormComplete" :isProcessing="processing"
+        @previous="previous" @next="nextBtnClicked" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
 </template>
@@ -1497,6 +1492,7 @@ import {deepCloneObject} from '@/utils/common';
 import {isEqual} from 'lodash';
 import rules from '@/utils/rules';
 import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload';
+import NavButton from '@/components/util/NavButton';
 
 let model = {
   expansionList: [],
@@ -1611,7 +1607,7 @@ export default {
       if (this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1 && this.model.expenseList.length == 0) {
         done = false;
       }
-      if (this.model.q3 === 1 && this.model.fundingList.length == 0) {
+      if (this.model.q3 === 1 && this.model.exceptionalCircumstances == 1 && this.model.circumstanceOccurWithin6Month == 1  && this.model.fundingList.length == 0) {
         done = false;
       }
       if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {
@@ -1679,11 +1675,11 @@ export default {
     ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     async nextBtnClicked() {
-      this.$refs.form.validate();
-      if (this.isFormComplete) {
-        let path = await this.getNextPath();
-        this.$router.push(path);
-      }
+      let path = await this.getNextPath();
+      this.$router.push(path);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     async previous() {
       let path = await this.getPreviousPath();
@@ -1879,7 +1875,7 @@ export default {
     },
   },
 
-  components: {RFIDocumentUpload}
+  components: {RFIDocumentUpload, NavButton}
 };
 
 

@@ -16,7 +16,6 @@ const auth = {
   isTokenExpired(token) {
     const now = Date.now().valueOf() / 1000;
     const payload = jsonwebtoken.decode(token);
-
     return (!!payload['exp'] && payload['exp'] < (now + 30)); // Add 30 seconds to make sure , edge case is avoided and token is refreshed.
   },
 
@@ -53,7 +52,7 @@ const auth = {
         }
       );
 
-      log.info('renew', utils.prettyStringify(response.data));
+      log.verbose('renew', utils.prettyStringify(response.data));
       if (response && response.data && response.data.access_token && response.data.refresh_token) {
         result.jwt = response.data.access_token;
         result.refreshToken = response.data.refresh_token;
