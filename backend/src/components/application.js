@@ -78,7 +78,7 @@ async function updateCCFRIApplication(req, res) {
       let payload = {
         'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        //'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
+        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
       log.info('patch ccfri payload' , payload);
 
