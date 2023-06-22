@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId, getApplicationDocument, deleteDocument} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
@@ -315,11 +315,49 @@ async function updateFacility(req, res) {
   }
 }
 
+async function deleteFacility(req, res) {
+  let { facilityId } = req.params;
+  let { ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
+  log.info('deleting facility', facilityId);
+
+  if (ccfriId){
+    log.verbose('deleting facilitys CCFRI application', facilityId);
+    await deleteOperationWithObjectId('ccof_applicationccfris', ccfriId);
+  }
+
+  if (eceweId){
+    log.verbose('deleting facilitys eceweId application', eceweId);
+    await deleteOperationWithObjectId('ccof_applicationecewes', eceweId);
+  }
+
+  if (ccofBaseFundingId){
+    log.verbose('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
+    //await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
+  }
+
+  //delete any associated documents to the facility.
+  let organizationUploadedDocuments = await getApplicationDocument(applicationId);
+  organizationUploadedDocuments = organizationUploadedDocuments.value;
+
+  const document = organizationUploadedDocuments.find((document) => document['ApplicationFacilityDocument.ccof_facility'] == facilityId);
+
+  //if at least 1 document exists for the facility, get the parent 'folder' GUID. Deleteing the parent entity removes all documents associated with the facility.
+  if (document){
+    log.verbose('deleting all documents associated with ' +  document['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'] );
+    await deleteOperationWithObjectId ( 'ccof_application_facility_documents', document['ApplicationFacilityDocument.ccof_application_facility_documentid']);
+  }
+
+  await deleteOperationWithObjectId('accounts', facilityId);
+  log.info('facility deleted successfully', facilityId);
+  return res.status(HttpStatus.OK).end();
+}
+
 module.exports = {
   getFacility,
   getFacilityChildCareTypes,
   createFacility,
   updateFacility,
+  deleteFacility,
   getLicenseCategories,
   updateFacilityLicenseType,
   getCCFRIClosureDates,

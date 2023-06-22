@@ -11,6 +11,9 @@
             <ul style="list-style: none">
               <li v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
+                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+                  <v-icon>mdi-close-circle</v-icon>
+                </v-btn>
               </li>
             </ul>
           </v-row>
@@ -31,7 +34,37 @@
       </v-card>
     </v-row>
 
-    <NavButton @previous="previous"></NavButton>
+    <v-row justify="space-around">
+      <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+    </v-row>
+
+    <v-dialog v-model="dialog" persistent max-width="525px">
+      <v-card>
+        <v-container class="pt-0">
+          <v-row>
+            <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+              <v-card-title class="white--text">Delete Application</v-card-title>
+            </v-col>
+            <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: left;">
+              <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: center;">
+              <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
+              <v-btn dark color="primary" :loading="processing" @click="deleteApplication()">Continue</v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -43,12 +76,21 @@ import NavButton from '@/components/util/NavButton';
 import { isChangeRequest } from '@/utils/common';
 
 export default {
-  components: { NavButton },
-  props: {
+  data() {
+    return {
+      dialog: false,
+      deleteFacilityName: undefined,
+      deleteFacilityId: undefined,
+      processing: false,
+      deleteCcfriId: undefined,
+      deleteEceweId: undefined,
+      deleteCcofBaseFundingId: undefined,
+    };
   },
   computed: {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
+    ...mapState('application', ['applicationStatus', 'applicationId']),
+    ...mapState('organization', ['organizationProviderType']),
     isLocked() {
       if (isChangeRequest(this)) {
         return false;
@@ -69,8 +111,10 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
+    ...mapActions('facility', ['deleteFacility']),
     previous() {
       let navItem = this.navBarList[this.navBarList.length - 1];
+      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
       this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
     addAnotherFacility() {
@@ -86,6 +130,23 @@ export default {
       } else {
         this.$router.push(PATHS.group.licenseUpload);
       }
+    },
+    confirmDeleteApplication(facilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
+      this.deleteFacilityName = facilityName;
+      this.deleteFacilityId = facilityId;
+      this.dialog = true;
+      this.deleteCcfriId = ccfriId;
+      this.deleteEceweId = eceweId;
+      this.deleteCcofBaseFundingId = ccofBaseFundingId;
+    },
+    async deleteApplication() {
+      this.processing = true;
+      console.log(this.deleteFacilityId);
+      console.log(this.deleteCcfriId);
+      console.log(this.applicationId);
+      await this.deleteFacility({ facilityId: this.deleteFacilityId , ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
+      this.processing = false;
+      this.dialog = false;
     }
   },
   mounted() {
