@@ -496,8 +496,8 @@
               </v-row>
               <v-row>
                 <v-col cols=9 class="text-left">
-                  <div v-if="child.parentFeeFrequency=='Daily' && child.childAgeCategory !='Preschool'" style="padding-left: 30px; padding-top: 12px">
-                    To estimate for a daily parent fee frequency, days with care must have the same amount of hours.
+                  <div v-if="child.parentFeeFrequency=='Daily' && child.childAgeCategory !='Preschool'" style="padding-left: 30px;">
+                    Reductions for full and half days will differ. If your care schedule is a mix of full and half days, enter them separately to receive an estimate.
                   </div>
                 </v-col>
                 <v-col cols=3 class="text-right">
