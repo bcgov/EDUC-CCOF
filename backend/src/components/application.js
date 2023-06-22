@@ -78,7 +78,7 @@ async function updateCCFRIApplication(req, res) {
       let payload = {
         'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
+        //'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
       log.info('patch ccfri payload' , payload);
 
@@ -520,11 +520,18 @@ function checkKey(key, obj) {
 }
 
 async function getFacilityChangeData(changeActionId){
+  let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
   let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
-  return new MappableObjectForFront(newFacData.value[0], NewFacilityMappings).toJSON();
+
+  newFacData.value.forEach(fac => {
+    mappedData.push( new MappableObjectForFront(fac, NewFacilityMappings).toJSON());
+  });
+
+  log.info('faccccc data post mapping', mappedData);
+  return mappedData;
 }
 
 async function getChangeRequest(req, res){
@@ -553,7 +560,7 @@ async function getChangeRequest(req, res){
           break;
         case CHANGE_REQUEST_TYPES.NEW_FACILITY:
           mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
-          mappedChangeAction = {...mappedChangeAction, ...await getFacilityChangeData(mappedChangeAction.changeActionId)};
+          mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
           break;
         }
         return mappedChangeAction;
