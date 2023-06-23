@@ -116,7 +116,7 @@ jobs:
         oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
         # Cancel any rollouts in progress
-        oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }} 2> /dev/null \
+        oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }} 2> /dev/null \
         || true && echo "No rollout in progress"
 
         # Create tag for PROD env from DEV env image
@@ -127,11 +127,11 @@ jobs:
         | oc apply -f -
 
         # Start rollout (if necessary) and follow it
-        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }} 2> /dev/null \
+        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }} 2> /dev/null \
         || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
-        oc rollout status dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}
+        oc rollout status dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }}
 
     - name: ZAP Scan
       uses: zaproxy/action-full-scan@v0.3.0
