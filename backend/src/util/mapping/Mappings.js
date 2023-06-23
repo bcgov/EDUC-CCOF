@@ -243,6 +243,7 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_optintoecewe', front: 'optInOrOut' },
+  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 
 const UserProfileOrganizationMappings = [
@@ -320,6 +321,9 @@ const UserProfileChangeRequestNewFacilityMappings = [
   { back: 'ccof_change_requestid', front: 'changeRequestId' },
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
   { back: '_ccof_change_action_value', front: 'changeActionId' },
+  { back: '_ccof_ccof_value', front: 'ccofBaseFundingId' },
+  { back: '_ccof_ccfri_value', front: 'ccfriApplicationId' },
+  { back: '_ccof_ecewe_value', front: 'eceweApplicationId' },
 ];
 
 const ProgramYearMappings = [

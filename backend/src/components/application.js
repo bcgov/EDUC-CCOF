@@ -37,9 +37,9 @@ const {mapFundingObjectForFront} = require('./funding');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 
-async function updateChangeRequestNewFacility(changeRequestFacilityId, payload){
+async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload){
   try{
-    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestFacilityId, payload);
+    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
     return response;
   }
   catch(e){
@@ -317,16 +317,17 @@ async function updateECEWEFacilityApplication(req, res) {
   let response;
   Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
   let eceweApplicationId;
-
   try {
     for (let key in forBackFacilities) {
       // add join attributes for application and facility
       forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications(' + req.params.applicationId + ')';
       forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts(' + forBackFacilities[key]._ccof_facility_value + ')';
       eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
+      let changeRequestNewFacilityid = forBackFacilities[key].ccof_change_request_new_facilityid;
       // remove attributes that are already used in payload join (above) and not needed.
       delete forBackFacilities[key].ccof_applicationeceweid;
       delete forBackFacilities[key]._ccof_facility_value;
+      delete forBackFacilities[key].ccof_change_request_new_facilityid;
 
       let facility = forBackFacilities[key];
       if (eceweApplicationId) {
@@ -340,13 +341,9 @@ async function updateECEWEFacilityApplication(req, res) {
       }
 
       //if this is a new facility change request, link ECEWE application to the New Facility Change Request
-      if (facility.changeRequestFacilityId) {
-        await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
-          {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${facility.eceweApplicationId})`}
-        );
-      } else {
-        await updateChangeRequestNewFacility(response,
-          {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${response})`}
+      if (changeRequestNewFacilityid && eceweApplicationId) {
+        await updateChangeRequestNewFacility(changeRequestNewFacilityid,
+          {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${eceweApplicationId})`}
         );
       }
     }

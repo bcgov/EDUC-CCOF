@@ -170,31 +170,19 @@ export default {
     isSaveBtnDisabled() {
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
     },
+    
     facilities: {
-      get() {
+      get() { 
         if (isChangeRequest(this)) {
-          let selectedFacility = [];
-          this.newFacilityList.forEach(f => {
-            if (f.changeRequestId === this.changeRequestId) {
-              selectedFacility.push(f.facilityId);
-            }
-          });
-          console.log('-----------> THIS IS selectedFacility ');
-          console.log(selectedFacility);
-          console.log('FACILITIES = ');
-          console.log(this.navBarList.filter(f => selectedFacility.includes(f.facilityId)));
-          // let foundhere = this.navBarList.filter((fac) => {
-          //   console.log(fac.changeRequestId);
-          //   console.log(fac.changeRequestId == this.changeRequestId);
-          // });
-          // this.$store.state.eceweApp.facilities.filter((fac) => {
-          //   console.log(fac);
-          //   console.log(fac.changeRequestId == this.changeRequestId);
-          // });
-          // return this.navBarList.find(f => f.changeRequestId === this.changeRequestId);
-          return this.navBarList.filter(f => selectedFacility.includes(f.facilityId));
+          console.log('ECEWE - isChangeRequest ');
+          console.log(this.$store.state.eceweApp.facilities);
+          console.log(this.$store.state.eceweApp.facilities.filter(el => el.changeRequestId === this.$route.params.changeRecGuid));
+          return this.$store.state.eceweApp.facilities.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+        } else {
+          console.log('ECEWE - NO NO');
+          console.log(this.$store.state.eceweApp.facilities.filter(el => !el.changeRequestId));
+          return this.$store.state.eceweApp.facilities.filter(el => !el.changeRequestId);
         }
-        return this.$store.state.eceweApp.facilities;
       },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
