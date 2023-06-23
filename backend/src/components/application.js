@@ -78,14 +78,20 @@ async function updateCCFRIApplication(req, res) {
       let payload = {
         'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
+        //'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
+
+      //only bind CCFRI application to main application if this facility is completed during a new application
+      //ccfri application for change request should only bind to their respective changeAction (done below)
+      if (!facility.changeRequestFacilityId){
+        payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
+      }
       log.info('patch ccfri payload' , payload);
 
       let response = undefined;
       if (facility.ccfriApplicationId) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
-        //log.info('CCFRI RESP!!!!!!!' , response);
+        log.info('CCFRI RESP!!!!!!!' , response);
         retVal.push(response);
       } else {
         response = await postOperation('ccof_applicationccfris', payload);
@@ -100,7 +106,7 @@ async function updateCCFRIApplication(req, res) {
       //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
       if(facility.changeRequestFacilityId){
         let resp = await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
-          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId})`}
+          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId? facility.ccfriApplicationId : response})`}
         );
         retVal.push(resp);
       }
