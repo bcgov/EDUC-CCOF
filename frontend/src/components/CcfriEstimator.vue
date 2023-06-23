@@ -495,12 +495,12 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols=9 class="text-left">
+                <v-col cols=8 class="text-left verticalAlignFlexbox">
                   <div v-if="child.parentFeeFrequency=='Daily' && child.childAgeCategory !='Preschool'" style="padding-left: 30px;">
                     Reductions for full and half days will differ. If your care schedule is a mix of full and half days, enter them separately to receive an estimate.
                   </div>
                 </v-col>
-                <v-col cols=3 class="text-right">
+                <v-col cols=4 class="text-right">
                   <v-btn style="color:white;font-family:BCSans;font-weight:600;font-family:BCSans;font-size:16px;padding-left:40px;padding-right:40px; margin-right:40px !important"
                         class="ma-2"
                         color="#0483AF"
@@ -1502,6 +1502,12 @@ export default {
 </script>
 
 <style>
+.verticalAlignFlexbox{
+    display: flex !important;
+    align-content: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
 .fa-caret-down::before {
     color: #0FC3ED !important;
 }
