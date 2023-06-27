@@ -163,7 +163,7 @@ export default {
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
-    ...mapMutations('reportChanges', ['setChangeRequestId']),
+    ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     async previous() {
       this.$router.push(PATHS.home);
     },
@@ -225,6 +225,7 @@ export default {
       }
       else{
         this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
         this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
       }
 

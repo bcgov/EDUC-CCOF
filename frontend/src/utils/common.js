@@ -2,7 +2,7 @@
 
 import {getDateFormatter} from '@/utils/format';
 import {LocalDate} from '@js-joda/core';
-import {isPlainObject} from 'lodash';
+import {isPlainObject, sortBy} from 'lodash';
 import { CHANGE_URL_PREFIX} from '@/utils/constants';
 
 const clone = require('rfdc')();
@@ -41,4 +41,8 @@ export function isNullOrBlank(value) {
 
 export function isChangeRequest(vueForm) {
   return vueForm?.$route?.path?.startsWith(CHANGE_URL_PREFIX);
+}
+
+export function sortByFacilityId(value) {
+  return sortBy(value,[function(o) { return o.facilityId; }])
 }

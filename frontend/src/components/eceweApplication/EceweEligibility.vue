@@ -295,11 +295,12 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -317,8 +318,23 @@ export default {
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('reportChanges', ['changeRequestId']),
+    filteredNavBarList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
+    },
+    filteredECEWEFacilityList() {
+      if (isChangeRequest(this)) {
+        return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.$store.state.eceweApp.facilities?.filter(el => !el.changeRequestId);
+      }
+    },
     facilities: {
-      get() { return this.$store.state.eceweApp.facilities; },
+      get() { return this.filteredECEWEFacilityList; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     enableButtons() {
@@ -329,6 +345,9 @@ export default {
             ||this.model.optInECEWE === 0;
     },
     isReadOnly() {
+      if (isChangeRequest(this)) {
+        return false;
+      }
       if (this.unlockEcewe) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
@@ -345,9 +364,9 @@ export default {
       await this.loadData();
       this.setIsStarted(true);
       this.model = {...this.eceweModel};
+      this.initECEWEFacilities(this.filteredNavBarList);
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       this.setLoadedFacilities(copyFacilities);
-      this.initECEWEFacilities(this.navBarList);
       this.isLoading = false;
     } catch(error) {
       console.log (error);
@@ -364,13 +383,25 @@ export default {
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
     ...mapMutations('application', ['setIsEceweComplete']),
     previous() {
-      this.$router.push(PATHS.ccfriHome);
+      if (isChangeRequest(this)) {
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.ccfriHome}`);  
+      } else {
+        this.$router.push(PATHS.ccfriHome);
+      }
     },
     async next() {
-      if (this.model.optInECEWE == 0) {
-        this.$router.push(PATHS.supportingDocumentUpload);
+      if (isChangeRequest(this)) {
+        if (this.model.optInECEWE == 0) {
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.supportingDocumentUpload}`);  
+        } else {
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweFacilities}`);
+        }
       } else {
-        this.$router.push(PATHS.eceweFacilities);
+        if (this.model.optInECEWE == 0) {
+          this.$router.push(PATHS.supportingDocumentUpload);
+        } else {
+          this.$router.push(PATHS.eceweFacilities);
+        }
       }
     },
     validateForm() {
@@ -405,7 +436,7 @@ export default {
       }
     },
     async loadData() {
-      if (this.isStarted) {
+      if (this.isStarted && this.facilities[0]?.changeRequestId == this.changeRequestId) {
         return;
       }
       if (this.applicationId) {
@@ -416,6 +447,7 @@ export default {
           this.setFailureAlert('Error loading ECEWE application.');
         }
         this.setIsStarted(true);
+        console.log('loadData IS COMPLETEEEEEE!!!!!!!!!!!!!');
       }
     },
     optOutFacilities() {
@@ -428,7 +460,7 @@ export default {
       //   }
       //   return facility;
       // });
-      this.navBarList.forEach(facility => {
+      this.filteredNavBarList.forEach(facility => {
         facility.eceweOptInStatus = 0;
       });
       this.facilities.forEach(facility => {
