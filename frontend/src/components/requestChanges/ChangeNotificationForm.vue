@@ -21,7 +21,7 @@
               <v-col class="col-lg-12 ">
               <p class="px-2 text--primary"><strong> For all changes other than "Adding a new facility(s) to your Organization, please download the change notification form by clicking on the button below."</strong>
               </p>
-                 <v-btn dark class="blueButton mb-10 ml-2" >Download a Change Notification Form</v-btn>
+              <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf" target="_blank"> <v-btn dark class="blueButton mb-10 ml-2" > Download a Change Notification Form</v-btn> </a>
               </v-col>
             </v-row>
             <v-row>
@@ -88,7 +88,7 @@
                 <v-list>
                   <ul>
                     <li>
-                      <v-list-item> <a href="#"> Group application form </a>
+                      <v-list-item> <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1321_ccof_group_application.pdf" target="_blank"> Group application form </a>
                       </v-list-item>
                     </li>
                   </ul>
@@ -98,7 +98,7 @@
                 <v-list>
                   <ul>
                     <li>
-                      <v-list-item> <a href="#"> Family application form </a>
+                      <v-list-item> <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1320_ccof_family_application.pdf" target="_blank"> Family application form </a>
                       </v-list-item>
                     </li>
                   </ul>
@@ -134,7 +134,7 @@
                   </ul>
                 </v-list>
 
-                <v-list-item-title> For more information <a href="#">visit the Child Care Operating Fund website</a></v-list-item-title>
+                <v-list-item-title  style="white-space: normal;"> For more information <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">visit the Child Care Operating Fund website</a></v-list-item-title>
                 <v-list>
                   <v-list-item> Greater Victoria area: <a href="tel:+2503656501"> +1 250 365-6501</a>
                   </v-list-item>

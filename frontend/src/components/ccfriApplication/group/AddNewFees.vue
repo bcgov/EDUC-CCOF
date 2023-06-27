@@ -355,9 +355,9 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
-      
+
       <v-dialog
         v-model="showRfiDialog"
         persistent
@@ -398,6 +398,7 @@ import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -460,7 +461,7 @@ export default {
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility.unlockCcfri){
+      if (this.currentFacility.unlockCcfri || isChangeRequest(this)){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){

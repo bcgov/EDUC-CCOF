@@ -80,6 +80,13 @@ async function updateCCFRIApplication(req, res) {
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
         'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
+
+      //only bind CCFRI application to main application if this facility is completed during a new application
+      //ccfri application for change request should only bind to their respective changeAction (done below)
+      //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.
+      // if (!facility.changeRequestFacilityId){
+      //   payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
+      // }
       log.info('patch ccfri payload' , payload);
 
       let response = undefined;
@@ -100,13 +107,7 @@ async function updateCCFRIApplication(req, res) {
       //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
       if(facility.changeRequestFacilityId){
         let resp = await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
-          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId})`}
-        );
-        retVal.push(resp);
-      }
-      else{
-        let resp = await updateChangeRequestNewFacility(response,
-          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${response})`}
+          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId? facility.ccfriApplicationId : response})`}
         );
         retVal.push(resp);
       }
@@ -522,11 +523,18 @@ function checkKey(key, obj) {
 }
 
 async function getFacilityChangeData(changeActionId){
+  let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
   let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
-  return new MappableObjectForFront(newFacData.value[0], NewFacilityMappings).toJSON();
+
+  newFacData.value.forEach(fac => {
+    mappedData.push( new MappableObjectForFront(fac, NewFacilityMappings).toJSON());
+  });
+
+  log.info('faccccc data post mapping', mappedData);
+  return mappedData;
 }
 
 async function getChangeRequest(req, res){
@@ -555,7 +563,7 @@ async function getChangeRequest(req, res){
           break;
         case CHANGE_REQUEST_TYPES.NEW_FACILITY:
           mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
-          mappedChangeAction = {...mappedChangeAction, ...await getFacilityChangeData(mappedChangeAction.changeActionId)};
+          mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
           break;
         }
         return mappedChangeAction;

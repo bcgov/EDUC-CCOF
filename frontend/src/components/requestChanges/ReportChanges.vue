@@ -57,16 +57,22 @@
                                     type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
 
         <v-row v-else>
-          <v-col class= "col-lg-10 mt-3">
+          <v-col class= "col-lg-12 mt-3">
             <h2>Change History</h2>
             <v-row>
-            <v-col class= "col-lg-3">
+              <v-col class= "col-lg-2">
                 <h4>Change Requests</h4>
               </v-col>
-              <v-col class= "col-lg-3">
+              <v-col class= "col-lg-1">
+                <h4>Fiscal Year</h4>
+              </v-col>
+              <v-col class= "col-lg-2">
+                <h4>Facility(s) name</h4>
+              </v-col>
+              <v-col class= "col-lg-2">
                 <h4>Status</h4>
               </v-col>
-              <v-col class= "col-lg-3">
+              <v-col class= "col-lg-2">
                 <h4>Submission Date</h4>
               </v-col>
               <v-col class= "col-lg-2">
@@ -80,16 +86,23 @@
             <!--TODO: ADD skeleton loader and isLoaded var-->
             <!--TODO: Change action data taken from first index! needs improvement -->
             <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
-              <v-col class= "col-lg-3">
+              <v-col class= "col-lg-2">
                 <h4></h4>
-
                 <!--TODO: ADD a function that maps these values-->
-                {{changeRequest.changeActions[0].changeType == 'PDF_CHANGE' ? 'CHANGE FORM' : 'NEW FACILITY'}}
+                {{changeRequest.changeActions[0].changeType == 'PDF_CHANGE' ? 'Report other changes' : 'Add new facility(s)'}}
               </v-col>
-              <v-col class= "col-lg-3">
+              <v-col class= "col-lg-1">
+                <h4></h4>
+                2023/24
+              </v-col>
+              <v-col class= "col-lg-2">
+                <h4></h4>
+                {{createFacilityNameString(changeRequest.changeActions)}}
+              </v-col>
+              <v-col class= "col-lg-2">
                 {{changeRequest.changeActions[0].status == 1? 'ACTIVE' : 'INACTIVE'}}
               </v-col>
-              <v-col class= "col-lg-3">
+              <v-col class= "col-lg-2">
                 {{ changeRequest.createdOnDate }}
               </v-col>
                 <v-col class= "col-lg-2">
@@ -145,6 +158,8 @@ export default {
       return (this.applicationStatus === 'SUBMITTED');
     },
 
+
+
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
@@ -155,6 +170,25 @@ export default {
 
     isPageComplete() {
 
+    },
+    createFacilityNameString(changeActions){
+
+      //did it this way so if there are many change Actions, it checks all of them to see if there is a new facility. Maybe change in the future
+      if (!changeActions.find(el => el.changeType == "NEW_FACILITY")){
+        return "- - - -";
+      }
+
+      let str = "";
+
+      //change in backend, only returns 1 at a time rn
+      let action = changeActions.find(el => el.changeType == "NEW_FACILITY");
+      action.facilities.forEach(fac => {
+        if (fac.facilityName){
+          str = str + `${fac.facilityName}, `;
+        }
+
+      });
+      return str;
     },
     next() {
       this.$router.push(PATHS.home);
@@ -169,7 +203,7 @@ export default {
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilityId);
+        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilities[0].facilityId);
       }
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
