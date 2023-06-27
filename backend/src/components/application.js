@@ -323,7 +323,7 @@ async function updateECEWEFacilityApplication(req, res) {
       forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications(' + req.params.applicationId + ')';
       forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts(' + forBackFacilities[key]._ccof_facility_value + ')';
       eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
-      let changeRequestNewFacilityid = forBackFacilities[key].ccof_change_request_new_facilityid;
+      let changeRequestNewFacilityId = forBackFacilities[key].ccof_change_request_new_facilityid;
       // remove attributes that are already used in payload join (above) and not needed.
       delete forBackFacilities[key].ccof_applicationeceweid;
       delete forBackFacilities[key]._ccof_facility_value;
@@ -338,13 +338,12 @@ async function updateECEWEFacilityApplication(req, res) {
         let operation = 'ccof_applicationecewes';
         response = await postOperation(operation, facility);
         facilities[key].eceweApplicationId = response;
-      }
-
-      //if this is a new facility change request, link ECEWE application to the New Facility Change Request
-      if (changeRequestNewFacilityid && eceweApplicationId) {
-        await updateChangeRequestNewFacility(changeRequestNewFacilityid,
-          {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${eceweApplicationId})`}
-        );
+        //if this is a new facility change request, link ECEWE application to the New Facility Change Request
+        if (changeRequestNewFacilityId) {
+          await updateChangeRequestNewFacility(changeRequestNewFacilityId,
+            {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${facilities[key].eceweApplicationId})`}
+          );
+        }
       }
     }
     return res.status(HttpStatus.OK).json({facilities: facilities});

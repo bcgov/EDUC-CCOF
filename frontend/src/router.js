@@ -580,6 +580,16 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.ECEWE
       }
     },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.supportingDocumentUpload,
+      name: 'change-request-Supporting Document Upload',
+      component: SupportingDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
+        requiresAuth: true,
+        showNavBar: true
+      }
+    },
   ]
 });
 
