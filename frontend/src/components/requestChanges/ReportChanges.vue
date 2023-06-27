@@ -202,6 +202,7 @@ export default {
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
         this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilities[0].facilityId);
       }
     },
