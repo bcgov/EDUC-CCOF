@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
-    ...mapMutations('reportChanges', ['setChangeRequestId']),
+    ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     async previous() {
       this.$router.push(PATHS.home);
     },
@@ -168,6 +168,7 @@ export default {
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
         this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilityId);
       }
     },
@@ -191,6 +192,7 @@ export default {
       }
       else{
         this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
         this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
       }
 

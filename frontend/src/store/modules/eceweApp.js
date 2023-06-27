@@ -2,6 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
+import { sortByFacilityId } from '@/utils/common';
 
 export default {
   namespaced: true,
@@ -30,6 +31,7 @@ export default {
         let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId)).data;
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
+        commit('setLoadedFacilities', payload.facilities);
         commit('setFacilities', payload.facilities);
       } catch (error) {
         console.info(`Failed to get ECEWE Application - ${error}`);
@@ -54,38 +56,55 @@ export default {
       }
     },
     async saveECEWEFacilities({ state, commit }) {
-      if (isEqual(state.loadedFacilities, state.facilities)) {
-        return;
-      }      
-      checkSession();
-      let payload = JSON.parse(JSON.stringify(state.facilities));
-      try {
-        commit('setLoadedFacilities', {...state.facilities});
-        let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
-        commit('setFacilities', response.data.facilities);
-        return response;
-      } catch (error) {
-        console.info(`Failed to update existing ECEWE facility application - ${error}`);
-        throw error;
+      let sortedLoadedFacilities = sortByFacilityId(state.loadedFacilities);
+      let sortedFacilities = sortByFacilityId(state.facilities);
+      let payload = []
+      sortedFacilities.forEach((facility, index) => {
+        if (!isEqual(facility,sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
+          payload.push(facility);
+        }
+      });
+      if (payload?.length > 0) {
+        checkSession();
+        payload = JSON.parse(JSON.stringify(payload));
+        try {
+          let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
+          let updatedFacilities = state.facilities;
+          response?.data?.facilities?.forEach(item => {
+            updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === item.facilityId)] = item;
+          });
+          commit('setFacilities', updatedFacilities);
+          commit('setLoadedFacilities', updatedFacilities);
+          return response;
+        } catch (error) {
+          console.info(`Failed to update existing ECEWE facility application - ${error}`);
+          throw error;
+        }
       }
     },
     /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
-    initECEWEFacilities({ state, commit }, navBarList) {
+    async initECEWEFacilities({ state, commit }, navBarList) {
       let facilityPayload;
       if (state.facilities?.length == 0) {
+        console.log(' No facilities payload, create from the narBarList.');
         // No facilities payload, create from the narBarList.
         facilityPayload = navBarList.map(facility => ({
           eceweApplicationId: null,
           facilityId: facility.facilityId,
-          optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null
+          optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
+          changeRequestId: facility.changeRequestId,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId
         }));
       } else {
         // A payload already exists, recreate to include any new facilities which could have been added to navBarList
         // since last creation.
+        console.log('A payload already exists, recreate');
         facilityPayload = navBarList.map(facility => ({
           facilityId: facility.facilityId,
           eceweApplicationId: getEceweApplicationId(facility.facilityId),
-          optInOrOut: getOptInOrOut(facility.facilityId)
+          optInOrOut: getOptInOrOut(facility.facilityId),
+          changeRequestId: facility.changeRequestId,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId
         }));
       }
       commit('setFacilities', facilityPayload);

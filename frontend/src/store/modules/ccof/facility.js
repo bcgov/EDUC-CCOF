@@ -124,6 +124,7 @@ export default {
               licenseNumber: state.facilityModel.licenseNumber,
               changeRequestId: rootState.reportChanges.changeRequestId,
               changeActionId: rootState.reportChanges.changeActionId,
+              changeRequestNewFacilityId: response.data?.changeRequestNewFacilityId,
               facilityStatus: 'New',
             }, { root: true });
             commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });

@@ -124,12 +124,12 @@
 
 <script>
 
-import {PATHS} from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import { deepCloneObject, getFileExtension } from '@/utils/common';
+import { deepCloneObject, getFileExtension, isChangeRequest } from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -144,6 +144,7 @@ export default {
     ...mapState('navBar', ['canSubmit']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
+    ...mapState('reportChanges', ['changeRequestId']),
     isLocked() {
       if (this.unlockSupportingDocuments) {
         return false;
@@ -244,10 +245,18 @@ export default {
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     previous() {
-      this.$router.push(PATHS.eceweFacilities);
+      if (isChangeRequest(this)) {
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweFacilities}`);
+      } else {
+        this.$router.push(PATHS.eceweFacilities);
+      }
     },
     next() {
-      this.$router.push(PATHS.summaryDeclaration);
+      if (isChangeRequest(this)) {
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.summaryDeclaration}`);
+      } else {
+        this.$router.push(PATHS.summaryDeclaration);
+      }
     },
     validateForm() {
       this.$refs.form?.validate();
