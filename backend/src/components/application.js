@@ -78,14 +78,15 @@ async function updateCCFRIApplication(req, res) {
       let payload = {
         'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        //'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
+        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
 
       //only bind CCFRI application to main application if this facility is completed during a new application
       //ccfri application for change request should only bind to their respective changeAction (done below)
-      if (!facility.changeRequestFacilityId){
-        payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
-      }
+      //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.
+      // if (!facility.changeRequestFacilityId){
+      //   payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
+      // }
       log.info('patch ccfri payload' , payload);
 
       let response = undefined;

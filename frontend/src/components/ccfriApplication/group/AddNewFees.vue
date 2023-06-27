@@ -400,7 +400,6 @@ import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
 import { isChangeRequest } from '@/utils/common';
 
-
 export default {
   components: { NavButton },
   mixins: [alertMixin],

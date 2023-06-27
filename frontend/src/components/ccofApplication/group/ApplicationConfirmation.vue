@@ -126,11 +126,10 @@ export default {
     },
     async next() {
       if (isChangeRequest(this)) {
-        this.$router.push(PATHS.group.licenseUpload);
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/licenseUpload`);
       } else {
         this.$router.push(PATHS.group.licenseUpload);
       }
-      this.$router.push(PATHS.group.licenseUpload);
     },
     confirmDeleteApplication(facilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;

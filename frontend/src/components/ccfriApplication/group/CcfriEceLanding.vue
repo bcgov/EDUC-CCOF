@@ -151,7 +151,7 @@ export default {
   beforeMount: function() {
     this.showOptStatus = new Array(this.filteredNavBarList.length).fill(false);
 
-    this.navBarList.forEach((fac, index) => { //TODO: validate this code
+    this.filteredNavBarList.forEach((fac, index) => { //TODO: validate this code
       if (fac.ccfriOptInStatus){
         this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
       }
@@ -173,10 +173,8 @@ export default {
       });
     },
     async previous() {
-      console.log(this.filteredNavBarList);
-      // console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
-      // let path = await this.getPreviousPath();
-      // this.$router.push(path);
+      let path = await this.getPreviousPath();
+      this.$router.push(path);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
