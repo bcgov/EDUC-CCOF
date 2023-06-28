@@ -9,16 +9,16 @@
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
-    <v-row v-if="!ccfri" >
+    <v-row v-if="!ccfri || ccfri.ccfriOptInStatus === 0" >
       <v-col cols="12" >
-          <span  cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
-          <v-text-field  cols="6" placeholder="Required" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+          <span  cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
+          <v-text-field  cols="12" placeholder="Required" class="summary-value" :value="this.getOptInOptOut(ccfri.ccfriOptInStatus)" dense flat solo hide-details readonly :rules="rules.required" >Opt-Out</v-text-field>
       </v-col>
     </v-row>
     <v-row v-else-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
       <div v-for=" (ccType, index) in ccfriChildCareTypes" :key="index">
       <v-row class="d-flex justify-start">
-        <v-col cols="6" lg="6" class="pb-1 pt-1 ml-2">
+        <v-col cols="12" lg="12" class="pb-1 pt-1 ml-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3" v-if="!!ccType.programYear && !!ccType.childCareCategory">Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}: </span>
@@ -89,54 +89,58 @@
               <v-text-field placeholder="Required"  :value="this.getClosureFees(this.ccfri.hasClosureFees)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
+          <v-row v-if="this.ccfri.hasClosureFees == 100000000">
+            <v-col class="col-md-3 col-12"><span class="summary-label">Closure Start Date</span></v-col>
+            <v-col class="col-md-3 col-12"><span class="summary-label">End Date</span></v-col>
+            <v-col class="col-md-3 col-12"><span class="summary-label">Reason</span></v-col>
+            <v-col class="col-md-3 col-12"><span class="summary-label">Did parents pay for this closure?</span></v-col>
+            <v-row v-for="(obj, index) in   this.ccfri.dates  " :key="index">
+              <v-col class="col-md-3 col-12">
+                <v-menu v-model="obj.calendarMenu1" :nudge-right="40" min-width="auto">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field placeholder="Required" dense flat solo hide-details :rules="rules.required" v-model="obj.formattedStartDate" readonly v-bind="attrs" v-on="on">
+                    </v-text-field>
+                  </template>
+                </v-menu>
+              </v-col>
 
-            
-              <v-row v-if="this.ccfri.hasClosureFees == 100000000">
-                <v-col class="col-md-3 col-12"><span class="summary-label">Closure Start Date</span></v-col>
-                <v-col class="col-md-3 col-12"><span class="summary-label">End Date</span></v-col>
-                <v-col class="col-md-3 col-12"><span class="summary-label">Reason</span></v-col>
-                <v-col class="col-md-3 col-12"><span class="summary-label">Did parents pay for this closure?</span></v-col>
-                <v-row v-for="(obj, index) in   this.ccfri.dates  " :key="index">
-                  <v-col class="col-md-3 col-12">
-                    <v-menu v-model="obj.calendarMenu1" :nudge-right="40" min-width="auto">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field placeholder="Required" dense flat solo hide-details :rules="rules.required" v-model="obj.formattedStartDate" readonly v-bind="attrs" v-on="on">
-                        </v-text-field>
-                      </template>
-                    </v-menu>
-                  </v-col>
+              <v-col class="col-md-3 col-12">
+                <v-menu v-model="obj.calendarMenu2" :nudge-right="40" min-width="auto">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field placeholder="Required" dense flat solo hide-details required readonly v-model="obj.formattedEndDate" :rules="rules.required" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                  </template>
+                </v-menu>
+              </v-col>
 
-                  <v-col class="col-md-3 col-12">
-                    <v-menu v-model="obj.calendarMenu2" :nudge-right="40" min-width="auto">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field placeholder="Required" dense flat solo hide-details required readonly v-model="obj.formattedEndDate" :rules="rules.required" v-bind="attrs" v-on="on">
-                        </v-text-field>
-                      </template>
-                    </v-menu>
-                  </v-col>
+              <v-col class="col-md-3 col-12 ">
+                <v-text-field placeholder="Required" readonly v-model="obj.closureReason" dense flat solo hide-details :rules="rules.required"></v-text-field>
+              </v-col>
 
-                  <v-col class="col-md-3 col-12 ">
-                    <v-text-field placeholder="Required" readonly v-model="obj.closureReason" dense flat solo hide-details :rules="rules.required"></v-text-field>
-                  </v-col>
+              <v-col class="col-md-3 col-12">
+                <v-text-field placeholder="Required" readonly dense flat solo hide-details
+                  :value="obj.feesPaidWhileClosed === 1 ? 'Yes' : 'No'" :rules="rules.required"></v-text-field>
+              </v-col>
+            </v-row> <!-- end v for-->
+          </v-row> <!-- end v if -->
+        </v-col>
 
-                  <v-col class="col-md-3 col-12">
-                    <v-text-field placeholder="Required" readonly dense flat solo hide-details
-                      :value="obj.feesPaidWhileClosed === 1 ? 'Yes' : 'No'" :rules="rules.required"></v-text-field>
-                  </v-col>
-
-                </v-row> <!-- end v for-->
-              </v-row> <!-- end v if -->
-            </v-col>
+      </v-row>
+      <v-col cols="12" lg="12" class="pb-2 pt-2">
+          <v-row no-gutters class="d-flex justify-start">
+            <span cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
+            <v-text-field cols="6"  placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)" class="summary-value " flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-row>
-          <v-col cols="12" class="pb-2 pt-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <span class="summary-label">Is there any other information about this facility you would like us to
-                know?</span>
-              <v-textarea label="--" class="col-12 summary-value-small" :value="this.ccfri.ccfriApplicationNotes" dense
-                flat solo hide-details no-resize readonly rows="3"></v-textarea>
-            </v-row>
-          </v-col>
-        </v-row>
+        </v-col>  
+        <v-col cols="12" class="pb-2 pt-2">
+          <v-row no-gutters class="d-flex justify-start">
+            <span class="summary-label">Is there any other information about this facility you would like us to
+              know?</span>
+            <v-textarea label="--" class="col-12 summary-value-small" :value="this.ccfri.ccfriApplicationNotes" dense
+              flat solo hide-details no-resize readonly rows="3"></v-textarea>
+          </v-row>
+        </v-col>
+      </v-row>
 
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
