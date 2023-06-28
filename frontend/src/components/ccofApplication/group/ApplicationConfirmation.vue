@@ -11,9 +11,9 @@
             <ul style="list-style: none">
               <li v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
-                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
-                  <v-icon>mdi-close-circle</v-icon>
-                </v-btn>
+                  <v-btn v-if="!item.isLocked" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
               </li>
             </ul>
           </v-row>
