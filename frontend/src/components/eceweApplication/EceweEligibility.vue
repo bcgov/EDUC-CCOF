@@ -45,7 +45,7 @@
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
                 v-model="model.optInECEWE"
-                :disabled="isReadOnly"
+                :disabled="isReadOnly('optInECEWE')"
                 :rules="rules.required">
                 <template v-slot:label>
                   <span class="radio-label" style="align-content: center;">For the {{formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
@@ -79,7 +79,7 @@
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
                 v-model="model.belongsToUnion"
-                :disabled="isReadOnly"
+                :disabled="isReadOnly()"
                 :rules="rules.required">
                 <template v-slot:label>
                   <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
@@ -113,7 +113,7 @@
             <v-row v-if="!isLoading" justify="center">
               <v-radio-group
                 v-model="model.applicableSector"
-                :disabled="isReadOnly"
+                :disabled="isReadOnly()"
                 :rules="rules.required">
                 <template v-slot:label>
                   <div class="radio-label text-center">Select the applicable sector:</div>
@@ -157,7 +157,7 @@
                   v-model="model.confirmation"
                   :value="1"
                   label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
-                  :disabled="isReadOnly"
+                  :disabled="isReadOnly()"
                   :rules="rules.required">
                 </v-checkbox>
               </v-col>
@@ -186,7 +186,7 @@
               <v-radio-group
                   v-model="model.fundingModel"
                   row
-                  :disabled="isReadOnly"
+                  :disabled="isReadOnly()"
                   :rules="rules.required"
                   class="mt-0">
                 <v-row justify="center">
@@ -277,7 +277,7 @@
                     v-model="model.confirmation"
                     :value="1"
                     label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
-                    :disabled="isReadOnly"
+                    :disabled="isReadOnly()"
                     :rules="rules.required">
                   </v-checkbox>
                 </v-col>
@@ -287,7 +287,7 @@
         </v-card>
       </v-row>
       <NavButton class="mt-10" :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
+        :isSaveDisabled="isReadOnly()" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveECEWEApplication"></NavButton>
     </v-container>
   </v-form>
@@ -344,17 +344,6 @@ export default {
             ||this.model.belongsToUnion === 0
             ||this.model.optInECEWE === 0;
     },
-    isReadOnly() {
-      if (isChangeRequest(this)) {
-        return false;
-      }
-      if (this.unlockEcewe) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
-    }
   },
   async mounted() {
     try {
@@ -382,6 +371,20 @@ export default {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
     ...mapMutations('application', ['setIsEceweComplete']),
+    isReadOnly(question) {
+      if (isChangeRequest(this)) {
+        if (question == 'optInECEWE') {
+          return (this.model.optInECEWE === 1);
+        }
+        return false;
+      }
+      if (this.unlockEcewe) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
     previous() {
       if (isChangeRequest(this)) {
         this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.ccfriHome}`);  
