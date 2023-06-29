@@ -207,7 +207,6 @@ export default {
     async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
-        console.log('Updating Application Status');
         await ApiService.apiAxios.put('/api/application/status/'  + applicationObj.applicationId, applicationObj);
       } catch (error) {
         console.log(`Failed to update application status - ${error}`);
