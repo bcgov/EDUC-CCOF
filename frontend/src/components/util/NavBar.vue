@@ -633,7 +633,7 @@ export default {
         title: 'Licence Upload',
         link: link,
         isAccessible: this.ccofConfirmationEnabled,
-        icon: this.getCheckbox(this.isLicenseUploadComplete),
+        icon: isChangeRequest? this.getCheckbox(false): this.getCheckbox(this.isLicenseUploadComplete),
         isActive: isChangeRequest? 'Change Request Licence Upload' === this.$route.name : 'Licence Upload' === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++
