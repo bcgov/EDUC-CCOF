@@ -88,7 +88,7 @@ export default {
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
         if (isChangeRequest(this)) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/funding/${navBar.ccofBaseFundingId}`);
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/funding/${navBar.ccofBaseFundingId}`);
         }
         else {
           this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
@@ -109,6 +109,9 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
+      if (this.isLocked) {
+        return;
+      }
       if (!this.isGroup()) {// For Family, we will need to set the postal code from organization.
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
@@ -127,7 +130,7 @@ export default {
       }
       if (!this.$route.params.urlGuid && isSave) {
         if (isChangeRequest(this)) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/facility/${this.facilityId}`);
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/facility/${this.facilityId}`);
         } else {
           this.$router.push(`${this.$route.path}/${this.facilityId}`);
         }
