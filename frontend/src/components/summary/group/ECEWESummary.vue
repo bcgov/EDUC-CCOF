@@ -142,11 +142,11 @@ export default {
     },
     getFundingModel(value){
       if(value === 100000000){
-        return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.';
+        return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
       }else if(value === 100000001){
-        return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.';
+        return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding';
       }else if(value === 100000002){
-        return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding.';
+        return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding';
       }else{
         return null;
       }
