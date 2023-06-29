@@ -1,5 +1,5 @@
 'use strict';
-const {postApplicationDocument, getApplicationDocument, getDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
+const {postApplicationDocument, getApplicationDocument, deleteDocument, postOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 
 
@@ -11,15 +11,10 @@ async function saveDocument(req, res) {
       let changeRequestNewFacilityId = document.changeRequestNewFacilityId;
       delete document.changeRequestNewFacilityId;
       let response = await postApplicationDocument(document);
-      console.log('THIS IS THE DOCMENT ID ====================')
-      console.log(response);
-      let getResponse = await getDocument(response?.annotationid);
-      console.log('======================== GET RESPONSE ============');
-      console.log(getResponse);
       //if this is a new facility change request, link supporting documents to the New Facility Change Action
       if (changeRequestNewFacilityId) {
-        await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
-          "ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response.applicationFacilityDocumentId})`
+        await postOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
+          "ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
         });
       }
     }

@@ -146,6 +146,9 @@ export default {
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapState('reportChanges', ['changeRequestId']),
     isLocked() {
+      if (isChangeRequest(this)) {
+        return false;
+      }
       if (this.unlockSupportingDocuments) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
@@ -252,14 +255,14 @@ export default {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweFacilities}`);
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
       } else {
         this.$router.push(PATHS.eceweFacilities);
       }
     },
     next() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.summaryDeclaration}`);
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.summaryDeclaration}`);
       } else {
         this.$router.push(PATHS.summaryDeclaration);
       }

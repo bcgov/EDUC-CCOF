@@ -205,18 +205,6 @@ async function getApplicationDocument(applicationID){
   }
 }
 
-async function getDocument(annotationid){
-  try {
-    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationid=' + annotationid;
-    log.info('get Data Url', url);
-    const response = await axios.get(url, getHttpHeader());
-    return response.data;
-  } catch (e) {
-    log.error(' getDocument Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
-  }
-}
-
 async function deleteDocument(annotationid){
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationid=' + annotationid;
@@ -244,6 +232,25 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
   } catch (e) {
     log.error(e);
     log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
+  }
+}
+
+async function postOperationWithObjectId(operation, objectId, payload) {
+  const operationWithObject = `${operation}(${objectId})`;
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operationWithObject;
+  log.info('postOperationWithObjectId Url', url);
+
+  if (log.isInfoEnabled) {
+    log.verbose(`postOperationWithObjectId post data for ${url}  :: is :: `, minify(payload));
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postOperationWithObjectId', response);
+    return response.data;
+  } catch (e) {
+    log.error(e);
+    log.error('postOperationWithObjectId Error', e.response ? e.response.status : e.message);
     throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
   }
 }
@@ -335,6 +342,7 @@ const utils = {
   getOperationWithObjectId,
   getOperation,
   postOperation,
+  postOperationWithObjectId,
   patchOperationWithObjectId,
   generateJWTToken,
   formatCommentTimestamp,
@@ -347,7 +355,6 @@ const utils = {
   deleteOperation,
   postApplicationDocument,
   getApplicationDocument,
-  getDocument,
   deleteDocument,
   sleep,
   getChangeActionDocument,
