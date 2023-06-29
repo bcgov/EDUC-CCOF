@@ -14,7 +14,7 @@
               </li>
               <li v-else v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
-                  <v-btn v-if="!item.isLocked" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+                  <v-btn v-if="!isLocked" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
               </li>
