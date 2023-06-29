@@ -41,15 +41,15 @@ const organizationType = [
 const fundingModelType = [
   {
     id: 100000000,
-    description: 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.',
+    description: 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding',
   },
   {
     id: 100000001,
-    description: 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.',
+    description: 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding',
   },
   {
     id: 100000002,
-    description: 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding.',
+    description: 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding',
   },
 ];
 

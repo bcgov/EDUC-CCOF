@@ -377,7 +377,8 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.uploadedDocuments.length + 1;
+      addObj.id = Math.random() * 10;
+      //addObj.id = this.uploadedDocuments.length + 1;
       this.uploadedDocuments.unshift(addObj);
       this.editItem(addObj);
     },

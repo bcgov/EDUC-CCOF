@@ -64,6 +64,7 @@ input[type=number] {
   background-position: 0 0;
   animation: bone 1.5s infinite;
   border-radius: 1em;
+  color: transparent!important;
 }
 
 .ccof-skeleton-loader fieldset, 
