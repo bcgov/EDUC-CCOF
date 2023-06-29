@@ -184,7 +184,7 @@ export default {
         ccof_change_requestid: '',
       },
       defaultItem: {
-        ccof_change_requestid: this.changeRequestId,
+        ccof_change_requestid: this.$route.params.changeRecGuid,
         subject : this.changeType
       },
       selectRules: [v => !!v || 'This is required']
@@ -194,7 +194,7 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments']),
+    ...mapState('reportChanges', ['uploadedDocuments']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     getFilteredDocs(){
@@ -262,7 +262,7 @@ export default {
       const payload = [];
       for (const file of newFilesAdded) {
         const obj = {
-          ccof_change_requestid: this.changeRequestId,
+          ccof_change_requestid: this.$route.params.changeRecGuid,
           subject: this.changeType,
           notetext: file.description,
           ...this.fileMap.get(String(file.id))

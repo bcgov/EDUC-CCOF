@@ -91,6 +91,9 @@ export default {
       this.$router.push(path);
     },
     async save(showNotification) {
+      if (this.isLocked) {
+        return;
+      }
       this.processing = true;
       this.setIsStarted(true);
       try {

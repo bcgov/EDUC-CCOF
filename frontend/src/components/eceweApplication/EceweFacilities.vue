@@ -235,14 +235,14 @@ export default {
     },
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweEligibility}`);  
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweEligibility}`);
       } else {
         return this.$router.push(PATHS.eceweEligibility);
       }
     },
     next() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.supportingDocumentUpload}`);  
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.supportingDocumentUpload}`);
       } else {
         this.$router.push(PATHS.supportingDocumentUpload);
       }

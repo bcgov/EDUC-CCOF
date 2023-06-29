@@ -318,7 +318,6 @@ export default {
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
-    ...mapState('reportChanges', ['changeRequestId']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -384,7 +383,7 @@ export default {
     ...mapMutations('application', ['setIsEceweComplete']),
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.ccfriHome}`);  
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.ccfriHome}`);
       } else {
         this.$router.push(PATHS.ccfriHome);
       }
@@ -392,9 +391,9 @@ export default {
     async next() {
       if (isChangeRequest(this)) {
         if (this.model.optInECEWE == 0) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.supportingDocumentUpload}`);  
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.supportingDocumentUpload}`);
         } else {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweFacilities}`);
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
         }
       } else {
         if (this.model.optInECEWE == 0) {
@@ -436,7 +435,7 @@ export default {
       }
     },
     async loadData() {
-      if (this.isStarted && this.facilities[0]?.changeRequestId == this.changeRequestId) {
+      if (this.isStarted && this.facilities[0]?.changeRequestId == this.$route.params.changeRecGuid) {
         return;
       }
       if (this.applicationId) {
