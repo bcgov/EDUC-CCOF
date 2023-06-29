@@ -94,13 +94,18 @@ export default {
       }
       return false;
     },
-    nextButtonDisabled() {
+    getFacilityList(){
       let facilityList;
       if (isChangeRequest(this)) {
         facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         facilityList = this.navBarList.filter(el => !el.changeRequestId);
       }
+      return facilityList;
+    },
+    nextButtonDisabled() {
+      let facilityList = this.getFacilityList;
+
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
         const uploadedLicenceCount = this.getUploadedLicenses.filter(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === facilityId).length;
@@ -235,17 +240,21 @@ export default {
       const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
+        let facilityList = this.getFacilityList;
+        let currFac = facilityList.find(fac => fac.facilityId === facilityId);
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,
           subject: 'Facility License',
+          changeRequestNewFacilityId : isChangeRequest(this) ? currFac.changeRequestNewFacilityId : undefined,
           ...file
         };
         fileList.push(obj);
       }
       const payload = {fileList,
         isLicenseUploadComplete:!this.nextButtonDisabled,
-        applicationId: this.applicationId};
+        applicationId: this.applicationId
+      };
       await this.saveLicenseFiles(payload);
     },
     async processLicenseFileDelete() {
