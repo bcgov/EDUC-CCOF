@@ -6,7 +6,8 @@ const {
   patchOperationWithObjectId,
   deleteOperationWithObjectId,
   sleep,
-  getLabelFromValue
+  getLabelFromValue,
+  updateChangeRequestNewFacility
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
@@ -37,16 +38,6 @@ const {mapFundingObjectForFront} = require('./funding');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 
-async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload){
-  try{
-    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
-    return response;
-  }
-  catch(e){
-    log.error('error', e);
-    return e.data ? e.data : e?.status;
-  }
-}
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
