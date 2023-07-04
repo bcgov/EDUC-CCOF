@@ -590,6 +590,16 @@ const router = new VueRouter({
         showNavBar: true
       }
     },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclaration,
+      name: 'Summary and Declaration New Facility',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: true
+      }
+    },
   ]
 });
 

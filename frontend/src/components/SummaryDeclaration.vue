@@ -301,6 +301,7 @@
 <script>
 
 import {PATHS} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -573,7 +574,7 @@ export default {
   },
   async mounted() {
     this.isProcessing = true;
-    await this.loadSummary();
+    await this.loadSummary(this.$route.params?.changeRecGuid);
 
     if (!this.unlockDeclaration) {
       await this.loadData();

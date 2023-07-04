@@ -1,6 +1,7 @@
 import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
+//import { isChangeRequest } from '@/utils/common';
 
 function parseLicenseCategories(licenseCategories, rootState) {
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
@@ -20,7 +21,6 @@ function getProgramYear(selectedGuid, programYearList){
 
   return programYear;
 }
-
 export default {
   namespaced: true,
   state: {
@@ -103,7 +103,8 @@ export default {
         throw error;
       }
     },
-    async loadSummary({ commit, rootState }) {
+
+    async loadSummary({ commit, rootState }, changeRecGuid = undefined) {
       checkSession();
       try {
         commit('isMainLoading', true);
@@ -115,6 +116,14 @@ export default {
           ecewe:undefined
         };
         //TODO: add the following variables to each of the facilities object:  isNMFLoading = true, isRFILoading = true
+
+        //filter all facilites and only show the new ones associated with the changeRecGuid on the page
+        if (changeRecGuid){
+          summaryModel.facilities = summaryModel.facilities.filter(fac => {return fac.changeRequestId == changeRecGuid;});
+        }
+        else {
+          summaryModel.facilities = summaryModel.facilities.filter(fac => {return !fac.changeRequestId;});
+        }
 
         commit('summaryModel', summaryModel);
         commit('isMainLoading', false);
