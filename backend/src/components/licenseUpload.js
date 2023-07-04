@@ -9,10 +9,8 @@ async function saveLicenses(req, res) {
 
     let licenses = req.body.fileList;
     for (let license of licenses) {
-      log.info('curr DOC is: ', license);
       let response = await postApplicationDocument(license);
-      log.info('the response from license upload' , response);
-
+      
       //bind the license to the change Request Action object so the Ministry can easily see all files related to the change Action.
       if (license.changeRequestNewFacilityId){
         let resp = await updateChangeRequestNewFacility(license.changeRequestNewFacilityId,
