@@ -2,7 +2,7 @@
 
 import {getDateFormatter} from '@/utils/format';
 import {LocalDate} from '@js-joda/core';
-import {isPlainObject} from 'lodash';
+import {isPlainObject, sortBy} from 'lodash';
 const clone = require('rfdc')();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
   const formatter = getDateFormatter(pattern);
@@ -35,4 +35,8 @@ export function getFileExtension(fileName) {
 }
 export function isNullOrBlank(value) {
   return value === null || value === undefined || value === '';
+}
+
+export function sortByFacilityId(value) {
+  return sortBy(value,[function(o) { return o.facilityId; }]);
 }

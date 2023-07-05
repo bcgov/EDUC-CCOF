@@ -2,6 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
+import { sortByFacilityId } from '@/utils/common';
 
 export default {
   namespaced: true,
@@ -27,12 +28,15 @@ export default {
     async loadECEWE({state, commit}) {
       checkSession();
       try {
-        let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId)).data;
+        let response = await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId);
+        let payload = response?.data;
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
         commit('setFacilities', payload.facilities);
+        return response;
       } catch (error) {
         console.info(`Failed to get ECEWE Application - ${error}`);
+        commit('setIsStarted', false);
         throw error;
       }
     },
@@ -50,23 +54,36 @@ export default {
         return response;
       } catch (error) {
         console.info(`Failed to update existing ECEWE application - ${error}`);
+        commit('setIsStarted', false);
         throw error;
       }
     },
     async saveECEWEFacilities({ state, commit }) {
-      if (isEqual(state.loadedFacilities, state.facilities)) {
-        return;
-      }      
-      checkSession();
-      let payload = JSON.parse(JSON.stringify(state.facilities));
-      try {
-        commit('setLoadedFacilities', {...state.facilities});
-        let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
-        commit('setFacilities', response.data.facilities);
-        return response;
-      } catch (error) {
-        console.info(`Failed to update existing ECEWE facility application - ${error}`);
-        throw error;
+      let sortedLoadedFacilities = sortByFacilityId(state.loadedFacilities);
+      let sortedFacilities = sortByFacilityId(state.facilities);
+      let payload = [];
+      sortedFacilities?.forEach((facility, index) => {
+        if (!isEqual(facility,sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
+          payload.push(facility);
+        }
+      });
+      if (payload?.length > 0) {
+        checkSession();
+        payload = JSON.parse(JSON.stringify(payload));
+        try {
+          let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
+          let updatedFacilities = state.facilities;
+          response?.data?.facilities?.forEach(facility => {
+            updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === facility.facilityId)] = facility;
+          });
+          commit('setFacilities', updatedFacilities);
+          commit('setLoadedFacilities', updatedFacilities);
+          return response;
+        } catch (error) {
+          console.info(`Failed to update existing ECEWE facility application - ${error}`);
+          commit('setIsStarted', false);
+          throw error;
+        }
       }
     },
     /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
