@@ -84,6 +84,7 @@ export default {
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
           commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: state.facilityModel });
+          //TODO: also find the existing value in the nav bar and update the facility Name and license number
           return response;
         } catch (error) {
           console.log(`Failed to update existing Facility - ${error}`);
@@ -97,12 +98,12 @@ export default {
           try {
             let changeActionId;
             if (changeRequestId) {
-              let item = rootState.reportChanges.changeRequestStore[changeRequestId];
-              console.log('item is: ', item);
-              // let's assume a it's a 1 to 1 mapping from Change Request to change Action.
-              if (item?.changeActions?.length > 0) {
-                changeActionId = item.changeActions[0].changeActionId;
+              //If there is a changeRequestId, get the change action from the store.
+              changeActionId = rootState.reportChanges.changeActionId;
+              if (!changeActionId) {  //If there is no changeActionID, then maybe the user refreshed.  Get it from the navBar
+                changeActionId = rootState.app.navBarList.find(el => el.changeRequestId == changeRequestId)?.changeActionId;
               }
+              console.log('Change ActionId is ', changeActionId);
             }
             if (!changeActionId) {
               const changeRequestPayload = {

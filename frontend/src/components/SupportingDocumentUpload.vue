@@ -116,7 +116,7 @@
         </v-card>
       </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing" 
+        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
@@ -246,14 +246,14 @@ export default {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweFacilities}`);
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
       } else {
         this.$router.push(PATHS.eceweFacilities);
       }
     },
     next() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.summaryDeclaration}`);
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.summaryDeclaration}`);
       } else {
         this.$router.push(PATHS.summaryDeclaration);
       }
@@ -377,7 +377,8 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.uploadedDocuments.length + 1;
+      addObj.id = Math.random() * 10;
+      //addObj.id = this.uploadedDocuments.length + 1;
       this.uploadedDocuments.unshift(addObj);
       this.editItem(addObj);
     },
