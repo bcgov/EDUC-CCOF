@@ -78,23 +78,18 @@
               </v-col>
             </v-row>
             <v-row v-if="!isLoading" justify="center">
-              <v-radio-group
-                v-model="model.belongsToUnion"
-                :disabled="isReadOnly()"
-                :rules="rules.required">
-                <template v-slot:label>
-                  <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
-                </template>
-                <div class="flex-center">
-                <v-radio class="pt-2 pr-8"
-                  label="Yes"
-                  :value="1"
-              ></v-radio>
-              <v-radio
-                  class="pt-1"
-                  label="No"
-                  :value="0"
-                  @click="model.applicableSector=null"
+              <v-col align-self="start">
+                <v-radio-group
+                  v-model="model.belongsToUnion"
+                  :disabled="isReadOnly()"
+                  :rules="rules.required">
+                  <template v-slot:label>
+                    <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
+                  </template>
+                  <div class="flex-left">
+                  <v-radio class="pt-2 pr-8"
+                    label="Yes"
+                    :value="1"
                 ></v-radio>
                 <v-radio
                     class="pt-1"
@@ -118,25 +113,20 @@
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" justify="center">
-              <v-radio-group
-                v-model="model.applicableSector"
-                :disabled="isReadOnly()"
-                :rules="rules.required">
-                <template v-slot:label>
-                  <div class="radio-label text-center">Select the applicable sector:</div>
-                </template>
-                <div class="flex-center">
-                <v-radio class="pt-2 pr-8"
-                  label="Community Social Services Employers' Association (CSSEA) Member"
-                  :value="100000000"
-                  @click="model.confirmation=null"
-              ></v-radio>
-              <v-radio
-                  class="pt-1"
-                  label="Other Unionized Employer"
-                  :value="100000001"
-                  @click="model.confirmation=null"
+            <v-row v-if="!isLoading" justify="left">
+              <v-col align-self="start">
+                <v-radio-group
+                  v-model="model.applicableSector"
+                  :disabled="isReadOnly()"
+                  :rules="rules.required">
+                  <template v-slot:label>
+                    <div class="radio-label text-left">Select the sector:</div>
+                  </template>
+                  <div class="flex-left">
+                  <v-radio class="pt-2 pr-8"
+                    label="Community Social Services Employers' Association (CSSEA) Member"
+                    :value="100000000"
+                    @click="model.confirmation=null"
                 ></v-radio>
                 <v-radio
                     class="pt-1"
