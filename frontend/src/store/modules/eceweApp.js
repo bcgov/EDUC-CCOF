@@ -28,13 +28,16 @@ export default {
     async loadECEWE({state, commit}) {
       checkSession();
       try {
-        let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId)).data;
+        let response = await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId);
+        let payload = response?.data;
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
         commit('setLoadedFacilities', payload.facilities);
         commit('setFacilities', payload.facilities);
+        return response;
       } catch (error) {
         console.info(`Failed to get ECEWE Application - ${error}`);
+        commit('setIsStarted', false);
         throw error;
       }
     },
@@ -46,20 +49,21 @@ export default {
         checkSession();
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
-        payload.isEceweComplete = isFormComplete; 
+        payload.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
         let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
         return response;
       } catch (error) {
         console.info(`Failed to update existing ECEWE application - ${error}`);
+        commit('setIsStarted', false);
         throw error;
       }
     },
     async saveECEWEFacilities({ state, commit }) {
       let sortedLoadedFacilities = sortByFacilityId(state.loadedFacilities);
       let sortedFacilities = sortByFacilityId(state.facilities);
-      let payload = []
-      sortedFacilities.forEach((facility, index) => {
+      let payload = [];
+      sortedFacilities?.forEach((facility, index) => {
         if (!isEqual(facility,sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
           payload.push(facility);
         }
@@ -70,14 +74,15 @@ export default {
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
           let updatedFacilities = state.facilities;
-          response?.data?.facilities?.forEach(item => {
-            updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === item.facilityId)] = item;
+          response?.data?.facilities?.forEach(facility => {
+            updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === facility.facilityId)] = facility;
           });
           commit('setFacilities', updatedFacilities);
           commit('setLoadedFacilities', updatedFacilities);
           return response;
         } catch (error) {
           console.info(`Failed to update existing ECEWE facility application - ${error}`);
+          commit('setIsStarted', false);
           throw error;
         }
       }

@@ -283,6 +283,17 @@ async function postChangeActionDocument(payload) {
   }
 }
 
+async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload){
+  try{
+    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
+    return response;
+  }
+  catch(e){
+    log.error('error', e);
+    return e.data ? e.data : e?.status;
+  }
+}
+
 
 function getHttpHeader() {
   let headers = null;
@@ -359,6 +370,7 @@ const utils = {
   sleep,
   getChangeActionDocument,
   postChangeActionDocument,
+  updateChangeRequestNewFacility
 };
 
 module.exports = utils;

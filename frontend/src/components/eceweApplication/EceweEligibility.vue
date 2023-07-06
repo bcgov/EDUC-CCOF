@@ -27,9 +27,7 @@
             </v-icon>
           </span>
           <span>
-            <strong>Note:</strong> Please ensure you have read and understand the full eligibility requirements
-            outlined in the ECE Wage Enhancement Funding Guidelines.
-            All CCFRI-eligible facilities <strong><u>must</u></strong> first opt-in to CCFRI in order to be eligible for ECE-WE.
+            <strong>Note:</strong> Please read and understand the full eligibility requirements in the <u>ECE-WE Funding Guildelines</u>.  All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
           </span>
         </v-alert>
       </v-row>
@@ -43,14 +41,15 @@
               </v-col>
             </v-row>
             <v-row v-if="!isLoading" justify="center">
+              <v-col align-self="start">
               <v-radio-group
                 v-model="model.optInECEWE"
                 :disabled="isReadOnly('optInECEWE')"
                 :rules="rules.required">
                 <template v-slot:label>
-                  <span class="radio-label" style="align-content: center;">For the {{formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
+                  <span class="radio-label" style="text-align: left;">For the {{formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
                 </template>
-                <div class="flex-center pt-2">
+                <div class="flex-left pt-2">
                   <v-radio
                     class="pt-2 pr-8"
                     label="Yes"
@@ -63,10 +62,12 @@
                     ></v-radio>
                 </div>
               </v-radio-group>
+            </v-col>
             </v-row>
           </v-container>
         </v-card>
       </v-row>
+
       <v-row v-if="(this.model.optInECEWE == 1) || isLoading" justify="center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
@@ -95,8 +96,15 @@
                   :value="0"
                   @click="model.applicableSector=null"
                 ></v-radio>
-              </div>
-              </v-radio-group>
+                <v-radio
+                    class="pt-1"
+                    label="No"
+                    :value="0"
+                    @click="model.applicableSector=null"
+                  ></v-radio>
+                  </div>
+                </v-radio-group>
+              </v-col>
             </v-row>
           </v-container>
         </v-card>
@@ -130,8 +138,15 @@
                   :value="100000001"
                   @click="model.confirmation=null"
                 ></v-radio>
-              </div>
-              </v-radio-group>
+                <v-radio
+                    class="pt-1"
+                    label="Other Unionized Employer"
+                    :value="100000001"
+                    @click="model.confirmation=null"
+                  ></v-radio>
+                </div>
+                </v-radio-group>
+              </v-col>
             </v-row>
           </v-container>
           <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center" class="mx-2 mb-4">
@@ -178,17 +193,20 @@
               </v-col>
             </v-row>
             <div v-if="!isLoading">
-              <v-row justify="center" >
+              <!-- <v-row justify="center" >
                 <v-col style="padding-bottom:0px;margin-bottom:0px;">
-                  Select the applicable funding model:
+                  <div class="radio-label text-left">Select your funding model:</div>
                 </v-col>
-              </v-row>
+              </v-row> -->
               <v-radio-group
                   v-model="model.fundingModel"
                   row
                   :disabled="isReadOnly()"
                   :rules="rules.required"
                   class="mt-0">
+                  <template v-slot:label>
+                    <div class="radio-label text-left">Select your funding model:</div>
+                  </template>
                 <v-row justify="center">
                   <v-col class="pt-7">
                     <v-radio
@@ -318,7 +336,6 @@ export default {
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
-    ...mapState('reportChanges', ['changeRequestId']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -350,13 +367,15 @@ export default {
       this.isLoading = true;
       this.setFundingModelTypes({...this.fundingModelTypeList});
       this.setApplicationId(this.applicationId);
-      await this.loadData();
-      this.setIsStarted(true);
-      this.model = {...this.eceweModel};
-      this.initECEWEFacilities(this.filteredNavBarList);
-      let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
-      this.setLoadedFacilities(copyFacilities);
-      this.isLoading = false;
+      let response = await this.loadData();
+      if (response) {
+        this.setIsStarted(true);
+        this.model = {...this.eceweModel};
+        let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+        this.setLoadedFacilities(copyFacilities);
+        this.initECEWEFacilities(this.navBarList);
+        this.isLoading = false;
+      }
     } catch(error) {
       console.log (error);
       this.isLoading = false;
@@ -387,7 +406,7 @@ export default {
     },
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.ccfriHome}`);  
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.ccfriHome}`);
       } else {
         this.$router.push(PATHS.ccfriHome);
       }
@@ -395,9 +414,9 @@ export default {
     async next() {
       if (isChangeRequest(this)) {
         if (this.model.optInECEWE == 0) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.supportingDocumentUpload}`);  
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.supportingDocumentUpload}`);
         } else {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweFacilities}`);
+          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
         }
       } else {
         if (this.model.optInECEWE == 0) {
@@ -439,12 +458,13 @@ export default {
       }
     },
     async loadData() {
-      if (this.isStarted && this.facilities[0]?.changeRequestId == this.changeRequestId) {
-        return;
+      if (this.isStarted) {
+        return true;
       }
       if (this.applicationId) {
         try {
-          await this.loadECEWE();
+          let response = await this.loadECEWE();
+          return response;
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');

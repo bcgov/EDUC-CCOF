@@ -204,10 +204,12 @@ export default {
   async mounted() {
     this.setFundingModelTypes({...this.fundingModelTypeList});
     this.setApplicationId(this.applicationId);
-    await this.loadData();
-    this.initECEWEFacilities(this.filteredNavBarList);
-    this.setupUiFacilities();
-    this.model = {...this.eceweModel};
+    let response = await this.loadData();
+    if (response) {
+      this.initECEWEFacilities(this.navBarList);
+      this.setupUiFacilities();
+      this.model = {...this.eceweModel};
+    }
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.saveFacilities(false);
@@ -235,14 +237,14 @@ export default {
     },
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.eceweEligibility}`);  
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweEligibility}`);
       } else {
         return this.$router.push(PATHS.eceweEligibility);
       }
     },
     next() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}${PATHS.supportingDocumentUpload}`);  
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.supportingDocumentUpload}`);
       } else {
         this.$router.push(PATHS.supportingDocumentUpload);
       }
@@ -251,28 +253,27 @@ export default {
       this.$refs.form?.validate();
     },
     async loadData() {
-      if (this.isStarted && this.facilities[0]?.changeRequestId == this.changeRequestId) {
-        return;
+      if (this.isStarted) {
+        return true;
       }
       if (this.applicationId) {
         this.isLoading = true;
         try {
-          await this.loadECEWE();
+          let response = await this.loadECEWE();
+          this.isLoading = false;
+          return response;
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
-        this.isLoading = false;
       }
     },
     async saveFacilities(showConfirmation) {
       this.isProcessing = true;
       try {
         let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
-        console.log('uiFacilitiesCopy 1 ', uiFacilitiesCopy);
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
-        console.log('uiFacilitiesCopy 2 ', uiFacilitiesCopy);
         this.setFacilities(uiFacilitiesCopy);
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {

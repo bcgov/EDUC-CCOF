@@ -114,6 +114,12 @@ export default {
           facilities: payload.facilities,
           ecewe:undefined
         };
+        // filter out all facilities that are part of the change request
+        const changeRequestList = rootState.app.navBarList.map( el => { if (el.changeRequestId) return el.facilityId;}).filter(el => el);
+        console.log('change request List: ', changeRequestList);
+
+        summaryModel.facilities = summaryModel.facilities?.filter(el => !changeRequestList.includes(el.facilityId));
+
         //TODO: add the following variables to each of the facilities object:  isNMFLoading = true, isRFILoading = true
 
         commit('summaryModel', summaryModel);
@@ -207,7 +213,6 @@ export default {
     async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
-        console.log('Updating Application Status');
         await ApiService.apiAxios.put('/api/application/status/'  + applicationObj.applicationId, applicationObj);
       } catch (error) {
         console.log(`Failed to update application status - ${error}`);

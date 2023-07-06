@@ -109,6 +109,9 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
+      if (this.isLocked) {
+        return;
+      }
       if (!this.isGroup()) {// For Family, we will need to set the postal code from organization.
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);

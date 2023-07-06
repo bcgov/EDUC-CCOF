@@ -350,7 +350,7 @@ export default {
                 title: 'Parent Fees',
                 subTitle: item.facilityName,
                 id: item.facilityId,
-                link: { name: 'change-request-ccfri-add-fees-guid', params: {changeRecGuid: 'ea4336ac-d6ff-ed11-8f6d-000d3a09d499', urlGuid: item.ccfriApplicationId}},
+                link: { name: 'change-request-ccfri-add-fees-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
                 isAccessible: this.applicationStatus==='SUBMITTED' ? true: this.isCCFRIOptInComplete(),
                 icon:  this.getCheckbox(item.isCCFRIComplete),
                 isActive: 'change-request-ccfri-add-fees-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
@@ -633,7 +633,7 @@ export default {
         title: 'Licence Upload',
         link: link,
         isAccessible: this.ccofConfirmationEnabled,
-        icon: this.getCheckbox(this.isLicenseUploadComplete),
+        icon: isChangeRequest? this.getCheckbox(false): this.getCheckbox(this.isLicenseUploadComplete),
         isActive: isChangeRequest? 'Change Request Licence Upload' === this.$route.name : 'Licence Upload' === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++
