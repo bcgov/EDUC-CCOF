@@ -216,7 +216,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['renewalYearLabel']),
-    ...mapState('app', ['navBarList', 'programYearList']),
+    ...mapState('app', ['navBarList', 'programYearList', 'isRenewal']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
@@ -337,7 +337,6 @@ export default {
     },
   },
   methods: {
-    ...mapState('app',['isRenewal']),
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {

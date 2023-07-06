@@ -368,13 +368,15 @@ export default {
       this.isLoading = true;
       this.setFundingModelTypes({...this.fundingModelTypeList});
       this.setApplicationId(this.applicationId);
-      await this.loadData();
-      this.setIsStarted(true);
-      this.model = {...this.eceweModel};
-      this.initECEWEFacilities(this.filteredNavBarList);
-      let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
-      this.setLoadedFacilities(copyFacilities);
-      this.isLoading = false;
+      let response = await this.loadData();
+      if (response) {
+        this.setIsStarted(true);
+        this.model = {...this.eceweModel};
+        let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+        this.setLoadedFacilities(copyFacilities);
+        this.initECEWEFacilities(this.navBarList);
+        this.isLoading = false;
+      }
     } catch(error) {
       console.log (error);
       this.isLoading = false;
@@ -443,12 +445,13 @@ export default {
       }
     },
     async loadData() {
-      if (this.isStarted && this.facilities[0]?.changeRequestId == this.$route.params.changeRecGuid) {
-        return;
+      if (this.isStarted) {
+        return true;
       }
       if (this.applicationId) {
         try {
-          await this.loadECEWE();
+          let response = await this.loadECEWE();
+          return response;
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
