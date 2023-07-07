@@ -258,6 +258,17 @@ export default {
 
       });
     },
+    addNewSupportingDocumentsToNavbar() {
+      this.items.push({
+        title: 'Supporting Document',
+        link: { name: 'change-request-Supporting-Document-Upload', params: {changeRecGuid: this.$route.params.changeRecGuid}},
+        isAccessible: true, //change this when change req logic more complete
+        icon: 'mdi-information',
+        isActive: 'change-request-Supporting-Document-Upload' === this.$route.name,
+        position: positionIndex++,
+        navBarId: navBarId++
+      });
+    },
     addReportChangeNavigationToNavBar(){
       this.items.push({
         title: 'Report Change',
@@ -302,7 +313,7 @@ export default {
       this.items.push(this.getAddNewFacilityCCOFNavigation());
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
-      this.addSupportingDocumentsToNavbar();
+      this.addNewSupportingDocumentsToNavbar();
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },

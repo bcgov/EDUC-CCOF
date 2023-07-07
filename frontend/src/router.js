@@ -582,7 +582,7 @@ const router = new VueRouter({
     },
     {
       path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.supportingDocumentUpload,
-      name: 'change-request-Supporting Document Upload',
+      name: 'change-request-Supporting-Document-Upload',
       component: SupportingDocumentUpload,
       meta: {
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
