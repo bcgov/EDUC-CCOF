@@ -1,5 +1,5 @@
 'use strict';
-const {postApplicationDocument, getApplicationDocument, deleteDocument, postOperationWithObjectId} = require('./utils');
+const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 
 
@@ -13,7 +13,7 @@ async function saveDocument(req, res) {
       let response = await postApplicationDocument(document);
       //if this is a new facility change request, link supporting documents to the New Facility Change Action
       if (changeRequestNewFacilityId) {
-        await postOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
+        await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
           "ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
         });
       }

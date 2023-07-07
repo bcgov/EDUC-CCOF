@@ -360,10 +360,10 @@ export default {
       let response = await this.loadData();
       if (response) {
         this.setIsStarted(true);
-        this.model = {...this.eceweModel};
+        this.initECEWEFacilities(this.filteredNavBarList);
         let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
         this.setLoadedFacilities(copyFacilities);
-        this.initECEWEFacilities(this.navBarList);
+        this.model = {...this.eceweModel};
         this.isLoading = false;
       }
     } catch(error) {
@@ -448,7 +448,7 @@ export default {
       }
     },
     async loadData() {
-      if (this.isStarted) {
+      if (this.isStarted && (this.facilities?.length > 0)  && (this.facilities[0].changeRequestId == this.$route.params.changeRecGuid)) {
         return true;
       }
       if (this.applicationId) {
@@ -501,7 +501,7 @@ export default {
         }
 
         //save the facilites reagrdless so ECE WE application is always created
-        await this.saveECEWEFacilities(showConfirmation);
+        await this.saveECEWEFacilities();
         if (showConfirmation) {
           this.setSuccessAlert('Success! ECEWE application has been saved.');
         }

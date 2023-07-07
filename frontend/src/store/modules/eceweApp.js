@@ -63,6 +63,7 @@ export default {
       let sortedLoadedFacilities = sortByFacilityId(state.loadedFacilities);
       let sortedFacilities = sortByFacilityId(state.facilities);
       let payload = [];
+      // check if there is any new/updated facility
       sortedFacilities?.forEach((facility, index) => {
         if (!isEqual(facility,sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
           payload.push(facility);
