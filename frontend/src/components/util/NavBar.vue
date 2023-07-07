@@ -265,6 +265,7 @@ export default {
         isAccessible: true, //change this when change req logic more complete
         icon: 'mdi-information',
         isActive: 'change-request-Supporting-Document-Upload' === this.$route.name,
+        expanded: false,
         position: positionIndex++,
         navBarId: navBarId++
       });
