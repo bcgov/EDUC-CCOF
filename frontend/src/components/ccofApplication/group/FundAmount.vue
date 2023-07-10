@@ -6,21 +6,16 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required
-                  :rules="[...rules.required, rules.min(0), rules.max(7)]" v-model.number="model.maxDaysPerWeek"
-                  label="Maximum number of days per week you provide child care" />
+                <v-text-field :disabled="isLocked" type="number" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" v-model.number="model.maxDaysPerWeek" label="Maximum number of days per week you provide child care" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" min="0" max="52" outlined required
-                  :rules="[...rules.required, rules.min(0), rules.max(52)]" v-model.number="model.maxWeeksPerYear"
-                  label="Maximum of weeks per year you provide child care" />
+                <v-text-field :disabled="isLocked" type="number" min="0" max="52" outlined required :rules="[...rules.required, rules.min(0), rules.max(52)]" v-model.number="model.maxWeeksPerYear" label="Maximum of weeks per year you provide child care" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col>
-                <v-radio-group :disabled="isLocked" row v-model="model.hasClosedMonth"
-                  label="Are there months when ALL of the programs at this facility are closed for the entire month?">
+                <v-radio-group :disabled="isLocked" row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -77,32 +72,21 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-menu v-if="!isLocked" ref="menu1" v-model="model.menu1" :close-on-content-click="false"
-                  :nudge-right="40" :return-value.sync="model.hoursFrom" transition="scale-transition" offset-y
-                  max-width="290px" min-width="290px">
+                <v-menu v-if="!isLocked" ref="menu1" v-model="model.menu1" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursFrom" transition="scale-transition" offset-y max-width="290px" min-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursFrom12hr"
-                      label="Facility hours of operation From" v-bind="attrs" v-on="on" />
+                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursFrom12hr" label="Facility hours of operation From" v-bind="attrs" v-on="on" />
                   </template>
-                  <v-time-picker v-if="model.menu1" v-model="model.hoursFrom" full-width
-                    @click:minute="$refs.menu1.save(model.hoursFrom); model.hoursFrom12hr = formatTime(model.hoursFrom)"
-                    :allowed-minutes="allowedStep" />
+                  <v-time-picker v-if="model.menu1" v-model="model.hoursFrom" full-width @click:minute="$refs.menu1.save(model.hoursFrom); model.hoursFrom12hr = formatTime(model.hoursFrom)" :allowed-minutes="allowedStep" />
                 </v-menu>
 
-                <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursFrom12hr"
-                  label="Facility hours of operation From" />
+                <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursFrom12hr" label="Facility hours of operation From" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-menu v-if="!isLocked" ref="menu2" v-model="model.menu2" :close-on-content-click="false"
-                  :nudge-right="40" :return-value.sync="model.hoursTo" transition="scale-transition" offset-y
-                  max-width="290px" min-width="290px">
+                <v-menu v-if="!isLocked" ref="menu2" v-model="model.menu2" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursTo" transition="scale-transition" offset-y max-width="290px" min-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursTo12hr"
-                      label="Facility hours of operation To" v-bind="attrs" v-on="on" />
+                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursTo12hr" label="Facility hours of operation To" v-bind="attrs" v-on="on" />
                   </template>
-                  <v-time-picker v-if="model.menu2" v-model="model.hoursTo" full-width
-                    @click:minute="$refs.menu2.save(model.hoursTo); model.hoursTo12hr = formatTime(model.hoursTo)"
-                    :allowed-minutes="allowedStep" />
+                  <v-time-picker v-if="model.menu2" v-model="model.hoursTo" full-width @click:minute="$refs.menu2.save(model.hoursTo); model.hoursTo12hr = formatTime(model.hoursTo)" :allowed-minutes="allowedStep" />
                 </v-menu>
 
                 <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursTo12hr"
@@ -113,8 +97,7 @@
         </v-card>
 
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-subtitle>Complete the licence information using your Community Care and Assisted Living Act
-            Licence.</v-card-subtitle>
+          <v-card-subtitle>Complete the licence information using your Community Care and Assisted Living Act Licence.</v-card-subtitle>
 
           <v-container>
             <v-row>
