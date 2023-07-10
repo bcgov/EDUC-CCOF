@@ -267,7 +267,7 @@
               <v-row>
                 <v-col class="d-flex wrap justify-center" style="padding-top:0px;padding-bottom:16px">
                   <div class="d-flex wrap" style="align-content:center;flex-wrap:wrap;">
-                  <v-card>
+                  <v-card min-width="154px" class="mb-1">
                     <v-toolbar color="#431782">
                         <v-spacer></v-spacer>
                         <v-toolbar-title>Monday</v-toolbar-title>
@@ -299,7 +299,7 @@
 
                     <v-spacer></v-spacer>
 
-                    <v-card>
+                    <v-card min-width="154px" class="mb-1">
                       <v-toolbar
                         color="#431782"
                       >
@@ -332,7 +332,7 @@
                     </v-card>
                     <v-spacer></v-spacer>
 
-                    <v-card max-width="">
+                    <v-card min-width="154px" class="mb-1">
                       <v-toolbar
                         color="#431782"
                       >
@@ -365,7 +365,7 @@
                     <v-spacer></v-spacer>
 
 
-                    <v-card max-width="">
+                    <v-card min-width="154px" class="mb-1">
                       <v-toolbar
                         color="#431782"
                       >
@@ -397,7 +397,7 @@
                     </v-card>
                     <v-spacer></v-spacer>
 
-                    <v-card max-width="">
+                    <v-card min-width="154px" class="mb-1">
                       <v-toolbar
                         color="#431782"
                       >
@@ -428,7 +428,7 @@
                       </v-list>
                     </v-card>
                     <v-spacer></v-spacer>
-                    <v-card max-width="">
+                    <v-card min-width="154px" class="mb-1">
                       <v-toolbar
                         color="#431782"
                       >
@@ -460,7 +460,7 @@
                     </v-card>
                     <v-spacer></v-spacer>
 
-                    <v-card max-width="">
+                    <v-card min-width="154px" class="mb-1">
                       <v-toolbar
                         color="#431782"
                       >
@@ -834,7 +834,7 @@ const CHILD_CARE_CATEGORY_LIST = [
 const CARE_TYPES = [
   { type: 'No care' },
   { type: '4 hours or less' },
-  { type: 'More than 4 hours' }
+  { type: 'Over 4 hours' }
 ];
 
 const CARE_TYPES_PRESCHOOL = [
@@ -995,10 +995,10 @@ export default {
         case CHILDCARE_TYPE_SCHOOL_CARE_K:
         case CHILDCARE_TYPE_SCHOOL_CARE_1:
           // eslint-disable-next-line
-          return "Select the amount of time your child has access to a child<br>care space, not the amount of time your child attends the space.<br><br>For example, select \"more than 4 hours\" if your child<br>attends care for one hour in the morning and two hours in<br>the afternoon, but you are able to use the space for longer<br>than 4 hours.";
+          return "Select the amount of time your child has access to a child<br>care space, not the amount of time your child attends the space.<br><br>For example, select \"Over 4 hours\" if your child<br>attends care for one hour in the morning and two hours in<br>the afternoon, but you are able to use the space for longer<br>than 4 hours.";
         default:
           // eslint-disable-next-line
-          return "Select your typical care schedule. Maximum funding for<br>CCFRI is based on five days of more than 4 hours of care<br>(full time care).";
+          return "Select your typical care schedule. Maximum funding for<br>CCFRI is based on five days of over 4 hours of care<br>(full time care).";
         }
       } else {
         switch (this.children[index - 1].childAgeCategory) {
@@ -1008,10 +1008,10 @@ export default {
         case CHILDCARE_TYPE_SCHOOL_CARE_K:
         case CHILDCARE_TYPE_SCHOOL_CARE_1:
           // eslint-disable-next-line
-          return "Select the amount of time the child has access to care, not the amount of<br>time the child is actually in care. For example, if the child has access to 5<br>hours of care but attends care for 3 hours, select \"More than 4 hours.\"";
+          return "Select the amount of time the child has access to care, not the amount of<br>time the child is actually in care. For example, if the child has access to 5<br>hours of care but attends care for 3 hours, select \"Over 4 hours.\"";
         default:
           // eslint-disable-next-line
-          return "For part-time care estimates, select the typical schedule of half days (4 hours<br>or less) and full days (more than 4 hours). The maximum benefit rates for<br>CCFRI are based on 5 full days per week (full-time care).";
+          return "For part-time care estimates, select the typical schedule of half days (4 hours<br>or less) and full days (over 4 hours). The maximum benefit rates for<br>CCFRI are based on 5 full days per week (full-time care).";
         }
 
       }
