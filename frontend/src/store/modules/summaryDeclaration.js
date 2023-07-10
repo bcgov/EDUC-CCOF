@@ -3,7 +3,6 @@ import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
-  console.log(licenseCategories, 'og LIc');
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
@@ -30,6 +29,7 @@ export default {
     summaryModel: {},
     isSummaryLoading: [],
     isMainLoading: true,
+    isLoadingComplete: false,
   },
   getters: {
     isCCFRIComplete: (state) => {
@@ -68,6 +68,9 @@ export default {
     isValidForm(state, value) {
       state.isValidForm = value;
     },
+    isLoadingComplete(state, value) {
+      state.isLoadingComplete = value;
+    }
   },
   actions: {
     async loadDeclaration({ commit, rootState }) {
@@ -82,7 +85,8 @@ export default {
     },
     async updateDeclaration({ commit, state, rootState}, reLockPayload) {
       checkSession();
-      let payload = { agreeConsentCertify:state.model.agreeConsentCertify,
+      let payload = {
+        agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
         declarationBStatus:state.model?.declarationBStatus };
@@ -128,7 +132,7 @@ export default {
           commit('summaryModel', summaryModel);
         }
         //new app only (i think this if block could be part of the one above?)
-        if (!rootState.app.isRenewal && payload.application?.organizationId) {
+        if (payload.application?.organizationId) {
           const config={
             params: {
               allFiles: true
@@ -142,9 +146,13 @@ export default {
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
           commit('summaryModel', summaryModel);
-
-          let facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
-          summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+          let facilityLicenseResponse = undefined;
+          try {
+            facilityLicenseResponse = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)).data;
+            summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse, rootState);
+          } catch(categoryError) {
+            console.log('error, unable to get childcare category for provider: ', facility.facilityId );
+          }
 
           //check for opt out - no need for more calls if opt-out
           if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
@@ -177,7 +185,7 @@ export default {
           summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
           commit('summaryModel', summaryModel);
 
-          if (!rootState.app.isRenewal) {
+          if (summaryModel.allDocuments && summaryModel.allDocuments.length > 0) {
             const allDocuments =summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
             commit('summaryModel', summaryModel);
@@ -188,16 +196,17 @@ export default {
         } // end FOR loop
 
         summaryModel.allDocuments = null;
+        await commit('isLoadingComplete', true );
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
       }
     },
 
-    async updateApplicationStatus(applicationObj) {
+    // eslint-disable-next-line no-empty-pattern
+    async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
-        console.log('Updating Application Status');
         await ApiService.apiAxios.put('/api/application/status/'  + applicationObj.applicationId, applicationObj);
       } catch (error) {
         console.log(`Failed to update application status - ${error}`);

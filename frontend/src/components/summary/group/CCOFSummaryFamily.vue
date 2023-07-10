@@ -138,37 +138,38 @@
             </v-row>
           </v-col>
         </v-row>
+        <span v-if="this.funding?.isExtendedHours?.toUpperCase() === 'YES'">
+          <v-row class="d-flex justify-start">
+            <v-col cols="6" lg="6" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
+                  <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
+                  <span class="summary-label">Maximum number of days per week you offer extended hours of child care</span>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
+                  <span class="summary-label">Maximum number of weeks per year you offer extended hours of child care</span>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="4" lg="4" class="pb-0 pt-3">
+              <v-row no-gutters class="d-flex justify-start">
 
-        <v-row class="d-flex justify-start">
-          <v-col cols="4" lg="4" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
-                <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
-              </v-col>
-              <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
-                <span class="summary-label">Maximum number of days per week you offer extended hours of child care</span>
-              </v-col>
-              <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                <span class="summary-label">Maximum number of weeks per year you offer extended hours of child care</span>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4" lg="4" class="pb-0 pt-3">
-            <v-row no-gutters class="d-flex justify-start">
-
-              <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.maxCapacityExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
-              </v-col>
-              <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.maxDaysPerWeekExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
-              </v-col>
-              <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.maxWeeksPerYearExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxCapacityExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxDaysPerWeekExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxWeeksPerYearExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </span>
+        <v-row class="d-flex justify-start mt-2">
           <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
@@ -281,7 +282,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('summaryDeclaration', ['summaryModel',]),
+    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete']),
     ...mapState('app', ['navBarList',]),
   },
   data() {
@@ -296,17 +297,16 @@ export default {
 
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
+
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
-  },
-};
+  },};
 </script>
 <style scoped>
 .summary-label {

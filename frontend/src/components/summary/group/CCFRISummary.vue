@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="ccfriSummaryForm" v-model="isValidForm">
-    <v-expansion-panel-header>
+      <v-expansion-panel-header>
       <h4 style="color:#003466;">Child Care Fee Reduction Initiative (CCFRI)
         <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
         <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
@@ -9,16 +9,16 @@
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
-    <v-row v-if="!ccfri" >
+    <v-row v-if="!ccfri || ccfri.ccfriOptInStatus === 0" >
       <v-col cols="12" >
-          <span  cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
-          <v-text-field  cols="6" placeholder="Required" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+          <span  cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
+          <v-text-field  cols="12" placeholder="Required" class="summary-value" :value="this.getOptInOptOut(ccfri.ccfriOptInStatus)" dense flat solo hide-details readonly :rules="rules.required" >Opt-Out</v-text-field>
       </v-col>
     </v-row>
     <v-row v-else-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
       <div v-for=" (ccType, index) in ccfriChildCareTypes" :key="index">
       <v-row class="d-flex justify-start">
-        <v-col cols="6" lg="6" class="pb-1 pt-1 ml-2">
+        <v-col cols="12" lg="12" class="pb-1 pt-1 ml-2">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3" v-if="!!ccType.programYear && !!ccType.childCareCategory">Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}: </span>
@@ -82,41 +82,66 @@
       </v-row>
       </div>
       <v-row class="d-flex justify-start ml-0">
-        <v-col cols="6" lg="6" class="pb-2 pt-2">
+        <v-col cols="12" lg="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
-            <v-col cols="6" class="d-flex justify-start">
+            <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label">Do you charge parent fees at this facility to any closures on business days (other than statutory holidays)</span>
               <v-text-field placeholder="Required"  :value="this.getClosureFees(this.ccfri.hasClosureFees)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
           </v-row>
+          <v-row v-if="this.ccfri.hasClosureFees == 100000000">
+            <v-col class="col-md-3 col-12"><span class="summary-label">Closure Start Date</span></v-col>
+            <v-col class="col-md-3 col-12"><span class="summary-label">End Date</span></v-col>
+            <v-col class="col-md-3 col-12"><span class="summary-label">Reason</span></v-col>
+            <v-col class="col-md-3 col-12"><span class="summary-label">Did parents pay for this closure?</span></v-col>
+            <v-row v-for="(obj, index) in   this.ccfri.dates  " :key="index">
+              <v-col class="col-md-3 col-12">
+                <v-menu v-model="obj.calendarMenu1" :nudge-right="40" min-width="auto">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field placeholder="Required" dense flat solo hide-details :rules="rules.required" v-model="obj.formattedStartDate" readonly v-bind="attrs" v-on="on">
+                    </v-text-field>
+                  </template>
+                </v-menu>
+              </v-col>
+
+              <v-col class="col-md-3 col-12">
+                <v-menu v-model="obj.calendarMenu2" :nudge-right="40" min-width="auto">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field placeholder="Required" dense flat solo hide-details required readonly v-model="obj.formattedEndDate" :rules="rules.required" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                  </template>
+                </v-menu>
+              </v-col>
+
+              <v-col class="col-md-3 col-12 ">
+                <v-text-field placeholder="Required" readonly v-model="obj.closureReason" dense flat solo hide-details :rules="rules.required"></v-text-field>
+              </v-col>
+
+              <v-col class="col-md-3 col-12">
+                <v-text-field placeholder="Required" readonly dense flat solo hide-details
+                  :value="obj.feesPaidWhileClosed === 1 ? 'Yes' : 'No'" :rules="rules.required"></v-text-field>
+              </v-col>
+            </v-row> <!-- end v for-->
+          </v-row> <!-- end v if -->
         </v-col>
-        <v-col cols="6" lg="6" class="pb-2 pt-2">
+
+      </v-row>
+      <v-col cols="12" lg="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
-            <v-col cols="6" class="d-flex justify-start">
-              <span class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
-              <v-text-field placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-            </v-col>
+            <span cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
+            <v-text-field cols="6"  placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)" class="summary-value " flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-row>
-        </v-col>
+        </v-col>  
         <v-col cols="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
-              <span class="summary-label">Is there any other information about this facility you would like us to know?</span>
-              <v-textarea label="--" class="col-12 summary-value-small"  :value="this.ccfri.ccfriApplicationNotes"  dense flat solo hide-details no-resize readonly rows="3" ></v-textarea>
+            <span class="summary-label">Is there any other information about this facility you would like us to
+              know?</span>
+            <v-textarea label="--" class="col-12 summary-value-small" :value="this.ccfri.ccfriApplicationNotes" dense
+              flat solo hide-details no-resize readonly rows="3"></v-textarea>
           </v-row>
         </v-col>
       </v-row>
-    </v-row>
-    <v-row v-else  class="d-flex flex-column">
-      <v-col cols="6" lg="6" class="pb-2 pt-2 ml-2">
-        <v-row no-gutters class="d-flex justify-start">
-          <v-col cols="6" class="d-flex justify-start">
-        <span cols="6" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
-        <v-text-field cols="6"  placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)" class="summary-value " flat solo hide-details readonly :rules="rules.required" ></v-text-field>
-      </v-col>
-      </v-row>
-      </v-col>
 
-    </v-row>
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
@@ -168,24 +193,24 @@ export default {
 
     };
   },
-  mounted() {
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  },
   watch: {
-    isValidForm: {
+    isLoadingComplete: {
       handler: function (val) {
-        this.$emit('isSummaryValid', this.formObj, val);
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     }
   },
   computed:{
     ...mapState('application', ['isRenewal',]),
+    ...mapState('summaryDeclaration', ['isLoadingComplete']),
     ccfriChildCareTypes() {
 
 
       //if the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
       //this checks for all licenses available for the facility, and displays what is missing to the user.
-      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses.length){
+      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses?.length){
         let childCareTypesArr = [];
 
         const findChildCareTypes = ((yearToSearch, checkForMissingPrevFees = false) => {
@@ -320,4 +345,3 @@ export default {
   opacity: 1;
 }
 </style>
-

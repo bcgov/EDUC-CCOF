@@ -167,10 +167,10 @@ export default {
     },
     previousProgramYearLabel(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
-      const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
+      //const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
 
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
-      return lastProgramYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
+      return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
     }
   },
   watch: {
