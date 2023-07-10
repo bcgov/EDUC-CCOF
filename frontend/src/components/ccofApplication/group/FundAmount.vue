@@ -12,7 +12,6 @@
                 <v-text-field :disabled="isLocked" type="number" min="0" max="52" outlined required :rules="[...rules.required, rules.min(0), rules.max(52)]" v-model.number="model.maxWeeksPerYear" label="Maximum number of weeks per year you provide child care" />
               </v-col>
             </v-row>
-            
             <v-row>
               <v-col cols="12" md="6">
                 <v-menu v-if="!isLocked" ref="menu1" v-model="model.menu1" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursFrom" transition="scale-transition" offset-y max-width="290px" min-width="290px">
@@ -92,8 +91,6 @@
                 <v-checkbox :disabled="isLocked" v-model="model.closedIn12" label="Dec" />
               </v-col>
             </v-row>
-
-            
           </v-container>
         </v-card>
 
@@ -140,7 +137,7 @@
         <v-card v-if="model.maxPreschool > 0" class="cc-top-level-card" width="1200">
           <v-card-title>Preschool</v-card-title>
           <v-card-subtitle>Please indicate how many preschool sessions your facility offers per day</v-card-subtitle>
-            
+
             <v-container>
               <v-row>
                 <v-col>
@@ -180,7 +177,7 @@
         </v-container>
 
           <v-card-title v-show="model.isSchoolProperty === 'yes'">Group Child Care (School Age Care on School Grounds)</v-card-title>
-          
+
           <v-card-subtitle>Please indicate each service that your facility offers</v-card-subtitle>
 
           <v-container v-show="model.isSchoolProperty === 'yes'">
