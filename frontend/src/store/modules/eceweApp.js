@@ -63,6 +63,7 @@ export default {
       let sortedLoadedFacilities = sortByFacilityId(state.loadedFacilities);
       let sortedFacilities = sortByFacilityId(state.facilities);
       let payload = [];
+      // check if there is any new/updated facility
       sortedFacilities?.forEach((facility, index) => {
         if (!isEqual(facility,sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
           payload.push(facility);
@@ -97,8 +98,8 @@ export default {
           eceweApplicationId: null,
           facilityId: facility.facilityId,
           optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
-          changeRequestId: facility.changeRequestId,
-          changeRequestNewFacilityId: facility.changeRequestNewFacilityId
+          changeRequestId: facility.changeRequestId ? facility.changeRequestId : null,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
         }));
       } else {
         // A payload already exists, recreate to include any new facilities which could have been added to navBarList
@@ -108,8 +109,8 @@ export default {
           facilityId: facility.facilityId,
           eceweApplicationId: getEceweApplicationId(facility.facilityId),
           optInOrOut: getOptInOrOut(facility.facilityId),
-          changeRequestId: facility.changeRequestId,
-          changeRequestNewFacilityId: facility.changeRequestNewFacilityId
+          changeRequestId: facility.changeRequestId ? facility.changeRequestId : null,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
         }));
       }
       commit('setFacilities', facilityPayload);
