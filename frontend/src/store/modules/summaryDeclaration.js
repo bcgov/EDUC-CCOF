@@ -132,7 +132,7 @@ export default {
           commit('summaryModel', summaryModel);
         }
         //new app only (i think this if block could be part of the one above?)
-        if (!rootState.app.isRenewal && payload.application?.organizationId) {
+        if (payload.application?.organizationId) {
           const config={
             params: {
               allFiles: true
@@ -185,7 +185,7 @@ export default {
           summaryModel.facilities[index].facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
           commit('summaryModel', summaryModel);
 
-          if (!rootState.app.isRenewal) {
+          if (summaryModel.allDocuments && summaryModel.allDocuments.length > 0) {
             const allDocuments =summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(document => document.ccof_facility === facility.facilityId);
             commit('summaryModel', summaryModel);
@@ -207,7 +207,6 @@ export default {
     async updateApplicationStatus({}, applicationObj) {
       checkSession();
       try {
-        console.log('Updating Application Status');
         await ApiService.apiAxios.put('/api/application/status/'  + applicationObj.applicationId, applicationObj);
       } catch (error) {
         console.log(`Failed to update application status - ${error}`);

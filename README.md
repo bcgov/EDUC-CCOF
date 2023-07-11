@@ -35,9 +35,14 @@ This project contains the frontend for the Child Care Operating Funding Initiati
 
 You can quickly run this application in production mode after cloning with the following commands (assuming you have already set up local configuration as well). Refer to the [Backend Readme](backend/README.md) and [Frontend Readme](frontend/README.md) for more details.
 
-    cd app
+    cd backend
     npm run all:install
     npm run all:build
+
+    cd frontend
+    npm run all:install
+    npm run all:build
+
     npm run serve
 
 ## License

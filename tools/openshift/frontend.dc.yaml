@@ -14,12 +14,13 @@
       creationTimestamp:
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-frontend-${BRANCH}"
+        branch: "${BRANCH}"
+      name: "${APP_NAME}-frontend"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
         app: "${APP_NAME}-${BRANCH}"
-        deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
+        deploymentconfig: "${APP_NAME}-frontend"
       strategy:
         resources: {}
         type: Rolling
@@ -30,7 +31,7 @@
           creationTimestamp:
           labels:
             app: "${APP_NAME}-${BRANCH}"
-            deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
+            deploymentconfig: "${APP_NAME}-frontend"
         spec:
           containers:
           - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
@@ -50,7 +51,7 @@
               periodSeconds: 10
               successThreshold: 1
               timeoutSeconds: 1
-            name: "${APP_NAME}-frontend-${BRANCH}"
+            name: "${APP_NAME}-frontend"
             ports:
             - containerPort: 2015
               protocol: TCP
@@ -89,7 +90,7 @@
       creationTimestamp:
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-frontend-${BRANCH}"
+      name: "${APP_NAME}-frontend"
     spec:
       ports:
       - name: 2015-tcp
@@ -98,7 +99,7 @@
         targetPort: 2015
       selector:
         app: "${APP_NAME}-${BRANCH}"
-        deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
+        deploymentconfig: "${APP_NAME}-frontend"
   # - apiVersion: v1
   #   kind: Route
   #   metadata:
@@ -122,23 +123,25 @@
   #       name: "${APP_NAME}-frontend-${BRANCH}"
   #       weight: 100
   #     wildcardPolicy: None
-  - apiVersion: autoscaling/v2beta1
+  - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
-      name: "${APP_NAME}-frontend-${BRANCH}-cpu-autoscaler"
+      name: "${APP_NAME}-frontend-cpu-autoscaler"
     spec:
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig
-        name: "${APP_NAME}-frontend-${BRANCH}"
+        name: "${APP_NAME}-frontend"
         subresource: scale
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
       metrics:
-        - type: Resource
-          resource:
-            name: cpu
-            targetAverageUtilization: 90
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 90
   parameters:
   - name: REPO_NAME
     description: Application repository name

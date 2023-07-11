@@ -76,6 +76,13 @@ export default {
       }
       return [];
     },
+    isSameAddressChecked () {      
+      if (!this.model.isSameAsMailing) {
+        this.model.address2 = '';
+        this.model.city2 = '';
+        this.model.postalCode2 = '';
+      }
+    },
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
@@ -91,6 +98,11 @@ export default {
       this.$router.push(path);
     },
     async save(showNotification) {
+      if (this.model.isSameAsMailing) {
+        this.model.address2 = this.model.address1;
+        this.model.city2 = this.model.city1;
+        this.model.postalCode2 = this.model.postalCode1;
+      }
       this.processing = true;
       this.setIsStarted(true);
       try {
