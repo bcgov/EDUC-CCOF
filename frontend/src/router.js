@@ -313,6 +313,16 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.summaryDeclaration + '/printable',
+      name: 'Printable Summary',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
+      }
+    },
+    {
       path: PATHS.ccfriHome,
       name: 'ccfri-home',
       component: CcfriEceLandingPage,

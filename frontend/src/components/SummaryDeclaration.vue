@@ -47,7 +47,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple accordion>
+            <v-expansion-panels focusable multiple accordion v-model="expand">
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
@@ -266,7 +266,7 @@
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
         :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
-        @previous="previous" @submit="submit"></NavButton>
+        @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
         persistent
@@ -374,6 +374,8 @@ export default {
       summaryModelFacilities: [],
       invalidSummaryForms: [],
       payload: {},
+      printableVersion: false,
+      expand: [],
     };
   },
   methods: {
@@ -470,8 +472,11 @@ export default {
       }
       this.updateNavBarStatus(formObj, isComplete);
     },
-
-
+    expandAllPanels() {
+      for (let i = 1; i < 20; i ++) { //TODO: 20 is an arbitrary number, look at how many facilities to get a proper number
+        this.expand.push(i);
+      }
+    },
     updateNavBarStatus(formObj, isComplete) {
       if (formObj) {
         console.info(`-- updating status for [${formObj?.formName}]' to be complete: [${isComplete}]`);
@@ -573,6 +578,9 @@ export default {
   },
   async mounted() {
     this.isProcessing = true;
+    if (this.$route.path.endsWith('printable')) {
+      this.printableVersion = true;
+    }
     await this.loadSummary();
 
     if (!this.unlockDeclaration) {
@@ -605,6 +613,9 @@ export default {
     }
     this.summaryKey = this.summaryKey + 1;
     this.isProcessing = false;
+    if (this.printableVersion) {
+      this.expandAllPanels();
+    }
   },
 
   watch: {
