@@ -6,10 +6,12 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" v-model.number="model.maxDaysPerWeek" @input="model.maxDaysPerWeek = model.maxDaysPerWeek ? model.maxDaysPerWeek : null" label="Maximum number of days per week you provide child care" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7)]" 
+                  v-model.number="model.maxDaysPerWeek" @input="convertBlankNumberToNull(model,'maxDaysPerWeek')" label="Maximum number of days per week you provide child care" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="52" outlined required :rules="[...rules.required, rules.min(0), rules.max(52)]" v-model.number="model.maxWeeksPerYear" label="Maximum number of weeks per year you provide child care" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="52" outlined required :rules="[...rules.required, rules.min(0), rules.max(52)]" 
+                  v-model.number="model.maxWeeksPerYear" @input="convertBlankNumberToNull(model,'maxWeeksPerYear')" label="Maximum number of weeks per year you provide child care" />
               </v-col>
             </v-row>
             
@@ -103,34 +105,40 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="rules.required" v-model.number="model.maxLicensesCapacity" label="Maximum Licensed Capacity" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="rules.required" 
+                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" label="Maximum Licensed Capacity" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareUnder36()]" v-model.number="model.maxGroupChildCareUnder36" label="Maximum Number for Group Child Care (under 36 months)" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareUnder36()]" 
+                  v-model.number="model.maxGroupChildCareUnder36" @input="convertBlankNumberToNull(model,'maxGroupChildCareUnder36')" label="Maximum Number for Group Child Care (under 36 months)" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCare36()]" v-model.number="model.maxGroupChildCare36" label="Maximum Number for Group Child Care (30 months to School Age)" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCare36()]" 
+                  v-model.number="model.maxGroupChildCare36" @input="convertBlankNumberToNull(model,'maxGroupChildCare36')" label="Maximum Number for Group Child Care (30 months to School Age)" />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxPreschool()]" v-model.number="model.maxPreschool" label="Maximum Number for Preschool" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxPreschool()]" 
+                  v-model.number="model.maxPreschool" @input="convertBlankNumberToNull(model,'maxPreschool')" label="Maximum Number for Preschool" />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareSchool()]" v-model.number="model.maxGroupChildCareSchool" label="Maximum Number for Group Child Care (School Age / School Age Care on School Grounds)" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareSchool()]" 
+                  v-model.number="model.maxGroupChildCareSchool" @input="convertBlankNumberToNull(model,'maxGroupChildCareSchool')" label="Maximum Number for Group Child Care (School Age / School Age Care on School Grounds)" />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareMultiAge()]" v-model.number="model.maxGroupChildCareMultiAge" label="Maximum Multi-Age Child Care" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required,groupValueRuleMaxGroupChildCareMultiAge()]" 
+                  v-model.number="model.maxGroupChildCareMultiAge" @input="convertBlankNumberToNull(model,'maxGroupChildCareMultiAge')" label="Maximum Multi-Age Child Care" />
               </v-col>
             </v-row>
 
@@ -144,19 +152,24 @@
             <v-container>
               <v-row>
                 <v-col>
-                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" v-model.number="model.monday" label="Monday" />
+                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" 
+                    v-model.number="model.monday" @input="convertBlankNumberToNull(model,'monday')" label="Monday" />
                 </v-col>
                 <v-col>
-                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" v-model.number="model.tusday" label="Tuesday" />
+                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" 
+                    v-model.number="model.tusday" @input="convertBlankNumberToNull(model,'tusday')" label="Tuesday" />
                 </v-col>
                 <v-col>
-                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" v-model.number="model.wednesday" label="Wednesday" />
+                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" 
+                    v-model.number="model.wednesday" @input="convertBlankNumberToNull(model,'wednesday')" label="Wednesday" />
                 </v-col>
                 <v-col>
-                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" v-model.number="model.thursday" label="Thursday" />
+                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" 
+                    v-model.number="model.thursday" @input="convertBlankNumberToNull(model,'thursday')" label="Thursday" />
                 </v-col>
                 <v-col>
-                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" v-model.number="model.friday" label="Friday" />
+                  <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="rules.required" 
+                    v-model.number="model.friday" @input="convertBlankNumberToNull(model,'friday')" label="Friday" />
                 </v-col>
                 <v-col>
                   <v-text-field :readonly="!isLocked" :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined v-bind:value="(model.monday || 0) + (model.tusday || 0) + (model.wednesday || 0) + (model.thursday || 0) + (model.friday || 0)" label="Total" />
@@ -214,13 +227,15 @@
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="7" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.min(0), rules.max(7)] : []" v-model.number="model.maxDaysPerWeekExtended" label="Maximum number of days per week you offer extended hours of child care?" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="7" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.min(0), rules.max(7)] : []" 
+                  v-model.number="model.maxDaysPerWeekExtended" @input="convertBlankNumberToNull(model,'maxDaysPerWeekExtended')" label="Maximum number of days per week you offer extended hours of child care?" />
               </v-col>
             </v-row>
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="52" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.min(0), rules.max(52)] : []" v-model.number="model.maxWeeksPerYearExtended" label="Maximum number of weeks per year you offer extended hours of child care?" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="52" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.min(0), rules.max(52)] : []" 
+                  v-model.number="model.maxWeeksPerYearExtended" @input="convertBlankNumberToNull(model,'maxWeeksPerYearExtended')" label="Maximum number of weeks per year you offer extended hours of child care?" />
               </v-col>
             </v-row>
 
@@ -236,31 +251,39 @@
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.extendedChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.extendedChildCareUnder36Months4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrLess')" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrLess')" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (School Age / School Age Care on School Grounds)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.extendedChildCareSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrLess')" :rules="rules.notRequired" label="Group Child Care (School Age / School Age Care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.multiAgeCare4OrLess" :rules="rules.notRequired" label="Multi-Age Child Care" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.multiAgeCare4OrLess" @input="convertBlankNumberToNull(model,'multiAgeCare4OrLess')" :rules="rules.notRequired" label="Multi-Age Child Care" />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.extendedChildCareUnder36Months4OrMore" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.extendedChildCareUnder36Months4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrMore')" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrMore')" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.extendedChildCareSchoolAge4OrMore" :rules="rules.notRequired" label="Group Child Care (School Age/ School Age Care on School Grounds)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.extendedChildCareSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrMore')" :rules="rules.notRequired" label="Group Child Care (School Age/ School Age Care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" v-model.number="model.multiAgeCare4more" :rules="rules.notRequired" label="Multi-Age Child Care" />
+                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()" 
+                    v-model.number="model.multiAgeCare4more" @input="convertBlankNumberToNull(model,'multiAgeCare4more')" :rules="rules.notRequired" label="Multi-Age Child Care" />
                 </v-row>
               </v-col>
             </v-row>
@@ -284,10 +307,11 @@
 <script>
 
 import fundMixing from '@/mixins/fundMixing';
+import globalMixin from '@/mixins/globalMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [fundMixing],
+  mixins: [fundMixing, globalMixin],
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.GROUP
