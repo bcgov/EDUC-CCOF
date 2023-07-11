@@ -130,8 +130,7 @@
           <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start pt-2">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label pt-2">Do you <b>regularly offer</b> extended daily hours of child care
-                  <b>(before 6am, after 7pm or overnight)</b>?</span>
+                <span class="summary-label pt-2">Do you <b>regularly offer</b> extended daily hours of child care <b>(before 6am, after 7pm or overnight)</b>?</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-start">
                 <v-text-field placeholder="Required" :value="this.funding?.isExtendedHours?.toUpperCase()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
