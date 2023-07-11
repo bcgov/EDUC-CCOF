@@ -171,7 +171,7 @@
 
             <v-row>
             <v-col>
-              <v-radio-group :disabled="isLocked" row v-model="model.isSchoolProperty" label="Is the facility located on school property?">
+              <v-radio-group :disabled="isLocked" row v-model="model.isSchoolProperty" :rules="rules.required" label="Is the facility located on school property?">
                 <v-radio label="Yes" value="yes" />
                 <v-radio label="No" value="no" />
               </v-radio-group>
@@ -236,16 +236,16 @@
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareUnder36Months4OrLess" :rules="rules.notRequired" label="Group Child Care (under 36 months)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareUnder36Months4OrLess" :rules="rules.required" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (30 months to School Age)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" :rules="rules.required" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.notRequired" label="Group Child Care (School Age / School Age Care on School Grounds)" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.required" label="Group Child Care (School Age / School Age Care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4OrLess" :rules="rules.notRequired" label="Multi-Age Child Care" />
+                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4OrLess" :rules="rules.required" label="Multi-Age Child Care" />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
