@@ -3,24 +3,24 @@
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center">
+          <!-- <v-card-title class="justify-center">
             <span class="text-h5">Child Care Operating Funding Program - {{this.formattedProgramYear}} Program Confirmation Form</span>
-          </v-card-title>
+          </v-card-title> -->
           <h2 class="text-center">
-            Supporting Document Upload
+            {{ changeType == 'NOTIFICATION_FORM' ? 'Change Notification Form Upload' : 'Supporting Documents Upload'}}
           </h2>
           <v-row justify="center" class="text-h5 py-4" style="color:#003466;">
             {{this.userInfo.organizationName}}
           </v-row>
           <v-row class="px-6 text-body-1">
-            Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE funding assessment.
+            Provide any additional documents you would like the program to review as part of your change notifcation form.
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
             The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
-            :items="uploadedDocuments"
+            :items="getFilteredDocs"
             class="elevation-1"
             hide-default-header
             hide-default-footer
@@ -43,7 +43,7 @@
               </v-col>
             </template>
 
-            <template v-slot:item.facilityName="{ item }">
+            <!-- <template v-slot:item.facilityName="{ item }">
               <v-col flex>
               <div v-if="item?.annotationid">
                 <span> {{ item?.ccof_facility_name }} </span>
@@ -59,7 +59,7 @@
                         :rules="selectRules"
               ></v-select>
               </v-col>
-            </template>
+            </template> -->
 
 
             <template v-slot:item.document="{ item }">
@@ -115,85 +115,32 @@
           </v-card>
         </v-card>
       </v-row>
-      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
-        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
+
+
     </v-container>
   </v-form>
 </template>
 
 <script>
 
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import { deepCloneObject, getFileExtension, isChangeRequest } from '@/utils/common';
-import NavButton from '@/components/util/NavButton';
+import { deepCloneObject, getFileExtension } from '@/utils/common';
 
 export default {
   mixins: [alertMixin],
-  components: { NavButton },
-  props: {},
-
-  computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('navBar', ['canSubmit']),
-    ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
-    ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['changeRequestId']),
-    isLocked() {
-      if (isChangeRequest(this)) {
-        return false;
-      }
-      if (this.unlockSupportingDocuments) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
-    },
-    isSaveDisabled(){
-      const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
-      return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
-    },
-    isNextEnabled() {
-      return this.isValidForm && this.canSubmit;
-    },
-    filteredNavBarList() {
-      if (isChangeRequest(this)) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
+  components: {  },
+  props: {
+    changeType: {
+      type: String,
+      required: true
     },
   },
-
-  async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
-    this.fileRules = [
-      v => !!v || 'This is required',
-      value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
-    ];
-    await this.mapFacilityData();
-    await this.createTable();
-
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    if(!this.isLocked){
-      await this.save(false);
-    }
-    next();
-  },
-
   data() {
     return {
+      filteredDocs : [],
       isLoading: false,
       isProcessing: false,
       rules,
@@ -203,13 +150,7 @@ export default {
       isValidForm: false,
       currentrow: null,
       headers: [
-        {
-          text: 'Facility Name',
-          align: 'left',
-          sortable: false,
-          value: 'facilityName',
-          class: 'table-header'
-        },
+
         {
           text: 'Document',
           align: 'left',
@@ -238,57 +179,81 @@ export default {
       fileInputError: [],
       fileMap: new Map(),
       fileRules: [],
-      uploadedDocuments: [],
       editedIndex: -1,
       editedItem: {
-        selectFacility: '',
+        ccof_change_requestid: '',
       },
       defaultItem: {
-        selectFacility: '',
+        ccof_change_requestid: this.changeRequestId,
+        subject : this.changeType
       },
       selectRules: [v => !!v || 'This is required']
 
     };
   },
 
+  computed: {
+    ...mapGetters('reportChanges', ['getUploadedDocuments']),
+    ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments']),
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
+    getFilteredDocs(){
+      return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
+    },
+    isLocked() {
+      return false; // (this.applicationStatus === 'SUBMITTED');
+    },
+  },
+
+  async mounted() {
+    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
+
+    this.fileRules = [
+      v => !!v || 'This is required',
+      value => !value || value.name.length < 255 || 'File name can be max 255 characters.',
+      value => !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
+      value => !value || this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) || `Accepted file types are ${this.fileFormats}.`,
+    ];
+  },
+  async beforeRouteLeave(_to, _from, next) {
+    if(!this.isLocked){
+      await this.save(false);
+    }
+    next();
+  },
   methods: {
-    ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
-    previous() {
-      if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
-      } else {
-        this.$router.push(PATHS.eceweFacilities);
-      }
-    },
-    next() {
-      if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.summaryDeclaration}`);
-      } else {
-        this.$router.push(PATHS.summaryDeclaration);
-      }
-    },
-    validateForm() {
-      this.$refs.form?.validate();
-    },
-    async saveClicked() {
-      await this.save();
-    },
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments']),
     async save(showConfirmation = true) {
+
+      console.log('saving from child component!');
+
       this.isProcessing = true;
+
+      console.log('filemap : ', this.fileMap);
+      console.log('filemap : ', this.fileMap.size > 0);
+
       try {
         await this.processDocumentFileDelete();
-        const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
-        if (newFilesAdded.length > 0) {
-          await this.processDocumentFilesSave(newFilesAdded);
-          this.fileMap?.clear();
+
+        if (this.fileMap.size > 0){
+          const newFilesAdded = this.uploadedDocuments.filter(el=> !!el.id);
+          console.log('newFilesAdded', newFilesAdded);
+          if (newFilesAdded.length > 0) {
+            await this.processDocumentFilesSave(newFilesAdded);
+            this.fileMap?.clear();
+          }
+
+          if (showConfirmation) {
+            this.setSuccessAlert('Changes Successfully Saved');
+          }
         }
 
-        if (showConfirmation) {
-          await this.createTable();
-          this.setSuccessAlert('Changes Successfully Saved');
+        else {
+          console.log('returning...');
+          return;
         }
       } catch (e) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        this.setFailureAlert('error in CHILD');
       } finally {
         this.isProcessing = false;
       }
@@ -297,14 +262,18 @@ export default {
       const payload = [];
       for (const file of newFilesAdded) {
         const obj = {
-          ccof_applicationid: this.applicationId,
-          ccof_facility: file.selectFacility?.facilityId,
-          subject: 'SUPPORTING',
+          ccof_change_requestid: this.changeRequestId,
+          subject: this.changeType,
           notetext: file.description,
-          changeRequestNewFacilityId: file.selectFacility?.changeRequestNewFacilityId,
           ...this.fileMap.get(String(file.id))
         };
-        payload.push(obj);
+
+        //only add objects from this component to the payload
+        //each child componenet sends it's own save payload to Dynamics
+        if(obj.filename){
+          payload.push(obj);
+        }
+
       }
       try {
         await this.saveUploadedDocuments(payload);
@@ -315,6 +284,7 @@ export default {
     async processDocumentFileDelete() {
       if (this.uploadedDocuments?.deletedItems?.length > 0) {
         await this.deleteDocuments(this.uploadedDocuments.deletedItems);
+        this.uploadedDocuments.deletedItems = [];
       }
     },
     async selectFile(file) {
@@ -352,23 +322,10 @@ export default {
     handleFileReadErr() {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
-    async createTable() {
-      this.isLoading = true;
-      try {
-        await this.getDocuments(this.applicationId);
-        this.uploadedDocuments = this.getUploadedDocuments.filter(document => this.filteredNavBarList.findIndex(item => item.facilityId == document.ccof_facility) > -1);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        this.isLoading = false;
-        this.fileMap?.clear();
-      }
-    },
     editItem(item) {
-      this.editedIndex = this.uploadedDocuments.indexOf(item);
+      this.editedIndex = this.filteredDocs.indexOf(item);
       this.editedItem = Object.assign({}, item);
     },
-
     deleteItem(item) {
       const index = this.uploadedDocuments.indexOf(item);
       if (item.annotationid) {
@@ -387,24 +344,14 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = Math.random() * 10;
-      //addObj.id = this.uploadedDocuments.length + 1;
+      addObj.id = Math.floor(Math.random() * 1000000); //TODO: i think this where we need UUID
       this.uploadedDocuments.unshift(addObj);
+      //this.testUploadedDocs.unshift(addObj); //this is the prop from parent, might not do anything, idk this point
       this.editItem(addObj);
     },
     updateDescription(item) {
       const index = this.uploadedDocuments.indexOf(item);
       this.uploadedDocuments[index].description = item.description;
-    },
-    async mapFacilityData() {
-      for (let facilityInfo of this.filteredNavBarList) {
-        const facility = {};
-        facility.facilityId = facilityInfo.facilityId;
-        facility.facilityName = facilityInfo.facilityName;
-        facility.licenseNumber = facilityInfo.licenseNumber;
-        facility.changeRequestNewFacilityId = facilityInfo.changeRequestNewFacilityId;
-        this.facilityNames.push(facility);
-      }
     },
   }
 };

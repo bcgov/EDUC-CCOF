@@ -11,7 +11,11 @@
                   <v-text-field :disabled="isLocked" outlined required v-model="model.legalName" :rules="rules.required" label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)" />
                 </v-col>
               </v-row>
-
+              <v-row>
+                <v-col>
+                    <v-text-field :disabled="isLocked" outlined :rules="validateIncorporationNumber(model.organizationType, model.incNumber)" v-model="model.incNumber" label="Incorporation Number (as it appears in BC Corporate Registry)" />
+                </v-col>
+            </v-row>
               <v-divider></v-divider>
 
               <v-card-subtitle> Organization Mailing Address </v-card-subtitle>
@@ -52,6 +56,7 @@
 
               <v-divider></v-divider>
 
+              <v-card-subtitle> Contact Information </v-card-subtitle>
               <v-row>
                 <v-col cols="12" md="6">
                   <v-text-field :disabled="isLocked" outlined required v-model="model.contactName" :rules="rules.required" label="Organization Contact Name" />
@@ -76,16 +81,14 @@
                 <v-col cols="12" md="6">
                   <v-text-field :disabled="isLocked" outlined required v-model="model.email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
                 </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field :disabled="isLocked" outlined :rules="validateIncorporationNumber(model.organizationType, model.incNumber)" v-model="model.incNumber" label="Incorporation Number (as it appears in BC Corporate Registry)" />
-                </v-col>
               </v-row>
 
               <v-divider></v-divider>
 
               <v-row>
                 <v-col>
-                  <v-radio-group :disabled="isLocked" v-model="model.organizationType" :rules="rules.required" label="Type of Organization">
+                  <v-card-subtitle> Type of Organization </v-card-subtitle>
+                  <v-radio-group :disabled="isLocked" v-model="model.organizationType" :rules="rules.required">
                     <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                   </v-radio-group>
                 </v-col>

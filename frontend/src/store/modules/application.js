@@ -19,8 +19,6 @@ export default {
     isEceweComplete: false,
     isLicenseUploadComplete: false,
     isOrganizationComplete: false,
-
-
   },
   mutations: {
     setApplicationId(state, value) { state.applicationId = value; },

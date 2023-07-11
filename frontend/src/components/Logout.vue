@@ -36,6 +36,7 @@ export default {
   methods: {
     clearStorage() {
       this.$store.commit('auth/setJwtToken');
+      window.sessionStorage.clear();
     }
   }
 };

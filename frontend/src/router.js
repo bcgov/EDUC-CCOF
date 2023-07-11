@@ -10,10 +10,11 @@ import ErrorPage from '@/components/ErrorPage.vue';
 import LoginError from '@/components/LoginError.vue';
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import authStore from './store/modules/auth';
+
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, CHANGE_URL_PREFIX } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -48,6 +49,9 @@ import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
 import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
+
+import ReportChange from '@/components/requestChanges/ReportChanges';
+import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
 
 Vue.prototype.moment = moment;
 
@@ -250,6 +254,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/licenseUpload',
+      name: 'Change Request Licence Upload',
+      component: LicenseUpload,
+      meta: {
+        pageTitle: 'Licence Upload',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
       path: PATHS.group.renewOrganization,
       name: 'Renew Organization',
       component: RenewOrganization,
@@ -345,7 +360,6 @@ const router = new VueRouter({
         requiresAuth: true,
       }
     },
-
     {
       path: PATHS.ccfriRequestMoreInfo + '/:urlGuid',
       name: 'ccfri-request-info',
@@ -436,6 +450,145 @@ const router = new VueRouter({
       path: '/token-expired',
       name: 'backend-session-expired',
       component: BackendSessionExpired
+    },
+    {
+      path: PATHS.reportChange.landing,
+      name: 'Report Change',
+      component: ReportChange,
+      meta: {
+        pageTitle: 'Report Changes',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.reportChange.notificationForm,
+      name: 'change-notification-form',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.reportChange.notificationForm + '/:urlGuid',
+      name: 'change-notification-form-guid',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.reportChange.facInfo,
+      name: 'change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility',
+      name: 'existing-change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility/:urlGuid',
+      name: 'change-request-facility-information-guid',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/funding/:urlGuid',
+      name: 'change-request-funding-guid',
+      component: GroupFundAmount,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facilityConfirmation',
+      name: 'change-request-new-facility-confirmation',
+      component: ApplicationConfirmation,
+      meta: {
+        pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid/ccfriApplication',
+      name: 'change-request-ccfri-home',
+      component: CcfriEceLandingPage,
+      meta: {
+        pageTitle: 'CCFRI Home',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' +  PATHS.addNewFees + '/:urlGuid',
+      name: 'change-request-ccfri-add-fees-guid',
+      component: AddNewFees,
+      meta: {
+        pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.eceweEligibility,
+      name: 'change-request-ECEWE-Eligibility',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.eceweFacilities,
+      name: 'change-request-ECEWE-Facilities',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.supportingDocumentUpload,
+      name: 'change-request-Supporting-Document-Upload',
+      component: SupportingDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
+        requiresAuth: true,
+        showNavBar: true
+      }
     },
   ]
 });

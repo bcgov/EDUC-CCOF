@@ -1,6 +1,7 @@
 'use strict';
-const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
+const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId,updateChangeRequestNewFacility} = require('./utils');
 const HttpStatus = require('http-status-codes');
+const log = require('./logger');
 
 
 async function saveLicenses(req, res) {
@@ -8,7 +9,14 @@ async function saveLicenses(req, res) {
 
     let licenses = req.body.fileList;
     for (let license of licenses) {
-      await postApplicationDocument(license);
+      let response = await postApplicationDocument(license);
+      
+      //bind the license to the change Request Action object so the Ministry can easily see all files related to the change Action.
+      if (license.changeRequestNewFacilityId){
+        let resp = await updateChangeRequestNewFacility(license.changeRequestNewFacilityId,
+          {"ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response.applicationFacilityDocumentId})`}
+        );
+      }
     }
     const application ={};
     application.ccof_licensecomplete = req.body.isLicenseUploadComplete;
