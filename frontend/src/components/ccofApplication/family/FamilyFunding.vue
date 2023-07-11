@@ -176,7 +176,7 @@
                   <v-text-field placeholder="Required" :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" :rules="rules.required" label="Family Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.required" label="Family Child Care (School Age / School age care on School Grounds)" />
+                  <v-text-field placeholder="Required" :disabled="isLocked" outlined type="number" v-model.number="model.extendedChildCareSchoolAge4OrLess" :rules="rules.required" label="Family Child Care (School Age / School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field placeholder="Required" :disabled="isLocked" outlined type="number" v-model.number="model.multiAgeCare4OrLess" :rules="rules.required" label="Multi-Age Care" />
