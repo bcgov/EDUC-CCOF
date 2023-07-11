@@ -15,9 +15,7 @@
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label pt-3">Maximum number of <b>days per week</b> you provide child care: </span>
-                <v-text-field placeholder="Required" :value="this.funding?.maxDaysPerWeek"
-                  class="summary-value ma-0 pa-0 px-0" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.maxDaysPerWeek" class="summary-value ma-0 pa-0 px-0" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -25,8 +23,7 @@
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
                 <span class="summary-label pt-3">Maximum number of <b>weeks per year</b> you provide child care: </span>
-                <v-text-field placeholder="Required" :value="this.funding?.maxWeeksPerYear" class="summary-value" dense
-                  flat solo hide-details readonly :rules="rules.required"></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.maxWeeksPerYear" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -35,68 +32,53 @@
           <v-col cols="8" lg="6" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label pt-3">Are there months when ALL of the programs at this facility are closed
-                  for the entire month? </span>
+                <span class="summary-label pt-3">Are there months when ALL of the programs at this facility are closed for the entire month? </span>
               </v-col>
               <v-col cols="12" class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.funding?.hasClosedMonth?.toUpperCase()"
-                  class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.hasClosedMonth?.toUpperCase()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
           <v-col cols="8" lg="6" class="pb-0 pt-0">
             <v-row v-if="this.funding?.hasClosedMonth?.toUpperCase() == 'YES'" no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label pt-3">Months where ALL of the programs at this facility are closed for the
-                  entire month: </span>
+                <span class="summary-label pt-3">Months where ALL of the programs at this facility are closed for the entire month: </span>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn1" class="d-flex justify-start">
-                <v-text-field value="January" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="January" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn2" class="d-flex justify-start">
-                <v-text-field value="February" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="February" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn3" class="d-flex justify-start">
-                <v-text-field value="March" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="March" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn4" class="d-flex justify-start">
-                <v-text-field value="April" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="April" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn5" class="d-flex justify-start">
-                <v-text-field value="May" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="May" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn6" class="d-flex justify-start">
-                <v-text-field value="June" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="June" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn7" class="d-flex justify-start">
-                <v-text-field value="July" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="July" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn8" class="d-flex justify-start">
-                <v-text-field value="August" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="August" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn9" class="d-flex justify-start">
-                <v-text-field value="September" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="September" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn10" class="d-flex justify-start">
-                <v-text-field value="October" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="October" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn11" class="d-flex justify-start">
-                <v-text-field value="November" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="November" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="4" v-if="this.funding?.closedIn12" class="d-flex justify-start">
-                <v-text-field value="December" class="summary-value" dense flat solo hide-details readonly
-                  :rules="rules.required"></v-text-field>
+                <v-text-field value="December" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -109,13 +91,11 @@
               </v-col>
               <v-col class="d-flex justify-start">
                 <span class="summary-label pt-3">From:</span>
-                <v-text-field placeholder="Required" :value="this.funding?.hoursFrom12hr" class="summary-value" dense
-                  flat solo hide-details readonly :rules="rules.required"></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.hoursFrom12hr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col class="d-flex justify-start">
                 <span class="summary-label pt-3">To:</span>
-                <v-text-field placeholder="Required" :value="this.funding?.hoursTo12hr" class="summary-value" dense flat
-                  solo hide-details readonly :rules="rules.required"></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.hoursTo12hr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -136,12 +116,10 @@
             <v-row no-gutters class="d-flex justify-start">
 
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.maxSpaces" class="summary-value" dense flat solo hide-details
-                  readonly></v-text-field>
+                <v-text-field :value="this.funding?.maxSpaces" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.maxLicensesCapacity" class="summary-value" dense flat solo
-                  hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.maxLicensesCapacity" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -156,8 +134,7 @@
                   <b>(before 6am, after 7pm or overnight)</b>?</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-start">
-                <v-text-field placeholder="Required" :value="this.funding?.isExtendedHours?.toUpperCase()"
-                  class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.isExtendedHours?.toUpperCase()" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -170,12 +147,10 @@
                   <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
-                  <span class="summary-label">Maximum number of days per week you offer extended hours of child
-                    care</span>
+                  <span class="summary-label">Maximum number of days per week you offer extended hours of child care</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                  <span class="summary-label">Maximum number of weeks per year you offer extended hours of child
-                    care</span>
+                  <span class="summary-label">Maximum number of weeks per year you offer extended hours of child care</span>
                 </v-col>
               </v-row>
             </v-col>
@@ -183,19 +158,13 @@
               <v-row no-gutters class="d-flex justify-start">
 
                 <v-col cols="12" class="d-flex justify-center">
-                  <v-text-field placeholder="Required" :rules="rules.required"
-                    :value="this.funding?.maxCapacityExtended" class="summary-value" dense flat solo hide-details
-                    readonly></v-text-field>
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxCapacityExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-center">
-                  <v-text-field placeholder="Required" :rules="rules.required"
-                    :value="this.funding?.maxDaysPerWeekExtended" class="summary-value" dense flat solo hide-details
-                    readonly></v-text-field>
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxDaysPerWeekExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-center">
-                  <v-text-field placeholder="Required" :rules="rules.required"
-                    :value="this.funding?.maxWeeksPerYearExtended" class="summary-value" dense flat solo hide-details
-                    readonly></v-text-field>
+                  <v-text-field placeholder="Required" :rules="rules.required" :value="this.funding?.maxWeeksPerYearExtended" class="summary-value" dense flat solo hide-details readonly></v-text-field>
                 </v-col>
               </v-row>
             </v-col>
@@ -205,8 +174,7 @@
           <v-col cols="12" lg="12" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label">For each type of service, indicate the <b>maximum number of spaces</b> for
-                  which you offer extended hours of child care:</span>
+                <span class="summary-label">For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended hours of child care:</span>
               </v-col>
             </v-row>
           </v-col>
@@ -237,20 +205,16 @@
                 <span class="summary-value"><b>4 hours or less </b>extended child care</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-end">
-                <v-text-field :value="this.funding?.extendedChildCareUnder36Months4OrLess" class="summary-value" dense
-                  flat solo hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.extendedChildCareUnder36Months4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex">
-                <v-text-field :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess" class="summary-value"
-                  dense flat solo hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.extendedChildCareSchoolAge4OrLess" class="summary-value" dense flat
-                  solo hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.extendedChildCareSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.multiAgeCare4OrLess" class="summary-value" dense flat solo
-                  hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.multiAgeCare4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -260,20 +224,16 @@
                 <span class="summary-value"><b>More than 4 hours</b> extended child care</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.extendedChildCareUnder36Months4OrMore" class="summary-value" dense
-                  flat solo hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.extendedChildCareUnder36Months4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore" class="summary-value"
-                  dense flat solo hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.extendedChildCareSchoolAge4OrMore" class="summary-value" dense flat
-                  solo hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.extendedChildCareSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field :value="this.funding?.multiAgeCare4more" class="summary-value" dense flat solo
-                  hide-details readonly></v-text-field>
+                <v-text-field :value="this.funding?.multiAgeCare4more" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -285,14 +245,8 @@
             <v-col cols="12" class="d-flex justify-start">
 
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <router-link :to="this.PATHS.family.orgInfo"
-                v-if="!this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'">
-                <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will
-                    bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId"
-                v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'">
-                <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will
-                    bring you to a different page.</u></span></router-link>
+              <router-link :to="this.PATHS.family.orgInfo" v-if="!this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
