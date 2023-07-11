@@ -32,6 +32,13 @@ export default {
     logoutCounter: 120,
   },
   mutations: {
+    setNavBarFacilityChangeRequest: (state, { facilityId, changeRequestFacilityId }) => {
+      console.log('setting new fac ID!');
+      let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
+      if (navBarItem) {
+        navBarItem.changeRequestFacilityId = changeRequestFacilityId;
+      }
+    },
     setLookupInfo: (state, lookupInfo) => {
       if (lookupInfo) {
         state.lookupInfo = lookupInfo;
@@ -100,6 +107,10 @@ export default {
     addToNavBarList: (state, payload) => {
       state.navBarList.push(payload);
     },
+    deleteFromNavBarList: (state, facilityId) => {
+      console.log('deleteFromNavBarList', state.navBarList, facilityId);
+      state.navBarList = state.navBarList.filter(item => item.facilityId !== facilityId);
+    },
     setCcofApplicationComplete: (state, ccofApplicationComplete) => {
       state.ccofApplicationComplete = ccofApplicationComplete;
     },
@@ -114,6 +125,10 @@ export default {
     },
     setSupportingDocumentUploadComplete: (state, supportingDocumentUploadComplete) => {
       state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
+    },
+    setNavBarStatus:(state, navBarStatus) => {
+      state.navBarStatus = navBarStatus;
+      window.sessionStorage.setItem('navBarStatus', navBarStatus); // set it in session.
     },
     setLogoutTimerEnabled: (state, value) => {
       state.logoutTimerEnabled = value;
@@ -184,7 +199,7 @@ export default {
         return state.navBarList[index - 1];
       }
       return null;
-    }
+    },
   },
   actions: {
     async getLookupInfo({ commit }) {

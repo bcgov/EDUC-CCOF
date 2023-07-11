@@ -24,7 +24,7 @@ export default {
     getFacilityById: (state) => (facilityId) => {
       return state.facilityStore[facilityId];
     },
-    // getCCFRIById: (state) => (ccfriId) => { 
+    // getCCFRIById: (state) => (ccfriId) => {
     //   return state.ccfriStore[ccfriId];
     // },
     isNewFacilityStarted: state => !isEmpty(state.facilityModel),
@@ -50,6 +50,9 @@ export default {
         state.facilityStore[facilityId] = facilityModel;
       }
     },
+    deleteFromStore: (state, facilityId) => {
+      delete state.facilityStore[facilityId];
+    },
     // addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
     //   if (ccfriId) {
     //     state.ccfriStore[ccfriId] = CCFRIFacilityModel;
@@ -57,10 +60,11 @@ export default {
     // }
   },
   actions: {
-    async saveFacility({ state, commit, rootState }) {
+    async saveFacility({ state, commit, rootState }, { isChangeRequest, changeRequestId }) {
 
       checkSession();
-
+      console.log('saveFacility- state model: ', state.facilityModel);
+      console.log('saveFacility- loaded model: ', state.loadedModel);
       if (isEqual(state.facilityModel, state.loadedModel)) {
         console.info('no model changes');
         return;
@@ -80,29 +84,77 @@ export default {
         try {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
           commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: state.facilityModel });
+          //TODO: also find the existing value in the nav bar and update the facility Name and license number
           return response;
         } catch (error) {
           console.log(`Failed to update existing Facility - ${error}`);
           throw error;
         }
       } else {
-        // else create a new facility
-        try {
-          let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
-          commit('setFacilityId', response.data?.facilityId);
-          commit('app/addToNavBarList', {
-            facilityName: state.facilityModel.facilityName,
-            facilityId: state.facilityId,
-            ccofBaseFundingId: response.data?.ccofBaseFundingId,
-            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
-            licenseNumber: state.facilityModel.licenseNumber,
-          }, { root: true });
-          commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
+        console.log('creating change request?', isChangeRequest);
+        // else create a new facility.  If is a change request, hit the change request endpoint
+        if (isChangeRequest) {
+          console.log('changeRequestId: ', changeRequestId);
+          try {
+            let changeActionId;
+            if (changeRequestId) {
+              //If there is a changeRequestId, get the change action from the store.
+              changeActionId = rootState.reportChanges.changeActionId;
+              if (!changeActionId) {  //If there is no changeActionID, then maybe the user refreshed.  Get it from the navBar
+                changeActionId = rootState.app.navBarList.find(el => el.changeRequestId == changeRequestId)?.changeActionId;
+              }
+              console.log('Change ActionId is ', changeActionId);
+            }
+            if (!changeActionId) {
+              const changeRequestPayload = {
+                applicationId: rootState.application.applicationId,
+                programYearId: rootState.application.programYearId
+              };
+              const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
+              commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
+              commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
+              changeActionId = changeRequestResponse.data?.changeActionId;
+            }
+            let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`, payload);
+            commit('setFacilityId', response.data?.facilityId);
+            commit('app/addToNavBarList', {
+              facilityName: state.facilityModel.facilityName,
+              facilityId: state.facilityId,
+              ccofBaseFundingId: response.data?.ccofBaseFundingId,
+              ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+              licenseNumber: state.facilityModel.licenseNumber,
+              changeRequestId: rootState.reportChanges.changeRequestId,
+              changeActionId: rootState.reportChanges.changeActionId,
+              changeRequestNewFacilityId: response.data?.changeRequestNewFacilityId,
+              facilityStatus: 'New',
+            }, { root: true });
+            commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
 
-          return response;
-        } catch (error) {
-          console.log(`Failed to save new Facility - ${error}`);
-          throw error;
+            return response;
+          } catch (error) {
+            console.log(`Failed to save new Facility - ${error}`);
+            throw error;
+          }
+        } else {
+          console.log('trying new facility');
+          try {
+            let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
+            commit('setFacilityId', response.data?.facilityId);
+            commit('app/addToNavBarList', {
+              facilityName: state.facilityModel.facilityName,
+              facilityId: state.facilityId,
+              ccofBaseFundingId: response.data?.ccofBaseFundingId,
+              ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+              licenseNumber: state.facilityModel.licenseNumber,
+              facilityStatus: 'New',
+            }, { root: true });
+            commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
+
+            return response;
+          } catch (error) {
+            console.log(`Failed to save new Facility - ${error}`);
+            throw error;
+          }
         }
       }
     },
@@ -114,9 +166,7 @@ export default {
         commit('setFacilityModel', facilityModel);
         commit('setLoadedModel', facilityModel);
       } else {
-
         checkSession();
-
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
           commit('addFacilityToStore', { facilityId: facilityId, facilityModel: response.data });
@@ -130,7 +180,15 @@ export default {
         }
       }
     },
+    async deleteFacility({ commit }, facilityObj) {
+      checkSession();
 
+      await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityObj.facilityId, {data: facilityObj});
+
+      commit('deleteFromStore', facilityObj.facilityId);
+      commit('funding/deleteFromStore', facilityObj.facilityId, { root: true });
+      commit('app/deleteFromNavBarList', facilityObj.facilityId, { root: true });
+    },
     newFacility({ commit }) {
       commit('setFacilityId', null);
       commit('setFacilityModel', {});

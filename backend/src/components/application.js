@@ -6,27 +6,37 @@ const {
   patchOperationWithObjectId,
   deleteOperationWithObjectId,
   sleep,
-  getLabelFromValue
+  getLabelFromValue,
+  updateChangeRequestNewFacility
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   APPLICATION_STATUS_CODES,
-  CCOF_STATUS_CODES
+  CCOF_STATUS_CODES,
+  CHANGE_REQUEST_TYPES
 } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
+const {CHANGE_REQUEST_TYPES_FRONT } = require('../components/changeRequest');
 const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
   UserProfileCCFRIMappings,
   ApplicationSummaryMappings,
-  ApplicationSummaryCcfriMappings, OrganizationFacilityMappings,CCOFApplicationFundingMapping,OrganizationMappings
+  ApplicationSummaryCcfriMappings,
+  OrganizationFacilityMappings,
+  CCOFApplicationFundingMapping,
+  OrganizationMappings,
+  //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
+
+
+const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 
 
 async function renewCCOFApplication(req, res) {
@@ -59,13 +69,21 @@ async function updateCCFRIApplication(req, res) {
       let payload = {
         'ccof_ccfrioptin': facility.optInResponse,
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`
+        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
-      //log.info(payload);
+
+      //only bind CCFRI application to main application if this facility is completed during a new application
+      //ccfri application for change request should only bind to their respective changeAction (done below)
+      //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.
+      // if (!facility.changeRequestFacilityId){
+      //   payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
+      // }
+      log.info('patch ccfri payload' , payload);
 
       let response = undefined;
       if (facility.ccfriApplicationId) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
+        log.info('CCFRI RESP!!!!!!!' , response);
         retVal.push(response);
       } else {
         response = await postOperation('ccof_applicationccfris', payload);
@@ -75,6 +93,14 @@ async function updateCCFRIApplication(req, res) {
           ccfriApplicationId: response,
           ccof_ccfrioptin: facility.optInResponse,
         });
+      }
+
+      //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
+      if(facility.changeRequestFacilityId){
+        let resp = await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
+          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId? facility.ccfriApplicationId : response})`}
+        );
+        retVal.push(resp);
       }
       await sleep(100); //slow down the hits to dynamics.
       //log.info('res data:' , response);
@@ -283,16 +309,17 @@ async function updateECEWEFacilityApplication(req, res) {
   let response;
   Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
   let eceweApplicationId;
-
   try {
     for (let key in forBackFacilities) {
       // add join attributes for application and facility
       forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications(' + req.params.applicationId + ')';
       forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts(' + forBackFacilities[key]._ccof_facility_value + ')';
       eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
+      let changeRequestNewFacilityId = forBackFacilities[key].ccof_change_request_new_facilityid;
       // remove attributes that are already used in payload join (above) and not needed.
       delete forBackFacilities[key].ccof_applicationeceweid;
       delete forBackFacilities[key]._ccof_facility_value;
+      delete forBackFacilities[key].ccof_change_request_new_facilityid;
 
       let facility = forBackFacilities[key];
       if (eceweApplicationId) {
@@ -303,6 +330,12 @@ async function updateECEWEFacilityApplication(req, res) {
         let operation = 'ccof_applicationecewes';
         response = await postOperation(operation, facility);
         facilities[key].eceweApplicationId = response;
+        //if this is a new facility change request, link ECEWE application to the New Facility Change Request
+        if (changeRequestNewFacilityId) {
+          await updateChangeRequestNewFacility(changeRequestNewFacilityId,
+            {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${facilities[key].eceweApplicationId})`}
+          );
+        }
       }
     }
     return res.status(HttpStatus.OK).json({facilities: facilities});
@@ -480,6 +513,65 @@ function checkKey(key, obj) {
   return false;
 }
 
+async function getFacilityChangeData(changeActionId){
+  let mappedData = [];
+  //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
+  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let newFacData = await getOperation(newFacOperation);
+  log.info(newFacData, 'new fac data before mapping');
+
+  newFacData.value.forEach(fac => {
+    mappedData.push( new MappableObjectForFront(fac, NewFacilityMappings).toJSON());
+  });
+
+  log.info('faccccc data post mapping', mappedData);
+  return mappedData;
+}
+
+async function getChangeRequest(req, res){
+  try {
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${req.params.applicationId}`;
+    let changeRequests = await getOperation(operation);
+    changeRequests = changeRequests.value;
+
+    let payload = [];
+
+    log.verbose(changeRequests);
+    await Promise.all(changeRequests.map(async (request) => {
+
+      let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
+
+      //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
+      req.changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
+
+        let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
+
+        //todo: add in logic for other change types, when required.
+        switch(mappedChangeAction.changeType){
+        case CHANGE_REQUEST_TYPES.PDF_CHANGE:
+          log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPES.PDF_CHANGE));
+          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE;
+          break;
+        case CHANGE_REQUEST_TYPES.NEW_FACILITY:
+          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
+          mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
+          break;
+        }
+        return mappedChangeAction;
+      }));
+
+      payload.push(req);
+    }));
+
+    log.info('final payload', payload);
+    return res.status(HttpStatus.OK).json(payload);
+  } catch (e) {
+    log.error('An error occurred while getting change request', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -490,5 +582,6 @@ module.exports = {
   getDeclaration,
   submitApplication,
   getApplicationSummary,
-  updateStatusForApplicationComponents
+  updateStatusForApplicationComponents,
+  getChangeRequest
 };

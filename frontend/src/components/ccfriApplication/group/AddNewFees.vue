@@ -85,7 +85,7 @@
                   <v-radio-group
                   :rules = "rules"
                     v-model="item.feeFrequency"
-                    label="Are your parent fees"
+                    label="Parent fee frequency"
                     :disabled="isReadOnly"
                   >
                     <v-radio
@@ -103,7 +103,7 @@
                   <v-container v-else class="ma-0 pa-0">
                   <v-row>
                     <v-col>
-                      <label>Submit your daily parent fee if you only offer care for 4 days or fewer per week.</label><br>
+                      <label>If you only offer care for <strong>4 days or fewer </strong> per week, enter daily parent fees.</label><br>
                       <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If you do not charge a parent fee (e.g. if the facility is closed) enter zero.</label>
                     </v-col>
                   </v-row>
@@ -193,15 +193,16 @@
           </div>
           <div class="px-md-12 px-7">
             <br>
+            <div>
+              <p>Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays. </a> Only indicate the date of closures where parent fees are charged.
+              </p>
+            </div>
             <v-radio-group
               required
               :disabled="isReadOnly"
               v-model="CCFRIFacilityModel.hasClosureFees"
-              label="Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than British Columbia statutory holidays. Only indicate the date of closures where parent fees are charged."
               :rules = "rules"
-
             >
-            <label> <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays </a> </label>
             <br>
               <v-radio
                 label="Yes"
@@ -355,9 +356,9 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
-      
+
       <v-dialog
         v-model="showRfiDialog"
         persistent
@@ -398,6 +399,7 @@ import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -460,7 +462,7 @@ export default {
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility.unlockCcfri){
+      if (this.currentFacility.unlockCcfri || isChangeRequest(this)){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){

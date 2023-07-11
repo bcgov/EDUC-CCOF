@@ -80,7 +80,7 @@
                                                     @isSummaryValid="isFormComplete"></FacilityInformationSummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
-                        <div v-if="!facility.funding"></div>
+                        <div v-if="!facility.funding || isRenewal"></div>
                         <div v-else>
                           <CCOFSummaryFamily v-if="summaryModel?.application?.organizationProviderType == 'FAMILY'"
                                     @isSummaryValid="isFormComplete" :funding="facility.funding"
@@ -106,8 +106,7 @@
                                       :ecewe-facility="facility.ecewe" :isProcessing="isProcessing"></ECEWESummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
-                        <div v-if="!facility.funding"></div>
-                        <UploadedDocumentsSummary v-else @isSummaryValid="isFormComplete"
+                        <UploadedDocumentsSummary @isSummaryValid="isFormComplete"
                                                   :documents="facility.documents"></UploadedDocumentsSummary>
                       </v-expansion-panel>
                     </div>

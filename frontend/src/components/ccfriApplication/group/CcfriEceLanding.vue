@@ -16,7 +16,7 @@
       class = "mx-0 justify-end"
       @click="toggleAll()"
       dark color='#003366'
-      :disabled="applicationStatus === 'SUBMITTED'"
+      :disabled="isReadOnly"
       >
       Opt in All Facilities
     </v-btn>
@@ -32,7 +32,7 @@
           tiled
           exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
+          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in filteredNavBarList" :key="facilityId">
           <v-card-text>
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
@@ -85,7 +85,7 @@
       </LargeButtonContainer>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
   </v-container>
 </template>
@@ -96,10 +96,12 @@
 
 import { mapState, mapMutations, mapActions } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
+
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -127,22 +129,29 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'applicationId']),
     ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
-
+    filteredNavBarList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
+    },
     isReadOnly(){
-      if (this.unlockedFacilities) {
+      if (this.unlockedFacilities || isChangeRequest(this)) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      else
+        return (this.applicationStatus === 'SUBMITTED');
     },
     unlockedFacilities(){
-      return this.navBarList.some(facility => facility.unlockCcfri);
+      return this.filteredNavBarList.some(facility => facility.unlockCcfri);
     },
 
   },
   beforeMount: function() {
-    this.showOptStatus = new Array(this.navBarList.length).fill(false);
+    this.showOptStatus = new Array(this.filteredNavBarList.length).fill(false);
 
-    this.navBarList.forEach((fac, index) => {
+    this.filteredNavBarList.forEach((fac, index) => { //TODO: validate this code
       if (fac.ccfriOptInStatus){
         this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
       }
@@ -158,14 +167,12 @@ export default {
       this.$set(this.showOptStatus, index, true);
     },
     toggleAll(){
-      this.navBarList.forEach((fac, index) => {
+      this.filteredNavBarList.forEach((fac, index) => {
         this.toggle(index);
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
     },
     async previous() {
-      console.log(this.ccfriOptInOrOut);
-      console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
       let path = await this.getPreviousPath();
       this.$router.push(path);
     },
@@ -174,7 +181,7 @@ export default {
       const radioButtonsIncomplete = Object.values(this.ccfriOptInOrOut).includes(undefined);
 
       let allOptStatusIncomplete = false;
-      for (const element of this.navBarList) {
+      for (const element of this.filteredNavBarList) {
         if (element.ccfriOptInStatus == null){
           allOptStatusIncomplete = true;
           break;
@@ -191,14 +198,19 @@ export default {
     async next() {
       await this.save(false);
 
-      let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
+      let firstOptInFacility = this.filteredNavBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
 
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){
+        //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
         this.$router.push({path : `${PATHS.eceweEligibility}`});
       }
       //if application locked, send to add new fees
-      else if (this.isReadOnly) {
+      else if (isChangeRequest(this) ) {
+        this.$router.push({path : `${CHANGE_URL_PREFIX}/${firstOptInFacility.changeRequestId}${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+      }
+      //if application locked, send to add new fees
+      else if (this.isReadOnly ) {
         this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
       }
       //if CCFRI is being renewed, go to page that displays fees
@@ -217,19 +229,22 @@ export default {
       this.processing = true;
       let payload = [];
 
-      for (let i = 0; i < this.navBarList.length; i++) {
+      for (let i = 0; i < this.filteredNavBarList.length; i++) {
       //change this to only send payloads with value chosen --- don't send undefined
-
         if (!ccfriOptInOrOut[i]){
           continue;
         }
-        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
+        if (this.filteredNavBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
+          this.filteredNavBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
           payload.push( {
             applicationID : this.applicationId, //CCOF BASE application ID
-            facilityID : this.navBarList[i].facilityId,
+            facilityID : this.filteredNavBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
-            ccfriApplicationId: this.navBarList[i].ccfriApplicationId
+            ccfriApplicationId: this.filteredNavBarList[i].ccfriApplicationId,
+            changeRequestFacilityId: this.filteredNavBarList[i].changeRequestNewFacilityId? this.filteredNavBarList[i].changeRequestNewFacilityId : undefined,
+            //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
+            //so it can be linked in the backend. It works with the above hardcoded guid ^
+            //I did not implement fully because it sounds like we might get that info back from profiderProfile
           });
         }
       }//end for loop

@@ -19,7 +19,7 @@ CHILD_AGE_CATEGORY_ORDER.set('PRE', 6);
 
 
 
-//Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API 
+//Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API
 
 const ACCOUNT_TYPE = Object.freeze({
   FACILITY: 100000001,
@@ -64,7 +64,7 @@ const OPTIN_STATUS_CODES = Object.freeze({
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
-  APPROVED: 3, 
+  APPROVED: 3,
   DRAFT: 2,
   SUBMITTED: 1,
   NOT_APPROVED: 4,
@@ -98,6 +98,23 @@ const FACILITY_AGE_GROUP_CODES = Object.freeze({
   '6': 'Preschool'
 });
 
+const CHANGE_REQUEST_TYPES = Object.freeze({
+  LEGAL_ORG_NAME_CHANGE: 100000000 ,
+  ORG_MAILING_ADDRESS: 100000001,
+  FACILITY_ADDRESS: 100000002,
+  FACILITY_NAME: 100000003,
+  LICENSE_CHANGE: 100000004,
+  NEW_FACILITY: 100000005,
+  SERVICE_DETAIL_CHANGE: 100000006,
+  PARENT_FEE_CHANGE: 100000007,
+  CLOSURE_UPDATE: 100000008,
+  CONTACT_INFORMATION_CHANGE: 100000009,
+  BUSINESS_HOURS: 100000010,
+  LEGAL_ENTITY_OWNERSHIP: 100000011,
+  DATE_DIRECT_DEPOSIT_INFO: 100000012,
+  PDF_CHANGE: 100000013,
+});
+
 module.exports = {
   CHILD_AGE_CATEGORY_TYPES,
   ACCOUNT_TYPE,
@@ -110,6 +127,7 @@ module.exports = {
   OPTIN_STATUS_CODES,
   PROGRAM_YEAR_STATUS_CODES,
   CCOF_APPLICATION_TYPES,
-  CHILD_AGE_CATEGORY_ORDER
+  CHILD_AGE_CATEGORY_ORDER,
+  CHANGE_REQUEST_TYPES
 };
 

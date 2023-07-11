@@ -1,3 +1,7 @@
+import Vue from 'vue';
+import Vuetify from 'vuetify';
+
+Vue.use(Vuetify);
 createAppDiv();
 function createAppDiv() {
   var app = document.createElement('div');

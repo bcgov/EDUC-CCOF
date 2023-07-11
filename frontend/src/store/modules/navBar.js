@@ -40,13 +40,15 @@ export default {
   },
   actions: {
     getNextPath: ({state}) => {
-      let index = getActiveIndex(state.navBarItems);
-      return getNavBarAtPositionIndex(state.navBarItems, (index + 1))?.link;
+      const index = getActiveIndex(state.navBarItems);
+      const  link = getNavBarAtPositionIndex(state.navBarItems, (index + 1))?.link;
+      console.log('Next path link is: ', link);
+      return link;
     },
     getPreviousPath: ({state}) => {
       let index = getActiveIndex(state.navBarItems);
       return getNavBarAtPositionIndex(state.navBarItems, (index - 1))?.link;
     },
 
-  },  
+  },
 };
