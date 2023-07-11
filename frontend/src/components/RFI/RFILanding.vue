@@ -215,6 +215,7 @@
                                 outlined
                                 :rules="rules.required"
                                 v-model.number="expense.expense"
+                                @input="convertBlankNumberToNull(expense,'expense')"
                                 prefix="$"
                                 label="Expense"
                   />
@@ -369,6 +370,7 @@
                       label="Amount Received"
                       type="number" @wheel="$event.target.blur()"
                       v-model.number="fundInfo.amount"
+                      @input="convertBlankNumberToNull(fundInfo,'amount')"
                       prefix="$"/>
                   </v-col>
 
@@ -378,6 +380,7 @@
                       type="number" @wheel="$event.target.blur()"
                       prefix="$"
                       v-model.number="fundInfo.expenses"
+                      @input="convertBlankNumberToNull(fundInfo,'expenses')"
                       label="Expense"
                       outlined
                       clearable
@@ -645,6 +648,7 @@
                     type="number" @wheel="$event.target.blur()"
                     class=""
                     v-model.number="obj.staffNumber"
+                    @input="convertBlankNumberToNull(obj,'staffNumber')"
                     label="Number of Staff Recieving Wage Increase"
                     outlined
                     clearable
@@ -670,6 +674,7 @@
                     prefix="$"
                     type="number" @wheel="$event.target.blur()"
                     v-model.number="obj.wageBeforeIncrease"
+                    @input="convertBlankNumberToNull(obj,'wageBeforeIncrease')"
                     label="Wage before increase"
                     outlined
                     clearable
@@ -683,6 +688,7 @@
                     prefix="$"
                     type="number" @wheel="$event.target.blur()"
                     v-model.number="obj.wageAfterIncrease"
+                    @input="convertBlankNumberToNull(obj,'wageAfterIncrease')"
                     label="Wage After increase"
                     outlined
                     clearable
@@ -697,6 +703,7 @@
                     outlined
                     :rules="[...rules.required, rules.min(0), rules.max(168)]"
                     v-model.number="obj.averageHours"
+                    @input="convertBlankNumberToNull(obj,'averageHours')"
                     label="Average hours per week at this facility"
                   />
                 </v-col>
@@ -1089,6 +1096,7 @@
                     outlined
                     :rules="rules.required"
                     v-model.number="obj.expense"
+                    @input="convertBlankNumberToNull(obj,'expense')"
                     prefix="$"
                   />
                 </v-col>
@@ -1317,6 +1325,7 @@
                     outlined
                     :rules="rules.required"
                     v-model.number="indigExpense.expense"
+                    @input="convertBlankNumberToNull(indigExpense,'expense')"
                     prefix="$"
                   />
                 </v-col>
@@ -1487,6 +1496,7 @@
 </template>
 <script>
 import alertMixin from '@/mixins/alertMixin';
+import globalMixin from '@/mixins/globalMixin';
 import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
 import {isEqual} from 'lodash';
@@ -1506,7 +1516,7 @@ let model = {
 // let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
-  mixins: [alertMixin],
+  mixins: [alertMixin, globalMixin],
   name: 'CcfriRequestMoreInfo',
   data() {
     return {
