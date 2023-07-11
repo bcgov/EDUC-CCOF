@@ -96,6 +96,7 @@ export const PATHS = {
   reportChange: {
     landing: `${CHANGE_URL_PREFIX}/landing`,
     notificationForm: `${CHANGE_URL_PREFIX}/change-notification-form`,
+    reportChangesSummaryDeclaration: `${CHANGE_URL_PREFIX}/summary-declaration`,
     facInfo: `${CHANGE_URL_PREFIX}/facility`,
     fundAmount: '/group/funding',
     ccfriHome: `${CHANGE_URL_PREFIX}/ccfriApplication/group/CcfriEceLanding`,

@@ -162,7 +162,7 @@ export default {
           text: 'Description',
           align: 'left',
           sortable: false,
-          value: 'description',
+          value: 'notetext',
           class: 'table-header'
         },
         {
