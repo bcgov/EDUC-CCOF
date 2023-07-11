@@ -211,7 +211,7 @@
 
                 <v-col class="col-md-2 col-12">
                   <v-text-field :disabled="isReadOnly"
-                                type="number"
+                                type="number" @wheel="$event.target.blur()"
                                 outlined
                                 :rules="rules.required"
                                 v-model.number="expense.expense"
@@ -367,7 +367,7 @@
                       outlined
                       :rules="rules.required"
                       label="Amount Received"
-                      type="number"
+                      type="number" @wheel="$event.target.blur()"
                       v-model.number="fundInfo.amount"
                       prefix="$"/>
                   </v-col>
@@ -375,7 +375,7 @@
                   <v-col class="col-md-2 col-12 ">
                     <v-text-field
                       :disabled="isReadOnly"
-                      type="number"
+                      type="number" @wheel="$event.target.blur()"
                       prefix="$"
                       v-model.number="fundInfo.expenses"
                       label="Expense"
@@ -642,7 +642,7 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     class=""
                     v-model.number="obj.staffNumber"
                     label="Number of Staff Recieving Wage Increase"
@@ -668,7 +668,7 @@
                   <v-text-field
                     :disabled="isReadOnly"
                     prefix="$"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     v-model.number="obj.wageBeforeIncrease"
                     label="Wage before increase"
                     outlined
@@ -681,7 +681,7 @@
                   <v-text-field
                     :disabled="isReadOnly"
                     prefix="$"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     v-model.number="obj.wageAfterIncrease"
                     label="Wage After increase"
                     outlined
@@ -693,7 +693,7 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     outlined
                     :rules="[...rules.required, rules.min(0), rules.max(168)]"
                     v-model.number="obj.averageHours"
@@ -1085,7 +1085,7 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     outlined
                     :rules="rules.required"
                     v-model.number="obj.expense"
@@ -1313,7 +1313,7 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     outlined
                     :rules="rules.required"
                     v-model.number="indigExpense.expense"
