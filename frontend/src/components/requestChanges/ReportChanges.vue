@@ -100,13 +100,13 @@
                 {{createFacilityNameString(changeRequest.changeActions)}}
               </v-col>
               <v-col class= "col-lg-2">
-                {{changeRequest.changeActions[0].status == 1? 'ACTIVE' : 'INACTIVE'}}
+                {{getStatusString(changeRequest.externalStatus)}}
               </v-col>
               <v-col class= "col-lg-2">
                 {{ changeRequest.createdOnDate }}
               </v-col>
                 <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId)">Continue</v-btn>
+                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId, index)">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
                   <v-btn class= "" @click="deleteRequest(changeRequest.changeActions[0].changeRequestId)">Delete</v-btn>
@@ -157,9 +157,6 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
-
-
-
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
@@ -190,20 +187,39 @@ export default {
       });
       return str;
     },
+    getStatusString(status){
+      switch (status){
+      case 1:
+        return "Incomplete";
+      case 2:
+        return "Submitted";
+      case 3:
+        return "Action Required";
+      case 4:
+        return "Ineligible";
+      case 5 :
+        return "Approved";
+      case 6:
+        return "Cancelled";
+      default:
+        return "Unknown"; //should never happen!
+      }
+
+    },
     next() {
       this.$router.push(PATHS.home);
     },
     routeToFacilityAdd(){
       this.$router.push(PATHS.reportChange.facInfo);
     },
-    continueButton(changeType, changeActionId = null,  changeRequestId = null){
+    continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
       if (changeType == 'PDF_CHANGE'){
         this.goToChangeForm(changeActionId, changeRequestId);
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilities[0].facilityId);
+        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[index].changeActions[0].facilities[0].facilityId);
       }
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){

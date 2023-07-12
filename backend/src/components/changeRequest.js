@@ -4,7 +4,7 @@ const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 const { mapFacilityObjectForBack } = require('./facility');
-const { ACCOUNT_TYPE, CCOF_STATUS_CODES, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
 
@@ -46,10 +46,27 @@ async function getChangeRequest(req, res) {
   try {
     let changeRequest = await getOperationWithObjectId('ccof_change_requests', req.params.changeRequestId);
     changeRequest = mapChangeRequestObjectForFront(changeRequest);
+    changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
+    changeRequest.externalStatus = getLabelFromValue(changeRequest.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
 
     return res.status(HttpStatus.OK).json(changeRequest);
   } catch (e) {
     console.log('e', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function updateChangeRequest(req, res){
+  let changeRequest = req.body;
+  //changeRequest.externalStatus = CHANGE_REQUEST_EXTERNAL_STATUS_CODES.externalStatus;
+  changeRequest = new MappableObjectForBack(changeRequest, ChangeRequestMappings);
+  changeRequest = changeRequest.toJSON();
+
+  try {
+    log.verbose('update change Request: payload', changeRequest);
+    let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -127,7 +144,7 @@ async function createChangeRequestFacility(req, res) {
       changeRequestNewFacilityId = payload.ccof_ccof_change_request_new_facility_facility[0].ccof_change_request_new_facilityid;
     }
     if (ccofBaseFundingId && changeRequestNewFacilityId) {
-      await updateChangeRequestNewFacility(changeRequestNewFacilityId, 
+      await updateChangeRequestNewFacility(changeRequestNewFacilityId,
         {
           "ccof_CCOF@odata.bind": `/ccof_application_basefundings(${ccofBaseFundingId})`
         }
@@ -192,4 +209,5 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
+  updateChangeRequest
 };

@@ -44,5 +44,5 @@ export function isChangeRequest(vueForm) {
 }
 
 export function sortByFacilityId(value) {
-  return sortBy(value,[function(o) { return o.facilityId; }])
+  return sortBy(value,[function(o) { return o.facilityId; }]);
 }

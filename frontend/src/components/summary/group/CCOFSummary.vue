@@ -349,6 +349,8 @@
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
               <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
               <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
+              <!-- change request link below -->
+                <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + '/funding/' + this.funding.ccofBaseFundingId" v-else-if="this.isChangeRequest && this.summaryModel.application.organizationProviderType == 'GROUP'"> <span style="color:#ff5252; text-underline: black"><u>CHANGE RECTo add this information, click here. This will bring you to a different page.</u></span></router-link >
               <router-link :to="this.PATHS.group.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
               <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
               <!-- <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link > -->
@@ -372,9 +374,11 @@
   </v-row>
 </template>
 <script>
-import {PATHS} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
+import {PATHS, CHANGE_URL_PREFIX} from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
+
 
 export default {
   name: 'CCOFSummary',
@@ -387,6 +391,10 @@ export default {
       type: String,
       required: true
     },
+    changeRecGuid: {
+      type: String,
+      required: false
+    }
   },
   methods: {
     calculateTotal() {
@@ -417,6 +425,8 @@ export default {
   },
   data() {
     return {
+      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
+      isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
       isValidForm: true,

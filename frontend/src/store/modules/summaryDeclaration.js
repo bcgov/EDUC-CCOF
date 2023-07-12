@@ -5,7 +5,7 @@ import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
-  console.log(uniqueLicenseCategories);
+  //console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
   let categories = lookupCategories.filter(item => uniqueLicenseCategories.includes(item.ccof_license_categoryid)).map(a => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -76,7 +76,20 @@ export default {
     async loadDeclaration({ commit, rootState }) {
       checkSession();
       try {
+
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.application.applicationId)).data;
+        commit('model', payload);
+      } catch (error) {
+        console.log(`Failed to get Declaration - ${error}`);
+        throw error;
+      }
+    },
+    async loadChangeRequestDeclaration({ commit, rootState } , changeRequestId) {
+      checkSession();
+      try {
+
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
+        console.log('!!!!!!!!!!!!!!!change rec payload' , payload);
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
@@ -103,7 +116,34 @@ export default {
         throw error;
       }
     },
+    async updateChangeRequestDeclaration({ commit, state, rootState}, changeRequestId) {
+      checkSession();
+      let payload = {
+        agreeConsentCertify:state.model.agreeConsentCertify,
+        orgContactName:state.model.orgContactName,
+        declarationAStatus:state.model?.declarationAStatus,
+        declarationBStatus:state.model?.declarationBStatus,
+        //externalStatus: 2,
+      };
 
+      //technically submit should be disabled until both these are filled in, so maybe don't need that
+      if (state.model.agreeConsentCertify && state.model.orgContactName){
+        payload.externalStatus = 2;
+      }
+      try {
+        // if ((Object.keys(reLockPayload).length > 0)) {
+        //   payload = {...payload, ...reLockPayload};
+        // }
+        let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+        state.model.externalStatus = 'SUBMITTED';
+        commit('model', state.model);
+        // commit('auth/setIsUserInfoLoaded', false, { root: true });
+        return response;
+      } catch (error) {
+        console.log(`Failed to SUBMIT application - ${error}`);
+        throw error;
+      }
+    },
     async loadSummary({ commit, rootState }, changeRecGuid = undefined) {
       checkSession();
       try {
@@ -115,16 +155,15 @@ export default {
           facilities: payload.facilities,
           ecewe:undefined
         };
-        // filter out all facilities that are part of the change request
-        const changeRequestList = rootState.app.navBarList.map( el => { if (el.changeRequestId) return el.facilityId;}).filter(el => el);
-        console.log('change request List: ', changeRequestList);
+        // filter out all facilities that are part of the change request --- Rob made the below code, when I pulled it in, it broke mine so commenting out for now
+        // const changeRequestList = rootState.app.navBarList.map( el => { if (el.changeRequestId) return el.facilityId;}).filter(el => el);
+        // console.log('change request List: ', changeRequestList);
 
-        summaryModel.facilities = summaryModel.facilities?.filter(el => !changeRequestList.includes(el.facilityId));
-
-        //TODO: add the following variables to each of the facilities object:  isNMFLoading = true, isRFILoading = true
+        // summaryModel.facilities = summaryModel.facilities?.filter(el => !changeRequestList.includes(el.facilityId));
 
         //filter all facilites and only show the new ones associated with the changeRecGuid on the page
         if (changeRecGuid){
+          console.log(summaryModel.facilities);
           summaryModel.facilities = summaryModel.facilities.filter(fac => {return fac.changeRequestId == changeRecGuid;});
         }
         else {
