@@ -131,7 +131,7 @@
             <span cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
             <v-text-field cols="6"  placeholder="Required" :value="this.getOptInOptOut(this.ccfri.ccfriOptInStatus)" class="summary-value " flat solo hide-details readonly :rules="rules.required" ></v-text-field>
           </v-row>
-        </v-col>  
+        </v-col>
         <v-col cols="12" class="pb-2 pt-2">
           <v-row no-gutters class="d-flex justify-start">
             <span class="summary-label">Is there any other information about this facility you would like us to
