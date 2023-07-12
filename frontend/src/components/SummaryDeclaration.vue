@@ -195,7 +195,7 @@
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
                 <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
-                <div v-show=" (this.unlockDeclaration && this.allFacilitiesApproved) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
+                <div v-show=" (this.model.unlockDeclaration && this.allFacilitiesApproved) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
                   <strong>DEC B</strong>
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
@@ -357,15 +357,16 @@ export default {
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     isReadOnly() {
+      console.log('cna submit' , this.canSubmit);
       if (this.isMinistryUser) {
         return true;
-      } else if (isChangeRequest(this)){
-        return false; //TODO: update with better logic after submit
+      } else if (this.unlockDeclaration || this.model.unlockDeclaration) {
+        console.log('howdy');
+        return false;
       } else if (!this.canSubmit) {
         return true;
-      } else if (this.unlockDeclaration) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
+      }
+      else if (this.applicationStatus === 'SUBMITTED') {
         return true;
       }
       return false;
@@ -405,6 +406,7 @@ export default {
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
+      console.log(this.canSubmit );
       if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
       } else {
@@ -433,9 +435,15 @@ export default {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateChangeRequestDeclaration(this.$route.params?.changeRecGuid);
-        await this.updateDeclaration(this.createRelockPayload()); //ADD IN THE IF STATEMENT
-        //JB - we will prob have a different endpoint / payload to save the change req
+        if(isChangeRequest(this)){
+          console.log('CHANGING!');
+          let unlockPayload = this.createChangeRequestRelockPayload();
+          console.log('unlok payload', unlockPayload);
+          await this.updateChangeRequestDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+        }
+        else{
+          await this.updateDeclaration(this.createRelockPayload());
+        }
         this.dialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.' + error);
@@ -449,6 +457,30 @@ export default {
       if ((Object.keys(ccrfiRelockPayload).length > 0)) {
         applicationRelockPayload['facilities'] = ccrfiRelockPayload;
       }
+      return applicationRelockPayload;
+    },
+    createChangeRequestRelockPayload() {
+      let applicationRelockPayload = {
+        unlockDeclaration: this.model.unlockDeclaration,
+        unlockChangeRequestDocument: this.model.unlockChangeRequestDocument,
+        unlockChangeRequest: this.model.unlockChangeRequest
+      };
+
+      console.log('first obj', applicationRelockPayload);
+      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI();
+      if ((Object.keys(ccrfiRelockPayload).length > 0)) {
+        applicationRelockPayload['facilities'] = ccrfiRelockPayload;
+      }
+      // Create payload with only unlock propteries set to 1.
+      // eslint-disable-next-line no-unused-vars
+      applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == true));
+      console.log('unlock appp', applicationRelockPayload);
+      // Update payload unlock properties from 1 to 0.
+      Object.keys(applicationRelockPayload).forEach(key => {
+        applicationRelockPayload[key] = false;
+      });
+
+      console.log('unlock appp2', applicationRelockPayload);
       return applicationRelockPayload;
     },
     createRelockPayloadForApplication() {

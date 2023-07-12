@@ -76,7 +76,6 @@ export default {
     async loadDeclaration({ commit, rootState }) {
       checkSession();
       try {
-
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.application.applicationId)).data;
         commit('model', payload);
       } catch (error) {
@@ -84,12 +83,16 @@ export default {
         throw error;
       }
     },
-    async loadChangeRequestDeclaration({ commit, rootState } , changeRequestId) {
+    async loadChangeRequestDeclaration({ commit,} , changeRequestId) {
       checkSession();
       try {
-
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
-        console.log('!!!!!!!!!!!!!!!change rec payload' , payload);
+
+        //clear the old decleration data out so provider can sign again for Dec B
+        if (payload.unlockDeclaration){
+          payload.agreeConsentCertify = null;
+          payload.orgContactName = null;
+        }
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
@@ -116,7 +119,7 @@ export default {
         throw error;
       }
     },
-    async updateChangeRequestDeclaration({ commit, state, rootState}, changeRequestId) {
+    async updateChangeRequestDeclaration({ commit, state,}, {changeRequestId, reLockPayload}) {
       checkSession();
       let payload = {
         agreeConsentCertify:state.model.agreeConsentCertify,
@@ -126,14 +129,16 @@ export default {
         //externalStatus: 2,
       };
 
-      //technically submit should be disabled until both these are filled in, so maybe don't need that
+      //technically submit should be disabled until both these are filled in, so maybe don't need this?
       if (state.model.agreeConsentCertify && state.model.orgContactName){
         payload.externalStatus = 2;
       }
+
       try {
-        // if ((Object.keys(reLockPayload).length > 0)) {
-        //   payload = {...payload, ...reLockPayload};
-        // }
+        if ((Object.keys(reLockPayload).length > 0)) {
+          payload = {...payload, ...reLockPayload};
+        }
+        //console.log('HEY this is re lock payloaddddddd', reLockPayload);
         let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
         state.model.externalStatus = 'SUBMITTED';
         commit('model', state.model);
