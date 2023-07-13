@@ -9,6 +9,11 @@ const ChangeRequestMappings = [
   { back: 'ccof_change_action_change_request ', front: 'ccof_change_action_change_request'}, // "d11fbf2c-e1c5-ed11-b597-000d3a09d699",
   { back: 'createdon', front: 'createdOnDate'},
   { back: 'ccof_change_action_change_request', front: 'changeActions'},
+  { back: 'ccof_organization_contact_name', front: 'orgContactName'},
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration'},
+  { back: 'ccof_consent', front: 'agreeConsentCertify'},
+  { back: 'ccof_unlock_document', front: 'unlockChangeRequestDocument'},
+  { back: 'ccof_unlock_change_request', front: 'unlockChangeRequest'},
   // { back: 'ccof_change_request_new_facilityid', front: 'changeFacilityID'},
 ];
 

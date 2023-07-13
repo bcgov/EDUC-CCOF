@@ -5,7 +5,7 @@ const { MappableObjectForFront, MappableObjectForBack, getMappingString } = requ
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
-const { ACCOUNT_TYPE, CCOF_STATUS_CODES, APPLICATION_STATUS_CODES, CHANGE_REQUEST_TYPES } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
 
@@ -76,7 +76,10 @@ async function getChangeRequest(req, res) {
     let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype)`;
     let changeRequest = await getOperation(operation);
     changeRequest = await mapChangeRequestObjectForFront(changeRequest);
-
+    changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
+    changeRequest.externalStatus = getLabelFromValue(changeRequest.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
+    log.info(changeRequest);
+    log.info(CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
     return res.status(HttpStatus.OK).json(changeRequest);
   } catch (e) {
     console.log('e', e);
@@ -84,6 +87,20 @@ async function getChangeRequest(req, res) {
   }
 }
 
+async function updateChangeRequest(req, res){
+  let changeRequest = req.body;
+  //changeRequest.externalStatus = CHANGE_REQUEST_EXTERNAL_STATUS_CODES.externalStatus;
+  changeRequest = new MappableObjectForBack(changeRequest, ChangeRequestMappings);
+  changeRequest = changeRequest.toJSON();
+
+  try {
+    log.verbose('update change Request: payload', changeRequest);
+    let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 
 // create Change Request
 async function createChangeRequest(req, res, changeType) {
@@ -222,4 +239,5 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
+  updateChangeRequest
 };

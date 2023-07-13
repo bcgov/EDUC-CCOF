@@ -31,6 +31,9 @@ export default {
       if (changeRequestId) {
         state.changeRequestStore[changeRequestId] = model;
       }
+    },//prob take this out
+    setChangeRequestStore: (state, model) => {
+      state.changeRequestStore = model;
     },
     setChangeRequestId: (state, changeRequestId) => {
       state.changeRequestId = changeRequestId;
@@ -53,7 +56,7 @@ export default {
       console.log('loading change req for: ', rootState.application.applicationId);
 
       checkSession();
-
+      let store = [];
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootState.application.applicationId);
         //console.log(response);
@@ -62,8 +65,8 @@ export default {
         if (!isEmpty(response.data)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
-            commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
-
+           // commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
+            store.push(element);
             //in the future we may not want to assume a new facility change is not the first of the array?
 
             element.changeActions.forEach((changeAction) => {
@@ -82,6 +85,21 @@ export default {
           commit('setNewFacilityList', newFacList);
           //may not need this either
         }
+
+        /*Ministry requirements want change request shown in the order of:
+          Action Required
+          In Progress
+          All others
+          priority numbers are arbitrary
+        */
+        store.sort((a , b) => {
+          a.externalStatus === 3? a.priority = 99 : a.externalStatus === 1? a.priority = 98 : a.priority = a.externalStatus;
+          b.externalStatus === 3? b.priority = 99 : b.externalStatus === 1? b.priority = 98 : b.priority = b.externalStatus;
+          return b.priority - a.priority;
+        });
+
+        commit('setChangeRequestStore', store);
+        console.log('sorted store:' , store);
       } catch(e) {
         console.log(`Failed to get load change req with error - ${e}`);
         throw e;
@@ -111,15 +129,15 @@ export default {
       }
 
     },
-    async deleteChangeRequest({state}, changeRequestId) {
+    async deleteChangeRequest({state, commit}, changeRequestId) {
       console.log('trying to delete req for: ', changeRequestId);
 
       checkSession();
 
       try {
-        let response = await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
-        console.log(response);
-        delete state.changeRequestStore[changeRequestId];
+        await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
+        state.changeRequestStore.splice(state.changeRequestStore.findIndex(changeRec => changeRec.changeRequestId === changeRequestId), 1);
+        commit('setChangeRequestStore', state.changeRequestStore);
       } catch(e) {
         console.log(`Failed to delete change req with error - ${e}`);
         throw e;

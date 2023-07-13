@@ -145,8 +145,16 @@
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
-            <v-col cols="12" v-if="!ccfri" class="d-flex justify-start">
+            <v-col cols="12" v-if="!ccfri && this.isChangeRequest" class="d-flex justify-start">
+
               <router-link :to="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+            </v-col>
+            <v-col cols="12" v-else-if="!ccfri" class="d-flex justify-start">
+              <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + '/ccfriApplication '" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+            </v-col>
+            <v-col cols="12" v-else-if="this.isChangeRequest" class="d-flex justify-start">
+             <!-- change request link below -->
+                <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + PATHS.addNewFees + '/' + ccfri?.ccfriId"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
             </v-col>
             <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
               <router-link :to="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
@@ -163,9 +171,11 @@
 </template>
 <script>
 import _ from 'lodash';
-import {PATHS} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
+import {PATHS, CHANGE_URL_PREFIX} from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
+
 
 
 export default {
@@ -178,10 +188,15 @@ export default {
       type: String,
       required: false
     },
+    changeRecGuid: {
+      type: String,
+      required: false
+    }
   },
   data() {
     return {
-
+      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
+      isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
       isValidForm: true,
