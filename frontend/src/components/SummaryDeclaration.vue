@@ -188,7 +188,6 @@
                  <!-- show for new org after ministry unlocks -->
                  <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
                 <div v-show="(this.isChangeRequest && !this.allFacilitiesApproved) ||((this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) )">
-                  <strong>DEC A</strong>
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -196,7 +195,6 @@
                 </div>
                 <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
                 <div v-show=" (this.model.unlockDeclaration && this.allFacilitiesApproved) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
-                  <strong>DEC B</strong>
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province

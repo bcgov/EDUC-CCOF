@@ -5,7 +5,6 @@ import {checkSession} from '@/utils/session';
 
 function parseLicenseCategories(licenseCategories, rootState) {
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
-  //console.log(uniqueLicenseCategories);
   const lookupCategories = [...rootState.app.lookupInfo.familyLicenseCategory, ...rootState.app.lookupInfo.groupLicenseCategory];
   let categories = lookupCategories.filter(item => uniqueLicenseCategories.includes(item.ccof_license_categoryid)).map(a => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -184,7 +183,6 @@ export default {
 
         //filter all facilites and only show the new ones associated with the changeRecGuid on the page
         if (changeRecGuid){
-          console.log(summaryModel.facilities);
           summaryModel.facilities = summaryModel.facilities.filter(fac => {return fac.changeRequestId == changeRecGuid;});
         }
         else {
@@ -195,7 +193,7 @@ export default {
         commit('isMainLoading', false);
 
 
-        let isSummaryLoading = new Array (payload.facilities.length).fill(true);
+        let isSummaryLoading = new Array (summaryModel.facilities.length).fill(true);
 
         await commit('isSummaryLoading', isSummaryLoading );
 
