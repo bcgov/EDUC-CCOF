@@ -163,7 +163,6 @@ export default {
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
-    ...mapState('reportChanges', ['changeRequestId', 'newFacilityList']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -206,7 +205,7 @@ export default {
     this.setApplicationId(this.applicationId);
     let response = await this.loadData();
     if (response) {
-      this.initECEWEFacilities(this.navBarList);
+      this.initECEWEFacilities(this.filteredNavBarList);
       this.setupUiFacilities();
       this.model = {...this.eceweModel};
     }
@@ -253,7 +252,7 @@ export default {
       this.$refs.form?.validate();
     },
     async loadData() {
-      if (this.isStarted) {
+      if (this.isStarted && (this.facilities?.length > 0)  && (this.facilities[0].changeRequestId == this.$route.params.changeRecGuid)) {
         return true;
       }
       if (this.applicationId) {

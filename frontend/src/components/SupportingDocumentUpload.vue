@@ -146,6 +146,9 @@ export default {
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapState('reportChanges', ['changeRequestId']),
     isLocked() {
+      if (isChangeRequest(this)) {
+        return false;
+      }
       if (this.unlockSupportingDocuments) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
@@ -159,8 +162,14 @@ export default {
     },
     isNextEnabled() {
       return this.isValidForm && this.canSubmit;
-    }
-
+    },
+    filteredNavBarList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
+    },
   },
 
   async mounted() {
@@ -292,6 +301,7 @@ export default {
           ccof_facility: file.selectFacility?.facilityId,
           subject: 'SUPPORTING',
           notetext: file.description,
+          changeRequestNewFacilityId: file.selectFacility?.changeRequestNewFacilityId,
           ...this.fileMap.get(String(file.id))
         };
         payload.push(obj);
@@ -346,7 +356,7 @@ export default {
       this.isLoading = true;
       try {
         await this.getDocuments(this.applicationId);
-        this.uploadedDocuments = this.getUploadedDocuments;
+        this.uploadedDocuments = this.getUploadedDocuments.filter(document => this.filteredNavBarList.findIndex(item => item.facilityId == document.ccof_facility) > -1);
       } catch (e) {
         console.error(e);
       } finally {
@@ -387,11 +397,12 @@ export default {
       this.uploadedDocuments[index].description = item.description;
     },
     async mapFacilityData() {
-      for (let facilityInfo of this.navBarList) {
+      for (let facilityInfo of this.filteredNavBarList) {
         const facility = {};
         facility.facilityId = facilityInfo.facilityId;
         facility.facilityName = facilityInfo.facilityName;
         facility.licenseNumber = facilityInfo.licenseNumber;
+        facility.changeRequestNewFacilityId = facilityInfo.changeRequestNewFacilityId;
         this.facilityNames.push(facility);
       }
     },
