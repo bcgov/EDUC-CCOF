@@ -12,7 +12,10 @@
                dense
                height="20rem"
                clipped-left
-    ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
+    ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment </h3></div></v-app-bar>
+    <div>
+      <h3 class="subBanner" v-if="subtitleBanner!=''">{{ subtitleBanner }}</h3>
+    </div>
     <ModalIdle v-if="isAuthenticated"/>
     <router-view/>
     </v-main>
@@ -49,7 +52,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'loginError', 'isLoading']),
     
-    ...mapState('app', ['pageTitle', 'showNavBar']),
+    ...mapState('app', ['pageTitle', 'showNavBar','subtitleBanner']),
+    ...mapState('application',['formattedProgramYear']),
     isIE() {
       return /Trident\/|MSIE/.test(window.navigator.userAgent);
     }
@@ -92,6 +96,11 @@ export default {
 
 .envBanner {
   font-size: 0.8rem;
+}
+.subBanner {
+  font-size: 0.8rem;
+  background-color: #fff9c4;
+  padding-left:2%;
 }
 
 .v-application {
