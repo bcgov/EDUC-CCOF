@@ -182,12 +182,13 @@ export default {
 
       //change in backend, only returns 1 at a time rn
       let action = changeActions.find(el => el.changeType == "NEW_FACILITY");
-      action.facilities.forEach(fac => {
-        if (fac.facilityName){
-          str = str + `${fac.facilityName}, `;
-        }
-
-      });
+      if (action.facilities) {
+        action.facilities.forEach(fac => {
+          if (fac.facilityName){
+            str = str + `${fac.facilityName}, `;
+          }
+        });
+      }
       return str;
     },
     next() {
