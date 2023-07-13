@@ -1,7 +1,9 @@
+import {isNullOrBlank} from '@/utils/common';
+
 export default {
   methods: {
     convertBlankNumberToNull(object, key) {
-      object[key] = object[key] ? object[key] : null;
+      object[key] = !isNullOrBlank(object[key]) ? object[key] : null;
     }
   }
 };
