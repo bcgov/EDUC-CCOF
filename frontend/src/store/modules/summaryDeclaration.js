@@ -133,37 +133,6 @@ export default {
         throw error;
       }
     },
-    //test refactor with above func
-    // async updateChangeRequestDeclaration({ commit, state,}, {changeRequestId, reLockPayload}) {
-    //   checkSession();
-    //   let payload = {
-    //     agreeConsentCertify:state.model.agreeConsentCertify,
-    //     orgContactName:state.model.orgContactName,
-    //     declarationAStatus:state.model?.declarationAStatus,
-    //     declarationBStatus:state.model?.declarationBStatus,
-    //     //externalStatus: 2,
-    //   };
-
-    //   //technically submit should be disabled until both these are filled in, so maybe don't need this?
-    //   if (state.model.agreeConsentCertify && state.model.orgContactName){
-    //     payload.externalStatus = 2;
-    //   }
-
-    //   try {
-    //     if ((Object.keys(reLockPayload).length > 0)) {
-    //       payload = {...payload, ...reLockPayload};
-    //     }
-    //     //console.log('HEY this is re lock payloaddddddd', reLockPayload);
-    //     let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
-    //     state.model.externalStatus = 'SUBMITTED';
-    //     commit('model', state.model);
-    //     // commit('auth/setIsUserInfoLoaded', false, { root: true });
-    //     return response;
-    //   } catch (error) {
-    //     console.log(`Failed to SUBMIT application - ${error}`);
-    //     throw error;
-    //   }
-    // },
     async loadSummary({ commit, rootState }, changeRecGuid = undefined) {
       checkSession();
       try {

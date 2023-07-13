@@ -590,42 +590,10 @@ async function getChangeRequestsFromApplicationId(applicationId){
 
 async function getChangeRequest(req, res){
   try {
-  //   let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${req.params.applicationId}`;
-  //   let changeRequests = await getOperation(operation);
-  //   changeRequests = changeRequests.value;
-
-  //   let payload = [];
-
-  //   log.verbose(changeRequests);
-  //   await Promise.all(changeRequests.map(async (request) => {
-
-  //     let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
-
-  //     //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
-  //     req.changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
-
-  //       let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
-
-  //       //todo: add in logic for other change types, when required.
-  //       switch(mappedChangeAction.changeType){
-  //       case CHANGE_REQUEST_TYPES.PDF_CHANGE:
-  //         log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPES.PDF_CHANGE));
-  //         mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE;
-  //         break;
-  //       case CHANGE_REQUEST_TYPES.NEW_FACILITY:
-  //         mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
-  //         mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
-  //         break;
-  //       }
-  //       return mappedChangeAction;
-  //     }));
-
-  //     payload.push(req);
-  //   }));
-
+    //pulled the logic out into a seperate function so it can be called from somewhere else
     const payload = await getChangeRequestsFromApplicationId(req.params.applicationId);
 
-    log.info('final payload', payload);
+    //log.info('final payload', payload);
     return res.status(HttpStatus.OK).json(payload);
   } catch (e) {
     log.error('An error occurred while getting change request', e);
