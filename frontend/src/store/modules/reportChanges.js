@@ -153,9 +153,8 @@ export default {
 
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/documents/' + changeActionId);
-        //console.log(response.data);
-
         commit('setUploadedDocument', response.data);
+        return response.data;
       } catch(e) {
         console.log(`Failed to get load req docs with error - ${e}`);
         throw e;
