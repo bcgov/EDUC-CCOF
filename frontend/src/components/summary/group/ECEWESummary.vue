@@ -87,7 +87,8 @@
 <script>
 
 import {mapState} from 'vuex';
-import {PATHS} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
+import {PATHS, CHANGE_URL_PREFIX} from '@/utils/constants';
 import rules from '@/utils/rules';
 
 export default {
@@ -105,6 +106,10 @@ export default {
       type: Boolean,
       required: false
     },
+    changeRecGuid: {
+      type: String,
+      required: false
+    }
   },
   computed: {
     ...mapState('application', ['formattedProgramYear']),
@@ -113,6 +118,8 @@ export default {
   },
   data() {
     return {
+      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
+      isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
       isValidForm: true,
@@ -155,7 +162,10 @@ export default {
       return !!(this.eceweFacility);
     },
     getRoutingPath(){
-      if(this.eceweFacility){
+      if(this.isChangeRequest){
+        return `${CHANGE_URL_PREFIX}/${this.changeRecGuid}${PATHS.eceweEligibility}`;
+      }
+      else if(this.eceweFacility){
         return PATHS.eceweFacilities;
       }else {
         return PATHS.eceweEligibility;

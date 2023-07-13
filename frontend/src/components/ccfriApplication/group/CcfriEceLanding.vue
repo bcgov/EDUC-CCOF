@@ -203,7 +203,12 @@ export default {
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){
         //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
-        this.$router.push({path : `${PATHS.eceweEligibility}`});
+        if (isChangeRequest(this) ) {
+          this.$router.push({path : `${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweEligibility}`});
+        }
+        else {
+          this.$router.push({path : `${PATHS.eceweEligibility}`});
+        }
       }
       //if application locked, send to add new fees
       else if (isChangeRequest(this) ) {

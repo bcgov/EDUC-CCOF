@@ -77,7 +77,8 @@
                                                     :ecewe-status="facility?.ecewe?.optInOrOut"
                                                     :license-categories="facility?.licenseCategories"
                                                     :providerType="summaryModel?.application?.organizationProviderType"
-                                                    @isSummaryValid="isFormComplete"></FacilityInformationSummary>
+                                                    @isSummaryValid="isFormComplete"
+                                                    :changeRecGuid="facility?.changeRequestId"></FacilityInformationSummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <div v-if="!facility.funding || isRenewal"></div>
@@ -86,24 +87,31 @@
                                     @isSummaryValid="isFormComplete" :funding="facility.funding"
                                     :facilityId="facility.facilityId"></CCOFSummaryFamily>
                           <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"
-                                    :facilityId="facility.facilityId"></CCOFSummary>
+                                    :facilityId="facility.facilityId" :changeRecGuid="facility.changeRequestId"></CCOFSummary>
                         </div>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri"
-                                      :facility-id="facility.facilityId"></CCFRISummary>
+                                      :facility-id="facility.facilityId"
+                                      :changeRecGuid="facility?.changeRequestId"></CCFRISummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
                         <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp"
-                                    :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></RFISummary>
+                                    :ccfriId="facility?.ccfri?.ccfriId"
+                                    :facilityId="facility.facilityId"
+                                    :changeRecGuid="facility?.changeRequestId"></RFISummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
                         <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp"
-                                    :ccfriId="facility?.ccfri?.ccfriId" :facilityId="facility.facilityId"></NMFSummary>
+                                    :ccfriId="facility?.ccfri?.ccfriId"
+                                    :facilityId="facility.facilityId"
+                                    :changeRecGuid="facility?.changeRequestId"></NMFSummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                      :ecewe-facility="facility.ecewe" :isProcessing="isProcessing"></ECEWESummary>
+                                      :ecewe-facility="facility.ecewe"
+                                      :isProcessing="isProcessing"
+                                      :changeRecGuid="facility.changeRequestId"></ECEWESummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <UploadedDocumentsSummary @isSummaryValid="isFormComplete"
@@ -114,7 +122,8 @@
                 <div v-if="!this.isRenewal">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                :ecewe-facility="null" :isProcessing="isProcessing"></ECEWESummary>
+                                :ecewe-facility="null" :isProcessing="isProcessing"
+                                ></ECEWESummary>
                 </v-expansion-panel>
                 </div>
               </v-row>
@@ -177,13 +186,15 @@
                   </p>
                 </div>
                  <!-- show for new org after ministry unlocks -->
-                <div v-show="(this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) ">
+                 <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
+                <div v-show="(this.isChangeRequest && !this.allFacilitiesApproved) ||((this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) )">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
-                <div v-show="(this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber)">
+                <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
+                <div v-show=" (this.model.unlockDeclaration && this.allFacilitiesApproved) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -301,6 +312,7 @@
 <script>
 
 import {PATHS} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -345,11 +357,17 @@ export default {
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
-      } else if (!this.canSubmit) {
-        return true;
-      } else if (this.unlockDeclaration) {
+      } else if ((this.model.externalStatus =="INCOMPLETE" || this.model.externalStatus == "ACTION_REQUIRED") && !this.allFacilitiesApproved) {
+        //allow users to submit their Dec A Change Request form without having to manually unlock
         return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
+      } else if (this.unlockDeclaration || this.model.unlockDeclaration) {
+        //ministry unlocks declaration for PCF or Change Request New Facility
+        return false;
+      } else if (!this.canSubmit) {
+        //checkboxes
+        return true;
+      }
+      else if (this.applicationStatus === 'SUBMITTED') {
         return true;
       }
       return false;
@@ -360,10 +378,16 @@ export default {
     isSummaryComplete() {
       return (this.invalidSummaryForms.length < 1 );
     },
+    allFacilitiesApproved(){
+      return this.summaryModel?.facilities?.every(facility => {
+        return facility.facilityInfo.facilityAccountNumber;
+      });
+    },
 
   },
   data() {
     return {
+      isChangeRequest: isChangeRequest(this), //might not need this - jb testing
       model,
       isValidForm: false,
       isLoading: false,
@@ -377,7 +401,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     ...mapMutations('application',['setIsEceweComplete']),
@@ -390,10 +414,16 @@ export default {
       }
       return this.isValidForm;
     },
+
     async loadData() {
       this.isLoading = true;
       try {
-        await this.loadDeclaration();
+        if(isChangeRequest(this)){
+          await this.loadChangeRequestDeclaration(this.$route.params?.changeRecGuid);
+        }
+        else{
+          await this.loadDeclaration();
+        }
       } catch (error) {
         console.log('Error loading application Declaration.', error);
         this.setFailureAlert('Error loading application Declaration.');
@@ -405,7 +435,12 @@ export default {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration(this.createRelockPayload());
+        if(isChangeRequest(this)){
+          await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+        }
+        else{
+          await this.updateDeclaration({changeRequestId: undefined, reLockPayload: this.createRelockPayload()});
+        }
         this.dialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.' + error);
@@ -419,6 +454,28 @@ export default {
       if ((Object.keys(ccrfiRelockPayload).length > 0)) {
         applicationRelockPayload['facilities'] = ccrfiRelockPayload;
       }
+      return applicationRelockPayload;
+    },
+    createChangeRequestRelockPayload() {
+      let applicationRelockPayload = {
+        unlockDeclaration: this.model.unlockDeclaration,
+        unlockChangeRequestDocument: this.model.unlockChangeRequestDocument,
+        unlockChangeRequest: this.model.unlockChangeRequest
+      };
+
+      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI(); //mentioned that we might need this, but actually I think no.. TODO: ask rob
+      if ((Object.keys(ccrfiRelockPayload).length > 0)) {
+        applicationRelockPayload['facilities'] = ccrfiRelockPayload;
+      }
+      // Create payload with only unlock propteries set to 1.
+      // eslint-disable-next-line no-unused-vars
+      applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == true));
+
+      // Update payload unlock properties from true to false for change request
+      Object.keys(applicationRelockPayload).forEach(key => {
+        applicationRelockPayload[key] = false;
+      });
+
       return applicationRelockPayload;
     },
     createRelockPayloadForApplication() {
@@ -573,7 +630,7 @@ export default {
   },
   async mounted() {
     this.isProcessing = true;
-    await this.loadSummary();
+    await this.loadSummary(this.$route.params?.changeRecGuid);
 
     if (!this.unlockDeclaration) {
       await this.loadData();

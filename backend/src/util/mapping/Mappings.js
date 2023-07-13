@@ -417,6 +417,7 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,
 ];
 
+//DONT USE THIS below for most change rec things- there is a seperate file for change request mappings
 const ChangeRequestMappings = [
   { back: 'ccof_change_requestid', front: 'changeRequestId'}, // null,
   //{ back: '', front: ''}, // null,
