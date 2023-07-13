@@ -49,6 +49,8 @@ async function getChangeRequest(req, res) {
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
     changeRequest.externalStatus = getLabelFromValue(changeRequest.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
 
+    log.info(changeRequest);
+    log.info(CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
     return res.status(HttpStatus.OK).json(changeRequest);
   } catch (e) {
     console.log('e', e);

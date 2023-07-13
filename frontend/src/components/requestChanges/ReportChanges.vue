@@ -17,7 +17,7 @@
         <v-row justify="space-around">
 
 
-          <SmallCard  class= "col-lg-6 " :disable="false">
+          <SmallCard  class= "col-lg-6 " :disable="false" v-if="this.organizationProviderType == 'GROUP'">
             <template #content class="px-10">
               <p class="text-h6 text-center "> Add a New facility to an existing organization </p>
               <p class="px-2">
@@ -151,6 +151,7 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore',]),
+    ...mapState('organization', ['organizationProviderType',]),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;

@@ -154,7 +154,7 @@
             </v-col>
             <v-col cols="12" v-else-if="this.isChangeRequest" class="d-flex justify-start">
              <!-- change request link below -->
-                <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + PATHS.addNewFees + '/' + ccfri?.ccfriId"> <span style="color:#ff5252; text-underline: black"><u>CHANGE RECTo add this information, click here. This will bring you to a different page.</u></span></router-link >
+                <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + PATHS.addNewFees + '/' + ccfri?.ccfriId"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
             </v-col>
             <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
               <router-link :to="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>

@@ -357,13 +357,16 @@ export default {
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     isReadOnly() {
-      console.log('cna submit' , this.canSubmit);
       if (this.isMinistryUser) {
         return true;
+      } else if ((this.model.externalStatus =="INCOMPLETE" || this.model.externalStatus == "ACTION_REQUIRED") && !this.allFacilitiesApproved) {
+        //allow users to submit their Dec A Change Request form without having to manually unlock
+        return false;
       } else if (this.unlockDeclaration || this.model.unlockDeclaration) {
-        console.log('howdy');
+        //ministry unlocks declaration for PCF or Change Request New Facility
         return false;
       } else if (!this.canSubmit) {
+        //checkboxes
         return true;
       }
       else if (this.applicationStatus === 'SUBMITTED') {
@@ -400,13 +403,12 @@ export default {
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'updateChangeRequestDeclaration', 'loadSummary', 'updateApplicationStatus']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
     ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     isPageComplete() {
-      console.log(this.canSubmit );
       if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
       } else {
@@ -436,13 +438,10 @@ export default {
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
         if(isChangeRequest(this)){
-          console.log('CHANGING!');
-          let unlockPayload = this.createChangeRequestRelockPayload();
-          console.log('unlok payload', unlockPayload);
-          await this.updateChangeRequestDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+          await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
         }
         else{
-          await this.updateDeclaration(this.createRelockPayload());
+          await this.updateDeclaration({changeRequestId: undefined, reLockPayload: this.createRelockPayload()});
         }
         this.dialog = true;
       } catch (error) {
@@ -466,21 +465,19 @@ export default {
         unlockChangeRequest: this.model.unlockChangeRequest
       };
 
-      console.log('first obj', applicationRelockPayload);
-      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI();
+      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI(); //mentioned that we might need this, but actually I think no.. TODO: ask rob
       if ((Object.keys(ccrfiRelockPayload).length > 0)) {
         applicationRelockPayload['facilities'] = ccrfiRelockPayload;
       }
       // Create payload with only unlock propteries set to 1.
       // eslint-disable-next-line no-unused-vars
       applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == true));
-      console.log('unlock appp', applicationRelockPayload);
-      // Update payload unlock properties from 1 to 0.
+
+      // Update payload unlock properties from true to false for change request
       Object.keys(applicationRelockPayload).forEach(key => {
         applicationRelockPayload[key] = false;
       });
 
-      console.log('unlock appp2', applicationRelockPayload);
       return applicationRelockPayload;
     },
     createRelockPayloadForApplication() {
