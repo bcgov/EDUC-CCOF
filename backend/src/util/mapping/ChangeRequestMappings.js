@@ -8,6 +8,7 @@ const ChangeRequestMappings = [
   { back: '_ccof_application_value', front: 'applicationId'}, // "d11fbf2c-e1c5-ed11-b597-000d3a09d699",
   { back: 'ccof_change_action_change_request ', front: 'ccof_change_action_change_request'}, // "d11fbf2c-e1c5-ed11-b597-000d3a09d699",
   { back: 'createdon', front: 'createdOnDate'},
+  { back: 'ccof_change_action_change_request', front: 'changeActions'},
   { back: 'ccof_organization_contact_name', front: 'orgContactName'},
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration'},
   { back: 'ccof_consent', front: 'agreeConsentCertify'},
@@ -31,12 +32,17 @@ const NewFacilityMappings = [
   // { back: '_ccof_facility_value', front: 'facilityId'},
 ];
 
+const MtfiMappings = [
+  { back: '_ccof_facility_value', front: 'facilityId'},
+  { back: '_ccof_ccfri_value', front: 'ccfriId'}
+];
 
 
 module.exports = {
   ChangeRequestMappings,
   ChangeActionRequestMappings,
-  NewFacilityMappings
+  NewFacilityMappings,
+  MtfiMappings,
 };
 
 // const ChangeRequestMappings = [

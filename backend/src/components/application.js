@@ -19,7 +19,6 @@ const {
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
-const {CHANGE_REQUEST_TYPES_FRONT } = require('../components/changeRequest');
 const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
@@ -559,20 +558,11 @@ async function getChangeRequestsFromApplicationId(applicationId){
 
       //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
       req.changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
-
         let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
-
-        //todo: add in logic for other change types, when required.
-        switch(mappedChangeAction.changeType){
-        case CHANGE_REQUEST_TYPES.PDF_CHANGE:
-          log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPES.PDF_CHANGE));
-          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE;
-          break;
-        case CHANGE_REQUEST_TYPES.NEW_FACILITY:
-          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
+        if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
           mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
-          break;
         }
+        mappedChangeAction.changeType = getLabelFromValue(mappedChangeAction.changeType, CHANGE_REQUEST_TYPES);
         return mappedChangeAction;
       }));
 

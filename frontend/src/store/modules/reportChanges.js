@@ -118,7 +118,7 @@ export default {
         'providerType': rootState.organization.organizationProviderType == 'GROUP' ?  100000000 : 100000001,
       };
       try {
-        let response = await ApiService.apiAxios.post('http://localhost:8080/api/changeRequest/documents', payload);
+        let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);
 
         commit('setChangeRequestId', response.data.changeRequestId);
         console.log(response);
