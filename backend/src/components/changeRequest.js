@@ -1,19 +1,15 @@
 'use strict';
 
 const log = require('./logger');
-const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
+const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
+const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
+
 const { mapFacilityObjectForBack } = require('./facility');
-const { ACCOUNT_TYPE, CCOF_STATUS_CODES, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
 
-const { getOperationWithObjectId, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument, getLabelFromValue } = require('./utils');
-
-const CHANGE_REQUEST_TYPES_FRONT = Object.freeze({
-  NEW_FACILITY: 'NEW_FACILITY',
-  PDF_CHANGE: 'PDF_CHANGE',
-});
+const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 
 
 function mapChangeRequestForBack(data, changeType) {
@@ -23,32 +19,65 @@ function mapChangeRequestForBack(data, changeType) {
 
   changeRequestForBack['ccof_Application@odata.bind'] = `/ccof_applications(${data.applicationId})`;
   delete changeRequestForBack._ccof_application_value;
-
   changeRequestForBack['ccof_change_action_change_request'] = [
     {
-      ccof_changetype: changeType === CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE ? 100000013 : 100000005
+      ccof_changetype: changeType
     }
   ];
-  if (changeType === CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY) {
+  if (changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
     changeRequestForBack.ccof_provider_type = 100000000; //New facilities are only available for GROUP provider types
   }
   return changeRequestForBack;
 }
 
-function mapChangeRequestObjectForFront(data) {
-  return new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+
+// get Change Action
+async function getChangeActionDetails(changeActionId, joiningTable, mapper) {
+  if (joiningTable) {
+    try {
+      let operation = `ccof_change_actions(${changeActionId})?$select=${joiningTable}&$expand=${joiningTable}($select=${getMappingString(mapper)})`;
+      let changeActionDetails = await getOperation(operation);
+      let details = changeActionDetails[joiningTable];
+      let retVal = [];
+      details?.forEach(el => retVal.push(new MappableObjectForFront(el, mapper).toJSON()));
+      return retVal;
+    } catch (e) {
+      log.error('Unable to get change action details',e);
+    }
+  } else {
+    return undefined;
+  }
 }
+
+
+async function mapChangeRequestObjectForFront(data) {
+  let retVal = new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+  let changeList = [];
+  await Promise.all(  retVal.changeActions?.map(async (el) =>  {
+    let changeAction = new MappableObjectForFront(el, ChangeActionRequestMappings).toJSON();
+    if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
+      const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfi_Change_Action', MtfiMappings );
+      changeAction.mtfi = mtfi;
+    }
+    changeList.push(changeAction);
+  }));
+  retVal.changeActions = changeList;
+  log.info('change actions: ', retVal);
+
+  return retVal;
+}
+
 
 // get Change Request
 async function getChangeRequest(req, res) {
   log.info('get changeRequest called');
 
   try {
-    let changeRequest = await getOperationWithObjectId('ccof_change_requests', req.params.changeRequestId);
-    changeRequest = mapChangeRequestObjectForFront(changeRequest);
+    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype)`;
+    let changeRequest = await getOperation(operation);
+    changeRequest = await mapChangeRequestObjectForFront(changeRequest);
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
     changeRequest.externalStatus = getLabelFromValue(changeRequest.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
-
     log.info(changeRequest);
     log.info(CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
     return res.status(HttpStatus.OK).json(changeRequest);
@@ -207,7 +236,6 @@ module.exports = {
   getChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
-  CHANGE_REQUEST_TYPES_FRONT,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
