@@ -92,6 +92,7 @@ export const PATHS = {
   summaryDeclaration:  '/summary-declaration',
   messagesPage: '/messages',
   supportingDocumentUpload: '/supporting-document-upload',
+  summaryDeclarationReportChanges:  '/summary-declaration-report-changes',
 
   reportChange: {
     landing: `${CHANGE_URL_PREFIX}/landing`,

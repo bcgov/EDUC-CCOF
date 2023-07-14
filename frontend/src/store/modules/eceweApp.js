@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
-import { sortByFacilityId } from '@/utils/common';
+import { sortByFacilityId, isNullOrBlank } from '@/utils/common';
 
 export default {
   namespaced: true,
@@ -41,9 +41,24 @@ export default {
         throw error;
       }
     },
-    async saveECEWE({ state, commit }, isFormComplete) {
+    async loadECEWEModelFromChangeRequest({commit, state}, loadedChangeRequest) {
+      if (!isNullOrBlank(loadedChangeRequest?.optInECEWE)) {
+        let eceweModel = {
+          applicationId: state.eceweModel?.applicationId,
+          optInECEWE: loadedChangeRequest.optInECEWE,
+          belongsToUnion: loadedChangeRequest.belongsToUnion,
+          applicableSector: loadedChangeRequest.applicableSector,
+          fundingModel: loadedChangeRequest.fundingModel,
+          confirmation: loadedChangeRequest.confirmation,
+          facilities: state.eceweModel?.facilities
+        };
+        commit('setEceweModel', eceweModel);
+        commit('setLoadedModel', eceweModel);
+      }
+    },
+    async saveECEWE({ state, commit }, {isFormComplete, isChangeRequest, changeRequestId}) {
       try {
-        if (isEqual(state.eceweModel, state.loadedModel)) {
+        if (isEqual(state.eceweModel, state.loadedModel) && state.isStarted) {
           return;
         }
         checkSession();
@@ -51,7 +66,13 @@ export default {
         delete payload.facilities;
         payload.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
-        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
+        let response;
+        if (isChangeRequest) {
+          delete payload.applicationId;
+          response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+        } else {
+          response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
+        }
         return response;
       } catch (error) {
         console.info(`Failed to update existing ECEWE application - ${error}`);

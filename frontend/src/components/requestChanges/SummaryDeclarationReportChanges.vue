@@ -28,7 +28,7 @@
             <v-row>
               <v-col class="pb-0 pr-3 justify-center">
                 <div >
-                  <p>You will not be able to submit your application until it is complete.</p>
+                  <p>You will not be able to submit your change request until it is complete.</p>
                   <p>Incomplete sections are marked with a red exclamation point.</p>
                 </div>
               </v-col>
@@ -65,15 +65,15 @@
                   </v-col>
                 </v-row>
                 <v-row
-                  v-for="item in this.notificationFormDocuments"
-                  :key="item.name"
+                  v-for="(item,index) in this.notificationFormDocuments"
+                  :key="index"
                   no-gutters
                 >
                   <v-col :cols="6">
                     {{ item.name }}
                   </v-col>
                   <v-col :cols="6">
-                    {{ item.subject }}
+                    {{ item.description }}
                   </v-col>
                 </v-row>
               </div>
@@ -90,8 +90,8 @@
                   </v-col>
                 </v-row>
                 <v-row
-                  v-for="item in this.supportingDocuments"
-                  :key="item.name"
+                  v-for="(item,index) in this.supportingDocuments"
+                  :key="index"
                   no-gutters
                 >
                   <v-col :cols="6">
@@ -125,7 +125,7 @@
           </v-row>
           <v-row v-if="!isProcessing">
             <v-col class="pb-0">
-              <div v-show="!this.isRenewal && !this.organizationAccountNumber">
+              <div v-show="!this.organizationAccountNumber">
                 <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                   I certify that I have read and understand the following requirements:</p>
                 <ul style="padding-top:10px;">
@@ -158,13 +158,13 @@
                 </p>
               </div>
                 <!-- show for new org after ministry unlocks -->
-              <div v-show="(this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) ">
+              <div v-show="this.model.declarationAStatus == 1 && this.loadedChangeRequest?.unlockDeclaration && this.organizationAccountNumber">
                 <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.</p>
                 <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                   ministries to validate the accuracy of any information that I have provided.</p>
               </div>
-              <div v-show="(this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber)">
+              <div v-show="this.model.declarationBStatus == 1 && this.loadedChangeRequest?.unlockDeclaration && this.organizationAccountNumber">
                 <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.</p>
                 <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -280,11 +280,10 @@
 </template>
 <script>
 
-import {PATHS} from '@/utils/constants';
-import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
+import { PATHS } from '@/utils/constants';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
-import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -313,33 +312,17 @@ export default {
     this.isProcessing = true;
     await this.loadData();
 
-    if (!this.unlockDeclaration) {
-      await this.loadDeclaration();
-      this.model = this.$store.state.summaryDeclaration.model ?? model;
-    }
-
-    if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
-      // Establish the server time
-      const serverTime = new Date(this.userInfo.serverTime);
-
-      // Determine declaration b start date
-      let declarationBStart;
-      this.programYearList.list.find(item => {
-        if (item.programYearId == this.programYearId) {
-          declarationBStart = new Date(item.declarationbStart);
-        }
-      });
-
-      // Determine:
-      //   - which user declaration text version (status a or b) will display
-      //   - which declaration status (a or b) will be saved on submit.
-      // saved as part of submission.
-      if (serverTime < declarationBStart) {
-        this.model.declarationAStatus = 1;
-        this.model.declarationBStatus = undefined;
-      } else {
+    // Determine:
+    //   - which user declaration text version (status a or b) will display
+    //   - which declaration status (a or b) will be saved on submit.
+    // saved as part of submission.
+    if (this.loadedChangeRequest?.unlockDeclaration && this.organizationAccountNumber) {
+      if (this.loadedChangeRequest?.enabledDeclarationB) {
         this.model.declarationBStatus = 1;
         this.model.declarationAStatus = undefined;
+      } else {
+        this.model.declarationAStatus = 1;
+        this.model.declarationBStatus = undefined;
       }
     }
     this.isProcessing = false;
@@ -365,31 +348,21 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
-    ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
-    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore']),
-    
+    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
     isReadOnly() {
-      if (this.isMinistryUser) {
+      if (this.isMinistryUser || !this.isSummaryComplete) {
         return true;
-      } else if (!this.canSubmit) {
-        return true;
-      } else if (this.unlockDeclaration) {
+      } else if (this.loadedChangeRequest?.unlockDeclaration) {
         return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
+      // TO-DO: may need to update --> is there any other status? e.g.: Approved
+      } else if (this.loadedChangeRequest?.externalStatus === 'SUBMITTED') {
         return true;
       }
       return false;
-    },
-    isFacilitiesAvailable() {
-      return this.summaryModel?.facilities?.length > 0;
-    },
-    isSummaryComplete() {
-      // return (this.invalidSummaryForms.length < 1 );
-      return true;
     },
     supportingDocuments() {
       return this.uploadedDocuments.filter(document => document.subject == 'SUPPORTING_DOC');
@@ -397,87 +370,63 @@ export default {
     notificationFormDocuments() {
       return this.uploadedDocuments.filter(document => document.subject == 'NOTIFICATION_FORM');
     },
+    isSummaryComplete() {
+      return (this.notificationFormDocuments?.length > 0 && this.supportingDocuments?.length > 0);
+    },
+    relockPayload() {
+      let relockPayload = {
+        unlockDeclaration: this.model.unlockDeclaration,
+        unlockChangeRequestDocument: this.model.unlockChangeRequestDocument,
+        unlockChangeRequest: this.model.unlockChangeRequest
+      };
+      return relockPayload;
+    }
   },
   methods: {
-    // ...mapActions('summaryDeclarationReportChanges', ['loadDeclaration', 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
-    ...mapActions('reportChanges', ['loadChangeRequestDocs']),
+    ...mapActions('summaryDeclaration', ['loadChangeRequestDeclaration', 'updateDeclaration']),
+    ...mapActions('reportChanges', ['loadChangeRequestDocs', 'getChangeRequest']),
+    async loadData() {
+      this.isLoading = true;
+      try {
+        await this.getChangeRequest(this.$route.params.changeRecGuid);
+        let payload = await this.loadChangeRequestDocs(this.changeActionId);
+        this.uploadedDocuments = payload?.map(document => ({
+          name: document.filename,
+          subject: document.subject,
+          description: document.notetext
+        }));
+        await this.loadChangeRequestDeclaration(this.$route.params.changeRecGuid);
+      } catch (error) {
+        console.log('Error loading the Summary Declaration.', error);
+        this.setFailureAlert('Error loading the Summary Declaration.');
+      } finally {
+        this.isLoading = false;
+      }
+    },
     isPageComplete() {
-      if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
+      if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
       } else {
         this.isValidForm = false;
       }
       return this.isValidForm;
     },
-    async loadData() {
-      this.isLoading = true;
-      try {      
-        let payload = await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-        this.uploadedDocuments = payload?.map(document => ({
-          name: document.filename,
-          subject: document.subject,
-          description: document.notetext
-        }));
-        await this.loadDeclaration();
-      } catch (error) {
-        console.log('Error loading application Declaration.', error);
-        this.setFailureAlert('Error loading application Declaration.');
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
     async submit() {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration(this.createRelockPayload());
+        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
         this.dialog = true;
       } catch (error) {
-        this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.' + error);
+        this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);
       } finally {
         this.isProcessing = false;
       }
     },
-
-    //TO-DO: unlock feature
-    // createRelockPayload() {
-    //   let applicationRelockPayload = this.createRelockPayloadForApplication();
-    //   let ccrfiRelockPayload = this.createRelockPayloadForCCFRI();
-    //   if ((Object.keys(ccrfiRelockPayload).length > 0)) {
-    //     applicationRelockPayload['facilities'] = ccrfiRelockPayload;
-    //   }
-    //   return applicationRelockPayload;
-    // },
-    // createRelockPayloadForApplication() {
-    //   let applicationRelockPayload = {
-    //     unlockBaseFunding: this.unlockBaseFunding,
-    //     unlockDeclaration: this.unlockDeclaration,
-    //     unlockEcewe: this.unlockEcewe,
-    //     unlockLicenseUpload: this.unlockLicenseUpload,
-    //     unlockSupportingDocuments: this.unlockSupportingDocuments
-    //   };
-      // Create payload with only unlock propteries set to 1.
-      // eslint-disable-next-line no-unused-vars
-      // applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == 1));
-      // Update payload unlock properties from 1 to 0.
-    //   Object.keys(applicationRelockPayload).forEach(key => {
-    //     applicationRelockPayload[key] = '0';
-    //   });
-    //   return applicationRelockPayload;
-    // },
     async previous() {
-      await this.$router.push(PATHS.reportChange.notificationForm + `/${this.$route.params.urlGuid}`);
-    },
-    async isFormComplete(formObj, isComplete) {
-      if (!isComplete) {
-        this.invalidSummaryForms.push(formObj);
-      }
+      await this.$router.push(PATHS.reportChange.notificationForm + `/${this.changeActionId}`);
     },
   },
-  
-
 };
 </script>
 

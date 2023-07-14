@@ -52,7 +52,7 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
-import ReportChangesSummaryDeclaration from '@/components/requestChanges/ReportChangesSummaryDeclaration';
+import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
 Vue.prototype.moment = moment;
 
@@ -483,16 +483,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.reportChangesSummaryDeclaration + '/:urlGuid',
-      name: 'report-changes-summary-declaration',
-      component: ReportChangesSummaryDeclaration,
-      meta: {
-        pageTitle: 'Report Changes - Summary and Declaration',
-        showNavBar: false,
-        requiresAuth: true,
-      }
-    },
-    {
       path: PATHS.reportChange.facInfo,
       name: 'change-request-facility-information',
       component: FacilityInformation,
@@ -609,6 +599,16 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclarationReportChanges,
+      name: 'Summary and Declaration Report Changes',
+      component: SummaryDeclarationReportChanges,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
       }
     },
   ]

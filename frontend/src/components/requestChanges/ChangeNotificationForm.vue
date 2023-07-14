@@ -166,7 +166,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -220,6 +220,7 @@ export default {
     },
   },
   async mounted(){
+    await this.getChangeRequest(this.changeRequestId);
     if(this.$route.params.urlGuid){
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
 
@@ -248,18 +249,17 @@ export default {
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore']),
+    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
       }
-      // return (this.applicationStatus === 'SUBMITTED');
-      return false;
+      return (this.loadedChangeRequest?.externalStatus === 'SUBMITTED');
     },
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments',]),
+    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
     async previous() {
       this.$router.push(PATHS.reportChange.landing);
@@ -286,7 +286,7 @@ export default {
       this.isLoading = false;
     },
     async next() {
-      await this.$router.push(PATHS.reportChange.reportChangesSummaryDeclaration + `/${this.$route.params.urlGuid}`);
+      await this.$router.push(CHANGE_URL_PREFIX + `/${this.changeRequestId}` + PATHS.summaryDeclarationReportChanges);
     },
     addNewRowToUploadedDocuments(item) {
       switch (item.documentType) {

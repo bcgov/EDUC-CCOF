@@ -84,16 +84,16 @@
 
               ></v-file-input>
             </template>
-            <template v-slot:item.description="{ item }">
+            <template v-slot:item.notetext="{ item }">
               <div v-if="item?.annotationid">
-                <span> {{ item?.description }} </span>
+                <span> {{ item?.notetext }} </span>
               </div>
               <v-text-field v-else
                             placeholder="Enter a description (Optional)"
                             dense
                             clearable
                             :rules="[rules.maxLength(255)]"
-                            v-model="item.description"
+                            v-model="item.notetext"
                             @change="updateDescription(item)"
               ></v-text-field>
             </template>
@@ -194,18 +194,19 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments']),
+    ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments', 'loadedChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     getFilteredDocs(){
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
     isLocked() {
-      return false; // (this.applicationStatus === 'SUBMITTED');
+      return this.loadedChangeRequest?.externalStatus === 'SUBMITTED';
     },
   },
 
   async mounted() {
+    await this.getChangeRequest(this.changeRequestId);
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
@@ -222,7 +223,7 @@ export default {
     next();
   },
   methods: {
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments', 'getChangeRequest']),
     async save(showConfirmation = true) {
 
       console.log('saving from child component!');
@@ -264,7 +265,7 @@ export default {
         const obj = {
           ccof_change_requestid: this.changeRequestId,
           subject: this.changeType,
-          notetext: file.description,
+          notetext: file.notetext,
           ...this.fileMap.get(String(file.id))
         };
 
@@ -351,7 +352,7 @@ export default {
     },
     updateDescription(item) {
       const index = this.uploadedDocuments.indexOf(item);
-      this.uploadedDocuments[index].description = item.description;
+      this.uploadedDocuments[index].notetext = item.notetext;
     },
   }
 };

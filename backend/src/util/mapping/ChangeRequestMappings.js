@@ -13,6 +13,14 @@ const ChangeRequestMappings = [
   { back: 'ccof_consent', front: 'agreeConsentCertify'},
   { back: 'ccof_unlock_document', front: 'unlockChangeRequestDocument'},
   { back: 'ccof_unlock_change_request', front: 'unlockChangeRequest'},
+  { back: 'ccof_ecewe_optin', front: 'optInECEWE' },
+  { back: 'ccof_ecewe_employeesunion', front: 'belongsToUnion' },
+  { back: 'ccof_ecewe_selecttheapplicablesector', front: 'applicableSector' },
+  { back: 'ccof_ecewe_selecttheapplicablefundingmode', front: 'fundingModel' },
+  { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
+  { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
+  { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
+  { back: 'ccof_declaration', front: 'enabledDeclarationB' },
   // { back: 'ccof_change_request_new_facilityid', front: 'changeFacilityID'},
 ];
 
