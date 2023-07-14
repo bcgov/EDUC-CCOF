@@ -312,7 +312,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
+    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapState('reportChanges', ['loadedChangeRequest', 'changeRequestId']),
@@ -375,7 +375,7 @@ export default {
     isReadOnly(question) {
       if (isChangeRequest(this)) {
         if (question == 'optInECEWE') {
-          return (this.model.optInECEWE === 1);
+          return (this.optinECEWEChangeRequestReadonly);
         }
         return false;
       }

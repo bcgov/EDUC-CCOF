@@ -14,6 +14,7 @@ export default {
     eceweModel: null,
     loadedModel: null,
     fundingModelTypes: null,
+    optinECEWEChangeRequestReadonly: false,
   },
   mutations: {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
@@ -23,6 +24,7 @@ export default {
     setFacilities: (state, facilities) => { state.facilities = facilities; },
     setLoadedFacilities: (state, loadedFacilities) => { state.loadedFacilities = loadedFacilities; },
     setFundingModelTypes: (state, fundingModelTypes) => { state.fundingModelTypes = fundingModelTypes; },
+    setOptinECEWEChangeRequestReadonly: (state, optinECEWEChangeRequestReadonly) => { state.optinECEWEChangeRequestReadonly = optinECEWEChangeRequestReadonly; },
   },
   actions: {
     async loadECEWE({state, commit}) {
@@ -30,6 +32,11 @@ export default {
       try {
         let response = await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId);
         let payload = response?.data;
+        if (payload?.optInECEWE === 1) {
+          commit('setOptinECEWEChangeRequestReadonly', true);
+        } else {
+          commit('setOptinECEWEChangeRequestReadonly', false);
+        }
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
         commit('setLoadedFacilities', payload.facilities);
