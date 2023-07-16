@@ -52,6 +52,7 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
+import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
 Vue.prototype.moment = moment;
 
@@ -598,6 +599,16 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclarationReportChanges,
+      name: 'Summary and Declaration Report Changes',
+      component: SummaryDeclarationReportChanges,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
       }
     },
   ]
