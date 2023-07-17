@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
-import { sortByFacilityId } from '@/utils/common';
+import { sortByFacilityId, isNullOrBlank } from '@/utils/common';
 
 export default {
   namespaced: true,
@@ -14,6 +14,7 @@ export default {
     eceweModel: null,
     loadedModel: null,
     fundingModelTypes: null,
+    optinECEWEChangeRequestReadonly: false,
   },
   mutations: {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
@@ -23,43 +24,75 @@ export default {
     setFacilities: (state, facilities) => { state.facilities = facilities; },
     setLoadedFacilities: (state, loadedFacilities) => { state.loadedFacilities = loadedFacilities; },
     setFundingModelTypes: (state, fundingModelTypes) => { state.fundingModelTypes = fundingModelTypes; },
+    setOptinECEWEChangeRequestReadonly: (state, optinECEWEChangeRequestReadonly) => { state.optinECEWEChangeRequestReadonly = optinECEWEChangeRequestReadonly; },
   },
   actions: {
     async loadECEWE({state, commit}) {
       checkSession();
       try {
-        let payload = (await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId)).data;
+        let response = await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId);
+        let payload = response?.data;
+        if (payload?.optInECEWE === 1) {
+          commit('setOptinECEWEChangeRequestReadonly', true);
+        } else {
+          commit('setOptinECEWEChangeRequestReadonly', false);
+        }
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
         commit('setLoadedFacilities', payload.facilities);
         commit('setFacilities', payload.facilities);
+        return response;
       } catch (error) {
         console.info(`Failed to get ECEWE Application - ${error}`);
+        commit('setIsStarted', false);
         throw error;
       }
     },
-    async saveECEWE({ state, commit }, isFormComplete) {
+    async loadECEWEModelFromChangeRequest({commit, state}, loadedChangeRequest) {
+      if (!isNullOrBlank(loadedChangeRequest?.optInECEWE)) {
+        let eceweModel = {
+          applicationId: state.eceweModel?.applicationId,
+          optInECEWE: loadedChangeRequest.optInECEWE,
+          belongsToUnion: loadedChangeRequest.belongsToUnion,
+          applicableSector: loadedChangeRequest.applicableSector,
+          fundingModel: loadedChangeRequest.fundingModel,
+          confirmation: loadedChangeRequest.confirmation,
+          facilities: state.eceweModel?.facilities
+        };
+        commit('setEceweModel', eceweModel);
+        commit('setLoadedModel', eceweModel);
+      }
+    },
+    async saveECEWE({ state, commit }, {isFormComplete, isChangeRequest, changeRequestId}) {
       try {
-        if (isEqual(state.eceweModel, state.loadedModel)) {
+        if (isEqual(state.eceweModel, state.loadedModel) && state.isStarted) {
           return;
         }
         checkSession();
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
-        payload.isEceweComplete = isFormComplete; 
+        payload.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
-        let response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
+        let response;
+        if (isChangeRequest) {
+          delete payload.applicationId;
+          response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+        } else {
+          response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
+        }
         return response;
       } catch (error) {
         console.info(`Failed to update existing ECEWE application - ${error}`);
+        commit('setIsStarted', false);
         throw error;
       }
     },
     async saveECEWEFacilities({ state, commit }) {
       let sortedLoadedFacilities = sortByFacilityId(state.loadedFacilities);
       let sortedFacilities = sortByFacilityId(state.facilities);
-      let payload = []
-      sortedFacilities.forEach((facility, index) => {
+      let payload = [];
+      // check if there is any new/updated facility
+      sortedFacilities?.forEach((facility, index) => {
         if (!isEqual(facility,sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
           payload.push(facility);
         }
@@ -70,14 +103,15 @@ export default {
         try {
           let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
           let updatedFacilities = state.facilities;
-          response?.data?.facilities?.forEach(item => {
-            updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === item.facilityId)] = item;
+          response?.data?.facilities?.forEach(facility => {
+            updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === facility.facilityId)] = facility;
           });
           commit('setFacilities', updatedFacilities);
           commit('setLoadedFacilities', updatedFacilities);
           return response;
         } catch (error) {
           console.info(`Failed to update existing ECEWE facility application - ${error}`);
+          commit('setIsStarted', false);
           throw error;
         }
       }
@@ -92,8 +126,8 @@ export default {
           eceweApplicationId: null,
           facilityId: facility.facilityId,
           optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
-          changeRequestId: facility.changeRequestId,
-          changeRequestNewFacilityId: facility.changeRequestNewFacilityId
+          changeRequestId: facility.changeRequestId ? facility.changeRequestId : null,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
         }));
       } else {
         // A payload already exists, recreate to include any new facilities which could have been added to navBarList
@@ -103,8 +137,8 @@ export default {
           facilityId: facility.facilityId,
           eceweApplicationId: getEceweApplicationId(facility.facilityId),
           optInOrOut: getOptInOrOut(facility.facilityId),
-          changeRequestId: facility.changeRequestId,
-          changeRequestNewFacilityId: facility.changeRequestNewFacilityId
+          changeRequestId: facility.changeRequestId ? facility.changeRequestId : null,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
         }));
       }
       commit('setFacilities', facilityPayload);

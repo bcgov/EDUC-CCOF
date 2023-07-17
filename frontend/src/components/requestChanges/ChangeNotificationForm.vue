@@ -140,7 +140,7 @@
                   </v-list-item>
                   <v-list-item> Outside Greater Victoria (toll free): <a href="tel:+18883386622">1 888 338-6622</a>
                   </v-list-item>
-                  <v-list-item> Email: <a href="email+MCF.CCOF@gov.bc.ca"> MCF.CCOF@gov.bc.ca</a>
+                  <v-list-item> Email: <a href="mailto:MCF.CCOF@gov.bc.ca"> MCF.CCOF@gov.bc.ca</a>
                   </v-list-item>
                 </v-list>
               </v-row>
@@ -153,9 +153,9 @@
     </v-form>
 
 
-    <NavButton :isNextDisplayed="false" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="true" :isProcessing="isLoading"
-        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
+    <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="false" :isProcessing="isLoading"
+        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
       <!-- <v-row justify="space-around">
         <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
           Back</v-btn>
@@ -166,7 +166,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS } from '@/utils/constants';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -220,6 +220,7 @@ export default {
     },
   },
   async mounted(){
+    await this.getChangeRequest(this.changeRequestId);
     if(this.$route.params.urlGuid){
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
 
@@ -239,31 +240,33 @@ export default {
       }
     }
   },
+  async beforeRouteLeave(_to, _from, next) {
+    if(!this.isReadOnly){
+      await this.save(false);
+    }
+    next();
+  },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeActionId, unsubmittedDocuments', 'changeRequestId', 'changeRequestStore']),
+    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
       }
-      // return (this.applicationStatus === 'SUBMITTED');
-      return false;
+      return (this.loadedChangeRequest?.externalStatus === 'SUBMITTED');
     },
-  },
-  beforeMount: function () {
-
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments',]),
+    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
     async previous() {
       this.$router.push(PATHS.reportChange.landing);
     },
-    async form() {
-      this.$router.push('http://localhost:8082/publiccf1345_cc_operating_program_funding_agreement_change_notification.pdf');
-    },
+    // async form() {
+    //   this.$router.push('http://localhost:8082/publiccf1345_cc_operating_program_funding_agreement_change_notification.pdf');
+    // },
     async save(showNotification = false){
       this.isLoading = true;
       try{
@@ -282,11 +285,8 @@ export default {
       }
       this.isLoading = false;
     },
-    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
-    beforeRouteLeave(_to, _from, next) {
-      //this.$store.commit('ccfriApp/model', this.model);
-      //TODO: update with fields from page
-      next();
+    async next() {
+      await this.$router.push(CHANGE_URL_PREFIX + `/${this.changeRequestId}` + PATHS.summaryDeclarationReportChanges);
     },
     addNewRowToUploadedDocuments(item) {
       switch (item.documentType) {

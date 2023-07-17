@@ -17,7 +17,7 @@
         <v-row justify="space-around">
 
 
-          <SmallCard  class= "col-lg-6 " :disable="false">
+          <SmallCard  class= "col-lg-6 " :disable="false" v-if="this.organizationProviderType == 'GROUP'">
             <template #content class="px-10">
               <p class="text-h6 text-center "> Add a New facility to an existing organization </p>
               <p class="px-2">
@@ -100,13 +100,13 @@
                 {{createFacilityNameString(changeRequest.changeActions)}}
               </v-col>
               <v-col class= "col-lg-2">
-                {{changeRequest.changeActions[0].status == 1? 'ACTIVE' : 'INACTIVE'}}
+                {{getStatusString(changeRequest.externalStatus)}}
               </v-col>
               <v-col class= "col-lg-2">
                 {{ changeRequest.createdOnDate }}
               </v-col>
                 <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId)">Continue</v-btn>
+                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId, index)">Continue</v-btn>
                 </v-col>
                 <v-col class= "col-lg-1">
                   <v-btn class= "" @click="deleteRequest(changeRequest.changeActions[0].changeRequestId)">Delete</v-btn>
@@ -151,15 +151,13 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore',]),
+    ...mapState('organization', ['organizationProviderType',]),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
-
-
-
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
@@ -182,13 +180,33 @@ export default {
 
       //change in backend, only returns 1 at a time rn
       let action = changeActions.find(el => el.changeType == "NEW_FACILITY");
-      action.facilities.forEach(fac => {
-        if (fac.facilityName){
-          str = str + `${fac.facilityName}, `;
-        }
-
-      });
+      if (action.facilities) {
+        action.facilities.forEach(fac => {
+          if (fac.facilityName){
+            str = str + `${fac.facilityName}, `;
+          }
+        });
+      }
       return str;
+    },
+    getStatusString(status){
+      switch (status){
+      case 1:
+        return "Incomplete";
+      case 2:
+        return "Submitted";
+      case 3:
+        return "Action Required";
+      case 4:
+        return "Ineligible";
+      case 5 :
+        return "Approved";
+      case 6:
+        return "Cancelled";
+      default:
+        return "Unknown"; //should never happen!
+      }
+
     },
     next() {
       this.$router.push(PATHS.home);
@@ -196,14 +214,14 @@ export default {
     routeToFacilityAdd(){
       this.$router.push(PATHS.reportChange.facInfo);
     },
-    continueButton(changeType, changeActionId = null,  changeRequestId = null){
+    continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
       if (changeType == 'PDF_CHANGE'){
         this.goToChangeForm(changeActionId, changeRequestId);
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[changeRequestId].changeActions[0].facilities[0].facilityId);
+        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[index].changeActions[0].facilities[0].facilityId);
       }
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){

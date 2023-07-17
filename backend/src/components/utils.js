@@ -23,7 +23,7 @@ function getConstKey(constants, value) {
         return key;
       }
     }
-    log.error(`getConstKey: Unable to find key for value: [${value}] for const: [${constants.constructor?.name}]`);
+    log.error(`getConstKey: Unable to find key for value: [${value}] for const: [${constants?.constructor?.name}]`);
   }
   return undefined;
 

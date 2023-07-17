@@ -171,6 +171,7 @@ import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   name: 'LandingPage',
@@ -216,15 +217,22 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['renewalYearLabel']),
-    ...mapState('app', ['navBarList', 'programYearList']),
+    ...mapState('app', ['navBarList', 'programYearList', 'isRenewal']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
+    filteredNavBarList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
+    },
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.navBarList;
+        return this.filteredNavBarList;
       }
-      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
+      return this.filteredNavBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     isCCFRIandECEWEComplete() {
       if (!this.navBarList) {
@@ -337,7 +345,6 @@ export default {
     },
   },
   methods: {
-    ...mapState('app',['isRenewal']),
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {

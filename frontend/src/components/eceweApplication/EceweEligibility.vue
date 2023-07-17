@@ -10,10 +10,10 @@
         <span class="text-h5">Early Childhood Educator Wage Enhancement (ECE-WE)</span>
       </div>
       <br>
-      <v-row justify="center" class="pt-4 text-h5" style="color:#003466;">
+      <v-row class="pt-4 text-h5 justify-center" style="color:#003466;">
         {{this.userInfo.organizationName}}
       </v-row>
-      <v-row justify="center" class="mt-6">
+      <v-row class="mt-6 justify-center">
         <v-alert
           class="col-11 mb-0"
           outlined
@@ -31,7 +31,7 @@
           </span>
         </v-alert>
       </v-row>
-      <v-row justify="center">
+      <v-row class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -40,11 +40,11 @@
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" justify="center">
+            <v-row v-if="!isLoading" class="justify-center">
               <v-col align-self="start">
               <v-radio-group
                 v-model="model.optInECEWE"
-                :disabled="isReadOnly"
+                :disabled="isReadOnly('optInECEWE')"
                 :rules="rules.required">
                 <template v-slot:label>
                   <span class="radio-label" style="text-align: left;">For the {{formattedProgramYear}} funding term, would you like to opt-in to ECE-WE for any facility in your organization?</span>
@@ -68,7 +68,7 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="(this.model.optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(this.model.optInECEWE == 1) || isLoading" class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -77,11 +77,11 @@
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" justify="center">
+            <v-row v-if="!isLoading" class="justify-center">
               <v-col align-self="start">
                 <v-radio-group
                   v-model="model.belongsToUnion"
-                  :disabled="isReadOnly"
+                  :disabled="isReadOnly()"
                   :rules="rules.required">
                   <template v-slot:label>
                     <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
@@ -104,7 +104,7 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -113,11 +113,11 @@
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" justify="left">
+            <v-row v-if="!isLoading" class="justify-left">
               <v-col align-self="start">
                 <v-radio-group
                   v-model="model.applicableSector"
-                  :disabled="isReadOnly"
+                  :disabled="isReadOnly()"
                   :rules="rules.required">
                   <template v-slot:label>
                     <div class="radio-label text-left">Select the sector:</div>
@@ -139,7 +139,7 @@
               </v-col>
             </v-row>
           </v-container>
-          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center" class="mx-2 mb-4">
+          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" class="mx-2 mb-4 justify-center">
             <v-row v-if="!isLoading" >
               <v-col class="py-0">
                 <v-card-title class="py-0 noticeInfo">
@@ -162,7 +162,7 @@
                   v-model="model.confirmation"
                   :value="1"
                   label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
-                  :disabled="isReadOnly"
+                  :disabled="isReadOnly()"
                   :rules="rules.required">
                 </v-checkbox>
               </v-col>
@@ -171,7 +171,7 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="(model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" justify="center">
+      <v-row v-if="(model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -182,46 +182,35 @@
                 <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
               </v-col>
             </v-row>
-            <div v-if="!isLoading">
-              <!-- <v-row justify="center" >
-                <v-col style="padding-bottom:0px;margin-bottom:0px;">
-                  <div class="radio-label text-left">Select your funding model:</div>
-                </v-col>
-              </v-row> -->
-              <v-radio-group
+            <v-row v-if="!isLoading">
+              <v-col align-self="start">
+                <v-radio-group
                   v-model="model.fundingModel"
-                  row
-                  :disabled="isReadOnly"
-                  :rules="rules.required"
-                  class="mt-0">
+                  :disabled="isReadOnly()"
+                  :rules="rules.required">
                   <template v-slot:label>
                     <div class="radio-label text-left">Select your funding model:</div>
                   </template>
-                <v-row justify="center">
-                  <v-col class="pt-7">
+                  <div class="flex-left">
                     <v-radio
                       :label="fundingModelTypeList[0].description"
-                      :value="fundingModelTypeList[0].id"></v-radio>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="pt-7">
+                      :value="fundingModelTypeList[0].id"
+                      class="pt-2 pr-8">
+                    </v-radio>
                     <v-radio
                       :label="fundingModelTypeList[1].description"
                       :value="fundingModelTypeList[1].id"
+                      class="pt-1 pr-8"
                     ></v-radio>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="pt-7">
                     <v-radio
                       :label="fundingModelTypeList[2].description"
                       :value="fundingModelTypeList[2].id"
+                      class="pt-1 pr-8"
                     ></v-radio>
-                  </v-col>
-                </v-row>
-              </v-radio-group>
-            </div>
+                  </div>
+                </v-radio-group>
+              </v-col>
+            </v-row>
             <v-card v-if="model.fundingModel == fundingModelTypeList[0].id" width="100%">
               <v-row>
                 <v-col class="py-0">
@@ -237,7 +226,7 @@
                   </v-card-title>
                 </v-col>
               </v-row>
-              <v-row justify="center" class="pa-2">
+              <v-row class="pa-2 justify-center">
                 Government’s Low-Wage Redress Funding supports ECE wage adjustments
               </v-row>
             </v-card>
@@ -257,7 +246,7 @@
                     </v-card-title>
                   </v-col>
                 </v-row>
-                <v-row justify="center" class="pa-2">
+                <v-row class="pa-2 justify-center">
                   Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
                 </v-row>
               </v-card>
@@ -285,7 +274,7 @@
                     v-model="model.confirmation"
                     :value="1"
                     label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
-                    :disabled="isReadOnly"
+                    :disabled="isReadOnly()"
                     :rules="rules.required">
                   </v-checkbox>
                 </v-col>
@@ -295,7 +284,7 @@
         </v-card>
       </v-row>
       <NavButton class="mt-10" :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
+        :isSaveDisabled="isReadOnly()" :isNextDisabled="!enableButtons" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveECEWEApplication"></NavButton>
     </v-container>
   </v-form>
@@ -308,7 +297,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
-import { isChangeRequest } from '@/utils/common';
+import { isChangeRequest, isNullOrBlank } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -323,9 +312,10 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
+    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('reportChanges', ['loadedChangeRequest', 'changeRequestId']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -351,30 +341,21 @@ export default {
             ||this.model.belongsToUnion === 0
             ||this.model.optInECEWE === 0;
     },
-    isReadOnly() {
-      if (isChangeRequest(this)) {
-        return false;
-      }
-      if (this.unlockEcewe) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
-    }
   },
   async mounted() {
     try {
       this.isLoading = true;
       this.setFundingModelTypes({...this.fundingModelTypeList});
       this.setApplicationId(this.applicationId);
-      await this.loadData();
-      this.setIsStarted(true);
-      this.model = {...this.eceweModel};
-      this.initECEWEFacilities(this.filteredNavBarList);
-      let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
-      this.setLoadedFacilities(copyFacilities);
-      this.isLoading = false;
+      let response = await this.loadData();
+      if (response) {
+        this.setIsStarted(true);
+        this.initECEWEFacilities(this.filteredNavBarList);
+        let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+        this.setLoadedFacilities(copyFacilities);
+        this.model = {...this.eceweModel};
+        this.isLoading = false;
+      }
     } catch(error) {
       console.log (error);
       this.isLoading = false;
@@ -386,12 +367,30 @@ export default {
     next();
   },
   methods: {
-    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities']),
+    ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities', 'loadECEWEModelFromChangeRequest']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
     ...mapMutations('application', ['setIsEceweComplete']),
-    previous() {
+    ...mapActions('reportChanges', ['getChangeRequest']),
+    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
+    isReadOnly(question) {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.ccfriHome}`);
+        if (question == 'optInECEWE') {
+          return (this.optinECEWEChangeRequestReadonly);
+        }
+        return false;
+      }
+      if (this.unlockEcewe) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
+    async previous() {
+      if (isChangeRequest(this)) {
+        // this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.ccfriHome}`);
+        let path = await this.getPreviousPath();
+        this.$router.push(path);
       } else {
         this.$router.push(PATHS.ccfriHome);
       }
@@ -443,18 +442,24 @@ export default {
       }
     },
     async loadData() {
-      if (this.isStarted && this.facilities[0]?.changeRequestId == this.$route.params.changeRecGuid) {
-        return;
+      if (this.isStarted && (this.facilities?.length > 0)  && (this.facilities[0].changeRequestId == this.$route.params.changeRecGuid)) {
+        return true;
       }
       if (this.applicationId) {
         try {
-          await this.loadECEWE();
+          let response = await this.loadECEWE();
+          if (isChangeRequest(this)) {
+            await this.getChangeRequest(this.$route.params.changeRecGuid);
+            if (this.loadedChangeRequest && !isNullOrBlank(this.loadedChangeRequest.optInECEWE)) {
+              await this.loadECEWEModelFromChangeRequest(this.loadedChangeRequest);
+            }
+          }
+          return response;
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
         this.setIsStarted(true);
-        console.log('loadData IS COMPLETEEEEEE!!!!!!!!!!!!!');
       }
     },
     optOutFacilities() {
@@ -479,7 +484,22 @@ export default {
       try {
         this.updateQuestions();
         this.setEceweModel(this.model);
-        await this.saveECEWE(this.enableButtons);
+        if (isChangeRequest(this) && isNullOrBlank(this.loadedChangeRequest?.optInECEWE)) {
+          this.setIsStarted(false);
+        }
+        if (isChangeRequest(this)) {
+          await this.saveECEWE({
+            isFormComplete: this.enableButtons,
+            isChangeRequest: true,
+            changeRequestId: this.$route.params.changeRecGuid
+          });
+        } else {
+          await this.saveECEWE({
+            isFormComplete: this.enableButtons,
+            isChangeRequest: false,
+            changeRequestId: null
+          });
+        }
         this.setIsEceweComplete(this.enableButtons);
         const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut === 1);
 
@@ -495,7 +515,7 @@ export default {
         }
 
         //save the facilites reagrdless so ECE WE application is always created
-        await this.saveECEWEFacilities(showConfirmation);
+        await this.saveECEWEFacilities();
         if (showConfirmation) {
           this.setSuccessAlert('Success! ECEWE application has been saved.');
         }

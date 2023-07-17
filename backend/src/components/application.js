@@ -19,7 +19,6 @@ const {
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
-const {CHANGE_REQUEST_TYPES_FRONT } = require('../components/changeRequest');
 const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
@@ -463,6 +462,7 @@ async function getApplicationSummary(req, res) {
   try {
     let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(ApplicationSummaryCcfriMappings)}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode),ccof_application_basefunding_Application`;
     let results = await getOperation(operation);
+
     let applicationSummary = new MappableObjectForFront(results, ApplicationSummaryMappings).data;
     applicationSummary.organizationProviderType = getLabelFromValue(applicationSummary.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
     applicationSummary.applicationType = getLabelFromValue(applicationSummary.applicationType, CCOF_APPLICATION_TYPES);
@@ -488,6 +488,21 @@ async function getApplicationSummary(req, res) {
       const mappedBaseFunding = mapFundingObjectForFront(baseFunding);
       getFacilityInMap(facilityMap, mappedBaseFunding.facilityId).funding = mappedBaseFunding;
     });
+
+    //add the change request ID to the facility so we can filter by it on the front end
+    let allChangeRequests = await getChangeRequestsFromApplicationId(req.params.applicationId);
+    if (allChangeRequests.length > 0) {
+      allChangeRequests.forEach(changeRequest => {
+        changeRequest.changeActions.forEach((changeAction) => {
+          if (changeAction.changeType == "NEW_FACILITY"){
+            changeAction.facilities.forEach(newFac => {
+              getFacilityInMap(facilityMap, newFac.facilityId).changeRequestId = changeAction.changeRequestId;
+            });
+          }
+        });
+      });
+    }
+
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
       facilities: Array.from(facilityMap.values())
@@ -528,9 +543,9 @@ async function getFacilityChangeData(changeActionId){
   return mappedData;
 }
 
-async function getChangeRequest(req, res){
+async function getChangeRequestsFromApplicationId(applicationId){
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${req.params.applicationId}`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
@@ -543,20 +558,11 @@ async function getChangeRequest(req, res){
 
       //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
       req.changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
-
         let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
-
-        //todo: add in logic for other change types, when required.
-        switch(mappedChangeAction.changeType){
-        case CHANGE_REQUEST_TYPES.PDF_CHANGE:
-          log.info('TESTING mappping of valuez', Object.keys(CHANGE_REQUEST_TYPES.PDF_CHANGE));
-          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.PDF_CHANGE;
-          break;
-        case CHANGE_REQUEST_TYPES.NEW_FACILITY:
-          mappedChangeAction.changeType = CHANGE_REQUEST_TYPES_FRONT.NEW_FACILITY;
+        if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
           mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
-          break;
         }
+        mappedChangeAction.changeType = getLabelFromValue(mappedChangeAction.changeType, CHANGE_REQUEST_TYPES);
         return mappedChangeAction;
       }));
 
@@ -564,6 +570,20 @@ async function getChangeRequest(req, res){
     }));
 
     log.info('final payload', payload);
+    return payload;
+  } catch (e) {
+    log.error('An error occurred while getting change request', e);
+    //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+
+}
+
+async function getChangeRequest(req, res){
+  try {
+    //pulled the logic out into a seperate function so it can be called from somewhere else
+    const payload = await getChangeRequestsFromApplicationId(req.params.applicationId);
+
+    //log.info('final payload', payload);
     return res.status(HttpStatus.OK).json(payload);
   } catch (e) {
     log.error('An error occurred while getting change request', e);

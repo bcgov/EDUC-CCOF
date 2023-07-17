@@ -52,8 +52,10 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
+
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import application from './store/modules/application.js';
+import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
 Vue.prototype.moment = moment;
 
@@ -619,13 +621,33 @@ const router = new VueRouter({
     },
     {
       path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.supportingDocumentUpload,
-      name: 'change-request-Supporting Document Upload',
+      name: 'change-request-Supporting-Document-Upload',
       component: SupportingDocumentUpload,
       meta: {
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclaration,
+      name: 'Summary and Declaration New Facility',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: true
+      }
+    },
+    {
+      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclarationReportChanges,
+      name: 'Summary and Declaration Report Changes',
+      component: SummaryDeclarationReportChanges,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
       }
     },
   ]

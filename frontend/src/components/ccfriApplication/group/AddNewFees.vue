@@ -113,59 +113,71 @@
                     >
                     <!-- childCareTypes[index].approvedFeeApr
                       I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeApr" label="April" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeApr" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="April" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMay" label="May" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeMay" @input="convertBlankNumberToNull(item,'approvedFeeMay')" label="May" prefix="$"/>
                     </v-col >
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJun" label="June" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeJun" @input="convertBlankNumberToNull(item,'approvedFeeJun')" label="June" prefix="$"/>
                     </v-col>
                     <v-col
                     class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJul" label="July" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeJul" @input="convertBlankNumberToNull(item,'approvedFeeJul')" label="July" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeAug" label="August" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeAug" @input="convertBlankNumberToNull(item,'approvedFeeAug')" label="August" prefix="$" />
                     </v-col>
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeSep" label="September" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeSep" @input="convertBlankNumberToNull(item,'approvedFeeSep')" label="September" prefix="$" />
                     </v-col>
                   </v-row>
 
                   <v-row>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeOct" label="October" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeOct')" label="October" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeNov" label="November" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeNov')" label="November" prefix="$"/>
                     </v-col >
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeDec" label="December" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeDec')" label="December" prefix="$"/>
                     </v-col >
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJan" label="Jan" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeJan')" label="Jan" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeFeb" label="Feb" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeFeb')" label="Feb" prefix="$" />
                     </v-col>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMar" label="March" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules" 
+                        v-model.number="item.approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeMar')" label="March" prefix="$" />
                     </v-col>
                   </v-row>
 
@@ -397,13 +409,14 @@ import { PATHS } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
 import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
-  mixins: [alertMixin],
+  mixins: [alertMixin, globalMixin],
   data() {
     return {
 

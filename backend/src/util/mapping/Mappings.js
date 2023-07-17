@@ -16,6 +16,7 @@ const OrganizationMappings = [
   { back: 'ccof_typeoforganization', front: 'organizationType' },
   // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
+  { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing'}
   // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
   // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
@@ -417,6 +418,7 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,
 ];
 
+//DONT USE THIS below for most change rec things- there is a seperate file for change request mappings
 const ChangeRequestMappings = [
   { back: 'ccof_change_requestid', front: 'changeRequestId'}, // null,
   //{ back: '', front: ''}, // null,
