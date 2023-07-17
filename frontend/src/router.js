@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -54,7 +54,6 @@ import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import application from './store/modules/application.js';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
 Vue.prototype.moment = moment;
@@ -66,7 +65,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
+      path: PATHS.ROOT.HOME,
       name: 'landing-page',
       component: LandingPage,
       meta: {
@@ -109,7 +108,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.estimator,
+      path: PATHS.ROOT.ESTIMATOR,
       name: 'ccfri-estimator',
       component: CcfriEstimator,
       meta: {
@@ -117,7 +116,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.selectApplicationType,
+      path: pcfUrl(PATHS.SELECT_APPLICATION_TYPE),
       name: 'Select CCOF Application Type',
       component: CcofApplicationTypeSelector,
       meta: {
@@ -126,7 +125,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.orgInfo,
+      path: pcfUrl(PATHS.CCOF_GROUP_ORG),
       name: 'Group Organization Information',
       component: GroupOrganizationInformation,
       meta: {
@@ -138,7 +137,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.family.orgInfo,
+      path: pcfUrl(PATHS.CCOF_FAMILY_ORG),
       name: 'Family Organization Information',
       component: FamilyOrganization,
       meta: {
@@ -151,7 +150,7 @@ const router = new VueRouter({
     },
 
     {
-      path: PATHS.family.eligibility,
+      path: pcfUrl(PATHS.CCOF_FAMILY_ELIGIBILITY),
       name: 'Eligibility',
       component: Eligibility,
       meta: {
@@ -163,7 +162,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.family.eligibility + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY),
       name: 'Eligibility GUID',
       component: Eligibility,
       meta: {
@@ -175,7 +174,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.family.fundAmount,
+      path: pcfUrl(PATHS.CCOF_FAMILY_FUNDING),
       name: 'FamilyFunding',
       component: FamilyFunding,
       meta: {
@@ -187,7 +186,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.family.fundAmount + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING),
       name: 'FamilyFunding GUID',
       component: FamilyFunding,
       meta: {
@@ -199,7 +198,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.facInfo,
+      path: pcfUrl(PATHS.CCOF_GROUP_FACILITY),
       name: 'Facility Information',
       component: FacilityInformation,
       meta: {
@@ -211,7 +210,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.facInfo + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY),
       name: 'Facility Information Guid',
       component: FacilityInformation,
       meta: {
@@ -223,7 +222,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.fundAmount,
+      path: pcfUrl(PATHS.CCOF_GROUP_FUNDING),
       name: 'Funding Amount',
       component: GroupFundAmount,
       meta: {
@@ -235,7 +234,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.fundAmount + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING),
       name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
@@ -247,7 +246,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.confirmation,
+      path: pcfUrl(PATHS.CCOF_GROUP_CONFIRM),
       name: 'Application Confirmation',
       component: ApplicationConfirmation,
       meta: {
@@ -259,7 +258,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.licenseUpload,
+      path: pcfUrl(PATHS.LICENSE_UPLOAD),
       name: 'Licence Upload',
       component: LicenseUpload,
       meta: {
@@ -271,7 +270,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid/licenseUpload',
+      path: changeUrl(PATHS.LICENSE_UPLOAD),
       name: 'Change Request Licence Upload',
       component: LicenseUpload,
       meta: {
@@ -283,7 +282,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.group.renewOrganization,
+      path: pcfUrl(PATHS.RENEW_CONFIRM),
       name: 'Renew Organization',
       component: RenewOrganization,
       meta: {
@@ -304,7 +303,7 @@ const router = new VueRouter({
     //   }
     // },
     {
-      path: PATHS.eceweEligibility,
+      path: pcfUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
@@ -316,7 +315,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.eceweFacilities,
+      path: pcfUrl(PATHS.ECEWE_FACILITITES),
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
@@ -328,7 +327,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.supportingDocumentUpload,
+      path: pcfUrl(PATHS.SUPPORTING_DOCS),
       name: 'Supporting Document Upload',
       component: SupportingDocumentUpload,
       meta: {
@@ -339,7 +338,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.summaryDeclaration,
+      path: pcfUrl(PATHS.SUMMARY_DECLARATION),
       name: 'Summary and Declaration',
       component: SummaryDeclaration,
       meta: {
@@ -350,7 +349,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.ccfriHome,
+      path: pcfUrl(PATHS.CCFRI_HOME),
       name: 'ccfri-home',
       component: CcfriEceLandingPage,
       meta: {
@@ -362,7 +361,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.addNewFees,
+      path: pcfUrl(PATHS.CCFRI_NEW_FEES),
       name: 'ccfri-add-fees',
       component: AddNewFees,
       meta: {
@@ -374,7 +373,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.addNewFees + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_NEW_FEES),
       name: 'ccfri-add-fees-guid',
       component: AddNewFees,
       meta: {
@@ -386,7 +385,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.ccfriRequestMoreInfo + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_RFI),
       name: 'ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
@@ -398,7 +397,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.NMF + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.NMF),
       name: 'new-facilities',
       component: NMF,
       meta: {
@@ -410,7 +409,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.currentFees + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES),
       name: 'ccfri-current-fees-guid',
       component: currentFees,
       meta: {
@@ -422,7 +421,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.currentFees ,
+      path: pcfUrl(PATHS.CCFRI_CURRENT_FEES),
       name: 'ccfri-current-fees',
       component: currentFees,
       meta: {
@@ -450,7 +449,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.impersonate,
+      path: PATHS.ROOT.IMPERSONATE,
       name: 'impersonate',
       component: Impersonate,
       meta: {
@@ -459,7 +458,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.messagesPage,
+      path: PATHS.ROOT.MESSAGES,
       name: 'messagesPage',
       component: MessagesPage,
       meta: {
@@ -481,7 +480,7 @@ const router = new VueRouter({
       component: BackendSessionExpired
     },
     {
-      path: PATHS.reportChange.landing,
+      path: PATHS.ROOT.CHANGE_LANDING,
       name: 'Report Change',
       component: ReportChange,
       meta: {
@@ -491,7 +490,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.notificationForm,
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM),
       name: 'change-notification-form',
       component: ChangeNotificationForm,
       meta: {
@@ -501,7 +500,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.notificationForm + '/:urlGuid',
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM),
       name: 'change-notification-form-guid',
       component: ChangeNotificationForm,
       meta: {
@@ -511,7 +510,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.reportChange.facInfo,
+      path: PATHS.PREFIX.CHANGE_REQUEST + PATHS.CCOF_GROUP_FACILITY, //TODO. there is no change request here.
       name: 'change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -523,7 +522,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility',
+      path: changeUrl(PATHS.CCOF_GROUP_FACILITY),
       name: 'existing-change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -535,7 +534,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facility/:urlGuid',
+      path: changeUrlGuid(PATHS.CCOF_GROUP_FACILITY),
       name: 'change-request-facility-information-guid',
       component: FacilityInformation,
       meta: {
@@ -547,7 +546,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid/funding/:urlGuid',
+      path: changeUrlGuid(PATHS.CCOF_GROUP_FUNDING),
       name: 'change-request-funding-guid',
       component: GroupFundAmount,
       meta: {
@@ -559,7 +558,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid/facilityConfirmation',
+      path: changeUrl(PATHS.CCOF_GROUP_CONFIRM),
       name: 'change-request-new-facility-confirmation',
       component: ApplicationConfirmation,
       meta: {
@@ -571,7 +570,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid/ccfriApplication',
+      path: changeUrl(PATHS.CCFRI_HOME),
       name: 'change-request-ccfri-home',
       component: CcfriEceLandingPage,
       meta: {
@@ -583,7 +582,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' +  PATHS.addNewFees + '/:urlGuid',
+      path: changeUrlGuid(PATHS.CCFRI_NEW_FEES),
       name: 'change-request-ccfri-add-fees-guid',
       component: AddNewFees,
       meta: {
@@ -595,7 +594,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.eceweEligibility,
+      path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'change-request-ECEWE-Eligibility',
       component: EceweEligibility,
       meta: {
@@ -608,7 +607,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.eceweFacilities,
+      path: changeUrl(PATHS.ECEWE_FACILITITES),
       name: 'change-request-ECEWE-Facilities',
       component: EceweFacilities,
       meta: {
@@ -620,7 +619,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.supportingDocumentUpload,
+      path: changeUrl(PATHS.SUPPORTING_DOCS),
       name: 'change-request-Supporting-Document-Upload',
       component: SupportingDocumentUpload,
       meta: {
@@ -631,7 +630,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclaration,
+      path: changeUrl(PATHS.SUMMARY_DECLARATION),
       name: 'Summary and Declaration New Facility',
       component: SummaryDeclaration,
       meta: {
@@ -641,7 +640,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: CHANGE_URL_PREFIX + '/:changeRecGuid' + PATHS.summaryDeclarationReportChanges,
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_DECLARATION),
       name: 'Summary and Declaration Report Changes',
       component: SummaryDeclarationReportChanges,
       meta: {
@@ -660,6 +659,13 @@ router.beforeEach((to, _from, next) => {
         next('/token-expired');
       }else {
         store.dispatch('auth/getUserInfo').then(() => {
+          if (to?.params?.changeRecGuid) {
+            store.commit('navBar/setChangeRequestId', to.params.changeRecGuid);
+          } else if (to?.params?.programYearGuid) {
+            store.commit('navBar/setProgramYearId', to.params.programYearGuid);
+          } else {
+            store.commit('navBar/clearGuids');
+          }
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
             next(PATHS.impersonate);
           } else {
@@ -692,9 +698,9 @@ router.afterEach((to) => {
   // determine if we should show navBar
   store.commit('app/setShowNavBar', to.meta?.showNavBar == true);
   if (to && to.meta) {
-    store.commit('app/setNavBarGroup', to.meta.navBarGroup);
+    store.commit('navBar/setNavBarGroup', to.meta.navBarGroup);
   } else {
-    store.commit('app/setNavBarGroup', '');
+    store.commit('navBar/setNavBarGroup', '');
   }
   // this section is to set page title in vue store
   if (to && to.meta) {
@@ -703,11 +709,11 @@ router.afterEach((to) => {
     store.commit('app/setPageTitle', '');
   }
 
-  if(to && to.meta){
-    if(to.meta.subtitleBanner&&to.meta.subtitleBanner.startsWith('%PROGRAMYEAR%')){
-      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',application.state.formattedProgramYear));
+  if(to?.meta?.subtitleBanner){
+    if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
+      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
     }else {
-    store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
+      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
     }
   } else {
     store.commit('app/setSubtitleBanner','');

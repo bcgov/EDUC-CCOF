@@ -42,7 +42,6 @@ export default {
       console.log('saveOrganization, payload', payload);
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       commit('setLoadedModel', { ...state.organizationModel });
-      commit('app/setIsOrganizationComplete', state.isOrganizationComplete, { root: true });
 
       if (state.organizationId) {
         // has an orgaization ID, so update the data
@@ -92,14 +91,6 @@ export default {
         commit('organization/setIsStarted', false, { root: true });
         commit('eceweApp/setIsStarted', false, { root: true });
         commit('auth/setIsUserInfoLoaded', false, { root: true });
-
-        // commit('setApplicationId', response.data?.applicationId);
-        // commit('setApplicationStatus', 'DRAFT');
-        // commit('setApplicationType', 'RENEW');
-        // commit('app/setIsLicenseUploadComplete', null, { root: true });
-        // commit('app/setIsRenewal', true, { root: true });
-        // let facilityList  = rootState.app.navBarList.map(({facilityId, facilityName, licenseNumber}) => ({facilityId, facilityName, licenseNumber}));
-        // commit('app/bulkAddToNavNBar', facilityList, { root: true });
 
         return response;
       } catch (error) {

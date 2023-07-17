@@ -59,56 +59,84 @@ export const PAGE_TITLES = Object.freeze({
 
 export const CHANGE_URL_PREFIX = '/report-change';
 
+/*******************************************************
+ *
+ * APPLICATION PATHS
+ * Paths will be set up using PREFIX/guid/SUFFIX/guid
+ * such as:  /pcf/${yearGuid}/facility/${facilityGuid}
+ *
+ *
+ ******************************************************/
+
 export const PATHS = {
-  home: '/',
-  estimator: '/ccfri-estimator',
-  ccfriHome: '/ccfriApplication/group/CcfriEceLanding',
-  addNewFees: '/ccfriApplication/group/add-new-fees',
-  currentFees: '/ccfriApplication/group/current-fees',
-  ccfriRequestMoreInfo: '/ccfri-application/request-info/landing',
-  WageIncrease: '/ccfri-application/request-info/wage-increase',
-  ServiceExpansion: '/ccfri-application/request-info/service-expansion',
-  IndigenousServiceExpansion: '/ccfri-application/request-info/indigenous-service-expansion',
-  UnderservedPop: '/ccfri-application/request-info/underserved-populations',
-  NMF: '/ccfri-application/request-info/new-facilities',
-  selectApplicationType: '/ccof-application/select-application-type',
-  impersonate: '/impersonate',
-  group: {
-    orgInfo: '/ccof-application/group/organization',
-    facInfo: '/ccof-application/group/facility',
-    fundAmount: '/ccof-application/group/funding',
-    confirmation: '/ccof-application/group/confirmation',
-    licenseUpload: '/ccof-application/group/licenseUpload',
-    renewOrganization: '/ccof-application/group/renew',
+  //Root paths don't require a prefix/suffix
+  ROOT: {
+    HOME: '/',
+    ESTIMATOR: '/ccfri-estimator',
+    IMPERSONATE: '/impersonate',
+    MESSAGES: '/messages',
+    CHANGE_LANDING: '/change/landing',
+    CHANGE_NEW_FACILITY: '/change/group/facility'
   },
-  family: {
-    orgInfo: '/ccof-application/family/organization',
-    eligibility: '/ccof-application/family/eligibility',
-    fundAmount: '/ccof-application/family/funding',
+  PREFIX: {
+    PCF: '/pcf',
+    CHANGE_REQUEST: '/change',
   },
-  eceweDocUpload: '/ecewe-document-upload',
-  eceweEligibility: '/ecewe-eligibility',
-  eceweFacilities: '/ecewe-facilities',
-  summaryDeclaration:  '/summary-declaration',
-  messagesPage: '/messages',
-  supportingDocumentUpload: '/supporting-document-upload',
-  summaryDeclarationReportChanges:  '/summary-declaration-report-changes',
+  //These are all suffixes.
+  SELECT_APPLICATION_TYPE: '/select-application-type',
+  RENEW_CONFIRM: '/group/renew',
 
-  reportChange: {
-    landing: `${CHANGE_URL_PREFIX}/landing`,
-    notificationForm: `${CHANGE_URL_PREFIX}/change-notification-form`,
-    facInfo: `${CHANGE_URL_PREFIX}/facility`,
-    fundAmount: '/group/funding',
-    ccfriHome: `${CHANGE_URL_PREFIX}/ccfriApplication/group/CcfriEceLanding`,
+  CCOF_GROUP_ORG: '/group/organization',
+  CCOF_GROUP_FACILITY: '/group/facility',
+  CCOF_GROUP_FUNDING: '/group/funding',
+  CCOF_GROUP_CONFIRM: '/group/confirmation',
 
-  }
+  CCOF_FAMILY_ORG: '/family/organization',
+  CCOF_FAMILY_ELIGIBILITY: '/family/eligibility',
+  CCOF_FAMILY_FUNDING: '/family/funding',
+
+  CCFRI_HOME: '/ccfri',
+  CCFRI_CURRENT_FEES: '/ccfri/current-fees',
+  CCFRI_NEW_FEES: '/ccfri/new-fees',
+  CCFRI_RFI: '/ccfri/req-info',
+  CCFRI_NMF: '/ccfri/req-info/new-facility',
+
+  ECEWE_ELIGIBILITY: '/ecewe-eligibility',
+  ECEWE_FACILITITES: '/ecewe-facilities',
+
+  LICENSE_UPLOAD: '/licenseUpload',
+  SUPPORTING_DOCS: '/supporting-documents',
+
+  SUMMARY_DECLARATION:  '/summary-declaration',
+
+  //Report Change prefix's
+  CHANGE_NOTIFICATION_FORM: `${CHANGE_URL_PREFIX}/notification-form`,
+  CHANGE_MTFI: 'midterm-fee-increase',
+  CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
+
 };
+
+//Some helper classes to build the URL consistently
+export function pcfUrl(suffix, programYearGuid = ':programYearGuid') {
+  return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}`;
+}
+
+export function pcfUrlGuid(suffix, programYearGuid = ':programYearGuid', urlGuid = ':urlGuid') {
+  return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}/${urlGuid}`;
+}
+
+export function changeUrl(suffix, changeRecGuid = ':changeRecGuid') {
+  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${suffix}`;
+}
+
+export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid') {
+  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${suffix}/${urlGuid}`;
+}
+
 
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
-  RFI: 'RFI',
-  NMF: 'NMF',
   ECEWE: 'ECE-WE'
 };
 
@@ -129,5 +157,6 @@ export const CCFRI_Categories = [
   'Group Before & After School (Kindergarten only)',
   'Family Before & After School (Kindergarten only)'
 ];
+
 
 

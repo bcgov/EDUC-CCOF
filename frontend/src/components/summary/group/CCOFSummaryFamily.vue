@@ -283,7 +283,7 @@ export default {
   },
   computed: {
     ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete']),
-    ...mapState('app', ['navBarList',]),
+    ...mapState('navBar', ['navBarList',]),
   },
   data() {
     return {

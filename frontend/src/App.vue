@@ -3,7 +3,7 @@
     <MsieBanner v-if="isIE"/>
     <Header/>
     <SnackBar></SnackBar>
-    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle"/>    
+    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle"/>
     <v-main fluid class="align-start">
     <v-app-bar v-if="bannerColor !== ''"
                style="color:white;"
@@ -20,8 +20,6 @@
     <router-view/>
     </v-main>
     <Footer/>
-
-    
   </v-app>
 </template>
 
@@ -51,7 +49,6 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'loginError', 'isLoading']),
-    
     ...mapState('app', ['pageTitle', 'showNavBar','subtitleBanner']),
     isIE() {
       return /Trident\/|MSIE/.test(window.navigator.userAgent);
@@ -79,8 +76,8 @@ export default {
       }
     }).finally(() => {
       this.setLoading(false);
-    });    
-    this.setLoading(false); 
+    });
+    this.setLoading(false);
   }
 };
 </script>

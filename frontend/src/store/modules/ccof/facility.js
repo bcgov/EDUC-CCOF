@@ -101,7 +101,7 @@ export default {
               //If there is a changeRequestId, get the change action from the store.
               changeActionId = rootState.reportChanges.changeActionId;
               if (!changeActionId) {  //If there is no changeActionID, then maybe the user refreshed.  Get it from the navBar
-                changeActionId = rootState.app.navBarList.find(el => el.changeRequestId == changeRequestId)?.changeActionId;
+                changeActionId = rootState.navBar.navBarList.find(el => el.changeRequestId == changeRequestId)?.changeActionId;
               }
               console.log('Change ActionId is ', changeActionId);
             }
@@ -117,7 +117,7 @@ export default {
             }
             let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`, payload);
             commit('setFacilityId', response.data?.facilityId);
-            commit('app/addToNavBarList', {
+            commit('navBar/addToNavBar', {
               facilityName: state.facilityModel.facilityName,
               facilityId: state.facilityId,
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
@@ -140,7 +140,7 @@ export default {
           try {
             let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
             commit('setFacilityId', response.data?.facilityId);
-            commit('app/addToNavBarList', {
+            commit('navBar/addToNavBar', {
               facilityName: state.facilityModel.facilityName,
               facilityId: state.facilityId,
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
@@ -187,7 +187,7 @@ export default {
 
       commit('deleteFromStore', facilityObj.facilityId);
       commit('funding/deleteFromStore', facilityObj.facilityId, { root: true });
-      commit('app/deleteFromNavBarList', facilityObj.facilityId, { root: true });
+      commit('navBar/deleteFromNavBar', facilityObj.facilityId, { root: true });
     },
     newFacility({ commit }) {
       commit('setFacilityId', null);

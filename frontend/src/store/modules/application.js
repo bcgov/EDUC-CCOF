@@ -8,7 +8,6 @@ export default {
     programYearId: null,
     programYearLabel: null,
     isRenewal: false,
-    formattedProgramYear: null,
 
     unlockBaseFunding: false,
     unlockDeclaration: false,
@@ -18,7 +17,9 @@ export default {
 
     isEceweComplete: false,
     isLicenseUploadComplete: false,
-    isOrganizationComplete: false,
+
+    ccofConfirmationEnabled: false,
+
   },
   mutations: {
     setApplicationId(state, value) { state.applicationId = value; },
@@ -29,7 +30,7 @@ export default {
     setProgramYearLabel(state, value) { state.programYearLabel = value; },
     setIsRenewal(state, value) { state.isRenewal = value; },
     setFormattedProgramYear(state, value) { state.formattedProgramYear = value; },
-
+    setCcofConfirmationEnabled(state, value) { state.ccofConfirmationEnabled = value; },
     setUnlockBaseFunding(state, value) { state.unlockBaseFunding = value; },
     setUnlockDeclaration(state, value) { state.unlockDeclaration = value; },
     setUnlockEcewe(state, value) { state.unlockEcewe = value; },
@@ -38,7 +39,6 @@ export default {
 
     setIsEceweComplete(state, value) { state.isEceweComplete = value; },
     setIsLicenseUploadComplete(state, value) { state.isLicenseUploadComplete = value; },
-    setIsOrganizationComplete(state, value) { state.isLicenseUploadComplete = value; },
 
     setFromUserInfo(state, userInfo) {
       console.log('setFromUserInfo called: ', userInfo);
@@ -59,10 +59,11 @@ export default {
 
       state.isEceweComplete = userInfo.isEceweComplete;
       state.isLicenseUploadComplete = userInfo.isLicenseUploadComplete;
-      state.isOrganizationComplete = userInfo.isOrganizationComplete;
     }
   },
-
+  getters: {
+    formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, '')
+  },
   actions: {
     loadFromUserinfo({ commit }, userInfo) {
       commit('setAapplicationId', userInfo.applicationId);
@@ -71,7 +72,6 @@ export default {
       commit('setCcofApplicationStatus', userInfo.ccofApplicationStatus);
       commit('setProgramYearId', userInfo.ccofProgramYearId);
       commit('setProgramYearLabel', userInfo.ccofProgramYearName);
-      commit('setFormattedProgramYear', userInfo.ccofProgramYearName?.replace(/[^\d/]/g, '') );
       commit('setIsRenewal', (userInfo.applicationType === 'RENEW'));
 
       commit('setUnlockBaseFunding', userInfo.unlockBaseFunding);
@@ -82,7 +82,6 @@ export default {
 
       commit('setIsEceweComplete', userInfo.isEceweComplete);
       commit('setIsLicenseUploadComplete', userInfo.isLicenseUploadComplete);
-      commit('setIsOrganizationComplete', userInfo.isOrganizationComplete);
     },
 
   },

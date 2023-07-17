@@ -139,7 +139,7 @@
 
 <script>
 
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -161,8 +161,9 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
-    ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('app', ['fundingModelTypeList']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -236,16 +237,16 @@ export default {
     },
     previous() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweEligibility}`);
+        this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
       } else {
-        return this.$router.push(PATHS.eceweEligibility);
+        this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
       }
     },
     next() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.supportingDocumentUpload}`);
+        this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
       } else {
-        this.$router.push(PATHS.supportingDocumentUpload);
+        this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
       }
     },
     validateForm() {

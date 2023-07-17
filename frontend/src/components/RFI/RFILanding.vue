@@ -1597,9 +1597,11 @@ export default {
   },
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
-    ...mapState('app', ['programYearList', 'navBarList']),
+    ...mapState('app', ['programYearList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
     currentFacility() {
       return this.navBarList.find(element => element.ccfriApplicationId == this.$route.params.urlGuid);
     },
@@ -1682,18 +1684,15 @@ export default {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
     ...mapMutations('app', ['refreshNavBar']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
-    async nextBtnClicked() {
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    nextBtnClicked() {
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();
     },
-    async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
     async save(showNotification) {
       this.processing = true;

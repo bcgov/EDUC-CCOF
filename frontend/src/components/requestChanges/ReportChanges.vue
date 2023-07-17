@@ -128,7 +128,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, changeUrlGuid } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -162,8 +162,8 @@ export default {
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
-    async previous() {
-      this.$router.push(PATHS.home);
+    previous() {
+      this.$router.push(PATHS.ROOT.HOME);
     },
 
     isPageComplete() {
@@ -209,10 +209,10 @@ export default {
 
     },
     next() {
-      this.$router.push(PATHS.home);
+      this.$router.push(PATHS.ROOT.HOME);
     },
     routeToFacilityAdd(){
-      this.$router.push(PATHS.reportChange.facInfo);
+      this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
     continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
       if (changeType == 'PDF_CHANGE'){
@@ -221,7 +221,7 @@ export default {
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(CHANGE_URL_PREFIX + '/' + changeRequestId + '/facility/' + this.changeRequestStore[index].changeActions[0].facilities[0].facilityId);
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
@@ -239,13 +239,12 @@ export default {
           console.log('unable to create a new Req');
           this.setFailureAlert('An error occurred while creating a change request Please try again later.');
         }
-
-        this.$router.push(PATHS.reportChange.notificationForm + '/' + newReq.changeActionId);
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, newReq.changeActionId));
       }
       else{
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(PATHS.reportChange.notificationForm + '/' + changeActionId);
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId));
       }
 
     },

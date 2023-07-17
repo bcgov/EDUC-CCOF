@@ -94,9 +94,9 @@
 
 
 
-import { mapState, mapMutations, mapActions } from 'vuex';
+import { mapState, mapMutations, mapGetters } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -127,8 +127,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'applicationId']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
+    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
+    ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapGetters('navBar', ['previousPath']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -162,7 +164,6 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
-    ...mapActions('navBar', ['getPreviousPath']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
@@ -172,9 +173,8 @@ export default {
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
     },
-    async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
@@ -204,27 +204,28 @@ export default {
       if(!firstOptInFacility){
         //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
         if (isChangeRequest(this) ) {
-          this.$router.push({path : `${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweEligibility}`});
+          this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
         }
         else {
-          this.$router.push({path : `${PATHS.eceweEligibility}`});
+          this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
         }
       }
-      //if application locked, send to add new fees
+      //if application is a change request, go to add new fees
       else if (isChangeRequest(this) ) {
-        this.$router.push({path : `${CHANGE_URL_PREFIX}/${firstOptInFacility.changeRequestId}${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_NEW_FEES, firstOptInFacility.changeRequestId, firstOptInFacility.ccfriApplicationId));
+
       }
       //if application locked, send to add new fees
       else if (this.isReadOnly ) {
-        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
       }
       //if CCFRI is being renewed, go to page that displays fees
       else if (this.isRenewal){
-        this.$router.push({path : `${PATHS.currentFees}/${firstOptInFacility.ccfriApplicationId}`});
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
       }
       // else go directly to addNewFees page
       else {
-        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
       }
     },
     validateForm() {
