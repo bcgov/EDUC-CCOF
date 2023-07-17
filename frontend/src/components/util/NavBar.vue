@@ -87,7 +87,7 @@
 import { mapState, mapGetters, mapMutations } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
 import StaticConfig from '../../common/staticConfig';
-import { CHANGE_URL_PREFIX } from '../../utils/constants';
+import { PATHS } from '../../utils/constants';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -185,7 +185,7 @@ export default {
       });
     },
     isChangeRequest() {
-      return this.$route.path?.startsWith(CHANGE_URL_PREFIX);
+      return this.$route.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
     },
     buildNavBar(){
       positionIndex = 0;

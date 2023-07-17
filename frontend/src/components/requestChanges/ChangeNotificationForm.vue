@@ -258,11 +258,11 @@ export default {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments',]),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
-    async previous() {
-      this.$router.push(PATHS.reportChange.landing);
+    previous() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
-    async form() {
-      this.$router.push('http://localhost:8082/publiccf1345_cc_operating_program_funding_agreement_change_notification.pdf');
+    form() {
+      this.$router.push('/publiccf1345_cc_operating_program_funding_agreement_change_notification.pdf');
     },
     async save(showNotification = false){
       this.isLoading = true;

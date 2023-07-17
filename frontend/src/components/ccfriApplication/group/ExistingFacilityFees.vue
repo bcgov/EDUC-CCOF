@@ -119,7 +119,8 @@
 <script>
 
 //userInfo.ccofProgramYearId;
-import { PATHS } from '@/utils/constants';
+import { PATHS, pcfUrlGuid } from '@/utils/constants';
+import { sleep } from '@/utils/common';
 import { mapState, mapActions, mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -144,8 +145,9 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('navBar', ['previousPath']),
     ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('application', ['formattedProgramYear', 'applicationId']),
+    ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
 
     findIndexOfFacility(){
@@ -167,7 +169,6 @@ export default {
     },
     previousProgramYearLabel(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
-      //const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
 
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
       return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
@@ -187,7 +188,17 @@ export default {
           } else {
             this.model.q1 = undefined;
           }
-          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data
+          let previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
+          if (!previousCCFRI) {
+            //No previous CCFRI ID.  wait 10 seconds and try loading again.
+            console.log('no previous CCFRI id for this guid. waiting 10 seconds');
+            await sleep(10000);
+            console.log('trying again');
+            previousCCFRI = await this.getPreviousCCFRI(this.$route.params.urlGuid);
+          }
+          if (previousCCFRI) {
+            await this.loadCCFRIFacility(previousCCFRI); //load this page up with the previous CCFRI data
+          }
 
           this.feeList = [];
 
@@ -221,11 +232,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility']),
-    ...mapActions('navBar', ['getPreviousPath']),
-    async previous(){
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI']),
+    previous(){
+      this.$router.push(this.previousPath);
     },
     async setFees (areFeesCorrect){
       await this.loadCCFRIFacility(this.$route.params.urlGuid);
@@ -246,11 +255,7 @@ export default {
       else if (this.model.q1 == 'Yes') {
         this.setFees(true);
       }
-      this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-
-
-      //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.$route.params.urlGuid));
     },
     validateForm() {
       this.$refs.isValidForm?.validate();

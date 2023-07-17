@@ -124,7 +124,6 @@
 
 <script>
 
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -144,6 +143,7 @@ export default {
     ...mapState('navBar', ['canSubmit']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
     ...mapState('reportChanges', ['changeRequestId']),
     isLocked() {
       if (isChangeRequest(this)) {
@@ -253,19 +253,13 @@ export default {
 
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
+
     previous() {
-      if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
-      } else {
-        this.$router.push(PATHS.eceweFacilities);
-      }
+      this.$router.push(this.previousPath);
     },
     next() {
-      if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.summaryDeclaration}`);
-      } else {
-        this.$router.push(PATHS.summaryDeclaration);
-      }
+      console.log('next path: ', this.nextPath);
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();

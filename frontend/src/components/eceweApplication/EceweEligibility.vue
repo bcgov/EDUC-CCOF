@@ -303,7 +303,7 @@
 
 <script>
 
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -325,7 +325,8 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities']),
     ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapGetters('navBar', ['previousPath']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -395,24 +396,25 @@ export default {
       return false;
     },
     previous() {
-      if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.ccfriHome}`);
-      } else {
-        this.$router.push(PATHS.ccfriHome);
-      }
+      this.$router.push(this.previousPath);
+      // if (isChangeRequest(this)) {
+      //   this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.ccfriHome}`);
+      // } else {
+      //   this.$router.push(PATHS.ccfriHome);
+      // }
     },
     async next() {
       if (isChangeRequest(this)) {
         if (this.model.optInECEWE == 0) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.supportingDocumentUpload}`);
+          this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
         } else {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}${PATHS.eceweFacilities}`);
+          this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
         }
       } else {
         if (this.model.optInECEWE == 0) {
-          this.$router.push(PATHS.supportingDocumentUpload);
+          this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
         } else {
-          this.$router.push(PATHS.eceweFacilities);
+          this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
         }
       }
     },

@@ -3,7 +3,7 @@
 import {getDateFormatter} from '@/utils/format';
 import {LocalDate} from '@js-joda/core';
 import {isPlainObject, sortBy} from 'lodash';
-import { CHANGE_URL_PREFIX} from '@/utils/constants';
+import { PATHS } from '@/utils/constants';
 
 const clone = require('rfdc')();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
@@ -40,9 +40,15 @@ export function isNullOrBlank(value) {
 }
 
 export function isChangeRequest(vueForm) {
-  return vueForm?.$route?.path?.startsWith(CHANGE_URL_PREFIX);
+  console.log('url is: ' + vueForm?.$route?.path);
+  console.log('is change request ', vueForm?.$route?.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST));
+  return vueForm?.$route?.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
 }
 
 export function sortByFacilityId(value) {
   return sortBy(value,[function(o) { return o.facilityId; }]);
+}
+
+export async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

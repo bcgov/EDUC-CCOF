@@ -169,7 +169,7 @@
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
-import { PATHS } from '@/utils/constants';
+import { PATHS, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -341,77 +341,63 @@ export default {
     ...mapActions('message', ['getAllMessages']),
     renewApplication() {
       this.setIsRenewal(true);
-      this.$router.push(PATHS.group.renewOrganization);
+      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));
     },
     goToReportChange(){
-      this.$router.push(PATHS.reportChange.landing);
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     continueRenewal() {
       this.goToLicenseUpload();
     },
     newApplication() {
       this.setIsRenewal(false);
-      this.$router.push(PATHS.selectApplicationType);
+      this.$router.push(pcfUrl(PATHS.SELECT_APPLICATION_TYPE, this.programYearList.newApp.programYearId));
     },
     continueApplication() {
       this.setIsRenewal(false);
       console.log('continueApplication .organizationProviderType', this.organizationProviderType);
-      if (this.organizationProviderType === 'GROUP') {
-        this.$router.push(PATHS.group.orgInfo);
-      } else if (this.organizationProviderType === 'FAMILY') {
-        this.$router.push(PATHS.family.orgInfo);
-      } else {
-        this.setFailureAlert(`Unknown Organization Provider Type: ${this.organizationProviderType}`);
-      }
+      this.$router.push(pcfUrl(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG, this.programYearId));
     },
     goToCCOFOrganizationInfo() {
-      if (this.organizationProviderType === 'GROUP') {
-        this.$router.push(PATHS.group.orgInfo);
-      } else if (this.organizationProviderType === 'FAMILY') {
-        this.$router.push(PATHS.family.orgInfo);
-      }
+      this.$router.push(pcfUrl(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG, this.programYearId));
     },
     goToCCOFFunding() {
       let firstFacilityId = this.navBarList[0]?.facilityId;
       let navBar = this.$store.getters['app/getNavByFacilityId'](firstFacilityId);
       if (navBar?.ccofBaseFundingId) {
-        if (this.organizationProviderType === 'GROUP') {
-          this.$router.push(PATHS.group.fundAmount + '/' + navBar.ccofBaseFundingId);
-        } else if (this.organizationProviderType === 'FAMILY') {
-          this.$router.push(PATHS.family.fundAmount + '/' + navBar.ccofBaseFundingId);
-        }
+        this.$router.push(pcfUrlGuid(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar?.ccofBaseFundingId));
       }
     },
     goToLicenseUpload() {
-      this.$router.push(PATHS.group.licenseUpload);
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
     },
     goToCCFRI(ccfriApplicationId) {
-      let path = this.isRenewal? PATHS.currentFees : PATHS.addNewFees;
+      let path = this.isRenewal? PATHS.CCFRI_CURRENT_FEES : PATHS.CCFRI_NEW_FEES;
       if (ccfriApplicationId)
-        this.$router.push(path + '/' + ccfriApplicationId);
+        this.$router.push(pcfUrlGuid(path, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(path + '/' + this.unlockCCFRIList[0]);
+        this.$router.push(pcfUrlGuid(path, this.programYearId, this.unlockCCFRIList[0]));
     },
     goToNMF(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(PATHS.NMF + '/' + ccfriApplicationId);
+        this.$router.push(pcfUrlGuid(PATHS.NMF, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(PATHS.NMF + '/' + this.unlockNMFList[0]);
+        this.$router.push(pcfUrlGuid(PATHS.NMF, this.programYearId, this.unlockNMFList[0]));
     },
     goToRFI(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + ccfriApplicationId);
+        this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(PATHS.ccfriRequestMoreInfo + '/' + this.unlockRFIList[0]);
+        this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.unlockRFIList[0]));
     },
     goToECEWE() {
-      this.$router.push(PATHS.eceweEligibility);
+      this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
     },
     goToSupportingDocumentUpload() {
-      this.$router.push(PATHS.supportingDocumentUpload);
+      this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
     },
     goToSummaryDeclaration() {
-      this.$router.push(PATHS.summaryDeclaration);
+      this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, this.programYearId));
     },
     viewApplication(type) {
       if (type === 'NEW') {

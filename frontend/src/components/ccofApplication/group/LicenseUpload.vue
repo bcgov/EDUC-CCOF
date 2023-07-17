@@ -79,6 +79,7 @@ export default {
     ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
     filteredLicenseUploadData() {
       if (isChangeRequest(this)) {
         return this.licenseUploadData.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -184,16 +185,12 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
-    ...mapActions('navBar', ['getPreviousPath', 'getNextPath']),
     ...mapMutations('app', ['setIsLicenseUploadComplete']),
-    async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
-    async next() {
-      this.$refs.form.validate();
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    next() {
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();

@@ -1,7 +1,7 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES, CHANGE_URL_PREFIX} from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, pcfUrlGuid} from '@/utils/constants';
 import { isChangeRequest } from '@/utils/common';
 import rules from '@/utils/rules';
-import { mapActions, mapState, mapMutations, } from 'vuex';
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isEmpty} from 'lodash';
 import NavButton from '@/components/util/NavButton';
@@ -13,9 +13,10 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['navBarList']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
     ...mapState('reportChanges', ['changeRequestId']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
+    ...mapGetters('navBar', ['previousPath']),
     isLocked() {
       if (isChangeRequest(this)) {
         return false;
@@ -79,12 +80,7 @@ export default {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
-      let navBar = this.$store.getters['app/getNextPrevByFacilityId'](this.$route.params.urlGuid);
-      if (navBar?.ccofBaseFundingId) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
-      } else {
-        this.$router.push(`${this.isGroup() ? PATHS.group.orgInfo : PATHS.family.orgInfo}`);
-      }
+      this.$router.push(this.previousPath);
     },
     async next() {
       // await this.save();
@@ -95,18 +91,12 @@ export default {
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
         if (isChangeRequest(this)) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/funding/${navBar.ccofBaseFundingId}`);
-        }
-        else {
-          this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
+          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, navBar.ccofBaseFundingId));
+        } else {
+          this.$router.push(pcfUrlGuid(this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar.ccofBaseFundingId));
         }
       } else {
         console.log('error, should never get here');
-        // if (isChangeRequest(this)) {
-        //   this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/group/funding/`);
-        // } else {
-        //   this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
-        // }
       }
     },
     validateForm() {
@@ -142,9 +132,9 @@ export default {
       }
       if (!this.$route.params.urlGuid && isSave) {
         if (isChangeRequest(this)) {
-          this.$router.push(`${CHANGE_URL_PREFIX}/${this.changeRequestId}/facility/${this.facilityId}`);
+          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
         } else {
-          this.$router.push(`${this.$route.path}/${this.facilityId}`);
+          this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYear, this.facilityId));
         }
       }
       this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });

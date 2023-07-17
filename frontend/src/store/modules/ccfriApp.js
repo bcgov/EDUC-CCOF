@@ -167,6 +167,16 @@ export default {
         }
       }
     },
+    /* eslint-disable no-empty-pattern */
+    async getPreviousCCFRI({}, ccfriId) {
+      try {
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
+        return response.data.previousCcfriId;
+      } catch(e) {
+        console.log(`Failed to get existing Facility with error - ${e}`);
+        throw e;
+      }
+    },
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);

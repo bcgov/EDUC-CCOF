@@ -59,6 +59,7 @@ function parseProgramYear(value) {
     future: undefined,
     previous: undefined,
     renewal: undefined,
+    newApp: undefined,
     list: []
   };
   value.forEach(item => {
@@ -75,6 +76,18 @@ function parseProgramYear(value) {
   programYears.previous = programYears.list.find(p => p.programYearId == programYears.current.previousYearId);
   programYears.list.sort((a,b) => { return b.order - a.order; } );
   programYears.renewal = programYears.future ? programYears.future:  programYears.list[0];
+
+  // Set the program year for a new application
+  if (programYears.current?.intakeEnd) {
+    const intakeDate = new Date(programYears.current?.intakeEnd);
+    programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.current;
+  } else {
+    programYears.newApp = programYears.current;
+  }
+
+
+
+
   return programYears;
 }
 

@@ -1,7 +1,7 @@
-import {ORGANIZATION_PROVIDER_TYPES, CHANGE_URL_PREFIX} from '@/utils/constants';
+import {ORGANIZATION_PROVIDER_TYPES} from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
-import {mapActions, mapState, mapMutations} from 'vuex';
+import {mapActions, mapState, mapMutations, mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isNullOrBlank} from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
@@ -14,11 +14,12 @@ export default {
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('app', ['familyLicenseCategory']),
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED' && !this.$route.path?.startsWith(CHANGE_URL_PREFIX));
+      return (this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest);
     }
   },
   data() {
@@ -31,20 +32,16 @@ export default {
   },
   methods: {
     ...mapActions('funding', ['saveFunding', 'loadFunding', 'fundingId']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('funding', ['setFundingModel', 'addModelToStore']),
     ...mapMutations('app', ['setNavBarFundingComplete']),
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
-    async previous() {
-      let previousPath = await this.getPreviousPath();
-      this.$router.push(previousPath);
+    previous() {
+      this.$router.push(this.previousPath);
     },
-    async next() {
-      let nextPath = await this.getNextPath();
-      console.log('next path: ', nextPath);
-      this.$router.push(nextPath);
+    next() {
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();

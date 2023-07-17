@@ -65,7 +65,6 @@ export default {
         if (!isEmpty(response.data)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
-           // commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
             store.push(element);
             //in the future we may not want to assume a new facility change is not the first of the array?
 

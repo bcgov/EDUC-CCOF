@@ -127,7 +127,7 @@ export default {
       this.$store.commit('auth/setJwtToken');
     },
     toEstimator(){
-      this.$router.push(PATHS.estimator);
+      this.$router.push(PATHS.ROOT.ESTIMATOR);
     }
   }
 };

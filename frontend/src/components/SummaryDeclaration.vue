@@ -349,6 +349,7 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
+    ...mapGetters('navBar', ['previousPath']),
     ...mapState('navBar', ['canSubmit']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
@@ -402,7 +403,6 @@ export default {
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
-    ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     ...mapMutations('application',['setIsEceweComplete']),
     ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
@@ -517,9 +517,8 @@ export default {
       }
       return ccrfiRelockPayload;
     },
-    async previous() {
-      let path = await this.getPreviousPath();
-      await this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
       if (!isComplete) {
