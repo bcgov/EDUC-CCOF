@@ -192,15 +192,9 @@ export default {
   computed: {
     ...mapState('application', ['formattedProgramYear']),
     ...mapState('nmfApp', ['nmfModel']),
-    ...mapState('navBar', ['navBarList']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
-    findIndexOfFacility(){
-      return this.navBarList.findIndex((element) => {
-        return element.ccfriApplicationId == this.$route.params.urlGuid;
-      });
-    },
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId']),
     currentFacility(){
-      return this.navBarList[this.findIndexOfFacility];
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly(){
       return (!this.currentFacility.unlockNmf);
@@ -228,6 +222,7 @@ export default {
   },
   methods : {
     ...mapMutations('nmfApp', ['setNmfModel','setIsNmfComplete','setHasNmf']),
+    ...mapMutations('navBar', ['setNavBarNMFComplete']),
     ...mapActions('nmfApp', ['loadNmf', 'saveNmf']),
     next(){
       this.$router.push(this.nextPath);
@@ -238,9 +233,6 @@ export default {
     previous() {
       this.$router.push(this.previousPath);
     },
-    updateCurrentFacilityNMFCompleteStatus(){
-      this.navBarList[this.findIndexOfFacility].isNmfComplete = this.isValidForm;
-    },
     async save(showNotification) {
       this.isProcessing = true;
       try {
@@ -250,7 +242,7 @@ export default {
         if (nmfId) {
           this.model.nmfId = nmfId;
         }
-        this.updateCurrentFacilityNMFCompleteStatus();
+        this.setNavBarNMFComplete({ccfriId: ccfriId, complete: this.isValidForm});
         if (showNotification) {
           this.setSuccessAlert('Success! RFI information has been saved.');
         }

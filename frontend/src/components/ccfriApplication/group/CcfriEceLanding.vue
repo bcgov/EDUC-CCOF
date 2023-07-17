@@ -241,7 +241,7 @@ export default {
           continue;
         }
         if (this.filteredNavBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          this.filteredNavBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          this.filteredNavBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i]; //TODO-RLO verify this code
           payload.push( {
             applicationID : this.applicationId, //CCOF BASE application ID
             facilityID : this.filteredNavBarList[i].facilityId,

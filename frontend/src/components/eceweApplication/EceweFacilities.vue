@@ -280,7 +280,7 @@ export default {
           response.data.facilities?.forEach(el => {
             let facility = this.filteredNavBarList.find(f => f.facilityId === el.facilityId);
             if (facility) {
-              facility.eceweOptInStatus = el.optInOrOut;
+              facility.eceweOptInStatus = el.optInOrOut; //TODO-RLO fix this
             }
           });
         }
