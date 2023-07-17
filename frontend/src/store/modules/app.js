@@ -4,6 +4,7 @@ export default {
   namespaced: true,
   state: {
     pageTitle: null,
+    subtitleBanner: '',
     //NavBar Details
     showNavBar: false,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
@@ -48,6 +49,9 @@ export default {
     },
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
+    },
+    setSubtitleBanner:(state,subtitleBanner) =>{
+      state.subtitleBanner=subtitleBanner;
     },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
