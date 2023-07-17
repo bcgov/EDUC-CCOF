@@ -278,7 +278,7 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -637,7 +637,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
