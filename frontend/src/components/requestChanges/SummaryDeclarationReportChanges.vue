@@ -280,7 +280,7 @@
 </template>
 <script>
 
-import { PATHS } from '@/utils/constants';
+import { PATHS, changeUrlGuid } from '@/utils/constants';
 import { mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -302,7 +302,7 @@ export default {
       isLoading: false,
       isProcessing: false,
       dialog: false,
-      landingPage: PATHS.home,
+      landingPage: PATHS.ROOT.HOME,
       uploadedDocuments: [],
       invalidSummaryForms: [],
       payload: {},
@@ -425,7 +425,7 @@ export default {
       }
     },
     async previous() {
-      await this.$router.push(PATHS.reportChange.notificationForm + `/${this.changeActionId}`);
+      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.changeRequestId, this.changeActionId));
     },
   },
 };

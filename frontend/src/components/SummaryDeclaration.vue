@@ -394,7 +394,7 @@ export default {
       isLoading: false,
       isProcessing: false,
       dialog: false,
-      landingPage: PATHS.home,
+      landingPage: PATHS.ROOT.HOME,
       summaryKey: 1,
       summaryModelFacilities: [],
       invalidSummaryForms: [],

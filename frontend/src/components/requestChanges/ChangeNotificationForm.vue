@@ -166,7 +166,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, changeUrl } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -286,8 +286,8 @@ export default {
       }
       this.isLoading = false;
     },
-    async next() {
-      await this.$router.push(CHANGE_URL_PREFIX + `/${this.changeRequestId}` + PATHS.summaryDeclarationReportChanges);
+    next() {
+      this.$router.push(changeUrl(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.changeRequestId));
     },
     addNewRowToUploadedDocuments(item) {
       switch (item.documentType) {

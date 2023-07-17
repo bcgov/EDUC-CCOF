@@ -118,7 +118,6 @@ export const PATHS = {
 
 //Some helper classes to build the URL consistently
 export function pcfUrl(suffix, programYearGuid = ':programYearGuid') {
-  console.log(`${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}`);
   return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}`;
 }
 
