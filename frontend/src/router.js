@@ -53,6 +53,10 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
 
+import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
+import application from './store/modules/application.js';
+import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -118,6 +122,7 @@ const router = new VueRouter({
       component: CcofApplicationTypeSelector,
       meta: {
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -128,7 +133,8 @@ const router = new VueRouter({
         pageTitle: 'Organization Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -139,7 +145,8 @@ const router = new VueRouter({
         pageTitle: 'Organization Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
 
@@ -151,7 +158,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Eligibility',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -162,7 +170,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Eligibility',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -173,7 +182,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -184,7 +194,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -195,7 +206,8 @@ const router = new VueRouter({
         pageTitle: 'Facility Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -206,7 +218,8 @@ const router = new VueRouter({
         pageTitle: 'Facility Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -217,7 +230,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -228,7 +242,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -239,7 +254,8 @@ const router = new VueRouter({
         pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -250,7 +266,8 @@ const router = new VueRouter({
         pageTitle: 'Licence Upload',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -261,7 +278,8 @@ const router = new VueRouter({
         pageTitle: 'Licence Upload',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -293,7 +311,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -304,7 +323,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -314,7 +334,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -324,7 +345,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -336,6 +358,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -347,6 +370,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -358,6 +382,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -369,6 +394,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -380,6 +406,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -391,6 +418,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -402,6 +430,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -489,7 +518,8 @@ const router = new VueRouter({
         pageTitle: 'change-request-facility-information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -500,7 +530,8 @@ const router = new VueRouter({
         pageTitle: 'change-request-facility-information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -511,7 +542,8 @@ const router = new VueRouter({
         pageTitle: 'Facility Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -522,7 +554,8 @@ const router = new VueRouter({
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -533,7 +566,8 @@ const router = new VueRouter({
         pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -545,6 +579,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -556,6 +591,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -566,7 +602,9 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+
       }
     },
     {
@@ -577,7 +615,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -587,7 +626,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -598,6 +638,16 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true
+      }
+    },
+    {
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      name: 'Summary and Declaration Report Changes',
+      component: SummaryDeclarationReportChanges,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
       }
     },
   ]
@@ -658,6 +708,16 @@ router.afterEach((to) => {
     store.commit('app/setPageTitle', to.meta.pageTitle);
   } else {
     store.commit('app/setPageTitle', '');
+  }
+
+  if(to?.meta?.subtitleBanner){
+    if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
+      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',application.state.formattedProgramYear));
+    }else {
+      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
+    }
+  } else {
+    store.commit('app/setSubtitleBanner','');
   }
 });
 

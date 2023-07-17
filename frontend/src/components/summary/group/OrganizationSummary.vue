@@ -237,22 +237,22 @@ export default {
   methods: {
     getOrgTypeString() {
       switch (this.summaryModel?.organization?.organizationType) {
-        case !this.summaryModel?.organization?.organizationType:
-          return '';
-        case 100000000:
-          return 'Non-Profit Society';
-        case 100000001:
-          return 'Public Institution(college/university)';
-        case 100000002:
-          return 'Registered Company';
-        case 100000003:
-          return 'Local Government';
-        case 100000004:
-          return 'First Nations Government';
-        case 100000005:
-          return 'Sole Proprietorship or Partnership';
-        default:
-          return '';
+      case !this.summaryModel?.organization?.organizationType:
+        return '';
+      case 100000000:
+        return 'Non-Profit Society';
+      case 100000001:
+        return 'Public Institution(college/university)';
+      case 100000002:
+        return 'Registered Company';
+      case 100000003:
+        return 'Local Government';
+      case 100000004:
+        return 'First Nations Government';
+      case 100000005:
+        return 'Sole Proprietorship or Partnership';
+      default:
+        return '';
       }
     },
   },

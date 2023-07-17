@@ -14,6 +14,7 @@ export default {
   state: {
     changeRequestId: undefined,
     changeActionId: undefined,
+    loadedChangeRequest: undefined,
     changeRequestStore : {},
     uploadedDocuments: [],
     newFacilityList: [], //may not need this now
@@ -23,6 +24,7 @@ export default {
     changeRequestStore: state => state.changeRequestStore,
     changeActions: state => state.changeActions,
     changeRequestId: state => state.changeRequestId,
+    loadedChangeRequest: state => state.loadedChangeRequest,
     getUploadedDocuments: state => state.uploadedDocuments,
     getChangeRequestFacilities: state => state.newFacilityList,
   },
@@ -41,7 +43,9 @@ export default {
     setChangeActionId: (state, changeActionId) => {
       state.changeActionId = changeActionId;
     },
-
+    setLoadedChangeRequest: (state, loadedChangeRequest) => {
+      state.loadedChangeRequest = loadedChangeRequest;
+    },
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
     },
@@ -50,6 +54,7 @@ export default {
     }//may not need this now
   },
   actions: {
+    // GET a list of all Change Requests for an application using applicationID
     async loadChangeRequest({commit, rootState}, ) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
@@ -105,6 +110,22 @@ export default {
       }
     },
 
+    // GET Change Request's details using changeRequestID
+    async getChangeRequest({commit}, changeRequestId) {
+      console.log('trying to get change req for: ', changeRequestId);
+      checkSession();
+      try {
+        let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+        console.log('THIS IS CHANGE REQUEST RESPONSE = ');
+        console.log(response);
+        commit('setLoadedChangeRequest', response);
+        return response;
+      } catch(e) {
+        console.log(`Failed to get change request with error - ${e}`);
+        throw e;
+      }
+    },
+
     //TODO: add it to the store
     async createChangeRequest({commit, rootState }) {
 
@@ -152,17 +173,16 @@ export default {
 
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/documents/' + changeActionId);
-        //console.log(response.data);
-
         commit('setUploadedDocument', response.data);
+        return response.data;
       } catch(e) {
         console.log(`Failed to get load req docs with error - ${e}`);
         throw e;
       }
     },
 
-    // eslint-disable-next-line no-unused-vars
-    async saveUploadedDocuments({state}, payload ){
+    // eslint-disable-next-line no-empty-pattern
+    async saveUploadedDocuments({}, payload ){
       console.log('save uploaded documents called');
       console.log('this is the payload:');
       console.log(payload);
@@ -184,7 +204,8 @@ export default {
     },
 
     //we can use the Supporting Doc route here because dynamics doc delete works off annotation ID - it does not have a different endpoint
-    async deleteDocuments(deletedFiles){
+    // eslint-disable-next-line no-empty-pattern
+    async deleteDocuments({},deletedFiles){
       console.log('DELETE files payload:' , deletedFiles);
       try {
         await ApiService.apiAxios.delete(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, { data: deletedFiles} );
