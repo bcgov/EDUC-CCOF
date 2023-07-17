@@ -54,7 +54,6 @@ import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import application from './store/modules/application.js';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
 Vue.prototype.moment = moment;
@@ -699,9 +698,9 @@ router.afterEach((to) => {
   // determine if we should show navBar
   store.commit('app/setShowNavBar', to.meta?.showNavBar == true);
   if (to && to.meta) {
-    store.commit('app/setNavBarGroup', to.meta.navBarGroup);
+    store.commit('navBar/setNavBarGroup', to.meta.navBarGroup);
   } else {
-    store.commit('app/setNavBarGroup', '');
+    store.commit('navBar/setNavBarGroup', '');
   }
   // this section is to set page title in vue store
   if (to && to.meta) {
@@ -712,7 +711,7 @@ router.afterEach((to) => {
 
   if(to?.meta?.subtitleBanner){
     if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
-      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',application.state.formattedProgramYear));
+      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
     }else {
       store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
     }

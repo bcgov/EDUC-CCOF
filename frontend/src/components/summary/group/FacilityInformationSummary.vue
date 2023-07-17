@@ -379,7 +379,7 @@ export default {
   },
   computed: {
     ...mapState('application', ['isRenewal',]),
-    ...mapState('app', ['navBarList',]),
+    ...mapState('navBar', ['navBarList',]),
     ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete',]),
     yesNoFacilityLabel() {
       if (this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY') {

@@ -40,8 +40,6 @@ export function isNullOrBlank(value) {
 }
 
 export function isChangeRequest(vueForm) {
-  console.log('url is: ' + vueForm?.$route?.path);
-  console.log('is change request ', vueForm?.$route?.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST));
   return vueForm?.$route?.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
 }
 

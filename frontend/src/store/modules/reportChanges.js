@@ -79,7 +79,7 @@ export default {
 
                 //set New Facility change request ID in nav bar so we can filter by it.
                 //we may not need to set it here, depends what Hoang is doing on dynamics side.
-                commit('app/setNavBarFacilityChangeRequest', {facilityId: changeAction.facilityId, changeRequestFacilityId: changeAction.changeRequestFacilityId}, { root: true });
+                commit('navBar/setNavBarFacilityChangeRequest', {facilityId: changeAction.facilityId, changeRequestFacilityId: changeAction.changeRequestFacilityId}, { root: true });
 
               }
             });

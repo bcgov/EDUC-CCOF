@@ -76,8 +76,9 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
+    ...mapState('app', ['isRenewal']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),
     filteredLicenseUploadData() {
@@ -185,7 +186,7 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete']),
+    ...mapMutations('application', ['setIsLicenseUploadComplete']),
     previous() {
       this.$router.push(this.previousPath);
     },

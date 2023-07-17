@@ -192,7 +192,7 @@ export default {
   computed: {
     ...mapState('application', ['formattedProgramYear']),
     ...mapState('nmfApp', ['nmfModel']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) => {

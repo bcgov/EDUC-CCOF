@@ -128,7 +128,8 @@ export default {
   },
   computed: {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
+    ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapGetters('navBar', ['previousPath']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {

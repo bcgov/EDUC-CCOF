@@ -217,7 +217,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['renewalYearLabel']),
-    ...mapState('app', ['navBarList', 'programYearList', 'isRenewal']),
+    ...mapState('app', ['programYearList', 'isRenewal']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
@@ -371,7 +372,7 @@ export default {
     },
     goToCCOFFunding() {
       let firstFacilityId = this.navBarList[0]?.facilityId;
-      let navBar = this.$store.getters['app/getNavByFacilityId'](firstFacilityId);
+      let navBar = this.$store.getters['navBar/getNavByFacilityId'](firstFacilityId);
       if (navBar?.ccofBaseFundingId) {
         this.$router.push(pcfUrlGuid(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar?.ccofBaseFundingId));
       }

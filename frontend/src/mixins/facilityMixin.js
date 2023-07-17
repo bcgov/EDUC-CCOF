@@ -11,7 +11,7 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
     ...mapState('reportChanges', ['changeRequestId']),
@@ -68,7 +68,7 @@ export default {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
-    ...mapMutations('app', ['setNavBarFacilityComplete']),
+    ...mapMutations('navBar', ['setNavBarFacilityComplete']),
     isSameAddressChecked() {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
@@ -87,7 +87,7 @@ export default {
       if (!this.$route.params.urlGuid) { //we won't have the funding guid until we save, so save first.
         await this.save(false);
       }
-      let navBar = this.$store.getters['app/getNavByFacilityId'](this.facilityId);
+      let navBar = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId);
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
         if (isChangeRequest(this)) {
@@ -134,7 +134,7 @@ export default {
         if (isChangeRequest(this)) {
           this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
         } else {
-          this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYear, this.facilityId));
+          this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId));
         }
       }
       this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });

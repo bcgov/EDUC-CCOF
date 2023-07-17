@@ -234,7 +234,7 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.app.navBarList, state.loadedModel.facilityId)) ){
+        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
           console.log(rootState.app.isRenewal);
           console.log(state.CCFRIFacilityModel.existingFeesCorrect);
           console.log(prevCcfriApp);
@@ -309,7 +309,6 @@ export default {
         //this handles the edge case of a user entering fees for CCFRI then going back to CCOF
         //and removing that child care type for new applications
         state.CCFRIFacilityModel.childCareTypes.forEach((childCareCat) => {
-          console.log('deleteing');
           let found = response.data.find(searchItem => {
             return (searchItem.childCareCategoryId == childCareCat.childCareCategoryId);
           });

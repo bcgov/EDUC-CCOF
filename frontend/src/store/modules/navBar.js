@@ -44,6 +44,7 @@ export default {
     canSubmit: true,
     changeRequestId: null,
     programYearId: null,
+    navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
   },
   mutations: {
     setNavBarItems: (state, value) => { state.navBarItems = value; },
@@ -64,11 +65,11 @@ export default {
       state.changeRequestId = null;
       state.navBarList = [];
     },
-    refreshNavBar(state) {
+    forceNavBarRefresh(state) {
       state.refreshNavBar = state.refreshNavBar + 1;
     },
     setUserProfileList: (state, value) => {state.userProfileList = value; },
-
+    setNavBarGroup: (state, navBarGroup) => { state.navBarGroup = navBarGroup; },
     /***********************************************
      * Some methods to to update the NavBar
      * These methods will refilter the navbar
@@ -124,7 +125,14 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-
+    setNavBarFacilityChangeRequest: (state, { facilityId, changeRequestFacilityId }) => {
+      console.log('setting new fac ID!');
+      let navBarItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      if (navBarItem) {
+        navBarItem.changeRequestFacilityId = changeRequestFacilityId;
+        filterNavBar(state);
+      }
+    },
 
   },
   getters: {
@@ -139,6 +147,25 @@ export default {
     previousPath: (state) => {
       let index = getActiveIndex(state.navBarItems);
       return getNavBarAtPositionIndex(state.navBarItems, (index - 1))?.link;
-    }
+    },
+    getNavByFacilityId: (state) => (facilityId) => {
+      if (!facilityId) {
+        return null;
+      }
+      return state.navBarList.find(item => item.facilityId == facilityId);
+    },
+    getNavByFundingId: (state) => (fundingId) => {
+      if (!fundingId) {
+        return null;
+      }
+      return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+    },
+    getNavByCCFRIId: (state) => (ccfriId) => {
+      if (!ccfriId) {
+        return null;
+      }
+      return state.navBarList.find(item => item.ccfriApplicationId == ccfriId);
+    },
+
   }
 };

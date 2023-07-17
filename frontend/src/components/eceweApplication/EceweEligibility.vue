@@ -313,7 +313,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly']),
-    ...mapState('app', ['navBarList', 'fundingModelTypeList']),
+    ...mapState('app', ['fundingModelTypeList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapState('reportChanges', ['loadedChangeRequest', 'changeRequestId']),

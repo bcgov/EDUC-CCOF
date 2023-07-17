@@ -281,7 +281,7 @@
 <script>
 
 import { PATHS } from '@/utils/constants';
-import { mapGetters, mapActions, mapState } from 'vuex';
+import { mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 
@@ -346,11 +346,11 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
-    ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
-    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
+    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId', 'navBarList']),
+    ...mapState('app', ['programYearList']),
+    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
-    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
     isReadOnly() {
@@ -385,6 +385,7 @@ export default {
   methods: {
     ...mapActions('summaryDeclaration', ['loadChangeRequestDeclaration', 'updateDeclaration']),
     ...mapActions('reportChanges', ['loadChangeRequestDocs', 'getChangeRequest']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
     async loadData() {
       this.isLoading = true;
       try {

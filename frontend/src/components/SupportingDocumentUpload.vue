@@ -139,8 +139,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('navBar', ['canSubmit']),
+    ...mapState('navBar', ['canSubmit', 'navBarList']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),

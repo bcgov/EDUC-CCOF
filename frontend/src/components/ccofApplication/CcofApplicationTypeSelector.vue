@@ -42,7 +42,7 @@ export default {
   name: 'LandingPage',
   components: { LargeCard, NavButton },
   computed: {
-    ...mapState('application', ['programYearId']),
+    ...mapState('app', ['programYearList']),
   },
   methods: {
     ...mapMutations('organization', ['setOrganizationProviderType']),
@@ -51,11 +51,11 @@ export default {
     },
     toGroup() {
       this.setOrganizationProviderType('GROUP');
-      this.$router.push(pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearId));
+      this.$router.push(pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearList.newApp.programYearId));
     },
     toFamily() {
       this.setOrganizationProviderType('FAMILY');
-      this.$router.push(pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId));
+      this.$router.push(pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearList.newApp.programYearId));
     }
   }
 };

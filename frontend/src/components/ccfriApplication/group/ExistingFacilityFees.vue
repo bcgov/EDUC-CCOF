@@ -146,7 +146,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('navBar', ['previousPath']),
-    ...mapState('app', ['navBarList', 'programYearList']),
+    ...mapState('app', ['programYearList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
 

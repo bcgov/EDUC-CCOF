@@ -259,6 +259,7 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
     previous() {

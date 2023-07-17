@@ -87,8 +87,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
     ...mapGetters('navBar', ['previousPath']),
     isLocked() {
@@ -109,8 +109,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
-    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
+    ...mapMutations('application', ['setCcofConfirmationEnabled']),
     ...mapActions('facility', ['deleteFacility']),
     previous() {
       this.$router.push(this.previousPath);

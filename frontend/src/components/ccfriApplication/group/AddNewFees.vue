@@ -458,7 +458,8 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
+    ...mapState('app', ['isRenewal', 'rfiList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),
@@ -519,7 +520,7 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('app', ['addToRfiNavBarStore', 'forceNavBarRefresh']),
+    ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh']),
     addRow () {
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },
@@ -537,7 +538,7 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.currentFacility.hasRfi = true;
+      this.currentFacility.hasRfi = true; //TODO-RLO - need to update in navbar.js
       this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.$route.params.urlGuid));
     },
     previous() {
@@ -568,7 +569,7 @@ export default {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
             this.currentFacility.hasRfi = false;
-            await this.forceNavBarRefresh();
+            this.forceNavBarRefresh();
           }
           this.$router.push(this.nextPath);
         }
@@ -611,7 +612,7 @@ export default {
         let facility = this.navBarList.find(el => el.ccfriApplicationId == this.ccfriId);
         if (facility) {
           facility.isCCFRIComplete = this.isFormComplete();
-          await this.forceNavBarRefresh();
+          this.forceNavBarRefresh();
         }
 
         //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days

@@ -33,7 +33,7 @@ export default {
   methods: {
     ...mapActions('funding', ['saveFunding', 'loadFunding', 'fundingId']),
     ...mapMutations('funding', ['setFundingModel', 'addModelToStore']),
-    ...mapMutations('app', ['setNavBarFundingComplete']),
+    ...mapMutations('navBar', ['setNavBarFundingComplete']),
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },

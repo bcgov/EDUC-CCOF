@@ -1597,7 +1597,8 @@ export default {
   },
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
-    ...mapState('app', ['programYearList', 'navBarList']),
+    ...mapState('app', ['programYearList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),

@@ -161,7 +161,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
-    ...mapState('app', ['navBarList', 'fundingModelTypeList']),
+    ...mapState('app', ['fundingModelTypeList']),
+    ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
