@@ -141,6 +141,10 @@ export default {
         filterNavBar(state);
       }
     },
+    refreshNavBarList:(state) => {
+      filterNavBar(state);
+      state.refreshNavBar++;
+    },
 
   },
   getters: {

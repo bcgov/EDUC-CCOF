@@ -1682,7 +1682,7 @@ export default {
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    ...mapMutations('app', ['refreshNavBar']),
+    ...mapMutations('navBar', ['setNavBarRFIComplete']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     nextBtnClicked() {
       this.$router.push(this.nextPath);

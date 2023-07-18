@@ -461,10 +461,10 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId']),
 
     currentFacility(){
-      return this.getNavByFacilityId(this.$route.params.urlGuid);
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
@@ -501,7 +501,7 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
           //this solves for the edge case bug where fees that need to be deleted cannot be deleted because the GUID has not been loaded from dynamics
-          window.location.reload();
+          // window.location.reload(); //TODO-RLO: removed this, review with Jen
         }
       },
       immediate: true,
@@ -511,7 +511,7 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'getNavByFacilityId', 'setNavBarCCFRIComplete']),
+    ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },

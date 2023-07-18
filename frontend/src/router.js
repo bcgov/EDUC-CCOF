@@ -397,7 +397,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: pcfUrlGuid(PATHS.NMF),
+      path: pcfUrlGuid(PATHS.CCFRI_NMF),
       name: 'new-facilities',
       component: NMF,
       meta: {
