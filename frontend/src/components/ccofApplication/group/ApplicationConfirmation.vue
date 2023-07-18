@@ -11,8 +11,8 @@
             <ul style="list-style: none">
               <li v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
-                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
-                  <v-icon>mdi-close-circle</v-icon>
+                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+                  <v-icon>mdi-trash-can</v-icon>
                 </v-btn>
               </li>
             </ul>
@@ -70,8 +70,9 @@
 
 <script>
 
-import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
-import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
+import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { mapState, mapMutations, mapActions } from 'vuex';
+import NavButton from '@/components/util/NavButton';
 import { isChangeRequest } from '@/utils/common';
 
 export default {
@@ -80,6 +81,7 @@ export default {
       dialog: false,
       deleteFacilityName: undefined,
       deleteFacilityId: undefined,
+      deletechangeRequestNewFacilityId: undefined,
       processing: false,
       deleteCcfriId: undefined,
       deleteEceweId: undefined,
@@ -87,10 +89,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('navBar', ['navBarList']),
-    ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
+    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
+    ...mapState('application', ['applicationStatus', 'applicationId']),
     ...mapState('organization', ['organizationProviderType']),
-    ...mapGetters('navBar', ['previousPath']),
     isLocked() {
       if (isChangeRequest(this)) {
         return false;
@@ -109,28 +110,32 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('application', ['setCcofConfirmationEnabled']),
+    ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
+    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     ...mapActions('facility', ['deleteFacility']),
     previous() {
-      this.$router.push(this.previousPath);
+      let navItem = this.navBarList[this.navBarList.length - 1];
+      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
+      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
     },
     addAnotherFacility() {
       if (isChangeRequest(this)) {
-        this.$router.push(changeUrl(PATHS.CCOF_GROUP_FACILITY, this.$route.params.changeRecGuid));
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/facility`);
       } else {
-        this.$router.push(pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId));
+        this.$router.push(PATHS.group.facInfo);
       }
     },
     async next() {
       if (isChangeRequest(this)) {
-        this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, this.$route.params.changeRecGuid));
+        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/licenseUpload`);
       } else {
-        this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
+        this.$router.push(PATHS.group.licenseUpload);
       }
     },
-    confirmDeleteApplication(facilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
+    confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
+      this.deletechangeRequestNewFacilityId = changeRequestNewFacilityId
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;
@@ -139,9 +144,10 @@ export default {
     async deleteApplication() {
       this.processing = true;
       console.log(this.deleteFacilityId);
+      console.log(this.deletechangeRequestNewFacilityId);
       console.log(this.deleteCcfriId);
       console.log(this.applicationId);
-      await this.deleteFacility({ facilityId: this.deleteFacilityId , ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
+      await this.deleteFacility({ facilityId: this.deleteFacilityId , changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;
     }
