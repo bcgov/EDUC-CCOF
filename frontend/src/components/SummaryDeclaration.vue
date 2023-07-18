@@ -153,7 +153,7 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="!this.isRenewal && !this.organizationAccountNumber">
+                <div v-show="!this.isRenewal && !this.organizationAccountNumber && !this.isChangeRequest">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                     I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
