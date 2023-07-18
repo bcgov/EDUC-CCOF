@@ -320,7 +320,7 @@
 
 <script>
 import { isChangeRequest } from '@/utils/common';
-import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
+import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
@@ -413,8 +413,7 @@ export default {
         return pcfUrl(PATHS.CCOF_FAMILY_ORG , this.programYearId);
       }
       else {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG , this.programYearId);
-        //return pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId , this.facilityId);
+        return pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId , this.facilityId);
       }
     },
   },

@@ -84,7 +84,7 @@
 <script>
 
 import rules from '@/utils/rules';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, } from '@/utils/constants';
 import {mapState} from 'vuex';
 
 export default {

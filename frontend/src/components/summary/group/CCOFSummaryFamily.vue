@@ -258,7 +258,7 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl,} from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
