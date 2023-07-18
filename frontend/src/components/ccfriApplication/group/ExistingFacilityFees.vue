@@ -145,24 +145,14 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('navBar', ['previousPath', 'getNavByCCFRIId']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
 
-    findIndexOfFacility(){
-      let activeFac = this.navBarList.findIndex((element) =>{
-        return element.ccfriApplicationId == this.$route.params.urlGuid;
-      });
-
-      return activeFac;
-    },
     currentFacility(){
-      return this.navBarList[this.findIndexOfFacility];
-    },
-    nextFacility(){
-      return this.navBarList[this.findIndexOfFacility + 1];
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     previousProgramYearGuid(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
