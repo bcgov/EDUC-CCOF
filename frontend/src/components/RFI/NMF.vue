@@ -156,7 +156,7 @@
         </v-card-text>
       </v-card>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isValidForm" :isProcessing="isProcessing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isValidForm" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
@@ -165,7 +165,7 @@
 <script>
 
 import alertMixin from '@/mixins/alertMixin';
-import { mapActions, mapState, mapMutations } from 'vuex';
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import NavButton from '@/components/util/NavButton';
 
 let model = { x: [],  };
@@ -192,7 +192,8 @@ export default {
   computed: {
     ...mapState('application', ['formattedProgramYear']),
     ...mapState('nmfApp', ['nmfModel']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
     findIndexOfFacility(){
       return this.navBarList.findIndex((element) => {
         return element.ccfriApplicationId == this.$route.params.urlGuid;
@@ -227,17 +228,15 @@ export default {
   },
   methods : {
     ...mapMutations('nmfApp', ['setNmfModel','setIsNmfComplete','setHasNmf']),
-    ...mapActions('navBar', ['getNextPath']),
     ...mapActions('nmfApp', ['loadNmf', 'saveNmf']),
-    async next(){
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    next(){
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
     },
     previous() {
-      this.$router.back();
+      this.$router.push(this.previousPath);
     },
     updateCurrentFacilityNMFCompleteStatus(){
       this.navBarList[this.findIndexOfFacility].isNmfComplete = this.isValidForm;

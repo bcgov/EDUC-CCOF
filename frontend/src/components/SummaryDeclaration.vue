@@ -347,12 +347,13 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('app', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
-    ...mapState('app', ['programYearList', 'navBarList','isOrganizationComplete','isLicenseUploadComplete', ]),
+    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId', 'navBarList']),
+    ...mapState('app', ['programYearList' ]),
+    ...mapGetters('navBar', ['previousPath']),
     ...mapState('navBar', ['canSubmit']),
-    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber']),
+    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
-    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding',
+    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     isReadOnly() {
       if (this.isMinistryUser) {
@@ -393,7 +394,7 @@ export default {
       isLoading: false,
       isProcessing: false,
       dialog: false,
-      landingPage: PATHS.home,
+      landingPage: PATHS.ROOT.HOME,
       summaryKey: 1,
       summaryModelFacilities: [],
       invalidSummaryForms: [],
@@ -402,10 +403,10 @@ export default {
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
-    ...mapActions('navBar', ['getPreviousPath']),
     ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
-    ...mapMutations('application',['setIsEceweComplete']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete', 'setIsOrganizationComplete', 'setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
+    ...mapMutations('application',['setIsEceweComplete', 'setIsLicenseUploadComplete']),
+    ...mapMutations('navBar', ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
+    ...mapMutations('organization', ['setIsOrganizationComplete']),
     isPageComplete() {
       if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
@@ -517,9 +518,8 @@ export default {
       }
       return ccrfiRelockPayload;
     },
-    async previous() {
-      let path = await this.getPreviousPath();
-      await this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
       if (!isComplete) {

@@ -3,7 +3,7 @@
     <MsieBanner v-if="isIE"/>
     <Header/>
     <SnackBar></SnackBar>
-    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle"/>    
+    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle"/>
     <v-main fluid class="align-start">
     <v-app-bar v-if="bannerColor !== ''"
                style="color:white;"
@@ -12,13 +12,14 @@
                dense
                height="20rem"
                clipped-left
-    ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
+    ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment </h3></div></v-app-bar>
+    <div>
+      <h3 class="subBanner" v-if="subtitleBanner!=''">{{ subtitleBanner }}</h3>
+    </div>
     <ModalIdle v-if="isAuthenticated"/>
     <router-view/>
     </v-main>
     <Footer/>
-
-    
   </v-app>
 </template>
 
@@ -48,8 +49,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'loginError', 'isLoading']),
-    
-    ...mapState('app', ['pageTitle', 'showNavBar']),
+    ...mapState('app', ['pageTitle', 'showNavBar','subtitleBanner']),
     isIE() {
       return /Trident\/|MSIE/.test(window.navigator.userAgent);
     }
@@ -76,7 +76,7 @@ export default {
       }
     }).finally(() => {
       this.setLoading(false);
-    });    
+    });
     this.setLoading(false);
   }
 };
@@ -92,6 +92,11 @@ export default {
 
 .envBanner {
   font-size: 0.8rem;
+}
+.subBanner {
+  font-size: 0.8rem;
+  background-color: #fff9c4;
+  padding-left:2%;
 }
 
 .v-application {

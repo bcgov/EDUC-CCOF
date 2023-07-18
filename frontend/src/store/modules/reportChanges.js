@@ -70,7 +70,6 @@ export default {
         if (!isEmpty(response.data)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
-           // commit('addChangeRequestToStore', {changeRequestId: element.changeRequestId, model: element});
             store.push(element);
             //in the future we may not want to assume a new facility change is not the first of the array?
 
@@ -80,7 +79,7 @@ export default {
 
                 //set New Facility change request ID in nav bar so we can filter by it.
                 //we may not need to set it here, depends what Hoang is doing on dynamics side.
-                commit('app/setNavBarFacilityChangeRequest', {facilityId: changeAction.facilityId, changeRequestFacilityId: changeAction.changeRequestFacilityId}, { root: true });
+                commit('navBar/setNavBarFacilityChangeRequest', {facilityId: changeAction.facilityId, changeRequestFacilityId: changeAction.changeRequestFacilityId}, { root: true });
 
               }
             });
@@ -182,8 +181,8 @@ export default {
       }
     },
 
-    // eslint-disable-next-line no-unused-vars
-    async saveUploadedDocuments({state}, payload ){
+    // eslint-disable-next-line no-empty-pattern
+    async saveUploadedDocuments({}, payload ){
       console.log('save uploaded documents called');
       console.log('this is the payload:');
       console.log(payload);
@@ -205,7 +204,8 @@ export default {
     },
 
     //we can use the Supporting Doc route here because dynamics doc delete works off annotation ID - it does not have a different endpoint
-    async deleteDocuments({state},deletedFiles){
+    // eslint-disable-next-line no-empty-pattern
+    async deleteDocuments({},deletedFiles){
       console.log('DELETE files payload:' , deletedFiles);
       try {
         await ApiService.apiAxios.delete(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, { data: deletedFiles} );
