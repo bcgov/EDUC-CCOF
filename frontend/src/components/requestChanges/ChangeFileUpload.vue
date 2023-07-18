@@ -28,18 +28,18 @@
           >
             <template v-slot:top>
               <v-col flex>
-              <v-toolbar flat color="white">
-                <div class="d-flex">
-                  <v-btn
-                    color="primary"
-                    class="ml-2 white--text v-skeleton-loader-small-button"
-                    :disabled="isLocked"
-                    @click="addNew">
-                    <v-icon dark>mdi-plus</v-icon>
-                    Add
-                  </v-btn>
-                </div>
-              </v-toolbar>
+                <v-toolbar flat color="white">
+                  <div class="d-flex">
+                    <v-btn
+                      color="primary"
+                      class="ml-2 white--text v-skeleton-loader-small-button"
+                      :disabled="isReadOnly"
+                      @click="addNew">
+                      <v-icon dark>mdi-plus</v-icon>
+                      Add
+                    </v-btn>
+                  </div>
+                </v-toolbar>
               </v-col>
             </template>
 
@@ -75,7 +75,7 @@
                             class="pt-0"
                             :id="String(item.id)"
                             :accept="fileAccept"
-                            :disabled="false"
+                            :disabled="isReadOnly"
                             placeholder="Select your file"
                             :error-messages="fileInputError"
                             @change="selectFile"
@@ -101,7 +101,7 @@
             <template v-slot:item.actions="{ item }">
               <v-icon
                 small
-                v-if="!isLocked"
+                v-if="!isReadOnly"
                 @click="deleteItem(item)"
               >
                 mdi-delete
@@ -113,6 +113,9 @@
             <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
             <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
           </v-card>
+          <v-row v-if="!this.isUploadComplete" class="px-6 pt-4 text-body-2 red--text">
+            {{ errorMessage }}
+          </v-row>
         </v-card>
       </v-row>
 
@@ -187,8 +190,7 @@ export default {
         ccof_change_requestid: this.changeRequestId,
         subject : this.changeType
       },
-      selectRules: [v => !!v || 'This is required']
-
+      isUploadComplete: true,
     };
   },
 
@@ -200,9 +202,15 @@ export default {
     getFilteredDocs(){
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
-    isLocked() {
+    isReadOnly() {
       return this.loadedChangeRequest?.externalStatus === 'SUBMITTED';
     },
+    errorMessage() {
+      if (this.changeType == 'NOTIFICATION_FORM') {
+        return 'Please upload the Change Notification Form for your requested changes.';
+      }
+      return 'Please upload your Community Care License and other supporting documents for your requested changes.';
+    }
   },
 
   async mounted() {
@@ -217,22 +225,16 @@ export default {
     ];
   },
   async beforeRouteLeave(_to, _from, next) {
-    if(!this.isLocked){
+    if(!this.isReadOnly){
       await this.save(false);
     }
     next();
   },
   methods: {
     ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments', 'getChangeRequest']),
+
     async save(showConfirmation = true) {
-
-      console.log('saving from child component!');
-
       this.isProcessing = true;
-
-      console.log('filemap : ', this.fileMap);
-      console.log('filemap : ', this.fileMap.size > 0);
-
       try {
         await this.processDocumentFileDelete();
 
@@ -243,12 +245,10 @@ export default {
             await this.processDocumentFilesSave(newFilesAdded);
             this.fileMap?.clear();
           }
-
           if (showConfirmation) {
             this.setSuccessAlert('Changes Successfully Saved');
           }
         }
-
         else {
           console.log('returning...');
           return;
@@ -292,6 +292,7 @@ export default {
       if (file) {
         const doc = await this.readFile(file);
         this.fileMap.set(this.currentrow, deepCloneObject(doc));
+        await this.checkUploadCompleteStatus();
       }
     },
     readFile(file) {
@@ -327,7 +328,7 @@ export default {
       this.editedIndex = this.filteredDocs.indexOf(item);
       this.editedItem = Object.assign({}, item);
     },
-    deleteItem(item) {
+    async deleteItem(item) {
       const index = this.uploadedDocuments.indexOf(item);
       if (item.annotationid) {
         let deletedItems = this.uploadedDocuments['deletedItems'];
@@ -340,8 +341,9 @@ export default {
           this.uploadedDocuments['deletedItems'] = deletedItems;
         }
       }
+      this.fileMap.delete(''+item.id);
       this.uploadedDocuments.splice(index, 1);
-
+      await this.checkUploadCompleteStatus();
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
@@ -353,6 +355,26 @@ export default {
     updateDescription(item) {
       const index = this.uploadedDocuments.indexOf(item);
       this.uploadedDocuments[index].notetext = item.notetext;
+    },
+    async getSavedDocumentsCount() {
+      let savedDocuments = this.uploadedDocuments.filter(document => {
+        return (document.annotationid && document.subject == this.changeType);
+      });
+      let savedDocumentsCount = savedDocuments?.length ? savedDocuments?.length : 0;
+      return savedDocumentsCount;
+    },
+    async getUnsavedDocumentsCount() {
+      let unsavedDocuments = this.uploadedDocuments.filter(document => {
+        return (!document.annotationid && document.subject == this.changeType && this.fileMap.has('' + document.id));
+      });
+      let unsavedDocumentsCount = unsavedDocuments?.length ? unsavedDocuments?.length : 0;
+      return unsavedDocumentsCount;
+    },
+    async checkUploadCompleteStatus() {
+      let savedDocumentsCount = await this.getSavedDocumentsCount();
+      let unsavedDocumentsCount = await this.getUnsavedDocumentsCount();
+      this.isUploadComplete = (savedDocumentsCount + unsavedDocumentsCount) > 0;
+      this.$emit('fileChange', this.isUploadComplete);
     },
   }
 };

@@ -1,166 +1,153 @@
 <template>
   <v-container>
-
     <div class="row pt-4 justify-center text-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
     <br>
-    <div class="row pt-4 justify-center">
-    <!-- <span class="text-h5">What would you like to change?</span> -->
-    </div>
-
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
-
       <v-container>
-        <!-- <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader> -->
-        <v-row  class="justify-space-around ">
-
+        <v-row class="justify-space-around ">
           <v-col class="col-lg-7 ">
-
             <v-row>
               <v-col class="col-lg-12 ">
-              <p class="px-2 text--primary"><strong> For all changes other than "Adding a new facility(s) to your Organization, please download the change notification form by clicking on the button below."</strong>
-              </p>
-              <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf" target="_blank"> <v-btn dark class="blueButton mb-10 ml-2" > Download a Change Notification Form</v-btn> </a>
+                <p class="px-2 text--primary">
+                  <strong>For all changes other than "Adding a new facility(s) to your Organization, please download the change notification form by clicking on the button below."</strong>
+                </p>
+                <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf" target="_blank">
+                  <v-btn dark class="blueButton mb-10 ml-2" >
+                    Download a Change Notification Form
+                  </v-btn>
+                </a>
               </v-col>
             </v-row>
             <v-row>
               <v-col class="col-lg-12 ">
-              <p class="px-2 text--primary"><strong> Please upload the Change Notification Form in the Dropbox below once you have filled out the form.</strong>
-              </p>
-              <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
+                <p class="px-2 text--primary">
+                  <strong>Please upload the Change Notification Form in the Dropbox below once you have filled out the form.</strong>
+                </p>
+                <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
                 <ChangeFileUpload
-                v-show="!isLoading"
-                ref="childRef"
-                :changeType="changeTypeForm"
-
-                @addRow="addNewRowToUploadedDocuments"
+                  v-show="!isLoading"
+                  ref="childRef"
+                  :changeType="changeTypeForm"
+                  @fileChange="updateChangeNotificationFormCompleteStatus($event)"
                 ></ChangeFileUpload>
               </v-col>
             </v-row>
             <v-row>
               <v-col class="col-lg-12 ">
-              <p class="px-2 text--primary"><strong> Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
-              </p>
-              <v-skeleton-loader  v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
-              <ChangeFileUpload
-              v-show="!isLoading"
-                ref="childRef2"
-                :changeType="changeTypeSupportingDoc"
-
-                @addRow="addNewRowToUploadedDocuments"
+                <p class="px-2 text--primary">
+                  <strong>Please upload your Community Care License and other supporting documents for your requested changes in the Dropbox below.</strong>
+                </p>
+                <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
+                <ChangeFileUpload
+                  v-show="!isLoading"
+                  ref="childRef2"
+                  :changeType="changeTypeSupportingDoc"
+                  @fileChange="updateSupportingDocumentCompleteStatus(($event))"
                 ></ChangeFileUpload>
               </v-col>
             </v-row>
-            <!-- <p class="px-2 ml-6 text--primary"> For any other changes, please call the office at 123-456-7890
-              </p> -->
-
           </v-col>
           <v-col class="col-lg-4 boarder">
             <v-row>
               <v-col class="col-lg-12 ">
-              <p class="px-2 text--primary"><strong>Supporting Documents</strong>
-              </p>
-              <br>
-              <v-row class="pa-6 pt-2 text-body-2">
-               <v-list-item-title>Legal or organization name change</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item>Proof of name change document
-                        <br> (e.g. marriage certificate, resumption of surname certificate, BC Corporate Registry "Notice of Name Change")
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                <p class="px-2 text--primary">
+                  <strong>Supporting Documents</strong>
+                </p>
+                <br>
+                <v-row class="pa-6 pt-2 text-body-2">
+                  <v-list-item-title>Legal or organization name change</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item>Proof of name change document
+                          <br> (e.g. marriage certificate, resumption of surname certificate, BC Corporate Registry "Notice of Name Change")
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-               <v-list-item-title>Group organization mailing address change</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item>CCALA Licence
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                  <v-list-item-title>Group organization mailing address change</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item>CCALA Licence
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-               <v-list-item-title>Group facility address change</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item> <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1321_ccof_group_application.pdf" target="_blank"> Group application form </a>
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                  <v-list-item-title>Group facility address change</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item> <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1321_ccof_group_application.pdf" target="_blank"> Group application form </a>
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-               <v-list-item-title>Family facility mailing address change</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item> <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1320_ccof_family_application.pdf" target="_blank"> Family application form </a>
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                  <v-list-item-title>Family facility mailing address change</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item> <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1320_ccof_family_application.pdf" target="_blank"> Family application form </a>
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-                <v-list-item-title>Family name change</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item>CCALA Licence
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                  <v-list-item-title>Family name change</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item>CCALA Licence
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-                <v-list-item-title>License change</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item>CCALA Licence
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                  <v-list-item-title>License change</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item>CCALA Licence
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-                <v-list-item-title>New facility license</v-list-item-title>
-                <v-list>
-                  <ul>
-                    <li>
-                      <v-list-item>Family or group CCOF application form
-                      </v-list-item>
-                    </li>
-                  </ul>
-                </v-list>
+                  <v-list-item-title>New facility license</v-list-item-title>
+                  <v-list>
+                    <ul>
+                      <li>
+                        <v-list-item>Family or group CCOF application form
+                        </v-list-item>
+                      </li>
+                    </ul>
+                  </v-list>
 
-                <v-list-item-title  style="white-space: normal;"> For more information <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">visit the Child Care Operating Fund website</a></v-list-item-title>
-                <v-list>
-                  <v-list-item> Greater Victoria area: <a href="tel:+2503656501"> +1 250 365-6501</a>
-                  </v-list-item>
-                  <v-list-item> Outside Greater Victoria (toll free): <a href="tel:+18883386622">1 888 338-6622</a>
-                  </v-list-item>
-                  <v-list-item> Email: <a href="mailto:MCF.CCOF@gov.bc.ca"> MCF.CCOF@gov.bc.ca</a>
-                  </v-list-item>
-                </v-list>
-              </v-row>
+                  <v-list-item-title  style="white-space: normal;"> For more information <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">visit the Child Care Operating Fund website</a></v-list-item-title>
+                  <v-list>
+                    <v-list-item> Greater Victoria area: <a href="tel:+2503656501"> +1 250 365-6501</a>
+                    </v-list-item>
+                    <v-list-item> Outside Greater Victoria (toll free): <a href="tel:+18883386622">1 888 338-6622</a>
+                    </v-list-item>
+                    <v-list-item> Email: <a href="mailto:MCF.CCOF@gov.bc.ca"> MCF.CCOF@gov.bc.ca</a>
+                    </v-list-item>
+                  </v-list>
+                </v-row>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
-
       </v-container>
     </v-form>
 
-
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
         :isSaveDisabled="isReadOnly" :isNextDisabled="false" :isProcessing="isLoading"
-        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
-      <!-- <v-row justify="space-around">
-        <v-btn color="info" outlined x-large :loading="processing" @click="previous()">
-          Back</v-btn>
-      </v-row> -->
-
+        @previous="previous" @next="next" @save="save(true)"></NavButton>
   </v-container>
 </template>
 
@@ -170,7 +157,7 @@ import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
-
+import { isNullOrBlank } from '@/utils/common';
 
 export default {
   name: 'ReportChange',
@@ -184,9 +171,8 @@ export default {
       isValidForm: false,
       processing: false,
       loading: false,
-      rules: [
-        (v) => !!v || 'Required.',
-      ],
+      isChangeNotificationFormComplete: false,
+      isSupportingDocumentComplete: false,
     };
   },
   watch: {
@@ -220,10 +206,12 @@ export default {
     },
   },
   async mounted(){
+    this.isLoading = true;
     await this.getChangeRequest(this.changeRequestId);
     if(this.$route.params.urlGuid){
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-
+      this.updateChangeNotificationFormCompleteStatus();
+      this.updateSupportingDocumentCompleteStatus();
       //the user refershed the page. Reload the store so we can have the needed changeRequestID
       if(!this.changeRequestId){
         try{
@@ -239,6 +227,7 @@ export default {
         //IF there isn't a match... what should we do? TODO
       }
     }
+    this.isLoading = false;
   },
   async beforeRouteLeave(_to, _from, next) {
     if(!this.isReadOnly){
@@ -249,7 +238,7 @@ export default {
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
@@ -288,16 +277,25 @@ export default {
     async next() {
       await this.$router.push(CHANGE_URL_PREFIX + `/${this.changeRequestId}` + PATHS.summaryDeclarationReportChanges);
     },
-    addNewRowToUploadedDocuments(item) {
-      switch (item.documentType) {
-      case 'change_form':
-        this.rfiDocumentsEC.unshift(item);
-        break;
-      case 'supporting_doc':
-        this.changeActionDocuments.unshift(item);
-        break;
+    updateChangeNotificationFormCompleteStatus(newStatus) {
+      if (isNullOrBlank(newStatus)) {
+        let savedChangeNotificationFormDocuments = this.uploadedDocuments?.filter(document => {
+          return (document.annotationid && document.subject == this.changeTypeForm);
+        });
+        this.isChangeNotificationFormComplete = savedChangeNotificationFormDocuments?.length > 0;
+      } else {
+        this.isChangeNotificationFormComplete = newStatus;
       }
-      this.uploadedDocuments.unshift(item);
+    },
+    updateSupportingDocumentCompleteStatus(newStatus) {
+      if (isNullOrBlank(newStatus)) {
+        let savedSupportingDocuments = this.uploadedDocuments?.filter(document => {
+          return (document.annotationid && document.subject == this.changeTypeSupportingDoc);
+        });
+        this.isSupportingDocumentComplete = savedSupportingDocuments?.length > 0;
+      } else {
+        this.isSupportingDocumentComplete = newStatus;
+      }
     },
   },
   components: { NavButton, ChangeFileUpload }

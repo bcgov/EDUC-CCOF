@@ -10,9 +10,9 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
-      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
+      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" class="justify-center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+          <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
@@ -53,15 +53,21 @@
             </v-col>
           </v-row>
           <div v-if="!isProcessing">
-            <div class="mt-2">
-              <h3>Change Notification Form Documents</h3>
+            <div class="my-2">
+              <h4>
+                Change Notification Form Documents
+                <v-icon v-if="isSummaryComplete" color="green" large>mdi-check-circle-outline</v-icon>
+                <v-icon v-if="!isSummaryComplete && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+                <span v-if="!isSummaryComplete && !this.isProcessing" style="color:#ff5252;">Your form is missing required
+                  information.</span>
+              </h4>
               <div>
                 <v-row no-gutters>
                   <v-col :cols="6">
-                    <h4>File name</h4>
+                    <h5>File name</h5>
                   </v-col>
                   <v-col :cols="6">
-                    <h4>Description (optional)</h4>
+                    <h5>Description (optional)</h5>
                   </v-col>
                 </v-row>
                 <v-row
@@ -76,17 +82,28 @@
                     {{ item.description }}
                   </v-col>
                 </v-row>
+                <router-link :to="notificationFormUploadPage" v-if="this.supportingDocuments?.length <= 0">
+                  <span style="color:#ff5252; text-underline: black">
+                    <u>To add this information, click here. This will bring you to a different page.</u>
+                  </span>
+                </router-link>
               </div>
             </div>
-            <div class="my-2">
-              <h3>Supporting Documents</h3>
+            <div class="my-4">
+              <h4>
+                Supporting Documents
+                <v-icon v-if="isSummaryComplete" color="green" large>mdi-check-circle-outline</v-icon>
+                <v-icon v-if="!isSummaryComplete && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+                <span v-if="!isSummaryComplete && !this.isProcessing" style="color:#ff5252;">Your form is missing required
+                  information</span>
+              </h4>
               <div>
                 <v-row no-gutters>
                   <v-col :cols="6">
-                    <h4>File name</h4>
+                    <h5>File name</h5>
                   </v-col>
                   <v-col :cols="6">
-                    <h4>Description (optional)</h4>
+                    <h5>Description (optional)</h5>
                   </v-col>
                 </v-row>
                 <v-row
@@ -101,6 +118,11 @@
                     {{ item.description }}
                   </v-col>
                 </v-row>
+                <router-link :to="notificationFormUploadPage" v-if="this.supportingDocuments?.length <= 0">
+                  <span style="color:#ff5252; text-underline: black">
+                    <u>To add this information, click here. This will bring you to a different page.</u>
+                  </span>
+                </router-link>
               </div>
             </div>
           </div>
@@ -109,7 +131,7 @@
       </div>
 
       <!---Declaration Start--->
-      <v-row justify="center">
+      <v-row class="justify-center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
 
           <v-row>
@@ -303,6 +325,7 @@ export default {
       isProcessing: false,
       dialog: false,
       landingPage: PATHS.home,
+      notificationFormUploadPage: PATHS.reportChange.notificationForm + `/${this.changeActionId}`,
       uploadedDocuments: [],
       invalidSummaryForms: [],
       payload: {},
