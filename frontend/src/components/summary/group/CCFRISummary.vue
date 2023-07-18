@@ -177,6 +177,10 @@ export default {
     changeRecGuid: {
       type: String,
       required: false
+    },
+    programYearId: {
+      type: String,
+      required: false
     }
   },
   data() {
@@ -286,16 +290,16 @@ export default {
         return changeUrl(PATHS.CCFRI_HOME , this.changeRecGuid,);
       }
       else if(!this.ccfri){
-        pcfUrl(PATHS.CCFRI_HOME, this.summaryModel.application.programYearId);
+        pcfUrl(PATHS.CCFRI_HOME, this.programYearId);
       }
       else if(isChangeRequest(this)){
         return changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.changeRecGuid, this.ccfri?.ccfriId);
       }
       else if(this.isRenewal){
-        return pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.summaryModel.application.programYearId, this.ccfri?.ccfriId);
+        return pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.ccfri?.ccfriId);
       }
       else {
-        return pcfUrlGuid(PATHS.CCFRI_NEW_FEES,  this.summaryModel.application.programYearId, this.ccfri?.ccfriId);
+        return pcfUrlGuid(PATHS.CCFRI_NEW_FEES,  this.programYearId, this.ccfri?.ccfriId);
       }
     },
     getClosureFees(value) {

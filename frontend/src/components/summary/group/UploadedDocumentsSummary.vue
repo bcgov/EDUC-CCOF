@@ -42,7 +42,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <router-link :to="PATHS.group.licenseUpload" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="PATHS.LICENSE_UPLOAD" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>

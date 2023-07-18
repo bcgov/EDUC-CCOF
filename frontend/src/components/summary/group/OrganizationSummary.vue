@@ -194,12 +194,8 @@
           <v-col cols="6" lg="4" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <!-- <router-link :to="this.PATHS.family.orgInfo"
-                  v-if="this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span
-                    style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring
-                      you to a different page.</u></span></router-link>
-                <router-link :to="PATHS.group.orgInfo" v-else> <span style="color:#ff5252; text-underline: black"><u>To
-                      add this information, click here. This will bring you to a different page.</u></span></router-link> -->
+                <router-link :to="getRoutingPath()"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
+
               </v-col>
             </v-row>
           </v-col>
@@ -212,7 +208,7 @@
 
 import { mapState } from 'vuex';
 import rules from '@/utils/rules';
-import { PATHS } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_URL_PREFIX } from '@/utils/constants';
 
 export default {
   name: 'OrganizationSummary',
@@ -229,12 +225,24 @@ export default {
       type: Boolean,
       required: false
     },
+    programYearId: {
+      type: String,
+      required: false
+    }
   },
   computed: {
     ...mapState('auth', ['userInfo']),
     ...mapState('summaryDeclaration', ['isLoadingComplete']),
   },
   methods: {
+    getRoutingPath(){
+      if(this.summaryModel.application.organizationProviderType == 'FAMILY'){
+        return pcfUrl(PATHS.CCOF_FAMILY_ORG ,this.programYearId);
+      }
+      else {
+        return pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearId);
+      }
+    },
     getOrgTypeString() {
       switch (this.summaryModel?.organization?.organizationType) {
       case !this.summaryModel?.organization?.organizationType:

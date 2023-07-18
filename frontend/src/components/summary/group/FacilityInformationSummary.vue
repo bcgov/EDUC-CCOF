@@ -217,12 +217,7 @@
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <!-- change request new facility below -->
-              <router-link :to="CHANGE_URL_PREFIX + '/' + changeRecGuid + '/facility/' + facilityId" v-else-if="isChangeRequest"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
-              <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <!-- <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
+              <router-link :to="getRoutingPathGroup()"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
             </v-col>
           </v-row>
         </v-col>
@@ -312,10 +307,8 @@
 
             <v-col cols="12" class="d-flex justify-start">
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
-              <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
-              <!-- <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
+
+              <router-link :to="getRoutingPathFamily()"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
             </v-col>
           </v-row>
         </v-col>
@@ -327,7 +320,7 @@
 
 <script>
 import { isChangeRequest } from '@/utils/common';
-import {PATHS, CHANGE_URL_PREFIX} from '@/utils/constants';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
@@ -364,6 +357,10 @@ export default {
     changeRecGuid: {
       type: String,
       required: false
+    },
+    programYearId: {
+      type: String,
+      required: false
     }
 
 
@@ -398,10 +395,31 @@ export default {
         return '';
       }
     },
+    calculateTotal() {
+      let total = 0;
+      total = (this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday);
+      return total;
+    },
+    getRoutingPathGroup(){
+      if(isChangeRequest(this)){
+        return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId);
+      }
+      else {
+        pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId);
+      }
+    },
+    getRoutingPathFamily(){
+      if(!this.funding.ccofBaseFundingId){
+        return pcfUrl(PATHS.CCOF_FAMILY_ORG , this.programYearId);
+      }
+      else {
+        return pcfUrl(PATHS.CCOF_FAMILY_ORG , this.programYearId);
+        //return pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId , this.facilityId);
+      }
+    },
   },
   data() {
     return {
-      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
       isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,

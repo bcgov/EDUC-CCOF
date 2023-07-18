@@ -242,10 +242,10 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-
+              <router-link :to="this.getRoutingPath()"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <!-- <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
             </v-col>
           </v-row>
         </v-col>
@@ -258,7 +258,7 @@
   </v-row>
 </template>
 <script>
-import {PATHS} from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_URL_PREFIX } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
@@ -273,12 +273,33 @@ export default {
       type: String,
       required: true
     },
+    programYearId: {
+      type: String,
+      required: false
+    }
   },
   methods: {
     calculateTotal() {
       let total = 0;
       total = (this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday);
       return total;
+    },
+    getRoutingPath(){
+      if(!this.funding.ccofBaseFundingId){
+        return pcfUrl(this.PATHS.CCOF_FAMILY_ORG ,this.programYearId);
+      }
+      else if(this.funding.ccofBaseFundingId ){
+        return pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
+      }
+      // else if(this.isChangeRequest){
+      //   return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
+      // }
+      // else if(this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP'){
+      //   return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.summaryModel.application.programYearId, this.funding.ccofBaseFundingId);
+      // }
+      // else {
+      //   return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.summaryModel.application.programYearId);
+      // }
     },
   },
   computed: {

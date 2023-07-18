@@ -72,7 +72,7 @@
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
-              <router-link :to="PATHS.NMF + '/' + ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
+              <router-link :to="getLink()" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -84,7 +84,7 @@
 <script>
 
 import rules from '@/utils/rules';
-import {PATHS} from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_URL_PREFIX } from '@/utils/constants';
 import {mapState} from 'vuex';
 
 export default {
@@ -102,6 +102,11 @@ export default {
         formId: this.facilityId,
       }
     };
+  },
+  methods: {
+    getLink(){
+      return pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.ccfriId );
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -125,6 +130,10 @@ export default {
       type: String,
       required: false
     },
+    programYearId: {
+      type: String,
+      required: false
+    }
   },
 
 };

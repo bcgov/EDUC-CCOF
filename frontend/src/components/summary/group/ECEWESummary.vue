@@ -109,6 +109,10 @@ export default {
     changeRecGuid: {
       type: String,
       required: false
+    },
+    programYearId: {
+      type: String,
+      required: false
     }
   },
   computed: {
@@ -166,9 +170,9 @@ export default {
         return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.changeRecGuid);
       }
       else if(this.eceweFacility){
-        return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.summaryModel.application.programYearId);
+        return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
       }else {
-        return pcfUrl(PATHS.ECEWE_FACILITITES, this.summaryModel.application.programYearId);
+        return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
       }
     },
     getOptInOptOut() {
