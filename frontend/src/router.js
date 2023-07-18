@@ -278,7 +278,7 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -289,6 +289,7 @@ const router = new VueRouter({
         pageTitle: 'Renew Organization',
         requiresAuth: true,
         showNavBar: false,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     // {
@@ -636,7 +637,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
     {
@@ -711,7 +713,15 @@ router.afterEach((to) => {
 
   if(to?.meta?.subtitleBanner){
     if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
+      if(to?.meta?.pageTitle==='Renew Organization'){
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].renewal.name.replace(/[^\d/]/g, '')));
+      }
+      else if(!store.getters['application/formattedProgramYear']){
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].newApp.name.replace(/[^\d/]/g, '')));
+      }
+      else{
       store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
+    }
     }else {
       store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
     }
