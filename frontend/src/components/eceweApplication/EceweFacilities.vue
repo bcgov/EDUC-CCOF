@@ -50,12 +50,12 @@
           <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
             <v-row>
               <v-col cols="12" class="d-flex">
-                <span>{{filteredNavBarList[index].facilityAccountNumber}}</span>
+                <span>{{navBarList[index].facilityAccountNumber}}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="5" class="flex-column">
-                <span>{{filteredNavBarList[index].facilityName}}</span>
+                <span>{{navBarList[index].facilityName}}</span>
               </v-col>
               <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
                   Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
@@ -92,7 +92,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                  License #: {{filteredNavBarList[index].licenseNumber}}
+                  License #: {{navBarList[index].licenseNumber}}
               </v-col>
             </v-row>
           </v-card>
@@ -162,20 +162,13 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['fundingModelTypeList']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
     isSaveBtnDisabled() {
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
-    },
-    filteredNavBarList() {
-      if (isChangeRequest(this)) {
-        return this.navBarList?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList?.filter(el => !el.changeRequestId);
-      }
     },
     filteredECEWEFacilityList() {
       if (isChangeRequest(this)) {
@@ -206,7 +199,7 @@ export default {
     this.setApplicationId(this.applicationId);
     let response = await this.loadData();
     if (response) {
-      this.initECEWEFacilities(this.filteredNavBarList);
+      this.initECEWEFacilities(this.navBarList);
       this.setupUiFacilities();
       this.model = {...this.eceweModel};
     }
@@ -217,7 +210,8 @@ export default {
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
-    ...mapMutations('app', ['setEceweFacilityComplete']),
+    ...mapMutations('navBar', ['refreshNavBarList']),
+
     ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
     setupUiFacilities() {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
@@ -278,11 +272,12 @@ export default {
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach(el => {
-            let facility = this.filteredNavBarList.find(f => f.facilityId === el.facilityId);
+            let facility = this.userProfileList.find(f => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
             }
           });
+          this.refreshNavBarList();
         }
         this.setupUiFacilities();
         if (showConfirmation || showConfirmation == null) {

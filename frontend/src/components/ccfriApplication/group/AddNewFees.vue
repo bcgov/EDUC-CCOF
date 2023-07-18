@@ -412,7 +412,6 @@ import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
-import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -462,22 +461,14 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId']),
 
-    findIndexOfFacility(){
-      return this.navBarList.findIndex((element) =>{
-        return element.ccfriApplicationId == this.$route.params.urlGuid;
-      });
-    },
     currentFacility(){
-      return this.navBarList[this.findIndexOfFacility];
-    },
-    nextFacility(){
-      return this.navBarList[this.findIndexOfFacility + 1];
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility.unlockCcfri || isChangeRequest(this)){
+      if (this.currentFacility.unlockCcfri || this.isChangeRequest){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){
@@ -510,7 +501,7 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
           //this solves for the edge case bug where fees that need to be deleted cannot be deleted because the GUID has not been loaded from dynamics
-          window.location.reload();
+          // window.location.reload(); //TODO-RLO: removed this, review with Jen
         }
       },
       immediate: true,
@@ -520,7 +511,7 @@ export default {
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh']),
+    ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },
@@ -538,7 +529,7 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.currentFacility.hasRfi = true; //TODO-RLO - need to update in navbar.js
+      this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: true});
       this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.$route.params.urlGuid));
     },
     previous() {
@@ -568,8 +559,7 @@ export default {
         } else {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
-            this.currentFacility.hasRfi = false;
-            this.forceNavBarRefresh();
+            this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: false});
           }
           this.$router.push(this.nextPath);
         }
@@ -608,12 +598,7 @@ export default {
       if (this.hasModelChanged() || this.hasDataToDelete()){
 
         this.processing = true;
-
-        let facility = this.navBarList.find(el => el.ccfriApplicationId == this.ccfriId);
-        if (facility) {
-          facility.isCCFRIComplete = this.isFormComplete();
-          this.forceNavBarRefresh();
-        }
+        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
         //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
         if (this.CCFRIFacilityModel.hasClosureFees == 100000001){
@@ -626,13 +611,13 @@ export default {
           facilityClosureDates : this.CCFRIFacilityModel.dates,
           ccof_formcomplete : this.isFormComplete(),
           notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
-          ccof_has_rfi: facility.hasRfi,
+          ccof_has_rfi: this.currentFacility.hasRfi,
           hasClosureFees: this.CCFRIFacilityModel.hasClosureFees
         };
         if (this.isRenewal) {
           firstObj = {
             ...firstObj,
-            ccof_has_rfi: facility.hasRfi,
+            ccof_has_rfi: this.currentFacility.hasRfi,
             existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
           };
         }
