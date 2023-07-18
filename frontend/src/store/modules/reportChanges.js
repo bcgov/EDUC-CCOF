@@ -18,7 +18,7 @@ export default {
     changeRequestStore : {},
     uploadedDocuments: [],
     newFacilityList: [], //may not need this now
-
+    userProfileChangeRequests: [],
   },
   getters: {
     changeRequestStore: state => state.changeRequestStore,
@@ -51,7 +51,8 @@ export default {
     },
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
-    }//may not need this now
+    },//may not need this now
+    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; }
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
