@@ -95,18 +95,7 @@
               </div>
             </div>
             <div class="my-4">
-              <h4>
-                Supporting Documents
-                <v-icon v-if="isSupportingDocumentsUploadComplete" color="green" large>
-                  mdi-check-circle-outline
-                </v-icon>
-                <v-icon v-if="!isSupportingDocumentsUploadComplete && !this.isProcessing" color="#ff5252" large>
-                  mdi-alert-circle-outline
-                </v-icon>
-                <span v-if="!isSupportingDocumentsUploadComplete && !this.isProcessing" style="color:#ff5252;">
-                  Your form is missing required information
-                </span>
-              </h4>
+              <h4>Supporting Documents</h4>
               <div>
                 <v-row no-gutters>
                   <v-col :cols="6">
@@ -128,11 +117,6 @@
                     {{ item.description }}
                   </v-col>
                 </v-row>
-                <router-link :to="documentUploadPage" v-if="this.supportingDocuments?.length <= 0">
-                  <span style="color:#ff5252; text-underline: black">
-                    <u>To add this information, click here. This will bring you to a different page.</u>
-                  </span>
-                </router-link>
               </div>
             </div>
           </div>
@@ -409,7 +393,7 @@ export default {
       return (this.supportingDocuments?.length > 0);
     },
     isSummaryComplete() {
-      return (this.isNotificationFormDocumentsUploadComplete && this.isSupportingDocumentsUploadComplete);
+      return (this.isNotificationFormDocumentsUploadComplete);
     },
     relockPayload() {
       let relockPayload = {

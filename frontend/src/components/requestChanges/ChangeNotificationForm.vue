@@ -172,7 +172,7 @@ export default {
       processing: false,
       loading: false,
       isChangeNotificationFormComplete: false,
-      isSupportingDocumentComplete: false,
+      isSupportingDocumentComplete: true,
     };
   },
   async mounted(){
@@ -180,7 +180,6 @@ export default {
       this.isLoading = true;
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
       this.updateChangeNotificationFormCompleteStatus();
-      this.updateSupportingDocumentCompleteStatus();
     }
     this.isLoading = false;
   },
@@ -245,14 +244,7 @@ export default {
       }
     },
     updateSupportingDocumentCompleteStatus(newStatus) {
-      if (isNullOrBlank(newStatus)) {
-        let savedSupportingDocuments = this.uploadedDocuments?.filter(document => {
-          return (document.annotationid && document.subject == this.changeTypeSupportingDoc);
-        });
-        this.isSupportingDocumentComplete = savedSupportingDocuments?.length > 0;
-      } else {
-        this.isSupportingDocumentComplete = newStatus;
-      }
+      this.isSupportingDocumentComplete = newStatus;
     },
   },
   components: { NavButton, ChangeFileUpload }

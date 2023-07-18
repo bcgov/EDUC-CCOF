@@ -113,8 +113,9 @@
             <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
             <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
           </v-card>
-          <v-row v-if="!this.isUploadComplete" class="px-6 pt-4 text-body-2 red--text">
-            {{ errorMessage }}
+          <v-row v-if="this.changeType == 'NOTIFICATION_FORM' && !this.isFileUploaded"
+            class="px-6 pt-4 text-body-2 red--text">
+            Please upload the Change Notification Form.
           </v-row>
         </v-card>
       </v-row>
@@ -190,7 +191,7 @@ export default {
         ccof_change_requestid: this.$route.params.changeRecGuid,
         subject : this.changeType
       },
-      isUploadComplete: true,
+      isFileUploaded: true,
     };
   },
 
@@ -205,12 +206,6 @@ export default {
     isReadOnly() {
       return this.loadedChangeRequest?.externalStatus === 'SUBMITTED';
     },
-    errorMessage() {
-      if (this.changeType == 'NOTIFICATION_FORM') {
-        return 'Please upload the Change Notification Form for your requested changes.';
-      }
-      return 'Please upload your Community Care License and other supporting documents for your requested changes.';
-    }
   },
 
   async mounted() {
@@ -341,7 +336,7 @@ export default {
         }
       }
       this.fileMap.delete(''+item.id);
-      this.uploadedDocuments.splice(index, 1);
+      await this.uploadedDocuments.splice(index, 1);
       await this.checkUploadCompleteStatus();
     },
     addNew() {
@@ -370,10 +365,14 @@ export default {
       return unsavedDocumentsCount;
     },
     async checkUploadCompleteStatus() {
-      let savedDocumentsCount = await this.getSavedDocumentsCount();
-      let unsavedDocumentsCount = await this.getUnsavedDocumentsCount();
-      this.isUploadComplete = (savedDocumentsCount + unsavedDocumentsCount) > 0;
-      this.$emit('fileChange', this.isUploadComplete);
+      if (this.changeType == 'NOTIFICATION_FORM') {
+        let savedDocumentsCount = await this.getSavedDocumentsCount();
+        let unsavedDocumentsCount = await this.getUnsavedDocumentsCount();
+        this.isFileUploaded = (savedDocumentsCount + unsavedDocumentsCount) > 0;
+        this.$emit('fileChange', (this.isFileUploaded && this.isValidForm));
+      } else {
+        this.$emit('fileChange', this.isValidForm);
+      }
     },
   }
 };
