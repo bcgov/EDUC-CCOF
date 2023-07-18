@@ -146,14 +146,14 @@
     </v-form>
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="false" :isProcessing="isLoading"
-        @previous="previous" @next="next" @save="save(true)"></NavButton>
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isChangeNotificationFormComplete || !isSupportingDocumentComplete" :isProcessing="isLoading"
+        @previous="previous" @next="next" @validateForm="validateForm" @save="save(true)"></NavButton>
   </v-container>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS, changeUrl } from '@/utils/constants';
+import { PATHS, changeUrlGuid } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -164,7 +164,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
       changeTypeForm: 'NOTIFICATION_FORM',
       changeTypeSupportingDoc: 'SUPPORTING_DOC',
       isUnlocked: false,
@@ -175,57 +175,12 @@ export default {
       isSupportingDocumentComplete: false,
     };
   },
-  watch: {
-    //get facilityID from here and then set it !
-    '$route.params.urlGuid': {
-      async handler() {
-        if (this.$route.params.urlGuid){
-          this.isLoading = true;
-          window.scrollTo(0,0);
-          //load the docs
-          //set a flag that exists/
-
-          try {
-            await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-            this.changeActionDocuments = this.getUploadedDocuments;
-
-          } catch (error) {
-            console.log(error);
-            this.setFailureAlert('An error occured while loading documents.');
-          }
-
-          this.isLoading = false;
-        }
-        //set it to empty so in case the user navigates to a fresh request, the store does not show the previously loaded documents
-        else{
-          this.setUploadedDocument([]);
-        }
-      },
-      immediate: true,
-      deep: true
-    },
-  },
   async mounted(){
-    this.isLoading = true;
-    await this.getChangeRequest(this.changeRequestId);
-    if(this.$route.params.urlGuid){
+    if (this.$route.params?.urlGuid) {
+      this.isLoading = true;
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
       this.updateChangeNotificationFormCompleteStatus();
       this.updateSupportingDocumentCompleteStatus();
-      //the user refershed the page. Reload the store so we can have the needed changeRequestID
-      if(!this.changeRequestId){
-        try{
-          await this.loadChangeRequest();
-        }
-        catch(error){
-          this.setFailureAlert('An error occurred while loading a change request. Please try again later.');
-        }
-
-        let changeReqId = Object.values(this.changeRequestStore).find(element => element.changeActions.changeActionId == this.$route.params.urlGuid).changeRequestId;
-        this.setChangeRequestId(changeReqId);
-
-        //IF there isn't a match... what should we do? TODO
-      }
     }
     this.isLoading = false;
   },
@@ -238,7 +193,7 @@ export default {
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments']),
+    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
@@ -249,14 +204,11 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
-    ...mapMutations('reportChanges', ['setChangeRequestId', 'setUploadedDocument']),
+    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments']),
+    ...mapMutations('reportChanges', ['setUploadedDocument']),
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
-    // async form() {
-    //   this.$router.push('http://localhost:8082/publiccf1345_cc_operating_program_funding_agreement_change_notification.pdf');
-    // },
     async save(showNotification = false){
       this.isLoading = true;
       try{
@@ -276,7 +228,11 @@ export default {
       this.isLoading = false;
     },
     next() {
-      this.$router.push(changeUrl(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.changeRequestId));
+      this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid));
+    },
+    async validateForm() {
+      await this.$refs.childRef.checkUploadCompleteStatus();
+      await this.$refs.childRef2.checkUploadCompleteStatus();
     },
     updateChangeNotificationFormCompleteStatus(newStatus) {
       if (isNullOrBlank(newStatus)) {

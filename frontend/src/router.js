@@ -642,7 +642,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
       name: 'Summary and Declaration Report Changes',
       component: SummaryDeclarationReportChanges,
       meta: {

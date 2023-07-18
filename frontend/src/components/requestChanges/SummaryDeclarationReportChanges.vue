@@ -56,10 +56,15 @@
             <div class="my-2">
               <h4>
                 Change Notification Form Documents
-                <v-icon v-if="isSummaryComplete" color="green" large>mdi-check-circle-outline</v-icon>
-                <v-icon v-if="!isSummaryComplete && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-                <span v-if="!isSummaryComplete && !this.isProcessing" style="color:#ff5252;">Your form is missing required
-                  information.</span>
+                <v-icon v-if="isNotificationFormDocumentsUploadComplete" color="green" large>
+                  mdi-check-circle-outline
+                </v-icon>
+                <v-icon v-if="!isNotificationFormDocumentsUploadComplete && !this.isProcessing" color="#ff5252" large>
+                  mdi-alert-circle-outline
+                </v-icon>
+                <span v-if="!isNotificationFormDocumentsUploadComplete && !this.isProcessing" style="color:#ff5252;">
+                  Your form is missing required information.
+                </span>
               </h4>
               <div>
                 <v-row no-gutters>
@@ -82,7 +87,7 @@
                     {{ item.description }}
                   </v-col>
                 </v-row>
-                <router-link :to="notificationFormUploadPage" v-if="this.supportingDocuments?.length <= 0">
+                <router-link :to="documentUploadPage" v-if="this.notificationFormDocuments?.length <= 0">
                   <span style="color:#ff5252; text-underline: black">
                     <u>To add this information, click here. This will bring you to a different page.</u>
                   </span>
@@ -92,10 +97,15 @@
             <div class="my-4">
               <h4>
                 Supporting Documents
-                <v-icon v-if="isSummaryComplete" color="green" large>mdi-check-circle-outline</v-icon>
-                <v-icon v-if="!isSummaryComplete && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-                <span v-if="!isSummaryComplete && !this.isProcessing" style="color:#ff5252;">Your form is missing required
-                  information</span>
+                <v-icon v-if="isSupportingDocumentsUploadComplete" color="green" large>
+                  mdi-check-circle-outline
+                </v-icon>
+                <v-icon v-if="!isSupportingDocumentsUploadComplete && !this.isProcessing" color="#ff5252" large>
+                  mdi-alert-circle-outline
+                </v-icon>
+                <span v-if="!isSupportingDocumentsUploadComplete && !this.isProcessing" style="color:#ff5252;">
+                  Your form is missing required information
+                </span>
               </h4>
               <div>
                 <v-row no-gutters>
@@ -118,7 +128,7 @@
                     {{ item.description }}
                   </v-col>
                 </v-row>
-                <router-link :to="notificationFormUploadPage" v-if="this.supportingDocuments?.length <= 0">
+                <router-link :to="documentUploadPage" v-if="this.supportingDocuments?.length <= 0">
                   <span style="color:#ff5252; text-underline: black">
                     <u>To add this information, click here. This will bring you to a different page.</u>
                   </span>
@@ -374,7 +384,7 @@ export default {
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
-    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest']),
     isReadOnly() {
       if (this.isMinistryUser || !this.isSummaryComplete) {
         return true;
@@ -392,8 +402,14 @@ export default {
     notificationFormDocuments() {
       return this.uploadedDocuments.filter(document => document.subject == 'NOTIFICATION_FORM');
     },
+    isNotificationFormDocumentsUploadComplete() {
+      return (this.notificationFormDocuments?.length > 0);
+    },
+    isSupportingDocumentsUploadComplete() {
+      return (this.supportingDocuments?.length > 0);
+    },
     isSummaryComplete() {
-      return (this.notificationFormDocuments?.length > 0 && this.supportingDocuments?.length > 0);
+      return (this.isNotificationFormDocumentsUploadComplete && this.isSupportingDocumentsUploadComplete);
     },
     relockPayload() {
       let relockPayload = {
@@ -402,7 +418,10 @@ export default {
         unlockChangeRequest: this.model.unlockChangeRequest
       };
       return relockPayload;
-    }
+    },
+    documentUploadPage() {
+      return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid);
+    },
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadChangeRequestDeclaration', 'updateDeclaration']),
@@ -411,8 +430,8 @@ export default {
     async loadData() {
       this.isLoading = true;
       try {
-        await this.getChangeRequest(this.$route.params.changeRecGuid);
-        let payload = await this.loadChangeRequestDocs(this.changeActionId);
+        await this.getChangeRequest(this.$route.params?.changeRecGuid);
+        let payload = await this.loadChangeRequestDocs(this.$route.params?.urlGuid);
         this.uploadedDocuments = payload?.map(document => ({
           name: document.filename,
           subject: document.subject,
@@ -447,7 +466,7 @@ export default {
       }
     },
     async previous() {
-      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.changeRequestId, this.changeActionId));
+      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid));
     },
   },
 };

@@ -68,7 +68,7 @@
               </div>
               <v-file-input v-else
                             color="#003366"
-                            :rules="fileRules"
+                            :rules="[...fileRules, ...rules.required]"
                             @click:clear="deleteItem(item)"
                             prepend-icon="mdi-file-upload"
                             :clearable="false"
@@ -187,7 +187,7 @@ export default {
         ccof_change_requestid: '',
       },
       defaultItem: {
-        ccof_change_requestid: this.changeRequestId,
+        ccof_change_requestid: this.$route.params.changeRecGuid,
         subject : this.changeType
       },
       isUploadComplete: true,
@@ -196,7 +196,7 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['changeRequestId', 'uploadedDocuments', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     getFilteredDocs(){
@@ -214,7 +214,6 @@ export default {
   },
 
   async mounted() {
-    await this.getChangeRequest(this.changeRequestId);
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
@@ -231,7 +230,7 @@ export default {
     next();
   },
   methods: {
-    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments', 'getChangeRequest']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'setUploadedDocuments', 'deleteDocuments']),
 
     async save(showConfirmation = true) {
       this.isProcessing = true;
@@ -263,7 +262,7 @@ export default {
       const payload = [];
       for (const file of newFilesAdded) {
         const obj = {
-          ccof_change_requestid: this.changeRequestId,
+          ccof_change_requestid: this.$route.params?.changeRecGuid,
           subject: this.changeType,
           notetext: file.notetext,
           ...this.fileMap.get(String(file.id))
