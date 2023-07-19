@@ -164,19 +164,19 @@ export default {
       if (!facilityId) {
         return null;
       }
-      return state.navBarList.find(item => item.facilityId == facilityId);
+      return state.userProfileList.find(item => item.facilityId == facilityId);
     },
     getNavByFundingId: (state) => (fundingId) => {
       if (!fundingId) {
         return null;
       }
-      return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+      return state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
     },
     getNavByCCFRIId: (state) => (ccfriId) => {
       if (!ccfriId) {
         return null;
       }
-      return state.navBarList.find(item => item.ccfriApplicationId == ccfriId);
+      return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
     },
 
   }

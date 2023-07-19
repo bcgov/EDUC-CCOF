@@ -363,10 +363,10 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId', 'navBarList']),
+    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList' ]),
     ...mapGetters('navBar', ['previousPath']),
-    ...mapState('navBar', ['canSubmit']),
+    ...mapState('navBar', ['canSubmit', 'navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
@@ -640,6 +640,7 @@ export default {
           }
         }
       }
+      this.forceNavBarRefresh();
     },
 
 
