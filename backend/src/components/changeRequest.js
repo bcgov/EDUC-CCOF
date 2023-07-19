@@ -110,6 +110,7 @@ async function createChangeRequest(req, res) {
     let changeRequest = req.body;
     let changeType = changeRequest.changeType;
     //log.info('change type', changeType);
+    //this is kind of ugly, replace with a better mapping function
     if (changeType === 'PARENT_FEE_CHANGE'){
       changeType = CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE;
     }

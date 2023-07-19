@@ -103,8 +103,7 @@
             <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
               <v-col class= "col-lg-2">
                 <h4></h4>
-                <!--TODO: ADD a function that maps these values-->
-                {{changeRequest.changeActions[0].changeType == 'PDF_CHANGE' ? 'Report other changes' : 'Add new facility(s)'}}
+                {{getChangeTypeString(changeRequest.changeActions[0].changeType)}}
               </v-col>
               <v-col class= "col-lg-1">
                 <h4></h4>
@@ -184,7 +183,23 @@ export default {
     isPageComplete() {
 
     },
+    getChangeTypeString(changeType){
+      console.log('change type', changeType);
+      switch(changeType){
+      case 'PDF_CHANGE':
+        return "Report other changes";
+      case 'NEW_FACILITY':
+        return "Add new facility(s)";
+      case 'PARENT_FEE_CHANGE':
+        return 'Midterm Fee Increase';
+
+      default:
+        return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
+      }
+    },
     createFacilityNameString(changeActions){
+
+      //TODO - add more logic to grab facility name from relevent change request. IE: MTFI
 
       //did it this way so if there are many change Actions, it checks all of them to see if there is a new facility. Maybe change in the future
       if (!changeActions.find(el => el.changeType == "NEW_FACILITY")){
