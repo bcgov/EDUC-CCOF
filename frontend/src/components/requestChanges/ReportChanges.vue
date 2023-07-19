@@ -49,76 +49,50 @@
               </template>
 
           </SmallCard>
-
-
         </v-row>
 
-        <v-skeleton-loader v-if="this.processing" :loading="this.processing"
-                                    type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
-
-        <v-row v-else>
+        <v-row no-gutters id="change-request-history">
           <v-col class= "col-lg-12 mt-3">
             <h2>Change History</h2>
-            <v-row>
-              <v-col class= "col-lg-2">
-                <h4>Change Requests</h4>
-              </v-col>
-              <v-col class= "col-lg-1">
-                <h4>Fiscal Year</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Facility(s) name</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Status</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Submission Date</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-
-              </v-col>
-
-              <v-col class= "col-lg-1">
-
-              </v-col>
-            </v-row>
-            <!--TODO: ADD skeleton loader and isLoaded var-->
-            <!--TODO: Change action data taken from first index! needs improvement -->
-            <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
-              <v-col class= "col-lg-2">
-                <h4></h4>
-                <!--TODO: ADD a function that maps these values-->
-                {{changeRequest.changeActions[0].changeType == 'PDF_CHANGE' ? 'Report other changes' : 'Add new facility(s)'}}
-              </v-col>
-              <v-col class= "col-lg-1">
-                <h4></h4>
-                2023/24
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4></h4>
-                {{createFacilityNameString(changeRequest.changeActions)}}
-              </v-col>
-              <v-col class= "col-lg-2">
-                {{getStatusString(changeRequest.externalStatus)}}
-              </v-col>
-              <v-col class= "col-lg-2">
-                {{ changeRequest.createdOnDate }}
-              </v-col>
-                <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId, index)">Continue</v-btn>
-                </v-col>
-                <v-col class= "col-lg-1">
-                  <v-btn class= "" @click="deleteRequest(changeRequest.changeActions[0].changeRequestId)">Delete</v-btn>
-                </v-col>
-            </v-row>
           </v-col>
         </v-row>
-
-
+        <v-row v-if="processing">
+          <v-col >
+            <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
+          </v-col>
+        </v-row>
+        <v-data-table
+          :headers="headers"
+          :items="allChangeRequests"
+          :height = "maxChangeRequestTableHeight"
+          mobile-breakpoint="960"
+          fixed-header
+          :item-class="getChangeRequestStyle"
+          class="elevation-4 my-4"
+          disable-pagination hide-default-footer
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
+          v-else
+        >
+          <template v-slot:item.actions="{ item }">
+            <v-btn
+              class="blueOutlinedButton mr-3"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+            >
+              Continue
+            </v-btn>
+            <v-btn
+              class="blueOutlinedButton"
+              @click="deleteRequest(item.changeRequestId)"
+              outlined
+            >
+              Delete
+            </v-btn>
+          </template>
+        </v-data-table>
       </v-container>
     </v-form>
-
 
     <NavButton :isNextDisplayed="false" :isSaveDisplayed="false"
          :isNextDisabled="true" :isProcessing="processing"
@@ -143,8 +117,24 @@ export default {
       isValidForm: false,
       processing: false,
       loading: false,
+      sortBy: ['priority','createdOnDate'],
+      sortDesc: true,
       rules: [
         (v) => !!v || 'Required.',
+      ],
+      headers: [
+        {
+          text: 'Change Requests',
+          align: 'start',
+          sortable: false,
+          value: 'changeTypeUpdated',
+          class: 'tableHeader'
+        },
+        { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
+        { text: 'Facility(s) name', value: 'facilityNames', class: 'tableHeader' },
+        { text: 'Status', value: 'status', class: 'tableHeader' },
+        { text: 'Submission Date', value: 'submissionDate', class: 'tableHeader' },
+        { text: ' ', value: 'actions', sortable: false },
       ],
     };
   },
@@ -158,16 +148,34 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
+    allChangeRequests() {
+      let allChangeRequests = [];
+      if (this.changeRequestStore?.length > 0) {
+        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => ({
+          index: index,
+          changeRequestId: changeRequest.changeActions[0]?.changeRequestId,
+          changeActionId: changeRequest.changeActions[0]?.changeActionId,
+          changeType: changeRequest.changeActions[0]?.changeType,
+          changeTypeUpdated: this.getChangeRequestType(changeRequest.changeActions[0]?.changeType),
+          fiscalYear: this.formattedProgramYear,
+          facilityNames: this.createFacilityNameString(changeRequest.changeActions),
+          status: this.getStatusString(changeRequest.externalStatus),
+          submissionDate: changeRequest?.createdOnDate,
+          priority: changeRequest?.priority
+        }));
+      }
+      return allChangeRequests;
+    },
+    // Table should be vertically scrollable once rows > 8
+    maxChangeRequestTableHeight() {
+      return this.allChangeRequests?.length > 8 ? 48 * 9 : undefined;
+    },
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
-    },
-
-    isPageComplete() {
-
     },
     createFacilityNameString(changeActions){
 
@@ -187,7 +195,7 @@ export default {
           }
         });
       }
-      return str;
+      return str.slice(0, -2);
     },
     getStatusString(status){
       switch (status){
@@ -206,7 +214,19 @@ export default {
       default:
         return "Unknown"; //should never happen!
       }
-
+    },
+    getChangeRequestType(changeType){
+      switch (changeType){
+      case 'PDF_CHANGE':
+        return "Report other changes";
+      case 'NEW_FACILITY':
+        return "Add new facility(s)";
+      default:
+        return "Unknown"; //should never happen!
+      }
+    },
+    getChangeRequestStyle(changeRequest){
+      return changeRequest.status == 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -239,7 +259,7 @@ export default {
           console.log('unable to create a new Req');
           this.setFailureAlert('An error occurred while creating a change request Please try again later.');
         }
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq.changeRequestId, newReq.changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId));
       }
       else{
         this.setChangeRequestId(changeRequestId);
@@ -280,7 +300,15 @@ export default {
 .blueButton {
   background-color: #003366 !important;
 }
-.blueText {
+.blueOutlinedButton {
+  color: #003366 !important;
+}
+::v-deep .tableHeader {
   color: rgb(0, 52, 102) !important;
+  font-weight: bold !important;
+  font-size: 16px !important;
+}
+::v-deep .redText {
+  color: red !important;
 }
 </style>

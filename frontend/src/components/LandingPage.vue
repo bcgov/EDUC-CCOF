@@ -95,7 +95,18 @@
         </template>
         <template #button>
           <!-- TODO: change back this logic for button color - was previously  :color='buttonColor(!isCCOFApproved) -->
-          <v-btn  @click="goToReportChange()" :color='buttonColor(isCCOFApproved)' dark>Report a change</v-btn>
+          <v-row no-gutters>
+            <v-col v-if="isUpdateChangeRequestDisplayed" class="col-12 mb-3">
+              <v-btn @click="goToChangeRequestHistory()" :color='buttonColor(false)' dark>
+                Update change request
+              </v-btn>
+            </v-col>
+            <v-col class="col-12">
+              <v-btn @click="goToReportChange()" :color='buttonColor(!isCCOFApproved)' dark>
+                Report a change
+              </v-btn>
+            </v-col>
+          </v-row>
         </template>
       </SmallCard>
 
@@ -222,6 +233,7 @@ export default {
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
     filteredNavBarList() {
       if (isChangeRequest(this)) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -344,6 +356,10 @@ export default {
     isCCOFApproved() {
       return (this.applicationType === 'RENEW') || (this.ccofStatus === this.CCOF_STATUS_APPROVED);
     },
+    isUpdateChangeRequestDisplayed() {
+      let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
+      return changeRequestStatuses?.includes("WITH_PROVIDER");
+    }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
@@ -354,6 +370,9 @@ export default {
     },
     goToReportChange(){
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+    },
+    goToChangeRequestHistory() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     continueRenewal() {
       this.goToLicenseUpload();
