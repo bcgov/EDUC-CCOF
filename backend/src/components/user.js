@@ -5,7 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_STATUS_CODES} = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_STATUS_CODES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES} = require('../util/constants');
 const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings } = require('../util/mapping/Mappings');
 const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -100,6 +100,8 @@ async function getUserInfo(req, res) {
   userResponse.application.ccof_ccof_change_request_Application_ccof_appl?.forEach(el => {
     const item = new MappableObjectForFront(el, UserProfileChangeRequestMappings).data;
     item.status = getLabelFromValue(item.status, CHANGE_REQUEST_STATUS_CODES);
+    item.externalStatus = getLabelFromValue(item.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
+
     changeRequests.push(item);
 
   });
