@@ -56,7 +56,7 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
-import MtfiInfo from '@/components/requestChanges/mtfi/MTFIInfo';
+import MtfiInfo from '@/components/mtfi/MTFIInfo';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);

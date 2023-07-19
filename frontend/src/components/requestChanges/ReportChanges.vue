@@ -253,6 +253,10 @@ export default {
         this.setChangeActionId(changeActionId);
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
+      else if (changeType == 'PARENT_FEE_CHANGE'){
+        this.setChangeRequestId(changeRequestId);
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+      }
     },
     async createNewChangeRequest(changeType){
 
