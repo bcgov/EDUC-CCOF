@@ -97,7 +97,7 @@ async function getUserInfo(req, res) {
 
 
   const changeRequests = [];
-  userResponse.application.ccof_ccof_change_request_Application_ccof_appl?.forEach(el => {
+  userResponse.application?.ccof_ccof_change_request_Application_ccof_appl?.forEach(el => {
     const item = new MappableObjectForFront(el, UserProfileChangeRequestMappings).data;
     item.status = getLabelFromValue(item.status, CHANGE_REQUEST_STATUS_CODES);
     item.externalStatus = getLabelFromValue(item.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
