@@ -12,7 +12,7 @@
               <li v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
                 <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
-                  <v-icon>mdi-trash-can</v-icon>
+                  <v-icon>mdi-close-circle</v-icon>
                 </v-btn>
               </li>
             </ul>
@@ -70,9 +70,8 @@
 
 <script>
 
-import { PATHS, CHANGE_URL_PREFIX } from '@/utils/constants';
-import { mapState, mapMutations, mapActions } from 'vuex';
-import NavButton from '@/components/util/NavButton';
+import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { isChangeRequest } from '@/utils/common';
 
 export default {
@@ -89,9 +88,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['navBarList', 'isLicenseUploadComplete']),
-    ...mapState('application', ['applicationStatus', 'applicationId']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
+    ...mapGetters('navBar', ['previousPath']),
     isLocked() {
       if (isChangeRequest(this)) {
         return false;
@@ -110,32 +110,29 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setCcofConfirmationEnabled', 'setIsLicenseUploadComplete']),
-    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
+    ...mapMutations('application', ['setCcofConfirmationEnabled']),
     ...mapActions('facility', ['deleteFacility']),
     previous() {
-      let navItem = this.navBarList[this.navBarList.length - 1];
-      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
-      this.$router.push(PATHS.group.fundAmount + '/' + navItem?.ccofBaseFundingId);
+      this.$router.push(this.previousPath);
     },
     addAnotherFacility() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/facility`);
+        this.$router.push(changeUrl(PATHS.CCOF_GROUP_FACILITY, this.$route.params.changeRecGuid));
       } else {
-        this.$router.push(PATHS.group.facInfo);
+        this.$router.push(pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId));
       }
     },
     async next() {
       if (isChangeRequest(this)) {
-        this.$router.push(`${CHANGE_URL_PREFIX}/${this.$route.params.changeRecGuid}/licenseUpload`);
+        this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, this.$route.params.changeRecGuid));
       } else {
-        this.$router.push(PATHS.group.licenseUpload);
+        this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
       }
     },
     confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
-      this.deletechangeRequestNewFacilityId = changeRequestNewFacilityId
+      this.deletechangeRequestNewFacilityId = changeRequestNewFacilityId,
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;
@@ -144,10 +141,9 @@ export default {
     async deleteApplication() {
       this.processing = true;
       console.log(this.deleteFacilityId);
-      console.log(this.deletechangeRequestNewFacilityId);
       console.log(this.deleteCcfriId);
       console.log(this.applicationId);
-      await this.deleteFacility({ facilityId: this.deleteFacilityId , changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
+      await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;
     }
