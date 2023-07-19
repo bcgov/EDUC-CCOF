@@ -88,7 +88,7 @@
 
 import {mapState} from 'vuex';
 import { isChangeRequest } from '@/utils/common';
-import {PATHS, CHANGE_URL_PREFIX} from '@/utils/constants';
+import { PATHS, pcfUrl, changeUrl, CHANGE_URL_PREFIX } from '@/utils/constants';
 import rules from '@/utils/rules';
 
 export default {
@@ -107,6 +107,10 @@ export default {
       required: false
     },
     changeRecGuid: {
+      type: String,
+      required: false
+    },
+    programYearId: {
       type: String,
       required: false
     }
@@ -163,12 +167,12 @@ export default {
     },
     getRoutingPath(){
       if(this.isChangeRequest){
-        return `${CHANGE_URL_PREFIX}/${this.changeRecGuid}${PATHS.eceweEligibility}`;
+        return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.changeRecGuid);
       }
       else if(this.eceweFacility){
-        return PATHS.eceweFacilities;
+        return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
       }else {
-        return PATHS.eceweEligibility;
+        return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
       }
     },
     getOptInOptOut() {

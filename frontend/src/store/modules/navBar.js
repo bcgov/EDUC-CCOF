@@ -75,42 +75,50 @@ export default {
      * These methods will refilter the navbar
      * and reforce the navbar to refresh
     ************************************************/
+    setNavBarValue: (state, { facilityId, property, value}) => {
+      const userProfileItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      if (userProfileItem) {
+        userProfileItem[property] = value;
+        filterNavBar(state);
+        state.refreshNavBar++;
+      }
+    },
     setNavBarFacilityComplete: (state, { facilityId, complete }) => {
-      let navBarItem = state.userProfileList.find(item => item.facilityId == facilityId);
-      if (navBarItem) {
-        navBarItem.isFacilityComplete = complete;
+      let userProfileItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      if (userProfileItem) {
+        userProfileItem.isFacilityComplete = complete;
         filterNavBar(state);
         state.refreshNavBar++;
       }
     },
     setNavBarFundingComplete: (state, { fundingId, complete }) => {
-      let navBarItem = state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
-      if (navBarItem) {
-        navBarItem.isCCOFComplete = complete;
+      let userProfileItem = state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
+      if (userProfileItem) {
+        userProfileItem.isCCOFComplete = complete;
         filterNavBar(state);
         state.refreshNavBar++;
       }
     },
-    setNavBarCCFRIComplete: (state, { fundingId, complete }) => {
-      let navBarItem = state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
-      if (navBarItem) {
-        navBarItem.isCCFRIComplete = complete;
+    setNavBarCCFRIComplete: (state, { ccfriId, complete }) => {
+      let userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      if (userProfileItem) {
+        userProfileItem.isCCFRIComplete = complete;
         filterNavBar(state);
         state.refreshNavBar++;
       }
     },
-    setNavBarNMFComplete: (state, { fundingId, complete }) => {
-      let navBarItem = state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
-      if (navBarItem) {
-        navBarItem.isNmfComplete = complete;
+    setNavBarNMFComplete: (state, { ccfriId, complete }) => {
+      let userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      if (userProfileItem) {
+        userProfileItem.isNmfComplete = complete;
         filterNavBar(state);
         state.refreshNavBar++;
       }
     },
-    setNavBarRFIComplete: (state, { fundingId, complete }) => {
-      let navBarItem = state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
-      if (navBarItem) {
-        navBarItem.isRfiComplete = complete;
+    setNavBarRFIComplete: (state, { ccfriId, complete }) => {
+      let userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      if (userProfileItem) {
+        userProfileItem.isRfiComplete = complete;
         filterNavBar(state);
         state.refreshNavBar++;
       }
@@ -133,6 +141,10 @@ export default {
         filterNavBar(state);
       }
     },
+    refreshNavBarList:(state) => {
+      filterNavBar(state);
+      state.refreshNavBar++;
+    },
 
   },
   getters: {
@@ -152,19 +164,19 @@ export default {
       if (!facilityId) {
         return null;
       }
-      return state.navBarList.find(item => item.facilityId == facilityId);
+      return state.userProfileList.find(item => item.facilityId == facilityId);
     },
     getNavByFundingId: (state) => (fundingId) => {
       if (!fundingId) {
         return null;
       }
-      return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+      return state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
     },
     getNavByCCFRIId: (state) => (ccfriId) => {
       if (!ccfriId) {
         return null;
       }
-      return state.navBarList.find(item => item.ccfriApplicationId == ccfriId);
+      return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
     },
 
   }

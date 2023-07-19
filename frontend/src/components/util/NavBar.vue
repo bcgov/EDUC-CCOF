@@ -111,7 +111,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle','isRenewal', 'programYearList']),
-    ...mapState('navBar', ['navBarList', 'forceNavBarRefresh', 'navBarGroup']),
+    ...mapState('navBar', ['navBarList', 'refreshNavBar', 'navBarGroup']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
@@ -151,15 +151,7 @@ export default {
       immediate: true,
       deep: true
     },
-    navBarList: {
-      handler() {
-        console.log('BuildNavBar called - trigged by navBarList');
-        this.buildNavBar();
-      },
-      immediate: true,
-      deep: true
-    },
-    forceNavBarRefresh: {
+    refreshNavBar: {
       handler() {
         console.log('BuildNavBar called - trigged by navBarRefresh - forced refresh');
         this.buildNavBar();

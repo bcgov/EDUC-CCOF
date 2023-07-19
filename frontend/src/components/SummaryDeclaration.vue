@@ -58,7 +58,8 @@
                 <div v-if="!this.isRenewal">
                   <v-expansion-panel variant="accordion">
                     <OrganizationSummary @isSummaryValid="isFormComplete" :programYear="this.formattedProgramYear"
-                                         :summary-model="this.summaryModel" :isProcessing="isProcessing">
+                                         :summary-model="this.summaryModel" :isProcessing="isProcessing"
+                                         :programYearId="summaryModel?.application?.programYearId">
                     </OrganizationSummary>
                   </v-expansion-panel>
                 </div>
@@ -78,40 +79,54 @@
                                                     :license-categories="facility?.licenseCategories"
                                                     :providerType="summaryModel?.application?.organizationProviderType"
                                                     @isSummaryValid="isFormComplete"
-                                                    :changeRecGuid="facility?.changeRequestId"></FacilityInformationSummary>
+                                                    :changeRecGuid="facility?.changeRequestId"
+                                                    :programYearId="summaryModel?.application?.programYearId"></FacilityInformationSummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <div v-if="!facility.funding || isRenewal"></div>
                         <div v-else>
                           <CCOFSummaryFamily v-if="summaryModel?.application?.organizationProviderType == 'FAMILY'"
                                     @isSummaryValid="isFormComplete" :funding="facility.funding"
-                                    :facilityId="facility.facilityId"></CCOFSummaryFamily>
+                                    :facilityId="facility.facilityId"
+                                    :programYearId="summaryModel?.application?.programYearId"
+                                    ></CCOFSummaryFamily>
                           <CCOFSummary v-else @isSummaryValid="isFormComplete" :funding="facility.funding"
-                                    :facilityId="facility.facilityId" :changeRecGuid="facility.changeRequestId"></CCOFSummary>
+                                    :facilityId="facility.facilityId"
+                                    :changeRecGuid="facility.changeRequestId"
+                                    :programYearId="summaryModel?.application?.programYearId"
+                                    ></CCOFSummary>
                         </div>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <CCFRISummary @isSummaryValid="isFormComplete" :ccfri="facility?.ccfri"
                                       :facility-id="facility.facilityId"
-                                      :changeRecGuid="facility?.changeRequestId"></CCFRISummary>
+                                      :changeRecGuid="facility?.changeRequestId"
+                                      :programYearId="summaryModel?.application?.programYearId"
+                                      ></CCFRISummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion" v-if="facility?.rfiApp">
                         <RFISummary @isSummaryValid="isFormComplete" :rfiApp="facility?.rfiApp"
                                     :ccfriId="facility?.ccfri?.ccfriId"
                                     :facilityId="facility.facilityId"
-                                    :changeRecGuid="facility?.changeRequestId"></RFISummary>
+                                    :changeRecGuid="facility?.changeRequestId"
+                                    :programYearId="summaryModel?.application?.programYearId"
+                                    ></RFISummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion" v-if="facility?.nmfApp">
                         <NMFSummary @isSummaryValid="isFormComplete" :nmfApp="facility?.nmfApp"
                                     :ccfriId="facility?.ccfri?.ccfriId"
                                     :facilityId="facility.facilityId"
-                                    :changeRecGuid="facility?.changeRequestId"></NMFSummary>
+                                    :changeRecGuid="facility?.changeRequestId"
+                                    :programYearId="summaryModel?.application?.programYearId"
+                                    ></NMFSummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
                                       :ecewe-facility="facility.ecewe"
                                       :isProcessing="isProcessing"
-                                      :changeRecGuid="facility.changeRequestId"></ECEWESummary>
+                                      :changeRecGuid="facility.changeRequestId"
+                                      :programYearId="summaryModel?.application?.programYearId"
+                                      ></ECEWESummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <UploadedDocumentsSummary @isSummaryValid="isFormComplete"
@@ -123,6 +138,7 @@
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
                                 :ecewe-facility="null" :isProcessing="isProcessing"
+                                :programYearId="summaryModel?.application?.programYearId"
                                 ></ECEWESummary>
                 </v-expansion-panel>
                 </div>
@@ -153,7 +169,7 @@
             </v-row>
             <v-row v-if="!isProcessing">
               <v-col class="pb-0">
-                <div v-show="!this.isRenewal && !this.organizationAccountNumber">
+                <div v-show="!this.isRenewal && !this.organizationAccountNumber && !this.isChangeRequest">
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                     I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
@@ -347,10 +363,10 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId', 'navBarList']),
+    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList' ]),
     ...mapGetters('navBar', ['previousPath']),
-    ...mapState('navBar', ['canSubmit']),
+    ...mapState('navBar', ['canSubmit', 'navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
@@ -624,6 +640,7 @@ export default {
           }
         }
       }
+      this.forceNavBarRefresh();
     },
 
 

@@ -145,22 +145,8 @@
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
           <v-row  no-gutters class="d-flex justify-start">
-            <v-col cols="12" v-if="!ccfri && this.isChangeRequest" class="d-flex justify-start">
-
-              <router-link :to="PATHS.ccfriHome" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-            </v-col>
-            <v-col cols="12" v-else-if="!ccfri" class="d-flex justify-start">
-              <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + '/ccfriApplication '" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-            </v-col>
-            <v-col cols="12" v-else-if="this.isChangeRequest" class="d-flex justify-start">
-             <!-- change request link below -->
-                <router-link :to="this.CHANGE_URL_PREFIX + '/' + changeRecGuid + PATHS.addNewFees + '/' + ccfri?.ccfriId"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
-            </v-col>
-            <v-col cols="12" v-else-if="this.isRenewal" class="d-flex justify-start">
-              <router-link :to="PATHS.currentFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-            </v-col>
-            <v-col cols="12" v-else class="d-flex justify-start">
-              <router-link :to="PATHS.addNewFees + '/' + ccfri?.ccfriId" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
+            <v-col cols="12" class="d-flex justify-start">
+              <router-link :to="getRoutingPath()" > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
             </v-col>
           </v-row>
         </v-col>
@@ -172,7 +158,7 @@
 <script>
 import _ from 'lodash';
 import { isChangeRequest } from '@/utils/common';
-import {PATHS, CHANGE_URL_PREFIX} from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid  } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
@@ -191,16 +177,17 @@ export default {
     changeRecGuid: {
       type: String,
       required: false
+    },
+    programYearId: {
+      type: String,
+      required: false
     }
   },
   data() {
     return {
-      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
-      isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
       isValidForm: true,
-      route_facility: PATHS.group.facInfo+'/'+this.facilityId,
       formObj:{
         formName: 'CCFRISummary',
         formId: this.ccfri?.ccfriId,
@@ -298,6 +285,23 @@ export default {
     },
   },
   methods: {
+    getRoutingPath(){
+      if(!this.ccfri && isChangeRequest(this)){
+        return changeUrl(PATHS.CCFRI_HOME , this.changeRecGuid,);
+      }
+      else if(!this.ccfri){
+        pcfUrl(PATHS.CCFRI_HOME, this.programYearId);
+      }
+      else if(isChangeRequest(this)){
+        return changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.changeRecGuid, this.ccfri?.ccfriId);
+      }
+      else if(this.isRenewal){
+        return pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.ccfri?.ccfriId);
+      }
+      else {
+        return pcfUrlGuid(PATHS.CCFRI_NEW_FEES,  this.programYearId, this.ccfri?.ccfriId);
+      }
+    },
     getClosureFees(value) {
       if (value === 100000000) {
         return 'Yes';

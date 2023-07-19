@@ -42,7 +42,7 @@ export default {
       console.log('saveOrganization, payload', payload);
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       commit('setLoadedModel', { ...state.organizationModel });
-
+      commit('navBar/forceNavBarRefresh', null, { root: true });
       if (state.organizationId) {
         // has an orgaization ID, so update the data
         try {
@@ -69,7 +69,6 @@ export default {
           commit('application/setApplicationId', response.data?.applicationId, { root: true });
           commit('application/setApplicationStatus', response.data?.applicationStatus, { root: true });
           commit('application/setApplicationType', response.data?.applicationType, { root: true });
-
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);

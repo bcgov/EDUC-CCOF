@@ -1598,12 +1598,11 @@ export default {
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList']),
-    ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId']),
     currentFacility() {
-      return this.navBarList.find(element => element.ccfriApplicationId == this.$route.params.urlGuid);
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
@@ -1683,7 +1682,7 @@ export default {
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    ...mapMutations('app', ['refreshNavBar']),
+    ...mapMutations('navBar', ['setNavBarRFIComplete']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     nextBtnClicked() {
       this.$router.push(this.nextPath);
@@ -1729,7 +1728,7 @@ export default {
 
       this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
-      this.currentFacility.isRfiComplete = this.isFormComplete;
+      this.setNavBarRFIComplete({ccfriId: ccfriId, complete: this.isFormComplete});
       try {
         let friApplicationGuid = await this.saveRfi({ccfriId: ccfriId, isRfiComplete: this.isFormComplete});
         if (friApplicationGuid) {

@@ -32,7 +32,7 @@
           tiled
           exact tile
           :ripple="false"
-          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in filteredNavBarList" :key="facilityId">
+          v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in navBarList" :key="facilityId">
           <v-card-text>
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
@@ -129,15 +129,8 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList']),
     ...mapGetters('navBar', ['previousPath']),
-    filteredNavBarList() {
-      if (isChangeRequest(this)) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
-    },
     isReadOnly(){
       if (this.unlockedFacilities || isChangeRequest(this)) {
         return false;
@@ -146,14 +139,14 @@ export default {
         return (this.applicationStatus === 'SUBMITTED');
     },
     unlockedFacilities(){
-      return this.filteredNavBarList.some(facility => facility.unlockCcfri);
+      return this.navBarList.some(facility => facility.unlockCcfri);
     },
 
   },
   beforeMount: function() {
-    this.showOptStatus = new Array(this.filteredNavBarList.length).fill(false);
+    this.showOptStatus = new Array(this.navBarList.length).fill(false);
 
-    this.filteredNavBarList.forEach((fac, index) => { //TODO: validate this code
+    this.navBarList.forEach((fac, index) => {
       if (fac.ccfriOptInStatus){
         this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
       }
@@ -163,12 +156,12 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
     toggleAll(){
-      this.filteredNavBarList.forEach((fac, index) => {
+      this.navBarList.forEach((fac, index) => {
         this.toggle(index);
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
@@ -181,7 +174,7 @@ export default {
       const radioButtonsIncomplete = Object.values(this.ccfriOptInOrOut).includes(undefined);
 
       let allOptStatusIncomplete = false;
-      for (const element of this.filteredNavBarList) {
+      for (const element of this.navBarList) {
         if (element.ccfriOptInStatus == null){
           allOptStatusIncomplete = true;
           break;
@@ -198,7 +191,7 @@ export default {
     async next() {
       await this.save(false);
 
-      let firstOptInFacility = this.filteredNavBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
+      let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
 
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){
@@ -235,32 +228,37 @@ export default {
       this.processing = true;
       let payload = [];
 
-      for (let i = 0; i < this.filteredNavBarList.length; i++) {
+      for (let i = 0; i < this.navBarList.length; i++) {
       //change this to only send payloads with value chosen --- don't send undefined
         if (!ccfriOptInOrOut[i]){
           continue;
         }
-        if (this.filteredNavBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          this.filteredNavBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
+        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
+          const userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
+          if (userProfileFacility) {
+            userProfileFacility.ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          }
           payload.push( {
             applicationID : this.applicationId, //CCOF BASE application ID
-            facilityID : this.filteredNavBarList[i].facilityId,
+            facilityID : this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
-            ccfriApplicationId: this.filteredNavBarList[i].ccfriApplicationId,
-            changeRequestFacilityId: this.filteredNavBarList[i].changeRequestNewFacilityId? this.filteredNavBarList[i].changeRequestNewFacilityId : undefined,
+            ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
+            changeRequestFacilityId: this.navBarList[i].changeRequestNewFacilityId? this.navBarList[i].changeRequestNewFacilityId : undefined,
             //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
             //so it can be linked in the backend. It works with the above hardcoded guid ^
             //I did not implement fully because it sounds like we might get that info back from profiderProfile
           });
         }
       }//end for loop
+      //Refresh the filtered list
+      this.refreshNavBarList();
       if (payload.length > 0) {
         try {
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
 
           response.data.forEach(item => {
             if (item.ccfriApplicationId) {
-              this.navBarList.find(facility => {
+              this.userProfileList.find(facility => {
                 if (facility.facilityId == item.facilityId) {
                   facility.ccfriApplicationId = item.ccfriApplicationId;
                 }

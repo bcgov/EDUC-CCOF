@@ -398,7 +398,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: pcfUrlGuid(PATHS.NMF),
+      path: pcfUrlGuid(PATHS.CCFRI_NMF),
       name: 'new-facilities',
       component: NMF,
       meta: {
@@ -642,7 +642,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
       name: 'Summary and Declaration Report Changes',
       component: SummaryDeclarationReportChanges,
       meta: {
@@ -720,8 +720,8 @@ router.afterEach((to) => {
         store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].newApp.name.replace(/[^\d/]/g, '')));
       }
       else{
-      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
-    }
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
+      }
     }else {
       store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
     }
