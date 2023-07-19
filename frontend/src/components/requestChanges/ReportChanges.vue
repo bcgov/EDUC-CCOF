@@ -20,10 +20,10 @@
           <SmallCard  class= "col-lg-6 " :disable="false" v-if="this.organizationProviderType == 'GROUP'">
             <template #content class="px-10">
               <p class="text-h6 text-center "> Add a New facility to an existing organization </p>
-              <p class="px-2">
+              <p class="px-2 text-center">
                 This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE information ready.
               </p>
-              <p class="px-2">
+              <p class="px-2 text-center">
                 You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> license.
               </p>
             </template>
@@ -38,13 +38,28 @@
           <SmallCard  class= "col-lg-6 " :disable="false">
             <template #content class="px-10">
               <p class="text-h6 text-center">Report changes to your License or service</p>
-              <p class="px-2">
+              <p class="px-2 text-center">
                 Please have your <i>Community Care And Assisted Living Act</i> license (if required) and other supporting documents ready.
               </p>
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
                   <v-btn dark class="blueButton mb-10" @click="goToChangeForm()" >Upload a Change Notification Form</v-btn>
+                </v-row>
+              </template>
+
+          </SmallCard>
+
+          <SmallCard  class= "col-lg-6 " :disable="false">
+            <template #content class="px-10">
+              <p class="text-h6 text-center">Parent fee increase (MTFI)</p>
+              <p class="px-2 text-center">
+                Text description to be provided by the ministry.
+              </p>
+            </template>
+              <template #button class="ma-0 pa-0 ">
+                <v-row justify="space-around">
+                  <v-btn dark class="blueButton mb-10" @click="goToMTFI()" >Update parent fees</v-btn>
                 </v-row>
               </template>
 
@@ -128,7 +143,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, changeUrlGuid } from '@/utils/constants';
+import { PATHS, changeUrlGuid , changeUrl} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -224,27 +239,42 @@ export default {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
     },
+    async createNewChangeRequest(changeType){
+
+      let newReq;
+      try{
+        newReq = await this.createChangeRequest(changeType);
+      }
+      catch(error){
+        console.log('unable to create a new Req');
+        this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
+      }
+      return newReq;
+    },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 
       this.processing = true;
 
       //create the change action first, then push it
       if (!changeActionId){
-
-        let newReq;
-        try{
-          newReq = await this.createChangeRequest();
-        }
-        catch(error){
-          console.log('unable to create a new Req');
-          this.setFailureAlert('An error occurred while creating a change request Please try again later.');
-        }
+        let newReq = await this.createNewChangeRequest('PDF_CHANGE');
         this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq.changeRequestId, newReq.changeActionId));
       }
       else{
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
         this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId));
+      }
+
+    },
+    async goToMTFI(changeRequestId = null){
+
+      if (!changeRequestId){
+        let newReq = await this.createNewChangeRequest('PARENT_FEE_CHANGE');
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, newReq.changeRequestId ));
+      }
+      else{
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
       }
 
     },
@@ -258,7 +288,8 @@ export default {
       }
 
       this.processing = false;
-    }
+    },
+
   },
   async mounted() {
     this.processing = true;
