@@ -239,7 +239,7 @@ export default {
           console.log('unable to create a new Req');
           this.setFailureAlert('An error occurred while creating a change request Please try again later.');
         }
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, newReq.changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq.changeRequestId, newReq.changeActionId));
       }
       else{
         this.setChangeRequestId(changeRequestId);

@@ -10,9 +10,9 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
-      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
+      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" class="justify-center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+          <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
@@ -53,15 +53,26 @@
             </v-col>
           </v-row>
           <div v-if="!isProcessing">
-            <div class="mt-2">
-              <h3>Change Notification Form Documents</h3>
+            <div class="my-2">
+              <h4>
+                Change Notification Form Documents
+                <v-icon v-if="isNotificationFormDocumentsUploadComplete" color="green" large>
+                  mdi-check-circle-outline
+                </v-icon>
+                <v-icon v-if="!isNotificationFormDocumentsUploadComplete && !this.isProcessing" color="#ff5252" large>
+                  mdi-alert-circle-outline
+                </v-icon>
+                <span v-if="!isNotificationFormDocumentsUploadComplete && !this.isProcessing" style="color:#ff5252;">
+                  Your form is missing required information.
+                </span>
+              </h4>
               <div>
                 <v-row no-gutters>
                   <v-col :cols="6">
-                    <h4>File name</h4>
+                    <h5>File name</h5>
                   </v-col>
                   <v-col :cols="6">
-                    <h4>Description (optional)</h4>
+                    <h5>Description (optional)</h5>
                   </v-col>
                 </v-row>
                 <v-row
@@ -76,17 +87,22 @@
                     {{ item.description }}
                   </v-col>
                 </v-row>
+                <router-link :to="documentUploadPage" v-if="this.notificationFormDocuments?.length <= 0">
+                  <span style="color:#ff5252; text-underline: black">
+                    <u>To add this information, click here. This will bring you to a different page.</u>
+                  </span>
+                </router-link>
               </div>
             </div>
-            <div class="my-2">
-              <h3>Supporting Documents</h3>
+            <div class="my-4">
+              <h4>Supporting Documents</h4>
               <div>
                 <v-row no-gutters>
                   <v-col :cols="6">
-                    <h4>File name</h4>
+                    <h5>File name</h5>
                   </v-col>
                   <v-col :cols="6">
-                    <h4>Description (optional)</h4>
+                    <h5>Description (optional)</h5>
                   </v-col>
                 </v-row>
                 <v-row
@@ -109,7 +125,7 @@
       </div>
 
       <!---Declaration Start--->
-      <v-row justify="center">
+      <v-row class="justify-center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
 
           <v-row>
@@ -352,7 +368,7 @@ export default {
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
-    ...mapState('reportChanges', ['changeActionId', 'unsubmittedDocuments', 'changeRequestId', 'changeRequestStore', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest']),
     isReadOnly() {
       if (this.isMinistryUser || !this.isSummaryComplete) {
         return true;
@@ -370,8 +386,14 @@ export default {
     notificationFormDocuments() {
       return this.uploadedDocuments.filter(document => document.subject == 'NOTIFICATION_FORM');
     },
+    isNotificationFormDocumentsUploadComplete() {
+      return (this.notificationFormDocuments?.length > 0);
+    },
+    isSupportingDocumentsUploadComplete() {
+      return (this.supportingDocuments?.length > 0);
+    },
     isSummaryComplete() {
-      return (this.notificationFormDocuments?.length > 0 && this.supportingDocuments?.length > 0);
+      return (this.isNotificationFormDocumentsUploadComplete);
     },
     relockPayload() {
       let relockPayload = {
@@ -380,7 +402,10 @@ export default {
         unlockChangeRequest: this.model.unlockChangeRequest
       };
       return relockPayload;
-    }
+    },
+    documentUploadPage() {
+      return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid);
+    },
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadChangeRequestDeclaration', 'updateDeclaration']),
@@ -389,8 +414,8 @@ export default {
     async loadData() {
       this.isLoading = true;
       try {
-        await this.getChangeRequest(this.$route.params.changeRecGuid);
-        let payload = await this.loadChangeRequestDocs(this.changeActionId);
+        await this.getChangeRequest(this.$route.params?.changeRecGuid);
+        let payload = await this.loadChangeRequestDocs(this.$route.params?.urlGuid);
         this.uploadedDocuments = payload?.map(document => ({
           name: document.filename,
           subject: document.subject,
@@ -425,7 +450,7 @@ export default {
       }
     },
     async previous() {
-      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.changeRequestId, this.changeActionId));
+      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid));
     },
   },
 };
