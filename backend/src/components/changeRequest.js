@@ -125,6 +125,26 @@ async function createChangeRequest(req, res, changeType) {
   }
 }
 
+async function createChangeAction(req, res, changeType) {
+  log.info('createChangeAction called');
+  try {
+    const payload = {
+      ccof_changetype: changeType,
+      'ccof_change_request@odata.bind': `ccof_change_requests(${req.params.changeRequestId})`
+    };
+    const changeActionId = await postOperation('ccof_change_actions', payload);
+    return res.status(HttpStatus.CREATED).json({
+      changeRequestId: req.params.changeRequestId,
+      changeActionId: changeActionId,
+      changeType: changeType
+    });
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+
 function buildNewFacilityPayload(req) {
   let facility = req.body;
 
@@ -239,5 +259,6 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
-  updateChangeRequest
+  updateChangeRequest,
+  createChangeAction,
 };

@@ -112,8 +112,8 @@ export const PATHS = {
   //Report Change prefix's
   CHANGE_NOTIFICATION_FORM: `${CHANGE_URL_PREFIX}/notification-form`,
   CHANGE_MTFI: 'midterm-fee-increase',
-  CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
-
+  CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',
+  CHANGE_NEW_FACILITY_OTHER: '/other-changes',
 };
 
 //Some helper classes to build the URL consistently

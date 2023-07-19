@@ -263,6 +263,18 @@ export default {
         navBarId: navBarId++
       });
     },
+    addChangeRequestNewFacilityOtherToNavBar() {
+      this.items.push({
+        title: 'Make Change',
+        link: { name: 'change-new-facility-other', params: {changeRecGuid: this.$route.params.changeRecGuid}},
+        isAccessible: true, //change this when change req logic more complete
+        icon: 'mdi-information',
+        isActive: 'change-new-facility-other' === this.$route.name,
+        expanded: false,
+        position: positionIndex++,
+        navBarId: navBarId++
+      });
+    },
     addReportChangeNavigationToNavBar(){
       this.items.push({
         title: 'Report Change',
@@ -308,6 +320,7 @@ export default {
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
       this.addNewSupportingDocumentsToNavbar();
+      this.addChangeRequestNewFacilityOtherToNavBar();
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },

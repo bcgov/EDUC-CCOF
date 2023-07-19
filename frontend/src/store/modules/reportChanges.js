@@ -129,7 +129,6 @@ export default {
 
     //TODO: add it to the store
     async createChangeRequest({commit, rootState }) {
-
       console.log('creating a change REQ');
 
       checkSession();
@@ -163,6 +162,19 @@ export default {
         console.log(`Failed to delete change req with error - ${e}`);
         throw e;
       }
+    },
+    async createChangeAction({commit, rootState }, {changeRequestId, type }) {
+      console.log('creating change Type');
+      checkSession();
+      try {
+        let response = await ApiService.apiAxios.post(`/api/changeRequest/${changeRequestId}/${type}`);
+        console.log(response);
+        return response.data;
+      } catch (error) {
+        console.info(`Failed to create a change request  - ${error}`);
+        throw error;
+      }
+
     },
 
     //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.
