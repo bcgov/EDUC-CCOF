@@ -30,7 +30,7 @@ function filterNavBar(state) {
   if (state.changeRequestId) {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
   } else if (state.programYearId) {
-    state.navBarList = state.userProfileList.map(el => el); //TODO: figure out how to filter for program year.
+    state.navBarList = state.userProfileList.filter(el => !el.changeRequestId); //TODO: This will take FACILITY.STATUS as well
   }
 }
 
