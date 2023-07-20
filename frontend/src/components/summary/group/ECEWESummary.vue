@@ -88,7 +88,7 @@
 
 import {mapState} from 'vuex';
 import { isChangeRequest } from '@/utils/common';
-import { PATHS, pcfUrl, changeUrl, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, pcfUrl, changeUrl } from '@/utils/constants';
 import rules from '@/utils/rules';
 
 export default {
@@ -122,7 +122,6 @@ export default {
   },
   data() {
     return {
-      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
       isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,

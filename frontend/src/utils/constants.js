@@ -58,7 +58,6 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
 });
 
-export const CHANGE_URL_PREFIX = '/report-change';
 
 /*******************************************************
  *
@@ -77,7 +76,7 @@ export const PATHS = {
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
-    CHANGE_NEW_FACILITY: '/change/group/facility'
+    CHANGE_NEW_FACILITY: '/change/new/group/facility'
   },
   PREFIX: {
     PCF: '/pcf',
@@ -111,7 +110,7 @@ export const PATHS = {
   SUMMARY_DECLARATION:  '/summary-declaration',
 
   //Report Change prefix's
-  CHANGE_NOTIFICATION_FORM: `${CHANGE_URL_PREFIX}/notification-form`,
+  CHANGE_NOTIFICATION_FORM: '/notification-form',
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
 

@@ -15,7 +15,7 @@
                   <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </li>
-            </ul> 
+            </ul>
           </v-row>
         </v-container>
       </v-card>
