@@ -76,11 +76,20 @@
         >
           <template v-slot:item.actions="{ item }">
             <v-btn
+              v-if="item.status == 'Incomplete'"
               class="blueOutlinedButton mr-3"
               @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
               outlined
             >
               Continue
+            </v-btn>
+            <v-btn
+              v-if="item.status == 'Submitted'"
+              class="blueOutlinedButton mr-3"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+            >
+              View
             </v-btn>
             <v-btn
               class="blueOutlinedButton"
@@ -117,8 +126,8 @@ export default {
       isValidForm: false,
       processing: false,
       loading: false,
-      sortBy: ['priority','createdOnDate'],
-      sortDesc: true,
+      sortBy: ['priority','submissionDate'],
+      sortDesc: [true,true],
       rules: [
         (v) => !!v || 'Required.',
       ],
@@ -221,12 +230,23 @@ export default {
         return "Report other changes";
       case 'NEW_FACILITY':
         return "Add new facility(s)";
+      case 'PARENT_FEE_CHANGE':
+        return "Midterm Fee Increase";
       default:
         return "Unknown"; //should never happen!
       }
     },
     getChangeRequestStyle(changeRequest){
       return changeRequest.status == 'Action Required' ? 'redText' : '';
+    },
+    getButtonLabel(buttonType, status) {
+      if (buttonType == 'ViewOrContinue') {
+        return status == 'Incomplete' ? 'Continue' : 'View';
+      } else if (buttonType == 'DiscardOrWithdraw') {
+        return status == 'Submitted' ? 'Discard' : 'Withdraw';
+      } else if (buttonType == 'Update') {
+        return 'Update';
+      }
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
