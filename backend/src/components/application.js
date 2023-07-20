@@ -409,8 +409,13 @@ async function updateStatusForApplicationComponents(req, res) {
         isEceweComplete: request.isEceweComplete,
         isLicenseUploadComplete: request.isLicenseUploadComplete
       };
-      applicationReq = (new MappableObjectForBack(applicationReq, ECEWEApplicationMappings)).toJSON();
-      promises.push(patchOperationWithObjectId('ccof_applications', req.params.applicationId, applicationReq));
+      if (request.changeRequestId) {
+        applicationReq = (new MappableObjectForBack(applicationReq, ChangeRequestMappings)).toJSON();
+        promises.push(patchOperationWithObjectId('ccof_change_requests', request.changeRequestId, applicationReq));
+      } else {
+        applicationReq = (new MappableObjectForBack(applicationReq, ECEWEApplicationMappings)).toJSON();
+        promises.push(patchOperationWithObjectId('ccof_applications', req.params.applicationId, applicationReq));
+      }
     }
     if (request.facilities) {
       for (let facility of request.facilities) {

@@ -67,7 +67,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import {deepCloneObject, getFileExtension, isChangeRequest} from '@/utils/common';
+import {deepCloneObject, getFileExtension} from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -77,19 +77,19 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['isRenewal']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     filteredLicenseUploadData() {
-      if (isChangeRequest(this)) {
-        return this.licenseUploadData.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      if (this.isChangeRequest) {
+        return this.licenseUploadData.filter(el => el.changeRequestId === this.changeRequestId);
       } else {
         return this.licenseUploadData.filter(el => !el.changeRequestId);
       }
     },
     isLocked() {
-      if (this.unlockLicenseUpload || isChangeRequest(this)) {
+      if (this.unlockLicenseUpload || this.isChangeRequest) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
@@ -98,7 +98,7 @@ export default {
     },
     getFacilityList(){
       let facilityList;
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         facilityList = this.navBarList.filter(el => !el.changeRequestId);
@@ -185,8 +185,10 @@ export default {
   },
 
   methods: {
-    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
+    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
     ...mapMutations('application', ['setIsLicenseUploadComplete']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
+    ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -221,8 +223,12 @@ export default {
           await this.processLicenseFilesSave();
           this.fileMap.clear();// clear the map.
         }
-
-        this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
+        if (this.isChangeRequest) {
+          this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled});
+        } else {
+          this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
+        }
+        this.forceNavBarRefresh();
         if (showConfirmation) {
           await this.createTable();
           this.setSuccessAlert('Changes Successfully Saved');
@@ -244,14 +250,15 @@ export default {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,
           subject: 'Facility License',
-          changeRequestNewFacilityId : isChangeRequest(this) ? currFac.changeRequestNewFacilityId : undefined,
+          changeRequestNewFacilityId : this.isChangeRequest ? currFac.changeRequestNewFacilityId : undefined,
           ...file
         };
         fileList.push(obj);
       }
       const payload = {fileList,
         isLicenseUploadComplete:!this.nextButtonDisabled,
-        applicationId: this.applicationId
+        applicationId: this.applicationId,
+        changeRequestId: this.isChangeRequest? this.changeRequestId : undefined
       };
       await this.saveLicenseFiles(payload);
     },

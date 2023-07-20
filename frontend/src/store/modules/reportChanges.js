@@ -27,6 +27,18 @@ export default {
     loadedChangeRequest: state => state.loadedChangeRequest,
     getUploadedDocuments: state => state.uploadedDocuments,
     getChangeRequestFacilities: state => state.newFacilityList,
+    // eslint-disable-next-line no-unused-vars
+    isCREceweComplete: (state, getters, rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isEceweComplete;
+    },
+    // eslint-disable-next-line no-unused-vars
+    isCRLicenseComplete: (state, getters, rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isLicenseUploadComplete;
+    },
+    // eslint-disable-next-line no-unused-vars
+    changeRequestStatus: (state, getters, rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
+    }
   },
   mutations: {
     addChangeRequestToStore: (state, {changeRequestId, model} ) => {
@@ -52,7 +64,22 @@ export default {
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
     },//may not need this now
-    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; }
+    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; },
+    setCRIsEceweComplete:(state, value) => {
+      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
+      if (changeRequest) {
+        changeRequest.isEceweComplete = value.isComplete;
+      }
+    },
+    setCRIsLicenseComplete:(state, value) => {
+      console.log('CHANGE REQUESTID : ', value.changeRequestId);
+
+      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
+      console.log('CHANGE REQUEST FOUND: ', changeRequest);
+      if (changeRequest) {
+        changeRequest.isLicenseUploadComplete = value.isComplete;
+      }
+    }
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID

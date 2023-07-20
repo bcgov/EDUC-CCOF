@@ -641,16 +641,6 @@ const router = new VueRouter({
         subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
-    {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
-      name: 'Summary and Declaration Report Changes',
-      component: SummaryDeclarationReportChanges,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: false
-      }
-    },
   ]
 });
 

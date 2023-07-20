@@ -297,7 +297,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
-import { isChangeRequest, isNullOrBlank } from '@/utils/common';
+import { isNullOrBlank } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -314,19 +314,19 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly']),
     ...mapState('app', ['fundingModelTypeList']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
-    ...mapGetters('navBar', ['previousPath']),
-    ...mapState('reportChanges', ['loadedChangeRequest', 'changeRequestId']),
+    ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
+    ...mapState('reportChanges', ['loadedChangeRequest']),
     filteredNavBarList() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         return this.navBarList.filter(el => !el.changeRequestId);
       }
     },
     filteredECEWEFacilityList() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         return this.$store.state.eceweApp.facilities?.filter(el => !el.changeRequestId);
@@ -372,10 +372,11 @@ export default {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities', 'loadECEWEModelFromChangeRequest']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
     ...mapMutations('application', ['setIsEceweComplete']),
+    ...mapMutations('reportChanges', ['setCRIsEceweComplete']),
     ...mapActions('reportChanges', ['getChangeRequest']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
     isReadOnly(question) {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         if (question == 'optInECEWE') {
           return (this.optinECEWEChangeRequestReadonly);
         }
@@ -392,7 +393,7 @@ export default {
       this.$router.push(this.previousPath);
     },
     async next() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         if (this.model.optInECEWE == 0) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
         } else {
@@ -444,7 +445,7 @@ export default {
       if (this.applicationId) {
         try {
           let response = await this.loadECEWE();
-          if (isChangeRequest(this)) {
+          if (this.isChangeRequest) {
             await this.getChangeRequest(this.$route.params.changeRecGuid);
             if (this.loadedChangeRequest && !isNullOrBlank(this.loadedChangeRequest.optInECEWE)) {
               await this.loadECEWEModelFromChangeRequest(this.loadedChangeRequest);
@@ -480,10 +481,10 @@ export default {
       try {
         this.updateQuestions();
         this.setEceweModel(this.model);
-        if (isChangeRequest(this) && isNullOrBlank(this.loadedChangeRequest?.optInECEWE)) {
+        if (this.isChangeRequest && isNullOrBlank(this.loadedChangeRequest?.optInECEWE)) {
           this.setIsStarted(false);
         }
-        if (isChangeRequest(this)) {
+        if (this.isChangeRequest) {
           await this.saveECEWE({
             isFormComplete: this.enableButtons,
             isChangeRequest: true,
@@ -496,7 +497,13 @@ export default {
             changeRequestId: null
           });
         }
-        this.setIsEceweComplete(this.enableButtons);
+        if (this.isChangeRequest) {
+          this.setCRIsEceweComplete({changeRequestId: this.changeRequestId, isComplete: this.enableButtons});
+        } else {
+          this.setIsEceweComplete(this.enableButtons);
+        }
+        this.forceNavBarRefresh();
+
         const optOutFacilities = this.model.optInECEWE === 0 && this.facilities.some(facility => facility.eceweApplicationId != null && facility.optInOrOut === 1);
 
         //jb below
