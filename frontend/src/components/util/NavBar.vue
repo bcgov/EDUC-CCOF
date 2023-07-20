@@ -619,7 +619,7 @@ export default {
         link: link,
         isAccessible: this.ccofConfirmationEnabled,
         icon: 'mdi-information',
-        isActive: 'Application Confirmation' === this.$route.name,
+        isActive: link.name === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++
       };
