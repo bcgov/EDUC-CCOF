@@ -14,7 +14,7 @@
       <v-container>
 
         <p class="text-h6 text-center">What changes do you want to make?</p>
-        <v-row justify="space-around">
+        <v-row class="d-flex justify-start">
 
 
           <SmallCard  class= "col-lg-6 " :disable="false" v-if="this.organizationProviderType == 'GROUP'">
