@@ -108,7 +108,8 @@ export default {
             if (!changeActionId) {
               const changeRequestPayload = {
                 applicationId: rootState.application.applicationId,
-                programYearId: rootState.application.programYearId
+                programYearId: rootState.application.programYearId,
+                changeType: 'NEW_FACILITY'
               };
               const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
               commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });

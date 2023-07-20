@@ -155,7 +155,7 @@ export default {
     },
 
     //TODO: add it to the store
-    async createChangeRequest({commit, rootState }) {
+    async createChangeRequest({commit, rootState }, changeType) {
 
       console.log('creating a change REQ');
 
@@ -164,6 +164,7 @@ export default {
         'applicationId': rootState.application.applicationId,
         'programYearId': rootState.application.programYearId,
         'providerType': rootState.organization.organizationProviderType == 'GROUP' ?  100000000 : 100000001,
+        'changeType' : changeType,
       };
       try {
         let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);

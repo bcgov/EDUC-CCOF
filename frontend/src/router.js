@@ -56,6 +56,7 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
+import MtfiInfo from '@/components/mtfi/MTFIInfo';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -639,6 +640,27 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      name: 'Summary and Declaration Report Changes',
+      component: SummaryDeclarationReportChanges,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_INFO),
+      name: 'Midterm Fee Increase Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
   ]
