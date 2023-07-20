@@ -54,7 +54,8 @@ export const PAGE_TITLES = Object.freeze({
   CCRFI_APPLICATION: 'CCRFI Application Form',
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
-  SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload'
+  SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
+  MTFI: 'Midterm Parent Fee Increase',
 });
 
 export const CHANGE_URL_PREFIX = '/report-change';
@@ -113,6 +114,8 @@ export const PATHS = {
   CHANGE_NOTIFICATION_FORM: `${CHANGE_URL_PREFIX}/notification-form`,
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
+
+  MTFI_INFO: '/mtfi-instructions'
 
 };
 

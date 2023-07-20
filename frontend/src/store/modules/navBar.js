@@ -30,7 +30,7 @@ function filterNavBar(state) {
   if (state.changeRequestId) {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
   } else if (state.programYearId) {
-    state.navBarList = state.userProfileList.map(el => el); //TODO: figure out how to filter for program year.
+    state.navBarList = state.userProfileList.filter(el => !el.changeRequestId); //TODO: This will take FACILITY.STATUS as well
   }
 }
 
@@ -164,19 +164,19 @@ export default {
       if (!facilityId) {
         return null;
       }
-      return state.navBarList.find(item => item.facilityId == facilityId);
+      return state.userProfileList.find(item => item.facilityId == facilityId);
     },
     getNavByFundingId: (state) => (fundingId) => {
       if (!fundingId) {
         return null;
       }
-      return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
+      return state.userProfileList.find(item => item.ccofBaseFundingId == fundingId);
     },
     getNavByCCFRIId: (state) => (ccfriId) => {
       if (!ccfriId) {
         return null;
       }
-      return state.navBarList.find(item => item.ccfriApplicationId == ccfriId);
+      return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
     },
 
   }
