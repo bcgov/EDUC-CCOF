@@ -11,11 +11,11 @@
             <ul style="list-style: none">
               <li v-for="item in facilityList" :key="item.facilityId" style="">
                 <span>{{ item.facilityName }}</span>
-                <v-btn variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
-                  <v-icon>mdi-close-circle</v-icon>
+                <v-btn v-if="!isLocked && facilityList.length > 1" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </li>
-            </ul>
+            </ul> 
           </v-row>
         </v-container>
       </v-card>
@@ -80,6 +80,7 @@ export default {
       dialog: false,
       deleteFacilityName: undefined,
       deleteFacilityId: undefined,
+      deletechangeRequestNewFacilityId: undefined,
       processing: false,
       deleteCcfriId: undefined,
       deleteEceweId: undefined,
@@ -128,9 +129,10 @@ export default {
         this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
       }
     },
-    confirmDeleteApplication(facilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
+    confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
+      this.deletechangeRequestNewFacilityId = changeRequestNewFacilityId,
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;
@@ -141,7 +143,7 @@ export default {
       console.log(this.deleteFacilityId);
       console.log(this.deleteCcfriId);
       console.log(this.applicationId);
-      await this.deleteFacility({ facilityId: this.deleteFacilityId , ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
+      await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;
     }

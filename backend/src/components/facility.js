@@ -317,7 +317,7 @@ async function updateFacility(req, res) {
 
 async function deleteFacility(req, res) {
   let { facilityId } = req.params;
-  let { ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
+  let { changeRequestNewFacilityId, ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
   log.info('deleting facility', facilityId);
 
   if (ccfriId){
@@ -349,6 +349,12 @@ async function deleteFacility(req, res) {
 
   await deleteOperationWithObjectId('accounts', facilityId);
   log.info('facility deleted successfully', facilityId);
+
+  if (changeRequestNewFacilityId) {
+    log.verbose('deleting change request facility', changeRequestNewFacilityId);
+    await deleteOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId);
+  }
+
   return res.status(HttpStatus.OK).end();
 }
 

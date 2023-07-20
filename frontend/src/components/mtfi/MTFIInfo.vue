@@ -31,8 +31,6 @@
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="false"
          :isNextDisabled="true" :isProcessing="false"
         @previous="previous()" @next="false"  @save="true"></NavButton>
-
-    test
   </v-container>
 </template>
 
@@ -70,3 +68,6 @@ export default {
     },
   },
 };
+
+</script>
+
