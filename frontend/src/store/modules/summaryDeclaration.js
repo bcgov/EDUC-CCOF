@@ -86,7 +86,8 @@ export default {
       checkSession();
       try {
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
-
+        console.log('loadChangeRequestDeclaration  =  ');
+        console.log(payload);
         //clear the old decleration data out so provider can sign again for Dec B
         if (payload.unlockDeclaration){
           payload.agreeConsentCertify = null;

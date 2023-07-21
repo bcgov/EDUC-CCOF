@@ -1,23 +1,11 @@
 <template>
   <v-form ref="form" v-model="isValidForm">
-    <v-container>
-      <v-row justify="space-around">
-        <v-card class="cc-top-level-card" width="1200">
-          <!-- <v-card-title class="justify-center">
-            <span class="text-h5">Child Care Operating Funding Program - {{this.formattedProgramYear}} Program Confirmation Form</span>
-          </v-card-title> -->
-          <h2 class="text-center">
-            {{ changeType == 'NOTIFICATION_FORM' ? 'Change Notification Form Upload' : 'Supporting Documents Upload'}}
-          </h2>
-          <v-row justify="center" class="text-h5 py-4" style="color:#003466;">
-            {{this.userInfo.organizationName}}
-          </v-row>
-          <v-row class="px-6 text-body-1">
-            Provide any additional documents you would like the program to review as part of your change notifcation form.
-          </v-row>
-          <v-row class="pa-6 pt-2 text-body-2">
-            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
-          </v-row>
+    <v-container class="pa-0">
+      <v-row no-gutters>
+        <v-col class="col-12 mb-6">
+          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
+        </v-col>
+        <v-col class="col-12">
           <v-data-table v-if="!isLoading"
             :headers="headers"
             :items="getFilteredDocs"
@@ -42,25 +30,6 @@
                 </v-toolbar>
               </v-col>
             </template>
-
-            <!-- <template v-slot:item.facilityName="{ item }">
-              <v-col flex>
-              <div v-if="item?.annotationid">
-                <span> {{ item?.ccof_facility_name }} </span>
-              </div>
-              <v-select v-else
-                        v-model="item.selectFacility"
-                        :items="facilityNames"
-                        item-text="facilityName"
-                        placeholder="Select a facility"
-                        return-object
-                        class="drop-down-select"
-                        required
-                        :rules="selectRules"
-              ></v-select>
-              </v-col>
-            </template> -->
-
 
             <template v-slot:item.document="{ item }">
               <div v-if="item?.annotationid">
@@ -108,19 +77,21 @@
               </v-icon>
             </template>
 
+            <template slot="no-data">
+              <div class="text-body-1">{{ this.noDataDefaultText }}</div>
+            </template>
+
           </v-data-table>
           <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
             <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
             <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
           </v-card>
           <v-row v-if="this.changeType == 'NOTIFICATION_FORM' && !this.isFileUploaded"
-            class="px-6 pt-4 text-body-2 red--text">
+            class="px-3 pt-4 text-body-1 red--text">
             Please upload the Change Notification Form.
           </v-row>
-        </v-card>
+        </v-col>
       </v-row>
-
-
     </v-container>
   </v-form>
 </template>
@@ -141,6 +112,10 @@ export default {
       type: String,
       required: true
     },
+    noDataDefaultText: {
+      type: String,
+      required: false
+    }
   },
   data() {
     return {

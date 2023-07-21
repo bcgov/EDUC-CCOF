@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center text-center">
-      <span class="text-h5">Change Notification Form</span>
+    <div class="row py-8 justify-center text-center">
+      <span class="text-h4">Change Notification Form</span>
     </div>
     <br>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
@@ -11,15 +11,15 @@
             <v-row>
               <v-col class="col-lg-12">
                 <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf" target="_blank">
-                  <v-btn dark class="blueButton mb-10 ml-2" x-large>
+                  <v-btn dark class="blueButton mb-10" x-large>
                     <strong>Download a Change Notification Form</strong>
                   </v-btn>
                 </a>
               </v-col>
             </v-row>
-            <v-row>
-              <v-col class="col-lg-12 ">
-                <p class="px-2 text--primary">
+            <v-row class="mb-12">
+              <v-col class="col-lg-12">
+                <p class="text-h5 mb-1">
                   <strong>Upload the completed Change Notification Form below.</strong>
                 </p>
                 <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
@@ -27,13 +27,14 @@
                   v-show="!isLoading"
                   ref="childRef"
                   :changeType="changeTypeForm"
+                  noDataDefaultText="Upload Change Notification Form (Required)"
                   @fileChange="updateChangeNotificationFormCompleteStatus($event)"
                 ></ChangeFileUpload>
               </v-col>
             </v-row>
-            <v-row>
-              <v-col class="col-lg-12 ">
-                <p class="px-2 text--primary">
+            <v-row class="mb-12">
+              <v-col class="col-lg-12">
+                <p class="text-h5 mb-1">
                   <strong>Upload supporting documents for your requested changes.</strong>
                 </p>
                 <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image"></v-skeleton-loader>
@@ -41,12 +42,13 @@
                   v-show="!isLoading"
                   ref="childRef2"
                   :changeType="changeTypeSupportingDoc"
+                  noDataDefaultText="Upload supporting documents"
                   @fileChange="updateSupportingDocumentCompleteStatus(($event))"
                 ></ChangeFileUpload>
               </v-col>
             </v-row>
           </v-col>
-          <v-col class="col-lg-4 boarder pl-10" >
+          <v-col class="col-lg-4 col-sm-12 boarder pl-10" >
             <p class="text--primary font-weight-bold mb-10">
               Supporting Documents
             </p>
@@ -67,15 +69,13 @@
               </ul>
             </p>
             <p class="mt-10">
-              For more information 
-              <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding" class="text-decoration-underline">visit the Child Care Operating Funding website</a>
+              For more information
+              <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding" class="text-decoration-underline"> visit the Child Care Operating Funding website</a>
             </p>
             <p class="mt-10">
-              Greater Victoria area: 
-              <a href="tel:+2503566501" class="text-decoration-underline">250 356-6501</a>
+              Greater Victoria area: 250 356-6501
               <br>
-              Outside Greater Victoria (toll free): 
-              <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622</a>
+              Outside Greater Victoria (toll free): 1 888 338-6622 (Option 2)
             </p>
           </v-col>
         </v-row>
@@ -115,6 +115,7 @@ export default {
   async mounted(){
     if (this.$route.params?.urlGuid) {
       this.isLoading = true;
+      await this.getChangeRequest(this.$route.params?.changeRecGuid);
       await this.loadChangeRequestDocs(this.$route.params.urlGuid);
       this.updateChangeNotificationFormCompleteStatus();
     }
@@ -140,7 +141,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments']),
+    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setUploadedDocument']),
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
