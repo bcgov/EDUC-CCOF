@@ -68,71 +68,79 @@
 
         </v-row>
 
-        <v-skeleton-loader v-if="this.processing" :loading="this.processing"
-                                    type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
-
-        <v-row v-else>
-          <v-col class= "col-lg-12 mt-3">
+        <v-row no-gutters id="change-request-history">
+          <v-col class= "col-lg-12 mt-10">
             <h2>Change History</h2>
-            <v-row>
-              <v-col class= "col-lg-2">
-                <h4>Change Requests</h4>
-              </v-col>
-              <v-col class= "col-lg-1">
-                <h4>Fiscal Year</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Facility(s) name</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Status</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Submission Date</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-
-              </v-col>
-
-              <v-col class= "col-lg-1">
-
-              </v-col>
-            </v-row>
-            <!--TODO: ADD skeleton loader and isLoaded var-->
-            <!--TODO: Change action data taken from first index! needs improvement -->
-            <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
-              <v-col class= "col-lg-2">
-                <h4></h4>
-                {{getChangeTypeString(changeRequest.changeActions[0].changeType)}}
-              </v-col>
-              <v-col class= "col-lg-1">
-                <h4></h4>
-                2023/24
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4></h4>
-                {{createFacilityNameString(changeRequest.changeActions)}}
-              </v-col>
-              <v-col class= "col-lg-2">
-                {{getStatusString(changeRequest.externalStatus)}}
-              </v-col>
-              <v-col class= "col-lg-2">
-                {{ changeRequest.createdOnDate }}
-              </v-col>
-                <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId, index)">Continue</v-btn>
-                </v-col>
-                <v-col class= "col-lg-1">
-                  <v-btn class= "" @click="deleteRequest(changeRequest.changeActions[0].changeRequestId)">Delete</v-btn>
-                </v-col>
-            </v-row>
           </v-col>
         </v-row>
-
-
+        <v-row v-if="processing">
+          <v-col >
+            <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
+          </v-col>
+        </v-row>
+        <v-data-table
+          :headers="headers"
+          :items="allChangeRequests"
+          :height = "maxChangeHistoryTableHeight"
+          mobile-breakpoint="960"
+          fixed-header
+          :item-class="getChangeRequestStyle"
+          class="elevation-4 my-4"
+          disable-pagination hide-default-footer
+          :sort-by="['priority', 'submissionDate']"
+          :sort-desc="[true, true]"
+          v-else
+        >
+          <template v-slot:item.actions="{ item }">
+            <v-btn
+              v-if="isContinueButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Continue
+            </v-btn>
+            <v-btn
+              v-if="isViewButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              View
+            </v-btn>
+            <v-btn
+              v-if="isUpdateButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Update
+            </v-btn>
+            <v-btn
+              v-if="isDiscardButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="deleteRequest(item.changeRequestId)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Discard
+            </v-btn>
+            <v-btn
+              v-if="isWithdrawButtonDisplayed(item.externalStatus, item.internalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="false"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Withdraw
+            </v-btn>
+          </template>
+        </v-data-table>
       </v-container>
     </v-form>
-
 
     <NavButton :isNextDisplayed="false" :isSaveDisplayed="false"
          :isNextDisabled="true" :isProcessing="processing"
@@ -160,6 +168,21 @@ export default {
       rules: [
         (v) => !!v || 'Required.',
       ],
+      headers: [
+        {
+          text: 'Change Requests',
+          align: 'start',
+          sortable: false,
+          value: 'changeTypeUpdated',
+          class: 'tableHeader'
+        },
+        { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
+        { text: 'Facility(s) name', value: 'facilityNames', class: 'tableHeader' },
+        { text: 'Status', value: 'externalStatus', class: 'tableHeader' },
+        { text: 'Submission Date', value: 'submissionDate', class: 'tableHeader' },
+        { text: ' ', value: 'actions', align: 'start', sortable: false },
+      ],
+      changeHistoryButtonWidth: '100px',
     };
   },
   computed: {
@@ -172,16 +195,35 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
+    allChangeRequests() {
+      let allChangeRequests = [];
+      if (this.changeRequestStore?.length > 0) {
+        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => ({
+          index: index,
+          changeRequestId: changeRequest.changeActions[0]?.changeRequestId,
+          changeActionId: changeRequest.changeActions[0]?.changeActionId,
+          changeType: changeRequest.changeActions[0]?.changeType,
+          changeTypeUpdated: this.getChangeTypeString(changeRequest.changeActions[0]?.changeType),
+          fiscalYear: this.formattedProgramYear,
+          facilityNames: this.createFacilityNameString(changeRequest.changeActions),
+          internalStatus: this.getInternalStatusString(changeRequest.status),
+          externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
+          submissionDate: changeRequest?.createdOnDate,
+          priority: changeRequest?.priority
+        }));
+      }
+      return allChangeRequests;
+    },
+    // Table should be vertically scrollable once rows > 8
+    maxChangeHistoryTableHeight() {
+      return this.allChangeRequests?.length > 8 ? 48 * 9 : undefined;
+    },
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
-    },
-
-    isPageComplete() {
-
     },
     getChangeTypeString(changeType){
       console.log('change type', changeType);
@@ -217,9 +259,9 @@ export default {
           }
         });
       }
-      return str;
+      return str.slice(0, -2);
     },
-    getStatusString(status){
+    getExternalStatusString(status){
       switch (status){
       case 1:
         return "Incomplete";
@@ -236,7 +278,29 @@ export default {
       default:
         return "Unknown"; //should never happen!
       }
-
+    },
+    getInternalStatusString(status){
+      switch (status){
+      case 1:
+        return "Incomplete";
+      case 3:
+        return "Submitted";
+      case 4:
+        return "Processing";
+      case 5:
+        return "WITH_PROVIDER";
+      case 6:
+        return "Ineligible";
+      case 7:
+        return "Approved";
+      case 8:
+        return "Cancelled";
+      default:
+        return "Unknown"; //should never happen!
+      }
+    },
+    getChangeRequestStyle(changeRequest){
+      return changeRequest.externalStatus == 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -277,7 +341,7 @@ export default {
       //create the change action first, then push it
       if (!changeActionId){
         let newReq = await this.createNewChangeRequest('PDF_CHANGE');
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq.changeRequestId, newReq.changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId));
       }
       else{
         this.setChangeRequestId(changeRequestId);
@@ -308,7 +372,21 @@ export default {
 
       this.processing = false;
     },
-
+    isViewButtonDisplayed(externalStatus) {
+      return ['Submitted','Approved','Cancelled'].includes(externalStatus);
+    },
+    isContinueButtonDisplayed(externalStatus) {
+      return ['Incomplete'].includes(externalStatus);
+    },
+    isDiscardButtonDisplayed(externalStatus) {
+      return ['Incomplete'].includes(externalStatus);
+    },
+    isWithdrawButtonDisplayed(externalStatus, internalStatus) {
+      return (externalStatus == 'Submitted' && (['Submitted','Incomplete','WITH_PROVIDER'].includes(internalStatus)));
+    },
+    isUpdateButtonDisplayed(externalStatus) {
+      return ['Action Required'].includes(externalStatus);
+    },
   },
   async mounted() {
     this.processing = true;
@@ -330,7 +408,15 @@ export default {
 .blueButton {
   background-color: #003366 !important;
 }
-.blueText {
+.blueOutlinedButton {
+  color: #003366 !important;
+}
+::v-deep .tableHeader {
   color: rgb(0, 52, 102) !important;
+  font-weight: bold !important;
+  font-size: 16px !important;
+}
+::v-deep .redText {
+  color: red !important;
 }
 </style>

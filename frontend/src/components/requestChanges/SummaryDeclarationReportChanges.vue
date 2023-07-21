@@ -141,46 +141,13 @@
           </v-row>
           <v-row v-if="!isProcessing">
             <v-col class="pb-0">
-              <div v-show="!this.organizationAccountNumber">
-                <p>I hereby confirm that the information I have provided in this application is complete and accurate.
-                  I certify that I have read and understand the following requirements:</p>
-                <ul style="padding-top:10px;">
-                  <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
-                  <li>Each facility must be in compliance with the Community Care and Assisted Living Act and Child
-                    Care Licensing
-                    Regulation;
-                  </li>
-                  <li>Each facility must be willing to provide services to families who receive the Affordable Child
-                    Care Benefit;
-                  </li>
-                  <li>The organization must be in good standing with BC Corporate Registry (if a nonprofit society or
-                    a registered company);
-                    and
-                  </li>
-                  <li>The applicant must be in good standing with the Ministry of Education and Child Care (that is,
-                    the Applicant must either
-                    have no outstanding balances owing to the Ministry OR the Applicant must have established payment
-                    plans for
-                    outstanding balances and these must be in good standing).
-                  </li>
-                </ul>
-                <p style="padding-top:10px;">Intentionally supplying information that is false or misleading with
-                  respect to a material fact in order to obtain a child care grant may
-                  lead to action being taken under Section 9 of the Child Care BC Act. If you are convicted of an
-                  offence under section 9, a court may
-                  order you imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the
-                  government all or part of any
-                  amount received under the child care grant.
-                </p>
-              </div>
-                <!-- show for new org after ministry unlocks -->
-              <div v-show="this.model.declarationAStatus == 1 && this.loadedChangeRequest?.unlockDeclaration && this.organizationAccountNumber">
+              <div v-show="this.model.declarationAStatus == 1">
                 <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.</p>
                 <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                   ministries to validate the accuracy of any information that I have provided.</p>
               </div>
-              <div v-show="this.model.declarationBStatus == 1 && this.loadedChangeRequest?.unlockDeclaration && this.organizationAccountNumber">
+              <div v-show="this.model.declarationBStatus == 1">
                 <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.</p>
                 <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -327,45 +294,29 @@ export default {
   async mounted() {
     this.isProcessing = true;
     await this.loadData();
+    if (!this.loadedChangeRequest?.unlockDeclaration) {
+      this.model = this.$store.state.summaryDeclaration.model ?? model;
+    }
 
     // Determine:
     //   - which user declaration text version (status a or b) will display
     //   - which declaration status (a or b) will be saved on submit.
     // saved as part of submission.
-    if (this.loadedChangeRequest?.unlockDeclaration && this.organizationAccountNumber) {
-      if (this.loadedChangeRequest?.enabledDeclarationB) {
-        this.model.declarationBStatus = 1;
-        this.model.declarationAStatus = undefined;
-      } else {
-        this.model.declarationAStatus = 1;
-        this.model.declarationBStatus = undefined;
-      }
+    if (this.loadedChangeRequest?.enabledDeclarationB) {
+      this.model.declarationBStatus = 1;
+      this.model.declarationAStatus = undefined;
+    } else {
+      this.model.declarationAStatus = 1;
+      this.model.declarationBStatus = undefined;
     }
     this.isProcessing = false;
-  },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          setTimeout(() => {
-            const keys = Object.keys(this.payload);
-            console.log('calling after 1 second');
-            if (keys.length > 1) {
-              console.log('sending updates to server');
-              this.updateApplicationStatus(this.payload);
-              this.forceNavBarRefresh();
-            }
-          }, 1000);
-        }
-      }
-    }
   },
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId', 'navBarList']),
     ...mapState('app', ['programYearList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
+    ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest']),
@@ -422,11 +373,10 @@ export default {
           description: document.notetext
         }));
         await this.loadChangeRequestDeclaration(this.$route.params.changeRecGuid);
+        this.isLoading = false;
       } catch (error) {
         console.log('Error loading the Summary Declaration.', error);
         this.setFailureAlert('Error loading the Summary Declaration.');
-      } finally {
-        this.isLoading = false;
       }
     },
     isPageComplete() {
