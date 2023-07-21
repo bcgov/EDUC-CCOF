@@ -382,10 +382,7 @@ export default {
       return ['Incomplete'].includes(externalStatus);
     },
     isWithdrawButtonDisplayed(externalStatus, internalStatus) {
-      if (externalStatus == 'Submitted' && (['Submitted','Incomplete','WITH_PROVIDER'].includes(internalStatus))) {
-        return true;
-      }
-      return false;
+      return (externalStatus == 'Submitted' && (['Submitted','Incomplete','WITH_PROVIDER'].includes(internalStatus)));
     },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
