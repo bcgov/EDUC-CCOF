@@ -73,9 +73,9 @@
               <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding" class="text-decoration-underline"> visit the Child Care Operating Funding website</a>
             </p>
             <p class="mt-10">
-              Greater Victoria area: 250 356-6501
+              Toll Free: <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>
               <br>
-              Outside Greater Victoria (toll free): 1 888 338-6622 (Option 2)
+              Local Phone: <a href="tel:+2503566501" class="text-decoration-underline">250 356-6501</a>
             </p>
           </v-col>
         </v-row>

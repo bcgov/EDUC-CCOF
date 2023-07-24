@@ -193,6 +193,21 @@ export default {
       }
     },
 
+    // FUTURE RELEASE
+    // async withdrawChangeRequest({state, commit}, changeRequestId) {
+    //   console.log('WITHDRAW Change request: ', changeRequestId);
+    //   checkSession();
+    //   if (changeRequestId){
+    //     let payload = {
+    //       externalStatus: 6,
+    //     }
+    //     let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+    //     state.model.externalStatus = 'CANCELLED';
+    //     commit('model', state.model);
+    //     return response;
+    //   }
+    // },
+
     //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.
     //change action id will return arr of docs
     async loadChangeRequestDocs({commit}, changeActionId) {

@@ -29,7 +29,9 @@ function getNavBarAtPositionIndex(items, index) {
 function filterNavBar(state) {
   if (state.changeRequestId) {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
-  } else if (state.programYearId) {
+  // VIET - temporary removed to fix issue in the Landing page (empty navBarList) 
+  // } else if (state.programYearId) {
+  } else {
     state.navBarList = state.userProfileList.filter(el => !el.changeRequestId); //TODO: This will take FACILITY.STATUS as well
   }
 }
