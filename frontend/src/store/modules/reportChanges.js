@@ -193,6 +193,28 @@ export default {
       }
     },
 
+    async cancelChangeRequest({state, commit}, changeRequestId) {
+      console.log('CANCEL Change request: ', changeRequestId);
+      checkSession();
+      if (changeRequestId){
+        try {
+          let payload = {
+            externalStatus: 6,
+          }
+          let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+          let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+          if (index) {
+            state.changeRequestStore[index].externalStatus = 6;
+            commit('setChangeRequestStore', state.changeRequestStore);
+          }
+          return response;
+        } catch (e) {
+          console.log(`Failed to cancel change request with error - ${e}`);
+          throw e;
+        }
+      }
+    },
+
     //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.
     //change action id will return arr of docs
     async loadChangeRequestDocs({commit}, changeActionId) {
