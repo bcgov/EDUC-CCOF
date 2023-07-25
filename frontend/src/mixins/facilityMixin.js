@@ -11,14 +11,21 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
-    ...mapState('reportChanges', ['changeRequestId']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
-    ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('navBar', ['previousPath','isChangeRequest']),
     isLocked() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
+        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(currentCR.unlockChangeRequest){
+          return false;
+        }
+        else if (currentCR.externalStatus==='SUBMITTED'||currentCR.externalStatus==='APPROVED'){
+          return true;
+        }
         return false;
       }
       if (this.unlockBaseFunding) {

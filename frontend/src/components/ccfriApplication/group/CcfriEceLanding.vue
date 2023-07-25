@@ -129,10 +129,10 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
     ...mapGetters('navBar', ['previousPath']),
     isReadOnly(){
-      if (this.unlockedFacilities || isChangeRequest(this)) {
+      if (this.unlockedFacilities) {
         return false;
       }
       else

@@ -14,8 +14,20 @@ export default {
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('app', ['familyLicenseCategory']),
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapState('navBar',['changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('navBar', ['isChangeRequest']),
     isLocked() {
+      if (this.isChangeRequest) {
+        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(currentCR.unlockChangeRequest){
+          return false;
+        }
+        else if (currentCR.externalStatus==='SUBMITTED'||currentCR.externalStatus==='APPROVED'){
+          return true;
+        }
+        return false;
+      }
       if (this.unlockBaseFunding) {
         return false;
       }
