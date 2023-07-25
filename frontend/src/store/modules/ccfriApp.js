@@ -181,7 +181,7 @@ export default {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
       console.log('what is loaded in loadFac', CCFRIFacilityModel);
-      let q = await dispatch('getPreviousCCFRI' ,ccfriId);
+      await dispatch('getPreviousCCFRI' ,ccfriId);
 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
@@ -195,7 +195,6 @@ export default {
           console.log('loading the ccfri');
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
           console.log('the resp', response);
-          //response.data.previousCcfriId = await dispatch('getPreviousCCFRI' ,ccfriId);
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});
 
           if(response.data.previousCcfriId){
