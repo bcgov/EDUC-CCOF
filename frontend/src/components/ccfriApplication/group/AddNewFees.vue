@@ -468,7 +468,7 @@ export default {
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility.unlockCcfri || this.isChangeRequest){
+      if (this.currentFacility.unlockCcfri){
         return false;
       }
       else if (this.applicationStatus === 'SUBMITTED'){

@@ -78,6 +78,7 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['isRenewal']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
@@ -89,7 +90,20 @@ export default {
       }
     },
     isLocked() {
-      if (this.unlockLicenseUpload || this.isChangeRequest) {
+      if(this.isChangeRequest){
+        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(!currentCR){
+          return false;
+        }
+        else if(currentCR.unlockLicenseUpload){
+          return false;
+        }
+        else if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
+      else if (this.unlockLicenseUpload) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;

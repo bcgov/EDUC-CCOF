@@ -317,7 +317,7 @@ export default {
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    ...mapState('reportChanges', ['loadedChangeRequest']),
+    ...mapState('reportChanges', ['loadedChangeRequest','userProfileChangeRequests']),
     filteredNavBarList() {
       if (this.isChangeRequest) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -377,9 +377,23 @@ export default {
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     isReadOnly(question) {
       if (this.isChangeRequest) {
-        if (question == 'optInECEWE') {
+        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(!currentCR){
+          return false;
+        }
+        else if(currentCR.unlockEcewe){
+          if (question == 'optInECEWE') {
+            return (this.optinECEWEChangeRequestReadonly);
+          }
+          return false;
+        }
+        else if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
+        else if (question == 'optInECEWE') {
           return (this.optinECEWEChangeRequestReadonly);
         }
+        
         return false;
       }
       if (this.unlockEcewe) {

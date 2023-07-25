@@ -73,6 +73,7 @@
 import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { isChangeRequest } from '@/utils/common';
+import { off } from 'process';
 
 export default {
   data() {
@@ -88,12 +89,23 @@ export default {
     };
   },
   computed: {
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
     isLocked() {
       if (isChangeRequest(this)) {
+        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(!currentCR){
+          return false;
+        }
+        else if(currentCR.unlockChangeRequest){
+          return false;
+        }
+        else if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockBaseFunding) {
