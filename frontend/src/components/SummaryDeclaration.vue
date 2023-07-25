@@ -253,6 +253,7 @@
             <v-row v-if="!isProcessing">
               <v-col class="pt-0">
                 <v-text-field
+                  id="signatureTextField"
                   v-if="!isProcessing"
                   outlined
                   v-model="model.orgContactName"
@@ -473,7 +474,9 @@ export default {
       this.updateNavBarStatus(formObj, isComplete);
     },
     expandAllPanels() {
-      for (let i = 1; i < 20; i ++) { //TODO: 20 is an arbitrary number, look at how many facilities to get a proper number
+      const numberOfFacilities = this.summaryModel.facilities.length;
+      const numberOfPanels = numberOfFacilities * 5;
+      for (let i = 1; i < numberOfPanels; i ++) { //TODO: numberOfPanels is an arbitrary number, look at how many facilities to get a proper number
         this.expand.push(i);
       }
     },

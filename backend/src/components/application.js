@@ -27,7 +27,7 @@ const {
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
-
+const puppeteer = require('puppeteer');
 
 async function renewCCOFApplication(req, res) {
   log.info('renew CCOF application called');
@@ -345,11 +345,97 @@ async function submitApplication(req, res) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
       }
     }
+    printPdf(req);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
+
+function printPdf(req, numOfRetries = 0) {
+  const url = `${req.headers.referer}/printable`;
+
+  puppeteer.launch({headless: false}).then(async browser => {
+    browser.newPage().then(page => {
+      page.setRequestInterception(true);
+
+      page.on('request', async (request) => {
+        const headers = request.headers();
+        headers['cookie'] = req.headers.cookie;
+        await request.continue({ headers });
+      });
+
+      log.info('printPdf :: starting page load');
+      page.goto(url, {waitUntil: 'networkidle2'}).then(() => {
+        page.waitForSelector('#signatureTextField', {visible: true, timeout: 360000}).then(() => {
+          log.info('printPdf :: page loaded starting pdf creation');
+          page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, timeout: 360000}).then(() => {
+            log.info('printPdf :: pdf created');
+            browser.close();
+          });
+        });
+      });
+    });
+  }).catch(e => {
+    log.error(e);
+
+    if (numOfRetries >= 3) {
+      log.info('printPdf :: maximum number of retries reached');
+      log.error(`printPdf :: unable to save pdf for application id ${req.params.applicationId}`);
+
+    } else {
+      let retryCount = numOfRetries + 1;
+      log.info('printPdf :: failed retrying');
+      log.info(`printPdf :: retry count ${retryCount}`);
+      printPdf(req, retryCount);
+    }
+  });
+}
+
+// TODO Investigate this is async solution seems to block
+// async function printPdf(req, numOfRetries = 0)  {
+//   try {
+//     log.verbose('printPdf :: launching puppeteer');
+//     const browser = await puppeteer.launch({
+//       headless: true,
+//       devtools: false
+//     });
+//     await browser.createIncognitoBrowserContext();
+//     const page = await browser.newPage();
+//
+//     await page.setRequestInterception(true);
+//
+//     page.on('request', (request) => {
+//       const headers = request.headers();
+//       headers['cookie'] = req.headers.cookie;
+//       request.continue({ headers });
+//     });
+//
+//     const url = `${req.headers.referer}/printable`;
+//     log.verbose(`printPdf :: url ${url}`);
+//
+//     await page.goto(url, {waitUntil: 'networkidle2'});
+//     await page.waitForSelector('#signatureTextField', {visible: true, timeout: 360000}); //needed to ensure page has loaded before printing
+//
+//     const pdf = await page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, timeout: 360000});
+//     await browser.close();
+//     log.verbose('printPdf :: closing puppeteer');
+//     return pdf;
+//   } catch (e) {
+//     log.error(e);
+//
+//     if (numOfRetries >= 3) {
+//       log.info('printPdf :: maximum number of retries reached');
+//       log.error(`printPdf :: unable to save pdf for application id ${req.params.applicationId}`);
+//
+//     } else {
+//       let retryCount = numOfRetries + 1;
+//       log.info('printPdf :: failed retrying');
+//       log.info(`printPdf :: retry count ${retryCount}`);
+//       printPdf(req, retryCount);
+//     }
+//   }
+// }
 
 function getFacilityInMap(map, facilityId) {
   let facility = map.get(facilityId);
