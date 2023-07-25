@@ -17,8 +17,6 @@ const ChangeRequestMappings = [
   { back: 'ccof_change_action_change_request', front: 'changeActions'},
   { back: 'ccof_organization_contact_name', front: 'orgContactName'},
   { back: 'ccof_consent', front: 'agreeConsentCertify'},
-  { back: 'ccof_unlock_document', front: 'unlockChangeRequestDocument'},
-  { back: 'ccof_unlock_change_request', front: 'unlockChangeRequest'},
   { back: 'ccof_ecewe_optin', front: 'optInECEWE' },
   { back: 'ccof_ecewe_employeesunion', front: 'belongsToUnion' },
   { back: 'ccof_ecewe_selecttheapplicablesector', front: 'applicableSector' },
