@@ -139,13 +139,23 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['canSubmit', 'navBarList']),
+    ...mapState('navBar', ['canSubmit', 'navBarList','changeRequestId']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
-    ...mapState('reportChanges', ['changeRequestId']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
     isLocked() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
+        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(!currentCR){
+          return false;
+        }
+        else if(currentCR.unlockSupportingDocuments){
+          return false;
+        }
+        else if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockSupportingDocuments) {

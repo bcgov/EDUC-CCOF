@@ -188,10 +188,13 @@ export default {
       //will only return true if set by a ministry user in dynamics
       if (isChangeRequest(this)) {
         let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(currentCR.unlockEcewe){
+        if(!currentCR){
           return false;
         }
-        else if(currentCR.externalStatus==='SUBMITTED'||currentCR.externalStatus==='APPROVED'){
+        else if(currentCR.unlockEcewe){
+          return false;
+        }
+        else if(currentCR.externalStatus!=='INCOMPLETE'){
           return true;
         }
         return false;

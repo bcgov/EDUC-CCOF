@@ -378,17 +378,20 @@ export default {
     isReadOnly(question) {
       if (this.isChangeRequest) {
         let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(currentCR.unlockEcewe){
+        if(!currentCR){
+          return false;
+        }
+        else if(currentCR.unlockEcewe){
           if (question == 'optInECEWE') {
             return (this.optinECEWEChangeRequestReadonly);
           }
           return false;
         }
+        else if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
         else if (question == 'optInECEWE') {
           return (this.optinECEWEChangeRequestReadonly);
-        }
-        else if(currentCR.externalStatus==='SUBMITTED'||currentCR.externalStatus==='APPROVED'){
-          return true;
         }
         
         return false;
