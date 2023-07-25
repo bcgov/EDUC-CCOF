@@ -120,24 +120,14 @@
               Update
             </v-btn>
             <v-btn
-              v-if="isDiscardButtonDisplayed(item.externalStatus)"
+              v-if="isCancelButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="confirmDiscardChangeRequest(item.changeRequestId)"
+              @click="confirmCancelChangeRequest(item.changeRequestId, item.changeTypeString, item.externalStatus, item.submissionDateString)"
               outlined
               :width="changeHistoryButtonWidth"
             >
-              Discard
+              Cancel
             </v-btn>
-            <!-- FUTURE RELEASE -->
-            <!-- <v-btn
-              v-if="isWithdrawButtonDisplayed(item.externalStatus, item.internalStatus)"
-              class="blueOutlinedButton mr-3 my-2"
-              @click="false"
-              outlined
-              :width="changeHistoryButtonWidth"
-            >
-              Withdraw
-            </v-btn> -->
           </template>
         </v-data-table>
         <v-dialog v-model="dialog" persistent max-width="525px">
@@ -145,7 +135,7 @@
             <v-container class="pt-0">
               <v-row>
                 <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
-                  <v-card-title class="white--text">Discard Change Request</v-card-title>
+                  <v-card-title class="white--text font-weight-bold">Cancel a change request</v-card-title>
                 </v-col>
                 <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
                 </v-col>
@@ -155,13 +145,15 @@
               </v-row>
               <v-row>
                 <v-col cols="12" style="text-align: left;">
-                  <p class="pt-4">Are you sure you want to discard this change request?</p>
+                  <p class="pt-8">Are you sure you want to cancel this change request?</p>
+                  <p class="pt-2">[{{cancelChangeRequestType}}]  [{{cancelChangeRequestStatus}}]  [{{cancelChangeRequestSubmissionDate}}]</p>
+                  <p class="pt-2 pb-8">You will not be able to resume a cancelled request. They will be viewable in your change history.</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" style="text-align: center;">
                   <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
-                  <v-btn dark color="primary" :loading="processing" @click="deleteRequest()">Continue</v-btn>
+                  <v-btn dark color="primary" :loading="processing" @click="cancel()">Continue</v-btn>
                 </v-col>
               </v-row>
             </v-container>
@@ -213,6 +205,10 @@ export default {
       ],
       changeHistoryButtonWidth: '100px',
       dialog: false,
+      cancelChangeRequestId: undefined,
+      cancelChangeRequestType: undefined,
+      cancelChangeRequestStatus: undefined,
+      cancelChangeRequestSubmissionDate: undefined,
     };
   },
   computed: {
@@ -241,8 +237,8 @@ export default {
           facilityNames: this.createFacilityNameString(changeRequest.changeActions),
           internalStatus: this.getInternalStatusString(changeRequest.status),
           externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
-          submissionDate: changeRequest?.latestSubmissionDate,
-          submissionDateString: this.getSubmissionDateString(changeRequest?.latestSubmissionDate),
+          submissionDate: changeRequest?.firstSubmissionDate,
+          submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
           priority: changeRequest?.priority
         }));
       }
@@ -257,7 +253,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -314,7 +310,7 @@ export default {
     getExternalStatusString(status){
       switch (status){
       case 1:
-        return "Incomplete";
+        return "In progress";
       case 2:
         return "Submitted";
       case 3:
@@ -332,7 +328,7 @@ export default {
     getInternalStatusString(status){
       switch (status){
       case 1:
-        return "Incomplete";
+        return "In progress";
       case 3:
         return "Submitted";
       case 4:
@@ -431,17 +427,26 @@ export default {
       }
 
     },
-    confirmDiscardChangeRequest(requestId) {
-      this.discardChangeRequestId = requestId;
+
+    confirmCancelChangeRequest(requestId, requestType, requestStatus, submissionDate) {
+      this.cancelChangeRequestId = requestId;
+      this.cancelChangeRequestType = requestType;
+      this.cancelChangeRequestStatus = requestStatus;
+      this.cancelChangeRequestSubmissionDate = submissionDate;
       this.dialog = true;
     },
-    async deleteRequest(requestId){
+
+    async cancel(){
       this.processing = true;
-      try{
-        await this.deleteChangeRequest(requestId);
+      try {
+        await this.cancelChangeRequest(this.cancelChangeRequestId);
+        this.cancelChangeRequestId = undefined;
+        this.setSuccessAlert('Success! Your change request have been canceled.');
       }
       catch(error){
-        this.setFailureAlert('An error occurred while deleting a change request Please try again later.');
+        console.log('CANCEL ERROR ----------> ');
+        console.log(error);
+        this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');
       }
 
       this.processing = false;
@@ -451,15 +456,11 @@ export default {
       return ['Submitted','Approved','Canceled'].includes(externalStatus);
     },
     isContinueButtonDisplayed(externalStatus) {
-      return ['Incomplete'].includes(externalStatus);
+      return ['In progress'].includes(externalStatus);
     },
-    isDiscardButtonDisplayed(externalStatus) {
-      return ['Incomplete'].includes(externalStatus);
+    isCancelButtonDisplayed(externalStatus) {
+      return !(['Canceled'].includes(externalStatus));
     },
-    // FUTURE RELEASE
-    // isWithdrawButtonDisplayed(externalStatus, internalStatus) {
-    //   return (externalStatus == 'Submitted' && (['Submitted','Incomplete','WITH_PROVIDER'].includes(internalStatus)));
-    // },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
     },
