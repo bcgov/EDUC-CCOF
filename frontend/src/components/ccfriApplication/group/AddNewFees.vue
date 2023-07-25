@@ -487,9 +487,7 @@ export default {
         }
         window.scrollTo(0,0);
         try {
-          //if(!this.CCFRIFacilityModel){
-            await this.loadCCFRIFacility(this.$route.params.urlGuid);
-          //}
+          await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
 

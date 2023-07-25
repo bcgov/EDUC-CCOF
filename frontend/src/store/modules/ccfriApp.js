@@ -101,8 +101,6 @@ export default {
     setLoadedModel: (state, loadedModel) => { state.loadedModel = loadedModel; }, //
     setCcfriId: (state, ccfriId) => { state.ccfriId = ccfriId; },
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
-      console.log('add store called');
-      console.log(CCFRIFacilityModel);
       if (ccfriId) {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;
       }
@@ -184,8 +182,6 @@ export default {
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
       console.log('what is loaded in loadFac', CCFRIFacilityModel);
       let q = await dispatch('getPreviousCCFRI' ,ccfriId);
-      //console.log('q', q);
-      //let oldApp = await dispatch('getPreviousCCFRI' , ccfriId);
 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
