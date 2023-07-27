@@ -355,7 +355,7 @@ async function submitApplication(req, res) {
 function printPdf(req, numOfRetries = 0) {
   const url = `${req.headers.referer}/printable`;
 
-  puppeteer.launch({headless: false}).then(async browser => {
+  puppeteer.launch({headless: true, devtools: false}).then(async browser => {
     browser.newPage().then(page => {
       page.setRequestInterception(true);
 
@@ -369,7 +369,7 @@ function printPdf(req, numOfRetries = 0) {
       page.goto(url, {waitUntil: 'networkidle2'}).then(() => {
         page.waitForSelector('#signatureTextField', {visible: true, timeout: 360000}).then(() => {
           log.info('printPdf :: page loaded starting pdf creation');
-          page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, timeout: 360000}).then(() => {
+          page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, scale: 0.5, timeout: 360000}).then(() => {
             log.info('printPdf :: pdf created');
             browser.close();
           });
