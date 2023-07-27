@@ -96,7 +96,7 @@ import {getFileExtension, getFileNameWithMaxNameLength, humanFileSize} from '@/u
 import alertMixin from '@/mixins/alertMixin';
 import rules from '@/utils/rules';
 import {deepCloneObject} from '@/utils/common';
-import {mapState} from 'vuex';
+import {mapGetters, mapState} from 'vuex';
 
 export default {
   mixins: [alertMixin],
@@ -119,9 +119,17 @@ export default {
 
   computed: {
     ...mapState('application', ['applicationStatus']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapState('navBar',['changeRequestId']),
+    ...mapGetters('navBar',['isChangeRequest']),
     isLocked() {
       if (this.currentFacility.unlockRfi === 1) {
         return false;
+      } else if(this.isChangeRequest){
+        let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
       }

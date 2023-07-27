@@ -458,10 +458,11 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'rfiList']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
 
     currentFacility(){
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
@@ -470,6 +471,12 @@ export default {
       //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockCcfri){
         return false;
+      }
+      else if(this.isChangeRequest){
+        let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
       }
       else if (this.applicationStatus === 'SUBMITTED'){
         return true;

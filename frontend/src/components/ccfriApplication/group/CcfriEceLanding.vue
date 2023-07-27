@@ -130,10 +130,17 @@ export default {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
-    ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('navBar', ['previousPath','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     isReadOnly(){
       if (this.unlockedFacilities) {
         return false;
+      }
+      else if(this.isChangeRequest){
+        let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
+        if(currentCR.externalStatus!=='INCOMPLETE'){
+          return true;
+        }
       }
       else
         return (this.applicationStatus === 'SUBMITTED');
