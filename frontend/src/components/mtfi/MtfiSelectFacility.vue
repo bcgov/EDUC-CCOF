@@ -32,6 +32,7 @@
           tiled
           exact tile
           :ripple="false"
+          :disabled="!ccfriOptInStatus==1"
           v-for="({facilityName, facilityId, licenseNumber, ccfriOptInStatus } , index) in userProfileList" :key="facilityId">
           <v-card-text >
             <v-row>
@@ -43,7 +44,7 @@
               <v-col cols="" class="d-flex align-center pl-13 col-12 col-md-4"
               >
 
-                <v-checkbox v-model="checkbox1" disabled="true"> </v-checkbox>
+                <v-checkbox v-model="checkbox1"> </v-checkbox>
 
               </v-col>
             </v-row>
@@ -159,37 +160,24 @@ export default {
       return this.isValidForm;
     },
     async next() {
-      await this.save(false);
 
-      let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, 'f672d73f-2b2b-ee11-bdf4-000d3a09d499' ));
 
-      //if all facilites are opt OUT, go to ECE WE
-      if(!firstOptInFacility){
-        //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
-        if (isChangeRequest(this) ) {
-          this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
-        }
-        else {
-          this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
-        }
-      }
-      //if application is a change request, go to add new fees
-      else if (isChangeRequest(this) ) {
-        this.$router.push(changeUrlGuid(PATHS.CCFRI_NEW_FEES, firstOptInFacility.changeRequestId, firstOptInFacility.ccfriApplicationId));
+      //await this.save(false);
 
-      }
-      //if application locked, send to add new fees
-      else if (this.isReadOnly ) {
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
-      }
-      //if CCFRI is being renewed, go to page that displays fees
-      else if (this.isRenewal){
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
-      }
-      // else go directly to addNewFees page
-      else {
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
-      }
+      //let firstOptInFacility = this.navBarList.find(({ ccfriOptInStatus }) =>  ccfriOptInStatus == 1 );
+
+      // //if all facilites are opt OUT, go to ECE WE
+      // if(!firstOptInFacility){
+      //   //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
+      //   if (isChangeRequest(this) ) {
+      //     this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
+      //   }
+      //   else {
+      //     this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
+      //   }
+      // }
+
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
@@ -198,53 +186,11 @@ export default {
       this.processing = true;
       let payload = [];
 
-      for (let i = 0; i < this.navBarList.length; i++) {
-      //change this to only send payloads with value chosen --- don't send undefined
-        if (!ccfriOptInOrOut[i]){
-          continue;
-        }
-        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          const userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
-          if (userProfileFacility) {
-            userProfileFacility.ccfriOptInStatus = this.ccfriOptInOrOut[i];
-          }
-          payload.push( {
-            applicationID : this.applicationId, //CCOF BASE application ID
-            facilityID : this.navBarList[i].facilityId,
-            optInResponse: this.ccfriOptInOrOut[i],
-            ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
-            changeRequestFacilityId: this.navBarList[i].changeRequestNewFacilityId? this.navBarList[i].changeRequestNewFacilityId : undefined,
-            //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
-            //so it can be linked in the backend. It works with the above hardcoded guid ^
-            //I did not implement fully because it sounds like we might get that info back from profiderProfile
-          });
-        }
-      }//end for loop
       //Refresh the filtered list
       this.refreshNavBarList();
-      if (payload.length > 0) {
-        try {
-          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
 
-          response.data.forEach(item => {
-            if (item.ccfriApplicationId) {
-              this.userProfileList.find(facility => {
-                if (facility.facilityId == item.facilityId) {
-                  facility.ccfriApplicationId = item.ccfriApplicationId;
-                }
-              });
-            }
-          });
-          this.forceNavBarRefresh();
-          if (withAlert) {
-            this.setSuccessAlert('Success! CCFRI Opt In status has been saved.');
-          }
-        } catch (error) {
-          console.info(error);
-          if (withAlert) {
-            this.setFailureAlert('An error occurred while saving. Please try again later.');
-          }
-        }
+      if (withAlert) {
+        this.setSuccessAlert('Success! CCFRI Opt In status has been saved.');
       }
       this.processing = false;
     },

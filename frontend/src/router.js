@@ -58,6 +58,7 @@ import SummaryDeclarationReportChanges from '@/components/requestChanges/Summary
 
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
+import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
 
 Vue.prototype.moment = moment;
 
@@ -674,8 +675,19 @@ const router = new VueRouter({
     },
     {
       path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
-      name: 'Midterm Fee Increase Information',
+      name: 'Midterm Fee Increase Select Facilities',
       component: MtfiSelectFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION),
+      name: 'CCFRI Fee Verification',
+      component: MtfiFeeVerification,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,

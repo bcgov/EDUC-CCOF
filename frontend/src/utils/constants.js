@@ -118,6 +118,8 @@ export const PATHS = {
 
   MTFI_GROUP_SELECT_FACILITY: '/mtfi-select-facility',
 
+  MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
+
 };
 
 //Some helper classes to build the URL consistently
