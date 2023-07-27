@@ -393,7 +393,6 @@ export default {
         else if (question == 'optInECEWE') {
           return (this.optinECEWEChangeRequestReadonly);
         }
-        
         return false;
       }
       if (this.unlockEcewe) {

@@ -332,7 +332,7 @@ async function deleteFacility(req, res) {
 
   if (ccofBaseFundingId){
     log.verbose('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
-    //await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
+    await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
   }
 
   //delete any associated documents to the facility.

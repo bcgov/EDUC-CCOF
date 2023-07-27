@@ -200,7 +200,7 @@ export default {
         try {
           let payload = {
             externalStatus: 6,
-          }
+          };
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
           let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
           if (index) {

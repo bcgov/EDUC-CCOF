@@ -151,9 +151,6 @@ export default {
     },
     async deleteApplication() {
       this.processing = true;
-      console.log(this.deleteFacilityId);
-      console.log(this.deleteCcfriId);
-      console.log(this.applicationId);
       await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;

@@ -114,6 +114,8 @@ export default {
               const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
               commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
+              commit('navBar/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
+              commit('navBar/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
               changeActionId = changeRequestResponse.data?.changeActionId;
             }
             let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`, payload);

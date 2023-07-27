@@ -184,14 +184,13 @@ export default {
       if(this.changeType==='NOTIFICATION_FORM'){
         if(currentCR.unlockChangeRequest){
           return false;
-        } 
+        }
       }
       else if(this.changeType==='SUPPORTING_DOC'){
         if(currentCR.unlockOtherChangesDocuments){
           return false;
         }
       }
- 
       return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
   },
