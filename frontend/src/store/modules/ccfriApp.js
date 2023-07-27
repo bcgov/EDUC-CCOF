@@ -4,8 +4,6 @@ import { checkSession } from '@/utils/session';
 import { deepCloneObject } from '../../utils/common';
 
 function isLocked(applicationStatus, navBarList, facilityId){
-
-  console.log(facilityId, 'faccccc');
   let currentFac = navBarList.find((element) =>{
     return element.facilityId == facilityId;
   });
@@ -180,7 +178,6 @@ export default {
     async loadCCFRIFacility({getters, commit, dispatch}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
-      console.log('what is loaded in loadFac', CCFRIFacilityModel);
       await dispatch('getPreviousCCFRI' ,ccfriId);
 
       if (CCFRIFacilityModel) {
