@@ -57,7 +57,7 @@ import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
-//import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
+import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
 
 Vue.prototype.moment = moment;
 
@@ -672,17 +672,17 @@ const router = new VueRouter({
         //subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
-    // {
-    //   path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
-    //   name: 'Midterm Fee Increase Information',
-    //   component: MtfiSelectFacility,
-    //   meta: {
-    //     pageTitle: PAGE_TITLES.MTFI,
-    //     requiresAuth: true,
-    //     showNavBar: false,
-    //     //subtitleBanner: Subtitle_Banners.ADDFACILITY
-    //   }
-    // },
+    {
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
+      name: 'Midterm Fee Increase Information',
+      component: MtfiSelectFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
   ]
 });
 
