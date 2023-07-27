@@ -349,10 +349,7 @@ export default {
       return (this.applicationType === 'RENEW') || (this.ccofStatus === this.CCOF_STATUS_APPROVED);
     },
     isReportChangeButtonEnabled() {
-      if (this.organizationAccountNumber && this.fundingAgreementNumber) {
-        return true;
-      }
-      return false;
+      return !!(this.organizationAccountNumber && this.fundingAgreementNumber);
     },
     isUpdateChangeRequestDisplayed() {
       let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
