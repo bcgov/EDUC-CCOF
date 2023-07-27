@@ -1,9 +1,9 @@
 <template>
   <v-container>
-    <v-row justify="center">
-      <div class="pa-10 text-h4">Welcome to CCOF!</div>
+    <v-row  justify="space-around">
+      <div class="pa-10 text-h4 text-center">Welcome to CCOF!</div>
     </v-row>
-    <v-row justify="">
+    <v-row>
       <span class="text-h4">Instructions:</span>
       <br><br><br>
       <p class="px-10 text-h6">
@@ -29,13 +29,13 @@
     </v-row>
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="false"
-         :isNextDisabled="true" :isProcessing="false"
-        @previous="previous()" @next="false"  @save="true"></NavButton>
+         :isNextDisabled="false" :isProcessing="false"
+        @previous="previous()" @next="next()"  @save="true"></NavButton>
   </v-container>
 </template>
 
 <script>
-import { PATHS,} from '@/utils/constants';
+import { PATHS, changeUrl} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 //import SmallCard from '../guiComponents/SmallCard.vue';
 
@@ -61,7 +61,10 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     next() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      //if group provider go to select facility
+      this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid));
+
+      //else family, go directly to confirm fee page for that facility
     },
     isPageComplete() {
 

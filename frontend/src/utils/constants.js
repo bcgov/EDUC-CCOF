@@ -114,7 +114,9 @@ export const PATHS = {
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
 
-  MTFI_INFO: '/mtfi-instructions'
+  MTFI_INFO: '/mtfi-instructions',
+
+  MTFI_GROUP_SELECT_FACILITY: '/mtfi-select-facility',
 
 };
 
