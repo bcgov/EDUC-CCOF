@@ -44,7 +44,7 @@
               <v-col cols="" class="d-flex align-center pl-13 col-12 col-md-4"
               >
 
-                <v-checkbox v-model="checkbox1"> </v-checkbox>
+                <v-checkbox v-model="checkbox[index]"> </v-checkbox>
 
               </v-col>
             </v-row>
@@ -92,6 +92,7 @@ export default {
       processing: false,
       loading: false,
       ccfriOptInOrOut,
+      checkbox: [],
       rules: [
         (v) => !!v  || 'Required.',
       ],
