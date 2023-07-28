@@ -418,40 +418,46 @@ export default {
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
       }
     },
+    notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
+      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
+        this.goToChangeForm(changeActionId, changeRequestId);
+      } else if (currentCR?.unlockDeclaration) {
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId));
+      } else {
+        this.goToChangeForm(changeActionId, changeRequestId);
+      }
+    },
+    newFacilityActionRequiredRoute(changeRequestId, index) {
+      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      if (currentCR?.unlockCCOF) {
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+      } else if (currentCR?.unlockLicenseUpload) {
+        this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, changeRequestId));
+      } else if (this.unlockCCFRIList?.length > 0) {
+        this.$router.push(changeUrl(PATHS.CCFRI_HOME, changeRequestId));
+      } else if (this.unlockRFIList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, this.unlockRFIList[0]));
+      } else if (this.unlockNMFList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_NMF, changeRequestId, this.unlockNMFList[0]));
+      } else if (currentCR?.unlockEcewe) {
+        this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, changeRequestId));
+      } else if (currentCR?.unlockSupportingDocuments) {
+        this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, changeRequestId));
+      } else if (currentCR?.unlockDeclaration) {
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId));
+      } else {
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+      }
+    },
     updateButton(changeType, changeActionId = null,  changeRequestId = null, index){
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       if (changeType == 'PDF_CHANGE'){
-        let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
-        if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
-          this.goToChangeForm(changeActionId, changeRequestId);
-        } else if (currentCR?.unlockDeclaration) {
-          this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId));
-        } else {
-          this.goToChangeForm(changeActionId, changeRequestId);
-        }
+        this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
       }
       else if (changeType == 'NEW_FACILITY') {
-        let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
-        if (currentCR?.unlockBaseFunding) {
-          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
-        } else if (currentCR?.unlockLicenseUpload) {
-          this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, changeRequestId));
-        } else if (currentCR?.unlockEcewe) {
-          this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, changeRequestId));
-        } else if (this.unlockCCFRIList?.length > 0) {
-          this.$router.push(changeUrl(PATHS.CCFRI_HOME, changeRequestId));
-        } else if (this.unlockRFIList?.length > 0) {
-          this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, this.unlockRFIList[0]));
-        } else if (this.unlockNMFList?.length > 0) {
-          this.$router.push(changeUrlGuid(PATHS.CCFRI_NMF, changeRequestId, this.unlockNMFList[0]));
-        } else if (currentCR?.unlockSupportingDocuments) {
-          this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, changeRequestId));
-        } else if (currentCR?.unlockDeclaration) {
-          this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId));
-        } else {
-          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
-        }
+        this.newFacilityActionRequiredRoute(changeRequestId, index);
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
