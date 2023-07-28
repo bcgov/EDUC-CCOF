@@ -23,7 +23,7 @@ export default {
         if(!currentCR){
           return false;
         }
-        else if(currentCR.unlockChangeRequest){
+        else if(currentCR.unlockCCOF){
           return false;
         }
         else if (currentCR.externalStatus!=='INCOMPLETE'){

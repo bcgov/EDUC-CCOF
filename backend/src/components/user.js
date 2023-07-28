@@ -104,7 +104,7 @@ async function getUserInfo(req, res) {
     let changeActionNewFacilityList = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     for (const changeActionNewFacility of changeActionNewFacilityList) {
       item.unlockEcewe = changeActionNewFacility?.ccof_unlock_ecewe;
-      item.unlockChangeRequest = changeActionNewFacility?.ccof_unlock_change_request;
+      item.unlockCCOF = changeActionNewFacility?.ccof_unlock_ccof;
       item.unlockSupportingDocuments = changeActionNewFacility?.ccof_unlock_supporting_document;
       item.unlockLicenseUpload = changeActionNewFacility?.ccof_unlock_licence_upload;
     }
