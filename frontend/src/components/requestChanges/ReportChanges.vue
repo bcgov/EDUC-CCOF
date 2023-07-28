@@ -14,16 +14,16 @@
       <v-container>
 
         <p class="text-h6 text-center">What changes do you want to make?</p>
-        <v-row justify="space-around">
+        <v-row class="d-flex justify-start">
 
 
           <SmallCard  class= "col-lg-6 " :disable="false" v-if="this.organizationProviderType == 'GROUP'">
             <template #content class="px-10">
               <p class="text-h6 text-center "> Add a New facility to an existing organization </p>
-              <p class="px-2">
+              <p class="px-2 text-center">
                 This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE information ready.
               </p>
-              <p class="px-2">
+              <p class="px-2 text-center">
                 You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> license.
               </p>
             </template>
@@ -38,7 +38,7 @@
           <SmallCard  class= "col-lg-6 " :disable="false">
             <template #content class="px-10">
               <p class="text-h6 text-center">Report changes to your License or service</p>
-              <p class="px-2">
+              <p class="px-2 text-center">
                 Please have your <i>Community Care And Assisted Living Act</i> license (if required) and other supporting documents ready.
               </p>
             </template>
@@ -50,75 +50,117 @@
 
           </SmallCard>
 
+          <SmallCard  class= "col-lg-6 " :disable="false">
+            <template #content class="px-10">
+              <p class="text-h6 text-center">Parent fee increase (MTFI)</p>
+              <p class="px-2 text-center">
+                Text description to be provided by the ministry.
+              </p>
+            </template>
+              <template #button class="ma-0 pa-0 ">
+                <v-row justify="space-around">
+                  <v-btn dark class="blueButton mb-10" @click="goToMTFI()" >Update parent fees</v-btn>
+                </v-row>
+              </template>
+
+          </SmallCard>
+
 
         </v-row>
 
-        <v-skeleton-loader v-if="this.processing" :loading="this.processing"
-                                    type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
-
-        <v-row v-else>
-          <v-col class= "col-lg-12 mt-3">
+        <v-row no-gutters id="change-request-history">
+          <v-col class= "col-lg-12 mt-10">
             <h2>Change History</h2>
-            <v-row>
-              <v-col class= "col-lg-2">
-                <h4>Change Requests</h4>
-              </v-col>
-              <v-col class= "col-lg-1">
-                <h4>Fiscal Year</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Facility(s) name</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Status</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4>Submission Date</h4>
-              </v-col>
-              <v-col class= "col-lg-2">
-
-              </v-col>
-
-              <v-col class= "col-lg-1">
-
-              </v-col>
-            </v-row>
-            <!--TODO: ADD skeleton loader and isLoaded var-->
-            <!--TODO: Change action data taken from first index! needs improvement -->
-            <v-row v-for=" (changeRequest, index) in changeRequestStore" :key="index">
-              <v-col class= "col-lg-2">
-                <h4></h4>
-                <!--TODO: ADD a function that maps these values-->
-                {{changeRequest.changeActions[0].changeType == 'PDF_CHANGE' ? 'Report other changes' : 'Add new facility(s)'}}
-              </v-col>
-              <v-col class= "col-lg-1">
-                <h4></h4>
-                2023/24
-              </v-col>
-              <v-col class= "col-lg-2">
-                <h4></h4>
-                {{createFacilityNameString(changeRequest.changeActions)}}
-              </v-col>
-              <v-col class= "col-lg-2">
-                {{getStatusString(changeRequest.externalStatus)}}
-              </v-col>
-              <v-col class= "col-lg-2">
-                {{ changeRequest.createdOnDate }}
-              </v-col>
-                <v-col class= "col-lg-2">
-                  <v-btn class= "" @click="continueButton(changeRequest.changeActions[0].changeType, changeRequest.changeActions[0].changeActionId, changeRequest.changeActions[0].changeRequestId, index)">Continue</v-btn>
-                </v-col>
-                <v-col class= "col-lg-1">
-                  <v-btn class= "" @click="deleteRequest(changeRequest.changeActions[0].changeRequestId)">Delete</v-btn>
-                </v-col>
-            </v-row>
           </v-col>
         </v-row>
-
-
+        <v-row v-if="processing">
+          <v-col >
+            <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
+          </v-col>
+        </v-row>
+        <v-data-table
+          :headers="headers"
+          :items="allChangeRequests"
+          :height = "maxChangeHistoryTableHeight"
+          mobile-breakpoint="960"
+          fixed-header
+          :item-class="getChangeRequestStyle"
+          class="elevation-4 my-4"
+          disable-pagination hide-default-footer
+          :sort-by="['priority', 'submissionDate']"
+          :sort-desc="[true, true]"
+          v-else
+        >
+          <template v-slot:item.actions="{ item }">
+            <v-btn
+              v-if="isContinueButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Continue
+            </v-btn>
+            <v-btn
+              v-if="isViewButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              View
+            </v-btn>
+            <v-btn
+              v-if="isUpdateButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="updateButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Update
+            </v-btn>
+            <v-btn
+              v-if="isCancelButtonDisplayed(item.externalStatus)"
+              class="blueOutlinedButton mr-3 my-2"
+              @click="confirmCancelChangeRequest(item.changeRequestId, item.changeTypeString, item.externalStatus, item.submissionDateString)"
+              outlined
+              :width="changeHistoryButtonWidth"
+            >
+              Cancel
+            </v-btn>
+          </template>
+        </v-data-table>
+        <v-dialog v-model="dialog" persistent max-width="525px">
+          <v-card>
+            <v-container class="pt-0">
+              <v-row>
+                <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+                  <v-card-title class="white--text font-weight-bold">Cancel a change request</v-card-title>
+                </v-col>
+                <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" style="text-align: left;">
+                  <p class="pt-8">Are you sure you want to cancel this change request?</p>
+                  <p class="pt-2">[{{cancelChangeRequestType}}]  [{{cancelChangeRequestStatus}}]  [{{cancelChangeRequestSubmissionDate}}]</p>
+                  <p class="pt-2 pb-8">You will not be able to resume a cancelled request. They will be viewable in your change history.</p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" style="text-align: center;">
+                  <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
+                  <v-btn dark color="primary" :loading="processing" @click="cancel()">Continue</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
+        </v-dialog>
       </v-container>
     </v-form>
-
 
     <NavButton :isNextDisplayed="false" :isSaveDisplayed="false"
          :isNextDisabled="true" :isProcessing="processing"
@@ -128,7 +170,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, changeUrlGuid } from '@/utils/constants';
+import { PATHS, changeUrlGuid , changeUrl} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -146,9 +188,31 @@ export default {
       rules: [
         (v) => !!v || 'Required.',
       ],
+      headersGroup: [
+        { text: 'Change Requests', value: 'changeTypeString', class: 'tableHeader'},
+        { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
+        { text: 'Facility(s) name', value: 'facilityNames', class: 'tableHeader' },
+        { text: 'Status', value: 'externalStatus', class: 'tableHeader' },
+        { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
+        { text: ' ', value: 'actions', align: 'start', sortable: false },
+      ],
+      headersFamily: [
+        { text: 'Change Requests', value: 'changeTypeString', class: 'tableHeader'},
+        { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
+        { text: 'Status', value: 'externalStatus', class: 'tableHeader' },
+        { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
+        { text: ' ', value: 'actions', align: 'start', sortable: false },
+      ],
+      changeHistoryButtonWidth: '100px',
+      dialog: false,
+      cancelChangeRequestId: undefined,
+      cancelChangeRequestType: undefined,
+      cancelChangeRequestStatus: undefined,
+      cancelChangeRequestSubmissionDate: undefined,
     };
   },
   computed: {
+    ...mapState('app', ['programYearList']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore',]),
     ...mapState('organization', ['organizationProviderType',]),
@@ -158,18 +222,72 @@ export default {
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
+    allChangeRequests() {
+      let allChangeRequests = [];
+      if (this.changeRequestStore?.length > 0) {
+        // FUTURE RELEASE - filter by Program Year
+        // allChangeRequests = this.changeRequestStore?.filter(changeRequest => this.isCurrentOrFuture(changeRequest.programYearId));
+        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => ({
+          index: index,
+          changeRequestId: changeRequest.changeActions[0]?.changeRequestId,
+          changeActionId: changeRequest.changeActions[0]?.changeActionId,
+          changeType: changeRequest.changeActions[0]?.changeType,
+          changeTypeString: this.getChangeTypeString(changeRequest.changeActions[0]?.changeType),
+          fiscalYear: this.getProgramYearString(changeRequest.programYearId),
+          facilityNames: this.createFacilityNameString(changeRequest.changeActions),
+          internalStatus: this.getInternalStatusString(changeRequest.status),
+          externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
+          submissionDate: changeRequest?.firstSubmissionDate,
+          submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
+          priority: changeRequest?.priority
+        }));
+      }
+      return allChangeRequests;
+    },
+    // Table should be vertically scrollable once rows > 8
+    maxChangeHistoryTableHeight() {
+      return this.allChangeRequests?.length > 8 ? 48 * 9 : undefined;
+    },
+    headers() {
+      return this.organizationProviderType == 'GROUP' ? this.headersGroup : this.headersFamily;
+    }
   },
   methods: {
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest' ]),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
+    // FUTURE RELEASE - filter change request to be displayed in Change History by Program Year
+    // isCurrentOrFuture(programYearId) {
+    //   let currentFutureYears = this.programYearList?.list?.map(programYear => {
+    //     if (['CURRENT','FUTURE'].includes(programYear.status)) {
+    //       return programYear.programYearId;
+    //     }
+    //   });
+    //   return currentFutureYears?.includes(programYearId);
+    // },
+    getProgramYearString(programYearId) {
+      let label = this.programYearList?.list?.find(programYear => programYear.programYearId == programYearId)?.name;
+      return label?.replace(/[^\d/]/g, '');
+    },
+    getChangeTypeString(changeType){
+      console.log('change type', changeType);
+      switch(changeType){
+      case 'PDF_CHANGE':
+        return "Report other changes";
+      case 'NEW_FACILITY':
+        return "Add new facility(s)";
+      case 'PARENT_FEE_CHANGE':
+        return 'Midterm Fee Increase';
 
-    isPageComplete() {
-
+      default:
+        return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
+      }
     },
     createFacilityNameString(changeActions){
+
+      //TODO - add more logic to grab facility name from relevent change request. IE: MTFI
 
       //did it this way so if there are many change Actions, it checks all of them to see if there is a new facility. Maybe change in the future
       if (!changeActions.find(el => el.changeType == "NEW_FACILITY")){
@@ -187,12 +305,12 @@ export default {
           }
         });
       }
-      return str;
+      return str.slice(0, -2);
     },
-    getStatusString(status){
+    getExternalStatusString(status){
       switch (status){
       case 1:
-        return "Incomplete";
+        return "In progress";
       case 2:
         return "Submitted";
       case 3:
@@ -202,11 +320,39 @@ export default {
       case 5 :
         return "Approved";
       case 6:
-        return "Cancelled";
+        return "Canceled";
       default:
         return "Unknown"; //should never happen!
       }
-
+    },
+    getInternalStatusString(status){
+      switch (status){
+      case 1:
+        return "In progress";
+      case 3:
+        return "Submitted";
+      case 4:
+        return "Processing";
+      case 5:
+        return "WITH_PROVIDER";
+      case 6:
+        return "Ineligible";
+      case 7:
+        return "Approved";
+      case 8:
+        return "Canceled";
+      default:
+        return "Unknown"; //should never happen!
+      }
+    },
+    getSubmissionDateString(date) {
+      if (date) {
+        return new Date(date).toLocaleDateString("en-US",{ year: 'numeric', month: '2-digit', day: '2-digit' });
+      }
+      return "- - - -";
+    },
+    getChangeRequestStyle(changeRequest){
+      return changeRequest.externalStatus == 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -223,6 +369,36 @@ export default {
         this.setChangeActionId(changeActionId);
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
+      else if (changeType == 'PARENT_FEE_CHANGE'){
+        this.setChangeRequestId(changeRequestId);
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+      }
+    },
+    updateButton(changeType, changeActionId = null,  changeRequestId = null, index){
+      if (changeType == 'PDF_CHANGE'){
+        this.goToChangeForm(changeActionId, changeRequestId);
+      }
+      else if (changeType == 'NEW_FACILITY'){
+        this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+      }
+      else if (changeType == 'PARENT_FEE_CHANGE'){
+        this.setChangeRequestId(changeRequestId);
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+      }
+    },
+    async createNewChangeRequest(changeType){
+
+      let newReq;
+      try{
+        newReq = await this.createChangeRequest(changeType);
+      }
+      catch(error){
+        console.log('unable to create a new Req');
+        this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
+      }
+      return newReq;
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 
@@ -230,16 +406,8 @@ export default {
 
       //create the change action first, then push it
       if (!changeActionId){
-
-        let newReq;
-        try{
-          newReq = await this.createChangeRequest();
-        }
-        catch(error){
-          console.log('unable to create a new Req');
-          this.setFailureAlert('An error occurred while creating a change request Please try again later.');
-        }
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq.changeRequestId, newReq.changeActionId));
+        let newReq = await this.createNewChangeRequest('PDF_CHANGE');
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId));
       }
       else{
         this.setChangeRequestId(changeRequestId);
@@ -248,17 +416,54 @@ export default {
       }
 
     },
-    async deleteRequest(requestId){
+    async goToMTFI(changeRequestId = null){
+
+      if (!changeRequestId){
+        let newReq = await this.createNewChangeRequest('PARENT_FEE_CHANGE');
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, newReq.changeRequestId ));
+      }
+      else{
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+      }
+
+    },
+
+    confirmCancelChangeRequest(requestId, requestType, requestStatus, submissionDate) {
+      this.cancelChangeRequestId = requestId;
+      this.cancelChangeRequestType = requestType;
+      this.cancelChangeRequestStatus = requestStatus;
+      this.cancelChangeRequestSubmissionDate = submissionDate;
+      this.dialog = true;
+    },
+
+    async cancel(){
       this.processing = true;
-      try{
-        await this.deleteChangeRequest(requestId);
+      try {
+        await this.cancelChangeRequest(this.cancelChangeRequestId);
+        this.cancelChangeRequestId = undefined;
+        this.setSuccessAlert('Success! Your change request have been canceled.');
       }
       catch(error){
-        this.setFailureAlert('An error occurred while deleting a change request Please try again later.');
+        console.log('CANCEL ERROR ----------> ');
+        console.log(error);
+        this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');
       }
 
       this.processing = false;
-    }
+      this.dialog = false;
+    },
+    isViewButtonDisplayed(externalStatus) {
+      return ['Submitted','Approved','Canceled'].includes(externalStatus);
+    },
+    isContinueButtonDisplayed(externalStatus) {
+      return ['In progress'].includes(externalStatus);
+    },
+    isCancelButtonDisplayed(externalStatus) {
+      return !(['Canceled'].includes(externalStatus));
+    },
+    isUpdateButtonDisplayed(externalStatus) {
+      return ['Action Required'].includes(externalStatus);
+    },
   },
   async mounted() {
     this.processing = true;
@@ -274,13 +479,18 @@ export default {
 };
 </script>
 <style scoped>
-.blueBorder{
-  border-top: 5px solid #003366 !important;
-}
 .blueButton {
   background-color: #003366 !important;
 }
-.blueText {
+.blueOutlinedButton {
+  color: #003366 !important;
+}
+:deep(.tableHeader) {
   color: rgb(0, 52, 102) !important;
+  font-weight: bold !important;
+  font-size: 16px !important;
+}
+:deep(.redText) {
+  color: red !important;
 }
 </style>

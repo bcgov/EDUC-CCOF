@@ -27,7 +27,10 @@ export default {
     setApplicationStatus(state, value) { state.applicationStatus = value; },
     setCcofApplicationStatus(state, value) { state.ccofApplicationStatus = value; },
     setProgramYearId(state, value) { state.programYearId = value; },
-    setProgramYearLabel(state, value) { state.programYearLabel = value; },
+    setProgramYearLabel(state, value) {
+      state.programYearLabel = value;
+      state.formattedProgramYear = value?.replace(/[^\d/]/g, '');
+    },
     setIsRenewal(state, value) { state.isRenewal = value; },
     setFormattedProgramYear(state, value) { state.formattedProgramYear = value; },
     setCcofConfirmationEnabled(state, value) { state.ccofConfirmationEnabled = value; },

@@ -120,10 +120,11 @@
 
 //userInfo.ccofProgramYearId;
 import { PATHS, pcfUrlGuid } from '@/utils/constants';
-import { sleep } from '@/utils/common';
-import { mapState, mapActions, mapGetters} from 'vuex';
+import { sleep, deepCloneObject } from '@/utils/common';
+import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import ApiService from '@/common/apiService';
 
 export default {
   components: { NavButton },
@@ -141,6 +142,7 @@ export default {
       rules: [
         (v) => !!v  || 'Required.',
       ],
+      currentCCFRI : undefined,
     };
   },
   computed: {
@@ -150,7 +152,7 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
-
+    ...mapGetters('ccfriApp', ['getCCFRIById']),
     currentFacility(){
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
@@ -172,6 +174,7 @@ export default {
         try {
           this.loading = true;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
+          console.log('fees correct handler' , this.CCFRIFacilityModel.existingFeesCorrect);
           if (this.CCFRIFacilityModel.existingFeesCorrect == 100000000) {
             this.model.q1 = 'Yes';
           } else if (this.CCFRIFacilityModel.existingFeesCorrect == 100000001) {
@@ -185,12 +188,13 @@ export default {
             console.log('no previous CCFRI id for this guid. waiting 10 seconds');
             await sleep(10000);
             console.log('trying again');
-            previousCCFRI = await this.getPreviousCCFRI(this.$route.params.urlGuid);
+            this.removeCCFRIFromStore(this.$route.params.urlGuid);
+            await this.loadCCFRIFacility(this.$route.params.urlGuid);
+            previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
           }
           if (previousCCFRI) {
             await this.loadCCFRIFacility(previousCCFRI); //load this page up with the previous CCFRI data
           }
-
           this.feeList = [];
 
           //only display last years child care fees
@@ -224,20 +228,24 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI']),
+    ...mapMutations('ccfriApp', ['setCCFRIFacilityModel' , 'addCCFRIToStore', 'removeCCFRIFromStore']),
     previous(){
       this.$router.push(this.previousPath);
     },
-    async setFees (areFeesCorrect){
-      await this.loadCCFRIFacility(this.$route.params.urlGuid);
-      this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
-      this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
+    setFees (areFeesCorrect){
+      this.currentCCFRI = deepCloneObject (this.getCCFRIById(this.$route.params.urlGuid));
+      this.currentCCFRI.prevYearFeesCorrect = areFeesCorrect;
+      this.currentCCFRI.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
+      //this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
+      console.log('existing fees POST set', this.currentCCFRI.existingFeesCorrect);
+      this.addCCFRIToStore({ccfriId: this.$route.params.urlGuid, CCFRIFacilityModel: this.currentCCFRI});
     },
     isFormValidAndLoaded(){
       //we need this to disable button while the page is loading
       return this.isValidForm && this.loading == false;
 
     },
-    next() {
+    async next() {
       this.loading = true;
 
       if (this.model.q1 == 'No'){
@@ -246,7 +254,15 @@ export default {
       else if (this.model.q1 == 'Yes') {
         this.setFees(true);
       }
+      await this.save();
+      //console.log('before NEXT', this.CCFRIFacilityModel.existingFeesCorrect);
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.$route.params.urlGuid));
+    },
+    async save(){
+      console.log('da feez payload', this.CCFRIFacilityModel.existingFeesCorrect);
+      let payload = {existingFeesCorrect: this.currentCCFRI.existingFeesCorrect};
+      let res = await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, payload);
+      console.log(res);
     },
     validateForm() {
       this.$refs.isValidForm?.validate();

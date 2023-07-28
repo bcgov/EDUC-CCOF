@@ -83,7 +83,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" >
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isCCOFApproved">
         <template #content>
           <p class="text-h6">
             Report changes to your licence or service
@@ -94,8 +94,18 @@
           </p>
         </template>
         <template #button>
-          <!-- TODO: change back this logic for button color - was previously  :color='buttonColor(!isCCOFApproved) -->
-          <v-btn  @click="goToReportChange()" :color='buttonColor(isCCOFApproved)' dark>Report a change</v-btn>
+          <v-row no-gutters>
+            <v-col v-if="isUpdateChangeRequestDisplayed" class="col-12 mb-3">
+              <v-btn @click="goToChangeRequestHistory()" :color='buttonColor(false)' dark>
+                Update change request
+              </v-btn>
+            </v-col>
+            <v-col class="col-12">
+              <v-btn @click="goToReportChange()" :color='buttonColor(!isCCOFApproved)' dark>
+                Report a change
+              </v-btn>
+            </v-col>
+          </v-row>
         </template>
       </SmallCard>
 
@@ -171,7 +181,6 @@ import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import { isChangeRequest } from '@/utils/common';
 
 export default {
   name: 'LandingPage',
@@ -213,6 +222,7 @@ export default {
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
 
     this.getAllMessagesVuex();
+    this.refreshNavBarList();
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -222,18 +232,12 @@ export default {
     ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
-    filteredNavBarList() {
-      if (isChangeRequest(this)) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
-    },
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.filteredNavBarList;
+        return this.navBarList;
       }
-      return this.filteredNavBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
+      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     isCCFRIandECEWEComplete() {
       if (!this.navBarList) {
@@ -344,16 +348,24 @@ export default {
     isCCOFApproved() {
       return (this.applicationType === 'RENEW') || (this.ccofStatus === this.CCOF_STATUS_APPROVED);
     },
+    isUpdateChangeRequestDisplayed() {
+      let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
+      return changeRequestStatuses?.includes("WITH_PROVIDER");
+    }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
+    ...mapMutations('navBar', ['refreshNavBarList']),
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));
     },
     goToReportChange(){
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+    },
+    goToChangeRequestHistory() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     continueRenewal() {
       this.goToLicenseUpload();

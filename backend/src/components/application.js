@@ -29,6 +29,7 @@ const {
   OrganizationFacilityMappings,
   CCOFApplicationFundingMapping,
   OrganizationMappings,
+  CCFRIFacilityMappings
   //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
@@ -58,6 +59,20 @@ async function renewCCOFApplication(req, res) {
   }
 }
 
+async function patchCCFRIApplication(req, res){
+  let payload = req.body;
+  payload = new MappableObjectForBack(payload, CCFRIFacilityMappings);
+  payload = payload.toJSON();
+
+  try{
+    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, payload);
+  }
+  catch (e){
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+  return res.status(HttpStatus.OK).json(payload);
+}
 
 //creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
@@ -409,8 +424,13 @@ async function updateStatusForApplicationComponents(req, res) {
         isEceweComplete: request.isEceweComplete,
         isLicenseUploadComplete: request.isLicenseUploadComplete
       };
-      applicationReq = (new MappableObjectForBack(applicationReq, ECEWEApplicationMappings)).toJSON();
-      promises.push(patchOperationWithObjectId('ccof_applications', req.params.applicationId, applicationReq));
+      if (request.changeRequestId) {
+        applicationReq = (new MappableObjectForBack(applicationReq, ChangeRequestMappings)).toJSON();
+        promises.push(patchOperationWithObjectId('ccof_change_requests', request.changeRequestId, applicationReq));
+      } else {
+        applicationReq = (new MappableObjectForBack(applicationReq, ECEWEApplicationMappings)).toJSON();
+        promises.push(patchOperationWithObjectId('ccof_applications', req.params.applicationId, applicationReq));
+      }
     }
     if (request.facilities) {
       for (let facility of request.facilities) {
@@ -603,5 +623,6 @@ module.exports = {
   submitApplication,
   getApplicationSummary,
   updateStatusForApplicationComponents,
-  getChangeRequest
+  getChangeRequest,
+  patchCCFRIApplication
 };

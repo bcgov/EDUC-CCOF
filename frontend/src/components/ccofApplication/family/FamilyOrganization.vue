@@ -62,33 +62,7 @@
                 </v-col>
               </v-row>
             </div>
-
             <v-divider></v-divider>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" outlined required v-model="model.yearBeganOperation"
-                  :rules="[...rules.required, ...rules.YYYY]" label="Year Facility began Operation (YYYY)" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required v-model="model.email" type="email"
-                  :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required v-model="model.phone"
-                  :rules="[...rules.required, rules.phone]" label="Business Phone" />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field readonly :disabled="isLocked" outlined required v-model="businessId"
-                  label="Business BCeID" />
-              </v-col>
-            </v-row>
-
-            <v-divider></v-divider>
-
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required

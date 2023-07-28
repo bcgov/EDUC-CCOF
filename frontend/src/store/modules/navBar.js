@@ -29,8 +29,11 @@ function getNavBarAtPositionIndex(items, index) {
 function filterNavBar(state) {
   if (state.changeRequestId) {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
-  } else if (state.programYearId) {
-    state.navBarList = state.userProfileList.map(el => el); //TODO: figure out how to filter for program year.
+  // VIET - temporary removed to fix issue in the Landing page (empty navBarList)
+  // need to check with Rob to see if we need to check this programYearId
+  // } else if (state.programYearId) {
+  } else {
+    state.navBarList = state.userProfileList.filter(el => !el.changeRequestId); //TODO: This will take FACILITY.STATUS as well
   }
 }
 

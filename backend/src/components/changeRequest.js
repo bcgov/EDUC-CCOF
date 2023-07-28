@@ -103,10 +103,24 @@ async function updateChangeRequest(req, res){
 }
 
 // create Change Request
-async function createChangeRequest(req, res, changeType) {
+async function createChangeRequest(req, res) {
   log.info('createChangeRequest called');
+
   try {
     let changeRequest = req.body;
+    let changeType = changeRequest.changeType;
+    //log.info('change type', changeType);
+    //this is kind of ugly, replace with a better mapping function
+    if (changeType === 'PARENT_FEE_CHANGE'){
+      changeType = CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE;
+    }
+    else if(changeType === 'NEW_FACILITY'){
+      changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
+    }
+    else if(changeType === 'PDF_CHANGE'){
+      changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
+    }
+    log.info('change type', changeType);
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
     let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;

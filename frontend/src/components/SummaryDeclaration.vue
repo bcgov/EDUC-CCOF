@@ -328,7 +328,6 @@
 <script>
 
 import {PATHS} from '@/utils/constants';
-import { isChangeRequest } from '@/utils/common';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -365,12 +364,13 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList' ]),
-    ...mapGetters('navBar', ['previousPath']),
-    ...mapState('navBar', ['canSubmit', 'navBarList']),
+    ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
+    ...mapState('navBar', ['canSubmit', 'navBarList', 'changeRequestId']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -404,7 +404,6 @@ export default {
   },
   data() {
     return {
-      isChangeRequest: isChangeRequest(this), //might not need this - jb testing
       model,
       isValidForm: false,
       isLoading: false,
@@ -419,10 +418,10 @@ export default {
   },
   methods: {
     ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
-    ...mapActions('licenseUpload', ['updateLicenseCompleteStatus']),
     ...mapMutations('application',['setIsEceweComplete', 'setIsLicenseUploadComplete']),
     ...mapMutations('navBar', ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     ...mapMutations('organization', ['setIsOrganizationComplete']),
+    ...mapMutations('reportChanges', ['setCRIsLicenseComplete', 'setCRIsEceweComplete']),
     isPageComplete() {
       if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
@@ -435,7 +434,7 @@ export default {
     async loadData() {
       this.isLoading = true;
       try {
-        if(isChangeRequest(this)){
+        if(this.isChangeRequest){
           await this.loadChangeRequestDeclaration(this.$route.params?.changeRecGuid);
         }
         else{
@@ -452,7 +451,7 @@ export default {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        if(isChangeRequest(this)){
+        if(this.isChangeRequest){
           await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
         }
         else{
@@ -547,6 +546,9 @@ export default {
 
     updateNavBarStatus(formObj, isComplete) {
       if (formObj) {
+        if (this.isChangeRequest) {
+          this.payload['changeRequestId'] = this.changeRequestId;
+        }
         console.info(`-- updating status for [${formObj?.formName}]' to be complete: [${isComplete}]`);
         if (!this.payload.applicationId) {
           this.payload['applicationId'] = this.summaryModel?.application?.applicationId;
@@ -572,9 +574,16 @@ export default {
           }
           break;
         case 'ECEWESummary':
-          if (this.isEceweComplete != isComplete) {
-            this.setIsEceweComplete(isComplete);
-            this.payload['isEceweComplete'] = isComplete;
+          if (this.isChangeRequest) {
+            if (this.isCREceweComplete != isComplete) {
+              this.setCRIsEceweComplete({changeRequestId: this.changeRequestId, isComplete: isComplete});
+              this.payload['isEceweComplete'] = isComplete;
+            }
+          } else {
+            if (this.isEceweComplete != isComplete) {
+              this.setIsEceweComplete(isComplete);
+              this.payload['isEceweComplete'] = isComplete;
+            }
           }
           break;
         case 'CCFRISummary':
@@ -633,11 +642,18 @@ export default {
           }
           break;
         case 'DocumentSummary':
-          if (this.isLicenseUploadComplete != isComplete) {
-            this.setIsLicenseUploadComplete(isComplete);
-            this.payload['isLicenseUploadComplete'] = isComplete;
-            break;
+          if (this.isChangeRequest) {
+            if (this.isCRLicenseComplete != isComplete) {
+              this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: isComplete});
+              this.payload['isLicenseUploadComplete'] = isComplete;
+            }
+          } else {
+            if (this.isLicenseUploadComplete != isComplete) {
+              this.setIsLicenseUploadComplete(isComplete);
+              this.payload['isLicenseUploadComplete'] = isComplete;
+            }
           }
+          break;
         }
       }
       this.forceNavBarRefresh();
@@ -688,7 +704,8 @@ export default {
           setTimeout(() => {
             const keys = Object.keys(this.payload);
             console.log('calling after 1 second');
-            if (keys.length > 1) {
+            //If this is a change request, we'll have 2 items in the payload.
+            if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2) ) {
               console.log('sending updates to server');
               this.updateApplicationStatus(this.payload);
               this.forceNavBarRefresh();

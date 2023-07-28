@@ -1,12 +1,11 @@
 'use strict';
-const {getOperation, getLabelFromValue, minify} = require('./utils');
+const {getOperation, getLabelFromValue, } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const _ = require ('lodash');
 const cache = require('memory-cache');
-const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES } = require('../util/constants');
 const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const log = require('./logger');
 
 
 const lookupCache = new cache.Cache();
@@ -128,7 +127,8 @@ async function getLookupInfo(req, res) {
       'organizationType': organizationType,
       'fundingModelType': fundingModelType,
       'groupLicenseCategory': licenseCategory.groupLicenseCategory,
-      'familyLicenseCategory': licenseCategory.familyLicenseCategory
+      'familyLicenseCategory': licenseCategory.familyLicenseCategory,
+      'changeRequestTypes:' : CHANGE_REQUEST_TYPES
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }

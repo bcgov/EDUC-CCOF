@@ -57,7 +57,7 @@ router.patch('/:changeRequestId', //passport.authenticate('jwt', {session: false
 router.post('/newFacility', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [checkSchema(newFacilityChangeRequestSchema)], (req, res) => {
     validationResult(req).throw();
-    return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    return createChangeRequest(req, res);
   });
 
 /**
@@ -86,7 +86,7 @@ router.get('/documents/:changeRequestId', passport.authenticate('jwt', {session:
 router.post('/documents', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [checkSchema(documentChangeRequestSchema)], (req, res) => {
     validationResult(req).throw();
-    return createChangeRequest(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
+    return createChangeRequest(req, res);
   });
 
 

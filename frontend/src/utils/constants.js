@@ -54,10 +54,10 @@ export const PAGE_TITLES = Object.freeze({
   CCRFI_APPLICATION: 'CCRFI Application Form',
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
-  SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload'
+  SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
+  MTFI: 'Midterm Parent Fee Increase',
 });
 
-export const CHANGE_URL_PREFIX = '/report-change';
 
 /*******************************************************
  *
@@ -76,7 +76,7 @@ export const PATHS = {
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
-    CHANGE_NEW_FACILITY: '/change/group/facility'
+    CHANGE_NEW_FACILITY: '/change/new/group/facility'
   },
   PREFIX: {
     PCF: '/pcf',
@@ -110,10 +110,12 @@ export const PATHS = {
   SUMMARY_DECLARATION:  '/summary-declaration',
 
   //Report Change prefix's
-  CHANGE_NOTIFICATION_FORM: `${CHANGE_URL_PREFIX}/notification-form`,
+  CHANGE_NOTIFICATION_FORM: '/notification-form',
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',
   CHANGE_NEW_FACILITY_OTHER: '/other-changes',
+  MTFI_INFO: '/mtfi-instructions'
+
 };
 
 //Some helper classes to build the URL consistently

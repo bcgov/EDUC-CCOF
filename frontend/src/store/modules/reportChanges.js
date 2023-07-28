@@ -27,6 +27,18 @@ export default {
     loadedChangeRequest: state => state.loadedChangeRequest,
     getUploadedDocuments: state => state.uploadedDocuments,
     getChangeRequestFacilities: state => state.newFacilityList,
+    // eslint-disable-next-line no-unused-vars
+    isCREceweComplete: (state, getters, rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isEceweComplete;
+    },
+    // eslint-disable-next-line no-unused-vars
+    isCRLicenseComplete: (state, getters, rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isLicenseUploadComplete;
+    },
+    // eslint-disable-next-line no-unused-vars
+    changeRequestStatus: (state, getters, rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
+    }
   },
   mutations: {
     addChangeRequestToStore: (state, {changeRequestId, model} ) => {
@@ -52,7 +64,22 @@ export default {
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
     },//may not need this now
-    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; }
+    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; },
+    setCRIsEceweComplete:(state, value) => {
+      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
+      if (changeRequest) {
+        changeRequest.isEceweComplete = value.isComplete;
+      }
+    },
+    setCRIsLicenseComplete:(state, value) => {
+      console.log('CHANGE REQUESTID : ', value.changeRequestId);
+
+      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
+      console.log('CHANGE REQUEST FOUND: ', changeRequest);
+      if (changeRequest) {
+        changeRequest.isLicenseUploadComplete = value.isComplete;
+      }
+    }
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
@@ -128,7 +155,8 @@ export default {
     },
 
     //TODO: add it to the store
-    async createChangeRequest({commit, rootState }) {
+    async createChangeRequest({commit, rootState }, changeType) {
+
       console.log('creating a change REQ');
 
       checkSession();
@@ -136,6 +164,7 @@ export default {
         'applicationId': rootState.application.applicationId,
         'programYearId': rootState.application.programYearId,
         'providerType': rootState.organization.organizationProviderType == 'GROUP' ?  100000000 : 100000001,
+        'changeType' : changeType,
       };
       try {
         let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);
@@ -175,6 +204,28 @@ export default {
         throw error;
       }
 
+    },
+
+    async cancelChangeRequest({state, commit}, changeRequestId) {
+      console.log('CANCEL Change request: ', changeRequestId);
+      checkSession();
+      if (changeRequestId){
+        try {
+          let payload = {
+            externalStatus: 6,
+          };
+          let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+          let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+          if (index) {
+            state.changeRequestStore[index].externalStatus = 6;
+            commit('setChangeRequestStore', state.changeRequestStore);
+          }
+          return response;
+        } catch (e) {
+          console.log(`Failed to cancel change request with error - ${e}`);
+          throw e;
+        }
+      }
     },
 
     //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.

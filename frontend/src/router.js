@@ -64,6 +64,13 @@ Vue.use(VueMeta);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  scrollBehavior: function(to, from, savedPosition) {
+    if (to.hash) {
+      return {selector: to.hash};
+    } else {
+      return { x: 0, y: 0 };
+    }
+  },
   routes: [
     {
       path: PATHS.ROOT.HOME,
@@ -679,8 +686,8 @@ router.beforeEach((to, _from, next) => {
           } else {
             store.commit('navBar/clearGuids');
           }
-          if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
-            next(PATHS.impersonate);
+          if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
+            next(PATHS.ROOT.IMPERSONATE);
           } else {
             next();
           }
