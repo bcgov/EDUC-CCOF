@@ -258,6 +258,7 @@ export default {
       for (const file of newFilesAdded) {
         const obj = {
           ccof_change_requestid: this.$route.params?.changeRecGuid,
+          ccof_change_actionid: this.$route.params?.urlGuid,
           subject: this.changeType,
           notetext: file.notetext,
           ...this.fileMap.get(String(file.id))
