@@ -246,6 +246,40 @@ async function saveChangeRequestDocs(req, res) {
   }
 }
 
+function buildMTFIFacilityPayload(facility) {
+  // let payload = new MappableObjectForBack(facility, MtfiMappings);
+  // Program Year table has no logical name to bind??
+  // payload['ccof_programyear@odata.bind'] = `/accounts(${facility.ccfriApplicationId})`;
+  let payload = {
+    'ccof_facilityid': facility.facilityId,
+    'ccof_organization@odata.bind': `/accounts(${facility.organizationId})`,
+    'ccof_facility@odata.bind': `/accounts(${facility.facilityId})`,
+    'ccof_ccfri@odata.bind': `/ccof_applicationccfris(${facility.ccfriApplicationId})`,
+    'ccof_ccfri_facility@odata.bind': `/ccof_adjudication_ccfri_facilitys(${facility.ccfriFacilityId})`,
+    'ccof_programyear@odata.bind': `/ccof_program_years(${facility.programYearId})`,
+  };
+  return payload;
+}
+
+
+async function createMTFIFacilities(req, res) {
+  let retVal = [];
+  let facilities = req.body;
+  console.log('createMTFIFacilities ========================== ');
+  console.log(facilities);
+  try {
+    await Promise.all(facilities.map(async (facility) => {
+      let payload = buildMTFIFacilityPayload(facility);
+      console.log(payload);
+      let response = await postOperation('ccof_change_request_mtfis', payload);
+      retVal.push(response);
+    }));
+    return res.status(HttpStatus.CREATED).json(retVal);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getChangeRequest,
   createChangeRequest,
@@ -253,5 +287,6 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
-  updateChangeRequest
+  updateChangeRequest,
+  createMTFIFacilities
 };

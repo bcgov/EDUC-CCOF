@@ -265,7 +265,20 @@ export default {
         console.error(error);
         throw error;
       }
-    }
+    },
+
+    async createMTFIFacilities({},payload) {
+      console.log('Create MTFI Facilities:' , payload);
+      checkSession();
+      try {
+        let response = await ApiService.apiAxios.post('/api/changeRequest/mtfiFacilities', payload);
+        console.log(response);
+        return response.data;
+      } catch (error) {
+        console.info(`Failed to create MTFI Facilities - ${error}`);
+        throw error;
+      }
+    },
   },
 
 };
