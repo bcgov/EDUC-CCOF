@@ -59,9 +59,9 @@
                       ></v-radio>
                     </v-radio-group>
 
-                    <v-container v-if="!item.feeFrequency"></v-container>
 
-                    <v-container v-else class="ma-0 pa-0 gridContainer">
+
+                    <v-container class="ma-0 pa-0 gridContainer">
 
                       <div class=" feeTitle">
                         <span >Current Fees: </span>
@@ -151,95 +151,193 @@
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
-                    <!-- End Row Two of Grid-->
-                    <div class=" feeTitleInput">
-                        <span >Remaining fee increase limit: </span>
+                      <!-- End Row Two of Grid-->
+                      <div class=" feeTitleInput">
+                          <span >Remaining fee increase limit: </span>
+                        </div>
+
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
-                    <div class="feeTitle">
-                      <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                        v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                        <v-divider class="border-opacity-100" vertical></v-divider>
-                    </div>
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
 
-                    <div class="feeTitle">
-                      <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                        v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                        <v-divider class="border-opacity-100" vertical></v-divider>
-                    </div>
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
 
-                    <div class="feeTitle">
-                      <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                        v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                        <v-divider class="border-opacity-100" vertical></v-divider>
-                    </div>
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
 
-                    <div class="feeTitle">
-                      <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                        v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                        <v-divider class="border-opacity-100" vertical></v-divider>
-                    </div>
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
 
-                    <div class="feeTitle">
-                      <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                        v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                        <v-divider class="border-opacity-100" vertical></v-divider>
-                    </div>
+                      <div class="feeTitle">
+                        <v-text-field  class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
 
-                    <div class="feeTitle">
-                      <v-text-field  class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                        v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                        <v-divider class="border-opacity-100" vertical></v-divider>
-                    </div>
-
-
+                      <!-- End Row Three of Grid-->
 
 
 
                     </v-container>
+                    <br>
 
-                    <v-container>
+                    <br>
 
-                    <v-row>
-                      <v-col
-                        class=" col-md-2">
-                        <span class="summary-label pt-3 ">Oct:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="item.approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeOct')" label="October" prefix="$"/>
-                      </v-col>
-                      <v-col
-                        class=" col-md-2">
-                        <span class="summary-label pt-3 ">Nov:</span>
+                    <v-container class="ma-0 pa-0 gridContainer">
+
+                      <div class=" feeTitle">
+                        <span >Current Fees: </span>
+                      </div>
+
+                      <div class="feeTitle ">
+                        <span >Oct:</span>
+                        <v-text-field class="" dense flat solo hide-details readonly type="number" :disabled="false"  :rules="feeRules"
+                          v-model.number="item.approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeApr')" prefix="$"/>
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <span class=" ">Nov:</span>
+                        <v-text-field  class="" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                          v-model.number="item.approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeMay')" label="May" prefix="$"/>
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <span class="">Dec:</span>
                         <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
-                          v-model.number="item.approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeNov')" label="November" prefix="$"/>
-                      </v-col >
-                      <v-col
-                        class=" col-md-2">
-                        <span class="summary-label pt-3 ">Dec:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="item.approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeDec')" label="December" prefix="$"/>
-                      </v-col >
-                      <v-col
-                        class=" col-md-2">
-                        <span class="summary-label pt-3 ">Jan:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="item.approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeJan')" label="Jan" prefix="$"/>
-                      </v-col>
-                      <v-col
-                        class=" col-md-2">
-                        <span class="summary-label pt-3 ">Feb:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="item.approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeFeb')" label="Feb" prefix="$" />
-                      </v-col>
-                      <v-col
-                        class=" col-md-2">
-                        <span class="summary-label pt-3 ">Mar:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="item.approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeMar')" label="March" prefix="$" />
-                      </v-col>
-                    </v-row>
+                          v-model.number="item.approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeJun')" label="June" prefix="$"/>
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
 
+                      <div class="feeTitle">
+                      <span class="">Jan:</span>
+                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                          v-model.number="item.approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeJul')" label="July" prefix="$"/>
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <span class=" ">Feb:</span>
+                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="item.approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeAug')" label="August" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <span class="">Mar:</span>
+                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="item.approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeSep')" label="September" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <!-- End Row One of Grid-->
+
+                      <div class=" feeTitleInput">
+                        <span >New Parent Fees: </span>
+                      </div>
+
+                      <div class="inputBoxWrapper ">
+                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="inputBoxWrapper ">
+                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="inputBoxWrapper ">
+                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="inputBoxWrapper ">
+                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="inputBoxWrapper ">
+                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="inputBoxWrapper ">
+                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <!-- End Row Two of Grid-->
+                      <div class=" feeTitleInput">
+                          <span >Remaining fee increase limit: </span>
+                        </div>
+
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <div class="feeTitle">
+                        <v-text-field  class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
+                          <v-divider class="border-opacity-100" vertical></v-divider>
+                      </div>
+
+                      <!-- End Row Three of Grid-->
+
+
+                      <br>
                     </v-container>
+
                   </div>
                 </v-card-text>
             </v-card>
