@@ -65,19 +65,27 @@ export default {
       state.newFacilityList = newFacilityList;
     },//may not need this now
     setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; },
+    addUserProfileChangeRequests:(state, value) => {
+      const item = {
+        changeRequestId: value,
+        externalStatus: 'INCOMPLETE'
+      };
+      state.userProfileChangeRequests.push(item);
+    },
     setCRIsEceweComplete:(state, value) => {
-      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
-      if (changeRequest) {
-        changeRequest.isEceweComplete = value.isComplete;
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        item.isEceweComplete = value.isComplete;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     },
     setCRIsLicenseComplete:(state, value) => {
-      console.log('CHANGE REQUESTID : ', value.changeRequestId);
-
-      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
-      console.log('CHANGE REQUEST FOUND: ', changeRequest);
-      if (changeRequest) {
-        changeRequest.isLicenseUploadComplete = value.isComplete;
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        item.isLicenseUploadComplete = value.isComplete;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     }
   },

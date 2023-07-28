@@ -357,7 +357,7 @@
 </template>
 <script>
 import { isChangeRequest } from '@/utils/common';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, CHANGE_URL_PREFIX } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
@@ -428,7 +428,6 @@ export default {
   },
   data() {
     return {
-      CHANGE_URL_PREFIX: CHANGE_URL_PREFIX,
       isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
