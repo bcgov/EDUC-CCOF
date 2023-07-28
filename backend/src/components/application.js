@@ -358,11 +358,13 @@ async function submitApplication(req, res) {
 async function printPdf(req, numOfRetries = 0)  {
   const url = `${req.headers.referer}/printable`;
 
+  const browser = await puppeteer.launch({headless: 'new', devtools: false});
+
   try {
-    const browser = await puppeteer.launch({headless: false, devtools: false});
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
+    await page.setDefaultTimeout(300000); //set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
 
     page.on('request', (request) => {
       const headers = request.headers();
@@ -372,9 +374,9 @@ async function printPdf(req, numOfRetries = 0)  {
 
     log.info('printPdf :: starting page load');
     await page.goto(url, {waitUntil: 'networkidle0'});
-    await page.waitForSelector('#signatureTextField', {visible: true, timeout: 360000});
+    await page.waitForSelector('#signatureTextField', {visible: true});
     log.info('printPdf :: page loaded starting pdf creation');
-    await page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, width: 1280, timeout: 360000});
+    await page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
     log.info('printPdf :: pdf created starting compression');
     const pdf = path.resolve('./', 'myPdf.pdf');
     const buffer = await compress(pdf);
@@ -384,6 +386,7 @@ async function printPdf(req, numOfRetries = 0)  {
     await browser.close();
   } catch (e) {
     log.error(e);
+    await browser.close();
 
     if (numOfRetries >= 3) {
       log.info('printPdf :: maximum number of retries reached');
