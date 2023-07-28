@@ -40,7 +40,7 @@
                               @click:clear="deleteFile(item)"
                               :id="item.facilityId"
                               :accept="fileAccept"
-                              :disabled="false"
+                              :disabled="isLocked"
                               placeholder="Select your file"
                               :error-messages="fileInputError"
                               @change="selectFile"

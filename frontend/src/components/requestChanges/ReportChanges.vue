@@ -121,7 +121,7 @@
             <v-btn
               v-if="isUpdateButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="updateButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              @click="updateButton(item.index, item.changeType, item.changeActionId, item.changeRequestId)"
               outlined
               :width="changeHistoryButtonWidth"
             >
@@ -450,7 +450,7 @@ export default {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
     },
-    updateButton(changeType, changeActionId = null,  changeRequestId = null, index){
+    updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       if (changeType == 'PDF_CHANGE'){
