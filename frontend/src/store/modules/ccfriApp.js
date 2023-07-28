@@ -105,6 +105,11 @@ export default {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;
       }
     },
+    removeCCFRIFromStore:(state, ccfriId ) => {
+      if (ccfriId) {
+        delete state.ccfriStore[ccfriId];
+      }
+    },
     addCCFRIMedianToStore: (state, {ccfriId, ccfriMedian} ) => {
       state.ccfriMedianStore[ccfriId] = ccfriMedian;
     },
