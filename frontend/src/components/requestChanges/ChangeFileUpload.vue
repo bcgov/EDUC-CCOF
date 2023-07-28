@@ -160,10 +160,10 @@ export default {
       fileRules: [],
       editedIndex: -1,
       editedItem: {
-        ccof_change_requestid: '',
+        ccof_change_action_id: '',
       },
       defaultItem: {
-        ccof_change_requestid: this.$route.params.changeRecGuid,
+        ccof_change_action_id: this.$route.params.urlGuid,
         subject : this.changeType
       },
       isFileUploaded: true,
@@ -232,7 +232,7 @@ export default {
       const payload = [];
       for (const file of newFilesAdded) {
         const obj = {
-          ccof_change_requestid: this.$route.params?.changeRecGuid,
+          ccof_change_action_id: this.$route.params?.urlGuid,
           subject: this.changeType,
           notetext: file.notetext,
           ...this.fileMap.get(String(file.id))
