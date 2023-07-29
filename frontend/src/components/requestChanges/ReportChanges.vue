@@ -82,7 +82,7 @@
           :headers="headers"
           :items="allChangeRequests"
           :height = "maxChangeHistoryTableHeight"
-          mobile-breakpoint="md"
+          mobile-breakpoint="1264"
           fixed-header
           :item-class="getChangeRequestStyle"
           class="elevation-4 my-4"
@@ -94,7 +94,7 @@
           <template v-slot:item.facilityNames="{ item }">
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <div v-on="on">{{ truncateString(item.facilityNames, facilityNamesStringMaxLength) }}</div>
+                <div v-on="on" class="tableText" :style="maxfacilityNamesStringLength">{{ item.facilityNames }}</div>
               </template>
               <div class="tableTooltip">{{ item.facilityNames }}</div>
             </v-tooltip>
@@ -256,14 +256,20 @@ export default {
     headers() {
       return this.organizationProviderType == 'GROUP' ? this.headersGroup : this.headersFamily;
     },
-    facilityNamesStringMaxLength() {
+    maxfacilityNamesStringLength() {
       switch (this.$vuetify.breakpoint.name) {
-      case 'xxl': return (Math.floor(this.$vuetify.breakpoint.width / 100) + 50);
-      case 'xl': return (Math.floor(this.$vuetify.breakpoint.width / 100) + 50);
-      case 'lg': return (Math.floor(this.$vuetify.breakpoint.width / 100) + 15);
-      case 'md': return (Math.floor(this.$vuetify.breakpoint.width / 100) + 60);
-      case 'sm': return (Math.floor(this.$vuetify.breakpoint.width / 100) + 40);
-      default: return 30;
+      case 'xl':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 500) + 'px');
+      case 'lg':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 50) + 'px');
+      case 'md':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
+      case 'sm':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
+      case 'xs':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px');
+      default:
+        return ('--maxLength: 100px');
       }
     },
     unlockCCFRIList() {
@@ -344,11 +350,6 @@ export default {
         });
       }
       return str.slice(0, -2);
-    },
-    truncateString(str, maxLength){
-      if (str.length > maxLength)
-        return str.substring(0, maxLength) + '...';
-      return str;
     },
     getExternalStatusString(status){
       switch (status){
@@ -569,5 +570,11 @@ export default {
 .tableTooltip {
   max-width: 70em;
   overflow-wrap: break-word;
+}
+.tableText {
+  max-width: var(--maxLength); /* the element needs a fixed width (in px, em, %, etc) */
+  overflow: hidden; /* make sure it hides the content that overflows */
+  white-space: nowrap; /* don't break the line */
+  text-overflow: ellipsis; /* give the beautiful '...' effect */
 }
 </style>
