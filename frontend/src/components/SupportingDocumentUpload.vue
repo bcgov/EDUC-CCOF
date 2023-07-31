@@ -144,16 +144,13 @@ export default {
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
     ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
-        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(!currentCR){
+        if(this.isSupportingDocumentsUnlocked||!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.unlockSupportingDocuments){
-          return false;
-        }
-        else if(currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
         return false;

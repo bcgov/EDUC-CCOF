@@ -93,16 +93,13 @@ export default {
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (isChangeRequest(this)) {
-        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(!currentCR){
+        if(this.isCCOFUnlocked||!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.unlockCCOF){
-          return false;
-        }
-        else if(currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
         return false;

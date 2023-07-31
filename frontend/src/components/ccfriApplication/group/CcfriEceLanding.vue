@@ -132,16 +132,16 @@ export default {
     ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
     ...mapGetters('navBar', ['previousPath','isChangeRequest']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     isReadOnly(){
       if (this.unlockedFacilities) {
         return false;
       }
       else if(this.isChangeRequest){
-        let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if (!currentCR){
+        if (!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
       }

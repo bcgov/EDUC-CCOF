@@ -38,6 +38,27 @@ export default {
     // eslint-disable-next-line no-unused-vars
     changeRequestStatus: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
+    },
+    isCCOFUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockCCOF;
+    },
+    isEceweUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockEcewe;
+    },
+    isLicenseUploadUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockLicenseUpload;
+    },
+    isSupportingDocumentsUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockSupportingDocuments;
+    },
+    isDeclarationUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockDeclaration;
+    },
+    isChangeRequestUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockChangeRequest;
+    },
+    isOtherDocumentsUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockOtherChangesDocuments;
     }
   },
   mutations: {

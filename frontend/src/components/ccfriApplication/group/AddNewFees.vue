@@ -473,11 +473,10 @@ export default {
         return false;
       }
       else if(this.isChangeRequest){
-        let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if (!currentCR){
+        if (!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
       }
