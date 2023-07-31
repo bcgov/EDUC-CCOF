@@ -1599,8 +1599,11 @@ export default {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
+    ...mapState('navBar',['changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     currentFacility() {
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
@@ -1608,6 +1611,13 @@ export default {
       //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockRfi === 1) {
         return false;
+      }else if(this.isChangeRequest){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
       }

@@ -603,6 +603,30 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrlGuid(PATHS.CCFRI_RFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_NMF),
+      name: 'change-request-new-facilities',
+      component: NMF,
+      meta: {
+        pageTitle: 'New Facilities',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
       path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'change-request-ECEWE-Eligibility',
       component: EceweEligibility,

@@ -130,12 +130,13 @@ export default {
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments']),
+    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
-      if (this.unlockedFacilities) {
+      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid)[0];
+      if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         return false;
       }
-      return (this.loadedChangeRequest?.externalStatus === 'SUBMITTED');
+      return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
   },
   methods: {
