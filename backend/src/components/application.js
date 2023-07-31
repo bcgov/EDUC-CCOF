@@ -6,7 +6,8 @@ const {
   patchOperationWithObjectId,
   deleteOperationWithObjectId,
   sleep,
-  getLabelFromValue
+  getLabelFromValue,
+  postApplicationSummaryDocument
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
@@ -28,8 +29,6 @@ const {
 const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
 const puppeteer = require('puppeteer');
-const path = require('path');
-const fs = require('fs');
 const {compress} = require('compress-pdf');
 
 async function renewCCOFApplication(req, res) {
@@ -376,14 +375,21 @@ async function printPdf(req, numOfRetries = 0)  {
     await page.goto(url, {waitUntil: 'networkidle0'});
     await page.waitForSelector('#signatureTextField', {visible: true});
     log.info('printPdf :: page loaded starting pdf creation');
-    await page.pdf({path: 'myPdf.pdf', displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
-    log.info('printPdf :: pdf created starting compression');
-    const pdf = path.resolve('./', 'myPdf.pdf');
-    const buffer = await compress(pdf);
-    const compressedPdf = path.resolve('./', 'myPdf.pdf');
-    await fs.promises.writeFile(compressedPdf, buffer);
+    const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
+    log.info('printPdf :: pdf buffer created starting compression');
+    const compressedPdfBuffer = await compress(pdfBuffer);
     log.info('printPdf :: compression completed');
     await browser.close();
+
+    let payload = {
+      ccof_applicationid: req.params.applicationId,
+      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+      filesize: compressedPdfBuffer.byteLength,
+      subject: 'TEST PDF APPLICATION SUMMARY',
+      documentbody: compressedPdfBuffer.toString('base64')
+    };
+
+    await postApplicationSummaryDocument(payload);
   } catch (e) {
     log.error(e);
     await browser.close();
@@ -399,6 +405,19 @@ async function printPdf(req, numOfRetries = 0)  {
       await printPdf(req, retryCount);
     }
   }
+}
+
+//returns current date in DDMMMYYYY format when saving pdf file name
+function getCurrentDateForPdfFileName() {
+  const date = new Date();
+  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+  });
+  const month = dateTimeFormatter.format(date).toUpperCase();
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  return `${day}${month}${year}`;
 }
 
 function getFacilityInMap(map, facilityId) {

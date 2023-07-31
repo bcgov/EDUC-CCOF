@@ -77,6 +77,7 @@ export default {
       checkSession();
       try {
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.application.applicationId)).data;
+        console.log(payload);
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
@@ -89,7 +90,8 @@ export default {
         agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
-        declarationBStatus:state.model?.declarationBStatus };
+        declarationBStatus:state.model?.declarationBStatus,
+        summaryDeclarationApplicationName: state.summaryModel?.application?.name};
       try {
         if ((Object.keys(reLockPayload).length > 0)) {
           payload = {...payload, ...reLockPayload};
