@@ -1603,6 +1603,7 @@ export default {
     ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     currentFacility() {
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
@@ -1611,8 +1612,10 @@ export default {
       if (this.currentFacility.unlockRfi === 1) {
         return false;
       }else if(this.isChangeRequest){
-        let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(currentCR.externalStatus!=='INCOMPLETE'){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
       } else if (this.applicationStatus === 'SUBMITTED') {

@@ -176,18 +176,18 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapState('navBar', ['changeRequestId']),
+    ...mapGetters('reportChanges',['isChangeRequestUnlocked','isOtherDocumentsUnlocked']),
     getFilteredDocs(){
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
     isReadOnly() {
-      let currentCR = this.userProfileChangeRequests.filter(el=>el.changeRequestId===this.changeRequestId)[0];
       if(this.changeType==='NOTIFICATION_FORM'){
-        if(currentCR.unlockChangeRequest){
+        if(this.isChangeRequestUnlocked){
           return false;
         } 
       }
       else if(this.changeType==='SUPPORTING_DOC'){
-        if(currentCR.unlockOtherChangesDocuments){
+        if(this.isOtherDocumentsUnlocked){
           return false;
         }
       }

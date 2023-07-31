@@ -82,6 +82,7 @@ export default {
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
     filteredLicenseUploadData() {
       if (this.isChangeRequest) {
         return this.licenseUploadData.filter(el => el.changeRequestId === this.changeRequestId);
@@ -91,14 +92,10 @@ export default {
     },
     isLocked() {
       if(this.isChangeRequest){
-        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(!currentCR){
+        if(this.isLicenseUploadUnlocked||!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.unlockLicenseUpload){
-          return false;
-        }
-        else if(currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
         return false;

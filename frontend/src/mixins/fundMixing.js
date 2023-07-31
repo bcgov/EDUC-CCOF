@@ -16,17 +16,15 @@ export default {
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
     ...mapState('navBar',['changeRequestId']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
-        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(!currentCR){
+        console.log(this.isCCOFUnlocked);
+        if(this.isCCOFUnlocked||!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.unlockCCOF){
-          return false;
-        }
-        else if (currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
         return false;

@@ -165,6 +165,7 @@ export default {
     ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -187,14 +188,10 @@ export default {
     isReadOnly() {
       //will only return true if set by a ministry user in dynamics
       if (isChangeRequest(this)) {
-        let currentCR = this.userProfileChangeRequests?.filter(el=>el.changeRequestId===this.changeRequestId)[0];
-        if(!currentCR){
+        if(this.isEceweUnlocked||!this.changeRequestStatus){
           return false;
         }
-        else if(currentCR.unlockEcewe){
-          return false;
-        }
-        else if(currentCR.externalStatus!=='INCOMPLETE'){
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
         return false;
