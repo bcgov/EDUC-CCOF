@@ -211,10 +211,11 @@
 
                 <v-col class="col-md-2 col-12">
                   <v-text-field :disabled="isReadOnly"
-                                type="number"
+                                type="number" @wheel="$event.target.blur()"
                                 outlined
                                 :rules="rules.required"
                                 v-model.number="expense.expense"
+                                @input="convertBlankNumberToNull(expense,'expense')"
                                 prefix="$"
                                 label="Expense"
                   />
@@ -367,17 +368,19 @@
                       outlined
                       :rules="rules.required"
                       label="Amount Received"
-                      type="number"
+                      type="number" @wheel="$event.target.blur()"
                       v-model.number="fundInfo.amount"
+                      @input="convertBlankNumberToNull(fundInfo,'amount')"
                       prefix="$"/>
                   </v-col>
 
                   <v-col class="col-md-2 col-12 ">
                     <v-text-field
                       :disabled="isReadOnly"
-                      type="number"
+                      type="number" @wheel="$event.target.blur()"
                       prefix="$"
                       v-model.number="fundInfo.expenses"
+                      @input="convertBlankNumberToNull(fundInfo,'expenses')"
                       label="Expense"
                       outlined
                       clearable
@@ -642,9 +645,10 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     class=""
                     v-model.number="obj.staffNumber"
+                    @input="convertBlankNumberToNull(obj,'staffNumber')"
                     label="Number of Staff Recieving Wage Increase"
                     outlined
                     clearable
@@ -668,8 +672,9 @@
                   <v-text-field
                     :disabled="isReadOnly"
                     prefix="$"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     v-model.number="obj.wageBeforeIncrease"
+                    @input="convertBlankNumberToNull(obj,'wageBeforeIncrease')"
                     label="Wage before increase"
                     outlined
                     clearable
@@ -681,8 +686,9 @@
                   <v-text-field
                     :disabled="isReadOnly"
                     prefix="$"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     v-model.number="obj.wageAfterIncrease"
+                    @input="convertBlankNumberToNull(obj,'wageAfterIncrease')"
                     label="Wage After increase"
                     outlined
                     clearable
@@ -693,10 +699,11 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     outlined
                     :rules="[...rules.required, rules.min(0), rules.max(168)]"
                     v-model.number="obj.averageHours"
+                    @input="convertBlankNumberToNull(obj,'averageHours')"
                     label="Average hours per week at this facility"
                   />
                 </v-col>
@@ -1085,10 +1092,11 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     outlined
                     :rules="rules.required"
                     v-model.number="obj.expense"
+                    @input="convertBlankNumberToNull(obj,'expense')"
                     prefix="$"
                   />
                 </v-col>
@@ -1313,10 +1321,11 @@
                 <v-col class="col-md-2 col-12">
                   <v-text-field
                     :disabled="isReadOnly"
-                    type="number"
+                    type="number" @wheel="$event.target.blur()"
                     outlined
                     :rules="rules.required"
                     v-model.number="indigExpense.expense"
+                    @input="convertBlankNumberToNull(indigExpense,'expense')"
                     prefix="$"
                   />
                 </v-col>
@@ -1487,6 +1496,7 @@
 </template>
 <script>
 import alertMixin from '@/mixins/alertMixin';
+import globalMixin from '@/mixins/globalMixin';
 import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
 import {isEqual} from 'lodash';
@@ -1506,7 +1516,7 @@ let model = {
 // let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
-  mixins: [alertMixin],
+  mixins: [alertMixin, globalMixin],
   name: 'CcfriRequestMoreInfo',
   data() {
     return {
@@ -1587,16 +1597,27 @@ export default {
   },
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
-    ...mapState('app', ['programYearList', 'navBarList']),
+    ...mapState('app', ['programYearList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
+    ...mapState('navBar',['changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     currentFacility() {
-      return this.navBarList.find(element => element.ccfriApplicationId == this.$route.params.urlGuid);
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockRfi === 1) {
         return false;
+      }else if(this.isChangeRequest){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
       }
@@ -1671,19 +1692,16 @@ export default {
   methods: {
     ...mapActions('rfiApp', ['loadRfi', 'saveRfi']),
     ...mapMutations('rfiApp', ['setRfiModel']),
-    ...mapMutations('app', ['refreshNavBar']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
+    ...mapMutations('navBar', ['setNavBarRFIComplete']),
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
-    async nextBtnClicked() {
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    nextBtnClicked() {
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();
     },
-    async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
     async save(showNotification) {
       this.processing = true;
@@ -1720,7 +1738,7 @@ export default {
 
       this.setRfiModel({...this.model});
       let ccfriId = this.$route.params.urlGuid;
-      this.currentFacility.isRfiComplete = this.isFormComplete;
+      this.setNavBarRFIComplete({ccfriId: ccfriId, complete: this.isFormComplete});
       try {
         let friApplicationGuid = await this.saveRfi({ccfriId: ccfriId, isRfiComplete: this.isFormComplete});
         if (friApplicationGuid) {

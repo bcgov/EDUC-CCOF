@@ -16,7 +16,7 @@
       class = "mx-0 justify-end"
       @click="toggleAll()"
       dark color='#003366'
-      :disabled="applicationStatus === 'SUBMITTED'"
+      :disabled="isReadOnly"
       >
       Opt in All Facilities
     </v-btn>
@@ -85,7 +85,7 @@
       </LargeButtonContainer>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
   </v-container>
 </template>
@@ -94,12 +94,14 @@
 
 
 
-import { mapState, mapMutations, mapActions } from 'vuex';
+import { mapState, mapMutations, mapGetters } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import { PATHS } from '@/utils/constants';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
+
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -125,14 +127,26 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'applicationId']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'ccfriOptInComplete', 'programYearList']),
-
+    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
+    ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
+    ...mapGetters('navBar', ['previousPath','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     isReadOnly(){
       if (this.unlockedFacilities) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      else if(this.isChangeRequest){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+      }
+      else
+        return (this.applicationStatus === 'SUBMITTED');
     },
     unlockedFacilities(){
       return this.navBarList.some(facility => facility.unlockCcfri);
@@ -152,8 +166,7 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
-    ...mapActions('navBar', ['getPreviousPath']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
@@ -163,11 +176,8 @@ export default {
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
     },
-    async previous() {
-      console.log(this.ccfriOptInOrOut);
-      console.log(Object.values(this.ccfriOptInOrOut).includes(undefined));
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    previous() {
+      this.$router.push(this.previousPath);
     },
     //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
     isPageComplete(){
@@ -195,19 +205,30 @@ export default {
 
       //if all facilites are opt OUT, go to ECE WE
       if(!firstOptInFacility){
-        this.$router.push({path : `${PATHS.eceweEligibility}`});
+        //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
+        if (isChangeRequest(this) ) {
+          this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
+        }
+        else {
+          this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
+        }
+      }
+      //if application is a change request, go to add new fees
+      else if (isChangeRequest(this) ) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_NEW_FEES, firstOptInFacility.changeRequestId, firstOptInFacility.ccfriApplicationId));
+
       }
       //if application locked, send to add new fees
-      else if (this.isReadOnly) {
-        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+      else if (this.isReadOnly ) {
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
       }
       //if CCFRI is being renewed, go to page that displays fees
       else if (this.isRenewal){
-        this.$router.push({path : `${PATHS.currentFees}/${firstOptInFacility.ccfriApplicationId}`});
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
       }
       // else go directly to addNewFees page
       else {
-        this.$router.push({path : `${PATHS.addNewFees}/${firstOptInFacility.ccfriApplicationId}`});
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
       }
     },
     validateForm() {
@@ -219,27 +240,35 @@ export default {
 
       for (let i = 0; i < this.navBarList.length; i++) {
       //change this to only send payloads with value chosen --- don't send undefined
-
         if (!ccfriOptInOrOut[i]){
           continue;
         }
         if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          this.navBarList[i].ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          const userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
+          if (userProfileFacility) {
+            userProfileFacility.ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          }
           payload.push( {
             applicationID : this.applicationId, //CCOF BASE application ID
             facilityID : this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
-            ccfriApplicationId: this.navBarList[i].ccfriApplicationId
+            ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
+            changeRequestFacilityId: this.navBarList[i].changeRequestNewFacilityId? this.navBarList[i].changeRequestNewFacilityId : undefined,
+            //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
+            //so it can be linked in the backend. It works with the above hardcoded guid ^
+            //I did not implement fully because it sounds like we might get that info back from profiderProfile
           });
         }
       }//end for loop
+      //Refresh the filtered list
+      this.refreshNavBarList();
       if (payload.length > 0) {
         try {
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
 
           response.data.forEach(item => {
             if (item.ccfriApplicationId) {
-              this.navBarList.find(facility => {
+              this.userProfileList.find(facility => {
                 if (facility.facilityId == item.facilityId) {
                   facility.ccfriApplicationId = item.ccfriApplicationId;
                 }

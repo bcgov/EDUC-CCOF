@@ -105,6 +105,11 @@ export default {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;
       }
     },
+    removeCCFRIFromStore:(state, ccfriId ) => {
+      if (ccfriId) {
+        delete state.ccfriStore[ccfriId];
+      }
+    },
     addCCFRIMedianToStore: (state, {ccfriId, ccfriMedian} ) => {
       state.ccfriMedianStore[ccfriId] = ccfriMedian;
     },
@@ -167,9 +172,22 @@ export default {
         }
       }
     },
-    async loadCCFRIFacility({getters, commit}, ccfriId) {
+    /* eslint-disable no-empty-pattern */
+    async getPreviousCCFRI({}, ccfriId) {
+      try {
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
+        return response.data.previousCcfriId;
+      } catch(e) {
+        console.log(`Failed to get existing Facility with error - ${e}`);
+        throw e;
+      }
+    },
+    async loadCCFRIFacility({getters, commit, dispatch}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
+      console.log('what is loaded in loadFac', CCFRIFacilityModel);
+      await dispatch('getPreviousCCFRI' ,ccfriId);
+
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
         commit('setLoadedModel', deepCloneObject(CCFRIFacilityModel)); //copy the data from the ccfri facility model into a new object - otherwsie loadedModel will change also when user modifes the page
@@ -179,8 +197,15 @@ export default {
           throw 'unable to  load facility because you are not logged in';
         }
         try {
+          console.log('loading the ccfri');
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
+          console.log('the resp', response);
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});
+
+          if(response.data.previousCcfriId){
+            let oldCcfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${response.data.previousCcfriId}`);
+            commit('addCCFRIToStore', {ccfriId: response.data.previousCcfriId, CCFRIFacilityModel: oldCcfri.data});
+          }
           commit('setCCFRIFacilityModel', response.data);
           commit('setLoadedModel', deepCloneObject(response.data));
 
@@ -224,7 +249,7 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if (!rootState.app.isRenewal || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.app.navBarList, state.loadedModel.facilityId)) ){
+        if (!rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
           console.log(rootState.app.isRenewal);
           console.log(state.CCFRIFacilityModel.existingFeesCorrect);
           console.log(prevCcfriApp);
@@ -299,7 +324,6 @@ export default {
         //this handles the edge case of a user entering fees for CCFRI then going back to CCOF
         //and removing that child care type for new applications
         state.CCFRIFacilityModel.childCareTypes.forEach((childCareCat) => {
-          console.log('deleteing');
           let found = response.data.find(searchItem => {
             return (searchItem.childCareCategoryId == childCareCat.childCareCategoryId);
           });

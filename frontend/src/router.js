@@ -10,10 +10,11 @@ import ErrorPage from '@/components/ErrorPage.vue';
 import LoginError from '@/components/LoginError.vue';
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import authStore from './store/modules/auth';
+
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -49,6 +50,12 @@ import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
+import ReportChange from '@/components/requestChanges/ReportChanges';
+import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
+
+import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
+import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -56,9 +63,17 @@ Vue.use(VueMeta);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  // eslint-disable-next-line no-unused-vars
+  scrollBehavior: function(to, from, savedPosition) {
+    if (to.hash) {
+      return {selector: to.hash};
+    } else {
+      return { x: 0, y: 0 };
+    }
+  },
   routes: [
     {
-      path: '/',
+      path: PATHS.ROOT.HOME,
       name: 'landing-page',
       component: LandingPage,
       meta: {
@@ -101,7 +116,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.estimator,
+      path: PATHS.ROOT.ESTIMATOR,
       name: 'ccfri-estimator',
       component: CcfriEstimator,
       meta: {
@@ -109,154 +124,180 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.selectApplicationType,
+      path: pcfUrl(PATHS.SELECT_APPLICATION_TYPE),
       name: 'Select CCOF Application Type',
       component: CcofApplicationTypeSelector,
       meta: {
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.orgInfo,
+      path: pcfUrl(PATHS.CCOF_GROUP_ORG),
       name: 'Group Organization Information',
       component: GroupOrganizationInformation,
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.family.orgInfo,
+      path: pcfUrl(PATHS.CCOF_FAMILY_ORG),
       name: 'Family Organization Information',
       component: FamilyOrganization,
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
 
     {
-      path: PATHS.family.eligibility,
+      path: pcfUrl(PATHS.CCOF_FAMILY_ELIGIBILITY),
       name: 'Eligibility',
       component: Eligibility,
       meta: {
         pageTitle: 'Information to Determine Eligibility',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.family.eligibility + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY),
       name: 'Eligibility GUID',
       component: Eligibility,
       meta: {
         pageTitle: 'Information to Determine Eligibility',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.family.fundAmount,
+      path: pcfUrl(PATHS.CCOF_FAMILY_FUNDING),
       name: 'FamilyFunding',
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.family.fundAmount + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING),
       name: 'FamilyFunding GUID',
       component: FamilyFunding,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.facInfo,
+      path: pcfUrl(PATHS.CCOF_GROUP_FACILITY),
       name: 'Facility Information',
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.facInfo + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY),
       name: 'Facility Information Guid',
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.fundAmount,
+      path: pcfUrl(PATHS.CCOF_GROUP_FUNDING),
       name: 'Funding Amount',
       component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.fundAmount + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING),
       name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.confirmation,
+      path: pcfUrl(PATHS.CCOF_GROUP_CONFIRM),
       name: 'Application Confirmation',
       component: ApplicationConfirmation,
       meta: {
         pageTitle: 'Application Confirmation',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.licenseUpload,
+      path: pcfUrl(PATHS.LICENSE_UPLOAD),
       name: 'Licence Upload',
       component: LicenseUpload,
       meta: {
         pageTitle: 'Licence Upload',
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.group.renewOrganization,
+      path: changeUrl(PATHS.LICENSE_UPLOAD),
+      name: 'Change Request Licence Upload',
+      component: LicenseUpload,
+      meta: {
+        pageTitle: 'Licence Upload',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: pcfUrl(PATHS.RENEW_CONFIRM),
       name: 'Renew Organization',
       component: RenewOrganization,
       meta: {
         pageTitle: 'Renew Organization',
         requiresAuth: true,
         showNavBar: false,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     // {
@@ -271,49 +312,53 @@ const router = new VueRouter({
     //   }
     // },
     {
-      path: PATHS.eceweEligibility,
+      path: pcfUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'ECEWE Eligibility',
       component: EceweEligibility,
       meta: {
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.eceweFacilities,
+      path: pcfUrl(PATHS.ECEWE_FACILITITES),
       name: 'ECEWE Facilities',
       component: EceweFacilities,
       meta: {
         pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
         requiresAuth: true,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.ECEWE
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.supportingDocumentUpload,
+      path: pcfUrl(PATHS.SUPPORTING_DOCS),
       name: 'Supporting Document Upload',
       component: SupportingDocumentUpload,
       meta: {
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.summaryDeclaration,
+      path: pcfUrl(PATHS.SUMMARY_DECLARATION),
       name: 'Summary and Declaration',
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: true
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.ccfriHome,
+      path: pcfUrl(PATHS.CCFRI_HOME),
       name: 'ccfri-home',
       component: CcfriEceLandingPage,
       meta: {
@@ -321,10 +366,11 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.addNewFees,
+      path: pcfUrl(PATHS.CCFRI_NEW_FEES),
       name: 'ccfri-add-fees',
       component: AddNewFees,
       meta: {
@@ -332,10 +378,11 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.addNewFees + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_NEW_FEES),
       name: 'ccfri-add-fees-guid',
       component: AddNewFees,
       meta: {
@@ -343,11 +390,11 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
-
     {
-      path: PATHS.ccfriRequestMoreInfo + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_RFI),
       name: 'ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
@@ -355,10 +402,11 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.NMF + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_NMF),
       name: 'new-facilities',
       component: NMF,
       meta: {
@@ -366,10 +414,11 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.currentFees + '/:urlGuid',
+      path: pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES),
       name: 'ccfri-current-fees-guid',
       component: currentFees,
       meta: {
@@ -377,10 +426,11 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
-      path: PATHS.currentFees ,
+      path: pcfUrl(PATHS.CCFRI_CURRENT_FEES),
       name: 'ccfri-current-fees',
       component: currentFees,
       meta: {
@@ -388,6 +438,7 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
       }
     },
     {
@@ -407,7 +458,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.impersonate,
+      path: PATHS.ROOT.IMPERSONATE,
       name: 'impersonate',
       component: Impersonate,
       meta: {
@@ -416,7 +467,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.messagesPage,
+      path: PATHS.ROOT.MESSAGES,
       name: 'messagesPage',
       component: MessagesPage,
       meta: {
@@ -437,6 +488,201 @@ const router = new VueRouter({
       name: 'backend-session-expired',
       component: BackendSessionExpired
     },
+    {
+      path: PATHS.ROOT.CHANGE_LANDING,
+      name: 'Report Change',
+      component: ReportChange,
+      meta: {
+        pageTitle: 'Report Changes',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM),
+      name: 'change-notification-form',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM),
+      name: 'change-notification-form-guid',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.PREFIX.CHANGE_REQUEST + PATHS.CCOF_GROUP_FACILITY, //TODO. there is no change request here.
+      name: 'change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.CCOF_GROUP_FACILITY),
+      name: 'existing-change-request-facility-information',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'change-request-facility-information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCOF_GROUP_FACILITY),
+      name: 'change-request-facility-information-guid',
+      component: FacilityInformation,
+      meta: {
+        pageTitle: 'Facility Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCOF_GROUP_FUNDING),
+      name: 'change-request-funding-guid',
+      component: GroupFundAmount,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.CCOF_GROUP_CONFIRM),
+      name: 'change-request-new-facility-confirmation',
+      component: ApplicationConfirmation,
+      meta: {
+        pageTitle: 'Application Confirmation',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.CCFRI_HOME),
+      name: 'change-request-ccfri-home',
+      component: CcfriEceLandingPage,
+      meta: {
+        pageTitle: 'CCFRI Home',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_NEW_FEES),
+      name: 'change-request-ccfri-add-fees-guid',
+      component: AddNewFees,
+      meta: {
+        pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_RFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_NMF),
+      name: 'change-request-new-facilities',
+      component: NMF,
+      meta: {
+        pageTitle: 'New Facilities',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
+      name: 'change-request-ECEWE-Eligibility',
+      component: EceweEligibility,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+
+      }
+    },
+    {
+      path: changeUrl(PATHS.ECEWE_FACILITITES),
+      name: 'change-request-ECEWE-Facilities',
+      component: EceweFacilities,
+      meta: {
+        pageTitle: PAGE_TITLES.ECEWE_APPLICATION,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.ECEWE,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUPPORTING_DOCS),
+      name: 'change-request-Supporting-Document-Upload',
+      component: SupportingDocumentUpload,
+      meta: {
+        pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
+        requiresAuth: true,
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION),
+      name: 'Summary and Declaration New Facility',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      name: 'Summary and Declaration Report Changes',
+      component: SummaryDeclarationReportChanges,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
+      }
+    },
   ]
 });
 
@@ -447,8 +693,15 @@ router.beforeEach((to, _from, next) => {
         next('/token-expired');
       }else {
         store.dispatch('auth/getUserInfo').then(() => {
-          if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.impersonate) {
-            next(PATHS.impersonate);
+          if (to?.params?.changeRecGuid) {
+            store.commit('navBar/setChangeRequestId', to.params.changeRecGuid);
+          } else if (to?.params?.programYearGuid) {
+            store.commit('navBar/setProgramYearId', to.params.programYearGuid);
+          } else {
+            store.commit('navBar/clearGuids');
+          }
+          if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
+            next(PATHS.ROOT.IMPERSONATE);
           } else {
             next();
           }
@@ -479,15 +732,33 @@ router.afterEach((to) => {
   // determine if we should show navBar
   store.commit('app/setShowNavBar', to.meta?.showNavBar == true);
   if (to && to.meta) {
-    store.commit('app/setNavBarGroup', to.meta.navBarGroup);
+    store.commit('navBar/setNavBarGroup', to.meta.navBarGroup);
   } else {
-    store.commit('app/setNavBarGroup', '');
+    store.commit('navBar/setNavBarGroup', '');
   }
   // this section is to set page title in vue store
   if (to && to.meta) {
     store.commit('app/setPageTitle', to.meta.pageTitle);
   } else {
     store.commit('app/setPageTitle', '');
+  }
+
+  if(to?.meta?.subtitleBanner){
+    if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
+      if(to?.meta?.pageTitle==='Renew Organization'){
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].renewal.name.replace(/[^\d/]/g, '')));
+      }
+      else if(!store.getters['application/formattedProgramYear']){
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].newApp.name.replace(/[^\d/]/g, '')));
+      }
+      else{
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
+      }
+    }else {
+      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
+    }
+  } else {
+    store.commit('app/setSubtitleBanner','');
   }
 });
 

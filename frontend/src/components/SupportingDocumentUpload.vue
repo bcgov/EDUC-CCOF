@@ -124,12 +124,11 @@
 
 <script>
 
-import {PATHS} from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import { deepCloneObject, getFileExtension } from '@/utils/common';
+import { deepCloneObject, getFileExtension, isChangeRequest } from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -140,11 +139,22 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
-    ...mapState('navBar', ['canSubmit']),
+    ...mapState('navBar', ['canSubmit', 'navBarList','changeRequestId']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus']),
     isLocked() {
+      if (this.isChangeRequest) {
+        if(this.isSupportingDocumentsUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
       if (this.unlockSupportingDocuments) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
@@ -158,8 +168,14 @@ export default {
     },
     isNextEnabled() {
       return this.isValidForm && this.canSubmit;
-    }
-
+    },
+    filteredNavBarList() {
+      if (isChangeRequest(this)) {
+        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.navBarList.filter(el => !el.changeRequestId);
+      }
+    },
   },
 
   async mounted() {
@@ -243,11 +259,13 @@ export default {
 
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
+
     previous() {
-      this.$router.push(PATHS.eceweFacilities);
+      this.$router.push(this.previousPath);
     },
     next() {
-      this.$router.push(PATHS.summaryDeclaration);
+      console.log('next path: ', this.nextPath);
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();
@@ -283,6 +301,7 @@ export default {
           ccof_facility: file.selectFacility?.facilityId,
           subject: 'SUPPORTING',
           notetext: file.description,
+          changeRequestNewFacilityId: file.selectFacility?.changeRequestNewFacilityId,
           ...this.fileMap.get(String(file.id))
         };
         payload.push(obj);
@@ -337,7 +356,7 @@ export default {
       this.isLoading = true;
       try {
         await this.getDocuments(this.applicationId);
-        this.uploadedDocuments = this.getUploadedDocuments;
+        this.uploadedDocuments = this.getUploadedDocuments.filter(document => this.filteredNavBarList.findIndex(item => item.facilityId == document.ccof_facility) > -1);
       } catch (e) {
         console.error(e);
       } finally {
@@ -378,11 +397,12 @@ export default {
       this.uploadedDocuments[index].description = item.description;
     },
     async mapFacilityData() {
-      for (let facilityInfo of this.navBarList) {
+      for (let facilityInfo of this.filteredNavBarList) {
         const facility = {};
         facility.facilityId = facilityInfo.facilityId;
         facility.facilityName = facilityInfo.facilityName;
         facility.licenseNumber = facilityInfo.licenseNumber;
+        facility.changeRequestNewFacilityId = facilityInfo.changeRequestNewFacilityId;
         this.facilityNames.push(facility);
       }
     },

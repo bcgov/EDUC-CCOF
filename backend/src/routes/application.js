@@ -4,8 +4,8 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
 const { getRFIMedian, getRFIApplication, createRFIApplication, updateRFIApplication} = require('../components/rfiApplication');
-const { upsertParentFees, updateCCFRIApplication, renewCCOFApplication, getApplicationSummary } = require('../components/application');
-const { getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication,updateStatusForApplicationComponents} = require('../components/application');
+const { upsertParentFees, updateCCFRIApplication, renewCCOFApplication, getApplicationSummary, getChangeRequest } = require('../components/application');
+const { patchCCFRIApplication,getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication,updateStatusForApplicationComponents} = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const { param, validationResult } = require('express-validator');
 
@@ -50,6 +50,11 @@ router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBac
   //validationResult(req).throw();
   //console.log(req.bpdy);
   return updateCCFRIApplication(req, res);
+});
+
+router.patch('/ccfri/:ccfriId/', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => {
+  //validationResult(req).throw();
+  return patchCCFRIApplication(req, res);
 });
 
 router.get('/ccfri/:ccfriId/nmf', passport.authenticate('jwt', {session: false}),isValidBackendToken,
@@ -119,6 +124,14 @@ router.put('/status/:applicationId', passport.authenticate('jwt', {session: fals
     validationResult(req).throw();
     return updateStatusForApplicationComponents(req, res);
   });
+
+/*   Get existing change requests for an application */
+
+router.get('/changeRequest/:applicationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
+  return getChangeRequest(req, res);
+});
+
 
 module.exports = router;
 

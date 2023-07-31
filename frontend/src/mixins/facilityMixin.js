@@ -1,6 +1,7 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, pcfUrlGuid} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
 import rules from '@/utils/rules';
-import { mapActions, mapState, mapMutations, } from 'vuex';
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isEmpty} from 'lodash';
 import NavButton from '@/components/util/NavButton';
@@ -10,11 +11,24 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
+    ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
+    ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
+
     isLocked() {
+      if (isChangeRequest(this)) {
+        if(this?.isCCOFUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
       if (this.unlockBaseFunding) {
         return false;
       }
@@ -62,36 +76,35 @@ export default {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
-    ...mapMutations('app', ['setNavBarFacilityComplete']),
+    ...mapMutations('navBar', ['setNavBarFacilityComplete']),
     isSameAddressChecked() {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
         this.model.city2 = '';
         this.model.postalCode2 = '';
-      } 
+      }
     },
     isGroup() {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
-      let navBar = this.$store.getters['app/getNextPrevByFacilityId'](this.$route.params.urlGuid);
-      if (navBar?.ccofBaseFundingId) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
-      } else {
-        this.$router.push(`${this.isGroup() ? PATHS.group.orgInfo : PATHS.family.orgInfo}`);
-      }
+      this.$router.push(this.previousPath);
     },
     async next() {
       // await this.save();
       if (!this.$route.params.urlGuid) { //we won't have the funding guid until we save, so save first.
         await this.save(false);
       }
-      let navBar = this.$store.getters['app/getNavByFacilityId'](this.facilityId);
+      let navBar = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId);
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}/${navBar.ccofBaseFundingId}`);
+        if (isChangeRequest(this)) {
+          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, navBar.ccofBaseFundingId));
+        } else {
+          this.$router.push(pcfUrlGuid(this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar.ccofBaseFundingId));
+        }
       } else {
-        this.$router.push(`${this.isGroup() ? PATHS.group.fundAmount : PATHS.family.fundAmount}`);
+        console.log('error, should never get here');
       }
     },
     validateForm() {
@@ -101,6 +114,9 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
+      if (this.isLocked) {
+        return;
+      }
       if (this.model.isSameAsMailing) {
         this.model.address2 = this.model.address1;
         this.model.city2 = this.model.city1;
@@ -115,7 +131,7 @@ export default {
       this.setFacilityModel({ ...this.model });
       this.processing = true;
       try {
-        await this.saveFacility();
+        await this.saveFacility({ isChangeRequest: isChangeRequest(this), changeRequestId: this.$route.params.changeRecGuid });
         if (isSave) {
           this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
         }
@@ -123,7 +139,11 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       if (!this.$route.params.urlGuid && isSave) {
-        this.$router.push(`${this.isGroup() ? PATHS.group.facInfo : PATHS.family.eligibility}/${this.facilityId}`);
+        if (isChangeRequest(this)) {
+          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
+        } else {
+          this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId));
+        }
       }
       this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
       this.processing = false;

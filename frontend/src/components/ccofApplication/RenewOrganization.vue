@@ -110,7 +110,7 @@
 <script>
 
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { PATHS } from '@/utils/constants';
+import { PATHS, pcfUrl } from '@/utils/constants';
 import rules from '@/utils/rules';
 import NavButton from '@/components/util/NavButton';
 
@@ -137,7 +137,8 @@ export default {
       && this.applicationType == 'RENEW'
       && this.ccofApplicationStatus == 'NEW'
       && this.programYearId == this.programYearList.renewal?.programYearId) {
-      this.$router.push(PATHS.group.licenseUpload);
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearList.renewal.programYearId));
+
     }
   },
   methods: {
@@ -145,13 +146,13 @@ export default {
     async next() {
       this.processing = true;
       await this.renewApplication();
-      this.$router.push(PATHS.group.licenseUpload);
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearList.renewal.programYearId));
     },
     validateForm() {
       this.$refs.form?.validate();
     },
     back() {
-      this.$router.push(PATHS.home);
+      this.$router.push(PATHS.ROOT.HOME);
     },
 
   },

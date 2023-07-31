@@ -10,7 +10,7 @@
             </v-row>
             <v-data-table v-if="!isLoading"
                           :headers="headers"
-                          :items="licenseUploadData"
+                          :items="filteredLicenseUploadData"
                           class="elevation-1"
                           hide-default-header
                           hide-default-footer
@@ -40,7 +40,7 @@
                               @click:clear="deleteFile(item)"
                               :id="item.facilityId"
                               :accept="fileAccept"
-                              :disabled="false"
+                              :disabled="isLocked"
                               placeholder="Select your file"
                               :error-messages="fileInputError"
                               @change="selectFile"
@@ -56,7 +56,7 @@
         </v-row>
       </span>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isValidForm || isLocked" :isNextDisabled="!isValidForm || nextButtonDisabled" :isProcessing="isProcessing" 
+        :isSaveDisabled="!isValidForm || isLocked" :isNextDisabled="!isValidForm || nextButtonDisabled" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="saveClicked()"></NavButton>
     </v-container>
   </v-form>
@@ -76,23 +76,53 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['navBarList', 'isLicenseUploadComplete', 'isRenewal']),
-    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId']),
+    ...mapState('app', ['isRenewal']),
+    ...mapState('navBar', ['navBarList', 'changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
-
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
+    filteredLicenseUploadData() {
+      if (this.isChangeRequest) {
+        return this.licenseUploadData.filter(el => el.changeRequestId === this.changeRequestId);
+      } else {
+        return this.licenseUploadData.filter(el => !el.changeRequestId);
+      }
+    },
     isLocked() {
-      if (this.unlockLicenseUpload) {
+      if(this.isChangeRequest){
+        if(this.isLicenseUploadUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
+      else if (this.unlockLicenseUpload) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
       }
       return false;
     },
+    getFacilityList(){
+      let facilityList;
+      if (this.isChangeRequest) {
+        facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        facilityList = this.navBarList.filter(el => !el.changeRequestId);
+      }
+      return facilityList;
+    },
     nextButtonDisabled() {
-      for (let navBarItem of this.navBarList) {
+      let facilityList = this.getFacilityList;
+
+      for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
         const uploadedLicenceCount = this.getUploadedLicenses.filter(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === facilityId).length;
-        const deletedLicenceCount = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
+        const deletedLicenceCount = this.filteredLicenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
         let fileMapLicencePerFacilityCount =  0;
         if(this.fileMap.size > 0 && this.fileMap.get(facilityId)){
           fileMapLicencePerFacilityCount = this.fileMap.get(facilityId)?.length;
@@ -166,17 +196,15 @@ export default {
   },
 
   methods: {
-    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles', 'updateLicenseCompleteStatus']),
-    ...mapActions('navBar', ['getPreviousPath', 'getNextPath']),
-    ...mapMutations('app', ['setIsLicenseUploadComplete']),
-    async previous() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
+    ...mapMutations('application', ['setIsLicenseUploadComplete']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
+    ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
+    previous() {
+      this.$router.push(this.previousPath);
     },
-    async next() {
-      this.$refs.form.validate();
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    next() {
+      this.$router.push(this.nextPath);
     },
     validateForm() {
       this.$refs.form?.validate();
@@ -206,8 +234,12 @@ export default {
           await this.processLicenseFilesSave();
           this.fileMap.clear();// clear the map.
         }
-
-        this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
+        if (this.isChangeRequest) {
+          this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled});
+        } else {
+          this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
+        }
+        this.forceNavBarRefresh();
         if (showConfirmation) {
           await this.createTable();
           this.setSuccessAlert('Changes Successfully Saved');
@@ -223,17 +255,22 @@ export default {
       const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
+        let facilityList = this.getFacilityList;
+        let currFac = facilityList.find(fac => fac.facilityId === facilityId);
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,
           subject: 'Facility License',
+          changeRequestNewFacilityId : this.isChangeRequest ? currFac.changeRequestNewFacilityId : undefined,
           ...file
         };
         fileList.push(obj);
       }
       const payload = {fileList,
         isLicenseUploadComplete:!this.nextButtonDisabled,
-        applicationId: this.applicationId};
+        applicationId: this.applicationId,
+        changeRequestId: this.isChangeRequest? this.changeRequestId : undefined
+      };
       await this.saveLicenseFiles(payload);
     },
     async processLicenseFileDelete() {

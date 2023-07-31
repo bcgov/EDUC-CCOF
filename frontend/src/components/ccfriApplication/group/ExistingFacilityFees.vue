@@ -119,10 +119,12 @@
 <script>
 
 //userInfo.ccofProgramYearId;
-import { PATHS } from '@/utils/constants';
-import { mapState, mapActions, mapGetters} from 'vuex';
+import { PATHS, pcfUrlGuid } from '@/utils/constants';
+import { sleep, deepCloneObject } from '@/utils/common';
+import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import ApiService from '@/common/apiService';
 
 export default {
   components: { NavButton },
@@ -140,26 +142,19 @@ export default {
       rules: [
         (v) => !!v  || 'Required.',
       ],
+      currentCCFRI : undefined,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['navBarList', 'programYearList']),
-    ...mapState('application', ['formattedProgramYear', 'applicationId']),
+    ...mapGetters('navBar', ['previousPath', 'getNavByCCFRIId']),
+    ...mapState('app', ['programYearList']),
+    ...mapState('navBar', ['navBarList']),
+    ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
-
-    findIndexOfFacility(){
-      let activeFac = this.navBarList.findIndex((element) =>{
-        return element.ccfriApplicationId == this.$route.params.urlGuid;
-      });
-
-      return activeFac;
-    },
+    ...mapGetters('ccfriApp', ['getCCFRIById']),
     currentFacility(){
-      return this.navBarList[this.findIndexOfFacility];
-    },
-    nextFacility(){
-      return this.navBarList[this.findIndexOfFacility + 1];
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     previousProgramYearGuid(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
@@ -167,7 +162,6 @@ export default {
     },
     previousProgramYearLabel(){
       const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
-      //const lastProgramYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == programYear.previousYearId );
 
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
       return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
@@ -180,6 +174,7 @@ export default {
         try {
           this.loading = true;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
+          console.log('fees correct handler' , this.CCFRIFacilityModel.existingFeesCorrect);
           if (this.CCFRIFacilityModel.existingFeesCorrect == 100000000) {
             this.model.q1 = 'Yes';
           } else if (this.CCFRIFacilityModel.existingFeesCorrect == 100000001) {
@@ -187,8 +182,19 @@ export default {
           } else {
             this.model.q1 = undefined;
           }
-          await this.loadCCFRIFacility(this.CCFRIFacilityModel.previousCcfriId); //load this page up with the previous CCFRI data
-
+          let previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
+          if (!previousCCFRI) {
+            //No previous CCFRI ID.  wait 10 seconds and try loading again.
+            console.log('no previous CCFRI id for this guid. waiting 10 seconds');
+            await sleep(10000);
+            console.log('trying again');
+            this.removeCCFRIFromStore(this.$route.params.urlGuid);
+            await this.loadCCFRIFacility(this.$route.params.urlGuid);
+            previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
+          }
+          if (previousCCFRI) {
+            await this.loadCCFRIFacility(previousCCFRI); //load this page up with the previous CCFRI data
+          }
           this.feeList = [];
 
           //only display last years child care fees
@@ -221,23 +227,25 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility']),
-    ...mapActions('navBar', ['getPreviousPath']),
-    async previous(){
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI']),
+    ...mapMutations('ccfriApp', ['setCCFRIFacilityModel' , 'addCCFRIToStore', 'removeCCFRIFromStore']),
+    previous(){
+      this.$router.push(this.previousPath);
     },
-    async setFees (areFeesCorrect){
-      await this.loadCCFRIFacility(this.$route.params.urlGuid);
-      this.CCFRIFacilityModel.prevYearFeesCorrect = areFeesCorrect;
-      this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
+    setFees (areFeesCorrect){
+      this.currentCCFRI = deepCloneObject (this.getCCFRIById(this.$route.params.urlGuid));
+      this.currentCCFRI.prevYearFeesCorrect = areFeesCorrect;
+      this.currentCCFRI.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
+      //this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
+      console.log('existing fees POST set', this.currentCCFRI.existingFeesCorrect);
+      this.addCCFRIToStore({ccfriId: this.$route.params.urlGuid, CCFRIFacilityModel: this.currentCCFRI});
     },
     isFormValidAndLoaded(){
       //we need this to disable button while the page is loading
       return this.isValidForm && this.loading == false;
 
     },
-    next() {
+    async next() {
       this.loading = true;
 
       if (this.model.q1 == 'No'){
@@ -246,11 +254,15 @@ export default {
       else if (this.model.q1 == 'Yes') {
         this.setFees(true);
       }
-      this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-
-
-      //this.$router.push({path : `${PATHS.addNewFees}/${this.$route.params.urlGuid}`});
-
+      await this.save();
+      //console.log('before NEXT', this.CCFRIFacilityModel.existingFeesCorrect);
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.$route.params.urlGuid));
+    },
+    async save(){
+      console.log('da feez payload', this.CCFRIFacilityModel.existingFeesCorrect);
+      let payload = {existingFeesCorrect: this.currentCCFRI.existingFeesCorrect};
+      let res = await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, payload);
+      console.log(res);
     },
     validateForm() {
       this.$refs.isValidForm?.validate();

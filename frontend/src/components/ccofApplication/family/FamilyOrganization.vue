@@ -62,28 +62,23 @@
                 </v-col>
               </v-row>
             </div>
-
             <v-divider></v-divider>
-
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" outlined required v-model="model.yearBeganOperation"
-                  :rules="[...rules.required, ...rules.YYYY]" label="Year Facility began Operation (YYYY)" />
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required
+                  v-model="model.yearBeganOperation" @input="convertBlankNumberToNull(model,'yearBeganOperation')" :rules="[...rules.required, ...rules.YYYY]" label="Year Facility began Operation (YYYY)" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required v-model="model.email" type="email"
-                  :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
+                <v-text-field :disabled="isLocked" outlined required v-model="model.email" type="email" :rules="[...rules.required, ...rules.email]" label="E-mail Address of Signing Authority" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" outlined required v-model="model.phone"
-                  :rules="[...rules.required, rules.phone]" label="Business Phone" />
+                <v-text-field :disabled="isLocked" outlined required v-model="model.phone" :rules="[...rules.required, rules.phone]" label="Business Phone" />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field readonly :disabled="isLocked" outlined required v-model="businessId"
-                  label="Business BCeID" />
+                <v-text-field readonly :disabled="isLocked" outlined required v-model="businessId" label="Business BCeID" />
               </v-col>
             </v-row>
 
@@ -91,10 +86,8 @@
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-radio-group :disabled="isLocked" v-model="model.organizationType" :rules="rules.required"
-                  label="Type of Orgnization">
-                  <v-radio v-for="item in this.filteredOrganizationList" :key="item.id" :label="item.name"
-                    :value="item.id"></v-radio>
+                <v-radio-group :disabled="isLocked" v-model="model.organizationType" :rules="rules.required" label="Type of Orgnization">
+                  <v-radio v-for="item in this.filteredOrganizationList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6">
@@ -117,10 +110,11 @@
 <script>
 
 import organizationMixin from '@/mixins/organizationMixin';
+import globalMixin from '@/mixins/globalMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 
 export default {
-  mixins: [organizationMixin],
+  mixins: [organizationMixin, globalMixin],
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY

@@ -75,7 +75,7 @@
 </v-card>
 
 <!-- JB here to make this work with renewels-->
-    <v-form ref="informationSummaryForm" v-model="isValidForm" v-if="!this.isRenewal && this.providerType == 'GROUP'">
+    <v-form ref="informationSummaryForm" v-model="isValidForm" v-if="(!this.isRenewal && this.providerType == 'GROUP' ) || this.isChangeRequest">
     <v-expansion-panel-header>
       <h4 style="color:#003466;">Facility Information
       <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
@@ -217,10 +217,7 @@
           <v-row  no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <!-- <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
+              <router-link :to="getRoutingPathGroup()"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
             </v-col>
           </v-row>
         </v-col>
@@ -299,6 +296,7 @@
             <v-col cols="10" class="d-flex justify-start">
                <v-text-field placeholder="Required" :value="this.facilityInfo?.fundingFacility" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
             </v-col>
+
           </v-row>
         </v-col>
       </v-row>
@@ -306,12 +304,11 @@
       <v-row v-if="!isValidForm" class="d-flex justify-start">
         <v-col cols="6" lg="4" class="pb-0 pt-0">
           <v-row  no-gutters class="d-flex justify-start">
+
             <v-col cols="12" class="d-flex justify-start">
               <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-              <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
-              <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else > <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
-              <!-- <router-link :to="this.PATHS.group.facInfo + '/' + facilityId" v-else> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
+
+              <router-link :to="getRoutingPathFamily()"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link >
             </v-col>
           </v-row>
         </v-col>
@@ -322,7 +319,8 @@
 </template>
 
 <script>
-import {PATHS} from '@/utils/constants';
+import { isChangeRequest } from '@/utils/common';
+import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
 
@@ -355,6 +353,14 @@ export default {
     providerType: {
       type: String,
       required: false
+    },
+    changeRecGuid: {
+      type: String,
+      required: false
+    },
+    programYearId: {
+      type: String,
+      required: false
     }
 
 
@@ -370,7 +376,7 @@ export default {
   },
   computed: {
     ...mapState('application', ['isRenewal',]),
-    ...mapState('app', ['navBarList',]),
+    ...mapState('navBar', ['navBarList',]),
     ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete',]),
     yesNoFacilityLabel() {
       if (this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY') {
@@ -389,9 +395,31 @@ export default {
         return '';
       }
     },
+    calculateTotal() {
+      let total = 0;
+      total = (this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday);
+      return total;
+    },
+    getRoutingPathGroup(){
+      if(isChangeRequest(this)){
+        return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId);
+      }
+      else {
+        pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId);
+      }
+    },
+    getRoutingPathFamily(){
+      if(!this.funding.ccofBaseFundingId){
+        return pcfUrl(PATHS.CCOF_FAMILY_ORG , this.programYearId);
+      }
+      else {
+        return pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId , this.facilityId);
+      }
+    },
   },
   data() {
     return {
+      isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
       isValidForm: true,

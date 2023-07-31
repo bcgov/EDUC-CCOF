@@ -139,11 +139,12 @@
 
 <script>
 
-import { PATHS } from '@/utils/constants';
+import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
+import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -160,33 +161,56 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
-    ...mapState('app', ['navBarList', 'fundingModelTypeList']),
-    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('app', ['fundingModelTypeList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
+    ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
     isSaveBtnDisabled() {
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
     },
+    filteredECEWEFacilityList() {
+      if (isChangeRequest(this)) {
+        console.log('filteredECEWEFacilityList = this.$store.state.eceweApp.facilities');
+        console.log(this.$store.state.eceweApp.facilities);
+        return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+      } else {
+        return this.$store.state.eceweApp.facilities?.filter(el => !el.changeRequestId);
+      }
+    },
     facilities: {
-      get() { return this.$store.state.eceweApp.facilities; },
+      get() { return this.filteredECEWEFacilityList; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
       //will only return true if set by a ministry user in dynamics
+      if (isChangeRequest(this)) {
+        if(this.isEceweUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
       if (this.unlockEcewe){
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');
     }
   },
-  async beforeMount() {
+  async mounted() {
     this.setFundingModelTypes({...this.fundingModelTypeList});
     this.setApplicationId(this.applicationId);
-    await this.loadData();
-    this.initECEWEFacilities(this.navBarList);
-    this.setupUiFacilities();
-    this.model = {...this.eceweModel};
+    let response = await this.loadData();
+    if (response) {
+      this.initECEWEFacilities(this.navBarList);
+      this.setupUiFacilities();
+      this.model = {...this.eceweModel};
+    }
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.saveFacilities(false);
@@ -194,13 +218,15 @@ export default {
   },
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWEFacilities', 'initECEWEFacilities']),
-    ...mapMutations('app', ['setEceweFacilityComplete']),
+    ...mapMutations('navBar', ['refreshNavBarList']),
+
     ...mapMutations('eceweApp', ['setEceweModel', 'setLoadedFacilities', 'setFacilities', 'setApplicationId', 'setFundingModelTypes']),
     setupUiFacilities() {
       let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
       copyFacilities.forEach(element => element.update = element.optInOrOut == null);
       this.uiFacilities = copyFacilities;
       this.setLoadedFacilities([...this.facilities]);
+      this.setFacilities([...this.facilities]);
     },
     toggleRadio(index) {
       this.uiFacilities[index].update = (this.uiFacilities[index].update==true)?false:true;
@@ -212,46 +238,54 @@ export default {
       });
     },
     previous() {
-      return this.$router.push(PATHS.eceweEligibility);
+      if (isChangeRequest(this)) {
+        this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
+      } else {
+        this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
+      }
     },
     next() {
-      this.$router.push(PATHS.supportingDocumentUpload);
+      if (isChangeRequest(this)) {
+        this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
+      } else {
+        this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
+      }
     },
     validateForm() {
       this.$refs.form?.validate();
     },
     async loadData() {
-      if (this.isStarted) {
-        return;
+      if (this.isStarted && (this.facilities?.length > 0)  && (this.facilities[0].changeRequestId == this.$route.params.changeRecGuid)) {
+        return true;
       }
       if (this.applicationId) {
         this.isLoading = true;
         try {
-          await this.loadECEWE();
+          let response = await this.loadECEWE();
+          this.isLoading = false;
+          return response;
         } catch (error) {
           console.log('Error loading ECEWE application.', error);
           this.setFailureAlert('Error loading ECEWE application.');
         }
-        this.isLoading = false;
       }
     },
     async saveFacilities(showConfirmation) {
       this.isProcessing = true;
       try {
         let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
-        console.log('uiFacilitiesCopy 1 ', uiFacilitiesCopy);
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
-        console.log('uiFacilitiesCopy 2 ', uiFacilitiesCopy);
         this.setFacilities(uiFacilitiesCopy);
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach(el => {
-            let facility = this.navBarList.find(f => f.facilityId === el.facilityId);
+            let facility = this.userProfileList.find(f => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
             }
           });
+          this.refreshNavBarList();
         }
         this.setupUiFacilities();
         if (showConfirmation || showConfirmation == null) {

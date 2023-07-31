@@ -7,9 +7,9 @@
       <p class="px-10 text-h6">
         If you select the incorrect provider type, you will need to contact the program at 1 (888) 338-6622 (Option 2).
         <br>
-        If you are unsure which type to select, you can view a PDF version of the 
+        If you are unsure which type to select, you can view a PDF version of the
         <a class="text-decoration-underline" href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1320_ccof_family_application.pdf">family form</a>
-        and the 
+        and the
         <a class="text-decoration-underline" href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1321_ccof_group_application.pdf">group form</a>.
       </p>
     </v-row>
@@ -34,30 +34,28 @@
 <script>
 
 import LargeCard from '@/components/guiComponents/LargeCard.vue';
-import { PATHS } from '@/utils/constants';
-import { mapMutations } from 'vuex';
+import { PATHS, pcfUrl } from '@/utils/constants';
+import { mapMutations, mapState } from 'vuex';
 import NavButton from '@/components/util/NavButton';
 
 export default {
   name: 'LandingPage',
-  data() {
-    return {
-      paths: PATHS
-    };
-  },
   components: { LargeCard, NavButton },
+  computed: {
+    ...mapState('app', ['programYearList']),
+  },
   methods: {
     ...mapMutations('organization', ['setOrganizationProviderType']),
-    async previous() {
-      this.$router.push(this.paths.home);
+    previous() {
+      this.$router.push(PATHS.ROOT.HOME);
     },
     toGroup() {
       this.setOrganizationProviderType('GROUP');
-      this.$router.push(this.paths.group.orgInfo);
+      this.$router.push(pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearList.newApp.programYearId));
     },
     toFamily() {
       this.setOrganizationProviderType('FAMILY');
-      this.$router.push(this.paths.family.orgInfo);
+      this.$router.push(pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearList.newApp.programYearId));
     }
   }
 };

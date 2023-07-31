@@ -5,8 +5,10 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES} = require('../util/constants');
-const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_STATUS_CODES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES} = require('../util/constants');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings } = require('../util/mapping/Mappings');
+const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
+
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const _ = require ('lodash');
 
@@ -35,7 +37,6 @@ async function getUserInfo(req, res) {
       });
     }
   }
-  
   let resData = {
     displayName: (queryUserName)? userName + '-' + queryUserName : userName,
     userName: userName,
@@ -43,7 +44,7 @@ async function getUserInfo(req, res) {
     isMinistryUser: isIdir,
     serverTime: new Date(),
     //TODO: unreadMessages is hardcoded. Remove this with API values when built out!
-    unreadMessages: false, 
+    unreadMessages: false,
   };
   let userResponse = undefined;
   if (isIdir) {
@@ -53,13 +54,13 @@ async function getUserInfo(req, res) {
         // dynamics api requires a userID. if userID not found then it wil use the query name
         // put a random userID so that we only search by queryname
         userResponse = await getUserProfile(null, queryUserName);
-        if (userResponse === null) { 
+        if (userResponse === null) {
           return res.status(HttpStatus.NOT_FOUND).json({message: 'No user found with that BCeID UserName'});
         }
       } catch (e) {
         log.error('getUserProfile Error', e.response ? e.response.status : e.message);
         throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
-      }      
+      }
     } else {
       //If not looking for a username, return from here since ministry staff should not have an account
       return res.status(HttpStatus.OK).json(resData);
@@ -70,12 +71,12 @@ async function getUserInfo(req, res) {
     log.verbose('User Guid is: ', userGuid);
     userResponse = await getUserProfile(userGuid, userName );
   }
-  
+
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:',minify(userResponse));
   }
 
-  if (userResponse === null) { 
+  if (userResponse === null) {
     creatUser(req);
     return res.status(HttpStatus.OK).json(resData);
   }
@@ -94,11 +95,35 @@ async function getUserInfo(req, res) {
   application.ccofProgramYearName = userResponse.application?.ccof_ProgramYear?.ccof_name;
   application.ccofApplicationStatus = getLabelFromValue(application.ccofStatus, CCOF_STATUS_CODES, 'NEW');
 
+
+  const changeRequests = [];
+  userResponse.application?.ccof_ccof_change_request_Application_ccof_appl?.forEach(el => {
+    const item = new MappableObjectForFront(el, UserProfileChangeRequestMappings).data;
+    item.status = getLabelFromValue(item.status, CHANGE_REQUEST_STATUS_CODES);
+    item.externalStatus = getLabelFromValue(item.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
+    let changeActionNewFacilityList = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    for (const changeActionNewFacility of changeActionNewFacilityList) {
+      item.unlockEcewe = changeActionNewFacility?.ccof_unlock_ecewe;
+      item.unlockCCOF = changeActionNewFacility?.ccof_unlock_ccof;
+      item.unlockSupportingDocuments = changeActionNewFacility?.ccof_unlock_supporting_document;
+      item.unlockLicenseUpload = changeActionNewFacility?.ccof_unlock_licence_upload;
+    }
+    let changeActionOtherChanges = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype !== CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    for (const changeActionOthers of changeActionOtherChanges){
+      item.unlockChangeRequest = changeActionOthers?.ccof_unlock_change_request;
+      item.unlockOtherChangesDocuments = changeActionOthers?.ccof_unlock_other_changes_document;
+    }
+
+    changeRequests.push(item);
+
+  });
+
   resData.facilityList = parseFacilityData(userResponse);
   let results = {
     ...resData,
     ...organization,
-    ...application
+    ...application,
+    changeRequests: changeRequests
   };
   return res.status(HttpStatus.OK).json(results);
 }
@@ -111,7 +136,7 @@ async function getUserProfile(userGuid, userName) {
     } else {
       url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userName=${userName}`;
     }
-    
+
     log.verbose('UserProfile Url is', url);
     const response = await axios.get(url, getHttpHeader());
     return response.data;
@@ -128,6 +153,23 @@ async function getUserProfile(userGuid, userName) {
   }
 }
 
+function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, facilityId) {
+  for (const changeRequest of changeRequestList) {
+    //todo -mk check statuscode
+    let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter(item =>item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    for (const changeActionNewFacility of changeActionNewFacilityList) {
+      let result = changeActionNewFacility?.ccof_change_request_new_facility_change_act.find(item => item['_ccof_facility_value'] === facilityId);
+      if (result) {
+        returnValue.changeRequestId = changeRequest?.ccof_change_requestid;
+        returnValue.unlockCcfri = result?.ccof_unlock_ccfri;
+        returnValue.unlockNmf = result?.ccof_unlock_nmf_rfi;
+        returnValue.unlockRfi = result?.ccof_unlock_rfi;
+        
+      }
+    };
+  };
+}
+
 function parseFacilityData(userResponse) {
   let facilityMap  = new Map(userResponse.facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
@@ -139,11 +181,15 @@ function parseFacilityData(userResponse) {
       eceweInfo = new MappableObjectForFront(eceweInfo, UserProfileECEWEMappings).data;
       let baseFunding = userResponse.application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
       baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
-      map.set(key, {
+      let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
+      let returnValue = {
         ...value,
         ...ccfriInfo,
         ...eceweInfo,
-        ...baseFunding});        
+        ...baseFunding,
+      };
+      updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, key);
+      map.set(key, returnValue);
     });
   }
   let facilityList = [];
@@ -162,9 +208,9 @@ async function getDynamicsUserByEmail(req) {
   let email = req.session.passport.user._json.email;
   if (!email) {
     //If for some reason, an email is not associated with the IDIR, just use IDR@gov.bc.ca
-    email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`; 
+    email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`;
   }
-  // eslint-disable-next-line quotes, 
+  // eslint-disable-next-line quotes,
   email.includes("'") ? email = email.replace("'", "''") : email;
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
@@ -177,7 +223,7 @@ async function getDynamicsUserByEmail(req) {
 
 async function creatUser(req) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
-  let given_name = req.session.passport.user._json.given_name; 
+  let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
   let firstname = undefined;
   let lastname = undefined;
