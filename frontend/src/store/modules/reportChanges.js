@@ -272,7 +272,7 @@ export default {
       console.log('Create MTFI Facilities:' , payload);
       checkSession();
       try {
-        let response = await ApiService.apiAxios.post('/api/changeRequest/mtfiFacilities', payload);
+        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
         console.log(response);
         return response.data;
       } catch (error) {

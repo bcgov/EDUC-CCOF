@@ -102,15 +102,6 @@ router.post('/documentUpload', passport.authenticate('jwt', {session: false}),is
 
 
 /**
- * Create MTFI Facilities
- */
-router.post('/mtfiFacilities', passport.authenticate('jwt', {session: false}),isValidBackendToken,
-  (req, res) => {
-    return createMTFIFacilities(req, res);
-  });
-
-
-/**
  * Delete a change request
  */
 

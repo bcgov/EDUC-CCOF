@@ -86,6 +86,19 @@ async function updateCCFRIApplication(req, res) {
         'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
 
+      // if there is Change Action ID in request body -> creating new Change Action MTFI
+      if (facility.changeActionId) {
+        delete payload['ccof_Application@odata.bind'];
+        payload['ccof_change_request_mtfi_application_ccfri'] = [
+          {
+            "ccof_facility@odata.bind": `/accounts(${facility.facilityID})`,
+            "ccof_Change_Action@odata.bind": `/ccof_change_actions(${facility.changeActionId})`,
+            'ccof_Organization@odata.bind': `/accounts(${facility.organizationId})`,
+            'ccof_ProgramYear@odata.bind': `/ccof_program_years(${facility.programYearId})`,
+          }
+        ];
+      }
+
       //only bind CCFRI application to main application if this facility is completed during a new application
       //ccfri application for change request should only bind to their respective changeAction (done below)
       //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.

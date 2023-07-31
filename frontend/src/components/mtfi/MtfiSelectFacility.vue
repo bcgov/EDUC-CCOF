@@ -126,10 +126,12 @@ export default {
         this.checkbox?.forEach((item, index) => {
           if (item)
             selectedMTFIFacilities.push({
-              'facilityId': this.userProfileList[index].facilityId,
+              'facilityID': this.userProfileList[index].facilityId,
+              'applicationID': this.applicationId,
               'changeActionId': this.changeActionId,
-              'ccfriApplicationId': this.userProfileList[index].ccfriApplicationId,
-              'ccfriFacilityId': this.userProfileList[index].ccfriFacilityId,
+              'optInResponse': 1,
+              // 'ccfriApplicationId': this.userProfileList[index].ccfriApplicationId,
+              // 'ccfriFacilityId': this.userProfileList[index].ccfriFacilityId,
               'programYearId': this.programYearId,
               'organizationId': this.organizationId 
             });
