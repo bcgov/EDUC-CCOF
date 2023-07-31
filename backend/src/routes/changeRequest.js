@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 
 const isValidBackendToken = auth.isValidBackendToken();
-const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs } = require('../components/changeRequest');
+const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs, createMTFIFacilities } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
 
@@ -101,6 +101,13 @@ router.post('/documentUpload', passport.authenticate('jwt', {session: false}),is
   });
 
 
+/**
+ * Create MTFI Facilities
+ */
+router.post('/mtfiFacilities', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  (req, res) => {
+    return createMTFIFacilities(req, res);
+  });
 
 
 /**
