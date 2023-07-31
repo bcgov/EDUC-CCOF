@@ -143,6 +143,7 @@ export default {
       console.log(this.deleteFacilityId);
       console.log(this.deleteCcfriId);
       console.log(this.applicationId);
+      console.log(this.deleteEceweId);
       await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;
