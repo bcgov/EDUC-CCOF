@@ -20,7 +20,6 @@ export default {
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
-        console.log(this.isCCOFUnlocked);
         if(this.isCCOFUnlocked||!this.changeRequestStatus){
           return false;
         }
