@@ -82,7 +82,7 @@
           :headers="headers"
           :items="allChangeRequests"
           :height = "maxChangeHistoryTableHeight"
-          mobile-breakpoint="1264"
+          mobile-breakpoint="md"
           fixed-header
           :item-class="getChangeRequestStyle"
           class="elevation-4 my-4"
@@ -128,7 +128,7 @@
               Update
             </v-btn>
             <v-btn
-              v-if="isCancelButtonDisplayed(item.internalStatus)"
+              v-if="isCancelButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton my-2"
               @click="confirmCancelChangeRequest(item.changeRequestId, item.changeTypeString, item.externalStatus, item.submissionDateString)"
               outlined
@@ -536,8 +536,9 @@ export default {
     isContinueButtonDisplayed(externalStatus) {
       return ['In Progress'].includes(externalStatus);
     },
-    isCancelButtonDisplayed(internalStatus) {
-      return (['Incomplete','Submitted','WITH_PROVIDER'].includes(internalStatus));
+    isCancelButtonDisplayed(externalStatus) {
+      // return (['Incomplete','Submitted','WITH_PROVIDER'].includes(internalStatus));
+      return (['In Progress'].includes(externalStatus));
     },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
