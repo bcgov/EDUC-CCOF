@@ -89,6 +89,7 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList']),
+    ...mapState('reportChanges', ['changeActionId',]),
     ...mapGetters('navBar', ['previousPath']),
     isReadOnly() {
       return false;
@@ -120,10 +121,13 @@ export default {
       this.processing = true;
       try {
         let selectedMTFIFacilities = [];
+
+        // To-do: see how we can get changeActionId after the user refresh the page.
         this.checkbox?.forEach((item, index) => {
           if (item)
             selectedMTFIFacilities.push({
               'facilityId': this.userProfileList[index].facilityId,
+              'changeActionId': this.changeActionId,
               'ccfriApplicationId': this.userProfileList[index].ccfriApplicationId,
               'ccfriFacilityId': this.userProfileList[index].ccfriFacilityId,
               'programYearId': this.programYearId,
@@ -132,7 +136,10 @@ export default {
         });
         console.log('selectedMTFIFacilities = ');
         console.log(selectedMTFIFacilities);
-        await this.createMTFIFacilities(selectedMTFIFacilities);
+        let response = await this.createMTFIFacilities(selectedMTFIFacilities);
+        console.log('createMTFIFacilities response = ');
+        console.log(response);
+
         this.processing = false;
         if (withAlert) {
           this.setSuccessAlert('Success! Selected facilities have been saved.');

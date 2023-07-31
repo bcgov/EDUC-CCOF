@@ -169,7 +169,8 @@ export default {
       try {
         let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);
 
-        commit('setChangeRequestId', response.data.changeRequestId);
+        commit('setChangeRequestId', response?.data?.changeRequestId);
+        commit('setChangeActionId', response?.data?.changeActionId);
         console.log(response);
         return response.data;
       } catch (error) {

@@ -371,6 +371,7 @@ export default {
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
       }
     },
