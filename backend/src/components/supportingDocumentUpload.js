@@ -1,27 +1,55 @@
 'use strict';
 const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
+const convert = require('heic-convert');
+const log = require('./logger');
+const {getFileExtension} = require('../util/common');
 
 
 async function saveDocument(req, res) {
   try {
     let documents = req.body;
     for (let document of documents) {
-      
       let changeRequestNewFacilityId = document.changeRequestNewFacilityId;
       delete document.changeRequestNewFacilityId;
+      if (getFileExtension(document.filename) === 'heic' ) {
+        log.verbose(`saveDocument :: heic detected for file name ${document.filename} starting conversion`);
+        document = await convertHeicDocumentToJpg(document);
+      }
+      await postApplicationDocument(document);
       let response = await postApplicationDocument(document);
       //if this is a new facility change request, link supporting documents to the New Facility Change Action
       if (changeRequestNewFacilityId) {
         await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
-          "ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
+          'ccof_Attachments@odata.bind': `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
         });
       }
     }
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
+    console.log(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
+}
+
+async function convertHeicDocumentToJpg(document) {
+  const heicBuffer = Buffer.from(document.documentbody, 'base64');
+  const jpgBuffer = await convert({
+    buffer: heicBuffer,
+    format: 'JPEG',
+    quality: 0.5
+  });
+
+  log.verbose('convertHeicDocumentToJpg :: coverting from heic', {...document, documentbody: 'OMITTED'});
+
+  document.documentbody = jpgBuffer.toString('base64');
+  document.filesize = jpgBuffer.byteLength;
+  const regex = /\.heic(?![\s\S]*\.heic)/i; //looks for last occurrence of .heic case-insensitive
+  document.filename = document.filename.replace(regex,'.jpg');
+
+  log.verbose('convertHeicDocumentToJpg :: converted to jpg', {...document, documentbody: 'OMITTED'});
+
+  return document;
 }
 
 function mapDocument(fileInfo) {
