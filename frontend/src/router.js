@@ -64,6 +64,7 @@ Vue.use(VueMeta);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  // eslint-disable-next-line no-unused-vars
   scrollBehavior: function(to, from, savedPosition) {
     if (to.hash) {
       return {selector: to.hash};
@@ -519,9 +520,9 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.CHANGE_NEW_FACILITY_OTHER),
-      name: 'change-new-facility-other',
-      component: NewFacilityOtherChanges,
+      path: changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER),
+      name: 'new-facility-other-guid',
+      component: ChangeNotificationForm,
       meta: {
         pageTitle: 'Change Notification Form',
         showNavBar: true,

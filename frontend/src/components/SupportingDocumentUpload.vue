@@ -115,6 +115,21 @@
           </v-card>
         </v-card>
       </v-row>
+      <v-row v-if="isChangeRequest">
+        <v-card class="px-0 py-0 mx-auto mb-10 rounded-lg col-12">
+          <v-card-text class="pt-7 pa-0">
+            <div class="px-md-12 px-7">
+              <p class="text-h5 text--primary">
+                Would you like to report any other changes to your licence or service?
+              </p>
+              <v-radio-group required v-model="otherChanges" :rules = "rules.required">
+                <v-radio label="Yes" value="Yes"/>
+                <v-radio label="No" value="No"/>
+              </v-radio-group>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
         :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
@@ -128,8 +143,10 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import { deepCloneObject, getFileExtension, isChangeRequest } from '@/utils/common';
+import { deepCloneObject, getFileExtension } from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
+import { PATHS, changeUrlGuid } from '@/utils/constants';
+
 
 export default {
   mixins: [alertMixin],
@@ -139,13 +156,12 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['canSubmit', 'navBarList']),
+    ...mapState('navBar', ['canSubmit', 'navBarList', 'changeRequestId']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
-    ...mapState('reportChanges', ['changeRequestId']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     isLocked() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         return false;
       }
       if (this.unlockSupportingDocuments) {
@@ -163,7 +179,7 @@ export default {
       return this.isValidForm && this.canSubmit;
     },
     filteredNavBarList() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         return this.navBarList.filter(el => !el.changeRequestId);
@@ -201,6 +217,7 @@ export default {
       tempFacilityId: null,
       isValidForm: false,
       currentrow: null,
+      otherChanges: null,
       headers: [
         {
           text: 'Facility Name',
@@ -252,13 +269,20 @@ export default {
 
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
+    ...mapActions('reportChanges', ['createChangeAction']),
 
     previous() {
       this.$router.push(this.previousPath);
     },
-    next() {
-      console.log('next path: ', this.nextPath);
-      this.$router.push(this.nextPath);
+    async next() {
+      if (this.isChangeRequest && this.otherChanges == 'Yes') {
+        const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
+        console.log('change action id: ', results.changeActionId);
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, results.changeActionId));
+      } else {
+        console.log('next path: ', this.nextPath);
+        this.$router.push(this.nextPath);
+      }
     },
     validateForm() {
       this.$refs.form?.validate();

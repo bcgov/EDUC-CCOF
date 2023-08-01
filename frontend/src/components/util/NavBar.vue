@@ -265,11 +265,11 @@ export default {
     },
     addChangeRequestNewFacilityOtherToNavBar() {
       this.items.push({
-        title: 'Make Change',
-        link: { name: 'change-new-facility-other', params: {changeRecGuid: this.$route.params.changeRecGuid}},
+        title: 'Report other changes',
+        link: { name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid,}},
         isAccessible: true, //change this when change req logic more complete
         icon: 'mdi-information',
-        isActive: 'change-new-facility-other' === this.$route.name,
+        isActive: 'new-facility-other-guid' === this.$route.name,
         expanded: false,
         position: positionIndex++,
         navBarId: navBarId++
