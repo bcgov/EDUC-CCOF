@@ -418,21 +418,21 @@ async function printPdf(req, numOfRetries = 0)  {
       request.continue({ headers });
     });
 
-    log.info('printPdf :: starting page load');
+    log.verbose('printPdf :: starting page load');
     await page.goto(url, {waitUntil: 'networkidle0'});
     await page.waitForSelector('#signatureTextField', {visible: true});
-    log.info('printPdf :: page loaded starting pdf creation');
+    log.verbose('printPdf :: page loaded starting pdf creation');
     const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
-    log.info('printPdf :: pdf buffer created starting compression');
+    log.verbose('printPdf :: pdf buffer created starting compression');
     const compressedPdfBuffer = await compress(pdfBuffer);
-    log.info('printPdf :: compression completed');
+    log.verbose('printPdf :: compression completed');
     await browser.close();
 
     let payload = {
       ccof_applicationid: req.params.applicationId,
       filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
       filesize: compressedPdfBuffer.byteLength,
-      subject: 'TEST PDF APPLICATION SUMMARY',
+      subject: 'APPLICATION SUMMARY',
       documentbody: compressedPdfBuffer.toString('base64')
     };
 
