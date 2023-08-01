@@ -188,12 +188,13 @@ export default {
             console.log('no previous CCFRI id for this guid. waiting 10 seconds');
             await sleep(10000);
             console.log('trying again');
-            previousCCFRI = await this.getPreviousCCFRI(this.$route.params.urlGuid);
+            this.removeCCFRIFromStore(this.$route.params.urlGuid);
+            await this.loadCCFRIFacility(this.$route.params.urlGuid);
+            previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
           }
           if (previousCCFRI) {
             await this.loadCCFRIFacility(previousCCFRI); //load this page up with the previous CCFRI data
           }
-
           this.feeList = [];
 
           //only display last years child care fees
@@ -227,7 +228,7 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI']),
-    ...mapMutations('ccfriApp', ['setCCFRIFacilityModel' , 'addCCFRIToStore']),
+    ...mapMutations('ccfriApp', ['setCCFRIFacilityModel' , 'addCCFRIToStore', 'removeCCFRIFromStore']),
     previous(){
       this.$router.push(this.previousPath);
     },
