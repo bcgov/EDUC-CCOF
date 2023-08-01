@@ -113,59 +113,71 @@
                     >
                     <!-- childCareTypes[index].approvedFeeApr
                       I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeApr" label="April" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeApr" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="April" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMay" label="May" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeMay" @input="convertBlankNumberToNull(item,'approvedFeeMay')" label="May" prefix="$"/>
                     </v-col >
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJun" label="June" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeJun" @input="convertBlankNumberToNull(item,'approvedFeeJun')" label="June" prefix="$"/>
                     </v-col>
                     <v-col
                     class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJul" label="July" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeJul" @input="convertBlankNumberToNull(item,'approvedFeeJul')" label="July" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeAug" label="August" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeAug" @input="convertBlankNumberToNull(item,'approvedFeeAug')" label="August" prefix="$" />
                     </v-col>
                     <v-col
                       class="col-6 col-md-2"
                     >
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeSep" label="September" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeSep" @input="convertBlankNumberToNull(item,'approvedFeeSep')" label="September" prefix="$" />
                     </v-col>
                   </v-row>
 
                   <v-row>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeOct" label="October" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeOct')" label="October" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeNov" label="November" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeNov')" label="November" prefix="$"/>
                     </v-col >
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeDec" label="December" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeDec')" label="December" prefix="$"/>
                     </v-col >
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeJan" label="Jan" prefix="$"/>
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeJan')" label="Jan" prefix="$"/>
                     </v-col>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeFeb" label="Feb" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeFeb')" label="Feb" prefix="$" />
                     </v-col>
                     <v-col
                       class="col-6 col-md-2">
-                      <v-text-field type="number" :disabled="isReadOnly" outlined :rules="feeRules"  v-model.number="item.approvedFeeMar" label="March" prefix="$" />
+                      <v-text-field type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        v-model.number="item.approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeMar')" label="March" prefix="$" />
                     </v-col>
                   </v-row>
 
@@ -356,9 +368,9 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing" 
+        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
-      
+
       <v-dialog
         v-model="showRfiDialog"
         persistent
@@ -393,16 +405,17 @@
   </v-form>
 </template>
 <script>
-import { PATHS } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
 
 export default {
   components: { NavButton },
-  mixins: [alertMixin],
+  mixins: [alertMixin, globalMixin],
   data() {
     return {
 
@@ -443,26 +456,29 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['lookupInfo']),
-    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('app', ['navBarList', 'isRenewal', 'rfiList']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId']),
+    ...mapState('app', ['isRenewal', 'rfiList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
 
-    findIndexOfFacility(){
-      return this.navBarList.findIndex((element) =>{
-        return element.ccfriApplicationId == this.$route.params.urlGuid;
-      });
-    },
     currentFacility(){
-      return this.navBarList[this.findIndexOfFacility];
-    },
-    nextFacility(){
-      return this.navBarList[this.findIndexOfFacility + 1];
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockCcfri){
         return false;
+      }
+      else if(this.isChangeRequest){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
       }
       else if (this.applicationStatus === 'SUBMITTED'){
         return true;
@@ -494,7 +510,7 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
           //this solves for the edge case bug where fees that need to be deleted cannot be deleted because the GUID has not been loaded from dynamics
-          window.location.reload();
+          // window.location.reload(); //TODO-RLO: removed this, review with Jen
         }
       },
       immediate: true,
@@ -503,9 +519,8 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
-    ...mapMutations('app', ['addToRfiNavBarStore', 'forceNavBarRefresh']),
+    ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },
@@ -523,19 +538,18 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.currentFacility.hasRfi = true;
-      this.$router.push(`${PATHS.ccfriRequestMoreInfo}/${this.$route.params.urlGuid}`);
+      this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: true});
+      this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.$route.params.urlGuid));
     },
-    async previous() {
+    previous() {
       if (this.isReadOnly){
-        this.$router.push({path : `${PATHS.ccfriHome}`});
+        this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
       }
       else if (this.isRenewal){
-        this.$router.push({path : `${PATHS.currentFees}/${this.currentFacility.ccfriApplicationId}`});
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));
       }
       else{
-        let path = await this.getPreviousPath();
-        this.$router.push(path);
+        this.$router.push(this.previousPath);
       }
 
     },
@@ -547,24 +561,20 @@ export default {
         if (this.rfi3percentCategories.length > 0) {
           if (this.currentFacility.hasRfi) {
             //already has RFI. just go to the next page
-            let path = await this.getNextPath();
-            this.$router.push(path);
+            this.$router.push(this.nextPath);
           } else {
             this.showRfiDialog = true;
           }
         } else {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
-            this.currentFacility.hasRfi = false;
-            await this.forceNavBarRefresh();
+            this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: false});
           }
-          let path = await this.getNextPath();
-          this.$router.push(path);
+          this.$router.push(this.nextPath);
         }
       } else {
         //Not renewal.
-        let path = await this.getNextPath();
-        this.$router.push(path);
+        this.$router.push(this.nextPath);
       }
     },
     validateForm() {
@@ -597,12 +607,7 @@ export default {
       if (this.hasModelChanged() || this.hasDataToDelete()){
 
         this.processing = true;
-
-        let facility = this.navBarList.find(el => el.ccfriApplicationId == this.ccfriId);
-        if (facility) {
-          facility.isCCFRIComplete = this.isFormComplete();
-          await this.forceNavBarRefresh();
-        }
+        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
         //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
         if (this.CCFRIFacilityModel.hasClosureFees == 100000001){
@@ -615,13 +620,13 @@ export default {
           facilityClosureDates : this.CCFRIFacilityModel.dates,
           ccof_formcomplete : this.isFormComplete(),
           notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
-          ccof_has_rfi: facility.hasRfi,
+          ccof_has_rfi: this.currentFacility.hasRfi,
           hasClosureFees: this.CCFRIFacilityModel.hasClosureFees
         };
         if (this.isRenewal) {
           firstObj = {
             ...firstObj,
-            ccof_has_rfi: facility.hasRfi,
+            ccof_has_rfi: this.currentFacility.hasRfi,
             existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
           };
         }

@@ -1,6 +1,6 @@
 <template>
   <v-container fluid style="padding:0">
-    <v-toolbar 
+    <v-toolbar
       dense
       color="yellow lighten-4"
       justify="center"
@@ -10,9 +10,9 @@
         <h3 v-if="hasUnreadActionRequiredMessage">Action required: new message(s)</h3>
         <h3 v-else>New message(s)</h3>
       </v-toolbar-title >
-    </v-toolbar> 
+    </v-toolbar>
 
-    <v-toolbar 
+    <v-toolbar
       dense
       color="#B3E5FF"
       justify="center"
@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     messageScreen() {
-      this.$router.push(PATHS.messagesPage);
+      this.$router.push(PATHS.ROOT.MESSAGES);
     }
   }
 };

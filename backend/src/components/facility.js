@@ -83,6 +83,7 @@ function mapCCFRIObjectForFront(data) {
 
 async function getFacility(req, res) {
   try {
+    //,_ccof_change_request_value
     let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
@@ -316,7 +317,7 @@ async function updateFacility(req, res) {
 
 async function deleteFacility(req, res) {
   let { facilityId } = req.params;
-  let { ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
+  let { changeRequestNewFacilityId, ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
   log.info('deleting facility', facilityId);
 
   if (ccfriId){
@@ -331,7 +332,7 @@ async function deleteFacility(req, res) {
 
   if (ccofBaseFundingId){
     log.verbose('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
-    //await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
+    await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
   }
 
   //delete any associated documents to the facility.
@@ -348,6 +349,12 @@ async function deleteFacility(req, res) {
 
   await deleteOperationWithObjectId('accounts', facilityId);
   log.info('facility deleted successfully', facilityId);
+
+  if (changeRequestNewFacilityId) {
+    log.verbose('deleting change request facility', changeRequestNewFacilityId);
+    await deleteOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId);
+  }
+
   return res.status(HttpStatus.OK).end();
 }
 
@@ -359,6 +366,7 @@ module.exports = {
   deleteFacility,
   getLicenseCategories,
   updateFacilityLicenseType,
-  getCCFRIClosureDates
+  getCCFRIClosureDates,
+  mapFacilityObjectForBack,
 };
 

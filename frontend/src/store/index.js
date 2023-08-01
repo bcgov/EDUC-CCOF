@@ -18,6 +18,8 @@ import eceweApp from '@/store/modules/eceweApp.js';
 import message from '@/store/modules/message.js';
 import summaryDeclaration from '@/store/modules/summaryDeclaration.js';
 
+import reportChanges from '@/store/modules/reportChanges.js';
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -36,6 +38,7 @@ export default new Vuex.Store({
     message,
     supportingDocumentUpload,
     summaryDeclaration,
-    navBar
+    navBar,
+    reportChanges
   }
 });

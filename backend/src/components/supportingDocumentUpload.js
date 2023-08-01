@@ -1,5 +1,5 @@
 'use strict';
-const {postApplicationDocument, getApplicationDocument, deleteDocument} = require('./utils');
+const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 
 
@@ -7,7 +7,16 @@ async function saveDocument(req, res) {
   try {
     let documents = req.body;
     for (let document of documents) {
-      await postApplicationDocument(document);
+      
+      let changeRequestNewFacilityId = document.changeRequestNewFacilityId;
+      delete document.changeRequestNewFacilityId;
+      let response = await postApplicationDocument(document);
+      //if this is a new facility change request, link supporting documents to the New Facility Change Action
+      if (changeRequestNewFacilityId) {
+        await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
+          "ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
+        });
+      }
     }
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
@@ -74,6 +83,7 @@ async function getAllUploadedDocuments(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
+
 async function deleteUploadedDocuments(req, res) {
   try {
     let deletedDocuments = req.body;

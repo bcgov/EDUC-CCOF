@@ -1,12 +1,11 @@
 'use strict';
-const {getOperation, getLabelFromValue, minify} = require('./utils');
+const {getOperation, getLabelFromValue, } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const _ = require ('lodash');
 const cache = require('memory-cache');
-const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES } = require('../util/constants');
 const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const log = require('./logger');
 
 
 const lookupCache = new cache.Cache();
@@ -59,6 +58,7 @@ function parseProgramYear(value) {
     future: undefined,
     previous: undefined,
     renewal: undefined,
+    newApp: undefined,
     list: []
   };
   value.forEach(item => {
@@ -75,6 +75,18 @@ function parseProgramYear(value) {
   programYears.previous = programYears.list.find(p => p.programYearId == programYears.current.previousYearId);
   programYears.list.sort((a,b) => { return b.order - a.order; } );
   programYears.renewal = programYears.future ? programYears.future:  programYears.list[0];
+
+  // Set the program year for a new application
+  if (programYears.current?.intakeEnd) {
+    const intakeDate = new Date(programYears.current?.intakeEnd);
+    programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.current;
+  } else {
+    programYears.newApp = programYears.current;
+  }
+
+
+
+
   return programYears;
 }
 
@@ -115,7 +127,8 @@ async function getLookupInfo(req, res) {
       'organizationType': organizationType,
       'fundingModelType': fundingModelType,
       'groupLicenseCategory': licenseCategory.groupLicenseCategory,
-      'familyLicenseCategory': licenseCategory.familyLicenseCategory
+      'familyLicenseCategory': licenseCategory.familyLicenseCategory,
+      'changeRequestTypes:' : CHANGE_REQUEST_TYPES
     };
     lookupCache.put('lookups', resData, 60 * 60 * 1000);
   }

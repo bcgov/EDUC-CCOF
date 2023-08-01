@@ -1,7 +1,7 @@
 import alertMixin from '@/mixins/alertMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState, mapGetters } from 'vuex';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -13,6 +13,7 @@ export default {
     ...mapState('facility', ['facilityList']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
@@ -65,7 +66,6 @@ export default {
   },
   methods: {
     ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
-    ...mapActions('navBar', ['getNextPath', 'getPreviousPath']),
     ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
     validateIncorporationNumber(organizationTypeId, incorporationNumber) {
       const selectedOrgType = this.organizationTypeList.find(obj => obj.id === organizationTypeId)?.name;
@@ -76,7 +76,7 @@ export default {
       }
       return [];
     },
-    isSameAddressChecked () {      
+    isSameAddressChecked () {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
         this.model.city2 = '';
@@ -89,15 +89,16 @@ export default {
     validateForm() {
       this.$refs.form?.validate();
     },
-    async next() {
-      let path = await this.getNextPath();
-      this.$router.push(path);
+    next() {
+      this.$router.push(this.nextPath);
     },
-    async back() {
-      let path = await this.getPreviousPath();
-      this.$router.push(path);
+    back() {
+      this.$router.push(this.previousPath);
     },
     async save(showNotification) {
+      if (this.isLocked) {
+        return;
+      }
       if (this.model.isSameAsMailing) {
         this.model.address2 = this.model.address1;
         this.model.city2 = this.model.city1;

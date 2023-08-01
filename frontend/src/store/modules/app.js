@@ -4,21 +4,14 @@ export default {
   namespaced: true,
   state: {
     pageTitle: null,
-    //NavBar Details
+    subtitleBanner: '',
     showNavBar: false,
-    navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
-    navBarList: [], //holds the generated nav bar
     isRenewal: false,
-    isOrganizationComplete: false,
-    isLicenseUploadComplete: false,
-    ccofApplicationComplete: false,
-    ccofConfirmationEnabled: false,
 
     //Notification Details
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
-    supportingDocumentUploadComplete: false,
 
     //Lookup Table Details
     programYearList: {},
@@ -26,7 +19,6 @@ export default {
     organizationTypeList: [],
     fundingModelTypeList: [],
     lookupInfo: null,
-    forceNavBarRefresh: 1,
     logoutTimerEnabled: false,
     logoutTime: undefined,
     logoutCounter: 120,
@@ -42,14 +34,14 @@ export default {
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
     },
+    setSubtitleBanner:(state,subtitleBanner) =>{
+      state.subtitleBanner=subtitleBanner;
+    },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
     },
     setAlertNotification: (state, alertNotification) => {
       state.alertNotification = alertNotification;
-    },
-    forceNavBarRefresh(state) {
-      state.forceNavBarRefresh = state.forceNavBarRefresh + 1;
     },
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
@@ -74,50 +66,8 @@ export default {
     setShowNavBar: (state, showNavBar) => {
       state.showNavBar = showNavBar;
     },
-    setNavBarGroup: (state, navBarGroup) => {
-      state.navBarGroup = navBarGroup;
-    },
-    setIsOrganizationComplete: (state, isOrganizationComplete) => {
-      state.isOrganizationComplete = isOrganizationComplete;
-    },
-    bulkAddToNavNBar: (state, facilityList) => {
-      if (facilityList) {
-        state.navBarList = facilityList;
-      }
-    },
-    setNavBarFacilityComplete: (state, { facilityId, complete }) => {
-      let navBarItem = state.navBarList.find(item => item.facilityId == facilityId);
-      if (navBarItem) {
-        navBarItem.isFacilityComplete = complete;
-      }
-    },
-    setNavBarFundingComplete: (state, { fundingId, complete }) => {
-      let navBarItem = state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
-      if (navBarItem) {
-        navBarItem.isCCOFComplete = complete;
-      }
-    },
-    addToNavBarList: (state, payload) => {
-      state.navBarList.push(payload);
-    },
-    deleteFromNavBarList: (state, facilityId) => {
-      console.log('deleteFromNavBarList', state.navBarList, facilityId);
-      state.navBarList = state.navBarList.filter(item => item.facilityId !== facilityId);
-    },
-    setCcofApplicationComplete: (state, ccofApplicationComplete) => {
-      state.ccofApplicationComplete = ccofApplicationComplete;
-    },
-    setCcofConfirmationEnabled: (state, ccofConfirmationEnabled) => {
-      state.ccofConfirmationEnabled = ccofConfirmationEnabled;
-    },
-    setIsLicenseUploadComplete: (state, isLicenseUploadComplete) => {
-      state.isLicenseUploadComplete = isLicenseUploadComplete;
-    },
     setIsRenewal: (state, isRenewal) => {
       state.isRenewal = isRenewal;
-    },
-    setSupportingDocumentUploadComplete: (state, supportingDocumentUploadComplete) => {
-      state.supportingDocumentUploadComplete = supportingDocumentUploadComplete;
     },
     setLogoutTimerEnabled: (state, value) => {
       state.logoutTimerEnabled = value;
@@ -132,63 +82,12 @@ export default {
   getters: {
     currentYearLabel: state => state.programYearList?.current?.name,
     renewalYearLabel: state => state.programYearList?.renewal?.name?.replace(/[^\d/]/g, ''),
+    programYearList: state => state.programYearList,
     childCareCategoryList: state => state.childCareCategoryList,
     organizationTypeList: state => state.organizationTypeList,
     fundingModelTypeList: state => state.fundingModelTypeList,
     lookupInfo: state => state.lookupInfo,
     logoutCounter: state => state.logoutCounter < 0 ? 0 : state.logoutCounter,
-
-    getNavByFacilityId: (state) => (facilityId) => {
-      if (!facilityId) {
-        return null;
-      }
-      return state.navBarList.find(item => item.facilityId == facilityId);
-    },
-    getNavByFundingId: (state) => (fundingId) => {
-      if (!fundingId) {
-        return null;
-      }
-      return state.navBarList.find(item => item.ccofBaseFundingId == fundingId);
-    },
-
-    getNavByCCFRIId: (state) => (ccfriId) => {
-      if (!ccfriId) {
-        return null;
-      }
-      return state.navBarList.find(item => item.ccfriApplicationId == ccfriId);
-    },
-
-    getNextNavByFacilityId: (state) => (facilityId) => {
-      if (!facilityId) {
-        return null;
-      }
-      let index = state.navBarList.findIndex(item => item.facilityId == facilityId);
-      if (index < state.navBarList?.length - 1) {
-        return state.navBarList[index + 1];
-      }
-      return null;
-    },
-    getNextNavByFundingId: (state) => (funding) => {
-      if (!funding) {
-        return null;
-      }
-      let index = state.navBarList.findIndex(item => item.ccofBaseFundingId == funding);
-      if (index < state.navBarList?.length - 1) {
-        return state.navBarList[index + 1];
-      }
-      return null;
-    },
-
-    getNextPrevByFacilityId: (state) => (facilityId) => {
-      if (!facilityId) {
-        return null;
-      }
-      let index = state.navBarList.findIndex(item => item.facilityId == facilityId);
-      if (index > 0) {
-        return state.navBarList[index - 1];
-      }
-      return null;
-    }
   },
   actions: {
     async getLookupInfo({ commit }) {

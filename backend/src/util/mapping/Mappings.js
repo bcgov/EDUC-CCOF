@@ -36,6 +36,7 @@ const FacilityMappings = [
   { back: 'ccof_facilityreceived_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
+  { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
@@ -243,6 +244,7 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_optintoecewe', front: 'optInOrOut' },
+  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 
 const UserProfileOrganizationMappings = [
@@ -274,6 +276,8 @@ const UserProfileFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
+  { back: 'ccof_facilitystatus_formatted', front: 'facilityStatus'},
+
 ];
 const UserProfileBaseFundingMappings = [
   //base funding
@@ -312,6 +316,15 @@ const UserProfileECEWEMappings = [
   { back: 'ccof_optintoecewe', front: 'eceweOptInStatus' },
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'eceweFacilityId' },
+];
+
+const UserProfileChangeRequestNewFacilityMappings = [
+  { back: 'ccof_change_requestid', front: 'changeRequestId' },
+  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
+  { back: '_ccof_change_action_value', front: 'changeActionId' },
+  { back: '_ccof_ccof_value', front: 'ccofBaseFundingId' },
+  { back: '_ccof_ccfri_value', front: 'ccfriApplicationId' },
+  { back: '_ccof_ecewe_value', front: 'eceweApplicationId' },
 ];
 
 const ProgramYearMappings = [
@@ -403,7 +416,13 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_has_rfi', front: 'hasRfi'}, // false,
   { back: 'ccof_unlock_rfi', front: 'unlockRfi'}, // null,
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'}, // false,
-]
+];
+
+//DONT USE THIS below for most change rec things- there is a seperate file for change request mappings
+const ChangeRequestMappings = [
+  { back: 'ccof_change_requestid', front: 'changeRequestId'}, // null,
+  //{ back: '', front: ''}, // null,
+];
 
 module.exports = {
   OrganizationMappings,
@@ -434,4 +453,6 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
+  ChangeRequestMappings,
+  UserProfileChangeRequestNewFacilityMappings
 };

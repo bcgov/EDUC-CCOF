@@ -2,7 +2,9 @@
 
 import {getDateFormatter} from '@/utils/format';
 import {LocalDate} from '@js-joda/core';
-import {isPlainObject} from 'lodash';
+import {isPlainObject, sortBy} from 'lodash';
+import { PATHS } from '@/utils/constants';
+
 const clone = require('rfdc')();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
   const formatter = getDateFormatter(pattern);
@@ -35,4 +37,16 @@ export function getFileExtension(fileName) {
 }
 export function isNullOrBlank(value) {
   return value === null || value === undefined || value === '';
+}
+
+export function isChangeRequest(vueForm) {
+  return vueForm?.$route?.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
+}
+
+export function sortByFacilityId(value) {
+  return sortBy(value,[function(o) { return o.facilityId; }]);
+}
+
+export async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
