@@ -47,7 +47,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple accordion v-model="expand">
+            <v-expansion-panels ref="v-expansion-panels" focusable multiple accordion v-model="expand">
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
@@ -401,7 +401,9 @@ export default {
         return facility.facilityInfo.facilityAccountNumber;
       });
     },
-
+    numberOfPanelsToExpand() {
+      return this.$refs["v-expansion-panels"]?.$children.length;
+    }
   },
   data() {
     return {
@@ -546,9 +548,7 @@ export default {
       this.updateNavBarStatus(formObj, isComplete);
     },
     expandAllPanels() {
-      const numberOfFacilities = this.summaryModel.facilities.length;
-      const numberOfPanels = numberOfFacilities * 5;
-      for (let i = 1; i < numberOfPanels; i ++) { //TODO: numberOfPanels is an arbitrary number, look at how many facilities to get a proper number
+      for (let i = 0; i < this.numberOfPanelsToExpand; i ++) {
         this.expand.push(i);
       }
     },
@@ -716,6 +716,8 @@ export default {
       handler: function (val) {
         if (val) {
           setTimeout(() => {
+            console.log(this.$refs["v-expansion-panels"]);
+            console.log(this.$refs["v-expansion-panels"].$children.length);
             const keys = Object.keys(this.payload);
             console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.
