@@ -76,7 +76,8 @@ export const PATHS = {
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
-    CHANGE_NEW_FACILITY: '/change/new/group/facility'
+    CHANGE_NEW_FACILITY: '/change/new/group/facility',
+    CHANGE_INFO: '/change/information',
   },
   PREFIX: {
     PCF: '/pcf',

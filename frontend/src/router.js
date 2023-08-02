@@ -55,6 +55,7 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+import ChangeInformation from '@/components/requestChanges/ChangeInformation';
 
 Vue.prototype.moment = moment;
 
@@ -681,6 +682,16 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: false
+      }
+    },
+    {
+      path: PATHS.ROOT.CHANGE_INFO,
+      name: 'Change Request Information',
+      component: ChangeInformation,
+      meta: {
+        pageTitle: 'Change Request Information',
+        requiresAuth: true,
+        showNavBar: false,
       }
     },
   ]
