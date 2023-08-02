@@ -74,6 +74,18 @@ async function patchCCFRIApplication(req, res){
   return res.status(HttpStatus.OK).json(payload);
 }
 
+async function deleteCCFRIApplication(req, res){
+  try{
+    log.info('deleteCCFRIApplication - ccfriId: ', req.params.ccfriId);
+    await deleteOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
+    return res.status(HttpStatus.OK).json();
+  }
+  catch (e){
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 //creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
@@ -85,6 +97,19 @@ async function updateCCFRIApplication(req, res) {
         'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
         'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
       };
+
+      // if there is Change Action ID in request body -> creating new Change Action MTFI
+      if (facility.changeActionId) {
+        delete payload['ccof_Application@odata.bind'];
+        payload['ccof_change_request_mtfi_application_ccfri'] = [
+          {
+            "ccof_facility@odata.bind": `/accounts(${facility.facilityID})`,
+            "ccof_Change_Action@odata.bind": `/ccof_change_actions(${facility.changeActionId})`,
+            'ccof_Organization@odata.bind': `/accounts(${facility.organizationId})`,
+            'ccof_ProgramYear@odata.bind': `/ccof_program_years(${facility.programYearId})`,
+          }
+        ];
+      }
 
       //only bind CCFRI application to main application if this facility is completed during a new application
       //ccfri application for change request should only bind to their respective changeAction (done below)
@@ -624,5 +649,6 @@ module.exports = {
   getApplicationSummary,
   updateStatusForApplicationComponents,
   getChangeRequest,
-  patchCCFRIApplication
+  patchCCFRIApplication,
+  deleteCCFRIApplication
 };

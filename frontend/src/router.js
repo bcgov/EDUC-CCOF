@@ -67,6 +67,7 @@ Vue.use(VueMeta);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  // eslint-disable-next-line no-unused-vars
   scrollBehavior: function(to, from, savedPosition) {
     if (to.hash) {
       return {selector: to.hash};
@@ -599,6 +600,30 @@ const router = new VueRouter({
       component: AddNewFees,
       meta: {
         pageTitle: 'CCFRI Add New Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_RFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_NMF),
+      name: 'change-request-new-facilities',
+      component: NMF,
+      meta: {
+        pageTitle: 'New Facilities',
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,

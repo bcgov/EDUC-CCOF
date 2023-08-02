@@ -20,12 +20,14 @@
         Please select which facility you would like to update
       </div>
     </v-row>
-    <LargeButtonContainer>
-      <v-form ref="isValidForm" value="false" v-model="isValidForm">
-      <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
+    <div v-if="loading" class="my-12">
+      <v-skeleton-loader max-height="475px" :loading="true" type="image, image, image"></v-skeleton-loader>
+    </div>
+    <LargeButtonContainer v-else>
+      <v-form ref="isValidForm" value="false" v-model="isValidForm" >
         <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
           :disabled="!ccfriOptInStatus==1"
-          v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus } , index) in userProfileList" :key="index">
+          v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus } , index) in filteredUserProfileList" :key="index">
           <v-card-text>
             <v-row>
               <v-col class="col-12 col-xl-10 col-lg-10 col-md-9">
@@ -43,7 +45,7 @@
     </LargeButtonContainer>
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-      :isSaveDisabled="isReadOnly" :isNextDisabled="!isPageComplete()" :isProcessing="processing"
+      :isSaveDisabled="loading || isReadOnly" :isNextDisabled="loading || isNextButtonDisabled" :isProcessing="processing"
       @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
   </v-container>
 </template>
@@ -77,7 +79,7 @@ export default {
       showOptStatus : '',
       isValidForm: false,
       processing: false,
-      loading: false,
+      loading: true,
       ccfriOptInOrOut,
       checkbox: [],
       rules: [
@@ -89,60 +91,98 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList']),
-    ...mapState('reportChanges', ['changeActionId',]),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
     ...mapGetters('navBar', ['previousPath']),
     isReadOnly() {
       return false;
     },
+    isNextButtonDisabled() {
+      return (!this.checkbox?.includes(true));
+    },
+    filteredUserProfileList() {
+      return this.userProfileList.filter(el => !el.changeRequestId);
+      // return this.userProfileList.filter(el => el.changeRequestId);
+    }
   },
-  beforeMount: function() {
+  async beforeMount() {
+    this.loading = true;
+    try {
+      await this.getChangeRequest(this.$route.params.changeRecGuid);
+      this.filteredUserProfileList?.forEach((facility, index) => {
+        if (this.mtfiFacilities?.find(item => item.facilityId == facility.facilityId))
+          this.checkbox[index] = true;
+      });
+      this.loading = false;
+    } catch(error) {
+      console.log('Error loading Change Request.', error);
+      this.setFailureAlert('Error loading change request.');
+    }
   },
   methods: {
     ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
-    ...mapActions('reportChanges', ['createMTFIFacilities']),
+    ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     previous() {
       this.$router.push(this.previousPath);
     },
-    //checks to ensure each facility has a CCFRI application started before allowing the user to proceed.
-    isPageComplete(){
-      return this.isValidForm;
-    },
     async next() {
-
       await this.save(false);
-
-      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, 'eed0c981-ab30-ee11-bdf4-000d3af4865d' )); //NEW CCFRI goes here
-
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId));
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
     },
+    isMTFIExisted(facility) {
+      let existedMTFIFacility = this.mtfiFacilities?.find(item => item.facilityId == facility.facilityId);
+      if (existedMTFIFacility)
+        return true;
+      return false;
+    },
+    getNewMTFIFacilities() {
+      let newMTFIFacilities = [];
+      this.checkbox?.forEach((item, index) => {
+        let facility = this.filteredUserProfileList[index];
+        if (item && facility && !this.isMTFIExisted(facility))
+          newMTFIFacilities.push({
+            'facilityID': facility.facilityId,
+            'applicationID': this.applicationId,
+            'changeActionId': this.changeActionId,
+            'optInResponse': 1,
+            // 'ccfriApplicationId': facility.ccfriApplicationId,
+            // 'ccfriFacilityId': facility.ccfriFacilityId,
+            'programYearId': this.programYearId,
+            'organizationId': this.organizationId
+          });
+      });
+      return newMTFIFacilities;
+    },
+    getDeleteMTFIFacilities() {
+      let deleteMTFIFacilities = [];
+      this.checkbox?.forEach((item, index) => {
+        let mtfiFacility = this.mtfiFacilities?.find(item => item.facilityId == this.filteredUserProfileList[index]?.facilityId);
+        if (!item && mtfiFacility && this.isMTFIExisted(mtfiFacility))
+          deleteMTFIFacilities.push({
+            'facilityId': mtfiFacility.facilityId,
+            'changeRequestMtfiId': mtfiFacility.changeRequestMtfiId,
+            'ccfriApplicationId': mtfiFacility.ccfriApplicationId,
+          });
+      });
+      return deleteMTFIFacilities;
+    },
     async save(withAlert) {
       this.processing = true;
       try {
-        let selectedMTFIFacilities = [];
+        let newMTFIFacilities = await this.getNewMTFIFacilities();
+        let deleteMTFIFacilities = await this.getDeleteMTFIFacilities();
 
-        // To-do: see how we can get changeActionId after the user refresh the page.
-        this.checkbox?.forEach((item, index) => {
-          if (item)
-            selectedMTFIFacilities.push({
-              'facilityId': this.userProfileList[index].facilityId,
-              'changeActionId': this.changeActionId,
-              'ccfriApplicationId': this.userProfileList[index].ccfriApplicationId,
-              'ccfriFacilityId': this.userProfileList[index].ccfriFacilityId,
-              'programYearId': this.programYearId,
-              'organizationId': this.organizationId ,
-            });
-        });
-        console.log('selectedMTFIFacilities = ');
-        console.log(selectedMTFIFacilities);
-        let response = await this.createMTFIFacilities(selectedMTFIFacilities);
-        console.log('createMTFIFacilities response = ');
-        console.log(response);
+        if (newMTFIFacilities?.length > 0)
+          await this.createChangeRequestMTFI(newMTFIFacilities);
+
+        if (deleteMTFIFacilities?.length > 0)
+          await this.deleteChangeRequestMTFI(deleteMTFIFacilities);
 
         this.processing = false;
         if (withAlert) {
-          this.setSuccessAlert('Success! Selected facilities have been saved.');
+          this.setSuccessAlert('Success! Your update has been saved.');
         }
       } catch (error)  {
         console.log(error);
@@ -153,7 +193,6 @@ export default {
   mounted() {
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
     next();
   },
   components: {LargeButtonContainer,NavButton}

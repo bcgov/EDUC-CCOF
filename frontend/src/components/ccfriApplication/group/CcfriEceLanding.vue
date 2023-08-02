@@ -129,11 +129,21 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList']),
-    ...mapGetters('navBar', ['previousPath']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
+    ...mapGetters('navBar', ['previousPath','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     isReadOnly(){
-      if (this.unlockedFacilities || isChangeRequest(this)) {
+      if (this.unlockedFacilities) {
         return false;
+      }
+      else if(this.isChangeRequest){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
       }
       else
         return (this.applicationStatus === 'SUBMITTED');

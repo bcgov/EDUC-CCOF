@@ -246,44 +246,31 @@ async function saveChangeRequestDocs(req, res) {
   }
 }
 
-function buildMTFIFacilityPayload(facility) {
-  // let payload = new MappableObjectForBack(facility, MtfiMappings);
-  // Program Year table has no logical name to bind??
-  // payload['ccof_programyear@odata.bind'] = `/accounts(${facility.ccfriApplicationId})`;
-  let payload = {
-    // 'ccof_FacilityId': facility.facilityId,
-    'ccof_Change_Action@odata.bind': `/ccof_change_actions(${facility.changeActionId})`,
-    'ccof_Organization@odata.bind': `/accounts(${facility.organizationId})`,
-    'ccof_facility@odata.bind': `/accounts(${facility.facilityId})`,
-    // 'ccof_ccfri@odata.bind': `/ccof_applicationccfris(${facility.ccfriApplicationId})`,
-    // 'ccof_ccfri_facility@odata.bind': `/ccof_adjudication_ccfri_facilitys(${facility.ccfriFacilityId})`,
-    'ccof_ProgramYear@odata.bind': `/ccof_program_years(${facility.programYearId})`,
-    // 'ccof_change_request_mtfi_application_ccfri': [
-    //   {
-    //       'ccof_ccfrioptin': 1,
-    //       'ccof_Facility@odata.bind': '/accounts(d524bae2-0d2c-ee11-bdf4-000d3af4865d)',
-    //       'ccof_Application@odata.bind': '/ccof_applications(5733c527-9722-ee11-9967-000d3a09d699)',
-    //   }
-    // ],
-  };
-  return payload;
+async function getChangeRequestMTFIByCcfriId(req, res){
+  try{
+    log.info('getChangeRequestMTFIByCcfriId - ccfriId = ', req.params.ccfriId);
+    let operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
+    let response = await getOperation(operation);
+    let mtfiDetails = [];
+    response?.ccof_change_request_mtfi_application_ccfri?.forEach(mtfiFacility => {
+      mtfiDetails.push(new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON());
+    });
+    return res.status(HttpStatus.OK).json(mtfiDetails);
+  }
+  catch (e){
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
 }
 
-
-async function createMTFIFacilities(req, res) {
-  let retVal = [];
-  let facilities = req.body;
-  console.log('createMTFIFacilities ========================== ');
-  console.log(facilities);
-  try {
-    await Promise.all(facilities.map(async (facility) => {
-      let payload = buildMTFIFacilityPayload(facility);
-      console.log(payload);
-      let response = await postOperation('ccof_change_request_mtfis', payload);
-      retVal.push(response);
-    }));
-    return res.status(HttpStatus.CREATED).json(retVal);
-  } catch (e) {
+async function deleteChangeRequestMTFI(req, res){
+  try{
+    log.info('deleteChangeRequestMTFI - mtfiId = ', req.params.mtfiId);
+    let response = await deleteOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId);
+    return res.status(HttpStatus.OK).json(response);
+  }
+  catch (e){
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -296,5 +283,6 @@ module.exports = {
   getChangeRequestDocs,
   saveChangeRequestDocs,
   updateChangeRequest,
-  createMTFIFacilities
+  getChangeRequestMTFIByCcfriId,
+  deleteChangeRequestMTFI,
 };

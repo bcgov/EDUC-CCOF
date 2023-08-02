@@ -82,7 +82,7 @@
           :headers="headers"
           :items="allChangeRequests"
           :height = "maxChangeHistoryTableHeight"
-          mobile-breakpoint="960"
+          mobile-breakpoint="md"
           fixed-header
           :item-class="getChangeRequestStyle"
           class="elevation-4 my-4"
@@ -91,6 +91,14 @@
           :sort-desc="[true, true]"
           v-else
         >
+          <template v-slot:item.facilityNames="{ item }">
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <div v-on="on" class="tableText" :style="maxfacilityNamesStringLength">{{ item.facilityNames }}</div>
+              </template>
+              <div class="tableTooltip">{{ item.facilityNames }}</div>
+            </v-tooltip>
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
               v-if="isContinueButtonDisplayed(item.externalStatus)"
@@ -113,7 +121,7 @@
             <v-btn
               v-if="isUpdateButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="updateButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
+              @click="updateButton(item.index, item.changeType, item.changeActionId, item.changeRequestId)"
               outlined
               :width="changeHistoryButtonWidth"
             >
@@ -121,7 +129,7 @@
             </v-btn>
             <v-btn
               v-if="isCancelButtonDisplayed(item.externalStatus)"
-              class="blueOutlinedButton mr-3 my-2"
+              class="blueOutlinedButton my-2"
               @click="confirmCancelChangeRequest(item.changeRequestId, item.changeTypeString, item.externalStatus, item.submissionDateString)"
               outlined
               :width="changeHistoryButtonWidth"
@@ -143,18 +151,14 @@
               <v-row>
                 <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12" style="text-align: left;">
-                  <p class="pt-8">Are you sure you want to cancel this change request?</p>
-                  <p class="pt-2">[{{cancelChangeRequestType}}]  [{{cancelChangeRequestStatus}}]  [{{cancelChangeRequestSubmissionDate}}]</p>
-                  <p class="pt-2 pb-8">You will not be able to resume a cancelled request. They will be viewable in your change history.</p>
-                </v-col>
+              <v-row class="pa-6">
+                <p>Are you sure you want to cancel this change request?</p>
+                <p class="pt-2">[{{cancelChangeRequestType}}]  [{{cancelChangeRequestStatus}}]  [{{cancelChangeRequestSubmissionDate}}]</p>
+                <p class="pt-2">You will not be able to resume a cancelled request. They will be viewable in your change history.</p>
               </v-row>
-              <v-row>
-                <v-col cols="12" style="text-align: center;">
+              <v-row class="d-flex justify-right">
                   <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
                   <v-btn dark color="primary" :loading="processing" @click="cancel()">Continue</v-btn>
-                </v-col>
               </v-row>
             </v-container>
           </v-card>
@@ -203,7 +207,7 @@ export default {
         { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
         { text: ' ', value: 'actions', align: 'start', sortable: false },
       ],
-      changeHistoryButtonWidth: '100px',
+      changeHistoryButtonWidth: '88px',
       dialog: false,
       cancelChangeRequestId: undefined,
       cancelChangeRequestType: undefined,
@@ -214,8 +218,9 @@ export default {
   computed: {
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeRequestStore',]),
+    ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests']),
     ...mapState('organization', ['organizationProviderType',]),
+    ...mapState('navBar', ['userProfileList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
@@ -246,11 +251,54 @@ export default {
     },
     // Table should be vertically scrollable once rows > 8
     maxChangeHistoryTableHeight() {
-      return this.allChangeRequests?.length > 8 ? 48 * 9 : undefined;
+      return this.allChangeRequests?.length > 8 ? 53 * 9 : undefined;
     },
     headers() {
       return this.organizationProviderType == 'GROUP' ? this.headersGroup : this.headersFamily;
-    }
+    },
+    maxfacilityNamesStringLength() {
+      if (this.$vuetify.breakpoint.width > 3500) {
+        return ('--maxLength: 700px');
+      }
+      switch (this.$vuetify.breakpoint.name) {
+      case 'xl':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px');
+      case 'lg':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10)) + 'px');
+      case 'md':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
+      case 'sm':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
+      case 'xs':
+        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px');
+      default:
+        return ('--maxLength: 100px');
+      }
+    },
+    unlockCCFRIList() {
+      let unlockList = [];
+      this.userProfileList?.forEach((facility) => {
+        if (facility.unlockCcfri)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    unlockNMFList() {
+      let unlockList = [];
+      this.userProfileList?.forEach((facility) => {
+        if (facility.unlockNmf)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    unlockRFIList() {
+      let unlockList = [];
+      this.userProfileList?.forEach((facility) => {
+        if (facility.unlockRfi)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
   },
   methods: {
     ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
@@ -272,7 +320,6 @@ export default {
       return label?.replace(/[^\d/]/g, '');
     },
     getChangeTypeString(changeType){
-      console.log('change type', changeType);
       switch(changeType){
       case 'PDF_CHANGE':
         return "Report other changes";
@@ -310,7 +357,7 @@ export default {
     getExternalStatusString(status){
       switch (status){
       case 1:
-        return "In progress";
+        return "In Progress";
       case 2:
         return "Submitted";
       case 3:
@@ -320,7 +367,7 @@ export default {
       case 5 :
         return "Approved";
       case 6:
-        return "Canceled";
+        return "Cancelled";
       default:
         return "Unknown"; //should never happen!
       }
@@ -328,7 +375,7 @@ export default {
     getInternalStatusString(status){
       switch (status){
       case 1:
-        return "In progress";
+        return "Incomplete";
       case 3:
         return "Submitted";
       case 4:
@@ -340,14 +387,15 @@ export default {
       case 7:
         return "Approved";
       case 8:
-        return "Canceled";
+        return "Cancelled";
       default:
         return "Unknown"; //should never happen!
       }
     },
     getSubmissionDateString(date) {
       if (date) {
-        return new Date(date).toLocaleDateString("en-US",{ year: 'numeric', month: '2-digit', day: '2-digit' });
+        // date display format: YYYY/MM/DD
+        return new Date(date).toLocaleDateString("zh-CN",{ year: 'numeric', month: '2-digit', day: '2-digit' });
       }
       return "- - - -";
     },
@@ -375,14 +423,46 @@ export default {
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
       }
     },
-    updateButton(changeType, changeActionId = null,  changeRequestId = null, index){
-      if (changeType == 'PDF_CHANGE'){
+    notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
+      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
+        this.goToChangeForm(changeActionId, changeRequestId);
+      } else if (currentCR?.unlockDeclaration) {
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId));
+      } else {
         this.goToChangeForm(changeActionId, changeRequestId);
       }
-      else if (changeType == 'NEW_FACILITY'){
-        this.setChangeRequestId(changeRequestId);
-        this.setChangeActionId(changeActionId);
+    },
+    newFacilityActionRequiredRoute(changeRequestId, index) {
+      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      if (currentCR?.unlockCCOF) {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+      } else if (currentCR?.unlockLicenseUpload) {
+        this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, changeRequestId));
+      } else if (this.unlockCCFRIList?.length > 0) {
+        this.$router.push(changeUrl(PATHS.CCFRI_HOME, changeRequestId));
+      } else if (this.unlockRFIList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, this.unlockRFIList[0]));
+      } else if (this.unlockNMFList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_NMF, changeRequestId, this.unlockNMFList[0]));
+      } else if (currentCR?.unlockEcewe) {
+        this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, changeRequestId));
+      } else if (currentCR?.unlockSupportingDocuments) {
+        this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, changeRequestId));
+      } else if (currentCR?.unlockDeclaration) {
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId));
+      } else {
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+      }
+    },
+    updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
+      this.setChangeRequestId(changeRequestId);
+      this.setChangeActionId(changeActionId);
+      if (changeType == 'PDF_CHANGE'){
+        this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
+      }
+      else if (changeType == 'NEW_FACILITY') {
+        this.newFacilityActionRequiredRoute(changeRequestId, index);
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
@@ -441,11 +521,9 @@ export default {
       try {
         await this.cancelChangeRequest(this.cancelChangeRequestId);
         this.cancelChangeRequestId = undefined;
-        this.setSuccessAlert('Success! Your change request have been canceled.');
+        this.setSuccessAlert('Success! Your change request has been cancelled.');
       }
       catch(error){
-        console.log('CANCEL ERROR ----------> ');
-        console.log(error);
         this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');
       }
 
@@ -453,13 +531,14 @@ export default {
       this.dialog = false;
     },
     isViewButtonDisplayed(externalStatus) {
-      return ['Submitted','Approved','Canceled'].includes(externalStatus);
+      return ['Submitted','Approved','Cancelled'].includes(externalStatus);
     },
     isContinueButtonDisplayed(externalStatus) {
-      return ['In progress'].includes(externalStatus);
+      return ['In Progress'].includes(externalStatus);
     },
     isCancelButtonDisplayed(externalStatus) {
-      return !(['Canceled'].includes(externalStatus));
+      // return (['Incomplete','Submitted','WITH_PROVIDER'].includes(internalStatus));
+      return (['In Progress'].includes(externalStatus));
     },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
@@ -467,7 +546,6 @@ export default {
   },
   async mounted() {
     this.processing = true;
-    console.log(this.applicationId);
     await this.loadChangeRequest();
     this.processing = false;
   },
@@ -492,5 +570,15 @@ export default {
 }
 :deep(.redText) {
   color: red !important;
+}
+.tableTooltip {
+  max-width: 70em;
+  overflow-wrap: break-word;
+}
+.tableText {
+  max-width: var(--maxLength); /* the element needs a fixed width (in px, em, %, etc) */
+  overflow: hidden; /* make sure it hides the content that overflows */
+  white-space: nowrap; /* don't break the line */
+  text-overflow: ellipsis; /* give the beautiful '...' effect */
 }
 </style>

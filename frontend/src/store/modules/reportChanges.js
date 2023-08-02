@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import {isEmpty} from 'lodash';
-
+import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 
 /*
 change REQUEST guid is what we need for saving and loading.
@@ -19,6 +19,7 @@ export default {
     uploadedDocuments: [],
     newFacilityList: [], //may not need this now
     userProfileChangeRequests: [],
+    mtfiFacilities: [],
   },
   getters: {
     changeRequestStore: state => state.changeRequestStore,
@@ -38,6 +39,27 @@ export default {
     // eslint-disable-next-line no-unused-vars
     changeRequestStatus: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
+    },
+    isCCOFUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockCCOF;
+    },
+    isEceweUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockEcewe;
+    },
+    isLicenseUploadUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockLicenseUpload;
+    },
+    isSupportingDocumentsUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockSupportingDocuments;
+    },
+    isDeclarationUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockDeclaration;
+    },
+    isChangeRequestUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockChangeRequest;
+    },
+    isOtherDocumentsUnlocked:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockOtherChangesDocuments;
     }
   },
   mutations: {
@@ -65,21 +87,35 @@ export default {
       state.newFacilityList = newFacilityList;
     },//may not need this now
     setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; },
+    addUserProfileChangeRequests:(state, value) => {
+      const item = {
+        changeRequestId: value,
+        externalStatus: 'INCOMPLETE'
+      };
+      state.userProfileChangeRequests.push(item);
+    },
     setCRIsEceweComplete:(state, value) => {
-      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
-      if (changeRequest) {
-        changeRequest.isEceweComplete = value.isComplete;
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        item.isEceweComplete = value.isComplete;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     },
     setCRIsLicenseComplete:(state, value) => {
-      console.log('CHANGE REQUESTID : ', value.changeRequestId);
-
-      let changeRequest = state.userProfileChangeRequests.find(el => el.changeRequestId === value.changeRequestId);
-      console.log('CHANGE REQUEST FOUND: ', changeRequest);
-      if (changeRequest) {
-        changeRequest.isLicenseUploadComplete = value.isComplete;
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        item.isLicenseUploadComplete = value.isComplete;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
-    }
+    },
+    setMTFIFacilities:(state, value) => {
+      state.mtfiFacilities = value;
+    },
+    addToMtfiFacilities: (state, payload) => {
+      payload?.forEach(facility => state.mtfiFacilities.push(facility));
+    },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
@@ -147,6 +183,10 @@ export default {
         console.log('THIS IS CHANGE REQUEST RESPONSE = ');
         console.log(response);
         commit('setLoadedChangeRequest', response);
+        commit('setChangeRequestId', response?.changeRequestId);
+        commit('setChangeActionId', response?.changeActions[0]?.changeActionId);
+        let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+        mtfiChangeActions?.forEach(changeAction => commit('addToMtfiFacilities', changeAction.mtfi));
         return response;
       } catch(e) {
         console.log(`Failed to get change request with error - ${e}`);
@@ -201,7 +241,7 @@ export default {
         try {
           let payload = {
             externalStatus: 6,
-          }
+          };
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
           let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
           if (index) {
@@ -268,15 +308,40 @@ export default {
       }
     },
 
-    async createMTFIFacilities({}, payload) {
-      console.log('Create MTFI Facilities:' , payload);
+    async createChangeRequestMTFI({state,commit}, payload) {
+      console.log('Create MTFI Change Request:' , payload);
       checkSession();
       try {
-        let response = await ApiService.apiAxios.post('/api/changeRequest/mtfiFacilities', payload);
-        console.log(response);
-        return response.data;
+        let ccfriResponse = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        await Promise.all(ccfriResponse?.data?.map(async (ccfri) => {
+          let mtfiResponse = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + ccfri?.ccfriApplicationId);
+          commit('addToMtfiFacilities', mtfiResponse?.data);
+        }));
       } catch (error) {
-        console.info(`Failed to create MTFI Facilities - ${error}`);
+        console.info(`Failed to create MTFI Change Requests - ${error}`);
+        throw error;
+      }
+    },
+
+    async deleteChangeRequestMTFI({state}, payload) {
+      console.log('Delete MTFI Change Request:' , payload);
+      checkSession();
+      try {
+        await Promise.all(payload.map(async (mtfiFacility) => {
+          if (mtfiFacility.ccfriApplicationId)
+            await ApiService.apiAxios.delete('/api/application/ccfri/' + mtfiFacility.ccfriApplicationId);
+        }));
+        await Promise.all(payload.map(async (mtfiFacility) => {
+          if (mtfiFacility.changeRequestMtfiId)
+            await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + mtfiFacility.changeRequestMtfiId);
+        }));
+        payload.forEach(facility => {
+          let deleteIndex = state.mtfiFacilities.findIndex(item => item.facilityId === facility.facilityId);
+          if (deleteIndex >= 0)
+            state.mtfiFacilities.splice(deleteIndex, 1);
+        });
+      } catch (error) {
+        console.info(`Failed to delete MTFI Change Requests - ${error}`);
         throw error;
       }
     },
