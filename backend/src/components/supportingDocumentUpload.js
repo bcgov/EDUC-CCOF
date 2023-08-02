@@ -15,7 +15,7 @@ async function saveDocument(req, res) {
       delete documentClone.changeRequestNewFacilityId;
       if (getFileExtension(documentClone.filename) === 'heic' ) {
         log.verbose(`saveDocument :: heic detected for file name ${documentClone.filename} starting conversion`);
-        document = await convertHeicDocumentToJpg(documentClone);
+        documentClone = await convertHeicDocumentToJpg(documentClone);
       }
       let response = await postApplicationDocument(documentClone);
       //if this is a new facility change request, link supporting documents to the New Facility Change Action
