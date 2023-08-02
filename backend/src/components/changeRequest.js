@@ -10,6 +10,7 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
+const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
 
 
 function mapChangeRequestForBack(data, changeType) {
@@ -191,7 +192,7 @@ async function createChangeRequestFacility(req, res) {
     if (ccofBaseFundingId && changeRequestNewFacilityId) {
       await updateChangeRequestNewFacility(changeRequestNewFacilityId,
         {
-          "ccof_CCOF@odata.bind": `/ccof_application_basefundings(${ccofBaseFundingId})`
+          'ccof_CCOF@odata.bind': `/ccof_application_basefundings(${ccofBaseFundingId})`
         }
       );
     }
@@ -238,6 +239,11 @@ async function saveChangeRequestDocs(req, res) {
     let documents = req.body;
     //log.info(documents);
     for (let document of documents) {
+      if (getFileExtension(document.filename) === 'heic' ) {
+        log.verbose(`saveChangeRequestDocs :: heic detected for file name ${document.filename} starting conversion`);
+        document = await convertHeicDocumentToJpg(document);
+      }
+
       await postChangeActionDocument(document);
     }
     return res.status(HttpStatus.CREATED).json();

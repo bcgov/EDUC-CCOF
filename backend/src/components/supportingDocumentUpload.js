@@ -1,9 +1,8 @@
 'use strict';
 const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const convert = require('heic-convert');
 const log = require('./logger');
-const {getFileExtension} = require('../util/common');
+const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
 
 
 async function saveDocument(req, res) {
@@ -30,26 +29,6 @@ async function saveDocument(req, res) {
     console.log(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
-}
-
-async function convertHeicDocumentToJpg(document) {
-  const heicBuffer = Buffer.from(document.documentbody, 'base64');
-  const jpgBuffer = await convert({
-    buffer: heicBuffer,
-    format: 'JPEG',
-    quality: 0.5
-  });
-
-  log.verbose('convertHeicDocumentToJpg :: coverting from heic', {...document, documentbody: 'OMITTED'});
-
-  document.documentbody = jpgBuffer.toString('base64');
-  document.filesize = jpgBuffer.byteLength;
-  const regex = /\.heic(?![\s\S]*\.heic)/i; //looks for last occurrence of .heic case-insensitive
-  document.filename = document.filename.replace(regex,'.jpg');
-
-  log.verbose('convertHeicDocumentToJpg :: converted to jpg', {...document, documentbody: 'OMITTED'});
-
-  return document;
 }
 
 function mapDocument(fileInfo) {
