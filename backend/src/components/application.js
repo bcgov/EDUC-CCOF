@@ -74,6 +74,18 @@ async function patchCCFRIApplication(req, res){
   return res.status(HttpStatus.OK).json(payload);
 }
 
+async function deleteCCFRIApplication(req, res){
+  try{
+    log.info('deleteCCFRIApplication - ccfriId: ', req.params.ccfriId);
+    await deleteOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
+    return res.status(HttpStatus.OK).json();
+  }
+  catch (e){
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 //creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
   let body = req.body;
@@ -637,5 +649,6 @@ module.exports = {
   getApplicationSummary,
   updateStatusForApplicationComponents,
   getChangeRequest,
-  patchCCFRIApplication
+  patchCCFRIApplication,
+  deleteCCFRIApplication
 };

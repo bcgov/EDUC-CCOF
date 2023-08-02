@@ -246,6 +246,34 @@ async function saveChangeRequestDocs(req, res) {
   }
 }
 
+async function getChangeRequestMTFIByCcfriId(req, res){
+  try{
+    log.info('getChangeRequestMTFIByCcfriId - ccfriId = ', req.params.ccfriId);
+    let operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
+    let response = await getOperation(operation);
+    let mtfiDetails = [];
+    response?.ccof_change_request_mtfi_application_ccfri?.forEach(mtfiFacility => {
+      mtfiDetails.push(new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON());
+    });
+    return res.status(HttpStatus.OK).json(mtfiDetails);
+  }
+  catch (e){
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function deleteChangeRequestMTFI(req, res){
+  try{
+    log.info('deleteChangeRequestMTFI - mtfiId = ', req.params.mtfiId);
+    let response = await deleteOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId);
+    return res.status(HttpStatus.OK).json(response);
+  }
+  catch (e){
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 
 module.exports = {
   getChangeRequest,
@@ -255,4 +283,6 @@ module.exports = {
   getChangeRequestDocs,
   saveChangeRequestDocs,
   updateChangeRequest,
+  getChangeRequestMTFIByCcfriId,
+  deleteChangeRequestMTFI,
 };

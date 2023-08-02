@@ -522,7 +522,7 @@ export default {
       try {
         await this.cancelChangeRequest(this.cancelChangeRequestId);
         this.cancelChangeRequestId = undefined;
-        this.setSuccessAlert('Success! Your change request have been canceled.');
+        this.setSuccessAlert('Success! Your change request has been cancelled.');
       }
       catch(error){
         this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');

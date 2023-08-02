@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import {isEmpty} from 'lodash';
-
+import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 
 /*
 change REQUEST guid is what we need for saving and loading.
@@ -19,6 +19,7 @@ export default {
     uploadedDocuments: [],
     newFacilityList: [], //may not need this now
     userProfileChangeRequests: [],
+    mtfiFacilities: [],
   },
   getters: {
     changeRequestStore: state => state.changeRequestStore,
@@ -108,7 +109,13 @@ export default {
         item.isLicenseUploadComplete = value.isComplete;
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
-    }
+    },
+    setMTFIFacilities:(state, value) => {
+      state.mtfiFacilities = value;
+    },
+    addToMtfiFacilities: (state, payload) => {
+      payload?.forEach(facility => state.mtfiFacilities.push(facility));
+    },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
@@ -176,6 +183,10 @@ export default {
         console.log('THIS IS CHANGE REQUEST RESPONSE = ');
         console.log(response);
         commit('setLoadedChangeRequest', response);
+        commit('setChangeRequestId', response?.changeRequestId);
+        commit('setChangeActionId', response?.changeActions[0]?.changeActionId);
+        let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+        mtfiChangeActions?.forEach(changeAction => commit('addToMtfiFacilities', changeAction.mtfi));
         return response;
       } catch(e) {
         console.log(`Failed to get change request with error - ${e}`);
@@ -297,15 +308,40 @@ export default {
       }
     },
 
-    async createMTFIFacilities({},payload) {
-      console.log('Create MTFI Facilities:' , payload);
+    async createChangeRequestMTFI({state,commit}, payload) {
+      console.log('Create MTFI Change Request:' , payload);
       checkSession();
       try {
-        const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-        console.log(response);
-        return response.data;
+        let ccfriResponse = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        await Promise.all(ccfriResponse?.data?.map(async (ccfri) => {
+          let mtfiResponse = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + ccfri?.ccfriApplicationId);
+          commit('addToMtfiFacilities', mtfiResponse?.data);
+        }));
       } catch (error) {
-        console.info(`Failed to create MTFI Facilities - ${error}`);
+        console.info(`Failed to create MTFI Change Requests - ${error}`);
+        throw error;
+      }
+    },
+
+    async deleteChangeRequestMTFI({state}, payload) {
+      console.log('Delete MTFI Change Request:' , payload);
+      checkSession();
+      try {
+        await Promise.all(payload.map(async (mtfiFacility) => {
+          if (mtfiFacility.ccfriApplicationId)
+            await ApiService.apiAxios.delete('/api/application/ccfri/' + mtfiFacility.ccfriApplicationId);
+        }));
+        await Promise.all(payload.map(async (mtfiFacility) => {
+          if (mtfiFacility.changeRequestMtfiId)
+            await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + mtfiFacility.changeRequestMtfiId);
+        }));
+        payload.forEach(facility => {
+          let deleteIndex = state.mtfiFacilities.findIndex(item => item.facilityId === facility.facilityId);
+          if (deleteIndex >= 0)
+            state.mtfiFacilities.splice(deleteIndex, 1);
+        });
+      } catch (error) {
+        console.info(`Failed to delete MTFI Change Requests - ${error}`);
         throw error;
       }
     },
