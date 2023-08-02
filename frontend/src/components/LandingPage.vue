@@ -401,15 +401,15 @@ export default {
     },
     goToNMF(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(PATHS.NMF, this.programYearId, ccfriApplicationId));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(pcfUrlGuid(PATHS.NMF, this.programYearId, this.unlockNMFList[0]));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.unlockNMFList[0]));
     },
     goToRFI(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, ccfriApplicationId));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.unlockRFIList[0]));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.unlockRFIList[0]));
     },
     goToECEWE() {
       this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));

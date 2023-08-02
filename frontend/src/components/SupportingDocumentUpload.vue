@@ -156,12 +156,20 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['canSubmit', 'navBarList', 'changeRequestId']),
+    ...mapState('navBar', ['canSubmit', 'navBarList','changeRequestId']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
+        if(this.isSupportingDocumentsUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockSupportingDocuments) {
