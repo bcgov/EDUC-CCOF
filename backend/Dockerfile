@@ -16,7 +16,8 @@ RUN apk upgrade --no-cache --available \
     && apk add --no-cache dbus chromium chromium-chromedriver
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
-    CHROME_PATH=/usr/lib/chromium/
+    CHROME_PATH=/usr/lib/chromium/ \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 ENV CHROMIUM_FLAGS="--disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-gpu"
 
