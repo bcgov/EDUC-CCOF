@@ -43,11 +43,13 @@
                   <div class="px-md-12 px-7">
                     <br>
 
+                    <v-row class="d-flex">
                     <v-radio-group
                     :rules = "rules"
                       v-model="item.feeFrequency"
                       label="Parent fee frequency"
                       :disabled="true"
+                      class="cols-5 justify-space-around"
                     >
                       <v-radio
                         label="Daily"
@@ -59,7 +61,19 @@
                       ></v-radio>
                     </v-radio-group>
 
+                    <v-select label="Which month are you requesting to increase parent fees"
+                      v-model="CCFRIFacilityModel.childCareTypes[index].selectedMonth"
+                      :items="months"
+                      class="cols-5 justify-space-around"
+                      outlined
+                      >
 
+                      <option v-for="month in months" :key="month.value" :value="month.value">
+                        {{ month.text }}
+                      </option>
+
+                    </v-select>
+                  </v-row>
 
                     <v-container class="ma-0 pa-0 gridContainer">
 
@@ -111,94 +125,51 @@
 
                       <!-- End Row One of Grid-->
 
-                      <div class=" feeTitleInput">
+                      <div class=" feeTitleInput" >
                         <span >New Parent Fees: </span>
                       </div>
 
+
+
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 1)" class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeApr" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field  v-if="isInputVisible(index, 2)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMay" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field  v-if="isInputVisible(index, 3)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJun" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 4)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJul" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 5)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeAug" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 6)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeSep" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <!-- End Row Two of Grid-->
-                      <div class=" feeTitleInput">
-                          <span >Remaining fee increase limit: </span>
-                        </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field  class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <!-- End Row Three of Grid-->
-
-
-
                     </v-container>
                     <br>
-
                     <br>
 
                     <v-container class="ma-0 pa-0 gridContainer">
@@ -256,85 +227,42 @@
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 7)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 8)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 9)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 10)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 11)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible(index, 12)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
-                        <v-divider class="border-opacity-100" vertical></v-divider>
+
                       </div>
 
                       <!-- End Row Two of Grid-->
-                      <div class=" feeTitleInput">
-                          <span >Remaining fee increase limit: </span>
-                        </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <div class="feeTitle">
-                        <v-text-field  class="noPadding" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
-                          v-model.number="feeIncreaseRemaining" @input="convertBlankNumberToNull(item,'approvedFeeSep')" prefix="$" />
-                          <v-divider class="border-opacity-100" vertical></v-divider>
-                      </div>
-
-                      <!-- End Row Three of Grid-->
-
-
                       <br>
                     </v-container>
 
@@ -342,7 +270,9 @@
                 </v-card-text>
             </v-card>
 
-            <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
+        </div>
+
+        <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
               rounded
               tiled
@@ -358,7 +288,7 @@
                   <v-radio-group
                   :rules = "rules"
                     row
-                    v-model="model.q1"
+                    v-model="currentFeesCorrect"
                   >
                     <v-radio
                       label="Yes"
@@ -371,9 +301,6 @@
                   </v-radio-group>
                 </v-card-text>
              </v-card>
-
-
-        </div>
       </div>
 
 
@@ -410,6 +337,22 @@ export default {
   mixins: [alertMixin, globalMixin],
   data() {
     return {
+      currentFeesCorrect: null,
+      selectedMonth: null,
+      months: [
+        {text: 'April', value:  1},
+        {text: 'May' ,value:  2},
+        {text: 'June' ,value:  3},
+        {text: 'July' ,value:  4},
+        {text: 'Aug' ,value:5},
+        {text: 'Sept',value: 6},
+        {text: 'Oct',value: 7},
+        {text: 'Novemeber',value: 8},
+        {text: 'December',value: 9},
+        {text: 'January',value: 10},
+        {text: 'Feb',value: 11},
+        {text: 'March',value: 12},
+      ],
       oldCcfri: undefined,
       newFees: 0,
       feeIncreaseRemaining: '',
@@ -465,18 +408,18 @@ export default {
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
             if (!q.approvedFeeApr){
               let fees = {
-                approvedFeeApr: 0,
-                approvedFeeAug: 0,
-                approvedFeeDec: 0,
-                approvedFeeFeb: 0,
-                approvedFeeJan: 0,
-                approvedFeeJul: 0,
-                approvedFeeJun: 0,
-                approvedFeeMar: 0,
-                approvedFeeMay: 0,
-                approvedFeeNov: 0,
-                approvedFeeOct: 0,
-                approvedFeeSep: 0,
+                approvedFeeApr: null,
+                approvedFeeAug: null,
+                approvedFeeDec: null,
+                approvedFeeFeb: null,
+                approvedFeeJan: null,
+                approvedFeeJul: null,
+                approvedFeeJun: null,
+                approvedFeeMar: null,
+                approvedFeeMay: null,
+                approvedFeeNov: null,
+                approvedFeeOct: null,
+                approvedFeeSep: null,
               };
               q = {...q, ...fees};
 
@@ -537,6 +480,17 @@ export default {
         console.info('change in the model!');
       }
       return true;
+    },
+    isInputVisible(index, monthOfCard){
+      console.log('passed into model index', index);
+      console.log('sel month', this.CCFRIFacilityModel.childCareTypes[index].selectedMonth);
+      if (!this.currentFeesCorrect){
+        return false;
+      }
+      else if(monthOfCard >= this.CCFRIFacilityModel.childCareTypes[index].selectedMonth){
+        return true;
+      }
+      return false;
     },
     isFormComplete(){
       return this.isValidForm; //false makes button clickable, true disables button
@@ -604,7 +558,7 @@ export default {
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows:    repeat(3, 100px);
+  grid-template-rows:    repeat(2, 100px);
   grid-gap: 10px;
 }
 
