@@ -111,7 +111,7 @@ export default {
 
       await this.save(false);
 
-      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, 'f672d73f-2b2b-ee11-bdf4-000d3a09d499' ));
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, 'eed0c981-ab30-ee11-bdf4-000d3af4865d' )); //NEW CCFRI goes here
 
     },
     validateForm() {
@@ -131,7 +131,7 @@ export default {
               'ccfriApplicationId': this.userProfileList[index].ccfriApplicationId,
               'ccfriFacilityId': this.userProfileList[index].ccfriFacilityId,
               'programYearId': this.programYearId,
-              'organizationId': this.organizationId 
+              'organizationId': this.organizationId ,
             });
         });
         console.log('selectedMTFIFacilities = ');

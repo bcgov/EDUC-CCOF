@@ -23,7 +23,7 @@
       </div>
 
       <div v-else>
-        <div v-for="(item , index) in CCFRIFacilityModel.childCareTypes" :key="index">
+        <div v-for="(item , index) in oldCcfri.childCareTypes" :key="index">
             <v-card
 
             elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
@@ -117,37 +117,37 @@
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeApr" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMay" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJun" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJul" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeAug" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeSep" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
@@ -257,37 +257,37 @@
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="inputBoxWrapper ">
                         <v-text-field class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
-                        v-model.number="newFees" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
+                        v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
                         <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
@@ -392,12 +392,13 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
-import { isChangeRequest } from '@/utils/common';
+import { deepCloneObject } from '../../utils/common';
+import { isEqual } from 'lodash';
 
 
 let ccfriOptInOrOut = {};
@@ -406,11 +407,12 @@ let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'CcfriLandingPage',
-  mixins: [alertMixin],
+  mixins: [alertMixin, globalMixin],
   data() {
     return {
+      oldCcfri: undefined,
       newFees: 0,
-      feeIncreaseRemaining: 45,
+      feeIncreaseRemaining: '',
       isUnlocked: false,
       originalFacilityList: [],
       model,
@@ -434,6 +436,7 @@ export default {
   },
   computed: {
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
+    ...mapGetters('ccfriApp', ['getCCFRIById']),
 
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
@@ -446,9 +449,49 @@ export default {
       async handler() {
         try {
           this.loading = true;
-          await this.loadCCFRIFacility(this.$route.params.urlGuid);
+          await this.loadCCFRIFacility('d6169369-3727-ee11-9965-000d3a09d4d4'); //old CCFRI - logic to come to get this from navBar
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); //new CCFRI from route
+          await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
+          this.oldCcfri = this.getCCFRIById('d6169369-3727-ee11-9965-000d3a09d4d4'); //set old CCFRI to display fees
 
+
+          let arr = [];
+
+          //sort the child care types so they match the cards of the old CCFRI fees
+          for (const childCareTypes of this.oldCcfri.childCareTypes){
+            let q = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareTypes.childCareCategoryId);
+            console.log(q);
+
+            //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
+            if (!q.approvedFeeApr){
+              let fees = {
+                approvedFeeApr: 0,
+                approvedFeeAug: 0,
+                approvedFeeDec: 0,
+                approvedFeeFeb: 0,
+                approvedFeeJan: 0,
+                approvedFeeJul: 0,
+                approvedFeeJun: 0,
+                approvedFeeMar: 0,
+                approvedFeeMay: 0,
+                approvedFeeNov: 0,
+                approvedFeeOct: 0,
+                approvedFeeSep: 0,
+              };
+              q = {...q, ...fees};
+
+            }
+            q.feeFrequency = childCareTypes.feeFrequency;
+            arr.push(q);
+          }
+          this.CCFRIFacilityModel.childCareTypes = arr;
+
+          console.log('the arr', arr);
+
+          console.log(this.oldCcfri);
           this.feeList = [];
+
+
 
           //only display last years child care fees
           // const prevYearGuid = this.previousProgramYearGuid;
@@ -480,7 +523,24 @@ export default {
 
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI']),
+    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes']),
+    ...mapMutations('ccfriApp', ['setLoadedModel']),
+    hasModelChanged(){
+      // console.log('model:', this.loadedModel);
+      // console.log('ccfriStore:', this.CCFRIFacilityModel);
+
+      if (isEqual(this.CCFRIFacilityModel, this.loadedModel)) {
+        console.info('no model changes');
+        return false;
+      }
+      else{
+        console.info('change in the model!');
+      }
+      return true;
+    },
+    isFormComplete(){
+      return this.isValidForm; //false makes button clickable, true disables button
+    },
     async next() {
 
     },
@@ -490,9 +550,29 @@ export default {
     validateForm() {
 
     },
-    async save(withAlert) {
+    async save(showMessage) {
+      //console.log(this.closureFees);
+      //this.hasDataToDelete();
+      //only save data to Dynamics if the form has changed.
+      if (this.hasModelChanged() || this.hasDataToDelete()){
+        this.processing = true;
+        // this.processing = true;
+        //this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
-    },
+        try {
+          this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
+          let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: false}); //TODO: run logic for RFI here?
+          console.log('the res is:' , res);
+          if (showMessage) {
+            this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+          }
+        } catch (error) {
+          console.info(error);
+          this.setFailureAlert('An error occurred while saving.');
+        }
+        this.processing = false;
+      }
+    }
   },
   mounted() {
     //this.model = this.$store.state.ccfriApp.model ?? model;

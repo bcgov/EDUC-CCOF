@@ -418,10 +418,9 @@ export default {
 
     },
     async goToMTFI(changeRequestId = null){
-
+      //if no change request GUID, the next page will create the change request.
       if (!changeRequestId){
-        let newReq = await this.createNewChangeRequest('PARENT_FEE_CHANGE');
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, newReq.changeRequestId ));
+        this.$router.push(PATHS.MTFI_INFO);
       }
       else{
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));

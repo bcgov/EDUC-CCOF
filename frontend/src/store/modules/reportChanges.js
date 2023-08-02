@@ -268,7 +268,7 @@ export default {
       }
     },
 
-    async createMTFIFacilities({},payload) {
+    async createMTFIFacilities({}, payload) {
       console.log('Create MTFI Facilities:' , payload);
       checkSession();
       try {

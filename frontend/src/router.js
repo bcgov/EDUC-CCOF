@@ -674,6 +674,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
+      name: 'Midterm Fee Increase Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
       path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
       name: 'Midterm Fee Increase Select Facilities',
       component: MtfiSelectFacility,

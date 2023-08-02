@@ -509,7 +509,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),
+    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'loadFacilityCareTypes', 'decorateWithCareTypes', 'loadCCFisCCRIMedian', 'getCcfriOver3percent']),
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
@@ -596,77 +596,13 @@ export default {
       //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged() || this.hasDataToDelete()){
-
         this.processing = true;
+        // this.processing = true;
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
-
-        //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
-        if (this.CCFRIFacilityModel.hasClosureFees == 100000001){
-          this.CCFRIFacilityModel.dates = [];
-        }
-
-        let payload = [];
-        let firstObj = {
-          ccfriApplicationGuid : this.ccfriId,
-          facilityClosureDates : this.CCFRIFacilityModel.dates,
-          ccof_formcomplete : this.isFormComplete(),
-          notes : this.CCFRIFacilityModel.ccfriApplicationNotes,
-          ccof_has_rfi: this.currentFacility.hasRfi,
-          hasClosureFees: this.CCFRIFacilityModel.hasClosureFees
-        };
-        if (this.isRenewal) {
-          firstObj = {
-            ...firstObj,
-            ccof_has_rfi: this.currentFacility.hasRfi,
-            existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
-          };
-        }
-
-        //checks if blank - don't save empty rows
-        for(let i =  this.CCFRIFacilityModel.dates.length -1; i >=0; i--){
-          if (isEqual( this.CCFRIFacilityModel.dates[i], this.dateObj)){
-            this.CCFRIFacilityModel.dates.splice(i, 1);
-          }
-        }
-
-        //for each child care type - prepare an object for the payload
-        //index will also match the order of how the cards are displayed.
-        this.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
-          if (item.feeFrequency) {
-
-            payload[index] = {
-              parentFeeGUID : item.parentFeeGUID,
-              deleteMe: item.deleteMe,
-              ccfriApplicationGuid : this.ccfriId, //CCFRI application GUID
-              childCareCategory : item.childCareCategoryId,
-              programYear : item.programYearId,
-              aprFee : item.approvedFeeApr,
-              mayFee : item.approvedFeeMay,
-              junFee : item.approvedFeeJun,
-              julFee : item.approvedFeeJul,
-              augFee : item.approvedFeeAug,
-              sepFee : item.approvedFeeSep,
-              octFee : item.approvedFeeOct,
-              novFee : item.approvedFeeNov,
-              decFee : item.approvedFeeDec,
-              janFee : item.approvedFeeJan,
-              febFee : item.approvedFeeFeb,
-              marFee : item.approvedFeeMar,
-            };
-
-            payload[index].feeFrequency = item.feeFrequency === 'Monthly'? '100000000' : item.feeFrequency  === 'Weekly'? '100000001' :item.feeFrequency === 'Daily'? '100000002' :'null';
-          }
-
-
-        }); // end FOR EACH
-
-        let obj = Object.assign(firstObj, payload[0]);
-
-        payload[0] = obj;
 
         try {
           this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+          let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
           console.log('the res is:' , res);
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
@@ -680,7 +616,7 @@ export default {
 
           //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
           //and life will be good :)
-          window.location.reload(true);
+          //window.location.reload(true);
         }
         this.processing = false;
       }

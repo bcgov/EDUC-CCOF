@@ -2,6 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { deepCloneObject } from '../../utils/common';
+import { isEqual } from 'lodash';
 
 function isLocked(applicationStatus, navBarList, facilityId){
 
@@ -119,6 +120,78 @@ export default {
   },
 
   actions: {
+    async saveCcfri({state,} , {isFormComplete: isFormComplete, hasRfi: hasRfi}){
+      //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
+      if (state.CCFRIFacilityModel.hasClosureFees == 100000001){
+        state.CCFRIFacilityModel.dates = [];
+      }
+
+      let payload = [];
+      let firstObj = {
+        ccfriApplicationGuid : state.ccfriId,
+        facilityClosureDates : state.CCFRIFacilityModel.dates,
+        ccof_formcomplete : isFormComplete,
+        notes : state.CCFRIFacilityModel.ccfriApplicationNotes,
+        ccof_has_rfi: hasRfi,
+        hasClosureFees: state.CCFRIFacilityModel.hasClosureFees
+      };
+      if (this.isRenewal) {
+        firstObj = {
+          ...firstObj,
+          ccof_has_rfi: hasRfi,
+          existingFeesCorrect: state.CCFRIFacilityModel.existingFeesCorrect,
+        };
+      }
+
+      //checks if blank - don't save empty rows
+      for(let i =  state.CCFRIFacilityModel.dates.length -1; i >=0; i--){
+        if (isEqual( state.CCFRIFacilityModel.dates[i], this.dateObj)){
+          state.CCFRIFacilityModel.dates.splice(i, 1);
+        }
+      }
+
+      //for each child care type - prepare an object for the payload
+      //index will also match the order of how the cards are displayed.
+      state.CCFRIFacilityModel.childCareTypes.forEach (async (item, index) => { //if any fee, dates, or notes have been inputted, run the save. else don't make the call
+        if (item.feeFrequency) {
+
+          payload[index] = {
+            parentFeeGUID : item.parentFeeGUID,
+            deleteMe: item.deleteMe,
+            ccfriApplicationGuid : state.ccfriId, //CCFRI application GUID
+            childCareCategory : item.childCareCategoryId,
+            programYear : item.programYearId,
+            aprFee : item.approvedFeeApr,
+            mayFee : item.approvedFeeMay,
+            junFee : item.approvedFeeJun,
+            julFee : item.approvedFeeJul,
+            augFee : item.approvedFeeAug,
+            sepFee : item.approvedFeeSep,
+            octFee : item.approvedFeeOct,
+            novFee : item.approvedFeeNov,
+            decFee : item.approvedFeeDec,
+            janFee : item.approvedFeeJan,
+            febFee : item.approvedFeeFeb,
+            marFee : item.approvedFeeMar,
+          };
+
+          payload[index].feeFrequency = item.feeFrequency === 'Monthly'? '100000000' : item.feeFrequency  === 'Weekly'? '100000001' :item.feeFrequency === 'Daily'? '100000002' :'null';
+        }
+
+      }); // end FOR EACH
+
+      let obj = Object.assign(firstObj, payload[0]);
+
+      payload[0] = obj;
+
+      try {
+        let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        console.log('the res is:' , res);
+        return res;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async getCcfriOver3percent({state, getters, rootState}) {
       console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       let over3percentFacilities = [];
@@ -244,39 +317,39 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if (!rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
-          console.log(rootState.app.isRenewal);
-          console.log(state.CCFRIFacilityModel.existingFeesCorrect);
-          console.log(prevCcfriApp);
+        // if (!rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
+        //   console.log(rootState.app.isRenewal);
+        //   console.log(state.CCFRIFacilityModel.existingFeesCorrect);
+        //   console.log(prevCcfriApp);
 
-          console.log('show all the cards');
-          response.data.forEach(item => {
+        //   console.log('show all the cards');
+        //   response.data.forEach(item => {
 
-            //check for undefined here!
+        //     //check for undefined here!
 
-            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
-              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == prevProgramYear.programYearId);
-            });
-            if (!found) {
-              careTypes.push( {
-                programYear: prevProgramYear.name,
-                programYearId: prevProgramYear.programYearId,
-                current: 1,
-                ...item
-              });
-            }
-            else{
-              found.deleteMe = false;
-            }
-          });
-        }
+        //     let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+        //       return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+        //       searchItem.programYearId == prevProgramYear.programYearId);
+        //     });
+        //     if (!found) {
+        //       careTypes.push( {
+        //         programYear: prevProgramYear.name,
+        //         programYearId: prevProgramYear.programYearId,
+        //         current: 1,
+        //         ...item
+        //       });
+        //     }
+        //     else{
+        //       found.deleteMe = false;
+        //     }
+        //   });
+        // }
 
         /*
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
-        else if (rootState.app.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
+        if (rootState.app.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
           console.log('prevCCFRI IS:' , prevCcfriApp);
           response.data.forEach(item => {
 

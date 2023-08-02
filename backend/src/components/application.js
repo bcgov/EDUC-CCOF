@@ -133,7 +133,7 @@ async function updateCCFRIApplication(req, res) {
 async function upsertParentFees(req, res) {
   let body = req.body;
 
-  //log.info(body);
+  log.info(body);
   let hasError = false;
   let theResponse = [];
 
