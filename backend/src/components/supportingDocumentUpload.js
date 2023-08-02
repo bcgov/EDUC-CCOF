@@ -3,20 +3,21 @@ const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOpe
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
+const _ = require('lodash');
 
 
 async function saveDocument(req, res) {
   try {
     let documents = req.body;
     for (let document of documents) {
-      let changeRequestNewFacilityId = document.changeRequestNewFacilityId;
-      delete document.changeRequestNewFacilityId;
-      if (getFileExtension(document.filename) === 'heic' ) {
-        log.verbose(`saveDocument :: heic detected for file name ${document.filename} starting conversion`);
-        document = await convertHeicDocumentToJpg(document);
+      let documentClone = _.cloneDeep(document);
+      let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId;
+      delete documentClone.changeRequestNewFacilityId;
+      if (getFileExtension(documentClone.filename) === 'heic' ) {
+        log.verbose(`saveDocument :: heic detected for file name ${documentClone.filename} starting conversion`);
+        document = await convertHeicDocumentToJpg(documentClone);
       }
-      await postApplicationDocument(document);
-      let response = await postApplicationDocument(document);
+      let response = await postApplicationDocument(documentClone);
       //if this is a new facility change request, link supporting documents to the New Facility Change Action
       if (changeRequestNewFacilityId) {
         await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {

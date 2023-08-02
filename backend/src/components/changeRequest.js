@@ -11,6 +11,7 @@ const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
+const _ = require('lodash');
 
 
 function mapChangeRequestForBack(data, changeType) {
@@ -239,12 +240,13 @@ async function saveChangeRequestDocs(req, res) {
     let documents = req.body;
     //log.info(documents);
     for (let document of documents) {
-      if (getFileExtension(document.filename) === 'heic' ) {
-        log.verbose(`saveChangeRequestDocs :: heic detected for file name ${document.filename} starting conversion`);
-        document = await convertHeicDocumentToJpg(document);
+      let documentClone = _.cloneDeep(document);
+      if (getFileExtension(documentClone.filename) === 'heic' ) {
+        log.verbose(`saveChangeRequestDocs :: heic detected for file name ${documentClone.filename} starting conversion`);
+        documentClone = await convertHeicDocumentToJpg(documentClone);
       }
 
-      await postChangeActionDocument(document);
+      await postChangeActionDocument(documentClone);
     }
     return res.status(HttpStatus.CREATED).json();
   } catch (e) {

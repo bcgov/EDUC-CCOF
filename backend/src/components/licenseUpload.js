@@ -3,6 +3,7 @@ const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOpe
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
+const _ = require('lodash');
 
 
 async function saveLicenses(req, res) {
@@ -10,17 +11,18 @@ async function saveLicenses(req, res) {
 
     let licenses = req.body.fileList;
     for (let license of licenses) {
+      let licenseClone = _.cloneDeep(license);
 
-      if (getFileExtension(license.filename) === 'heic' ) {
-        log.verbose(`saveLicenses :: heic detected for file name ${license.filename} starting conversion`);
-        license = await convertHeicDocumentToJpg(license);
+      if (getFileExtension(licenseClone.filename) === 'heic' ) {
+        log.verbose(`saveLicenses :: heic detected for file name ${licenseClone.filename} starting conversion`);
+        licenseClone = await convertHeicDocumentToJpg(licenseClone);
       }
 
-      let response = await postApplicationDocument(license);
+      let response = await postApplicationDocument(licenseClone);
 
       //bind the license to the change Request Action object so the Ministry can easily see all files related to the change Action.
-      if (license.changeRequestNewFacilityId){
-        await updateChangeRequestNewFacility(license.changeRequestNewFacilityId,
+      if (licenseClone.changeRequestNewFacilityId){
+        await updateChangeRequestNewFacility(licenseClone.changeRequestNewFacilityId,
           {'ccof_Attachments@odata.bind': `/ccof_application_facility_documents(${response.applicationFacilityDocumentId})`}
         );
       }
