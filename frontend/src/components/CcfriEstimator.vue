@@ -563,7 +563,7 @@
                             <v-row style="font-size:14px;" justify="center">
                               <v-col align="center" style="padding-top:3px;">
                                 <span :style="'color:'+(active ? '#9D2AB1' : 'black')">
-                                  {{(n.rate==0 || n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
+                                  {{(n.rate==0 || n.rate==null || n.rate==undefined || n.rate == 'N/A') ? 'N/A' : '$'+ (n.rate % 1 == 0 ? n.rate % 1 : (Math.round(n.rate * 100) / 100).toFixed(2))}}
                                 </span>
                               </v-col>
                             </v-row>
@@ -599,7 +599,7 @@
                           <v-row style="font-size:14px;" justify="center">
                             <v-col align="center" style="padding-top:3px;">
                               <span style="">
-                                {{(n.rate==0 || n.rate==null || n.rate==undefined) ? 'N/A' : '$'+n.rate}}
+                                {{(n.rate==0 || n.rate==null || n.rate==undefined || n.rate == 'N/A') ? 'N/A' : '$' +  (n.rate % 1 == 0 ? n.rate : (Math.round(n.rate * 100) / 100).toFixed(2))}}
                               </span>
                             </v-col>
                           </v-row>
