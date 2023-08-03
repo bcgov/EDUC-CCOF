@@ -8,6 +8,7 @@ RUN ln -s /logs .
 
 COPY package*.json ./
 RUN npm ci
+RUN npm run install-chromium
 
 COPY . /opt/app-root/src
 

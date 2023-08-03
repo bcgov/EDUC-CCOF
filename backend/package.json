@@ -21,7 +21,8 @@
     "pretest": "npm run lint",
     "purge": "rm -rf node_modules",
     "reinstall": "npm run purge && npm install",
-    "test:unit-linux": "export NODE_ENV=test && npm run test"
+    "test:unit-linux": "export NODE_ENV=test && npm run test",
+    "install-chromium": "node node_modules/puppeteer/install.js"
   },
   "dependencies": {
     "@babel/runtime": "7.1.5",
