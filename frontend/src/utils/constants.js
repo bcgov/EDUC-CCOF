@@ -109,7 +109,7 @@ export const PATHS = {
 
   SUMMARY_DECLARATION:  '/summary-declaration',
 
-  //Report Change prefix's
+  //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',

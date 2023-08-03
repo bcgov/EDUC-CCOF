@@ -530,7 +530,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.PREFIX.CHANGE_REQUEST + PATHS.CCOF_GROUP_FACILITY, //TODO. there is no change request here.
+      path: PATHS.ROOT.CHANGE_NEW_FACILITY, //TODO. there is no change request here.
       name: 'change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -704,13 +704,7 @@ router.beforeEach((to, _from, next) => {
         next('/token-expired');
       }else {
         store.dispatch('auth/getUserInfo').then(() => {
-          if (to?.params?.changeRecGuid) {
-            store.commit('navBar/setChangeRequestId', to.params.changeRecGuid);
-          } else if (to?.params?.programYearGuid) {
-            store.commit('navBar/setProgramYearId', to.params.programYearGuid);
-          } else {
-            store.commit('navBar/clearGuids');
-          }
+          store.commit('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);
           } else {

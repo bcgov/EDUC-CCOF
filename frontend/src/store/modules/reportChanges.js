@@ -39,26 +39,37 @@ export default {
     changeRequestStatus: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
     },
+    // eslint-disable-next-line no-unused-vars
     isCCOFUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockCCOF;
     },
+    // eslint-disable-next-line no-unused-vars
     isEceweUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockEcewe;
     },
+    // eslint-disable-next-line no-unused-vars
     isLicenseUploadUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockLicenseUpload;
     },
+    // eslint-disable-next-line no-unused-vars
     isSupportingDocumentsUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockSupportingDocuments;
     },
+    // eslint-disable-next-line no-unused-vars
     isDeclarationUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockDeclaration;
     },
+    // eslint-disable-next-line no-unused-vars
     isChangeRequestUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockChangeRequest;
     },
+    // eslint-disable-next-line no-unused-vars
     isOtherDocumentsUnlocked:(state,getters,rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockOtherChangesDocuments;
+    },
+    // eslint-disable-next-line no-unused-vars
+    getChangeNotificationActionId:(state,getters,rootState) => {
+      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.changeNotificationActionId;
     }
   },
   mutations: {
@@ -108,7 +119,16 @@ export default {
         item.isLicenseUploadComplete = value.isComplete;
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
+    },
+    addChangeNotificationId:(state, value) => {
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        item.changeNotificationActionId = value.changeNotificationActionId;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      }
     }
+
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID

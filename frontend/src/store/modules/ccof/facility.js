@@ -115,7 +115,6 @@ export default {
               commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
               commit('navBar/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
-              commit('navBar/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
               commit('reportChanges/addUserProfileChangeRequests', changeRequestResponse.data?.changeRequestId, { root: true });
               changeActionId = changeRequestResponse.data?.changeActionId;
             }

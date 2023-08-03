@@ -140,7 +140,7 @@
 <script>
 
 import rules from '@/utils/rules';
-import {mapActions, mapGetters, mapState,} from 'vuex';
+import {mapActions, mapGetters, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import { deepCloneObject, getFileExtension } from '@/utils/common';
@@ -278,6 +278,7 @@ export default {
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     ...mapActions('reportChanges', ['createChangeAction']),
+    ...mapMutations('reportChanges', ['addChangeNotificationId']),
 
     previous() {
       this.$router.push(this.previousPath);
@@ -286,6 +287,7 @@ export default {
       if (this.isChangeRequest && this.otherChanges == 'Yes') {
         const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
         console.log('change action id: ', results.changeActionId);
+        this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
         this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, results.changeActionId));
       } else {
         console.log('next path: ', this.nextPath);
