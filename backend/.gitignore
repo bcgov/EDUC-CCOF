@@ -35,3 +35,6 @@ realm.json
 .*-audit.json
 *.log
 logs
+
+#puppeteer cache
+.cache

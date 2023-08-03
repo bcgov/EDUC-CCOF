@@ -404,9 +404,14 @@ async function submitApplication(req, res) {
 async function printPdf(req, numOfRetries = 0)  {
   const url = `${req.headers.referer}/printable`;
 
-  const browser = await puppeteer.launch({headless: 'new', devtools: false});
+  log.verbose('printPdf :: dirname',__dirname);
+  log.verbose('printPdf :: puppeteer executable path is', puppeteer.executablePath());
+  log.verbose('printPdf :: url path is', url);
+
+  const browser = await puppeteer.launch({headless: 'new'}); //to debug locally add {headless: 'true', devtools: true} to params
 
   try {
+    log.verbose('printPdf :: starting new page');
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
