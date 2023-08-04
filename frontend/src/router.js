@@ -57,6 +57,10 @@ import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 import ChangeInformation from '@/components/requestChanges/ChangeInformation';
 
+import MtfiInfo from '@/components/mtfi/MTFIInfo';
+import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
+import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -692,6 +696,50 @@ const router = new VueRouter({
         pageTitle: 'Change Request Information',
         requiresAuth: true,
         showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_INFO),
+      name: 'Midterm Fee Increase Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
+      name: 'Midterm Fee Increase Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
+      name: 'Midterm Fee Increase Select Facilities',
+      component: MtfiSelectFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION),
+      name: 'CCFRI Fee Verification',
+      component: MtfiFeeVerification,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
       }
     },
   ]

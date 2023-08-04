@@ -419,6 +419,7 @@ export default {
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
       }
     },
@@ -497,10 +498,9 @@ export default {
 
     },
     async goToMTFI(changeRequestId = null){
-
+      //if no change request GUID, the next page will create the change request.
       if (!changeRequestId){
-        let newReq = await this.createNewChangeRequest('PARENT_FEE_CHANGE');
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, newReq.changeRequestId ));
+        this.$router.push(PATHS.MTFI_INFO);
       }
       else{
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
@@ -521,7 +521,7 @@ export default {
       try {
         await this.cancelChangeRequest(this.cancelChangeRequestId);
         this.cancelChangeRequestId = undefined;
-        this.setSuccessAlert('Success! Your change request have been canceled.');
+        this.setSuccessAlert('Success! Your change request has been cancelled.');
       }
       catch(error){
         this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');

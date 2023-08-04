@@ -250,19 +250,24 @@ export default {
 
       if (this.model.q1 == 'No'){
         this.setFees(false);
+        await this.save();
       }
       else if (this.model.q1 == 'Yes') {
         this.setFees(true);
+        await this.save();
       }
-      await this.save();
+
       //console.log('before NEXT', this.CCFRIFacilityModel.existingFeesCorrect);
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.$route.params.urlGuid));
     },
     async save(){
-      console.log('da feez payload', this.CCFRIFacilityModel.existingFeesCorrect);
-      let payload = {existingFeesCorrect: this.currentCCFRI.existingFeesCorrect};
-      let res = await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, payload);
-      console.log(res);
+      console.log('da feez payload', this.currentCCFRI.existingFeesCorrect);
+      if (this.currentCCFRI.existingFeesCorrect){
+        let payload = {existingFeesCorrect: this.currentCCFRI.existingFeesCorrect};
+        let res = await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, payload);
+        console.log(res);
+      }
+
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
