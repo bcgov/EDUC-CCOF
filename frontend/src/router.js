@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -500,7 +500,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM),
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'change-notification-form',
       component: ChangeNotificationForm,
       meta: {
@@ -510,12 +510,22 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'change-notification-form-guid',
       component: ChangeNotificationForm,
       meta: {
         pageTitle: 'Change Notification Form',
         showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER),
+      name: 'new-facility-other-guid',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: true,
         requiresAuth: true,
       }
     },
@@ -540,7 +550,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.PREFIX.CHANGE_REQUEST + PATHS.CCOF_GROUP_FACILITY, //TODO. there is no change request here.
+      path: PATHS.ROOT.CHANGE_NEW_FACILITY, //TODO. there is no change request here.
       name: 'change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -695,7 +705,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'Summary and Declaration Report Changes',
       component: SummaryDeclarationReportChanges,
       meta: {
@@ -714,13 +724,7 @@ router.beforeEach((to, _from, next) => {
         next('/token-expired');
       }else {
         store.dispatch('auth/getUserInfo').then(() => {
-          if (to?.params?.changeRecGuid) {
-            store.commit('navBar/setChangeRequestId', to.params.changeRecGuid);
-          } else if (to?.params?.programYearGuid) {
-            store.commit('navBar/setProgramYearId', to.params.programYearGuid);
-          } else {
-            store.commit('navBar/clearGuids');
-          }
+          store.commit('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);
           } else {

@@ -112,6 +112,9 @@ async function getUserInfo(req, res) {
     for (const changeActionOthers of changeActionOtherChanges){
       item.unlockChangeRequest = changeActionOthers?.ccof_unlock_change_request;
       item.unlockOtherChangesDocuments = changeActionOthers?.ccof_unlock_other_changes_document;
+      if (changeActionOthers.ccof_changetype === CHANGE_REQUEST_TYPES.PDF_CHANGE) {
+        item.changeNotificationActionId = changeActionOthers.ccof_change_actionid;
+      }
     }
 
     changeRequests.push(item);
@@ -164,10 +167,10 @@ function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, 
         returnValue.unlockCcfri = result?.ccof_unlock_ccfri;
         returnValue.unlockNmf = result?.ccof_unlock_nmf_rfi;
         returnValue.unlockRfi = result?.ccof_unlock_rfi;
-        
+
       }
-    };
-  };
+    }
+  }
 }
 
 function parseFacilityData(userResponse) {

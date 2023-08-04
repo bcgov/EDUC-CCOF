@@ -95,6 +95,7 @@ import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
 import { isNullOrBlank } from '@/utils/common';
+import { CHANGE_TYPES } from '@/utils/constants';
 
 export default {
   name: 'ReportChange',
@@ -129,6 +130,7 @@ export default {
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
+    ...mapGetters('navBar', ['getChangeType', 'nextPath']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
@@ -169,7 +171,11 @@ export default {
       this.isLoading = false;
     },
     next() {
-      this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid));
+      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+        this.$router.push(this.nextPath);
+      } else {
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      }
     },
     async validateForm() {
       await this.$refs.childRef.checkUploadCompleteStatus();
