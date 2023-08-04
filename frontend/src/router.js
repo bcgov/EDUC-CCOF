@@ -52,6 +52,7 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
+import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
@@ -514,6 +515,26 @@ const router = new VueRouter({
       component: ChangeNotificationForm,
       meta: {
         pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_DIALOGUE),
+      name: 'change-notification-dialogue',
+      component: ChangeNotificationDialogue,
+      meta: {
+        pageTitle: 'Change Notification Dialogue',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.CHANGE_NOTIFICATION_DIALOGUE,
+      name: 'change-notification-dialogue-guid',
+      component: ChangeNotificationDialogue,
+      meta: {
+        pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
       }

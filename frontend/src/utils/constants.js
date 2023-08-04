@@ -111,6 +111,7 @@ export const PATHS = {
 
   //Report Change prefix's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
+  CHANGE_NOTIFICATION_DIALOGUE: '/notification-dialogue',
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
 

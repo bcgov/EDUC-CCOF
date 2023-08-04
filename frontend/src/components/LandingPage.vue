@@ -352,7 +352,7 @@ export default {
       let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
       return changeRequestStatuses?.includes("WITH_PROVIDER");
     }
-  },
+  }, 
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),

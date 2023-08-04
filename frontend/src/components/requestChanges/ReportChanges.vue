@@ -44,7 +44,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeForm()" >Upload a Change Notification Form</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="goToChangeInfoDialogue()" >Upload a Change Notification Form</v-btn>
                 </v-row>
               </template>
 
@@ -479,6 +479,9 @@ export default {
         this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
       }
       return newReq;
+    },
+    goToChangeInfoDialogue() {
+      this.$router.push(PATHS.CHANGE_NOTIFICATION_DIALOGUE);
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 
