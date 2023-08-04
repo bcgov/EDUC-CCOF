@@ -67,6 +67,6 @@
 
 <script>
 export default {
-    name: 'GroupChangeDialogueContent'
-}
+  name: 'GroupChangeDialogueContent'
+};
 </script>
