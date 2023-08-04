@@ -59,15 +59,19 @@ export const PAGE_TITLES = Object.freeze({
 });
 
 
+export const CHANGE_TYPES = Object.freeze({
+  NEW_FACILITY: 'nf',
+  CHANGE_NOTIFICATION: 'pdf',
+  MTFI: 'mtfi'
+});
+
 /*******************************************************
  *
  * APPLICATION PATHS
  * Paths will be set up using PREFIX/guid/SUFFIX/guid
  * such as:  /pcf/${yearGuid}/facility/${facilityGuid}
  *
- *
  ******************************************************/
-
 export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
@@ -109,11 +113,11 @@ export const PATHS = {
 
   SUMMARY_DECLARATION:  '/summary-declaration',
 
-  //Report Change prefix's
+  //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
   CHANGE_MTFI: 'midterm-fee-increase',
-  CHANGE_NOTIFICATION_DECLARATION:  '/notification-declaration',
-
+  CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',
+  CHANGE_NEW_FACILITY_OTHER: '/other-changes',
   MTFI_INFO: '/mtfi-instructions'
 
 };
@@ -127,12 +131,12 @@ export function pcfUrlGuid(suffix, programYearGuid = ':programYearGuid', urlGuid
   return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}/${urlGuid}`;
 }
 
-export function changeUrl(suffix, changeRecGuid = ':changeRecGuid') {
-  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${suffix}`;
+export function changeUrl(suffix, changeRecGuid = ':changeRecGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
+  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}`;
 }
 
-export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid') {
-  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${suffix}/${urlGuid}`;
+export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
+  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
 
