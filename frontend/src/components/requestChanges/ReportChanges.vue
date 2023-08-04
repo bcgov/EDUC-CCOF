@@ -480,6 +480,9 @@ export default {
       }
       return newReq;
     },
+    goToChangeInfoDialogue() {
+      this.$router.push(PATHS.CHANGE_NOTIFICATION_DIALOGUE);
+    },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 
       this.processing = true;

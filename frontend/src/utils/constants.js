@@ -115,6 +115,7 @@ export const PATHS = {
 
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
+  CHANGE_NOTIFICATION_DIALOGUE: '/notification-dialogue',
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',
   CHANGE_NEW_FACILITY_OTHER: '/other-changes',

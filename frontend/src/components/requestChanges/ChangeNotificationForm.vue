@@ -134,7 +134,10 @@ export default {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
-      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid)[0];
+      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid);
+      if (currentCR && currentCR.length > 0) {
+        currentCR = currentCR[0];
+      }
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         return false;
       }
