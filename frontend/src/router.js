@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -52,7 +52,6 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
-import NewFacilityOtherChanges from '@/components/requestChanges/NewFacilityOtherChanges';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
@@ -500,7 +499,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM),
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOFITICATION),
       name: 'change-notification-form',
       component: ChangeNotificationForm,
       meta: {
@@ -510,7 +509,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOFITICATION),
       name: 'change-notification-form-guid',
       component: ChangeNotificationForm,
       meta: {
@@ -685,7 +684,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOFITICATION),
       name: 'Summary and Declaration Report Changes',
       component: SummaryDeclarationReportChanges,
       meta: {

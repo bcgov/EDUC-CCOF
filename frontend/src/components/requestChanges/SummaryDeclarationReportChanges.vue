@@ -263,7 +263,7 @@
 </template>
 <script>
 
-import { PATHS, changeUrlGuid } from '@/utils/constants';
+import { PATHS, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants';
 import { mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -355,7 +355,7 @@ export default {
       return relockPayload;
     },
     documentUploadPage() {
-      return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid);
+      return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOFITICATION);
     },
   },
   methods: {
@@ -400,7 +400,7 @@ export default {
       }
     },
     async previous() {
-      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid));
+      await this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOFITICATION));
     },
   },
 };

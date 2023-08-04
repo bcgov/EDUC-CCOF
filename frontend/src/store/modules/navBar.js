@@ -166,6 +166,15 @@ export default {
     isChangeRequest: (state) => {
       return state.currentUrl?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
     },
+    getChangeType: (state, getters) => {
+      if (getters.isChangeRequest) {
+        const arr = state.currentUrl.split('/');
+        if (arr?.length > 2) {
+          return arr[2];
+        }
+      }
+      return null;
+    },
     nextPath: (state) => {
       const index = getActiveIndex(state.navBarItems);
       const  link = getNavBarAtPositionIndex(state.navBarItems, (index + 1))?.link;
