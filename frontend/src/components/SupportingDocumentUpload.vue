@@ -116,7 +116,7 @@
         </v-card>
       </v-row>
       <v-row v-if="isChangeRequest">
-        <v-card class="px-0 py-0 mx-auto mb-10 rounded-lg col-12">
+        <v-card class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card"  width="1200">
           <v-card-text class="pt-7 pa-0">
             <div class="px-md-12 px-7">
               <p class="text-h5 text--primary">
@@ -129,6 +129,9 @@
             </div>
           </v-card-text>
         </v-card>
+      </v-row>
+      <v-row v-if="otherChanges=='Yes'" class="d-flex justify-center">
+        <GroupChangeDialogueContent style="max-width: 1200px;" class="pb-4"/>
       </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
         :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
@@ -146,11 +149,12 @@ import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
 import { deepCloneObject, getFileExtension } from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 import { PATHS, changeUrlGuid } from '@/utils/constants';
+import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent';
 
 
 export default {
   mixins: [alertMixin],
-  components: { NavButton },
+  components: { NavButton, GroupChangeDialogueContent },
   props: {},
 
   computed: {
@@ -161,7 +165,7 @@ export default {
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
     ...mapState('reportChanges', ['userProfileChangeRequests']),
-    ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus']),
+    ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus', 'getChangeNotificationActionId']),
     isLocked() {
       if (this.isChangeRequest) {
         if(this.isSupportingDocumentsUnlocked||!this.changeRequestStatus){
@@ -206,6 +210,13 @@ export default {
     ];
     await this.mapFacilityData();
     await this.createTable();
+    if (this.isChangeRequest) {
+      if (this.getChangeNotificationActionId) {
+        this.otherChanges = 'Yes';
+      } else {
+        this.otherChanges = 'No';
+      }
+    }
 
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -285,10 +296,14 @@ export default {
     },
     async next() {
       if (this.isChangeRequest && this.otherChanges == 'Yes') {
-        const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
-        console.log('change action id: ', results.changeActionId);
-        this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, results.changeActionId));
+        let changeNotificationId = this.getChangeNotificationActionId;
+        if (!changeNotificationId) {
+          const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
+          console.log('change action id: ', results.changeActionId);
+          this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
+          changeNotificationId = results.changeActionId
+        }
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
       } else {
         console.log('next path: ', this.nextPath);
         this.$router.push(this.nextPath);

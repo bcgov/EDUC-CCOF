@@ -130,7 +130,7 @@ export default {
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['getChangeType', 'nextPath']),
+    ...mapGetters('navBar', ['getChangeType', 'nextPath', 'previousPath']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
@@ -150,7 +150,11 @@ export default {
     ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setUploadedDocument']),
     previous() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+        this.$router.push(this.previousPath);
+      } else {
+        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      }
     },
     async save(showNotification = false){
       this.isLoading = true;
