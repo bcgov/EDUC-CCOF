@@ -131,7 +131,7 @@
         </v-card>
       </v-row>
       <v-row v-if="otherChanges=='Yes'" class="d-flex justify-center">
-        <GroupChangeDialogueContent style="maxWidth: 1200px;" class="pb-4"/>
+        <GroupChangeDialogueContent style="max-width: 1200px;" class="pb-4"/>
       </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
         :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
