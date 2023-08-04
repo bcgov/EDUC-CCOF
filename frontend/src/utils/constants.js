@@ -61,7 +61,7 @@ export const PAGE_TITLES = Object.freeze({
 
 export const CHANGE_TYPES = Object.freeze({
   NEW_FACILITY: 'nf',
-  CHANGE_NOFITICATION: 'pdf',
+  CHANGE_NOTIFICATION: 'pdf',
   MTFI: 'mtfi'
 });
 
@@ -132,12 +132,10 @@ export function pcfUrlGuid(suffix, programYearGuid = ':programYearGuid', urlGuid
 }
 
 export function changeUrl(suffix, changeRecGuid = ':changeRecGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
-  console.log('----------- PATH: ', `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}`);
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}`;
 }
 
 export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
-  console.log('----------- PATH: ', `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`);
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
