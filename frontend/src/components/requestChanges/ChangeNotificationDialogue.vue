@@ -1,11 +1,19 @@
 <template>
   <v-container fluid>
     <v-form ref="form">
+      <v-row class="d-flex justify-center">
+        <span class="text-h4">Child Care Operating Funding Program  - {{ formattedProgramYear }}</span>
+      </v-row>
+      <v-row class="d-flex justify-center">
+        <h2>Funding Agreement Change Notification</h2>
+      </v-row>
+      <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+        {{ this.userInfo.organizationName }}
+      </v-row>
       <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'"></GroupChangeDialogueContent>
       <FamilyChangeDialogueContent v-else></FamilyChangeDialogueContent>
       <v-row class="d-flex justify-center">
         <p>For more information about reporting changes, visit the Child Care Operating Funding Website.</p>
-
       </v-row>
       <NavButton :isProcessing="processing" :isNextDisplayed="true" class="mt-10" @previous="previous" @next="next">
       </NavButton>
@@ -35,7 +43,8 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapState('organization', ['organizationProviderType'])
+    ...mapState('organization', ['organizationProviderType']),
+    ...mapState('application', ['formattedProgramYear']),
 
   },
   methods: {
