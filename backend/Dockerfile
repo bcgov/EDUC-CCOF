@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:lts-alpine3.13
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0-alpine3.17
 
 RUN mkdir -p /logs \
     && chmod 755 /logs
@@ -8,19 +8,24 @@ RUN ln -s /logs .
 
 COPY package*.json ./
 RUN npm ci
-RUN npm run install-chromium
 
 COPY . /opt/app-root/src
 
 # Installs latest Chromium package.
-#RUN apk upgrade --no-cache --available \
-#    && apk add --no-cache dbus chromium chromium-chromedriver
-#
-#ENV CHROME_BIN=/usr/bin/chromium-browser \
-#    CHROME_PATH=/usr/lib/chromium/ \
-#    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-#
-#ENV CHROMIUM_FLAGS="--disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-gpu"
+RUN apk upgrade --no-cache --available \
+    && apk add --no-cache dbus chromium chromium-chromedriver
+
+ENV CHROME_BIN=/usr/bin/chromium-browser \
+    CHROME_PATH=/usr/lib/chromium/ \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Start compress-pdf requirements to run in alpine environment
+RUN apk add --no-cache ghostscript
+
+ENV GHOSTSCRIPT_PATH=/usr/bin/gs
+# End compress-pdf requirements
+
 
 EXPOSE 443 8080
 CMD ["npm", "start"]

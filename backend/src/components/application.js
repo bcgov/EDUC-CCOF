@@ -407,8 +407,16 @@ async function printPdf(req, numOfRetries = 0)  {
   log.verbose('printPdf :: dirname',__dirname);
   log.verbose('printPdf :: puppeteer executable path is', puppeteer.executablePath());
   log.verbose('printPdf :: url path is', url);
-
-  const browser = await puppeteer.launch({headless: 'new'}); //to debug locally add {headless: 'true', devtools: true} to params
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    dumpio: true,
+    args: [
+      '--no-sandbox',
+      '--disable-software-rasterizer',
+      '--disable-dev-shm-usage',
+      '--disable-gpu'
+    ]
+  }); //to debug locally add {headless: 'true', devtools: true} in options
 
   try {
     log.verbose('printPdf :: starting new page');
@@ -429,7 +437,7 @@ async function printPdf(req, numOfRetries = 0)  {
     log.verbose('printPdf :: page loaded starting pdf creation');
     const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
     log.verbose('printPdf :: pdf buffer created starting compression');
-    const compressedPdfBuffer = await compress(pdfBuffer);
+    const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
     log.verbose('printPdf :: compression completed');
     await browser.close();
 
