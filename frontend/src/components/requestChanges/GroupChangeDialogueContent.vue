@@ -31,7 +31,7 @@
                         Select <span style="font-weight: bold;">Next</span> to complete the form
                         <p style="font-weight: bold;">Submit the Direct Deposit Appilcation to:</p>
                         <ul>
-                            <li>Update banking information</li>
+                            <li><a href='https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf'>Update banking information</a></li>
                         </ul>
                         <p>Email: <a href="mailto:cccda@gov.bc.ca">cccda@gov.bc.ca</a></p>
                         <p>Mailing address:</p>

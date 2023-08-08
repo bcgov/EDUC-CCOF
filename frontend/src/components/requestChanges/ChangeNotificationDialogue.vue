@@ -13,7 +13,7 @@
       <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'"></GroupChangeDialogueContent>
       <FamilyChangeDialogueContent v-else></FamilyChangeDialogueContent>
       <v-row class="d-flex justify-center">
-        <p>For more information about reporting changes, visit the Child Care Operating Funding Website.</p>
+        <p>For more information about reporting changes, <a href='https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/report-changes '>visit the Child Care Operating Funding Website</a>.</p>
       </v-row>
       <NavButton :isProcessing="processing" :isNextDisplayed="true" class="mt-10" @previous="previous" @next="next">
       </NavButton>
