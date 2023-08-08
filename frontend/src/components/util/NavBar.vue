@@ -87,6 +87,7 @@
 import { mapState, mapGetters, mapMutations } from 'vuex';
 import { NAV_BAR_GROUPS } from '@/utils/constants';
 import StaticConfig from '../../common/staticConfig';
+import { times } from 'lodash';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -298,7 +299,12 @@ export default {
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },
+    buildMFTINavBar(){
+      console.log('building MFTI nav bar');
+      this.addLandingPageToNavBar();
+      this.addSummaryAndDeclarationToNavBar();
 
+    },
     buildNewFacilityNavBar(){
       console.log('building new FAC nav barr');
 
@@ -307,6 +313,7 @@ export default {
       this.items.push(this.getAddNewFacilityCCOFNavigation());
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
+      this.items.push(this.getMTFINavigation());
       this.addNewSupportingDocumentsToNavbar();
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
@@ -643,6 +650,52 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++
       };
+    },
+    getMTFINavigation(){
+      // Select Facility
+      // Current Fee Verification - Each Fac
+      // New Fees - Each Fac
+      // Declaration
+      let items = [];
+      items.push(
+        {
+          title: 'Select Facility',
+          link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid}},
+          isAccessible: true,
+          icon: this.getCheckbox(false),
+          isActive: 'Midterm Fee Increase Select Facilities'===this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++
+        },
+      );
+      console.log('buidling MTFI Nav');
+      console.log(this.userProfileList?.length);
+      if(this.userProfileList?.length>0){
+        
+        this.userProfileList?.forEach((item)=>{
+          console.log(item);
+          items.push({
+            title: 'Current Fees',
+            subTitle: item.facilityName,
+            id: item.facilityId,
+            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.facilityId}},
+            isAccessible:true,
+            icon: this.getCheckbox(false),
+            isActive: 'CCFRI Fee Verification'===this.$route.name,
+            position: positionIndex++,
+            navBarId: navBarId++
+          });
+        });
+      }
+      let retval =   {
+        title: NAV_BAR_GROUPS.MTFI,
+        isAccessible: true,
+        icon: this.getCheckbox(false),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.MTFI),
+        items: items,
+        navBarId: navBarId++
+      };
+      return retval;
     },
     getAddNewFacilityCCOFNavigation(){
       let items = [];
