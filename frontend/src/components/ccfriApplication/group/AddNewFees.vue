@@ -538,8 +538,8 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: true});
-      this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.$route.params.urlGuid));
+      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
     },
     previous() {
       if (this.isReadOnly){
@@ -568,7 +568,7 @@ export default {
         } else {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
-            this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: false});
+            this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
           }
           this.$router.push(this.nextPath);
         }

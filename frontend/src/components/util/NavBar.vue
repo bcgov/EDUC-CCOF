@@ -118,7 +118,7 @@ export default {
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -264,6 +264,18 @@ export default {
         navBarId: navBarId++
       });
     },
+    addChangeRequestNewFacilityOtherToNavBar() {
+      this.items.push({
+        title: 'Report other changes',
+        link: { name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: this.getChangeNotificationActionId}},
+        isAccessible: true, //change this when change req logic more complete
+        icon: 'mdi-information',
+        isActive: 'new-facility-other-guid' === this.$route.name,
+        expanded: false,
+        position: positionIndex++,
+        navBarId: navBarId++
+      });
+    },
     addReportChangeNavigationToNavBar(){
       this.items.push({
         title: 'Report Change',
@@ -315,6 +327,9 @@ export default {
       this.items.push(this.getAddNewECEWENavigation());
       this.items.push(this.getMTFINavigation());
       this.addNewSupportingDocumentsToNavbar();
+      if (this.getChangeNotificationActionId) {
+        this.addChangeRequestNewFacilityOtherToNavBar();
+      }
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },
@@ -592,10 +607,10 @@ export default {
       return {
         title: 'Facility',
         id: null,
-        link: {name: this.isChangeRequest? 'Report Change Facility' : 'Facility Information'},
+        link: {name: this.isChangeRequest? 'change-request-facility-information' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: this.isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: this.isChangeRequest? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };

@@ -95,6 +95,7 @@ import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
 import { isNullOrBlank } from '@/utils/common';
+import { CHANGE_TYPES } from '@/utils/constants';
 
 export default {
   name: 'ReportChange',
@@ -129,10 +130,14 @@ export default {
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
+    ...mapGetters('navBar', ['getChangeType', 'nextPath', 'previousPath']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
-      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid)[0];
+      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid);
+      if (currentCR && currentCR.length > 0) {
+        currentCR = currentCR[0];
+      }
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         return false;
       }
@@ -145,7 +150,11 @@ export default {
     ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setUploadedDocument']),
     previous() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+        this.$router.push(this.previousPath);
+      } else {
+        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      }
     },
     async save(showNotification = false){
       this.isLoading = true;
@@ -166,7 +175,11 @@ export default {
       this.isLoading = false;
     },
     next() {
-      this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid));
+      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+        this.$router.push(this.nextPath);
+      } else {
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      }
     },
     async validateForm() {
       await this.$refs.childRef.checkUploadCompleteStatus();
