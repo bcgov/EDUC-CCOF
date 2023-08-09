@@ -314,9 +314,9 @@ export default {
             }
             this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
           } else {
-            let changeNotificationId = this.getChangeNotificationActionId;
-            if (changeNotificationId) {
-              await this.deleteChangeAction({changeRequestId: this.changeRequestId, changeActionId: changeNotificationId});
+            let changeActionId = this.getChangeNotificationActionId;
+            if (changeActionId) {
+              await this.deleteChangeAction(changeActionId);
               this.deleteChangeNotificationId({changeRequestId: this.changeRequestId});
               await this.forceNavBarRefresh();
             }

@@ -263,7 +263,7 @@ export default {
 
     },
 
-    async deleteChangeAction({state, commit}, {changeRequestId, changeActionId}) {
+    async deleteChangeAction({state, commit}, changeActionId) {
       console.log('trying to delete changeActionId: ', changeActionId);
       checkSession();
       try {
