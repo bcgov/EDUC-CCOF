@@ -14,8 +14,20 @@ export default {
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('app', ['familyLicenseCategory']),
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapState('navBar',['changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
+      if (this.isChangeRequest) {
+        if(this.isCCOFUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
       if (this.unlockBaseFunding) {
         return false;
       }

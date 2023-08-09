@@ -160,10 +160,10 @@ export default {
       fileRules: [],
       editedIndex: -1,
       editedItem: {
-        ccof_change_requestid: '',
+        ccof_change_action_id: '',
       },
       defaultItem: {
-        ccof_change_requestid: this.$route.params.changeRecGuid,
+        ccof_change_action_id: this.$route.params.urlGuid,
         subject : this.changeType
       },
       isFileUploaded: true,
@@ -172,14 +172,26 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest','userProfileChangeRequests']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
+    ...mapState('navBar', ['changeRequestId']),
+    ...mapGetters('reportChanges',['isChangeRequestUnlocked','isOtherDocumentsUnlocked']),
     getFilteredDocs(){
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
     isReadOnly() {
-      return this.loadedChangeRequest?.externalStatus === 'SUBMITTED';
+      if(this.changeType==='NOTIFICATION_FORM'){
+        if(this.isChangeRequestUnlocked){
+          return false;
+        }
+      }
+      else if(this.changeType==='SUPPORTING_DOC'){
+        if(this.isOtherDocumentsUnlocked){
+          return false;
+        }
+      }
+      return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
   },
 
@@ -232,7 +244,7 @@ export default {
       const payload = [];
       for (const file of newFilesAdded) {
         const obj = {
-          ccof_change_requestid: this.$route.params?.changeRecGuid,
+          ccof_change_action_id: this.$route.params?.urlGuid,
           subject: this.changeType,
           notetext: file.notetext,
           ...this.fileMap.get(String(file.id))

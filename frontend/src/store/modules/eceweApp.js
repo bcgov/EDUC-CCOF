@@ -105,6 +105,11 @@ export default {
           let updatedFacilities = state.facilities;
           response?.data?.facilities?.forEach(facility => {
             updatedFacilities[updatedFacilities.findIndex(el => el.facilityId === facility.facilityId)] = facility;
+            commit('navBar/setNavBarValue', {
+              facilityId: facility.facilityId,
+              property: 'eceweApplicationId',
+              value: facility.eceweApplicationId,
+            }, { root: true });
           });
           commit('setFacilities', updatedFacilities);
           commit('setLoadedFacilities', updatedFacilities);

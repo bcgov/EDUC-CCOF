@@ -11,14 +11,22 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
-    ...mapState('reportChanges', ['changeRequestId']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
+
     isLocked() {
       if (isChangeRequest(this)) {
+        if(this?.isCCOFUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockBaseFunding) {

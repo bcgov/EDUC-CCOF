@@ -162,8 +162,10 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['fundingModelTypeList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
     },
@@ -186,6 +188,12 @@ export default {
     isReadOnly() {
       //will only return true if set by a ministry user in dynamics
       if (isChangeRequest(this)) {
+        if(this.isEceweUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockEcewe){

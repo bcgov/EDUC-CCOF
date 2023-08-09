@@ -101,6 +101,18 @@ async function getUserInfo(req, res) {
     const item = new MappableObjectForFront(el, UserProfileChangeRequestMappings).data;
     item.status = getLabelFromValue(item.status, CHANGE_REQUEST_STATUS_CODES);
     item.externalStatus = getLabelFromValue(item.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
+    let changeActionNewFacilityList = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    for (const changeActionNewFacility of changeActionNewFacilityList) {
+      item.unlockEcewe = changeActionNewFacility?.ccof_unlock_ecewe;
+      item.unlockCCOF = changeActionNewFacility?.ccof_unlock_ccof;
+      item.unlockSupportingDocuments = changeActionNewFacility?.ccof_unlock_supporting_document;
+      item.unlockLicenseUpload = changeActionNewFacility?.ccof_unlock_licence_upload;
+    }
+    let changeActionOtherChanges = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype !== CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    for (const changeActionOthers of changeActionOtherChanges){
+      item.unlockChangeRequest = changeActionOthers?.ccof_unlock_change_request;
+      item.unlockOtherChangesDocuments = changeActionOthers?.ccof_unlock_other_changes_document;
+    }
 
     changeRequests.push(item);
 
@@ -141,19 +153,21 @@ async function getUserProfile(userGuid, userName) {
   }
 }
 
-function findChangeRequestNewFacility(changeRequestList, facilityId) {
+function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, facilityId) {
   for (const changeRequest of changeRequestList) {
-    let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter(item => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    //todo -mk check statuscode
+    let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter(item =>item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     for (const changeActionNewFacility of changeActionNewFacilityList) {
       let result = changeActionNewFacility?.ccof_change_request_new_facility_change_act.find(item => item['_ccof_facility_value'] === facilityId);
       if (result) {
-        result['ccof_change_requestid'] = changeRequest?.ccof_change_requestid;
-        result = new MappableObjectForFront(result, UserProfileChangeRequestNewFacilityMappings).data;
-        return result;
+        returnValue.changeRequestId = changeRequest?.ccof_change_requestid;
+        returnValue.unlockCcfri = result?.ccof_unlock_ccfri;
+        returnValue.unlockNmf = result?.ccof_unlock_nmf_rfi;
+        returnValue.unlockRfi = result?.ccof_unlock_rfi;
+        
       }
     };
   };
-  return null;
 }
 
 function parseFacilityData(userResponse) {
@@ -168,14 +182,14 @@ function parseFacilityData(userResponse) {
       let baseFunding = userResponse.application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
       baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
       let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
-      let changeRequestNewFacility = findChangeRequestNewFacility(changeRequestList, key);
-      map.set(key, {
+      let returnValue = {
         ...value,
         ...ccfriInfo,
         ...eceweInfo,
         ...baseFunding,
-        ...changeRequestNewFacility
-      });
+      };
+      updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, key);
+      map.set(key, returnValue);
     });
   }
   let facilityList = [];

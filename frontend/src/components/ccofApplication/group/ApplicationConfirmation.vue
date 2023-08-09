@@ -88,12 +88,20 @@ export default {
     };
   },
   computed: {
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (isChangeRequest(this)) {
+        if(this.isCCOFUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockBaseFunding) {
@@ -140,9 +148,6 @@ export default {
     },
     async deleteApplication() {
       this.processing = true;
-      console.log(this.deleteFacilityId);
-      console.log(this.deleteCcfriId);
-      console.log(this.applicationId);
       await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;
