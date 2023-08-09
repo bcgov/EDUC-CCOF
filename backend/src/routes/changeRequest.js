@@ -5,6 +5,7 @@ const auth = require('../components/auth');
 
 const isValidBackendToken = auth.isValidBackendToken();
 const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs, createChangeAction, deleteChangeAction } = require('../components/changeRequest');
+const { deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
 
@@ -125,5 +126,20 @@ router.delete('/:changeRequestId', passport.authenticate('jwt', {session: false}
     return deleteChangeRequest(req, res);
   });
 
+/**
+ * Get Change Requests MTFI using CCFRI Application Id
+ */
+router.get('/mtfi/:ccfriId/', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
+    return getChangeRequestMTFIByCcfriId(req, res);
+  });
+
+/**
+ * Delete Change Requests MTFI
+ */
+router.delete('/mtfi/:mtfiId/', passport.authenticate('jwt', {session: false}),isValidBackendToken, 
+  [param('mtfiId', 'URL param: [mtfiId] is required').not().isEmpty()],  (req, res) => {
+  return deleteChangeRequestMTFI(req, res);
+});
 
 module.exports = router;
