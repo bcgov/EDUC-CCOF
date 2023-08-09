@@ -127,7 +127,15 @@ export default {
         item.changeNotificationActionId = value.changeNotificationActionId;
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
-    }
+    },
+    deleteChangeNotificationId:(state, value) => {
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        delete item.changeNotificationActionId;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      }
+    },
 
   },
   actions: {
@@ -253,6 +261,17 @@ export default {
         throw error;
       }
 
+    },
+
+    async deleteChangeAction({state, commit}, changeActionId) {
+      console.log('trying to delete changeActionId: ', changeActionId);
+      checkSession();
+      try {
+        await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/changeAction/' + changeActionId);
+      } catch(e) {
+        console.log(`Failed to delete change action with error - ${e}`);
+        throw e;
+      }
     },
 
     async cancelChangeRequest({state, commit}, changeRequestId) {

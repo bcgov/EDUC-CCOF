@@ -232,20 +232,23 @@ export default {
       if (this.changeRequestStore?.length > 0) {
         // FUTURE RELEASE - filter by Program Year
         // allChangeRequests = this.changeRequestStore?.filter(changeRequest => this.isCurrentOrFuture(changeRequest.programYearId));
-        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => ({
-          index: index,
-          changeRequestId: changeRequest.changeActions[0]?.changeRequestId,
-          changeActionId: changeRequest.changeActions[0]?.changeActionId,
-          changeType: changeRequest.changeActions[0]?.changeType,
-          changeTypeString: this.getChangeTypeString(changeRequest.changeActions[0]?.changeType),
-          fiscalYear: this.getProgramYearString(changeRequest.programYearId),
-          facilityNames: this.createFacilityNameString(changeRequest.changeActions),
-          internalStatus: this.getInternalStatusString(changeRequest.status),
-          externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
-          submissionDate: changeRequest?.firstSubmissionDate,
-          submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
-          priority: changeRequest?.priority
-        }));
+        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => {
+          let sortedChangeActions = this.sortChangeActions(changeRequest, 'desc');
+          return {
+            index: index,
+            changeRequestId: changeRequest?.changeRequestId,
+            changeActionId: sortedChangeActions[0]?.changeActionId,
+            changeType: sortedChangeActions[0]?.changeType,
+            changeTypeString: this.getChangeTypeString(sortedChangeActions[0]?.changeType),
+            fiscalYear: this.getProgramYearString(changeRequest.programYearId),
+            facilityNames: this.createFacilityNameString(changeRequest.changeActions),
+            internalStatus: this.getInternalStatusString(changeRequest.status),
+            externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
+            submissionDate: changeRequest?.firstSubmissionDate,
+            submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
+            priority: changeRequest?.priority
+          }
+        });
       }
       return allChangeRequests;
     },
@@ -409,13 +412,14 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
     continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
+      let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
       if (changeType == 'PDF_CHANGE'){
         this.goToChangeForm(changeActionId, changeRequestId);
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId));
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
@@ -545,6 +549,9 @@ export default {
     },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
+    },
+    sortChangeActions(changeRequest, order) {
+      return _.sortBy(changeRequest.changeActions, 'createdOn', order);
     },
   },
   async mounted() {
