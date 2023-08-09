@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0-alpine3.17
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:18.16.0-alpine3.17
 
 RUN mkdir -p /logs \
     && chmod 755 /logs
