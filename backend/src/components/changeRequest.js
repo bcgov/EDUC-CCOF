@@ -73,7 +73,7 @@ async function getChangeRequest(req, res) {
   log.info('get changeRequest called');
 
   try {
-    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype)`;
+    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon)`;
     let changeRequest = await getOperation(operation);
     changeRequest = await mapChangeRequestObjectForFront(changeRequest);
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
@@ -158,6 +158,17 @@ async function createChangeAction(req, res, changeType) {
   }
 }
 
+async function deleteChangeAction(req, res) {
+  let { changeActionId } = req?.params;
+  log.info('deleteChangeAction called - changeActionId = ' + changeActionId);
+  try {
+    await deleteOperationWithObjectId('ccof_change_actions', changeActionId);
+    return res.status(HttpStatus.OK).end();
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 
 function buildNewFacilityPayload(req) {
   let facility = req.body;
@@ -275,4 +286,5 @@ module.exports = {
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,
+  deleteChangeAction,
 };

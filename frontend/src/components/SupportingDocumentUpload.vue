@@ -116,7 +116,12 @@
         </v-card>
       </v-row>
       <v-row v-if="isChangeRequest">
-        <v-card class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card"  width="1200">
+        <v-card class="mx-auto mb-4 rounded-lg cc-top-level-card" width="1200" v-if="isLoading">
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading"></v-skeleton-loader>
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
+        </v-card>
+        <v-card class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card" width="1200" v-else>
           <v-card-text class="pt-7 pa-0">
             <div class="px-md-12 px-7">
               <p class="text-h5 text--primary">
@@ -134,7 +139,7 @@
         <GroupChangeDialogueContent style="max-width: 1200px;" class="pb-4"/>
       </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
+        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing || isLoading"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
@@ -288,25 +293,43 @@ export default {
 
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
-    ...mapActions('reportChanges', ['createChangeAction']),
-    ...mapMutations('reportChanges', ['addChangeNotificationId']),
+    ...mapActions('reportChanges', ['createChangeAction', 'deleteChangeAction']),
+    ...mapMutations('reportChanges', ['addChangeNotificationId','deleteChangeNotificationId']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),    
 
     previous() {
       this.$router.push(this.previousPath);
     },
     async next() {
-      if (this.isChangeRequest && this.otherChanges == 'Yes') {
-        let changeNotificationId = this.getChangeNotificationActionId;
-        if (!changeNotificationId) {
-          const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
-          console.log('change action id: ', results.changeActionId);
-          this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
-          changeNotificationId = results.changeActionId
+      this.isProcessing = true;
+      try {
+        if (this.isChangeRequest) {
+          if (this.otherChanges == 'Yes') {
+            let changeNotificationId = this.getChangeNotificationActionId;
+            if (!changeNotificationId) {
+              const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
+              console.log('change action id: ', results.changeActionId);
+              this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
+              changeNotificationId = results.changeActionId
+            }
+            this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
+          } else {
+            let changeNotificationId = this.getChangeNotificationActionId;
+            if (changeNotificationId) {
+              await this.deleteChangeAction({changeRequestId: this.changeRequestId, changeActionId: changeNotificationId});
+              this.deleteChangeNotificationId({changeRequestId: this.changeRequestId});
+              await this.forceNavBarRefresh();
+            }
+            this.$router.push(this.nextPath);
+          }
+        } else {
+          console.log('next path: ', this.nextPath);
+          this.$router.push(this.nextPath);
         }
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
-      } else {
-        console.log('next path: ', this.nextPath);
-        this.$router.push(this.nextPath);
+      } catch (e) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.isProcessing = false;
       }
     },
     validateForm() {
