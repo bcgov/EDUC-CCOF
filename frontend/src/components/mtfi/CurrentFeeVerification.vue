@@ -44,24 +44,12 @@
                     <br>
 
                     <v-row class="d-flex">
-                    <v-radio-group
-                    :rules = "rules"
-                      v-model="item.feeFrequency"
-                      label="Parent fee frequency"
-                      :disabled="true"
-                      class="cols-5 justify-space-around"
-                    >
-                      <v-radio
-                        label="Daily"
-                        value="Daily"
-                      ></v-radio>
-                      <v-radio
-                        label="Monthly"
-                        value="Monthly"
-                      ></v-radio>
-                    </v-radio-group>
+
+                    <v-text-field label="Parent fee frequency" dense flat solo hide-details readonly :disabled="false" :rules="feeRules"
+                          v-model.number="item.feeFrequency" @input="convertBlankNumberToNull(item,'approvedFeeApr')" prefix="Parent fee frequency: "/>
 
                     <v-select label="Which month are you requesting to increase parent fees"
+                      v-if="currentFeesCorrect"
                       v-model="CCFRIFacilityModel.childCareTypes[index].selectedMonth"
                       :items="months"
                       class="cols-5 justify-space-around"
@@ -125,7 +113,7 @@
 
                       <!-- End Row One of Grid-->
 
-                      <div class=" feeTitleInput" >
+                      <div class=" feeTitleInput" v-if="currentFeesCorrect">
                         <span >New Parent Fees: </span>
                       </div>
 
@@ -222,7 +210,7 @@
 
                       <!-- End Row One of Grid-->
 
-                      <div class=" feeTitleInput">
+                      <div class=" feeTitleInput" v-if="currentFeesCorrect">
                         <span >New Parent Fees: </span>
                       </div>
 
@@ -338,7 +326,7 @@ export default {
   data() {
     return {
       currentFeesCorrect: null,
-      selectedMonth: null,
+      selectedMonth: 0,
       months: [
         {text: 'April', value:  1},
         {text: 'May' ,value:  2},
@@ -392,10 +380,14 @@ export default {
       async handler() {
         try {
           this.loading = true;
-          await this.loadCCFRIFacility('d6169369-3727-ee11-9965-000d3a09d4d4'); //old CCFRI - logic to come to get this from navBar
+          //await this.loadCCFRIFacility('d6169369-3727-ee11-9965-000d3a09d4d4'); //old CCFRI - logic to come to get this from navBar
           await this.loadCCFRIFacility(this.$route.params.urlGuid); //new CCFRI from route
+          await this.loadCCFRIFacility(this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId).ccfriApplicationId); //oldCCFRI found via new CCFRI
+          await this.loadCCFRIFacility(this.$route.params.urlGuid); //put the new one back in the store so I can render the page (ugly)
+
+
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
-          this.oldCcfri = this.getCCFRIById('d6169369-3727-ee11-9965-000d3a09d4d4'); //set old CCFRI to display fees
+          this.oldCcfri = this.getCCFRIById(this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId).ccfriApplicationId); //set old CCFRI to display fees
 
 
           let arr = [];
@@ -406,7 +398,7 @@ export default {
             console.log(q);
 
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
-            if (!q.approvedFeeApr){
+            if (!q.approvedFeeMar){ //TODO: not the best way to test if the fees have been filled out
               let fees = {
                 approvedFeeApr: null,
                 approvedFeeAug: null,
@@ -429,9 +421,9 @@ export default {
           }
           this.CCFRIFacilityModel.childCareTypes = arr;
 
-          console.log('the arr', arr);
+          //console.log('the arr', arr);
 
-          console.log(this.oldCcfri);
+          //console.log(this.oldCcfri);
           this.feeList = [];
 
 
@@ -446,7 +438,7 @@ export default {
 
           //this.feeList.sort((a, b) => a.orderNumber - b.orderNumber);
 
-          console.log(this.feeList);
+          //console.log(this.feeList);
 
 
           //will have to only display the previous years fee - some logic will have to be done here for that
@@ -467,7 +459,7 @@ export default {
   },
   methods: {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes']),
-    ...mapMutations('ccfriApp', ['setLoadedModel']),
+    ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
     hasModelChanged(){
       // console.log('model:', this.loadedModel);
       // console.log('ccfriStore:', this.CCFRIFacilityModel);
@@ -482,8 +474,8 @@ export default {
       return true;
     },
     isInputVisible(index, monthOfCard){
-      console.log('passed into model index', index);
-      console.log('sel month', this.CCFRIFacilityModel.childCareTypes[index].selectedMonth);
+      // console.log('passed into model index', index);
+      // console.log('sel month', this.CCFRIFacilityModel.childCareTypes[index].selectedMonth);
       if (!this.currentFeesCorrect){
         return false;
       }
@@ -558,7 +550,7 @@ export default {
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows:    repeat(2, 100px);
+  grid-template-rows:    repeat(2, 75px);
   grid-gap: 10px;
 }
 
