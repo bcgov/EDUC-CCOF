@@ -40,7 +40,7 @@
                               @click:clear="deleteFile(item)"
                               :id="item.facilityId"
                               :accept="fileAccept"
-                              :disabled="false"
+                              :disabled="isLocked"
                               placeholder="Select your file"
                               :error-messages="fileInputError"
                               @change="selectFile"
@@ -78,9 +78,11 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('app', ['isRenewal']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
     filteredLicenseUploadData() {
       if (this.isChangeRequest) {
         return this.licenseUploadData.filter(el => el.changeRequestId === this.changeRequestId);
@@ -89,7 +91,16 @@ export default {
       }
     },
     isLocked() {
-      if (this.unlockLicenseUpload || this.isChangeRequest) {
+      if(this.isChangeRequest){
+        if(this.isLicenseUploadUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
+        return false;
+      }
+      else if (this.unlockLicenseUpload) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;

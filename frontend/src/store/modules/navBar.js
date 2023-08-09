@@ -1,3 +1,6 @@
+import {PATHS} from '@/utils/constants';
+
+
 function getActiveIndex(items) {
   let foundIndex = -1;
   for (let i = 0; (i < items.length && foundIndex < 0); i++) {
@@ -47,6 +50,7 @@ export default {
     canSubmit: true,
     changeRequestId: null,
     programYearId: null,
+    currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
   },
   mutations: {
@@ -58,15 +62,23 @@ export default {
       state.changeRequestId = value;
       filterNavBar(state);
     },
-    setProgramYearId: (state, value) => {
-      state.programYearId = value;
-      state.changeRequestId = null;
-      filterNavBar(state);
-    },
-    clearGuids: (state) => {
-      state.programYearId = null;
-      state.changeRequestId = null;
-      state.navBarList = [];
+    setUrlDetails: (state, to) => {
+      console.log('to url is: ', to);
+      state.currentUrl = to.fullPath;
+      if (to?.params?.changeRecGuid) {
+        state.changeRequestId = to.params.changeRecGuid;
+        state.programYearId = null;
+        filterNavBar(state);
+      } else if (to?.params?.programYearGuid) {
+        state.changeRequestId = null;
+        state.programYearId = to.params.programYearGuid;
+        filterNavBar(state);
+      } else {
+        state.programYearId = null;
+        state.changeRequestId = null;
+        state.navBarList = [];
+      }
+
     },
     forceNavBarRefresh(state) {
       state.refreshNavBar = state.refreshNavBar + 1;
@@ -152,7 +164,16 @@ export default {
   },
   getters: {
     isChangeRequest: (state) => {
-      return state.changeRequestId? true : false;
+      return state.currentUrl?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
+    },
+    getChangeType: (state, getters) => {
+      if (getters.isChangeRequest) {
+        const arr = state.currentUrl.split('/');
+        if (arr?.length > 2) {
+          return arr[2];
+        }
+      }
+      return null;
     },
     nextPath: (state) => {
       const index = getActiveIndex(state.navBarItems);

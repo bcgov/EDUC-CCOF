@@ -251,8 +251,8 @@ async function getChangeActionDocument(changeActionId){
 async function postChangeActionDocument(payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeActionDocument';
   log.info('postChangeActionDocument Url', url);
-  if (log.isDebugEnabled()) {
-    log.debug(`postChangeActionDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+  if (log.isVerboseEnabled()) {
+    log.verbose(`postChangeActionDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());

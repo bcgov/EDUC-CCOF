@@ -115,8 +115,31 @@
           </v-card>
         </v-card>
       </v-row>
+      <v-row v-if="isChangeRequest">
+        <v-card class="mx-auto mb-4 rounded-lg cc-top-level-card" width="1200" v-if="isLoading">
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading"></v-skeleton-loader>
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
+        </v-card>
+        <v-card class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card" width="1200" v-else>
+          <v-card-text class="pt-7 pa-0">
+            <div class="px-md-12 px-7">
+              <p class="text-h5 text--primary">
+                Would you like to report any other changes to your licence or service?
+              </p>
+              <v-radio-group required v-model="otherChanges" :rules = "rules.required">
+                <v-radio label="Yes" value="Yes"/>
+                <v-radio label="No" value="No"/>
+              </v-radio-group>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-row>
+      <v-row v-if="otherChanges=='Yes'" class="d-flex justify-center">
+        <GroupChangeDialogueContent style="max-width: 1200px;" class="pb-4"/>
+      </v-row>
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing"
+        :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing || isLoading"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </v-form>
@@ -125,27 +148,37 @@
 <script>
 
 import rules from '@/utils/rules';
-import {mapActions, mapGetters, mapState,} from 'vuex';
+import {mapActions, mapGetters, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import { deepCloneObject, getFileExtension, isChangeRequest } from '@/utils/common';
+import { deepCloneObject, getFileExtension } from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
+import { PATHS, changeUrlGuid } from '@/utils/constants';
+import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent';
+
 
 export default {
   mixins: [alertMixin],
-  components: { NavButton },
+  components: { NavButton, GroupChangeDialogueContent },
   props: {},
 
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['canSubmit', 'navBarList']),
+    ...mapState('navBar', ['canSubmit', 'navBarList','changeRequestId']),
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
-    ...mapState('reportChanges', ['changeRequestId']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus', 'getChangeNotificationActionId']),
     isLocked() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
+        if(this.isSupportingDocumentsUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockSupportingDocuments) {
@@ -163,7 +196,7 @@ export default {
       return this.isValidForm && this.canSubmit;
     },
     filteredNavBarList() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
       } else {
         return this.navBarList.filter(el => !el.changeRequestId);
@@ -182,6 +215,13 @@ export default {
     ];
     await this.mapFacilityData();
     await this.createTable();
+    if (this.isChangeRequest) {
+      if (this.getChangeNotificationActionId) {
+        this.otherChanges = 'Yes';
+      } else {
+        this.otherChanges = 'No';
+      }
+    }
 
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -201,6 +241,7 @@ export default {
       tempFacilityId: null,
       isValidForm: false,
       currentrow: null,
+      otherChanges: null,
       headers: [
         {
           text: 'Facility Name',
@@ -252,13 +293,45 @@ export default {
 
   methods: {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
+    ...mapActions('reportChanges', ['createChangeAction', 'deleteChangeAction']),
+    ...mapMutations('reportChanges', ['addChangeNotificationId','deleteChangeNotificationId']),
+    ...mapMutations('navBar', ['forceNavBarRefresh']),    
 
     previous() {
       this.$router.push(this.previousPath);
     },
-    next() {
-      console.log('next path: ', this.nextPath);
-      this.$router.push(this.nextPath);
+    async next() {
+      this.isProcessing = true;
+      try {
+        if (this.isChangeRequest) {
+          if (this.otherChanges == 'Yes') {
+            let changeNotificationId = this.getChangeNotificationActionId;
+            if (!changeNotificationId) {
+              const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
+              console.log('change action id: ', results.changeActionId);
+              this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
+              changeNotificationId = results.changeActionId
+            }
+            this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
+          } else {
+            let changeActionId = this.getChangeNotificationActionId;
+            if (changeActionId) {
+              await this.deleteChangeAction(changeActionId);
+              this.deleteChangeNotificationId({changeRequestId: this.changeRequestId});
+              await this.forceNavBarRefresh();
+            }
+            this.$router.push(this.nextPath);
+          }
+        } else {
+          console.log('next path: ', this.nextPath);
+          this.$router.push(this.nextPath);
+
+        }
+      } catch (e) {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.isProcessing = false;
+      }
     },
     validateForm() {
       this.$refs.form?.validate();

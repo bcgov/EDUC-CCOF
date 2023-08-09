@@ -10,7 +10,7 @@
           <v-row justify="center" style="padding-top: 2em;">
             <ul style="list-style: none">
               <li v-for="item in facilityList" :key="item.facilityId" style="">
-                <span>{{ item.facilityName }}</span>
+                <router-link :to="getRoutingPath(item.facilityId)"><span>{{ item.facilityName }}</span></router-link>
                 <v-btn v-if="!isLocked && facilityList.length > 1" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
                   <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
@@ -70,7 +70,7 @@
 
 <script>
 
-import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { isChangeRequest } from '@/utils/common';
 
@@ -88,12 +88,20 @@ export default {
     };
   },
   computed: {
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (isChangeRequest(this)) {
+        if(this.isCCOFUnlocked||!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
         return false;
       }
       if (this.unlockBaseFunding) {
@@ -114,6 +122,14 @@ export default {
     ...mapActions('facility', ['deleteFacility']),
     previous() {
       this.$router.push(this.previousPath);
+    },
+    getRoutingPath(facilityId) {
+      if(isChangeRequest(this)){
+        return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, facilityId);
+      }
+      else {
+        return pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, facilityId);
+      }
     },
     addAnotherFacility() {
       if (isChangeRequest(this)) {
@@ -140,10 +156,6 @@ export default {
     },
     async deleteApplication() {
       this.processing = true;
-      console.log(this.deleteFacilityId);
-      console.log(this.deleteCcfriId);
-      console.log(this.applicationId);
-      console.log(this.deleteEceweId);
       await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       this.processing = false;
       this.dialog = false;

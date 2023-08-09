@@ -172,14 +172,26 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest','userProfileChangeRequests']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
+    ...mapState('navBar', ['changeRequestId']),
+    ...mapGetters('reportChanges',['isChangeRequestUnlocked','isOtherDocumentsUnlocked']),
     getFilteredDocs(){
       return this.uploadedDocuments.filter(el=> el.subject == this.changeType);
     },
     isReadOnly() {
-      return this.loadedChangeRequest?.externalStatus === 'SUBMITTED';
+      if(this.changeType==='NOTIFICATION_FORM'){
+        if(this.isChangeRequestUnlocked){
+          return false;
+        }
+      }
+      else if(this.changeType==='SUPPORTING_DOC'){
+        if(this.isOtherDocumentsUnlocked){
+          return false;
+        }
+      }
+      return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
   },
 

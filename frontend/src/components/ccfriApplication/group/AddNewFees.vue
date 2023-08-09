@@ -458,18 +458,27 @@ export default {
     ...mapGetters('app', ['lookupInfo']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'rfiList']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
 
     currentFacility(){
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility.unlockCcfri || this.isChangeRequest){
+      if (this.currentFacility.unlockCcfri){
         return false;
+      }
+      else if(this.isChangeRequest){
+        if (!this.changeRequestStatus){
+          return false;
+        }
+        else if(this.changeRequestStatus!=='INCOMPLETE'){
+          return true;
+        }
       }
       else if (this.applicationStatus === 'SUBMITTED'){
         return true;
@@ -529,8 +538,8 @@ export default {
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
     toRfi() {
-      this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: true});
-      this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.$route.params.urlGuid));
+      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
     },
     previous() {
       if (this.isReadOnly){
@@ -559,7 +568,7 @@ export default {
         } else {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
-            this.setNavBarValue({ facilityId: this.$route.params.urlGuid, property: 'hasRfi', value: false});
+            this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
           }
           this.$router.push(this.nextPath);
         }

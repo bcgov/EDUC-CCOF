@@ -83,7 +83,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isCCOFApproved">
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isReportChangeButtonEnabled">
         <template #content>
           <p class="text-h6">
             Report changes to your licence or service
@@ -101,7 +101,7 @@
               </v-btn>
             </v-col>
             <v-col class="col-12">
-              <v-btn @click="goToReportChange()" :color='buttonColor(!isCCOFApproved)' dark>
+              <v-btn @click="goToReportChange()" :color='buttonColor(!isReportChangeButtonEnabled)' dark>
                 Report a change
               </v-btn>
             </v-col>
@@ -229,7 +229,7 @@ export default {
     ...mapGetters('app', ['renewalYearLabel']),
     ...mapState('app', ['programYearList', 'isRenewal']),
     ...mapState('navBar', ['navBarList']),
-    ...mapState('organization', ['organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
+    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     ...mapState('reportChanges', ['userProfileChangeRequests']),
@@ -348,6 +348,9 @@ export default {
     isCCOFApproved() {
       return (this.applicationType === 'RENEW') || (this.ccofStatus === this.CCOF_STATUS_APPROVED);
     },
+    isReportChangeButtonEnabled() {
+      return !!(this.organizationAccountNumber && this.fundingAgreementNumber);
+    },
     isUpdateChangeRequestDisplayed() {
       let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
       return changeRequestStatuses?.includes("WITH_PROVIDER");
@@ -401,15 +404,15 @@ export default {
     },
     goToNMF(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(PATHS.NMF, this.programYearId, ccfriApplicationId));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(pcfUrlGuid(PATHS.NMF, this.programYearId, this.unlockNMFList[0]));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.unlockNMFList[0]));
     },
     goToRFI(ccfriApplicationId) {
       if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, ccfriApplicationId));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, ccfriApplicationId));
       else
-        this.$router.push(pcfUrlGuid(PATHS.RFI, this.programYearId, this.unlockRFIList[0]));
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.unlockRFIList[0]));
     },
     goToECEWE() {
       this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
