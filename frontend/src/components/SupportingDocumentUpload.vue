@@ -325,6 +325,7 @@ export default {
         } else {
           console.log('next path: ', this.nextPath);
           this.$router.push(this.nextPath);
+
         }
       } catch (e) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
