@@ -301,7 +301,7 @@ export default {
           const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
           console.log('change action id: ', results.changeActionId);
           this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
-          changeNotificationId = results.changeActionId
+          changeNotificationId = results.changeActionId;
         }
         this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
       } else {

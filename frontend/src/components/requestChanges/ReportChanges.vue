@@ -44,7 +44,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeForm()" >Upload a Change Notification Form</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" >Upload a Change Notification Form</v-btn>
                 </v-row>
               </template>
 
@@ -480,7 +480,7 @@ export default {
       }
       return newReq;
     },
-    goToChangeInfoDialogue() {
+    goToChangeDialogue() {
       this.$router.push(PATHS.CHANGE_NOTIFICATION_DIALOGUE);
     },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
