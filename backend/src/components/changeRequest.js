@@ -295,6 +295,18 @@ async function deleteChangeRequestMTFI(req, res){
   }
 }
 
+async function updateChangeRequestMTFI(req, res){
+  try{
+    let response = await patchOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId, req.body);
+    return res.status(HttpStatus.OK).json();
+  }
+  catch(e){
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+
+  }
+}
+
 module.exports = {
   getChangeRequest,
   createChangeRequest,
@@ -304,4 +316,5 @@ module.exports = {
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,
+  updateChangeRequestMTFI
 };
