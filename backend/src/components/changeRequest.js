@@ -159,10 +159,9 @@ async function createChangeAction(req, res, changeType) {
 }
 
 async function deleteChangeAction(req, res) {
-  let { changeActionId } = req?.params;
-  log.info('deleteChangeAction called - changeActionId = ' + changeActionId);
+  log.info('deleteChangeAction called - changeActionId = ' + req.params.changeActionId);
   try {
-    await deleteOperationWithObjectId('ccof_change_actions', changeActionId);
+    await deleteOperationWithObjectId('ccof_change_actions', req.params.changeActionId);
     return res.status(HttpStatus.OK).end();
   } catch (e) {
     log.error('error', e);
