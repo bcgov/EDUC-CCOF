@@ -1,4 +1,4 @@
-import {PATHS} from '@/utils/constants';
+import {PATHS, CHANGE_TYPES} from '@/utils/constants';
 
 
 function getActiveIndex(items) {
@@ -49,6 +49,7 @@ export default {
     refreshNavBar: 1,  //The navbar watches this value and refreshes itself when this changes.
     canSubmit: true,
     changeRequestId: null,
+    changeType: null,
     programYearId: null,
     currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
@@ -62,6 +63,7 @@ export default {
       state.changeRequestId = value;
       filterNavBar(state);
     },
+
     setUrlDetails: (state, to) => {
       console.log('to url is: ', to);
       state.currentUrl = to.fullPath;
@@ -160,6 +162,9 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
+    setNavBarList:(state,payload) => {
+      state.navBarList = payload;
+    }
 
   },
   getters: {
@@ -170,7 +175,8 @@ export default {
       if (getters.isChangeRequest) {
         const arr = state.currentUrl.split('/');
         if (arr?.length > 2) {
-          return arr[2];
+          state.changeType=arr[2];
+          return state.changeType;
         }
       }
       return null;

@@ -85,7 +85,7 @@
 <script>
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
-import { NAV_BAR_GROUPS } from '@/utils/constants';
+import { NAV_BAR_GROUPS , CHANGE_TYPES } from '@/utils/constants';
 import StaticConfig from '../../common/staticConfig';
 import { times } from 'lodash';
 
@@ -111,14 +111,16 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle','isRenewal', 'programYearList']),
-    ...mapState('navBar', ['navBarList', 'refreshNavBar', 'navBarGroup']),
+    ...mapState('navBar', ['navBarList', 'userProfileList', 'refreshNavBar', 'navBarGroup']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
-    ...mapGetters('navBar', ['isChangeRequest']),
+    ...mapGetters('navBar', ['isChangeRequest','getChangeType']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus']),
+    ...mapState('reportChanges',['mtfiFacilities']),
+    ...mapState('ccfriApp',['ccfriStore']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -156,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', ]),
+    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', 'setNavBarList']),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
@@ -181,8 +183,14 @@ export default {
       console.log('is change request: ', this.isChangeRequest);
       console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
-        console.log('calling new Fac build nav bar');
-        this.buildNewFacilityNavBar();
+        if(this.getChangeType==='nf'){
+          console.log('calling new Fac build nav bar');
+          this.buildNewFacilityNavBar();
+        }
+        else if(this.getChangeType ==='mtfi'){
+          console.log('call mtfi build nav bar');
+          this.buildMTFINavBar();
+        }
       } else {
         this.buildApplicationNavBar();
       }
@@ -210,7 +218,12 @@ export default {
       let linkName;
       if (this.isChangeRequest) {
         checkbox = this.changeRequestStatus === 'SUBMITTED' && !this.unlockDeclaration;
-        linkName = 'Summary and Declaration New Facility';
+        if(this.getChangeType===CHANGE_TYPES.NEW_FACILITY){
+          linkName = 'Summary and Declaration New Facility';
+        }
+        else if (this.getChangeType===CHANGE_TYPES.MTFI){
+          linkName = 'Summary and Declaration MTFI';
+        }
       } else {
         checkbox = this.applicationStatus === 'SUBMITTED' && !this.unlockDeclaration;
         linkName = 'Summary and Declaration';
@@ -264,18 +277,6 @@ export default {
         navBarId: navBarId++
       });
     },
-    addChangeRequestNewFacilityOtherToNavBar() {
-      this.items.push({
-        title: 'Report other changes',
-        link: { name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: this.getChangeNotificationActionId}},
-        isAccessible: true, //change this when change req logic more complete
-        icon: 'mdi-information',
-        isActive: 'new-facility-other-guid' === this.$route.name,
-        expanded: false,
-        position: positionIndex++,
-        navBarId: navBarId++
-      });
-    },
     addReportChangeNavigationToNavBar(){
       this.items.push({
         title: 'Report Change',
@@ -311,9 +312,10 @@ export default {
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },
-    buildMFTINavBar(){
+    buildMTFINavBar(){
       console.log('building MFTI nav bar');
       this.addLandingPageToNavBar();
+      this.items.push(this.getMTFINavigation());
       this.addSummaryAndDeclarationToNavBar();
 
     },
@@ -325,11 +327,7 @@ export default {
       this.items.push(this.getAddNewFacilityCCOFNavigation());
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
-      this.items.push(this.getMTFINavigation());
       this.addNewSupportingDocumentsToNavbar();
-      if (this.getChangeNotificationActionId) {
-        this.addChangeRequestNewFacilityOtherToNavBar();
-      }
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },
@@ -607,10 +605,10 @@ export default {
       return {
         title: 'Facility',
         id: null,
-        link: {name: this.isChangeRequest? 'change-request-facility-information' : 'Facility Information'},
+        link: {name: this.isChangeRequest? 'Report Change Facility' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: this.isChangeRequest? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: this.isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };
@@ -666,47 +664,95 @@ export default {
         navBarId: navBarId++
       };
     },
+    isMTFISelectFacilitiesComplete(){
+      return this.mtfiFacilities;
+    },
+    isMTFICCFRIComplete(facilityId){
+      let ccfriId = this.mtfiFacilities?.filter(el=>el.facilityId===facilityId).ccfriApplicationId;
+      console.log('-----MTFI CCFRI STUFFS-----');
+      console.log(ccfriId);
+      console.log(this.ccfriStore);
+      return this.ccfriStore[ccfriId]?.ccof_formcomplete;
+    },
     getMTFINavigation(){
       // Select Facility
       // Current Fee Verification - Each Fac
       // New Fees - Each Fac
+      // RFI for each Fac
       // Declaration
+      console.log('building MTFI Nav');
       let items = [];
       items.push(
         {
           title: 'Select Facility',
           link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid}},
           isAccessible: true,
-          icon: this.getCheckbox(false),
+          icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
           isActive: 'Midterm Fee Increase Select Facilities'===this.$route.name,
           position: positionIndex++,
           navBarId: navBarId++
         },
       );
-      console.log('buidling MTFI Nav');
-      console.log(this.userProfileList?.length);
-      if(this.userProfileList?.length>0){
+      
+      console.log(this.mtfiFacilities?.length);
+      if(this.mtfiFacilities?.length>0){
+        console.log(this.userProfileList?.length);
+        let mtfiList = this.userProfileList?.filter(el=>this.mtfiFacilities.some(item=>item.facilityId===el.facilityId));
+        console.log(mtfiList);
+        this.setNavBarList(mtfiList);
         
-        this.userProfileList?.forEach((item)=>{
+        this.navBarList?.forEach((item)=>{
+          console.log('mtfiFacility items');
           console.log(item);
+          let ccfriId = this.mtfiFacilities.filter(el => el.facilityId===item.facilityId).ccfriApplicationId;
           items.push({
-            title: 'Current Fees',
+            title: 'Fee Verification',
             subTitle: item.facilityName,
             id: item.facilityId,
-            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.facilityId}},
+            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: ccfriId}},
             isAccessible:true,
-            icon: this.getCheckbox(false),
+            icon: this.getCheckbox(this.isMTFICCFRIComplete(item.facilityId)),
             isActive: 'CCFRI Fee Verification'===this.$route.name,
             position: positionIndex++,
             navBarId: navBarId++
           });
+          if (item.hasRfi || item.unlockRfi) {
+              items.push(
+                {
+                  title: 'Parent Fee Increase – RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}},
+                  isAccessible: true,
+                  icon: this.getCheckbox(item.isRfiComplete),
+                  isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
+            if (item.unlockNmf || item.hasNmf) {
+              items.push(
+                {
+                  title: 'Parent Fee - RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
+                  isAccessible: true,
+                  icon:  this.getCheckbox(item.isNmfComplete),
+                  isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
         });
       }
       let retval =   {
         title: NAV_BAR_GROUPS.MTFI,
         isAccessible: true,
-        icon: this.getCheckbox(false),
-        expanded: this.isExpanded(NAV_BAR_GROUPS.MTFI),
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
+        expanded: true,// this.isExpanded(NAV_BAR_GROUPS.MTFI),
         items: items,
         navBarId: navBarId++
       };

@@ -139,11 +139,11 @@ export function pcfUrlGuid(suffix, programYearGuid = ':programYearGuid', urlGuid
   return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}/${urlGuid}`;
 }
 
-export function changeUrl(suffix, changeRecGuid = ':changeRecGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
+export function changeUrl(suffix, changeRecGuid = ':changeRecGuid', changeType = CHANGE_TYPES.MTFI) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}`;
 }
 
-export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
+export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid', changeType = CHANGE_TYPES.MTFI) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 

@@ -730,14 +730,14 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_INFO),
+      path: changeUrl(PATHS.MTFI_INFO,  ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Information',
       component: MtfiInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
@@ -748,29 +748,31 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY,  ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Select Facilities',
       component: MtfiSelectFacility,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
-      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION),
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'CCFRI Fee Verification',
       component: MtfiFeeVerification,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
   ]
