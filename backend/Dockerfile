@@ -18,7 +18,7 @@ RUN apk upgrade --no-cache --available \
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     GHOSTSCRIPT_PATH=/usr/bin/gs
 
 EXPOSE 443 8080
