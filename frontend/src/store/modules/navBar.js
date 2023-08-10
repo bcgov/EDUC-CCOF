@@ -30,7 +30,9 @@ function getNavBarAtPositionIndex(items, index) {
   return foundItem;
 }
 function filterNavBar(state) {
-  if (state.changeRequestId) {
+  //Mitchel - Since most CRs will be making changes to existing facilities
+  //only grabs facilities from specific change request when new facility CR so far
+  if (state.changeType ==='nf') {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
   // VIET - temporary removed to fix issue in the Landing page (empty navBarList)
   // need to check with Rob to see if we need to check this programYearId
@@ -162,10 +164,6 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-    setNavBarList:(state,payload) => {
-      state.navBarList = payload;
-    }
-
   },
   getters: {
     isChangeRequest: (state) => {

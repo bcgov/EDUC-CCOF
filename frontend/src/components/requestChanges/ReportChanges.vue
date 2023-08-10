@@ -420,7 +420,7 @@ export default {
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
@@ -466,7 +466,7 @@ export default {
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
     },
     async createNewChangeRequest(changeType){
@@ -506,7 +506,7 @@ export default {
         this.$router.push(PATHS.MTFI_INFO);
       }
       else{
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
 
     },

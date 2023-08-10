@@ -61,6 +61,7 @@ import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import { isChangeRequest } from '@/utils/common';
+import { CHANGE_TYPES } from '@/utils/constants';
 
 
 let ccfriOptInOrOut = {};
@@ -113,6 +114,7 @@ export default {
           this.checkbox[index] = true;
       });
       this.loading = false;
+      this.refreshNavBarList();
     } catch(error) {
       console.log('Error loading Change Request.', error);
       this.setFailureAlert('Error loading change request.');
@@ -126,7 +128,7 @@ export default {
     },
     async next() {
       await this.save(false);
-      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId));
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId,CHANGE_TYPES.MTFI));
     },
     validateForm() {
       this.$refs.isValidForm?.validate();

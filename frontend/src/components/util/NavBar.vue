@@ -120,7 +120,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus']),
     ...mapState('reportChanges',['mtfiFacilities']),
-    ...mapState('ccfriApp',['ccfriStore']),
+    ...mapGetters('ccfriApp', ['getCCFRIById']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -313,10 +313,15 @@ export default {
       this.setNavBarItems(this.items);
     },
     buildMTFINavBar(){
+      // Select Facility
+      // Fee Verification - Each Fac
+      // RFI for each Fac
+      // Declaration
       console.log('building MFTI nav bar');
       this.addLandingPageToNavBar();
       this.items.push(this.getMTFINavigation());
-      this.addSummaryAndDeclarationToNavBar();
+      //this.addSummaryAndDeclarationToNavBar();
+      this.setNavBarItems(this.items);
 
     },
     buildNewFacilityNavBar(){
@@ -665,27 +670,23 @@ export default {
       };
     },
     isMTFISelectFacilitiesComplete(){
-      return this.mtfiFacilities;
+      return this.mtfiFacilities?.length>0;
     },
-    isMTFICCFRIComplete(facilityId){
-      let ccfriId = this.mtfiFacilities?.filter(el=>el.facilityId===facilityId).ccfriApplicationId;
+    isMTFICCFRIComplete(ccfriId){
       console.log('-----MTFI CCFRI STUFFS-----');
       console.log(ccfriId);
-      console.log(this.ccfriStore);
-      return this.ccfriStore[ccfriId]?.ccof_formcomplete;
+      console.log('---------');
+      console.log(this.getCCFRIById(ccfriId));
+
+      return this.getCCFRIById(ccfriId)?.ccof_formcomplete;
     },
     getMTFINavigation(){
-      // Select Facility
-      // Current Fee Verification - Each Fac
-      // New Fees - Each Fac
-      // RFI for each Fac
-      // Declaration
       console.log('building MTFI Nav');
       let items = [];
       items.push(
         {
           title: 'Select Facility',
-          link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid}},
+          link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid,changeType:CHANGE_TYPES.MTFI}},
           isAccessible: true,
           icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
           isActive: 'Midterm Fee Increase Select Facilities'===this.$route.name,
@@ -693,66 +694,29 @@ export default {
           navBarId: navBarId++
         },
       );
-      
-      console.log(this.mtfiFacilities?.length);
-      if(this.mtfiFacilities?.length>0){
-        console.log(this.userProfileList?.length);
-        let mtfiList = this.userProfileList?.filter(el=>this.mtfiFacilities.some(item=>item.facilityId===el.facilityId));
-        console.log(mtfiList);
-        this.setNavBarList(mtfiList);
-        
-        this.navBarList?.forEach((item)=>{
-          console.log('mtfiFacility items');
-          console.log(item);
-          let ccfriId = this.mtfiFacilities.filter(el => el.facilityId===item.facilityId).ccfriApplicationId;
+
+      if(this.navBarList?.length>0){
+        let mtfiList = this.navBarList?.filter(el=>this.mtfiFacilities?.some(item=>item.facilityId===el.facilityId));
+        mtfiList?.forEach((item)=>{
+          let ccfriId = this.mtfiFacilities.filter(el => el.facilityId===item.facilityId)[0].ccfriApplicationId;
           items.push({
             title: 'Fee Verification',
             subTitle: item.facilityName,
             id: item.facilityId,
-            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: ccfriId}},
+            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: ccfriId,changeType:CHANGE_TYPES.MTFI}},
             isAccessible:true,
-            icon: this.getCheckbox(this.isMTFICCFRIComplete(item.facilityId)),
-            isActive: 'CCFRI Fee Verification'===this.$route.name,
+            icon: this.getCheckbox(this.isMTFICCFRIComplete(ccfriId)),
+            isActive: 'CCFRI Fee Verification'===this.$route.name && this.$route.params.urlGuid===ccfriId,
             position: positionIndex++,
             navBarId: navBarId++
           });
-          if (item.hasRfi || item.unlockRfi) {
-              items.push(
-                {
-                  title: 'Parent Fee Increase – RFI',
-                  subTitle: item.facilityName,
-                  id: item.facilityId,
-                  link: { name: 'ccfri-request-info', params: {urlGuid: item.ccfriApplicationId}},
-                  isAccessible: true,
-                  icon: this.getCheckbox(item.isRfiComplete),
-                  isActive: 'ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
-                  position: positionIndex++,
-                  navBarId: navBarId++
-                },
-              );
-            }
-            if (item.unlockNmf || item.hasNmf) {
-              items.push(
-                {
-                  title: 'Parent Fee - RFI',
-                  subTitle: item.facilityName,
-                  id: item.facilityId,
-                  link: { name: 'new-facilities', params: {urlGuid: item.ccfriApplicationId} },
-                  isAccessible: true,
-                  icon:  this.getCheckbox(item.isNmfComplete),
-                  isActive: (this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name),
-                  position: positionIndex++,
-                  navBarId: navBarId++
-                },
-              );
-            }
         });
       }
       let retval =   {
         title: NAV_BAR_GROUPS.MTFI,
         isAccessible: true,
         icon: this.getCheckbox(this.areChildrenComplete(items)),
-        expanded: true,// this.isExpanded(NAV_BAR_GROUPS.MTFI),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.MTFI),
         items: items,
         navBarId: navBarId++
       };
