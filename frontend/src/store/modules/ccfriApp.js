@@ -138,7 +138,8 @@ export default {
         ccof_formcomplete : isFormComplete,
         notes : state.CCFRIFacilityModel.ccfriApplicationNotes,
         ccof_has_rfi: hasRfi,
-        hasClosureFees: state.CCFRIFacilityModel.hasClosureFees
+        hasClosureFees: state.CCFRIFacilityModel.hasClosureFees,
+        existingFeesCorrect: state.CCFRIFacilityModel.existingFeesCorrect
       };
       if (this.isRenewal) {
         firstObj = {

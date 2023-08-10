@@ -9,10 +9,18 @@
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
     <br>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Facility Name: </span>
+    <!-- <div class="row pt-4 justify-center">
+      <span class="text-h5">Facility Name: {{ currentFacility.facilityName }}</span>
     </div>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">License Number: {{ currentFacility.facilityAccountNumber }}</span>
+    </div> -->
 
+
+    <br><br>
+    <div class="row pt-4 justify-center">
+      <span class="text-h6">Our records show this facility's approved parent fees for April 2024 to March 2025 are as follows:</span>
+    </div>
 
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
 
@@ -49,7 +57,7 @@
                           v-model.number="item.feeFrequency" @input="convertBlankNumberToNull(item,'approvedFeeApr')" prefix="Parent fee frequency: "/>
 
                     <v-select label="Which month are you requesting to increase parent fees"
-                      v-if="currentFeesCorrect"
+                      v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'"
                       v-model="CCFRIFacilityModel.childCareTypes[index].selectedMonth"
                       :items="months"
                       class="cols-5 justify-space-around"
@@ -113,7 +121,7 @@
 
                       <!-- End Row One of Grid-->
 
-                      <div class=" feeTitleInput" v-if="currentFeesCorrect">
+                      <div class=" feeTitleInput" v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'">
                         <span >New Parent Fees: </span>
                       </div>
 
@@ -210,7 +218,7 @@
 
                       <!-- End Row One of Grid-->
 
-                      <div class=" feeTitleInput" v-if="currentFeesCorrect">
+                      <div class=" feeTitleInput" v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'">
                         <span >New Parent Fees: </span>
                       </div>
 
@@ -276,15 +284,15 @@
                   <v-radio-group
                   :rules = "rules"
                     row
-                    v-model="currentFeesCorrect"
+                    v-model="CCFRIFacilityModel.existingFeesCorrect"
                   >
                     <v-radio
                       label="Yes"
-                      value="Yes"
+                      value="100000000"
                     ></v-radio>
                     <v-radio
                       label="No"
-                      value="No"
+                      value=100000001
                     ></v-radio>
                   </v-radio-group>
                 </v-card-text>
@@ -325,7 +333,6 @@ export default {
   mixins: [alertMixin, globalMixin],
   data() {
     return {
-      currentFeesCorrect: null,
       selectedMonth: 0,
       months: [
         {text: 'April', value:  1},
@@ -341,11 +348,9 @@ export default {
         {text: 'Feb',value: 11},
         {text: 'March',value: 12},
       ],
+      currentFacility: undefined,
       oldCcfri: undefined,
-      newFees: 0,
-      feeIncreaseRemaining: '',
       isUnlocked: false,
-      originalFacilityList: [],
       model,
       isReadOnly: false,
       showOptStatus : '',
@@ -387,7 +392,8 @@ export default {
 
 
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
-          this.oldCcfri = this.getCCFRIById(this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId).ccfriApplicationId); //set old CCFRI to display fees
+          this.currentFacility = this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
+          this.oldCcfri = this.getCCFRIById(this.currentFacility.ccfriApplicationId); //set old CCFRI to display fees
 
 
           let arr = [];
@@ -419,6 +425,11 @@ export default {
             q.feeFrequency = childCareTypes.feeFrequency;
             arr.push(q);
           }
+          //convert the number to a string so the radio buttons work properly
+          if(this.CCFRIFacilityModel.existingFeesCorrect){
+            this.CCFRIFacilityModel.existingFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect.toString();
+          }
+
           this.CCFRIFacilityModel.childCareTypes = arr;
 
           //console.log('the arr', arr);
@@ -477,7 +488,7 @@ export default {
     isInputVisible(index, monthOfCard){
       // console.log('passed into model index', index);
       // console.log('sel month', this.CCFRIFacilityModel.childCareTypes[index].selectedMonth);
-      if (!this.currentFeesCorrect){
+      if (!this.CCFRIFacilityModel.existingFeesCorrect  || this.CCFRIFacilityModel.existingFeesCorrect == '100000001'){
         return false;
       }
       else if(monthOfCard >= this.CCFRIFacilityModel.childCareTypes[index].selectedMonth){
@@ -510,7 +521,7 @@ export default {
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: false}); //TODO: run logic for RFI here?
 
-          await this.updateChangeRequestMTFI({changeRequestMtfiId :'feba2211-1636-ee11-bdf4-000d3af4865d'}); //testing the endpoint
+          //await this.updateChangeRequestMTFI({changeRequestMtfiId :'feba2211-1636-ee11-bdf4-000d3af4865d'}); //testing the endpoint
           //console.log('the res is:' , res);
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
