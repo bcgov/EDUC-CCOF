@@ -1,43 +1,44 @@
 <template>
     <v-container>
-      <v-row justify="center">
-        <div class="pa-10 text-h4">Welcome to CCOF!</div>
+      <v-row justify="space-around">
+        <div class="pa-10 text-h4 text-center">Welcome to CCOF!</div>
       </v-row>
-      <v-row>
-        <h4 class="px-10 text-h6"><b>Instructions:</b></h4>
-        <p class="px-10 text-body-1">
+      <v-row justify="space-around">
+        <div>
+        <h4 class="text-h4"><b>Instructions:</b></h4>
+
+        <br>
+        <p class="px-10 text-h6">
           You must notify the Child Care Operating Funding Program within two business days of any change to:
+          
           <ul>
+            
             <li>Your facility licence</li>
             <li>Services outlined in Schedule in Schedule A of your Child Care Operating Funding Agreement</li>
           </ul>
           <br>
           To ensure accurate payments, please notify us of any changes <b>before</b> submitting an enrolment report of a monthly ECE report.
         </p>
-      </v-row>
-      <v-row justify="space-around" class="test2">
-        <v-col>
-            <v-card outlined>
-              
-                <v-card-title class="test">
-                  <v-icon
-                    x-large
-                    class="py-1 noticeInfoIcon">
-                    mdi-information
-                  </v-icon>
-                  <span justify="center"><b>Additional funding cannot be paid in the month that:</b></span></v-card-title>
-                <v-card-text>
-                    <ul>
-                        <li>the Funding Agreement starts</li>
-                        <li>the Funding Agreement has already been modified</li>
-                        <li>you submitted an enrolment report and received payment</li>
-                    </ul>
-                </v-card-text>
+          <v-card outlined class="mx-10">
+            
+              <v-card-title class="test">
+                <v-icon
+                  x-large
+                  class="py-1 noticeInfoIcon">
+                  mdi-information
+                </v-icon>
+                <span><b>Additional funding cannot be paid in the month that:</b></span></v-card-title>
+              <v-card-text>
+                  <ul>
+                      <li>the Funding Agreement starts</li>
+                      <li>the Funding Agreement has already been modified</li>
+                      <li>you submitted an enrolment report and received payment</li>
+                  </ul>
+              </v-card-text>
         </v-card>
-        </v-col>
-      </v-row>
-      <v-row>
-        <p>
+        <br>
+        <p class="px-10 text-h6">
+          <br>
             <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/report-changes">
             Learn more about reporting changes</a> to your licence or service.
             <br>
@@ -48,6 +49,7 @@
                 <li>You may need to attach other supporting documents related to your change request</li>
             </ul>
         </p>
+      </div>
       </v-row>
       <NavButton 
       :isNextDisplayed="true" @previous="previous" @next="next"></NavButton>
