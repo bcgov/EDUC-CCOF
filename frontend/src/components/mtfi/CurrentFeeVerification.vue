@@ -291,13 +291,37 @@
                       value="100000000"
                     ></v-radio>
                     <v-radio
-                      label="No"
+                      label="No" 
                       value=100000001
                     ></v-radio>
                   </v-radio-group>
                 </v-card-text>
              </v-card>
       </div>
+
+      <v-dialog v-model="areFeesCorrect" persistent max-width="600px">
+        <v-card>
+          <v-container class="pt-0">
+            <v-row>
+              <v-col cols="10" class="py-0 pl-0" style="background-color:#234075;">
+                <v-card-title class="white--text font-weight-bold">Incorrect values shown for current fees</v-card-title>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-end" style="background-color:#234075;">
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+            </v-row>
+            <v-row class="pa-6">
+              <p>If the parent fees shown do not match the current fees, call the Child Care Operating Fund Program at <a
+                  href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>.</p>
+            </v-row>
+            <v-row class="d-flex justify-right">
+              <v-btn dark color="primary" :loading="processing" @click="cancel()">Close</v-btn>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-dialog>
 
 
     </v-form>
@@ -348,6 +372,7 @@ export default {
         {text: 'Feb',value: 11},
         {text: 'March',value: 12},
       ],
+      dialog: false,
       currentFacility: undefined,
       oldCcfri: undefined,
       isUnlocked: false,
@@ -377,7 +402,10 @@ export default {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList']),
-    ...mapGetters('navBar', ['previousPath'])
+    ...mapGetters('navBar', ['previousPath']),
+    areFeesCorrect() {
+      return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
+    }
   },
   watch: {
     //get facilityID from here and then set it !
@@ -472,6 +500,10 @@ export default {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
+  cancel() {
+    this.dialog = false;
+    this.CCFRIFacilityModel.existingFeesCorrect = null;
+  },
     hasModelChanged(){
       // console.log('model:', this.loadedModel);
       // console.log('ccfriStore:', this.CCFRIFacilityModel);
