@@ -10,10 +10,10 @@
     </div>
     <br>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Facility Name: {{ getCurrentFacility.facilityName }}</span>
+      <span class="text-h5">Facility Name: {{ getCurrentFacility?.facilityName }}</span>
     </div>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">License Number: {{ currentFacility.facilityAccountNumber }}</span>
+      <span class="text-h5">License Number: {{ getCurrentFacility?.facilityAccountNumber }}</span>
     </div>
 
 
@@ -51,9 +51,10 @@
                   <div class="px-md-12 px-7">
                     <br>
 
-                    <v-row class="d-flex justify-space-around">
+                    <v-row class="d-flex">
 
-                      <v-select label="Parent fee frequency: "
+                      <v-col cols="6">
+                        <v-select label="Parent fee frequency: "
                         v-model="CCFRIFacilityModel.childCareTypes[index].feeFrequency"
                         :items="feeChoices"
                         class="cols-4 justify-space-around"
@@ -63,25 +64,16 @@
                           {{ item }}
                         </option>
                       </v-select>
+                      </v-col>
+                      <v-col cols="3">
+                        <v-btn dark class="blueButton mb-10" @click="copyFees(index)" >Auto-fill approved parent fees</v-btn>
+                      </v-col>
+                      <v-col cols="2">
+                        <v-btn class=" mb-10" @click="clearFees(index)" >Clear parent fees</v-btn>
+                      </v-col>
 
-                      <v-btn dark class="blueButton mb-10" @click="copyFees(index)" >Auto-fill approved parent fees</v-btn>
 
-                      <v-btn class=" mb-10" @click="clearFees(index)" >Clear</v-btn>
-
-                    <!-- <v-select label="Which month are you requesting to increase parent fees"
-                      v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'"
-                      v-model="CCFRIFacilityModel.childCareTypes[index].selectedMonth"
-                      :items="months"
-                      class="cols-5 justify-space-around"
-                      outlined
-                      >
-
-                      <option v-for="month in months" :key="month.value" :value="month.value">
-                        {{ month.text }}
-                      </option>
-
-                    </v-select> -->
-                  </v-row>
+                    </v-row>
 
                     <v-container class="ma-0 pa-0 gridContainer">
 

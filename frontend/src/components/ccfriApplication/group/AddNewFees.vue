@@ -463,6 +463,7 @@ export default {
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
 
     currentFacility(){
       return this.getNavByCCFRIId(this.$route.params.urlGuid);

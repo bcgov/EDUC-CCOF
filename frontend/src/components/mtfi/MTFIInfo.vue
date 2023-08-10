@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { PATHS, changeUrl} from '@/utils/constants';
+import { PATHS, changeUrl, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 //import SmallCard from '../guiComponents/SmallCard.vue';
 
@@ -70,7 +70,7 @@ export default {
         console.log(newReq);
         this.$route.params.changeRecGuid = newReq.changeRequestId;
       }
-      this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid,CHANGE_TYPES.MTFI));
+      this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI));
 
       //else family, go directly to confirm fee page for that facility
     },

@@ -1,109 +1,86 @@
 <template>
-    <v-container fluid>
-        <v-form ref="form">
-            <v-row class="d-flex justify-center">
-                <span class="text-h4">Child Care Operating Funding Program</span>
-            </v-row>
-            <v-row class="d-flex justify-center">
-                <h2>Funding Agreement Change Notification</h2>
-            </v-row>
-            <v-row class="d-flex justify-center text-h5" style="color:#003466;">
-                {{ this.userInfo.organizationName }}
-            </v-row>
-            <v-row class="d-flex justify-center">
-                <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-                    <v-row class="d-flex justify-start">
-                        <v-col class="pa-0">
-                            <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Report Changes</v-card-title>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <div class="px-md-12 px-7">
-                                <p style="font-weight: bold;">Submit a change notificatin form to update:</p>
-                                <ul style="line-height: 70%">
-                                    <li>Capacity</li>
-                                    <li>Facility name</li>
-                                    <li>Organization legal name</li>
-                                    <li>Organization mailing address</li>
-                                    <li>Permanent facility closure</li>
-                                    <li>Service category</li>
-                                    <li>Service details:</li>
-                                    <ul>
-                                        <li>Days per week</li>
-                                        <li>Extended hours</li>
-                                        <li>Maximum spaces offered</li>
-                                        <li>Preschool age programs</li>
-                                        <li>School age programs</li>
-                                        <li>Weeks per year</li>
-                                    </ul>
-                                </ul>
-                                Select <span style="font-weight: bold;">Next</span> to complete the form
-                                <p style="font-weight: bold;">Submit the Direct Deposit Appilcation to:</p>
-                                <ul>
-                                    <li>Update banking information</li>
-                                </ul>
-                                <p>Email: <a href="mailto:cccda@gov.bc.ca">cccda@gov.bc.ca</a></p>
-                                <p>Mailing address:</p>
-                                Child Care Operating Funding<br />
-                                PO Box 9965 Stn Prov Govt<br />
-                                Victoria BC V8W 9R4
-
-                            </div>
-                        </v-col>
-                        <v-divider vertical></v-divider>
-                        <v-col>
-                            <p style="font-weight: bold;">Contact the CCOF Program Update:</p>
-                            <ul style="line-height: 70%">
-                                <li>Authorized contacts/signing authority</li>
-                                <li>BCeID update</li>
-                                <li>Closure dates with parent fees</li>
-                                <li>Facility business hours</li>
-                                <li>Facility email and phone number</li>
-                                <li>Organization email and phone number</li>
-                                <li>Parent fees increase</li>
-                                <li>Temporary facility closure (one or more FULL months to a max of three)</li>
-                                <li>Update legal entity ownership</li>
-                            </ul><br />
-                            <p>Contact the CCOF Program:</p>
-                            Email: <a href="mailto:ccof@gov.bc.ca">ccof@gov.bc.ca</a><br />
-                            Toll free: <a href="tel:18883386622">1 888 338-6622 (Option 2)</a><br />
-                            Local Phone: <a href="tel:2503566501">250 356-6501</a>
-                        </v-col>
-                    </v-row>
-                </v-card>
-            </v-row>
-            <v-row class="d-flex justify-center">
-                <p>For more information about reporting changes, visit the Child Care Operating Funding Website.</p>
-                
-            </v-row>
-            <NavButton  @previous="true" @next="true"></NavButton>
-        </v-form>
-    </v-container>
+  <v-container fluid>
+    <v-form ref="form">
+      <v-row class="d-flex justify-center">
+        <span class="text-h4">Child Care Operating Funding Program  - {{ formattedProgramYear }}</span>
+      </v-row>
+      <v-row class="d-flex justify-center">
+        <h2>Funding Agreement Change Notification</h2>
+      </v-row>
+      <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+        {{ this.userInfo.organizationName }}
+      </v-row>
+      <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'"></GroupChangeDialogueContent>
+      <FamilyChangeDialogueContent v-else></FamilyChangeDialogueContent>
+      <v-row class="d-flex justify-center">
+        <p>For more information about reporting changes, <a href='https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/report-changes '>visit the Child Care Operating Funding Website</a>.</p>
+      </v-row>
+      <NavButton :isProcessing="processing" :isNextDisplayed="true" class="mt-10" @previous="previous" @next="next">
+      </NavButton>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
-import { PATHS, changeUrlGuid } from '@/utils/constants';
+import { PATHS, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants';
 import NavButton from '@/components/util/NavButton';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import alertMixin from '@/mixins/alertMixin';
 import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent';
 import FamilyChangeDialogueContent from '@/components/requestChanges/FamilyChangeDialogueContent';
 
 export default {
-    components: { NavButton, GroupChangeDialogueContent, FamilyChangeDialogueContent },
-    computed: {
-        ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-        ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    },
+  name: 'ChangeNotificationDialogue',
+  components: { NavButton, GroupChangeDialogueContent, FamilyChangeDialogueContent },
+  mixins: [alertMixin],
+  data() {
+    return {
+      isGroup: true,
+      processing: false,
+      providerType: ORGANIZATION_PROVIDER_TYPES.GROUP
+    };
+  },
+  computed: {
+    ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
+    ...mapState('organization', ['organizationProviderType']),
+    ...mapState('application', ['formattedProgramYear']),
+
+  },
+  methods: {
+    ...mapActions('reportChanges', ['createChangeRequest']),
+    ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
-        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
-    next() {
-        //TBD
+    async createNewChangeRequest(changeType) {
+
+      let newReq;
+      try {
+        newReq = await this.createChangeRequest(changeType);
+      }
+      catch (error) {
+        console.log('unable to create a new Req');
+        this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
+      }
+      return newReq;
     },
-    async goToChangeForm() {
-        this.processing = true;
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, change));
+    async next(changeActionId = null, changeRequestId = null) {
+
+      this.processing = true;
+
+      //create the change action first, then push it
+      if (!changeActionId) {
+        let newReq = await this.createNewChangeRequest('PDF_CHANGE');
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      }
+      else {
+        this.setChangeRequestId(changeRequestId);
+        this.setChangeActionId(changeActionId);
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      }
+
     }
+  }
 };
 </script>

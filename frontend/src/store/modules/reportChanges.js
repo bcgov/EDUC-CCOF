@@ -97,7 +97,9 @@ export default {
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
     },//may not need this now
-    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; },
+    setUserProfileChangeRequests:(state, value) => {
+      state.userProfileChangeRequests = value;
+    },
     addUserProfileChangeRequests:(state, value) => {
       const item = {
         changeRequestId: value,
@@ -134,8 +136,21 @@ export default {
         item.changeNotificationActionId = value.changeNotificationActionId;
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
-    }
-
+    },
+    deleteChangeNotificationId:(state, value) => {
+      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
+      if (index > -1) {
+        let item = state.userProfileChangeRequests[index];
+        delete item.changeNotificationActionId;
+        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      }
+    },
+    // setMTFIFacilities:(state, value) => {
+    //   state.mtfiFacilities = value;
+    // },
+    // addToMtfiFacilities: (state, payload) => {
+    //   payload?.forEach(facility => state.mtfiFacilities.push(facility));
+    // },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
@@ -241,12 +256,12 @@ export default {
     },
     async deleteChangeRequest({state, commit}, changeRequestId) {
       console.log('trying to delete req for: ', changeRequestId);
-
       checkSession();
-
       try {
         await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
-        state.changeRequestStore.splice(state.changeRequestStore.findIndex(changeRec => changeRec.changeRequestId === changeRequestId), 1);
+        let index = state.changeRequestStore.findIndex(changeRec => changeRec.changeRequestId === changeRequestId);
+        if (index > -1)
+          state.changeRequestStore.splice(index, 1);
         commit('setChangeRequestStore', state.changeRequestStore);
       } catch(e) {
         console.log(`Failed to delete change req with error - ${e}`);
@@ -267,6 +282,17 @@ export default {
 
     },
 
+    async deleteChangeAction({state, commit}, changeActionId) {
+      console.log('trying to delete changeActionId: ', changeActionId);
+      checkSession();
+      try {
+        await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/changeAction/' + changeActionId);
+      } catch(e) {
+        console.log(`Failed to delete change action with error - ${e}`);
+        throw e;
+      }
+    },
+
     async cancelChangeRequest({state, commit}, changeRequestId) {
       console.log('CANCEL Change request: ', changeRequestId);
       checkSession();
@@ -276,10 +302,15 @@ export default {
             externalStatus: 6,
           };
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
-          let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
-          if (index) {
-            state.changeRequestStore[index].externalStatus = 6;
+          let indexChangeRequestStore = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+          if (indexChangeRequestStore > -1) {
+            state.changeRequestStore[indexChangeRequestStore].externalStatus = 6;
             commit('setChangeRequestStore', state.changeRequestStore);
+          };
+          let indexUserProfileCR = state.userProfileChangeRequests?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+          if (indexUserProfileCR > -1) {
+            state.userProfileChangeRequests[indexUserProfileCR].externalStatus = 'CANCELLED';
+            commit('setUserProfileChangeRequests', state.userProfileChangeRequests);
           }
           return response;
         } catch (e) {

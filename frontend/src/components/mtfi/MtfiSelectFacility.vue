@@ -56,13 +56,10 @@
 
 import { mapState, mapMutations, mapGetters, mapActions } from 'vuex';
 import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
-import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
-import ApiService from '@/common/apiService';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import { isChangeRequest } from '@/utils/common';
-import { CHANGE_TYPES } from '@/utils/constants';
-
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -124,11 +121,11 @@ export default {
     ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     previous() {
-      this.$router.push(this.previousPath);
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     async next() {
       await this.save(false);
-      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId,CHANGE_TYPES.MTFI));
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
