@@ -97,7 +97,9 @@ export default {
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
     },//may not need this now
-    setUserProfileChangeRequests:(state, value) => { state.userProfileChangeRequests = value; },
+    setUserProfileChangeRequests:(state, value) => {
+      state.userProfileChangeRequests = value;
+    },
     addUserProfileChangeRequests:(state, value) => {
       const item = {
         changeRequestId: value,
@@ -248,12 +250,12 @@ export default {
     },
     async deleteChangeRequest({state, commit}, changeRequestId) {
       console.log('trying to delete req for: ', changeRequestId);
-
       checkSession();
-
       try {
         await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
-        state.changeRequestStore.splice(state.changeRequestStore.findIndex(changeRec => changeRec.changeRequestId === changeRequestId), 1);
+        let index = state.changeRequestStore.findIndex(changeRec => changeRec.changeRequestId === changeRequestId);
+        if (index > -1)
+          state.changeRequestStore.splice(index, 1);
         commit('setChangeRequestStore', state.changeRequestStore);
       } catch(e) {
         console.log(`Failed to delete change req with error - ${e}`);
@@ -294,10 +296,15 @@ export default {
             externalStatus: 6,
           };
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
-          let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
-          if (index) {
-            state.changeRequestStore[index].externalStatus = 6;
+          let indexChangeRequestStore = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+          if (indexChangeRequestStore > -1) {
+            state.changeRequestStore[indexChangeRequestStore].externalStatus = 6;
             commit('setChangeRequestStore', state.changeRequestStore);
+          };
+          let indexUserProfileCR = state.userProfileChangeRequests?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+          if (indexUserProfileCR > -1) {
+            state.userProfileChangeRequests[indexUserProfileCR].externalStatus = 'CANCELLED'; 
+            commit('setUserProfileChangeRequests', state.userProfileChangeRequests);
           }
           return response;
         } catch (e) {

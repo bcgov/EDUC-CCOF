@@ -127,7 +127,7 @@
               <p class="text-h5 text--primary">
                 Would you like to report any other changes to your licence or service?
               </p>
-              <v-radio-group required v-model="otherChanges" :rules = "rules.required">
+              <v-radio-group required v-model="otherChanges" :rules = "rules.required" :disabled="isLocked">
                 <v-radio label="Yes" value="Yes"/>
                 <v-radio label="No" value="No"/>
               </v-radio-group>
@@ -295,7 +295,7 @@ export default {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     ...mapActions('reportChanges', ['createChangeAction', 'deleteChangeAction']),
     ...mapMutations('reportChanges', ['addChangeNotificationId','deleteChangeNotificationId']),
-    ...mapMutations('navBar', ['forceNavBarRefresh']),    
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
 
     previous() {
       this.$router.push(this.previousPath);
@@ -310,7 +310,7 @@ export default {
               const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
               console.log('change action id: ', results.changeActionId);
               this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
-              changeNotificationId = results.changeActionId
+              changeNotificationId = results.changeActionId;
             }
             this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
           } else {

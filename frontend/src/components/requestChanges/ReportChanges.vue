@@ -247,7 +247,7 @@ export default {
             submissionDate: changeRequest?.firstSubmissionDate,
             submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
             priority: changeRequest?.priority
-          }
+          };
         });
       }
       return allChangeRequests;
@@ -304,7 +304,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
+    ...mapActions('reportChanges', ['loadChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -424,7 +424,7 @@ export default {
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
@@ -510,7 +510,7 @@ export default {
         this.$router.push(PATHS.MTFI_INFO);
       }
       else{
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
       }
 
     },
@@ -560,7 +560,6 @@ export default {
     this.processing = false;
   },
   beforeRouteLeave(_to, _from, next) {
-    //this.$store.commit('ccfriApp/model', this.model);
     next();
   },
   components: { SmallCard, NavButton }

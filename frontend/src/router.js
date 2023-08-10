@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid, changeUrlSummaryDeclaration } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -56,6 +56,7 @@ import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotifi
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
 
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
@@ -719,7 +720,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_INFO),
+      path: changeUrl(PATHS.MTFI_INFO, ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Information',
       component: MtfiInfo,
       meta: {
@@ -741,7 +742,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Select Facilities',
       component: MtfiSelectFacility,
       meta: {
@@ -752,11 +753,22 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION),
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'CCFRI Fee Verification',
       component: MtfiFeeVerification,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlSummaryDeclaration(':changeRecGuid'),
+      name: 'Summary and Declaration Change Request',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: false,
         //subtitleBanner: Subtitle_Banners.ADDFACILITY
