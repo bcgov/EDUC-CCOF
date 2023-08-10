@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 
 const isValidBackendToken = auth.isValidBackendToken();
 const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs, createChangeAction, deleteChangeAction } = require('../components/changeRequest');
-const { deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
+const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
 
@@ -137,9 +137,21 @@ router.get('/mtfi/:ccfriId/', passport.authenticate('jwt', {session: false}),isV
 /**
  * Delete Change Requests MTFI
  */
-router.delete('/mtfi/:mtfiId/', passport.authenticate('jwt', {session: false}),isValidBackendToken, 
+router.delete('/mtfi/:mtfiId/', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('mtfiId', 'URL param: [mtfiId] is required').not().isEmpty()],  (req, res) => {
-  return deleteChangeRequestMTFI(req, res);
-});
+    return deleteChangeRequestMTFI(req, res);
+  });
+
+
+  /**
+ * Update Change Request MTFI
+ */
+
+router.patch('/mtfi/:mtfiId/', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('mtfiId', 'URL param: [mtfiId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return updateChangeRequestMTFI(req, res);
+  });
+
 
 module.exports = router;

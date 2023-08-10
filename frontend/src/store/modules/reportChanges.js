@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
-import {isEmpty} from 'lodash';
+import {isEmpty, update} from 'lodash';
 import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 
 /*
@@ -403,6 +403,17 @@ export default {
         throw error;
       }
     },
+
+    async updateChangeRequestMTFI({state}, payload) {
+      console.log('updating change req MTFI');
+      checkSession();
+      try {
+        await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST_MTFI + '/' + payload.changeRequestMtfiId);
+      } catch (error) {
+        console.info(`Failed to delete MTFI Change Requests - ${error}`);
+        throw error;
+      }
+    }
   },
 
 };

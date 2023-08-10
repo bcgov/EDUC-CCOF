@@ -138,7 +138,8 @@ export default {
         ccof_formcomplete : isFormComplete,
         notes : state.CCFRIFacilityModel.ccfriApplicationNotes,
         ccof_has_rfi: hasRfi,
-        hasClosureFees: state.CCFRIFacilityModel.hasClosureFees
+        hasClosureFees: state.CCFRIFacilityModel.hasClosureFees,
+        existingFeesCorrect: state.CCFRIFacilityModel.existingFeesCorrect
       };
       if (this.isRenewal) {
         firstObj = {
@@ -289,6 +290,7 @@ export default {
       }
     },
     async decorateWithCareTypes({commit, state, rootState}, facilityId) {
+      console.log('rootstate', rootState);
       const  ccofProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
 
@@ -322,33 +324,33 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        // if (!rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
-        //   console.log(rootState.app.isRenewal);
-        //   console.log(state.CCFRIFacilityModel.existingFeesCorrect);
-        //   console.log(prevCcfriApp);
+        if (!rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
+          console.log(rootState.app.isRenewal);
+          console.log(state.CCFRIFacilityModel.existingFeesCorrect);
+          console.log(prevCcfriApp);
 
-        //   console.log('show all the cards');
-        //   response.data.forEach(item => {
+          console.log('show all the cards');
+          response.data.forEach(item => {
 
-        //     //check for undefined here!
+            //check for undefined here!
 
-        //     let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
-        //       return (searchItem.childCareCategoryId == item.childCareCategoryId &&
-        //       searchItem.programYearId == prevProgramYear.programYearId);
-        //     });
-        //     if (!found) {
-        //       careTypes.push( {
-        //         programYear: prevProgramYear.name,
-        //         programYearId: prevProgramYear.programYearId,
-        //         current: 1,
-        //         ...item
-        //       });
-        //     }
-        //     else{
-        //       found.deleteMe = false;
-        //     }
-        //   });
-        // }
+            let found = state.CCFRIFacilityModel.childCareTypes.find(searchItem => {
+              return (searchItem.childCareCategoryId == item.childCareCategoryId &&
+              searchItem.programYearId == prevProgramYear.programYearId);
+            });
+            if (!found) {
+              careTypes.push( {
+                programYear: prevProgramYear.name,
+                programYearId: prevProgramYear.programYearId,
+                current: 1,
+                ...item
+              });
+            }
+            else{
+              found.deleteMe = false;
+            }
+          });
+        }
 
         /*
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
