@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -52,9 +52,11 @@ import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
 
 import ReportChange from '@/components/requestChanges/ReportChanges';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
+import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+import ChangeInformation from '@/components/requestChanges/ChangeInformation';
 
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
@@ -503,7 +505,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM),
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'change-notification-form',
       component: ChangeNotificationForm,
       meta: {
@@ -513,7 +515,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'change-notification-form-guid',
       component: ChangeNotificationForm,
       meta: {
@@ -523,7 +525,37 @@ const router = new VueRouter({
       }
     },
     {
-      path: PATHS.PREFIX.CHANGE_REQUEST + PATHS.CCOF_GROUP_FACILITY, //TODO. there is no change request here.
+      path: changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER),
+      name: 'new-facility-other-guid',
+      component: ChangeNotificationForm,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: true,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: changeUrl(PATHS.CHANGE_NOTIFICATION_DIALOGUE),
+      name: 'change-notification-dialogue',
+      component: ChangeNotificationDialogue,
+      meta: {
+        pageTitle: 'Change Notification Dialogue',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.CHANGE_NOTIFICATION_DIALOGUE,
+      name: 'change-notification-dialogue-guid',
+      component: ChangeNotificationDialogue,
+      meta: {
+        pageTitle: 'Change Notification Dialogue',
+        showNavBar: false,
+        requiresAuth: true,
+      }
+    },
+    {
+      path: PATHS.ROOT.CHANGE_NEW_FACILITY, //TODO. there is no change request here.
       name: 'change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -678,7 +710,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION),
+      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'Summary and Declaration Report Changes',
       component: SummaryDeclarationReportChanges,
       meta: {
@@ -688,14 +720,24 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_INFO),
+      path: PATHS.ROOT.CHANGE_INFO,
+      name: 'Change Request Information',
+      component: ChangeInformation,
+      meta: {
+        pageTitle: 'Change Request Information',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_INFO,  ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Information',
       component: MtfiInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
@@ -706,29 +748,31 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY),
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY,  ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Select Facilities',
       component: MtfiSelectFacility,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
-      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION),
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'CCFRI Fee Verification',
       component: MtfiFeeVerification,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
   ]
@@ -741,13 +785,7 @@ router.beforeEach((to, _from, next) => {
         next('/token-expired');
       }else {
         store.dispatch('auth/getUserInfo').then(() => {
-          if (to?.params?.changeRecGuid) {
-            store.commit('navBar/setChangeRequestId', to.params.changeRecGuid);
-          } else if (to?.params?.programYearGuid) {
-            store.commit('navBar/setProgramYearId', to.params.programYearGuid);
-          } else {
-            store.commit('navBar/clearGuids');
-          }
+          store.commit('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);
           } else {

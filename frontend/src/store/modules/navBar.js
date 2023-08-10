@@ -1,3 +1,6 @@
+import {PATHS, CHANGE_TYPES} from '@/utils/constants';
+
+
 function getActiveIndex(items) {
   let foundIndex = -1;
   for (let i = 0; (i < items.length && foundIndex < 0); i++) {
@@ -27,7 +30,9 @@ function getNavBarAtPositionIndex(items, index) {
   return foundItem;
 }
 function filterNavBar(state) {
-  if (state.changeRequestId) {
+  //Mitchel - Since most CRs will be making changes to existing facilities
+  //only grabs facilities from specific change request when new facility CR so far
+  if (state.changeType ==='nf') {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
   // VIET - temporary removed to fix issue in the Landing page (empty navBarList)
   // need to check with Rob to see if we need to check this programYearId
@@ -46,7 +51,9 @@ export default {
     refreshNavBar: 1,  //The navbar watches this value and refreshes itself when this changes.
     canSubmit: true,
     changeRequestId: null,
+    changeType: null,
     programYearId: null,
+    currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
   },
   mutations: {
@@ -58,15 +65,24 @@ export default {
       state.changeRequestId = value;
       filterNavBar(state);
     },
-    setProgramYearId: (state, value) => {
-      state.programYearId = value;
-      state.changeRequestId = null;
-      filterNavBar(state);
-    },
-    clearGuids: (state) => {
-      state.programYearId = null;
-      state.changeRequestId = null;
-      state.navBarList = [];
+
+    setUrlDetails: (state, to) => {
+      console.log('to url is: ', to);
+      state.currentUrl = to.fullPath;
+      if (to?.params?.changeRecGuid) {
+        state.changeRequestId = to.params.changeRecGuid;
+        state.programYearId = null;
+        filterNavBar(state);
+      } else if (to?.params?.programYearGuid) {
+        state.changeRequestId = null;
+        state.programYearId = to.params.programYearGuid;
+        filterNavBar(state);
+      } else {
+        state.programYearId = null;
+        state.changeRequestId = null;
+        state.navBarList = [];
+      }
+
     },
     forceNavBarRefresh(state) {
       state.refreshNavBar = state.refreshNavBar + 1;
@@ -148,11 +164,20 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-
   },
   getters: {
     isChangeRequest: (state) => {
-      return state.changeRequestId? true : false;
+      return state.currentUrl?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
+    },
+    getChangeType: (state, getters) => {
+      if (getters.isChangeRequest) {
+        const arr = state.currentUrl.split('/');
+        if (arr?.length > 2) {
+          state.changeType=arr[2];
+          return state.changeType;
+        }
+      }
+      return null;
     },
     nextPath: (state) => {
       const index = getActiveIndex(state.navBarItems);

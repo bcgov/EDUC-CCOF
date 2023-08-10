@@ -41,6 +41,7 @@ import alertMixin from '@/mixins/alertMixin';
 
 import NavButton from '@/components/util/NavButton';
 import { mapActions } from 'vuex';
+import { CHANGE_TYPES } from '../../utils/constants';
 
 export default {
   components: {NavButton},
@@ -69,7 +70,7 @@ export default {
         console.log(newReq);
         this.$route.params.changeRecGuid = newReq.changeRequestId;
       }
-      this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid));
+      this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid,CHANGE_TYPES.MTFI));
 
       //else family, go directly to confirm fee page for that facility
     },

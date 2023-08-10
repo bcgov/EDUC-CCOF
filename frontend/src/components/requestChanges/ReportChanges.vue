@@ -174,7 +174,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, changeUrlGuid , changeUrl} from '@/utils/constants';
+import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -420,7 +420,7 @@ export default {
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
@@ -428,7 +428,7 @@ export default {
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         this.goToChangeForm(changeActionId, changeRequestId);
       } else if (currentCR?.unlockDeclaration) {
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       } else {
         this.goToChangeForm(changeActionId, changeRequestId);
       }
@@ -466,7 +466,7 @@ export default {
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
     },
     async createNewChangeRequest(changeType){
@@ -481,6 +481,9 @@ export default {
       }
       return newReq;
     },
+    goToChangeInfoDialogue() {
+      this.$router.push(PATHS.CHANGE_NOTIFICATION_DIALOGUE);
+    },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 
       this.processing = true;
@@ -488,12 +491,12 @@ export default {
       //create the change action first, then push it
       if (!changeActionId){
         let newReq = await this.createNewChangeRequest('PDF_CHANGE');
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       }
       else{
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       }
 
     },
@@ -503,7 +506,7 @@ export default {
         this.$router.push(PATHS.MTFI_INFO);
       }
       else{
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
 
     },
