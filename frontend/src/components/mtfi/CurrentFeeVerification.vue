@@ -9,12 +9,12 @@
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
     <br>
-    <!-- <div class="row pt-4 justify-center">
-      <span class="text-h5">Facility Name: {{ currentFacility.facilityName }}</span>
+    <div class="row pt-4 justify-center">
+      <span class="text-h5">Facility Name: {{ getCurrentFacility.facilityName }}</span>
     </div>
     <div class="row pt-4 justify-center">
       <span class="text-h5">License Number: {{ currentFacility.facilityAccountNumber }}</span>
-    </div> -->
+    </div>
 
 
     <br><br>
@@ -51,12 +51,24 @@
                   <div class="px-md-12 px-7">
                     <br>
 
-                    <v-row class="d-flex">
+                    <v-row class="d-flex justify-space-around">
 
-                    <v-text-field label="Parent fee frequency" dense flat solo hide-details readonly :disabled="false" :rules="feeRules"
-                          v-model.number="item.feeFrequency" @input="convertBlankNumberToNull(item,'approvedFeeApr')" prefix="Parent fee frequency: "/>
+                      <v-select label="Parent fee frequency: "
+                        v-model="CCFRIFacilityModel.childCareTypes[index].feeFrequency"
+                        :items="feeChoices"
+                        class="cols-4 justify-space-around"
+                        outlined
+                      >
+                        <option v-for="item in feeChoices" :key="item" :value="item">
+                          {{ item }}
+                        </option>
+                      </v-select>
 
-                    <v-select label="Which month are you requesting to increase parent fees"
+                      <v-btn dark class="blueButton mb-10" @click="copyFees(index)" >Auto-fill approved parent fees</v-btn>
+
+                      <v-btn class=" mb-10" @click="clearFees(index)" >Clear</v-btn>
+
+                    <!-- <v-select label="Which month are you requesting to increase parent fees"
                       v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'"
                       v-model="CCFRIFacilityModel.childCareTypes[index].selectedMonth"
                       :items="months"
@@ -68,7 +80,7 @@
                         {{ month.text }}
                       </option>
 
-                    </v-select>
+                    </v-select> -->
                   </v-row>
 
                     <v-container class="ma-0 pa-0 gridContainer">
@@ -128,37 +140,37 @@
 
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 1)" class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" class="" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeApr" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field  v-if="isInputVisible(index, 2)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field  v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMay" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field  v-if="isInputVisible(index, 3)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field  v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJun" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 4)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJul" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 5)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeAug" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 6)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeSep" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
@@ -223,37 +235,37 @@
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 7)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 8)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 9)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 10)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 11)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
 
                       <div class="inputBoxWrapper ">
-                        <v-text-field v-if="isInputVisible(index, 12)" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
+                        <v-text-field v-if="isInputVisible()" type="number" @wheel="$event.target.blur()" :disabled="isReadOnly" outlined :rules="feeRules"
                         v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeApr')" label="" prefix="$"/>
 
                       </div>
@@ -291,7 +303,7 @@
                       value="100000000"
                     ></v-radio>
                     <v-radio
-                      label="No" 
+                      label="No"
                       value=100000001
                     ></v-radio>
                   </v-radio-group>
@@ -358,20 +370,21 @@ export default {
   data() {
     return {
       selectedMonth: 0,
-      months: [
-        {text: 'April', value:  1},
-        {text: 'May' ,value:  2},
-        {text: 'June' ,value:  3},
-        {text: 'July' ,value:  4},
-        {text: 'Aug' ,value:5},
-        {text: 'Sept',value: 6},
-        {text: 'Oct',value: 7},
-        {text: 'Novemeber',value: 8},
-        {text: 'December',value: 9},
-        {text: 'January',value: 10},
-        {text: 'Feb',value: 11},
-        {text: 'March',value: 12},
-      ],
+      // months: [
+      //   {text: 'April', value:  1},
+      //   {text: 'May' ,value:  2},
+      //   {text: 'June' ,value:  3},
+      //   {text: 'July' ,value:  4},
+      //   {text: 'Aug' ,value:5},
+      //   {text: 'Sept',value: 6},
+      //   {text: 'Oct',value: 7},
+      //   {text: 'Novemeber',value: 8},
+      //   {text: 'December',value: 9},
+      //   {text: 'January',value: 10},
+      //   {text: 'Feb',value: 11},
+      //   {text: 'March',value: 12},
+      // ],
+      feeChoices: ['Daily', 'Monthly'],
       dialog: false,
       currentFacility: undefined,
       oldCcfri: undefined,
@@ -405,6 +418,9 @@ export default {
     ...mapGetters('navBar', ['previousPath']),
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
+    },
+    getCurrentFacility(){
+      return this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
     }
   },
   watch: {
@@ -450,7 +466,6 @@ export default {
               q = {...q, ...fees};
 
             }
-            q.feeFrequency = childCareTypes.feeFrequency;
             arr.push(q);
           }
           //convert the number to a string so the radio buttons work properly
@@ -500,10 +515,40 @@ export default {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
-  cancel() {
-    this.dialog = false;
-    this.CCFRIFacilityModel.existingFeesCorrect = null;
-  },
+    cancel() {
+      this.dialog = false;
+      this.CCFRIFacilityModel.existingFeesCorrect = null;
+    },
+    clearFees(index){
+
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeApr = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMay = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJun = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJul = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeAug = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeSep = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeOct = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeNov = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeDec = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJan = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb = 0;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = 0;
+    },
+    copyFees(index){
+
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeApr = this.oldCcfri.childCareTypes[index].approvedFeeApr;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMay = this.oldCcfri.childCareTypes[index].approvedFeeMay;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJun = this.oldCcfri.childCareTypes[index].approvedFeeJun;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJul = this.oldCcfri.childCareTypes[index].approvedFeeJul;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeAug = this.oldCcfri.childCareTypes[index].approvedFeeAug;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeSep = this.oldCcfri.childCareTypes[index].approvedFeeSep;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeOct = this.oldCcfri.childCareTypes[index].approvedFeeOct;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeNov = this.oldCcfri.childCareTypes[index].approvedFeeNov;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeDec = this.oldCcfri.childCareTypes[index].approvedFeeDec;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJan = this.oldCcfri.childCareTypes[index].approvedFeeJan;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb = this.oldCcfri.childCareTypes[index].approvedFeeFeb;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = this.oldCcfri.childCareTypes[index].approvedFeeMar;
+    },
     hasModelChanged(){
       // console.log('model:', this.loadedModel);
       // console.log('ccfriStore:', this.CCFRIFacilityModel);
@@ -517,16 +562,14 @@ export default {
       }
       return true;
     },
-    isInputVisible(index, monthOfCard){
+    isInputVisible(){
       // console.log('passed into model index', index);
       // console.log('sel month', this.CCFRIFacilityModel.childCareTypes[index].selectedMonth);
-      if (!this.CCFRIFacilityModel.existingFeesCorrect  || this.CCFRIFacilityModel.existingFeesCorrect == '100000001'){
-        return false;
-      }
-      else if(monthOfCard >= this.CCFRIFacilityModel.childCareTypes[index].selectedMonth){
-        return true;
-      }
-      return false;
+      return !(!this.CCFRIFacilityModel.existingFeesCorrect  || this.CCFRIFacilityModel.existingFeesCorrect == '100000001');
+      // else if(monthOfCard >= this.CCFRIFacilityModel.childCareTypes[index].selectedMonth){
+      //   return true;
+      // }
+      // return false;
     },
     isFormComplete(){
       return this.isValidForm; //false makes button clickable, true disables button
@@ -627,6 +670,10 @@ export default {
 
  .noPadding{
   margin-left: 0px;
+}
+
+.blueButton {
+  background-color: #003366 !important;
 }
 
 
