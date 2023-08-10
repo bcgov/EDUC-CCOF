@@ -41,7 +41,6 @@ import alertMixin from '@/mixins/alertMixin';
 
 import NavButton from '@/components/util/NavButton';
 import { mapActions } from 'vuex';
-import { CHANGE_TYPES } from '../../utils/constants';
 
 export default {
   components: {NavButton},

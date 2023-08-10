@@ -51,7 +51,7 @@
                   <div class="px-md-12 px-7">
                     <br>
 
-                    <v-row class="d-flex">
+                    <v-row class="d-flex" v-if="isInputVisible()">
 
                       <v-col cols="6">
                         <v-select label="Parent fee frequency: "

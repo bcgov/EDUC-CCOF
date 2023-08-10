@@ -510,11 +510,7 @@ export default {
         this.$router.push(PATHS.MTFI_INFO);
       }
       else{
-<<<<<<< HEAD
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
-=======
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
->>>>>>> 523f83d79754a97533deed14afac24bb8e27646d
       }
 
     },

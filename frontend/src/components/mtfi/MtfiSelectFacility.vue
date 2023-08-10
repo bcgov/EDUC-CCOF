@@ -183,6 +183,7 @@ export default {
         if (withAlert) {
           this.setSuccessAlert('Success! Your update has been saved.');
         }
+        this.refreshNavBarList();
       } catch (error)  {
         console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
