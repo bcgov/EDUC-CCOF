@@ -414,7 +414,8 @@ async function printPdf(req, numOfRetries = 0)  {
       '--no-sandbox',
       '--disable-software-rasterizer',
       '--disable-dev-shm-usage',
-      '--disable-gpu'
+      '--disable-gpu',
+      '--database'
     ]
   }); //to debug locally add {headless: 'true', devtools: true} in options
 
