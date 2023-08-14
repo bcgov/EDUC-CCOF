@@ -2,15 +2,13 @@
 const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
-const _ = require('lodash');
-
+const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
 
 async function saveDocument(req, res) {
   try {
     let documents = req.body;
     for (let document of documents) {
-      let documentClone = _.cloneDeep(document);
+      let documentClone = document;
       let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId;
       delete documentClone.changeRequestNewFacilityId;
       if (getFileExtension(documentClone.filename) === 'heic' ) {

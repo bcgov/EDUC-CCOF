@@ -2,16 +2,14 @@
 const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId,updateChangeRequestNewFacility} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
-const _ = require('lodash');
-
+const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
 
 async function saveLicenses(req, res) {
   try {
 
     let licenses = req.body.fileList;
     for (let license of licenses) {
-      let licenseClone = _.cloneDeep(license);
+      let licenseClone = license;
 
       if (getFileExtension(licenseClone.filename) === 'heic' ) {
         log.verbose(`saveLicenses :: heic detected for file name ${licenseClone.filename} starting conversion`);

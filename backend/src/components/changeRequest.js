@@ -10,9 +10,7 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
-const {getFileExtension, convertHeicDocumentToJpg} = require('../util/common');
-const _ = require('lodash');
-
+const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
 
 function mapChangeRequestForBack(data, changeType) {
   let changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -238,9 +236,8 @@ async function getChangeRequestDocs(req, res){
 async function saveChangeRequestDocs(req, res) {
   try {
     let documents = req.body;
-    //log.info(documents);
     for (let document of documents) {
-      let documentClone = _.cloneDeep(document);
+      let documentClone = document;
       if (getFileExtension(documentClone.filename) === 'heic' ) {
         log.verbose(`saveChangeRequestDocs :: heic detected for file name ${documentClone.filename} starting conversion`);
         documentClone = await convertHeicDocumentToJpg(documentClone);
