@@ -35,6 +35,7 @@ const ChangeActionRequestMappings = [
   { back: 'ccof_change_actionid', front: 'changeActionId'}, // 6,
   { back: 'ccof_changetype', front: 'changeType'}, // 100000013,
   { back: '_ccof_change_request_value', front: 'changeRequestId'}, // 6,
+  { back: 'createdon', front: 'createdOn'},
   // { back: '_ccof_facility_value', front: 'facilityId'},
 ];
 

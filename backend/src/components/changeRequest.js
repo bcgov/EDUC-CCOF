@@ -73,7 +73,7 @@ async function getChangeRequest(req, res) {
   log.info('get changeRequest called');
 
   try {
-    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype)`;
+    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon)`;
     let changeRequest = await getOperation(operation);
     changeRequest = await mapChangeRequestObjectForFront(changeRequest);
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
@@ -133,6 +133,36 @@ async function createChangeRequest(req, res) {
       changeRequestId: changeRequestId,
       changeActionId: changeActionId,
     });
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function createChangeAction(req, res, changeType) {
+  log.info('createChangeAction called');
+  try {
+    const payload = {
+      ccof_changetype: changeType,
+      'ccof_change_request@odata.bind': `ccof_change_requests(${req.params.changeRequestId})`
+    };
+    const changeActionId = await postOperation('ccof_change_actions', payload);
+    return res.status(HttpStatus.CREATED).json({
+      changeRequestId: req.params.changeRequestId,
+      changeActionId: changeActionId,
+      changeType: changeType
+    });
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function deleteChangeAction(req, res) {
+  log.info('deleteChangeAction called - changeActionId = ' + req.params.changeActionId);
+  try {
+    await deleteOperationWithObjectId('ccof_change_actions', req.params.changeActionId);
+    return res.status(HttpStatus.OK).end();
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -253,5 +283,7 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
-  updateChangeRequest
+  updateChangeRequest,
+  createChangeAction,
+  deleteChangeAction,
 };

@@ -44,7 +44,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeForm()" >Upload a Change Notification Form</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" >Upload a Change Notification Form</v-btn>
                 </v-row>
               </template>
 
@@ -174,7 +174,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, changeUrlGuid , changeUrl} from '@/utils/constants';
+import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -232,20 +232,23 @@ export default {
       if (this.changeRequestStore?.length > 0) {
         // FUTURE RELEASE - filter by Program Year
         // allChangeRequests = this.changeRequestStore?.filter(changeRequest => this.isCurrentOrFuture(changeRequest.programYearId));
-        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => ({
-          index: index,
-          changeRequestId: changeRequest.changeActions[0]?.changeRequestId,
-          changeActionId: changeRequest.changeActions[0]?.changeActionId,
-          changeType: changeRequest.changeActions[0]?.changeType,
-          changeTypeString: this.getChangeTypeString(changeRequest.changeActions[0]?.changeType),
-          fiscalYear: this.getProgramYearString(changeRequest.programYearId),
-          facilityNames: this.createFacilityNameString(changeRequest.changeActions),
-          internalStatus: this.getInternalStatusString(changeRequest.status),
-          externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
-          submissionDate: changeRequest?.firstSubmissionDate,
-          submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
-          priority: changeRequest?.priority
-        }));
+        allChangeRequests = this.changeRequestStore?.map((changeRequest, index) => {
+          let sortedChangeActions = this.sortChangeActions(changeRequest, 'desc');
+          return {
+            index: index,
+            changeRequestId: changeRequest?.changeRequestId,
+            changeActionId: sortedChangeActions[0]?.changeActionId,
+            changeType: sortedChangeActions[0]?.changeType,
+            changeTypeString: this.getChangeTypeString(sortedChangeActions[0]?.changeType),
+            fiscalYear: this.getProgramYearString(changeRequest.programYearId),
+            facilityNames: this.createFacilityNameString(changeRequest.changeActions),
+            internalStatus: this.getInternalStatusString(changeRequest.status),
+            externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
+            submissionDate: changeRequest?.firstSubmissionDate,
+            submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
+            priority: changeRequest?.priority
+          }
+        });
       }
       return allChangeRequests;
     },
@@ -409,13 +412,14 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
     continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
+      let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
       if (changeType == 'PDF_CHANGE'){
         this.goToChangeForm(changeActionId, changeRequestId);
       }
       else if (changeType == 'NEW_FACILITY'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId));
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
@@ -427,7 +431,7 @@ export default {
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         this.goToChangeForm(changeActionId, changeRequestId);
       } else if (currentCR?.unlockDeclaration) {
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       } else {
         this.goToChangeForm(changeActionId, changeRequestId);
       }
@@ -480,6 +484,9 @@ export default {
       }
       return newReq;
     },
+    goToChangeDialogue() {
+      this.$router.push(PATHS.CHANGE_NOTIFICATION_DIALOGUE);
+    },
     async goToChangeForm(changeActionId = null,  changeRequestId = null){
 
       this.processing = true;
@@ -487,12 +494,12 @@ export default {
       //create the change action first, then push it
       if (!changeActionId){
         let newReq = await this.createNewChangeRequest('PDF_CHANGE');
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       }
       else{
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId));
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       }
 
     },
@@ -542,6 +549,9 @@ export default {
     },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
+    },
+    sortChangeActions(changeRequest, order) {
+      return _.sortBy(changeRequest.changeActions, 'createdOn', order);
     },
   },
   async mounted() {

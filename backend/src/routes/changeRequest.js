@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 
 const isValidBackendToken = auth.isValidBackendToken();
-const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs } = require('../components/changeRequest');
+const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs, createChangeAction, deleteChangeAction } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
 
@@ -101,12 +101,24 @@ router.post('/documentUpload', passport.authenticate('jwt', {session: false}),is
   });
 
 
+router.post('/:changeRequestId/documents', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return createChangeAction(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
+  });
 
+/**
+ * Delete a change action
+ */
+router.delete('/changeAction/:changeActionId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('changeActionId', 'URL param: [changeActionId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return deleteChangeAction(req, res);
+  });
 
 /**
  * Delete a change request
  */
-
 router.delete('/:changeRequestId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('changeRequestId', 'URL param: [changeRequestId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
