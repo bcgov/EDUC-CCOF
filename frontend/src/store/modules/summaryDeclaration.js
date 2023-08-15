@@ -97,7 +97,7 @@ export default {
         throw error;
       }
     },
-    async updateDeclaration({ commit, state, rootState}, {changeRequestId, reLockPayload}) {
+    async updateDeclaration({ commit, state, rootState, dispatch}, {changeRequestId, reLockPayload}) {
       checkSession();
       let payload = {
         agreeConsentCertify:state.model.agreeConsentCertify,
@@ -118,6 +118,8 @@ export default {
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
           state.model.externalStatus = 'SUBMITTED';
           commit('model', state.model);
+          dispatch('reportChanges/updateExternalStatusInChangeRequestStore', {changeRequestId: changeRequestId, newStatus: 2}, { root: true });
+          dispatch('reportChanges/updateExternalStatusInUserProfileChangeRequests', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
           return response;
         }
         else{
