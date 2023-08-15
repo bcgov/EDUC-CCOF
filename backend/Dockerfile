@@ -26,7 +26,8 @@ COPY chrome.conf /etc/fonts/local.conf
 
 # Add Chrome as a user
 RUN mkdir -p /usr/src/app \
-    && chown -R 1013920000 /usr/src/app
+    && adduser -D chrome \
+    && chown -R chrome:chrome /usr/src/app
 
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
