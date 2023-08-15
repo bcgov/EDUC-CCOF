@@ -17,7 +17,7 @@ COPY . /opt/app-root/src
 #    && apk add --no-cache dbus chromium chromium-chromedriver ghostscript
 
 RUN apk upgrade --no-cache --available \
-    && apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont ghostscript
+    && apk add --no-cache chromium-swiftshader nss freetype harfbuzz ca-certificates ttf-freefont ghostscript
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
