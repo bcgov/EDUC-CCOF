@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
-import {isEmpty, update} from 'lodash';
+import {isEmpty} from 'lodash';
 import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 
 /*
@@ -154,7 +154,7 @@ export default {
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
-    async loadChangeRequest({commit, rootState}, ) {
+    async getChangeRequestList({commit, rootState}, ) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
       console.log('loading change req for: ', rootState.application.applicationId);
