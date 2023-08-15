@@ -72,7 +72,9 @@ export const CHANGE_TYPES = Object.freeze({
  * Paths will be set up using PREFIX/guid/SUFFIX/guid
  * such as:  /pcf/${yearGuid}/facility/${facilityGuid}
  *
+ *
  ******************************************************/
+
 export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
@@ -81,7 +83,8 @@ export const PATHS = {
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
-    CHANGE_NEW_FACILITY: '/change/new/group/facility'
+    CHANGE_NEW_FACILITY: '/change/new/group/facility',
+    CHANGE_INFO: '/change/information',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -152,7 +155,8 @@ export function changeUrlSummaryDeclaration(changeRecGuid = ':changeRecGuid') {
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
-  ECEWE: 'ECE-WE'
+  ECEWE: 'ECE-WE',
+  MTFI: 'MTFI',
 };
 
 export const ORGANIZATION_PROVIDER_TYPES = {

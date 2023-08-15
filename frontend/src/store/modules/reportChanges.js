@@ -123,6 +123,12 @@ export default {
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     },
+    setMTFIFacilities:(state, value) => {
+      state.mtfiFacilities = value;
+    },
+    addToMtfiFacilities: (state, payload) => {
+      payload?.forEach(facility => state.mtfiFacilities.push(facility));
+    },
     addChangeNotificationId:(state, value) => {
       const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
       if (index > -1) {
@@ -139,12 +145,12 @@ export default {
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     },
-    setMTFIFacilities:(state, value) => {
-      state.mtfiFacilities = value;
-    },
-    addToMtfiFacilities: (state, payload) => {
-      payload?.forEach(facility => state.mtfiFacilities.push(facility));
-    },
+    // setMTFIFacilities:(state, value) => {
+    //   state.mtfiFacilities = value;
+    // },
+    // addToMtfiFacilities: (state, payload) => {
+    //   payload?.forEach(facility => state.mtfiFacilities.push(facility));
+    // },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID

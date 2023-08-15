@@ -326,8 +326,8 @@ module.exports = {
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,
+  updateChangeRequestMTFI,
   deleteChangeAction,
   getChangeRequestMTFIByCcfriId,
   deleteChangeRequestMTFI,
-  updateChangeRequestMTFI
 };

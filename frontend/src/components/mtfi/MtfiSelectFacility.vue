@@ -59,6 +59,7 @@ import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
+import { isChangeRequest } from '@/utils/common';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -110,6 +111,7 @@ export default {
           this.checkbox[index] = true;
       });
       this.loading = false;
+      this.refreshNavBarList();
     } catch(error) {
       console.log('Error loading Change Request.', error);
       this.setFailureAlert('Error loading change request.');
@@ -181,6 +183,7 @@ export default {
         if (withAlert) {
           this.setSuccessAlert('Success! Your update has been saved.');
         }
+        this.refreshNavBarList();
       } catch (error)  {
         console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');

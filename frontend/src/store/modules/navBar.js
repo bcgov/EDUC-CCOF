@@ -1,4 +1,4 @@
-import {PATHS} from '@/utils/constants';
+import {PATHS, CHANGE_TYPES} from '@/utils/constants';
 
 
 function getActiveIndex(items) {
@@ -30,7 +30,9 @@ function getNavBarAtPositionIndex(items, index) {
   return foundItem;
 }
 function filterNavBar(state) {
-  if (state.changeRequestId) {
+  //Mitchel - Since most CRs will be making changes to existing facilities
+  //only grabs facilities from specific change request when new facility CR so far
+  if (state.changeType ==='nf') {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
   // VIET - temporary removed to fix issue in the Landing page (empty navBarList)
   // need to check with Rob to see if we need to check this programYearId
@@ -49,6 +51,7 @@ export default {
     refreshNavBar: 1,  //The navbar watches this value and refreshes itself when this changes.
     canSubmit: true,
     changeRequestId: null,
+    changeType: null,
     programYearId: null,
     currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
@@ -62,6 +65,7 @@ export default {
       state.changeRequestId = value;
       filterNavBar(state);
     },
+
     setUrlDetails: (state, to) => {
       console.log('to url is: ', to);
       state.currentUrl = to.fullPath;
@@ -160,7 +164,6 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-
   },
   getters: {
     isChangeRequest: (state) => {
@@ -170,7 +173,8 @@ export default {
       if (getters.isChangeRequest) {
         const arr = state.currentUrl.split('/');
         if (arr?.length > 2) {
-          return arr[2];
+          state.changeType=arr[2];
+          return state.changeType;
         }
       }
       return null;

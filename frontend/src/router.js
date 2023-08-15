@@ -56,6 +56,7 @@ import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotifi
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+import ChangeInformation from '@/components/requestChanges/ChangeInformation';
 import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
 
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
@@ -720,14 +721,24 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_INFO, ':changeRecGuid', CHANGE_TYPES.MTFI),
+      path: PATHS.ROOT.CHANGE_INFO,
+      name: 'Change Request Information',
+      component: ChangeInformation,
+      meta: {
+        pageTitle: 'Change Request Information',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_INFO,  ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Midterm Fee Increase Information',
       component: MtfiInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
@@ -738,7 +749,7 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
@@ -748,8 +759,9 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
@@ -759,8 +771,9 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
     {
