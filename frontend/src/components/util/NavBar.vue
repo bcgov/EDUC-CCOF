@@ -111,12 +111,12 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle','isRenewal', 'programYearList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList', 'refreshNavBar', 'navBarGroup']),
+    ...mapState('navBar', ['navBarList', 'userProfileList', 'refreshNavBar', 'navBarGroup', 'changeType']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
-    ...mapGetters('navBar', ['isChangeRequest','getChangeType']),
+    ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus']),
     ...mapState('reportChanges',['mtfiFacilities']),
@@ -183,11 +183,11 @@ export default {
       console.log('is change request: ', this.isChangeRequest);
       console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
-        if(this.getChangeType==='nf'){
+        if(this.changeType==='nf'){
           console.log('calling new Fac build nav bar');
           this.buildNewFacilityNavBar();
         }
-        else if(this.getChangeType ==='mtfi'){
+        else if(this.changeType ==='mtfi'){
           console.log('call mtfi build nav bar');
           this.buildMTFINavBar();
         }
@@ -218,10 +218,10 @@ export default {
       let linkName;
       if (this.isChangeRequest) {
         checkbox = this.changeRequestStatus === 'SUBMITTED' && !this.unlockDeclaration;
-        if(this.getChangeType===CHANGE_TYPES.NEW_FACILITY){
+        if(this.changeType===CHANGE_TYPES.NEW_FACILITY){
           linkName = 'Summary and Declaration New Facility';
         }
-        else if (this.getChangeType===CHANGE_TYPES.MTFI){
+        else if (this.changeType===CHANGE_TYPES.MTFI){
           linkName = 'Summary and Declaration MTFI';
         }
       } else {

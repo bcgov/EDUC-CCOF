@@ -3,6 +3,7 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
+const { UserProfileCCFRIMappings } = require('../util/mapping/Mappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
@@ -32,7 +33,7 @@ function mapChangeRequestForBack(data, changeType) {
 
 
 // get Change Action
-async function getChangeActionDetails(changeActionId, joiningTable, mapper) {
+async function getChangeActionDetails2(changeActionId, joiningTable, mapper) {
   if (joiningTable) {
     try {
       let operation = `ccof_change_actions(${changeActionId})?$select=${joiningTable}&$expand=${joiningTable}($select=${getMappingString(mapper)})`;
@@ -50,13 +51,44 @@ async function getChangeActionDetails(changeActionId, joiningTable, mapper) {
 }
 
 
+// get Change Action
+async function getChangeActionDetails(changeActionId, changeDetailEntity, changeDetailMapper, joiningTable, joiningTableMapping) {
+  if (joiningTable) {
+    try {
+      let operation;
+      if (joiningTable) {
+        operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=${joiningTable}($select=${getMappingString(joiningTableMapping)})`;
+      } else {
+        operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'`;
+      }
+
+      let changeActionDetails = await getOperation(operation);
+      let details = changeActionDetails?.value;
+      let retVal = [];
+      details?.forEach(el => {
+        let data = new MappableObjectForFront(el, changeDetailMapper).toJSON();
+        let joinData = undefined;
+        if (joiningTable) {
+          joinData = new MappableObjectForFront(el[joiningTable], joiningTableMapping).toJSON();
+        }
+        retVal.push({...data, ...joinData});
+      });
+      return retVal;
+    } catch (e) {
+      log.error('Unable to get change action details',e);
+    }
+  } else {
+    return undefined;
+  }
+}
+
 async function mapChangeRequestObjectForFront(data) {
   let retVal = new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
   let changeList = [];
   await Promise.all(  retVal.changeActions?.map(async (el) =>  {
     let changeAction = new MappableObjectForFront(el, ChangeActionRequestMappings).toJSON();
     if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
-      const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfi_Change_Action', MtfiMappings );
+      const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileCCFRIMappings );
       changeAction.mtfi = mtfi;
     }
     changeList.push(changeAction);
