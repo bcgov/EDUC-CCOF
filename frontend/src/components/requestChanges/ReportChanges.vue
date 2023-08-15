@@ -304,7 +304,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('reportChanges', ['loadChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
+    ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -556,7 +556,7 @@ export default {
   },
   async mounted() {
     this.processing = true;
-    await this.loadChangeRequest();
+    await this.getChangeRequestList();
     this.processing = false;
   },
   beforeRouteLeave(_to, _from, next) {

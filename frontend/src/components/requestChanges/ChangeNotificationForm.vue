@@ -130,7 +130,8 @@ export default {
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['getChangeType', 'nextPath', 'previousPath']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
+    ...mapState('navBar', ['changeType']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
@@ -147,10 +148,10 @@ export default {
   methods: {
     ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
+    ...mapActions('reportChanges', ['createChangeRequest','getChangeRequestList', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setUploadedDocument']),
     previous() {
-      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+      if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
         this.$router.push(this.previousPath);
       } else {
         this.$router.push(PATHS.ROOT.CHANGE_LANDING);
@@ -175,7 +176,7 @@ export default {
       this.isLoading = false;
     },
     next() {
-      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+      if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
         this.$router.push(this.nextPath);
       } else {
         this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));

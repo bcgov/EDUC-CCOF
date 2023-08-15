@@ -113,31 +113,33 @@ export default {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
     },
-    async getUserInfo({state, commit}){
+    async getUserInfo({state, commit, dispatch}, to){
       //This method is called by the router.
       //Only hit the API service if the info has not already been loaded.
-      if (state.isUserInfoLoaded) {
-        return;
+      if (!state.isUserInfoLoaded) {
+        let userInfoRes = undefined;
+        if (state.impersonateId && state.isMinistryUser) {
+          userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
+        } else {
+          userInfoRes = await ApiService.getUserInfo();
+        }
+        commit('setUserInfo', userInfoRes.data);
+        commit('application/setFromUserInfo', userInfoRes.data, { root: true });
+        commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
+        commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
+        commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
+        commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
+        commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
+        commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
+        commit('organization/setFundingAgreementNumber', userInfoRes.data?.fundingAgreementNumber, { root: true });
+        commit('organization/setIsOrganizationComplete', userInfoRes.data.isOrganizationComplete, { root: true });
+        commit('reportChanges/setUserProfileChangeRequests', userInfoRes.data.changeRequests, { root: true });
+        commit('setIsUserInfoLoaded', true);
+        commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
       }
-      let userInfoRes = undefined;
-      if (state.impersonateId && state.isMinistryUser) {
-        userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
-      } else {
-        userInfoRes = await ApiService.getUserInfo();
+      if (to?.params?.changeRecGuid) {
+        await dispatch('navBar/loadChangeRequest', to.params.changeRecGuid,  { root: true });
       }
-      commit('setUserInfo', userInfoRes.data);
-      commit('application/setFromUserInfo', userInfoRes.data, { root: true });
-      commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
-      commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
-      commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
-      commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
-      commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
-      commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
-      commit('organization/setFundingAgreementNumber', userInfoRes.data?.fundingAgreementNumber, { root: true });
-      commit('organization/setIsOrganizationComplete', userInfoRes.data.isOrganizationComplete, { root: true });
-      commit('reportChanges/setUserProfileChangeRequests', userInfoRes.data.changeRequests, { root: true });
-      commit('setIsUserInfoLoaded', true);
-      commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
     },
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API

@@ -33,8 +33,8 @@ function getProgramYear(selectedGuid, programYearList){
   return programYear;
 }
 
-function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters) {
-  if (currentRFI.prevYearFeesCorrect) {
+function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
+  if (currentRFI.prevYearFeesCorrect || rootState.navBar.changeType == 'mtfi') {
     let previousRFI = getters.getCCFRIById(currentRFI.previousCcfriId);
     console.log('previous childcare type: ', previousRFI.childCareTypes);
     console.log('categoryId: ', careType.childCareCategoryId);
@@ -198,8 +198,14 @@ export default {
         console.log(error);
       }
     },
-    async getCcfriOver3percent({state, getters, rootState}) {
+    async getCcfriOver3percent({state, getters, rootState}, currentCcfri = undefined) {
       console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
+      //FOR MTFI ONLY
+      //previous CCFRI == previous PCF ccfri
+      //CURRENT ccfri == PCF current fiscal CCFRI
+      //CCFRI Facility model == MTFI CCFRI
+      console.log('MTFI calculation');
+      console.log('old CCFRi passed in', currentCcfri);
       let over3percentFacilities = [];
       const currentProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
@@ -207,11 +213,13 @@ export default {
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
       console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
-      const threePercentMedian = getters.getCCFRIMedianById(state.ccfriId);
+      const threePercentMedian = getters.getCCFRIMedianById(currentCcfri? currentCcfri.ccfriApplicationId : state.ccfriId);
+      console.log('the 3 percent', threePercentMedian);
       state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
         .forEach(careType => {
           console.log(`Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`);
-          let previousCareType = getPreviousCareType(state.CCFRIFacilityModel, careType, previousProgramYearId, getters);
+          let previousCareType = getPreviousCareType((currentCcfri? currentCcfri : state.CCFRIFacilityModel), careType, previousProgramYearId, getters, rootState);
+          console.log('da previous care type', previousCareType);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
             // let difference = compareChildCareFees(careType, previousCareType);
@@ -232,14 +240,22 @@ export default {
       console.log('over array', over3percentFacilities);
       return over3percentFacilities;
     },
-
-    async loadCCFisCCRIMedian({state, getters, commit}) {
+    async loadCCFisCCRIMedian({state, getters, commit}, ccfriToLoad) {
       let ccfriMedian = getters.getCCFRIMedianById(state.ccfriId);
       if (!ccfriMedian) {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
           commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+        } catch(e) {
+          console.log(`Failed to get CCFRI Median - ${e}`);
+          throw e;
+        }
+      }
+      else if (ccfriToLoad){
+        try {
+          let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${ccfriToLoad}/median`);
+          commit('addCCFRIMedianToStore', {ccfriId: ccfriToLoad, ccfriMedian: response.data});
         } catch(e) {
           console.log(`Failed to get CCFRI Median - ${e}`);
           throw e;
@@ -324,7 +340,7 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if (!rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) ){
+        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
           console.log(rootState.app.isRenewal);
           console.log(state.CCFRIFacilityModel.existingFeesCorrect);
           console.log(prevCcfriApp);
