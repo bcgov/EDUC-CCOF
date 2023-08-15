@@ -408,7 +408,7 @@ async function printPdf(req, numOfRetries = 0)  {
   log.verbose('printPdf :: puppeteer executable path is', puppeteer.executablePath());
   log.verbose('printPdf :: url path is', url);
 
-  // url = url.replace('http://localhost:8081', 'https://dev.mychildcareservices.gov.bc.ca'); //for docker container to connect since it doesn't reach local host
+  // url = url.replace('http://localhost:8081', 'https://dev.mychildcareservices.gov.bc.ca'); //TODO Remove this Derek for docker container to connect since it doesn't reach local host
 
   // log.verbose('printPdf :: new url path is', url);
 
