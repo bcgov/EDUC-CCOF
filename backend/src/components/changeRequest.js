@@ -31,27 +31,7 @@ function mapChangeRequestForBack(data, changeType) {
   return changeRequestForBack;
 }
 
-
-// get Change Action
-async function getChangeActionDetails2(changeActionId, joiningTable, mapper) {
-  if (joiningTable) {
-    try {
-      let operation = `ccof_change_actions(${changeActionId})?$select=${joiningTable}&$expand=${joiningTable}($select=${getMappingString(mapper)})`;
-      let changeActionDetails = await getOperation(operation);
-      let details = changeActionDetails[joiningTable];
-      let retVal = [];
-      details?.forEach(el => retVal.push(new MappableObjectForFront(el, mapper).toJSON()));
-      return retVal;
-    } catch (e) {
-      log.error('Unable to get change action details',e);
-    }
-  } else {
-    return undefined;
-  }
-}
-
-
-// get Change Action
+// get Change Action details.  depending on the entity, we may want to get details 2 level below change action
 async function getChangeActionDetails(changeActionId, changeDetailEntity, changeDetailMapper, joiningTable, joiningTableMapping) {
   if (joiningTable) {
     try {

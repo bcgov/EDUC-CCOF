@@ -279,7 +279,7 @@ export default {
     },
     addReportChangeNavigationToNavBar(){
       this.items.push({
-        title: 'Report Change',
+        title: 'Change Notification Form',
         link: {name: 'Report Change'},
         isAccessible: true,
         icon: 'mdi-information',
@@ -333,6 +333,8 @@ export default {
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
       this.addNewSupportingDocumentsToNavbar();
+      this.addReportChangeNavigationToNavBar();
+
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },

@@ -34,7 +34,7 @@ function getNavBarAtPositionIndex(items, index) {
 //Add additional facility details to the navBar
 function decoarateNavBar(state, facilityKey) {
   state.navBarList.forEach(nav => {
-    const facility = state.userProfileList.find(el => el.facilityId = nav[facilityKey]);
+    const facility = state.userProfileList.find(el => el.facilityId === nav[facilityKey]);
     if (facility) {
       nav.facilityName = facility.facilityName;
       nav.facilityId = facility.facilityId;
@@ -47,7 +47,7 @@ function getChangeActionDetails(state, detailsProperty, detailsKey, detailsId) {
   let change = state.changeRequestMap.find(state.changeRequestId);
   if (change?.changeActions && change.changeActions.length > 0) {
     let details = change.changeActions[0][detailsProperty];
-     item = details?.find(el => el[detailsKey] == detailsId);
+    item = details?.find(el => el[detailsKey] == detailsId);
   }
   return item;
 }
