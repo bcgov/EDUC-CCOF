@@ -19,7 +19,7 @@
 
     <br><br>
     <div class="row pt-4 justify-center">
-      <span class="text-h6">Our records show this facility's approved parent fees for April 2024 to March 2025 are as follows:</span>
+      <span class="text-h6">Our records show this facility's approved parent fees for  are as follows:</span>
     </div>
 
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
@@ -31,7 +31,7 @@
       </div>
 
       <div v-else>
-        <div v-for="(item , index) in oldCcfri.childCareTypes" :key="index">
+        <div v-for="(item , index) in currentPcfCcfri.childCareTypes" :key="index">
             <v-card
 
             elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
@@ -379,7 +379,7 @@ export default {
       feeChoices: ['Daily', 'Monthly'],
       dialog: false,
       currentFacility: undefined,
-      oldCcfri: undefined,
+      currentPcfCcfri: undefined,
       isUnlocked: false,
       model,
       isReadOnly: false,
@@ -423,19 +423,25 @@ export default {
           this.loading = true;
           //await this.loadCCFRIFacility('d6169369-3727-ee11-9965-000d3a09d4d4'); //old CCFRI - logic to come to get this from navBar
           await this.loadCCFRIFacility(this.$route.params.urlGuid); //new CCFRI from route
-          await this.loadCCFRIFacility(this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId).ccfriApplicationId); //oldCCFRI found via new CCFRI
+          await this.loadCCFRIFacility(this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId).ccfriApplicationId); //currentPcfCcfri found via new CCFRI
+          await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
+
+          // if(this.CCFRIFacilityModel.previousCcfriId){
+          //   await this.loadCCFisCCRIMedian(this.CCFRIFacilityModel.previousCcfriId); //i think actually this is the median we need?
+          // }
+
           await this.loadCCFRIFacility(this.$route.params.urlGuid); //put the new one back in the store so I can render the page (ugly)
 
 
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
           this.currentFacility = this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
-          this.oldCcfri = this.getCCFRIById(this.currentFacility.ccfriApplicationId); //set old CCFRI to display fees
+          this.currentPcfCcfri = this.getCCFRIById(this.currentFacility.ccfriApplicationId); //set old CCFRI to display fees
 
-
+          console.log('OLDDD ccfri', this.currentPcfCcfri);
           let arr = [];
 
           //sort the child care types so they match the cards of the old CCFRI fees
-          for (const childCareTypes of this.oldCcfri.childCareTypes){
+          for (const childCareTypes of this.currentPcfCcfri.childCareTypes){
             let q = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareTypes.childCareCategoryId);
             console.log(q);
 
@@ -469,22 +475,8 @@ export default {
 
           //console.log('the arr', arr);
 
-          //console.log(this.oldCcfri);
+          //console.log(this.currentPcfCcfri);
           this.feeList = [];
-
-
-
-          //only display last years child care fees
-          // const prevYearGuid = this.previousProgramYearGuid;
-          // this.CCFRIFacilityModel.childCareTypes.forEach(item => {
-          //   if (item.programYearId == prevYearGuid ){
-          //     this.feeList.push(item);
-          //   }
-          // });
-
-          //this.feeList.sort((a, b) => a.orderNumber - b.orderNumber);
-
-          //console.log(this.feeList);
 
 
           //will have to only display the previous years fee - some logic will have to be done here for that
@@ -504,7 +496,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', ]),
+    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', 'getCcfriOver3percentMTFI', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
     cancel() {
@@ -528,18 +520,18 @@ export default {
     },
     copyFees(index){
 
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeApr = this.oldCcfri.childCareTypes[index].approvedFeeApr;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMay = this.oldCcfri.childCareTypes[index].approvedFeeMay;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJun = this.oldCcfri.childCareTypes[index].approvedFeeJun;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJul = this.oldCcfri.childCareTypes[index].approvedFeeJul;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeAug = this.oldCcfri.childCareTypes[index].approvedFeeAug;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeSep = this.oldCcfri.childCareTypes[index].approvedFeeSep;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeOct = this.oldCcfri.childCareTypes[index].approvedFeeOct;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeNov = this.oldCcfri.childCareTypes[index].approvedFeeNov;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeDec = this.oldCcfri.childCareTypes[index].approvedFeeDec;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJan = this.oldCcfri.childCareTypes[index].approvedFeeJan;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb = this.oldCcfri.childCareTypes[index].approvedFeeFeb;
-      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = this.oldCcfri.childCareTypes[index].approvedFeeMar;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeApr = this.currentPcfCcfri.childCareTypes[index].approvedFeeApr;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMay = this.currentPcfCcfri.childCareTypes[index].approvedFeeMay;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJun = this.currentPcfCcfri.childCareTypes[index].approvedFeeJun;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJul = this.currentPcfCcfri.childCareTypes[index].approvedFeeJul;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeAug = this.currentPcfCcfri.childCareTypes[index].approvedFeeAug;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeSep = this.currentPcfCcfri.childCareTypes[index].approvedFeeSep;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeOct = this.currentPcfCcfri.childCareTypes[index].approvedFeeOct;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeNov = this.currentPcfCcfri.childCareTypes[index].approvedFeeNov;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeDec = this.currentPcfCcfri.childCareTypes[index].approvedFeeDec;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJan = this.currentPcfCcfri.childCareTypes[index].approvedFeeJan;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb = this.currentPcfCcfri.childCareTypes[index].approvedFeeFeb;
+      this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = this.currentPcfCcfri.childCareTypes[index].approvedFeeMar;
     },
     hasModelChanged(){
       // console.log('model:', this.loadedModel);
@@ -581,6 +573,10 @@ export default {
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged() || this.hasDataToDelete()){
         this.processing = true;
+        console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
+        //this.rfi3percentCategories = await this.getCcfriOver3percent();
+         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
+        console.log('rfi3percentCategories length ', this.rfi3percentCategories);
         // this.processing = true;
         //this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
