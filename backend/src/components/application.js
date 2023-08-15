@@ -402,11 +402,16 @@ async function submitApplication(req, res) {
 }
 
 async function printPdf(req, numOfRetries = 0)  {
-  const url = `${req.headers.referer}/printable`;
+  let url = `${req.headers.referer}/printable`;
 
   log.verbose('printPdf :: dirname',__dirname);
   log.verbose('printPdf :: puppeteer executable path is', puppeteer.executablePath());
   log.verbose('printPdf :: url path is', url);
+
+  // url = url.replace('http://localhost:8081', 'https://dev.mychildcareservices.gov.bc.ca'); //for docker container to connect since it doesn't reach local host
+
+  // log.verbose('printPdf :: new url path is', url);
+
   const browser = await puppeteer.launch({
     headless: 'new',
     dumpio: true,
@@ -415,9 +420,8 @@ async function printPdf(req, numOfRetries = 0)  {
       '--disable-software-rasterizer',
       '--disable-dev-shm-usage',
       '--disable-gpu',
-      '--database'
     ]
-  }); //to debug locally add {headless: 'true', devtools: true} in options
+  }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
 
   try {
     log.verbose('printPdf :: starting new page');
@@ -441,6 +445,9 @@ async function printPdf(req, numOfRetries = 0)  {
     const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
     log.verbose('printPdf :: compression completed');
     await browser.close();
+
+    console.log('compressed size ' + compressedPdfBuffer.byteLength);
+    console.log('normal size ' + pdfBuffer.byteLength);
 
     let payload = {
       ccof_applicationid: req.params.applicationId,
