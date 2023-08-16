@@ -413,7 +413,7 @@ async function printPdf(req, numOfRetries = 0)  {
   // log.verbose('printPdf :: new url path is', url);
 
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: true,
     dumpio: true,
     args: [
       '--no-sandbox',
