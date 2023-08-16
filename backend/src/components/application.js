@@ -404,16 +404,13 @@ async function submitApplication(req, res) {
 async function printPdf(req, numOfRetries = 0)  {
   let url = `${req.headers.referer}/printable`;
 
-  log.verbose('printPdf :: dirname',__dirname);
-  log.verbose('printPdf :: puppeteer executable path is', puppeteer.executablePath());
+  log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);
+  log.verbose('printPdf :: correlationId is', req.session.correlationID);
+  log.verbose('printPdf :: applicationId is', req.params.applicationId);
   log.verbose('printPdf :: url path is', url);
 
-  // url = url.replace('http://localhost:8081', 'https://dev.mychildcareservices.gov.bc.ca'); //TODO Remove this Derek for docker container to connect since it doesn't reach local host
-
-  // log.verbose('printPdf :: new url path is', url);
-
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: true, //setting this to 'new' will crash on openshift
     dumpio: true,
     args: [
       '--no-sandbox',
@@ -443,11 +440,8 @@ async function printPdf(req, numOfRetries = 0)  {
     const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
     log.verbose('printPdf :: pdf buffer created starting compression');
     const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
-    log.verbose('printPdf :: compression completed');
+    log.verbose('printPdf :: compression completed for applicationId', req.params.applicationId);
     await browser.close();
-
-    console.log('compressed size ' + compressedPdfBuffer.byteLength);
-    console.log('normal size ' + pdfBuffer.byteLength);
 
     let payload = {
       ccof_applicationid: req.params.applicationId,

@@ -12,10 +12,6 @@ RUN npm ci
 
 COPY . /opt/app-root/src
 
-# Installs latest Chromium package.
-#RUN apk upgrade --no-cache --available \
-#    && apk add --no-cache dbus chromium chromium-chromedriver ghostscript
-
 RUN apk upgrade --no-cache --available \
     && apk add --no-cache chromium-swiftshader nss freetype harfbuzz ca-certificates ttf-freefont ghostscript
 
