@@ -424,7 +424,6 @@ export default {
       processing: false,
       loading: false,
       ccfriOptInOrOut,
-      feeList : [],
       rules: [
         (v) => !!v  || 'Required.',
       ],
@@ -458,30 +457,27 @@ export default {
       async handler() {
         try {
           this.loading = true;
-          //await this.loadCCFRIFacility('d6169369-3727-ee11-9965-000d3a09d4d4'); //old CCFRI - logic to come to get this from navBar
-          await this.loadCCFRIFacility(this.$route.params.urlGuid); //new CCFRI from route
-          await this.loadCCFRIFacility(this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId).ccfriApplicationId); //currentPcfCcfri found via new CCFRI
-          await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
+          let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
+          this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
+          await this.loadCCFRIFacility(this.currentFacility.ccfriApplicationId); //load the old ccfri into the store
 
-
-          await this.loadCCFRIFacility(this.$route.params.urlGuid); //put the new one back in the store so I can render the page (ugly)
-
-
-          await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
-          this.currentFacility = this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
           this.currentPcfCcfri = this.getCCFRIById(this.currentFacility.ccfriApplicationId); //set old CCFRI to display fees
-          this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId);
+          this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
+
+          await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
+          await this.loadCCFRIFacility(this.$route.params.urlGuid);
+          await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
 
           console.log('OLDDD ccfri', this.currentPcfCcfri);
           let arr = [];
 
           //sort the child care types so they match the cards of the old CCFRI fees
           for (const childCareType of this.currentPcfCcfri.childCareTypes){
-            let q = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareType.childCareCategoryId);
-            console.log(q);
+            let careCategory = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareType.childCareCategoryId);
+            console.log(careCategory);
 
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
-            if (!q.feeFrequency){
+            if (!careCategory.feeFrequency){
               let fees = {
                 approvedFeeApr: null,
                 approvedFeeAug: null,
@@ -495,12 +491,12 @@ export default {
                 approvedFeeNov: null,
                 approvedFeeOct: null,
                 approvedFeeSep: null,
-                feeFrequency: childCareType.feeFrequency,
+                feeFrequency: childCareType.feeFrequency, //per the requirements, set the fee frequency to whatever was selected on the PCF
               };
-              q = {...q, ...fees};
+              careCategory = {...careCategory, ...fees};
 
             }
-            arr.push(q);
+            arr.push(careCategory);
           }
           //convert the number to a string so the radio buttons work properly
           if(this.CCFRIFacilityModel.existingFeesCorrect){
@@ -508,12 +504,6 @@ export default {
           }
 
           this.CCFRIFacilityModel.childCareTypes = arr;
-
-          //console.log('the arr', arr);
-
-          //console.log(this.currentPcfCcfri);
-          this.feeList = [];
-
 
           //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
