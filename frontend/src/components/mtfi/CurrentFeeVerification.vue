@@ -382,7 +382,7 @@ export default {
       currentPcfCcfri: undefined,
       isUnlocked: false,
       model,
-      isReadOnly: false,
+      //isReadOnly: false,
       showOptStatus : '',
       isValidForm: false,
       processing: false,
@@ -408,11 +408,21 @@ export default {
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
     getCurrentFacility(){
       return this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
+    },
+    isReadOnly(){
+      if(!this.changeRequestStatus){
+        return false;
+      }
+      if(this.changeRequestStatus!=='INCOMPLETE'){
+        return true;
+      }
+      return false;
     }
   },
   watch: {
@@ -499,6 +509,7 @@ export default {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', 'getCcfriOver3percentMTFI', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
+    ...mapMutations('navBar',['setNavBarCCFRIComplete']),
     cancel() {
       this.dialog = false;
       this.CCFRIFacilityModel.existingFeesCorrect = null;
@@ -575,15 +586,17 @@ export default {
         this.processing = true;
         console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
         //this.rfi3percentCategories = await this.getCcfriOver3percent();
-         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-        console.log('rfi3percentCategories length ', this.rfi3percentCategories);
+         //this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
+        //console.log('rfi3percentCategories length ', this.rfi3percentCategories);
         // this.processing = true;
         //this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
         try {
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: false}); //TODO: run logic for RFI here?
-
+          console.log('~~~Should set navbar CCFRI to Complete');
+          this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
+          console.log(this.isFormComplete());
           //await this.updateChangeRequestMTFI({changeRequestMtfiId :'feba2211-1636-ee11-bdf4-000d3af4865d'}); //testing the endpoint
           //console.log('the res is:' , res);
           if (showMessage) {

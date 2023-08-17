@@ -317,7 +317,6 @@ export default {
       // Fee Verification - Each Fac
       // RFI for each Fac
       // Declaration
-      console.log('building MFTI nav bar');
       this.addLandingPageToNavBar();
       this.items.push(this.getMTFINavigation());
       //this.addSummaryAndDeclarationToNavBar();
@@ -672,15 +671,7 @@ export default {
       };
     },
     isMTFISelectFacilitiesComplete(){
-      return this.mtfiFacilities?.length>0;
-    },
-    isMTFICCFRIComplete(ccfriId){
-      console.log('-----MTFI CCFRI STUFFS-----');
-      console.log(ccfriId);
-      console.log('---------');
-      console.log(this.getCCFRIById(ccfriId));
-
-      return this.getCCFRIById(ccfriId)?.ccof_formcomplete;
+      return this.navBarList?.length>0;
     },
     getMTFINavigation(){
       console.log('building MTFI Nav');
@@ -698,17 +689,15 @@ export default {
       );
 
       if(this.navBarList?.length>0){
-        let mtfiList = this.navBarList?.filter(el=>this.mtfiFacilities?.some(item=>item.facilityId===el.facilityId));
-        mtfiList?.forEach((item)=>{
-          let ccfriId = this.mtfiFacilities.filter(el => el.facilityId===item.facilityId)[0].ccfriApplicationId;
+        this.navBarList?.forEach((item)=>{
           items.push({
             title: 'Fee Verification',
             subTitle: item.facilityName,
             id: item.facilityId,
-            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: ccfriId,changeType:CHANGE_TYPES.MTFI}},
+            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId,changeType:CHANGE_TYPES.MTFI}},
             isAccessible:true,
-            icon: this.getCheckbox(this.isMTFICCFRIComplete(ccfriId)),
-            isActive: 'CCFRI Fee Verification'===this.$route.name && this.$route.params.urlGuid===ccfriId,
+            icon: this.getCheckbox(item.isCCFRIComplete),
+            isActive: 'CCFRI Fee Verification'===this.$route.name && this.$route.params.urlGuid===item.ccfriApplicationId,
             position: positionIndex++,
             navBarId: navBarId++
           });

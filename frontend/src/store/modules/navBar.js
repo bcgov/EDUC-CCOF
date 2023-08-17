@@ -44,7 +44,7 @@ function decoarateNavBar(state, facilityKey) {
 //find the change action details details(the data element below change Action)
 function getChangeActionDetails(state, detailsProperty, detailsKey, detailsId) {
   let item = null;
-  let change = state.changeRequestMap.find(state.changeRequestId);
+  let change = state.changeRequestMap.get(state.changeRequestId);
   if (change?.changeActions && change.changeActions.length > 0) {
     let details = change.changeActions[0][detailsProperty];
     item = details?.find(el => el[detailsKey] == detailsId);
@@ -216,6 +216,9 @@ export default {
     addChangeRequestToStore: (state, {changeRequestId, changeRequestModel}) => {
       state.changeRequestMap.set(changeRequestId, changeRequestModel);
     },
+    removeChangeMap:(state) => {
+      state.changeRequestMap.clear();  
+    }
   },
   getters: {
     isChangeRequest: (state) => {
