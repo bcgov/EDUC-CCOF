@@ -407,7 +407,6 @@
 <script>
 import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
-import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
@@ -533,7 +532,6 @@ export default {
     },
     closeDialog() {
       this.showRfiDialog = false;
-
     },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
