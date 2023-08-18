@@ -731,7 +731,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
-      name: 'Midterm Fee Increase Information',
+      name: 'Midterm-Fee-Increase-Information',
       component: MtfiInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
@@ -782,7 +782,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.MTFI
       }

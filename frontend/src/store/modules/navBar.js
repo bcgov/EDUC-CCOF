@@ -139,7 +139,12 @@ export default {
      * and reforce the navbar to refresh
     ************************************************/
     setNavBarValue: (state, { facilityId, property, value}) => {
-      const userProfileItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      let userProfileItem;
+      if (state.changeType === 'mtfi') {
+        userProfileItem =  getChangeActionDetails(state, 'mtfi', 'ccfriFacilityId', facilityId);
+      } else {
+        userProfileItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      }
       if (userProfileItem) {
         userProfileItem[property] = value;
         filterNavBar(state);
@@ -184,7 +189,12 @@ export default {
       }
     },
     setNavBarRFIComplete: (state, { ccfriId, complete }) => {
-      let userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      let userProfileItem;
+      if (state.changeType === 'mtfi') {
+        userProfileItem =  getChangeActionDetails(state, 'mtfi', 'ccfriApplicationId', ccfriId);
+      } else {
+        userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      }
       if (userProfileItem) {
         userProfileItem.isRfiComplete = complete;
         filterNavBar(state);
@@ -249,7 +259,12 @@ export default {
       if (!ccfriId) {
         return null;
       }
-      return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      if(state.changeType==='mtfi'){
+        return getChangeActionDetails(state, 'mtfi', 'ccfriApplicationId', ccfriId);
+      }
+      else{
+        return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      }
     },
 
   },

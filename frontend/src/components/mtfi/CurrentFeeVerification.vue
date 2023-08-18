@@ -535,7 +535,7 @@ export default {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
-    ...mapMutations('navBar',['setNavBarCCFRIComplete']),
+    ...mapMutations('navBar',['setNavBarCCFRIComplete','setNavBarValue']),
     cancel() {
       this.dialog = false;
       this.CCFRIFacilityModel.existingFeesCorrect = null;
@@ -609,7 +609,7 @@ export default {
       return this.isValidForm; //false makes button clickable, true disables button
     },
     toRfi() {
-      //this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true}); //TODO: i think mtfi nav is different
+      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
       this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
     },
     async next() {
