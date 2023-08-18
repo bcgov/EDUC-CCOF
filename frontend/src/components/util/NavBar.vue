@@ -691,7 +691,7 @@ export default {
       if(this.navBarList?.length>0){
         this.navBarList?.forEach((item)=>{
           items.push({
-            title: 'Fee Verification',
+            title: 'Parent Fee Verification',
             subTitle: item.facilityName,
             id: item.facilityId,
             link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId,changeType:CHANGE_TYPES.MTFI}},
@@ -701,6 +701,21 @@ export default {
             position: positionIndex++,
             navBarId: navBarId++
           });
+          if (item.hasRfi || item.unlockRfi) {
+              items.push(
+                {
+                  title: 'Parent Fee Increase – RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
+                  isAccessible: true,
+                  icon: this.getCheckbox(item.isRfiComplete),
+                  isActive: 'change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
         });
       }
       let retval =   {
