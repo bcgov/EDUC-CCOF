@@ -88,7 +88,7 @@ export default {
   computed: {
     ...mapState('application', ['programYearId', 'applicationId']),
     ...mapState('organization', ['organizationId', 'organizationName']),
-    ...mapState('navBar', ['userProfileList']),
+    ...mapState('navBar', ['userProfileList','navBarList']),
     ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
     ...mapGetters('navBar', ['previousPath']),
     isReadOnly() {
@@ -126,7 +126,7 @@ export default {
     },
     async next() {
       await this.save(false);
-      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.navBarList[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
