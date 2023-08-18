@@ -418,7 +418,7 @@ export default {
       currentPcfCcfri: undefined,
       isUnlocked: false,
       model,
-      isReadOnly: false,
+      //isReadOnly: false,
       showOptStatus : '',
       isValidForm: false,
       processing: false,
@@ -444,11 +444,21 @@ export default {
     ...mapState('application', ['programYearId']),
     ...mapState('navBar', ['navBarList', 'userProfileList']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
     getCurrentFacility(){
       return this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
+    },
+    isReadOnly(){
+      if(!this.changeRequestStatus){
+        return false;
+      }
+      if(this.changeRequestStatus!=='INCOMPLETE'){
+        return true;
+      }
+      return false;
     }
   },
   watch: {
@@ -525,6 +535,7 @@ export default {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
+    ...mapMutations('navBar',['setNavBarCCFRIComplete','setNavBarValue']),
     cancel() {
       this.dialog = false;
       this.CCFRIFacilityModel.existingFeesCorrect = null;
@@ -598,7 +609,7 @@ export default {
       return this.isValidForm; //false makes button clickable, true disables button
     },
     toRfi() {
-      //this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true}); //TODO: i think mtfi nav is different
+      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
       this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
     },
     async next() {
@@ -646,15 +657,15 @@ export default {
         this.processing = true;
         console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
         //this.rfi3percentCategories = await this.getCcfriOver3percent();
-         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-        console.log('rfi3percentCategories length ', this.rfi3percentCategories);
+         //this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
+        //console.log('rfi3percentCategories length ', this.rfi3percentCategories);
         // this.processing = true;
         //this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()}); how do this with new nav bar?
 
         try {
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0}); //TODO: run logic for RFI here?
-
+          this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
           //await this.updateChangeRequestMTFI({changeRequestMtfiId :'feba2211-1636-ee11-bdf4-000d3af4865d'}); //testing the endpoint
           //console.log('the res is:' , res);
           if (showMessage) {
