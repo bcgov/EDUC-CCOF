@@ -16,7 +16,7 @@
             Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE funding assessment.
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
-            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
+            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
