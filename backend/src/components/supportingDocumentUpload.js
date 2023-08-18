@@ -25,7 +25,6 @@ async function saveDocument(req, res) {
     }
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
-    console.log(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
