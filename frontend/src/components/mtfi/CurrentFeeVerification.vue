@@ -393,7 +393,7 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
@@ -438,7 +438,7 @@ export default {
   computed: {
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
-
+    ...mapState('organization', ['organizationProviderType']),
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('application', ['programYearId']),
@@ -639,7 +639,13 @@ export default {
       //this.$router.push(PATHS.ROOT.HOME);
     },
     previous() {
-      this.$router.push(this.previousPath);
+
+      if(this.organizationProviderType == 'FAMILY'){
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
+      }
+      else{
+        this.$router.push(this.previousPath);
+      }
     },
     validateForm() {
 

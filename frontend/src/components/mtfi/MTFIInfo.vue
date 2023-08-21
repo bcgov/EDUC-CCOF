@@ -29,18 +29,18 @@
     </v-row>
 
     <NavButton :isNextDisplayed="true" :isSaveDisplayed="false"
-         :isNextDisabled="false" :isProcessing="false"
+         :isNextDisabled="false" :isProcessing="loading"
         @previous="previous()" @next="next()"  @save="true"></NavButton>
   </v-container>
 </template>
 
 <script>
-import { PATHS, changeUrl, CHANGE_TYPES } from '@/utils/constants';
+import { PATHS, changeUrlGuid, changeUrl, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 //import SmallCard from '../guiComponents/SmallCard.vue';
 
 import NavButton from '@/components/util/NavButton';
-import { mapActions } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 
 export default {
   components: {NavButton},
@@ -48,6 +48,7 @@ export default {
   data() {
     return {
       isValidForm: false,
+      newReq: undefined,
       processing: false,
       loading: false,
       rules: [
@@ -55,27 +56,77 @@ export default {
       ],
     };
   },
+  async beforeMount() {
+    this.loading = true;
+    if(this.organizationProviderType == 'FAMILY' && this.$route.params.changeRecGuid){
+      try {
+        await this.getChangeRequest(this.$route.params.changeRecGuid);
+        // this.userProfileList?.forEach((facility, index) => {
+        //   if (this.mtfiFacilities?.find(item => item.facilityId == facility.facilityId))
+        //     this.checkbox[index] = true;
+        // });
+        this.loading = false;
+        this.refreshNavBarList();
+      } catch(error) {
+        console.log('Error loading Change Request.', error);
+        this.setFailureAlert('Error loading change request.');
+      }
+    }
+    this.loading = false;
+  },
   computed: {
+    ...mapState('application', ['programYearId', 'applicationId']),
+    ...mapState('organization', ['organizationId', 'organizationName', 'organizationProviderType']),
+    ...mapState('navBar', ['userProfileList']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
   },
   methods: {
-    ...mapActions('reportChanges', ['createChangeRequest']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'createChangeRequestMTFI', 'getChangeRequest']),
+    ...mapMutations('reportChanges', ['setMTFIFacilities']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     async next() {
 
+      this.loading = true;
+
       if (!this.$route.params.changeRecGuid){
-        let newReq = await this.createChangeRequest('PARENT_FEE_CHANGE');
-        console.log(newReq);
-        this.$route.params.changeRecGuid = newReq.changeRequestId;
+        this.newReq = await this.createChangeRequest('PARENT_FEE_CHANGE');
+        console.log(this.newReq );
+        this.$route.params.changeRecGuid = this.newReq.changeRequestId;
       }
-      this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI));
 
-      //else family, go directly to confirm fee page for that facility
-    },
-    isPageComplete() {
+      if(this.organizationProviderType == 'FAMILY'){ // && mtfi does not exist yet?
 
+        if (this.mtfiFacilities?.length == 0){
+          await this.save();
+        }
+        this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
+      }
+      else{
+        this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI));
+      }
     },
+    //we only need to save a MTFI change rec on this page for family org. We do this so we can skip the facility selection page.
+    async save (){
+      try{
+        await this.createChangeRequestMTFI([
+          {
+            'facilityID': this.userProfileList[0].facilityId,
+            'applicationID': this.applicationId,
+            'changeActionId': this.newReq.changeActionId,
+            'optInResponse': 1,
+            'programYearId': this.programYearId,
+            'organizationId': this.organizationId
+          }
+        ]);
+      }
+      catch (error)  {
+        console.log(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      }
+    }
   },
 };
 
