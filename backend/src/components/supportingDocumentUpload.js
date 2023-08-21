@@ -1,20 +1,25 @@
 'use strict';
 const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId} = require('./utils');
 const HttpStatus = require('http-status-codes');
-
+const log = require('./logger');
+const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
 
 async function saveDocument(req, res) {
   try {
     let documents = req.body;
     for (let document of documents) {
-      
-      let changeRequestNewFacilityId = document.changeRequestNewFacilityId;
-      delete document.changeRequestNewFacilityId;
-      let response = await postApplicationDocument(document);
+      let documentClone = document;
+      let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId;
+      delete documentClone.changeRequestNewFacilityId;
+      if (getFileExtension(documentClone.filename) === 'heic' ) {
+        log.verbose(`saveDocument :: heic detected for file name ${documentClone.filename} starting conversion`);
+        documentClone = await convertHeicDocumentToJpg(documentClone);
+      }
+      let response = await postApplicationDocument(documentClone);
       //if this is a new facility change request, link supporting documents to the New Facility Change Action
       if (changeRequestNewFacilityId) {
         await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, {
-          "ccof_Attachments@odata.bind": `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
+          'ccof_Attachments@odata.bind': `/ccof_application_facility_documents(${response?.applicationFacilityDocumentId})`
         });
       }
     }
