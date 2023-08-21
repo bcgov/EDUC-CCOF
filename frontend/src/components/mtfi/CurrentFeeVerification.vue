@@ -70,9 +70,9 @@
 
                       <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:60px">
                         <v-tooltip top color="#003366">
-                          <template v-slot:activator="{ on, attrs }">
-                          <v-card v-on="on" class="tooltip">
-                            <v-icon class="pt-1" small style="color: #003366" color=white>mdi-help</v-icon>
+                          <template v-slot:activator="{ on, attrs }" style="color: #313131">
+                          <v-card v-on="on" style="background-color: #003366 !important" class="tooltip">
+                            <v-icon class="pt-1" small style="color: #ffffff !important;">mdi-help</v-icon>
                           </v-card>
                         </template>
                           <span v-if="isButtonActive(index)" v-html="'This automatically fills the new parent fees fields with the current approved fee values. This will replace any data entered for this care category.'"/>
@@ -632,7 +632,7 @@ export default {
         if (this.currentFacility.hasRfi) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
         }
-        this.$router.push(this.nextPath); //TODO - don't think this will work - go to summary dec
+        this.$router.push('/'); //TODO - don't think this will work - go to summary dec
       }
 
 

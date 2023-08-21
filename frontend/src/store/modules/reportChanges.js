@@ -377,6 +377,7 @@ export default {
       checkSession();
       try {
         let ccfriResponse = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        console.log(ccfriResponse);
         await Promise.all(ccfriResponse?.data?.map(async (ccfri) => {
           let mtfiResponse = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + ccfri?.ccfriApplicationId);
           commit('addToMtfiFacilities', mtfiResponse?.data);
