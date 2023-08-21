@@ -1611,4 +1611,15 @@ div.ma-1.fill-height.v-card.v-card--disabled.v-sheet.theme--light {
 .v-data-footer__select {
   text-align: left !important;
 }
+
+div.v-slide-group__prev.v-slide-group__prev--disabled span i  {
+  caret-color: #7B7C7E !important;
+  color: #7B7C7E !important;
+}
+
+div.v-slide-group__next.v-slide-group__next--disabled span i  {
+  caret-color: #7B7C7E !important;
+  color: #7B7C7E !important;
+}
+
 </style>
