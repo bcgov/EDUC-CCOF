@@ -4,8 +4,8 @@ const router = express.Router();
 const auth = require('../components/auth');
 
 const isValidBackendToken = auth.isValidBackendToken();
-const { updateChangeRequestMTFI, getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs, createChangeAction, deleteChangeAction } = require('../components/changeRequest');
-const { deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
+const { getChangeRequest, updateChangeRequest, createChangeRequest, createChangeRequestFacility, deleteChangeRequest, getChangeRequestDocs, saveChangeRequestDocs, createChangeAction, deleteChangeAction } = require('../components/changeRequest');
+const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
 

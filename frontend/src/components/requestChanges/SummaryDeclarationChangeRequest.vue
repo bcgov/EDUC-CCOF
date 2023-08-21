@@ -10,12 +10,9 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
-      <v-row class="d-flex justify-center text-h5" style="color:#003466;">
-        To submit your application, review this summary of your information and scroll down to sign the declaration.
-      </v-row>
-      <!-- <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
+      <v-row v-if="!this.isSummaryComplete && !this.isProcessing" class="justify-center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+          <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
@@ -30,7 +27,7 @@
             </v-row>
             <v-row>
               <v-col class="pb-0 pr-3 justify-center">
-                <div>
+                <div >
                   <p>You will not be able to submit your application until it is complete.</p>
                   <p>Incomplete sections are marked with a red exclamation point.</p>
                 </div>
@@ -38,7 +35,7 @@
             </v-row>
           </v-container>
         </v-card>
-      </v-row> -->
+      </v-row>
       <div>
         <v-row class="d-flex justify-center">
           <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -48,33 +45,69 @@
               </v-col>
             </v-row>
             <v-expansion-panels focusable multiple accordion>
-              <v-row v-if="false">
+              <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader
-                    v-if="false" :loading="false"
+                    v-if="isMainLoading" :loading="isMainLoading"
                     type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph">
                   </v-skeleton-loader>
                 </v-col>
               </v-row>
-              <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
-                <div v-for=" (facility, index)  in this.mtfiFacilities" :key="facility?.facilityId" class="special">
-                  <v-skeleton-loader
-                    v-if="false" :loading="false"
-                    type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph">
-                  </v-skeleton-loader>
-                  <div v-else>
-                    <v-expansion-panel variant="accordion">
-                      <MTFISummary
-                        @isSummaryValid="isFormComplete"
-                        :ccfriApplicationId="facility?.ccfriApplicationId"
-                        :facility-id="facility?.facilityId">
-                      </MTFISummary>
-                    </v-expansion-panel>
+              <v-row v-else no-gutters class="d-flex flex-column mb-2">
+
+                <!-- Change Notification Form Summary -->
+                <div class="d-flex flex-column mb-2 mt-10" v-if="hasChangeRequestType('PDF_CHANGE')">
+                  <div>
+                    THIS IS CHANGE NOTIFICATION FORM
                   </div>
                 </div>
+
+                <!-- MTFI Summary -->
+                <v-row no-gutters class="d-flex flex-column mb-2 mt-10" v-if="hasChangeRequestType('MTFI')">
+                  <div v-for=" (facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
+                    <v-skeleton-loader
+                      v-if="isSummaryLoading[index]" :loading="isSummaryLoading[index]"
+                      type="paragraph, text@3, paragraph, text@3, paragraph">
+                    </v-skeleton-loader>
+                    <div v-else>
+                      <v-expansion-panel variant="accordion">
+                        <v-row no-gutters class="d-flex pl-6 pt-5">
+                          <v-col class="col-6 col-lg-4">
+                            <p class="summary-label">Facility Name</p>
+                            <p label="--" class="summary-value">{{ facility.facilityName ? facility.facilityName : '--'  }}</p>
+                          </v-col>
+                          <v-col class="col-6 col-lg-3">
+                            <p class="summary-label">Facility ID</p>
+                            <p label="--" class="summary-value">{{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}</p>
+                          </v-col>
+                          <v-col class="col-6 col-lg-3">
+                            <p class="summary-label">Licence Number</p>
+                            <p label="--" class="summary-value">{{ facility.licenseNumber ? facility.licenseNumber : '--' }}</p>
+                          </v-col>
+                        </v-row>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <MTFISummary v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
+                          @isSummaryValid="isFormComplete"
+                          :oldCcfri="facility?.oldCcfri"
+                          :newCcfri="facility?.newCcfri"
+                          :facilityId="facility.facilityId">
+                        </MTFISummary>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion" v-if="facility?.hasRfi && !isSummaryLoading[index]">
+                        <RFISummary 
+                          @isSummaryValid="isFormComplete"
+                          :rfiApp="facility?.rfiApp"
+                          :ccfriId="facility?.ccfriApplicationId"
+                          :facilityId="facility.facilityId">
+                        </RFISummary>
+                      </v-expansion-panel>
+                    </div>
+                  </div>
+                </v-row>
+
               </v-row>
             </v-expansion-panels>
-
           </v-card>
         </v-row>
       </div>
@@ -129,16 +162,16 @@
                     amount received under the child care grant.
                   </p>
                 </div>
-                 <!-- show for new org after ministry unlocks -->
-                 <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
-                <div v-show="((this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) )">
+
+                 <!-- Declaration A -->
+                <div v-show="!isDeclarationBDisplayed">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
-                <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
-                <div v-show=" (this.model.unlockDeclaration) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
+                <!-- Declaration B -->
+                <div v-show="isDeclarationBDisplayed">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -255,72 +288,83 @@
 </template>
 <script>
 
-import {PATHS} from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
-import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary';
+import RFISummary from '@/components/summary/group/RFISummary';
 
-let model = {
-  agreeConsentCertify: undefined,
-  orgContactName: undefined,
-};
 
 export default {
   components: {
-    FacilityInformationSummary,
     MTFISummary,
+    RFISummary,
     NavButton
   },
   mixins: [alertMixin],
+  data() {
+    return {
+      isValidForm: false,
+      isProcessing: false,
+      dialog: false,
+      landingPage: PATHS.ROOT.HOME,
+      summaryKey: 1,
+      invalidSummaryForms: [],
+      payload: {},
+    };
+  },
+  async beforeMount() {
+    await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
+    // Determine:
+    //   - which user declaration text version (status a or b) will display
+    //   - which declaration status (a or b) will be saved on submit.
+    // saved as part of submission.
+    if (this.isDeclarationBDisplayed) {
+      this.model.declarationBStatus = 1;
+      this.model.declarationAStatus = undefined;
+    } else {
+      this.model.declarationAStatus = 1;
+      this.model.declarationBStatus = undefined;
+    }
+  },
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
-    ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId', 'navBarList']),
-    ...mapState('app', ['programYearList']),
-    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
+    ...mapState('organization', ['organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
-    ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
-    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'mtfiFacilities']),
+    ...mapState('summaryDeclaration', ['summaryModel', 'model']),
+    ...mapState('application', ['isRenewal']),
     isReadOnly() {
-      if (this.isMinistryUser || !this.isSummaryComplete) {
+      if (this.isMinistryUser || !this.isLoadingComplete) {
         return true;
-      } else if (this.loadedChangeRequest?.unlockDeclaration) {
+      } else if (this.model?.unlockDeclaration) {
         return false;
-      // TO-DO: may need to update --> is there any other status? e.g.: Approved
-      } else if (this.loadedChangeRequest?.externalStatus === 'SUBMITTED') {
+      } else if (this.model?.externalStatus != 'INCOMPLETE') {
         return true;
       }
       return false;
     },
     isSummaryComplete() {
-      // return (this.invalidSummaryForms.length < 1 );
-      return true;
+      return (this.invalidSummaryForms.length < 1 );
     },
-
-  },
-  data() {
-    return {
-      model,
-      isValidForm: false,
-      isLoading: false,
-      isProcessing: false,
-      dialog: false,
-      landingPage: PATHS.ROOT.HOME,
-      summaryKey: 1,
-      summaryModelFacilities: [],
-      invalidSummaryForms: [],
-      payload: {},
-    };
+    facilities() {
+      if (this.summaryModel?.mtfiFacilities) {
+        return this.summaryModel?.mtfiFacilities;
+      }
+      return null;
+    },
+    relockPayload() {
+      let relockPayload = {
+        unlockDeclaration: this.model.unlockDeclaration,
+      };
+      return relockPayload;
+    },
+    isDeclarationBDisplayed() {
+      return (this.model.enabledDeclarationB || this.hasChangeRequestType('MTFI'));
+    }
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
-    ...mapMutations('application',['setIsEceweComplete', 'setIsLicenseUploadComplete']),
-    ...mapMutations('navBar', ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
-    ...mapMutations('organization', ['setIsOrganizationComplete']),
-    ...mapMutations('reportChanges', ['setCRIsLicenseComplete', 'setCRIsEceweComplete']),
-    ...mapActions('reportChanges', ['getChangeRequest']),
+    ...mapActions('summaryDeclaration', ['updateDeclaration', 'loadChangeRequestSummaryDeclaration']),
 
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
@@ -330,91 +374,17 @@ export default {
       }
       return this.isValidForm;
     },
-    async loadData() {
-      this.isLoading = true;
-      try {
-        if (!this.loadedChangeRequest)
-          await this.getChangeRequest(this.$route.params?.changeRecGuid);
-        await this.loadChangeRequestDeclaration(this.$route.params?.changeRecGuid);
-      } catch (error) {
-        console.log('Error loading change request Declaration.', error);
-        this.setFailureAlert('Error loading application Declaration.');
-      } finally {
-        this.isLoading = false;
-      }
-    },
     async submit() {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
         this.dialog = true;
       } catch (error) {
-        this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.' + error);
+        this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);
       } finally {
         this.isProcessing = false;
       }
-    },
-    createChangeRequestRelockPayload() {
-      let applicationRelockPayload = {
-        unlockDeclaration: this.model.unlockDeclaration,
-        unlockChangeRequestDocument: this.model.unlockChangeRequestDocument,
-        unlockChangeRequest: this.model.unlockChangeRequest
-      };
-
-      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI(); //mentioned that we might need this, but actually I think no.. TODO: ask rob
-      if ((Object.keys(ccrfiRelockPayload).length > 0)) {
-        applicationRelockPayload['facilities'] = ccrfiRelockPayload;
-      }
-      // Create payload with only unlock propteries set to 1.
-      // eslint-disable-next-line no-unused-vars
-      applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == true));
-
-      // Update payload unlock properties from true to false for change request
-      Object.keys(applicationRelockPayload).forEach(key => {
-        applicationRelockPayload[key] = false;
-      });
-
-      return applicationRelockPayload;
-    },
-    createRelockPayloadForApplication() {
-      let applicationRelockPayload = {
-        unlockBaseFunding: this.unlockBaseFunding,
-        unlockDeclaration: this.unlockDeclaration,
-        unlockEcewe: this.unlockEcewe,
-        unlockLicenseUpload: this.unlockLicenseUpload,
-        unlockSupportingDocuments: this.unlockSupportingDocuments
-      };
-      // Create payload with only unlock propteries set to 1.
-      // eslint-disable-next-line no-unused-vars
-      applicationRelockPayload = Object.fromEntries(Object.entries(applicationRelockPayload).filter(([_, v]) => v == 1));
-      // Update payload unlock properties from 1 to 0.
-      Object.keys(applicationRelockPayload).forEach(key => {
-        applicationRelockPayload[key] = '0';
-      });
-      return applicationRelockPayload;
-    },
-    createRelockPayloadForCCFRI() {
-      let ccrfiRelockPayload = new Array(0);
-      for (const facility of this.navBarList) {
-        let applicationIdPayload = {ccfriApplicationId: facility.ccfriApplicationId};
-        let unlockPayload = {
-          unlockCcfri: facility.unlockCcfri,
-          unlockNmf: facility.unlockNmf,
-          unlockRfi: facility.unlockRfi
-        };
-        // Create payload with only unlock propteries set to 1.
-        // eslint-disable-next-line no-unused-vars
-        unlockPayload = Object.fromEntries(Object.entries(unlockPayload).filter(([_, v]) => v == 1));
-        // Update payload unlock properties from 1 to 0.
-        Object.keys(unlockPayload).forEach(key => {
-          unlockPayload[key] = '0';
-        });
-        if ((Object.keys(unlockPayload).length > 0)) {
-          ccrfiRelockPayload.push({...applicationIdPayload, ...unlockPayload});
-        }
-      }
-      return ccrfiRelockPayload;
     },
     previous() {
       this.$router.push(this.previousPath);
@@ -423,34 +393,23 @@ export default {
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }
-      this.updateNavBarStatus(formObj, isComplete);
+      // this.updateNavBarStatus(formObj, isComplete);
     },
-  },
-  async mounted() {
-    this.isProcessing = true;
-    await this.loadData();
-    if (!this.loadedChangeRequest?.unlockDeclaration) {
-      this.model = this.$store.state.summaryDeclaration.model ?? model;
+    hasChangeRequestType(changeType) {
+      switch (changeType) {
+      case 'MTFI':
+        return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+      case 'PDF_CHANGE':
+        return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
+      default:
+        return false;
+      }
     }
-
-    // Determine:
-    //   - which user declaration text version (status a or b) will display
-    //   - which declaration status (a or b) will be saved on submit.
-    // saved as part of submission.
-    if (this.loadedChangeRequest?.enabledDeclarationB) {
-      this.model.declarationBStatus = 1;
-      this.model.declarationAStatus = undefined;
-    } else {
-      this.model.declarationAStatus = 1;
-      this.model.declarationBStatus = undefined;
-    }
-    this.isProcessing = false;
   },
-
 };
 </script>
 
-<style>
+<style scoped>
 li {
   padding-bottom: 12px;
 }
@@ -471,9 +430,5 @@ li {
 .summary-value {
   font-size: medium;
   color: black;
-}
-
-.special {
-  margin-top: 5vh !important;
 }
 </style>

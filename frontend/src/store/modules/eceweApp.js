@@ -15,6 +15,7 @@ export default {
     loadedModel: null,
     fundingModelTypes: null,
     optinECEWEChangeRequestReadonly: false,
+    belongsToUnionChangeRequestReadonly: false,
   },
   mutations: {
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
@@ -25,6 +26,7 @@ export default {
     setLoadedFacilities: (state, loadedFacilities) => { state.loadedFacilities = loadedFacilities; },
     setFundingModelTypes: (state, fundingModelTypes) => { state.fundingModelTypes = fundingModelTypes; },
     setOptinECEWEChangeRequestReadonly: (state, optinECEWEChangeRequestReadonly) => { state.optinECEWEChangeRequestReadonly = optinECEWEChangeRequestReadonly; },
+    setBelongsToUnionChangeRequestReadonly: (state, belongsToUnionChangeRequestReadonly) => { state.belongsToUnionChangeRequestReadonly = belongsToUnionChangeRequestReadonly; },
   },
   actions: {
     async loadECEWE({state, commit}) {
@@ -32,11 +34,8 @@ export default {
       try {
         let response = await ApiService.apiAxios.get('/api/application/ecewe/' + state.applicationId);
         let payload = response?.data;
-        if (payload?.optInECEWE === 1) {
-          commit('setOptinECEWEChangeRequestReadonly', true);
-        } else {
-          commit('setOptinECEWEChangeRequestReadonly', false);
-        }
+        commit('setOptinECEWEChangeRequestReadonly', (payload?.optInECEWE === 1));
+        commit('setBelongsToUnionChangeRequestReadonly', (payload?.belongsToUnion === 1));
         commit('setEceweModel', payload);
         commit('setLoadedModel', payload);
         commit('setLoadedFacilities', payload.facilities);
