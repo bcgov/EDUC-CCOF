@@ -412,6 +412,7 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
     continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
+      this.processing = true;
       let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
       if (changeType == 'PDF_CHANGE'){
         this.goToChangeForm(changeActionId, changeRequestId);
@@ -460,6 +461,7 @@ export default {
       }
     },
     updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
+      this.processing = true;
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       if (changeType == 'PDF_CHANGE'){
