@@ -313,13 +313,9 @@ export default {
       this.setNavBarItems(this.items);
     },
     buildMTFINavBar(){
-      // Select Facility
-      // Fee Verification - Each Fac
-      // RFI for each Fac
-      // Declaration
       this.addLandingPageToNavBar();
       this.items.push(this.getMTFINavigation());
-      //this.addSummaryAndDeclarationToNavBar();
+      this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
 
     },

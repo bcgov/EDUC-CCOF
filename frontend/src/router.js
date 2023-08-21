@@ -776,6 +776,18 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrlSummaryDeclaration(':changeRecGuid'),
+      name: 'Summary and Declaration MTFI',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
       path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'change-request-ccfri-request-info',
       component: CCFRIRequestMoreInfo,
