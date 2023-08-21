@@ -393,7 +393,7 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl, changeUrlSummaryDeclaration } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
@@ -632,7 +632,7 @@ export default {
         if (this.currentFacility.hasRfi) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
         }
-        this.$router.push('/'); //TODO - don't think this will work - go to summary dec
+        this.$router.push(changeUrlSummaryDeclaration(this.$route.params.changeRecGuid)); //TODO - don't think this will work - go to summary dec
       }
 
 
