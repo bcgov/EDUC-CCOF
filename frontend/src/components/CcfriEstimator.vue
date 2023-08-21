@@ -581,7 +581,7 @@
                         </template>
                         <template v-slot:prev>
                               <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size:13px;">
-                                <v-icon id="left-chevron-month-selector" style="color:#431782" x-large>mdi-chevron-left</v-icon>
+                                <v-icon color="#431782" x-large>mdi-chevron-left</v-icon>
                                 <span style="color:#313131;font-family:BCSans;">
                                   {{child.feeFrequency}}&nbsp;
                                 </span>
