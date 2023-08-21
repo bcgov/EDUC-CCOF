@@ -42,6 +42,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
+  CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
 });
 
@@ -71,7 +72,9 @@ export const CHANGE_TYPES = Object.freeze({
  * Paths will be set up using PREFIX/guid/SUFFIX/guid
  * such as:  /pcf/${yearGuid}/facility/${facilityGuid}
  *
+ *
  ******************************************************/
+
 export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
@@ -80,7 +83,8 @@ export const PATHS = {
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
-    CHANGE_NEW_FACILITY: '/change/new/group/facility'
+    CHANGE_NEW_FACILITY: '/change/new/group/facility',
+    CHANGE_INFO: '/change/information',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -119,7 +123,11 @@ export const PATHS = {
   CHANGE_MTFI: 'midterm-fee-increase',
   CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',
   CHANGE_NEW_FACILITY_OTHER: '/other-changes',
-  MTFI_INFO: '/mtfi-instructions'
+  MTFI_INFO: '/mtfi-instructions',
+
+  MTFI_GROUP_SELECT_FACILITY: '/mtfi-select-facility',
+
+  MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
 
 };
 
@@ -140,11 +148,15 @@ export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid 
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
+export function changeUrlSummaryDeclaration(changeRecGuid = ':changeRecGuid') {
+  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${PATHS.SUMMARY_DECLARATION}`;
+}
 
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
-  ECEWE: 'ECE-WE'
+  ECEWE: 'ECE-WE',
+  MTFI: 'MTFI',
 };
 
 export const ORGANIZATION_PROVIDER_TYPES = {
@@ -165,5 +177,22 @@ export const CCFRI_Categories = [
   'Family Before & After School (Kindergarten only)'
 ];
 
+export const CHANGE_REQUEST_TYPES = {
+  LEGAL_ORG_NAME_CHANGE: 100000000 ,
+  ORG_MAILING_ADDRESS: 100000001,
+  FACILITY_ADDRESS: 100000002,
+  FACILITY_NAME: 100000003,
+  LICENSE_CHANGE: 100000004,
+  NEW_FACILITY: 100000005,
+  SERVICE_DETAIL_CHANGE: 100000006,
+  PARENT_FEE_CHANGE: 100000007,
+  CLOSURE_UPDATE: 100000008,
+  CONTACT_INFORMATION_CHANGE: 100000009,
+  BUSINESS_HOURS: 100000010,
+  LEGAL_ENTITY_OWNERSHIP: 100000011,
+  DATE_DIRECT_DEPOSIT_INFO: 100000012,
+  PDF_CHANGE: 100000013,
+  NEW_CATEGORY: 100000014,
+};
 
 

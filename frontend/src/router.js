@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid, changeUrlSummaryDeclaration } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -56,6 +56,12 @@ import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotifi
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
 import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+import ChangeInformation from '@/components/requestChanges/ChangeInformation';
+import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
+
+import MtfiInfo from '@/components/mtfi/MTFIInfo';
+import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
+import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
 
 Vue.prototype.moment = moment;
 
@@ -634,18 +640,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CCFRI_RFI),
-      name: 'change-request-ccfri-request-info',
-      component: CCFRIRequestMoreInfo,
-      meta: {
-        pageTitle: 'CCFRI Request More Info',
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
-        requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
-    },
-    {
       path: changeUrlGuid(PATHS.CCFRI_NMF),
       name: 'change-request-new-facilities',
       component: NMF,
@@ -714,6 +708,97 @@ const router = new VueRouter({
         showNavBar: false
       }
     },
+    {
+      path: PATHS.ROOT.CHANGE_INFO,
+      name: 'Change Request Information',
+      component: ChangeInformation,
+      meta: {
+        pageTitle: 'Change Request Information',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_INFO,  ':changeRecGuid', CHANGE_TYPES.MTFI),
+      name: 'Midterm Fee Increase Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
+      name: 'Midterm-Fee-Increase-Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, ':changeRecGuid', CHANGE_TYPES.MTFI),
+      name: 'Midterm Fee Increase Select Facilities',
+      component: MtfiSelectFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'CCFRI Fee Verification',
+      component: MtfiFeeVerification,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrlSummaryDeclaration(':changeRecGuid'),
+      name: 'Summary and Declaration Change Request',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false,
+        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
+      path: changeUrlSummaryDeclaration(':changeRecGuid'),
+      name: 'Summary and Declaration MTFI',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
   ]
 });
 
@@ -723,7 +808,7 @@ router.beforeEach((to, _from, next) => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
       }else {
-        store.dispatch('auth/getUserInfo').then(() => {
+        store.dispatch('auth/getUserInfo', to).then(() => {
           store.commit('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);
