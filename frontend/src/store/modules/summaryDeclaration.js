@@ -325,7 +325,9 @@ export default {
             mtfiFacility.licenseNumber = userProfileListFacility.licenseNumber;
             mtfiFacility.oldCcfriApplicationId = userProfileListFacility.ccfriApplicationId;
             mtfiFacility.oldCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.oldCcfriApplicationId}`)).data;
+            mtfiFacility.oldCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
             mtfiFacility.newCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.ccfriApplicationId}`)).data;
+            mtfiFacility.newCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
             if (mtfiFacility.hasRfi || mtfiFacility.unlockRfi)
               mtfiFacility.rfiApp = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)).data;
             isSummaryLoading.splice(index, 1, false);

@@ -36,7 +36,7 @@
 
             <v-row>
               <v-col>
-                <v-radio-group :disabled="isLocked" row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
+                <v-radio-group :disabled="isLocked" :rules="rules.required" row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>

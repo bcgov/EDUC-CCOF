@@ -83,7 +83,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="false">
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isReportChangeButtonEnabled">
         <template #content>
           <p class="text-h6">
             Report changes to your licence or service
@@ -365,7 +365,7 @@ export default {
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));
     },
     goToReportChange(){
-      this.$router.push(PATHS.ROOT.CHANGE_INFO);
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
