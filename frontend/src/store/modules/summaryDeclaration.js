@@ -1,6 +1,7 @@
 import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
+import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 //import { isChangeRequest } from '@/utils/common';
 
 function parseLicenseCategories(licenseCategories, rootState) {
@@ -255,8 +256,104 @@ export default {
         console.log(`Failed to update application status - ${error}`);
         throw error;
       }
+    },
 
-    }
+    async loadChangeRequestSummaryDeclaration({ state, commit, dispatch }, changeRequestId) {
+      checkSession();
+      try {
+        commit('isMainLoading', true);
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+        let changeRequestTypes = [];
+        payload?.changeActions?.forEach(item => {
+          if (!changeRequestTypes.includes(item.changeType)) {
+            changeRequestTypes.push(item.changeType)
+          };
+        });
+
+        // Load Declaration model
+        let declarationModel = {
+          unlockDeclaration: payload?.unlockDeclaration,
+          agreeConsentCertify: payload?.unlockDeclaration ? null : payload?.agreeConsentCertify,
+          orgContactName: payload?.unlockDeclaration ? null : payload?.orgContactName,
+          externalStatus: payload?.externalStatus,
+          enabledDeclarationB: payload?.enabledDeclarationB,
+          declarationAStatus: payload?.declarationAStatus,
+          declarationBStatus: payload?.declarationBStatus
+        }
+        commit('model', declarationModel);
+
+        // Load Summary model
+        let summaryModel = {
+          changeActions: payload?.changeActions,
+          changeRequestTypes: changeRequestTypes,
+        };
+        commit('summaryModel', summaryModel);
+        await Promise.all(changeRequestTypes.map(async changeType => {
+          switch (changeType) {
+            case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
+              await dispatch('loadChangeRequestSummaryForMtfi', payload);
+              break;
+            case CHANGE_REQUEST_TYPES.PDF_CHANGE:
+              await dispatch('loadChangeRequestSummaryForChangeNotiForm', payload);
+              break;
+            default:
+              throw `Not found change request type - ${changeType}`;
+            }
+        }))
+        commit('isLoadingComplete', true );
+      } catch (error) {
+        console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
+        throw error;
+      }
+    },
+
+    // Assumption: a change request can only have 1 MTFI change action
+    async loadChangeRequestSummaryForMtfi({ state, commit, rootState }, payload) {
+      try {
+        let summaryModel = state.summaryModel;
+        let mtfiChangeAction = payload.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+        summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
+
+        let isSummaryLoading = new Array (summaryModel.mtfiFacilities.length).fill(true);
+        commit('isSummaryLoading', isSummaryLoading);
+
+        await Promise.all(summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
+          let userProfileListFacility = rootState.navBar.userProfileList.find(item => item.facilityId === mtfiFacility.facilityId);
+          if (userProfileListFacility) {
+            mtfiFacility.facilityName = userProfileListFacility.facilityName;
+            mtfiFacility.facilityAccountNumber = userProfileListFacility.facilityAccountNumber;
+            mtfiFacility.licenseNumber = userProfileListFacility.licenseNumber;
+            mtfiFacility.oldCcfriApplicationId = userProfileListFacility.ccfriApplicationId;
+            mtfiFacility.oldCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.oldCcfriApplicationId}`)).data;
+            mtfiFacility.newCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.ccfriApplicationId}`)).data;
+            if (mtfiFacility.hasRfi || mtfiFacility.unlockRfi)
+              mtfiFacility.rfiApp = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)).data;
+            isSummaryLoading.splice(index, 1, false);
+            commit('isSummaryLoading', isSummaryLoading);
+            if (state.isMainLoading)
+              commit('isMainLoading', false);
+          }
+          commit('summaryModel', summaryModel);
+        }));
+      } catch (error) {
+        console.log(`Failed to load Summary for change request MTFI - ${error}`);
+        throw error;
+      }
+    },
+
+    // Assumption: a change request can only have 1 Change Notification Form change action
+    async loadChangeRequestSummaryForChangeNotiForm({ state, commit, dispatch }, payload) {
+      try {
+        let summaryModel = state.summaryModel;
+        let changeNotiChangeAction = payload.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
+        summaryModel.changeNotificationFormDocuments = await dispatch('reportChanges/loadChangeRequestDocs', changeNotiChangeAction?.changeActionId, { root: true });
+        commit('summaryModel', summaryModel);
+        commit('isMainLoading', false);
+      } catch (error) {
+        console.log(`Failed to load Summary for change request Change Notification Form - ${error}`);
+        throw error;
+      }
+    },
   },
 
 };

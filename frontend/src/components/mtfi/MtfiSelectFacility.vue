@@ -131,10 +131,8 @@ export default {
       this.$refs.isValidForm?.validate();
     },
     isMTFIExisted(facility) {
-      let existedMTFIFacility = this.mtfiFacilities?.find(item => item.facilityId == facility.facilityId);
-      if (existedMTFIFacility)
-        return true;
-      return false;
+      let index = this.mtfiFacilities?.findIndex(item => item.facilityId == facility.facilityId);
+      return (index > -1);
     },
     getNewMTFIFacilities() {
       let newMTFIFacilities = [];

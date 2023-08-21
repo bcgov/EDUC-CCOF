@@ -313,11 +313,13 @@ export default {
     },
 
     updateExternalStatusInChangeRequestStore({state, commit}, {changeRequestId, newStatus}) {
-      let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
-      if (index > -1) {
-        state.changeRequestStore[index].externalStatus = newStatus;
-        commit('setChangeRequestStore', state.changeRequestStore);
-      };
+      if (Object.keys(state.changeRequestStore).length > 0) {
+        let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+        if (index > -1) {
+          state.changeRequestStore[index].externalStatus = newStatus;
+          commit('setChangeRequestStore', state.changeRequestStore);
+        };
+      }
     },
 
     updateExternalStatusInUserProfileChangeRequests({state, commit}, {changeRequestId, newStatus}) {
