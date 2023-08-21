@@ -613,7 +613,7 @@ export default {
       this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
     },
     async next() {
-      //await this.save(false);
+      await this.save(false);
 
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
@@ -660,7 +660,7 @@ export default {
          //this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
         //console.log('rfi3percentCategories length ', this.rfi3percentCategories);
         // this.processing = true;
-        //this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()}); how do this with new nav bar?
+        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
         try {
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes

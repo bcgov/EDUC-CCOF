@@ -81,7 +81,7 @@
               <v-col align-self="start">
                 <v-radio-group
                   v-model="model.belongsToUnion"
-                  :disabled="isReadOnly()"
+                  :disabled="isReadOnly('belongsToUnion')"
                   :rules="rules.required">
                   <template v-slot:label>
                     <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
@@ -312,7 +312,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly']),
+    ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly', 'belongsToUnionChangeRequestReadonly']),
     ...mapState('app', ['fundingModelTypeList']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
@@ -378,19 +378,14 @@ export default {
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     isReadOnly(question) {
       if (this.isChangeRequest) {
-        if(this.isEceweUnlocked||!this.changeRequestStatus){
-          if (question == 'optInECEWE') {
-            return (this.optinECEWEChangeRequestReadonly);
-          }
-          return false;
-        }
+        if (this.isEceweUnlocked || !this.changeRequestStatus) 
+          return (((question == 'optInECEWE') && this.optinECEWEChangeRequestReadonly)
+            || ((question == 'belongsToUnion') && this.belongsToUnionChangeRequestReadonly));
         else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
-        else if (question == 'optInECEWE') {
-          return (this.optinECEWEChangeRequestReadonly);
-        }
-        return false;
+        return (((question == 'optInECEWE') && this.optinECEWEChangeRequestReadonly)
+          || ((question == 'belongsToUnion') && this.belongsToUnionChangeRequestReadonly));
       }
       if (this.unlockEcewe) {
         return false;

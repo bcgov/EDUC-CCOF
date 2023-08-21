@@ -293,7 +293,7 @@ export default {
       }
     },
 
-    async cancelChangeRequest({state, commit}, changeRequestId) {
+    async cancelChangeRequest({dispatch}, changeRequestId) {
       console.log('CANCEL Change request: ', changeRequestId);
       checkSession();
       if (changeRequestId){
@@ -302,21 +302,31 @@ export default {
             externalStatus: 6,
           };
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
-          let indexChangeRequestStore = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
-          if (indexChangeRequestStore > -1) {
-            state.changeRequestStore[indexChangeRequestStore].externalStatus = 6;
-            commit('setChangeRequestStore', state.changeRequestStore);
-          };
-          let indexUserProfileCR = state.userProfileChangeRequests?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
-          if (indexUserProfileCR > -1) {
-            state.userProfileChangeRequests[indexUserProfileCR].externalStatus = 'CANCELLED';
-            commit('setUserProfileChangeRequests', state.userProfileChangeRequests);
-          }
+          dispatch('updateExternalStatusInChangeRequestStore', {changeRequestId: changeRequestId, newStatus: 6});
+          dispatch('updateExternalStatusInUserProfileChangeRequests', {changeRequestId: changeRequestId, newStatus: 'CANCELLED'});
           return response;
         } catch (e) {
           console.log(`Failed to cancel change request with error - ${e}`);
           throw e;
         }
+      }
+    },
+
+    updateExternalStatusInChangeRequestStore({state, commit}, {changeRequestId, newStatus}) {
+      if (Object.keys(state.changeRequestStore).length > 0) {
+        let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+        if (index > -1) {
+          state.changeRequestStore[index].externalStatus = newStatus;
+          commit('setChangeRequestStore', state.changeRequestStore);
+        };
+      }
+    },
+
+    updateExternalStatusInUserProfileChangeRequests({state, commit}, {changeRequestId, newStatus}) {
+      let index = state.userProfileChangeRequests?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
+      if (index > -1) {
+        state.userProfileChangeRequests[index].externalStatus = newStatus; 
+        commit('setUserProfileChangeRequests', state.userProfileChangeRequests);
       }
     },
 

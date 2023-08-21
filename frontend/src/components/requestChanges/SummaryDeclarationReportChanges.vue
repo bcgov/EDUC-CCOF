@@ -294,6 +294,7 @@ export default {
   async mounted() {
     this.isProcessing = true;
     await this.loadData();
+    await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
     if (!this.loadedChangeRequest?.unlockDeclaration) {
       this.model = this.$store.state.summaryDeclaration.model ?? model;
     }
@@ -326,7 +327,7 @@ export default {
       } else if (this.loadedChangeRequest?.unlockDeclaration) {
         return false;
       // TO-DO: may need to update --> is there any other status? e.g.: Approved
-      } else if (this.loadedChangeRequest?.externalStatus === 'SUBMITTED') {
+      } else if (this.loadedChangeRequest?.externalStatus != 'INCOMPLETE') {
         return true;
       }
       return false;
@@ -359,7 +360,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadChangeRequestDeclaration', 'updateDeclaration']),
+    ...mapActions('summaryDeclaration', ['loadChangeRequestDeclaration', 'updateDeclaration', 'loadChangeRequestSummaryDeclaration']),
     ...mapActions('reportChanges', ['loadChangeRequestDocs', 'getChangeRequest']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     async loadData() {
