@@ -123,7 +123,6 @@ async function getLicenseCategories(req, res){
   }
 }
 
-
 async function getFacilityChildCareTypes(req, res){
   try {
     //this is actually the CCFRI guid rn
@@ -354,9 +353,18 @@ async function deleteFacility(req, res) {
     log.verbose('deleting change request facility', changeRequestNewFacilityId);
     await deleteOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId);
   }
-
   return res.status(HttpStatus.OK).end();
 }
+
+async function getApprovedParentFees(req, res) {
+  const facilityId = req.params.facilityId;
+  const programYearId = req.params.programYearId;
+  const operation = `accounts(${facilityId})?$select=accountid,address1_city,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,_ccof_facility_value,_ccof_programyear_value,_ccof_childcarecategory_value,ccof_frequency,ccof_availability,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar;$filter=(statuscode eq 1 and _ccof_programyear_value eq ${programYearId} and Microsoft.Dynamics.CRM.In(PropertyName='ccof_availability',PropertyValues=['100000001','100000002']) and Microsoft.Dynamics.CRM.In(PropertyName='ccof_frequency',PropertyValues=['100000000','100000002']));$orderby= _ccof_programyear_value desc),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)`
+  const payLoad = await getOperation(operation);
+  return res.status(200).json(payLoad);
+}
+
+
 
 module.exports = {
   getFacility,
@@ -368,5 +376,6 @@ module.exports = {
   updateFacilityLicenseType,
   getCCFRIClosureDates,
   mapFacilityObjectForBack,
+  getApprovedParentFees
 };
 
