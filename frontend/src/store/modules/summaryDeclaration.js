@@ -261,7 +261,8 @@ export default {
     async loadChangeRequestSummaryDeclaration({ state, commit, dispatch }, changeRequestId) {
       checkSession();
       try {
-        commit('isMainLoading', true);
+        if (!state.summaryModel)
+          commit('isMainLoading', true);
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
         let changeRequestTypes = [];
         payload?.changeActions?.forEach(item => {
@@ -284,12 +285,15 @@ export default {
 
         // Load Summary model
         let summaryModel = {
+          ...state.summaryModel,
           changeActions: payload?.changeActions,
           changeRequestTypes: changeRequestTypes,
         };
         commit('summaryModel', summaryModel);
         await Promise.all(changeRequestTypes.map(async changeType => {
           switch (changeType) {
+            case CHANGE_REQUEST_TYPES.NEW_FACILITY:
+              break;
             case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
               await dispatch('loadChangeRequestSummaryForMtfi', payload);
               break;

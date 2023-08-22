@@ -174,7 +174,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl} from '@/utils/constants';
+import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl, changeUrlSummaryDeclaration } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -433,7 +433,7 @@ export default {
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         this.goToChangeForm(changeActionId, changeRequestId);
       } else if (currentCR?.unlockDeclaration) {
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+        this.$router.push(changeUrlSummaryDeclaration(changeRequestId));
       } else {
         this.goToChangeForm(changeActionId, changeRequestId);
       }

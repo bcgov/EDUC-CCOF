@@ -90,7 +90,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS, changeUrlGuid } from '@/utils/constants';
+import { PATHS, changeUrlSummaryDeclaration } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -179,7 +179,7 @@ export default {
       if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
         this.$router.push(this.nextPath);
       } else {
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));
+        this.$router.push(changeUrlSummaryDeclaration(this.$route.params?.changeRecGuid));
       }
     },
     async validateForm() {

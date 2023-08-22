@@ -55,7 +55,6 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 import ChangeInformation from '@/components/requestChanges/ChangeInformation';
 import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
 
@@ -699,16 +698,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
-      name: 'Summary and Declaration Report Changes',
-      component: SummaryDeclarationReportChanges,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: false
-      }
-    },
-    {
       path: PATHS.ROOT.CHANGE_INFO,
       name: 'Change Request Information',
       component: ChangeInformation,
@@ -771,8 +760,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        showNavBar: true,
+        subtitleBanner: Subtitle_Banners.CHANGEREQUEST
       }
     },
     {

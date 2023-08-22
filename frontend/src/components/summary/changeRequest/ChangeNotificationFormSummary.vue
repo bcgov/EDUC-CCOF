@@ -1,62 +1,57 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
-    <v-form ref="changeNotificationFormSummaryForm" v-model="isValidForm">
-      <h4 class="blueText">Change Notification Form
-        <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
-        <v-icon v-if="!isValidForm" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-        <span v-if="!isValidForm" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
-      </h4>
-      <div v-if="!isProcessing">
-        <div class="my-2">
+    <v-form ref="changeNotificationFormSummaryForm">
+      <v-expansion-panel-header>
+        <h4 class="blueText">
+          Change Notification Form
+          <v-icon v-if="isChangeNotificationFormDocumentsUploaded" color="green" large>mdi-check-circle-outline</v-icon>
+          <v-icon v-if="!isChangeNotificationFormDocumentsUploaded" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+          <span v-if="!isChangeNotificationFormDocumentsUploaded" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
+        </h4>
+      </v-expansion-panel-header>
+      <v-expansion-panel-content eager>
+        <div class="my-4">
           <h4>
             Change Notification Form Documents
-            <v-icon v-if="isNotificationFormDocumentsUploadComplete" color="green" large>
-              mdi-check-circle-outline
-            </v-icon>
-            <v-icon v-if="!isNotificationFormDocumentsUploadComplete && !this.isProcessing" color="#ff5252" large>
-              mdi-alert-circle-outline
-            </v-icon>
-            <span v-if="!isNotificationFormDocumentsUploadComplete && !this.isProcessing" style="color:#ff5252;">
-              Your form is missing required information.
-            </span>
           </h4>
           <div>
             <v-row no-gutters>
-              <v-col :cols="6">
-                <h5>File name</h5>
+              <v-col :cols="6" class="summary-label pr-8">
+                File name
               </v-col>
-              <v-col :cols="6">
-                <h5>Description (optional)</h5>
+              <v-col :cols="6" class="summary-label">
+                Description (optional)
               </v-col>
             </v-row>
             <v-row
               v-for="(item,index) in this.notificationFormDocuments"
               :key="index"
               no-gutters
+              v-if="isChangeNotificationFormDocumentsUploaded"
             >
-              <v-col :cols="6">
-                {{ item.name }}
+              <v-col :cols="6" class="summary-value pr-8">
+                {{ item.filename }}
               </v-col>
               <v-col :cols="6">
-                {{ item.description }}
+                {{ item.notetext }}
               </v-col>
             </v-row>
-            <router-link :to="documentUploadPage" v-if="this.notificationFormDocuments?.length <= 0">
-              <span style="color:#ff5252; text-underline: black">
-                <u>To add this information, click here. This will bring you to a different page.</u>
-              </span>
-            </router-link>
+            <v-row no-gutters v-if="!isChangeNotificationFormDocumentsUploaded">
+              <v-col :cols="6" style="" class="summary-value-missing">
+                Required
+              </v-col>
+            </v-row>
           </div>
         </div>
         <div class="my-4">
           <h4>Supporting Documents</h4>
           <div>
             <v-row no-gutters>
-              <v-col :cols="6">
-                <h5>File name</h5>
+              <v-col :cols="6" class="summary-label pr-8">
+                File name
               </v-col>
-              <v-col :cols="6">
-                <h5>Description (optional)</h5>
+              <v-col :cols="6" class="summary-label">
+                Description (optional)
               </v-col>
             </v-row>
             <v-row
@@ -64,49 +59,42 @@
               :key="index"
               no-gutters
             >
-              <v-col :cols="6">
-                {{ item.name }}
+              <v-col :cols="6" class="summary-value pr-8">
+                {{ item.filename }}
               </v-col>
-              <v-col :cols="6">
-                {{ item.description }}
+              <v-col :cols="6" class="summary-value">
+                {{ item.notetext }}
               </v-col>
             </v-row>
           </div>
         </div>
-      </div>
+        <router-link :to="getRoutingPath" v-if="!isChangeNotificationFormDocumentsUploaded">
+          <span style="color:#ff5252">
+            <u>To add this information, click here. This will bring you to a different page.</u>
+          </span>
+        </router-link>
+      </v-expansion-panel-content>
     </v-form>
   </v-row>
 </template>
 
 <script>
-import _ from 'lodash';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
-import rules from '@/utils/rules';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import { mapState } from 'vuex';
 
 export default {
   props: {
-    oldCcfri: {
-      type: Object,
-      required: false
-    },
-    newCcfri: {
-      type: Object,
-      required: false
-    },
-    facilityId: {
-      type: String,
-      required: false
+    changeNotificationFormDocuments: {
+      type: Array,
+      required: true
     },
   },
   data() {
     return {
       PATHS,
-      rules,
-      isValidForm: true,
       formObj:{
-        formName: 'MTFISummary',
-        formId: this.facilityId,
+        formName: 'ChangeNotificationFormSummary',
+        formId: this.changeActionId,
       },
     };
   },
@@ -114,16 +102,29 @@ export default {
     isLoadingComplete: {
       handler: function (val) {
         if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+          this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormDocumentsUploaded);
         }
       },
     }
   },
   computed:{
-    ...mapState('summaryDeclaration', ['isLoadingComplete']),
-    getRoutingPath(){
-      return changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.newCcfri.ccfriApplicationId, CHANGE_TYPES.MTFI);
+    ...mapState('summaryDeclaration', ['isLoadingComplete', 'summaryModel']),
+    changeActionId() {
+      let changeAction = this.summaryModel.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
+      return changeAction ? changeAction.changeActionId : null;
     },
+    getRoutingPath() {
+      return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION);
+    },
+    supportingDocuments() {
+      return this.changeNotificationFormDocuments?.filter(document => document.subject == 'SUPPORTING_DOC');
+    },
+    notificationFormDocuments() {
+      return this.changeNotificationFormDocuments?.filter(document => document.subject == 'NOTIFICATION_FORM');
+    },
+    isChangeNotificationFormDocumentsUploaded() {
+      return this.notificationFormDocuments?.length > 0;
+    }
   },
   methods: {
   }
@@ -140,45 +141,13 @@ export default {
   color: black !important;
 }
 
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-.summary-value-small{
-  color: black;
-  font-size: small;
-  font-weight: bold
-}
-
-.gridContainer {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows:    repeat(2, 65px);
-}
-
-.feeTitle {
-  display: flex;
-  align-items: center;
-  text-align: end !important;
-  text-align: right !important;
-  justify-items: end;
-  justify-content: end;
-  padding: 0px 16px 0px 8px;
-  border-right: solid 1px rgba(0, 0, 0, 0.5) !important;
+.summary-value-missing {
+  font-size: medium;
+  color:#ff5252 !important;
 }
 
 .blueText {
   color: #003466 !important;
 }
 
->>>::placeholder {
-  color: #ff5252!important;
-  opacity: 1;
-}
 </style>
