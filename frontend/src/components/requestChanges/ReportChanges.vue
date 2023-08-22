@@ -50,7 +50,7 @@
 
           </SmallCard>
 
-          <SmallCard  class= "col-lg-6 " :disable="false">
+          <SmallCard  class= "col-lg-6 " :disable="!isMtfiEnabled()">
             <template #content class="px-10">
               <p class="text-h6 text-center">Parent fee increase (MTFI)</p>
               <p class="px-2 text-center">
@@ -59,7 +59,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToMTFI()" >Update parent fees</v-btn>
+                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" >Update parent fees</v-btn>
                 </v-row>
               </template>
 
@@ -514,7 +514,6 @@ export default {
       else{
         this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
       }
-
     },
 
     confirmCancelChangeRequest(requestId, requestType, requestStatus, submissionDate) {
@@ -554,6 +553,14 @@ export default {
     },
     sortChangeActions(changeRequest, order) {
       return _.sortBy(changeRequest.changeActions, 'createdOn', order);
+    },
+    isMtfiEnabled(){
+      //requirements state only one mtfi can be in prograss at a time. Provider may start another MTFI as soon as the last one is completed.
+      let found =  this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && el.externalStatus == "In Progress");
+      return !found;
+    },
+    buttonColor(isDisabled) {
+      return isDisabled ? '#909090' : '#003366';
     },
   },
   async mounted() {

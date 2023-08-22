@@ -26,7 +26,7 @@
     <LargeButtonContainer v-else>
       <v-form ref="isValidForm" value="false" v-model="isValidForm" >
         <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
-          :disabled="!ccfriOptInStatus==1"
+          :disabled="!(ccfriOptInStatus==1) || isReadOnly"
           v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus } , index) in filteredUserProfileList" :key="index">
           <v-card-text>
             <v-row>
@@ -36,7 +36,7 @@
                 <p class="text--primary">Licence #: {{licenseNumber}}</p>
               </v-col>
               <v-col v-if="ccfriOptInStatus==1" class="d-flex align-center justify-center">
-                <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]"></v-checkbox>
+                <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]" :disabled="isReadOnly"></v-checkbox>
               </v-col>
             </v-row>
           </v-card-text>
@@ -88,11 +88,12 @@ export default {
   computed: {
     ...mapState('application', ['programYearId', 'applicationId']),
     ...mapState('organization', ['organizationId', 'organizationName']),
-    ...mapState('navBar', ['userProfileList']),
-    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
+    ...mapState('navBar', ['userProfileList','navBarList']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
     isReadOnly() {
-      return false;
+      let changeRequest = this.userProfileChangeRequests.find(item => item.changeRequestId === this.$route.params.changeRecGuid);
+      return (changeRequest?.externalStatus != 'INCOMPLETE');
     },
     isNextButtonDisabled() {
       return (!this.checkbox?.includes(true));
@@ -118,14 +119,15 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList', 'addToNavBar','removeChangeMap']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
+    ...mapActions('navBar',['loadChangeRequest']),
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     async next() {
       await this.save(false);
-      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.mtfiFacilities[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
+      this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.navBarList[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
     },
     validateForm() {
       this.$refs.isValidForm?.validate();
@@ -138,7 +140,8 @@ export default {
       let newMTFIFacilities = [];
       this.checkbox?.forEach((item, index) => {
         let facility = this.filteredUserProfileList[index];
-        if (item && facility && !this.isMTFIExisted(facility))
+        if (item && facility && !this.isMTFIExisted(facility)){
+          this.removeChangeMap();
           newMTFIFacilities.push({
             'facilityID': facility.facilityId,
             'applicationID': this.applicationId,
@@ -149,6 +152,7 @@ export default {
             'programYearId': this.programYearId,
             'organizationId': this.organizationId
           });
+        }
       });
       return newMTFIFacilities;
     },
@@ -156,12 +160,14 @@ export default {
       let deleteMTFIFacilities = [];
       this.checkbox?.forEach((item, index) => {
         let mtfiFacility = this.mtfiFacilities?.find(item => item.facilityId == this.filteredUserProfileList[index]?.facilityId);
-        if (!item && mtfiFacility && this.isMTFIExisted(mtfiFacility))
+        if (!item && mtfiFacility && this.isMTFIExisted(mtfiFacility)){
+          this.removeChangeMap();
           deleteMTFIFacilities.push({
             'facilityId': mtfiFacility.facilityId,
             'changeRequestMtfiId': mtfiFacility.changeRequestMtfiId,
             'ccfriApplicationId': mtfiFacility.ccfriApplicationId,
           });
+        }
       });
       return deleteMTFIFacilities;
     },
@@ -177,6 +183,7 @@ export default {
         if (deleteMTFIFacilities?.length > 0)
           await this.deleteChangeRequestMTFI(deleteMTFIFacilities);
 
+        await this.loadChangeRequest(this.$route.params.changeRecGuid);
         this.processing = false;
         if (withAlert) {
           this.setSuccessAlert('Success! Your update has been saved.');
@@ -185,7 +192,7 @@ export default {
       } catch (error)  {
         console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
+      }  
     },
   },
   mounted() {

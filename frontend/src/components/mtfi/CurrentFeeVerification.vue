@@ -60,31 +60,31 @@
                         class="cols-4 justify-space-around"
                         outlined
                         @change="clearFees(index)"
+                        :disabled="isReadOnly"
                       >
-                      <!-- :onChange="clearFees(index)" -->
                         <option v-for="item in feeChoices" :key="item" :value="item" >
                           {{ item }}
                         </option>
                       </v-select>
                       </v-col>
 
-                      <v-col cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:60px">
+                      <v-col v-if="!isReadOnly" cols="1" style="padding-bottom:0px;padding-top:16px;padding-left:60px">
                         <v-tooltip top color="#003366">
-                          <template v-slot:activator="{ on, attrs }">
-                          <v-card v-on="on" class="tooltip">
-                            <v-icon class="pt-1" small style="color: #003366" color=white>mdi-help</v-icon>
+                          <template v-slot:activator="{ on, attrs }" style="color: #313131">
+                          <v-card v-on="on" style="background-color: #003366 !important" class="tooltip">
+                            <v-icon class="pt-1" small style="color: #ffffff !important;">mdi-help</v-icon>
                           </v-card>
                         </template>
-                          <span v-if="isButtonActive(index)" v-html="'This automatically fills the new parent fees fields with the current approved fee values. This will replace any data entered for this care category.'"/>
+                          <span v-if="isButtonActive(index) " v-html="'This automatically fills the new parent fees fields with the current approved fee values. This will replace any data entered for this care category.'"/>
                           <span v-else v-html="'Enter your new parent fees for all months. Current parent fee values will not change. \n Note: Auto-fill is not available if you change the parent fee frequency'"/>
                         </v-tooltip>
                       </v-col>
 
                       <v-col cols="3">
-                        <v-btn class="blueButton mb-10" @click="copyFees(index)" :disabled="!isButtonActive(index)">Auto-fill approved parent fees</v-btn>
+                        <v-btn v-if="!isReadOnly" class="blueButton mb-10" @click="copyFees(index)" :disabled="!isButtonActive(index)">Auto-fill approved parent fees</v-btn>
                       </v-col>
                       <v-col cols="2">
-                        <v-btn class=" mb-10" @click="clearFees(index)" :disabled="!isButtonActive(index)">Clear parent fees</v-btn>
+                        <v-btn v-if="!isReadOnly" class=" mb-10" @click="clearFees(index)" :disabled="!isButtonActive(index)">Clear parent fees</v-btn>
                       </v-col>
 
 
@@ -305,6 +305,7 @@
                   :rules = "rules"
                     row
                     v-model="CCFRIFacilityModel.existingFeesCorrect"
+                    :disabled="isReadOnly"
                   >
                     <v-radio
                       label="Yes"
@@ -315,8 +316,6 @@
                       value=100000001
                     ></v-radio>
                   </v-radio-group>
-
-                  {{ isValidForm }}
                 </v-card-text>
              </v-card>
       </div>
@@ -351,7 +350,7 @@
 
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="false" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly" :isNextDisabled="!isValidForm" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -401,9 +400,7 @@ import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
 
 
-let ccfriOptInOrOut = {};
-let textInput = '' ;
-let model = { x: [], ccfriOptInOrOut, textInput };
+let model = { };
 
 export default {
   name: 'CcfriLandingPage',
@@ -418,12 +415,10 @@ export default {
       currentPcfCcfri: undefined,
       isUnlocked: false,
       model,
-      isReadOnly: false,
-      showOptStatus : '',
+      //isReadOnly: false,
       isValidForm: false,
       processing: false,
       loading: false,
-      ccfriOptInOrOut,
       rules: [
         (v) => !!v  || 'Required.',
       ],
@@ -443,12 +438,22 @@ export default {
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('application', ['programYearId']),
     ...mapState('navBar', ['navBarList', 'userProfileList']),
-    ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('navBar', ['previousPath', 'nextPath']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
     getCurrentFacility(){
       return this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
+    },
+    isReadOnly(){
+      if(!this.changeRequestStatus){
+        return false;
+      }
+      if(this.changeRequestStatus!=='INCOMPLETE'){
+        return true;
+      }
+      return false;
     }
   },
   watch: {
@@ -468,13 +473,11 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
 
-          console.log('OLDDD ccfri', this.currentPcfCcfri);
           let arr = [];
 
           //sort the child care types so they match the cards of the old CCFRI fees
           for (const childCareType of this.currentPcfCcfri.childCareTypes){
             let careCategory = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareType.childCareCategoryId);
-            console.log(careCategory);
 
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
             if (!careCategory.feeFrequency){
@@ -525,19 +528,15 @@ export default {
     ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
+    ...mapMutations('navBar',['setNavBarCCFRIComplete','setNavBarValue']),
     cancel() {
       this.dialog = false;
       this.CCFRIFacilityModel.existingFeesCorrect = null;
-    },
-    onChange(event){
-      console.log(event.target.value);
-
     },
     closeDialog() {
       this.showRfiDialog = false;
     },
     clearFees(index){
-
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeApr = 0;
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMay = 0;
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJun = 0;
@@ -552,7 +551,6 @@ export default {
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = 0;
     },
     copyFees(index){
-
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeApr = this.currentPcfCcfri.childCareTypes[index].approvedFeeApr;
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMay = this.currentPcfCcfri.childCareTypes[index].approvedFeeMay;
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeJun = this.currentPcfCcfri.childCareTypes[index].approvedFeeJun;
@@ -567,17 +565,7 @@ export default {
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = this.currentPcfCcfri.childCareTypes[index].approvedFeeMar;
     },
     hasModelChanged(){
-      // console.log('model:', this.loadedModel);
-      // console.log('ccfriStore:', this.CCFRIFacilityModel);
-
-      if (isEqual(this.CCFRIFacilityModel, this.loadedModel)) {
-        console.info('no model changes');
-        return false;
-      }
-      else{
-        console.info('change in the model!');
-      }
-      return true;
+      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
     arePrevFeesCorrect(){
       return !(!this.CCFRIFacilityModel.existingFeesCorrect  || this.CCFRIFacilityModel.existingFeesCorrect == '100000001' );
@@ -598,11 +586,11 @@ export default {
       return this.isValidForm; //false makes button clickable, true disables button
     },
     toRfi() {
-      //this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true}); //TODO: i think mtfi nav is different
+      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
       this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
     },
     async next() {
-      //await this.save(false);
+      await this.save(false);
 
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
@@ -621,14 +609,10 @@ export default {
         if (this.currentFacility.hasRfi) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
         }
-        this.$router.push(this.nextPath); //TODO - don't think this will work - go to summary dec
+        this.$router.push(this.nextPath);
       }
-
-
-      //this.$router.push(PATHS.ROOT.HOME);
     },
     previous() {
-
       if(this.organizationProviderType == 'FAMILY'){
         this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
       }
@@ -640,31 +624,23 @@ export default {
 
     },
     async save(showMessage) {
-      //console.log(this.closureFees);
       //only save data to Dynamics if the form has changed.
-      if (this.hasModelChanged()){
-        this.processing = true;
-        console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
-        //this.rfi3percentCategories = await this.getCcfriOver3percent();
-         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-        console.log('rfi3percentCategories length ', this.rfi3percentCategories);
-        // this.processing = true;
-        //this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()}); how do this with new nav bar?
-
-        try {
+      try {
+        if (this.hasModelChanged()){
+          this.processing = true;
+          console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
+          this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0}); //TODO: run logic for RFI here?
-
-          //await this.updateChangeRequestMTFI({changeRequestMtfiId :'feba2211-1636-ee11-bdf4-000d3af4865d'}); //testing the endpoint
-          //console.log('the res is:' , res);
-          if (showMessage) {
-            this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          }
-        } catch (error) {
-          console.info(error);
-          this.setFailureAlert('An error occurred while saving.');
+          await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0});
+          this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
+          this.processing = false;
         }
-        this.processing = false;
+        if (showMessage) {
+          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+        }
+      } catch (error) {
+        console.info(error);
+        this.setFailureAlert('An error occurred while saving.');
       }
     }
   },

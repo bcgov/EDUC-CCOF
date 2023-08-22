@@ -145,12 +145,6 @@ export default {
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     },
-    // setMTFIFacilities:(state, value) => {
-    //   state.mtfiFacilities = value;
-    // },
-    // addToMtfiFacilities: (state, payload) => {
-    //   payload?.forEach(facility => state.mtfiFacilities.push(facility));
-    // },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
@@ -221,7 +215,9 @@ export default {
         commit('setChangeRequestId', response?.changeRequestId);
         commit('setChangeActionId', response?.changeActions[0]?.changeActionId);
         let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
-        mtfiChangeActions?.forEach(changeAction => commit('addToMtfiFacilities', changeAction.mtfi));
+        let mtfiFacilities = [];
+        mtfiChangeActions?.forEach(changeAction => mtfiFacilities.push(changeAction.mtfi));
+        commit('setMTFIFacilities', ...mtfiFacilities);
         return response;
       } catch(e) {
         console.log(`Failed to get change request with error - ${e}`);
@@ -387,6 +383,7 @@ export default {
       checkSession();
       try {
         let ccfriResponse = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        console.log(ccfriResponse);
         await Promise.all(ccfriResponse?.data?.map(async (ccfri) => {
           let mtfiResponse = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + ccfri?.ccfriApplicationId);
           commit('addToMtfiFacilities', mtfiResponse?.data);

@@ -13,14 +13,14 @@
           <div class="ma-0 pa-0">
             <div class="pa-0 mx-0 my-5">
               <p class="text-h6 blueText">
-                Parent Fees {{item?.programYear}}: <strong>Full-time {{item?.childCareCategory}}</strong>
+                Parent Fees {{item.programYear}}: <strong>Full-time {{item.childCareCategory}}</strong>
                 (Over four hours, five days a week)
               </p>
             </div>
             <v-row no-gutters>
-              <v-row no-gutters v-if="item?.feeFrequency != newCcfri?.childCareTypes[index].feeFrequency">
+              <v-row no-gutters v-if="item.feeFrequency != newCcfri?.childCareTypes[index].feeFrequency">
                 <v-col class="col-12 col-lg-4 pb-3">
-                  Current parent fee frequency: {{item?.feeFrequency}}
+                  Current parent fee frequency: {{item.feeFrequency}}
                 </v-col>
                 <v-col class="col-12 col-lg-4 pb-3">
                   New parent fee frequency: {{newCcfri?.childCareTypes[index].feeFrequency}}
@@ -28,7 +28,7 @@
               </v-row>
               <div v-else>
                 <p>
-                  Parent fee frequency: {{item?.feeFrequency}}
+                  Parent fee frequency: {{item.feeFrequency}}
                 </p>
               </div>
             </v-row>

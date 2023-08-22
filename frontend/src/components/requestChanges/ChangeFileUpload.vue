@@ -3,7 +3,7 @@
     <v-container class="pa-0">
       <v-row no-gutters>
         <v-col class="col-12 mb-6">
-          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
+          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.
         </v-col>
         <v-col class="col-12">
           <v-data-table v-if="!isLoading"

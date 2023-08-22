@@ -720,7 +720,7 @@ const router = new VueRouter({
     },
     {
       path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
-      name: 'Midterm Fee Increase Information',
+      name: 'Midterm-Fee-Increase-Information',
       component: MtfiInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
@@ -765,13 +765,25 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI),
+      name: 'Summary and Declaration MTFI',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
       path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'change-request-ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.MTFI
       }
