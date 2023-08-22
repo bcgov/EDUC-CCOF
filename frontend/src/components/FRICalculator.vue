@@ -689,8 +689,8 @@ export default {
         'Monthly'
       ],
       typeOfCareList: [
-        'Licensed Group',
-        'Licensed Family'
+        'Licenced Group',
+        'Licenced Family'
       ],
       childAgeCategoryList: [
         '0 - 18 Months',
@@ -836,9 +836,9 @@ export default {
         //for (child in this.form.children) {
         for (var i = 0; i < this.children.length; i++) { 
         // Get the rate table info based on the provided type of child care and childs age category...
-          if (this.form.typeOfCare === 'Licensed Group') {
+          if (this.form.typeOfCare === 'Licenced Group') {
             rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
-          } else if (this.form.typeOfCare === 'Licensed Family') {
+          } else if (this.form.typeOfCare === 'Licenced Family') {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
         
