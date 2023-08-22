@@ -108,7 +108,7 @@
                 <span class="summary-label">Maximum number of child care spaces you offer</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-start  pb-2 pt-2">
-                <span class="summary-label">Maximum licenced capacity </span>
+                <span class="summary-label">Maximum licensed capacity </span>
               </v-col>
             </v-row>
           </v-col>

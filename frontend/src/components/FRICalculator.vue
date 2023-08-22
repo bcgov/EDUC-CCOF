@@ -105,7 +105,7 @@
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Licenced group child care takes place in a community-based facility or centre.<br> Licenced family child care takes place in the child care provider’s personal residence.</span>
+                    <span>Licensed group child care takes place in a community-based facility or centre.<br> Licensed family child care takes place in the child care provider’s personal residence.</span>
                   </v-tooltip>
             </v-col>
             <v-col cols="4" class="pb-0">
@@ -689,8 +689,8 @@ export default {
         'Monthly'
       ],
       typeOfCareList: [
-        'Licenced Group',
-        'Licenced Family'
+        'Licensed Group',
+        'Licensed Family'
       ],
       childAgeCategoryList: [
         '0 - 18 Months',
@@ -836,9 +836,9 @@ export default {
         //for (child in this.form.children) {
         for (var i = 0; i < this.children.length; i++) { 
         // Get the rate table info based on the provided type of child care and childs age category...
-          if (this.form.typeOfCare === 'Licenced Group') {
+          if (this.form.typeOfCare === 'Licensed Group') {
             rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
-          } else if (this.form.typeOfCare === 'Licenced Family') {
+          } else if (this.form.typeOfCare === 'Licensed Family') {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           }
         

@@ -890,8 +890,8 @@ export default {
         'Monthly'
       ],
       typeOfCareList: [
-        'Licenced Group',
-        'Licenced Family'
+        'Licensed Group',
+        'Licensed Family'
       ],
       rulesTypeOfCare: [
         (v) => !!v || 'Type of care is required'
@@ -914,12 +914,12 @@ export default {
   },
   computed: {
     filteredChildAgeCategoryList() {
-      return CHILD_CARE_CATEGORY_LIST.filter(el => !this.categoriesToRemove.includes(el) && !(this.form.typeOfCare === 'Licenced Family' && el === CHILDCARE_TYPE_PRESCHOOL ));
+      return CHILD_CARE_CATEGORY_LIST.filter(el => !this.categoriesToRemove.includes(el) && !(this.form.typeOfCare === 'Licensed Family' && el === CHILDCARE_TYPE_PRESCHOOL ));
     },
     /** TOOL TIPS TOOLTIPS*/
     careTypeToolTip() {
       // eslint-disable-next-line
-      return "Licenced group child care takes place in a community-based<br/>facility or centre. Licenced family child care takes place<br/>in the child care provider's personal residence.";
+      return "Licensed group child care takes place in a community-based<br/>facility or centre. Licensed family child care takes place<br/>in the child care provider's personal residence.";
     },
     ageCategoryToolTip() {
       // eslint-disable-next-line
@@ -981,7 +981,7 @@ export default {
       this.resetForm();
       this.selectedFacility = e;
       if (this.selectedFacility.careType) {
-        this.form.typeOfCare = this.selectedFacility.careType === 'F' ? 'Licenced Family' : 'Licenced Group';
+        this.form.typeOfCare = this.selectedFacility.careType === 'F' ? 'Licensed Family' : 'Licensed Group';
         this.isTypeOfCareDisabled = true;
       }
       this.filterChildsAgeCategory();
@@ -991,7 +991,7 @@ export default {
         switch (this.children[index - 1].childAgeCategory) {
         case CHILDCARE_TYPE_PRESCHOOL:
           // eslint-disable-next-line
-          return "Licenced preschool care is only funded for 4 hours or less.";
+          return "Licensed preschool care is only funded for 4 hours or less.";
         case CHILDCARE_TYPE_SCHOOL_CARE_K:
         case CHILDCARE_TYPE_SCHOOL_CARE_1:
           // eslint-disable-next-line
@@ -1169,7 +1169,7 @@ export default {
         for (let i = 0; i < this.children.length; i++) {
 
           // Get the rate table info based on the provided type of child care and childs age category...
-          if (this.form.typeOfCare == 'Licenced Group') {
+          if (this.form.typeOfCare == 'Licensed Group') {
             rateTableInfo = this.GROUP_REDUCTION_RATES.get(this.children[i].childAgeCategory);
           } else {
             rateTableInfo = this.FAMILY_REDUCTION_RATES.get(this.children[i].childAgeCategory);
@@ -1353,7 +1353,7 @@ export default {
       }
     },
     setTypeOfCare(typeOfCare) {
-      if (typeOfCare === 'Licenced Family') {
+      if (typeOfCare === 'Licensed Family') {
         this.children.forEach(child => {
           if (child.childAgeCategory === CHILDCARE_TYPE_PRESCHOOL) {
             child.childAgeCategory = undefined;

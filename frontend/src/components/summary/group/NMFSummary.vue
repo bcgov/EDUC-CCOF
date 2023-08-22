@@ -14,7 +14,7 @@
         <v-col cols="8" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="10" class="d-flex justify-start">
-              <span class="summary-label pt-3"> Did you apply for Ministry funding to create new licenced spaces prior to April 1, 2021 (e.g. New Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?</span>
+              <span class="summary-label pt-3"> Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021 (e.g. New Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?</span>
             </v-col>
             <v-col cols="3" class="d-flex justify-start">
               <v-text-field placeholder="Required" :value="this.nmfApp?.supportNeeds " class="" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>

@@ -173,7 +173,7 @@
                   <p>I hereby confirm that the information I have provided in this application is complete and accurate.
                     I certify that I have read and understand the following requirements:</p>
                   <ul style="padding-top:10px;">
-                    <li>Each facility must be licenced under the Community Care and Assisted Living Act;</li>
+                    <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
                     <li>Each facility must be in compliance with the Community Care and Assisted Living Act and Child
                       Care Licensing
                       Regulation;

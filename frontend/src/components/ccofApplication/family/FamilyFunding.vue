@@ -127,7 +127,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required, rules.min(0)]"
-                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" @change="$refs.form?.validate()" label="Maximum licenced capacity" />
+                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" @change="$refs.form?.validate()" label="Maximum licensed capacity" />
                 <label>(as indicated on your Community care and assisted Living Act Licence)</label>
               </v-col>
             </v-row>

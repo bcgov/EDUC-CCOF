@@ -103,7 +103,7 @@
             <v-row>
               <v-col>
                 <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="rules.required"
-                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" label="Maximum Licenced Capacity" />
+                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" label="Maximum Licensed Capacity" />
               </v-col>
             </v-row>
 

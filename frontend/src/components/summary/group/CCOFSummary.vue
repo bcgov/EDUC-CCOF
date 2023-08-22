@@ -95,7 +95,7 @@
                 <span class="summary-value">Type of Service</span>
               </v-col>
               <v-col cols="10" class="d-flex justify-start pb-2 pt-2">
-                <span class="summary-label">Maximum Licenced Capacity</span>
+                <span class="summary-label">Maximum Licensed Capacity</span>
               </v-col>
               <v-col cols="10" class="d-flex justify-start pb-2 pt-2">
                 <span class="summary-label">Group Child Care (Under 36 months)</span>

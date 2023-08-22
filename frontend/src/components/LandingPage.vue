@@ -193,15 +193,15 @@ export default {
       ccofNewApplicationText: [
         {
           title: 'CCOF Base Funding',
-          body: '<p><strong>(CCOF)</strong> Base Funding assists eligible licenced family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
+          body: '<p><strong>(CCOF)</strong> Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
         },
         {
           title: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
-          body: 'The CCFRI offers funding to eligible, licenced child care providers to reduce and stabilize parents’ monthly child care fees.',
+          body: 'The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
         },
         {
           title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
-          body: 'Providers with licenced care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
+          body: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
         },
       ],
       CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:'
