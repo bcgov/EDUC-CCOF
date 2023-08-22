@@ -201,7 +201,6 @@ export default {
       }
     },
     async getCcfriOver3percent({state, getters, rootState}, currentCcfri = undefined) {
-      console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       //FOR MTFI ONLY
       //previous CCFRI == previous PCF ccfri
       //CURRENT ccfri == PCF current fiscal CCFRI
@@ -316,7 +315,7 @@ export default {
 
         console.log(prevCcfriApp, 'in upper try');
 
-        console.log('currProgramYear', currProgramYear);
+        //('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
         response.data.forEach(item => {
