@@ -95,7 +95,7 @@
                         </MTFISummary>
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion" v-if="facility?.hasRfi && !isSummaryLoading[index]">
-                        <RFISummary 
+                        <RFISummary
                           @isSummaryValid="isFormComplete"
                           :rfiApp="facility?.rfiApp"
                           :ccfriId="facility?.ccfriApplicationId"
@@ -330,6 +330,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
+    ...mapGetters('navBar', ['previousPath']),
     ...mapState('organization', ['organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'model']),
