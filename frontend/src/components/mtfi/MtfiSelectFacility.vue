@@ -26,7 +26,7 @@
     <LargeButtonContainer v-else>
       <v-form ref="isValidForm" value="false" v-model="isValidForm" >
         <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
-          :disabled="!ccfriOptInStatus==1"
+          :disabled="!(ccfriOptInStatus==1) || isReadOnly"
           v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus } , index) in filteredUserProfileList" :key="index">
           <v-card-text>
             <v-row>
@@ -36,7 +36,7 @@
                 <p class="text--primary">Licence #: {{licenseNumber}}</p>
               </v-col>
               <v-col v-if="ccfriOptInStatus==1" class="d-flex align-center justify-center">
-                <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]"></v-checkbox>
+                <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]" :disabled="isReadOnly"></v-checkbox>
               </v-col>
             </v-row>
           </v-card-text>
@@ -89,10 +89,11 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList','navBarList']),
-    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
     isReadOnly() {
-      return false;
+      let changeRequest = this.userProfileChangeRequests.find(item => item.changeRequestId === this.$route.params.changeRecGuid);
+      return (changeRequest?.externalStatus != 'INCOMPLETE');
     },
     isNextButtonDisabled() {
       return (!this.checkbox?.includes(true));

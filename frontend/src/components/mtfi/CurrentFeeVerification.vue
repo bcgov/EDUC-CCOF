@@ -565,7 +565,7 @@ export default {
       this.CCFRIFacilityModel.childCareTypes[index].approvedFeeMar = this.currentPcfCcfri.childCareTypes[index].approvedFeeMar;
     },
     hasModelChanged(){
-      return isEqual(this.CCFRIFacilityModel, this.loadedModel);
+      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
     arePrevFeesCorrect(){
       return !(!this.CCFRIFacilityModel.existingFeesCorrect  || this.CCFRIFacilityModel.existingFeesCorrect == '100000001' );
@@ -625,23 +625,22 @@ export default {
     },
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
-      if (this.hasModelChanged()){
-        this.processing = true;
-        console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
-        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
-
-        try {
+      try {
+        if (this.hasModelChanged()){
+          this.processing = true;
+          console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
+          this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
-          if (showMessage) {
-            this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          }
-        } catch (error) {
-          console.info(error);
-          this.setFailureAlert('An error occurred while saving.');
+          this.processing = false;
         }
-        this.processing = false;
+        if (showMessage) {
+          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+        }
+      } catch (error) {
+        console.info(error);
+        this.setFailureAlert('An error occurred while saving.');
       }
     }
   },
