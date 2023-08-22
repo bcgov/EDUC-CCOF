@@ -37,7 +37,7 @@
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
                 <p class="text--primary "><strong> Facility Name: {{facilityName}}</strong></p>
-                <p class="text--primary"> License: {{licenseNumber}}</p>
+                <p class="text--primary"> Licence: {{licenseNumber}}</p>
                 <strong> <p class="text--primary  " >Opt In:  {{ccfriOptInStatus == "IN" ? "IN"  :  ccfriOptInStatus == "1" ? "IN" :  ccfriOptInStatus == "0" ?"OUT" :  "NOT SELECTED" }} </p> </strong>
               </v-col>
               <v-col cols="" class="d-flex align-center col-12 col-md-5"

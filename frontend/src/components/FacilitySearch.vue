@@ -11,7 +11,7 @@
           <v-row>
             <v-col cols="10" class="pt-5 text-left">
               <div color="#313131" style="padding-left:24px;font-style:normal;font-weight:500;font-family:BCSans;font-size:16px;">
-                Enter a facility name or city of a licensed child care provider participating in CCFRI
+                Enter a facility name or city of a licenced child care provider participating in CCFRI
               </div>
             </v-col>
           </v-row>

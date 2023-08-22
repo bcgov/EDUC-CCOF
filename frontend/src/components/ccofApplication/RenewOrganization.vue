@@ -9,7 +9,7 @@
       <v-row justify="space-around">
         <v-card class="cc-top-level-card justify-center" width="800">
             <v-card-text>
-                Do your current license and service details match the information found in
+                Do your current licence and service details match the information found in
                 Schedule A of your most recent Funding Agreement?
             </v-card-text>
             <v-row>

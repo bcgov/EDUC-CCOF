@@ -11,7 +11,7 @@
                   <v-skeleton-loader class="mx-auto" max-width="300" type="text@3"/>
                 </div>
 
-                <v-radio-group :disabled="isLocked" required :rules="rules.required"  v-model="model.familyLicenseType" label="License type" v-show="!loading">
+                <v-radio-group :disabled="isLocked" required :rules="rules.required"  v-model="model.familyLicenseType" label="Licence type" v-show="!loading">
                   <v-radio label="Family child care" value="7" />
                   <v-radio label="In-Home Multi-Age Child Care" value="6" />
                   <v-radio label="Multi-Age Care" value="5" />
@@ -127,8 +127,8 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required, rules.min(0)]"
-                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" @change="$refs.form?.validate()" label="Maximum licensed capacity" />
-                <label>(as indicated on your Community care and assisted Living Act License)</label>
+                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" @change="$refs.form?.validate()" label="Maximum licenced capacity" />
+                <label>(as indicated on your Community care and assisted Living Act Licence)</label>
               </v-col>
             </v-row>
           </v-container>

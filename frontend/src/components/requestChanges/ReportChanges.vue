@@ -24,7 +24,7 @@
                 This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE information ready.
               </p>
               <p class="px-2 text-center">
-                You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> license.
+                You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
               </p>
             </template>
               <template #button class="ma-0 pa-0 ">
@@ -37,9 +37,9 @@
 
           <SmallCard  class= "col-lg-6 " :disable="false">
             <template #content class="px-10">
-              <p class="text-h6 text-center">Report changes to your License or service</p>
+              <p class="text-h6 text-center">Report changes to your Licence or service</p>
               <p class="px-2 text-center">
-                Please have your <i>Community Care And Assisted Living Act</i> license (if required) and other supporting documents ready.
+                Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other supporting documents ready.
               </p>
             </template>
               <template #button class="ma-0 pa-0 ">

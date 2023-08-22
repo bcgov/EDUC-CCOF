@@ -28,7 +28,7 @@
           </v-card>
           <div class="px-md-12 px-7 py-10">
             <p class="text-h6 text--primary my-0">
-              1.	Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021
+              1.	Did you apply for Ministry funding to create new licenced spaces prior to April 1, 2021
               (e.g. New Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?
             </p>
             <v-radio-group

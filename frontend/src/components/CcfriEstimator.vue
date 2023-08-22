@@ -991,7 +991,7 @@ export default {
         switch (this.children[index - 1].childAgeCategory) {
         case CHILDCARE_TYPE_PRESCHOOL:
           // eslint-disable-next-line
-          return "Licensed preschool care is only funded for 4 hours or less.";
+          return "Licenced preschool care is only funded for 4 hours or less.";
         case CHILDCARE_TYPE_SCHOOL_CARE_K:
         case CHILDCARE_TYPE_SCHOOL_CARE_1:
           // eslint-disable-next-line

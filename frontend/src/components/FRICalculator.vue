@@ -105,7 +105,7 @@
                       <v-icon small color="white">mdi-help</v-icon>
                     </v-card>
                   </template>
-                    <span>Licensed group child care takes place in a community-based facility or centre.<br> Licensed family child care takes place in the child care provider’s personal residence.</span>
+                    <span>Licenced group child care takes place in a community-based facility or centre.<br> Licenced family child care takes place in the child care provider’s personal residence.</span>
                   </v-tooltip>
             </v-col>
             <v-col cols="4" class="pb-0">
