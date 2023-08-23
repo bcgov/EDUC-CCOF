@@ -281,10 +281,10 @@ export default {
       if (this.getChangeNotificationActionId) {
         this.items.push({
           title: 'Change Notification Form',
-          link: {name: 'Report Change'},
+          link: {name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: this.getChangeNotificationActionId}},
           isAccessible: true,
           icon: 'mdi-information',
-          isActive: 'Report Change' === this.$route.name,
+          isActive: 'new-facility-other-guid' === this.$route.name,
           expanded: false,
           position: positionIndex++,
           navBarId: navBarId++
