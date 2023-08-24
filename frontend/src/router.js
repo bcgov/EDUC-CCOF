@@ -532,6 +532,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: true,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
       }
     },
     {
@@ -762,6 +763,16 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: Subtitle_Banners.CHANGEREQUEST
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
+      name: 'Summary and Declaration Change Notification Form',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
       }
     },
     {

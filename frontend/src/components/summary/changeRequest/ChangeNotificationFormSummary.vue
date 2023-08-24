@@ -4,9 +4,9 @@
       <v-expansion-panel-header>
         <h4 class="blueText">
           Change Notification Form
-          <v-icon v-if="isChangeNotificationFormDocumentsUploaded" color="green" large>mdi-check-circle-outline</v-icon>
-          <v-icon v-if="!isChangeNotificationFormDocumentsUploaded" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-          <span v-if="!isChangeNotificationFormDocumentsUploaded" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
+          <v-icon v-if="isLoadingComplete && isChangeNotificationFormComplete" color="green" large>mdi-check-circle-outline</v-icon>
+          <v-icon v-if="isLoadingComplete && !isChangeNotificationFormComplete" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+          <span v-if="isLoadingComplete && !isChangeNotificationFormComplete" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
         </h4>
       </v-expansion-panel-header>
       <v-expansion-panel-content eager>
@@ -27,7 +27,7 @@
               v-for="(item,index) in this.notificationFormDocuments"
               :key="index"
               no-gutters
-              v-if="isChangeNotificationFormDocumentsUploaded"
+              v-if="isChangeNotificationFormComplete"
             >
               <v-col :cols="6" class="summary-value pr-8">
                 {{ item.filename }}
@@ -36,7 +36,7 @@
                 {{ item.notetext }}
               </v-col>
             </v-row>
-            <v-row no-gutters v-if="!isChangeNotificationFormDocumentsUploaded">
+            <v-row no-gutters v-if="!isChangeNotificationFormComplete">
               <v-col :cols="6" style="" class="summary-value-missing">
                 Required
               </v-col>
@@ -68,7 +68,7 @@
             </v-row>
           </div>
         </div>
-        <router-link :to="getRoutingPath" v-if="!isChangeNotificationFormDocumentsUploaded">
+        <router-link :to="getRoutingPath" v-if="!isChangeNotificationFormComplete">
           <span style="color:#ff5252">
             <u>To add this information, click here. This will bring you to a different page.</u>
           </span>
@@ -79,14 +79,14 @@
 </template>
 
 <script>
-import { PATHS, changeUrlGuid, CHANGE_TYPES, CHANGE_REQUEST_TYPES } from '@/utils/constants';
-import { mapState } from 'vuex';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   props: {
     changeNotificationFormDocuments: {
       type: Array,
-      required: true
+      required: false
     },
   },
   data() {
@@ -94,7 +94,6 @@ export default {
       PATHS,
       formObj:{
         formName: 'ChangeNotificationFormSummary',
-        formId: this.changeActionId,
       },
     };
   },
@@ -102,19 +101,20 @@ export default {
     isLoadingComplete: {
       handler: function (val) {
         if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormDocumentsUploaded);
+          this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormComplete);
         }
       },
     }
   },
   computed:{
+    ...mapGetters('reportChanges', ['getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
     ...mapState('summaryDeclaration', ['isLoadingComplete', 'summaryModel']),
-    changeActionId() {
-      let changeAction = this.summaryModel.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
-      return changeAction ? changeAction.changeActionId : null;
-    },
+    ...mapState('navBar', ['changeType']),
     getRoutingPath() {
-      return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION);
+      if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
+        return changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid,  this.getChangeNotificationActionId, CHANGE_TYPES.CHANGE_NOTIFICATION);
+      }
+      return changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.$route.params?.changeRecGuid, this.getChangeNotificationActionId);
     },
     supportingDocuments() {
       return this.changeNotificationFormDocuments?.filter(document => document.subject == 'SUPPORTING_DOC');
@@ -122,9 +122,6 @@ export default {
     notificationFormDocuments() {
       return this.changeNotificationFormDocuments?.filter(document => document.subject == 'NOTIFICATION_FORM');
     },
-    isChangeNotificationFormDocumentsUploaded() {
-      return this.notificationFormDocuments?.length > 0;
-    }
   },
   methods: {
   }

@@ -56,7 +56,7 @@
               <v-row v-else no-gutters class="d-flex flex-column mb-2">
 
                 <!-- Change Notification Form Summary -->
-                <v-expansion-panel variant="accordion" v-if="hasChangeRequestType('PDF_CHANGE')">
+                <v-expansion-panel variant="accordion" v-if="hasChangeRequestType('PDF_CHANGE')" class="mb-8 mt-8">
                   <ChangeNotificationFormSummary
                     @isSummaryValid="isFormComplete"
                     :changeNotificationFormDocuments="summaryModel?.changeNotificationFormDocuments">
@@ -289,7 +289,7 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -334,6 +334,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges', ['getChangeNotificationActionId']),
+    ...mapState('navBar', ['changeType']),
     ...mapState('organization', ['organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'model']),
@@ -398,6 +400,9 @@ export default {
       }
     },
     previous() {
+      if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.getChangeNotificationActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      }
       this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {

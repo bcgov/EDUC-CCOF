@@ -261,6 +261,7 @@ export default {
     async loadChangeRequestSummaryDeclaration({ state, commit, dispatch }, changeRequestId) {
       checkSession();
       try {
+        commit('isLoadingComplete', false);
         if (!state.summaryModel)
           commit('isMainLoading', true);
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;

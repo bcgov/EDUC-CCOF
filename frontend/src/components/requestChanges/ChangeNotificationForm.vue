@@ -90,7 +90,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS, changeUrlSummaryDeclaration } from '@/utils/constants';
+import { PATHS, changeUrl } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -146,7 +146,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('app', ['setCcfriOptInComplete']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapActions('reportChanges', ['createChangeRequest','getChangeRequestList', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setUploadedDocument']),
@@ -165,6 +165,7 @@ export default {
         await this.$refs.childRef.save(false);
         await this.$refs.childRef2.save(false);
         await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+        this.forceNavBarRefresh();
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
         }
@@ -179,7 +180,7 @@ export default {
       if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
         this.$router.push(this.nextPath);
       } else {
-        this.$router.push(changeUrlSummaryDeclaration(this.$route.params?.changeRecGuid));
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, this.$route.params?.changeRecGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));
       }
     },
     async validateForm() {

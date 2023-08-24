@@ -118,7 +118,7 @@ export default {
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
     ...mapState('reportChanges',['mtfiFacilities']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
     navRefresh() {
@@ -283,7 +283,7 @@ export default {
           title: 'Change Notification Form',
           link: {name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: this.getChangeNotificationActionId}},
           isAccessible: true,
-          icon: 'mdi-information',
+          icon: this.getCheckbox(this.isChangeNotificationFormComplete),
           isActive: 'new-facility-other-guid' === this.$route.name,
           expanded: false,
           position: positionIndex++,

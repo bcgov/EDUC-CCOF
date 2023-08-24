@@ -15,7 +15,7 @@
       </v-row>
       <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+          <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
@@ -134,7 +134,7 @@
                       </v-expansion-panel>
                     </div>
                 </div>
-                <div v-if="!this.isRenewal">
+                <div v-if="!this.isRenewal" class="mt-10">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
                                 :ecewe-facility="null" :isProcessing="isProcessing"
@@ -142,7 +142,7 @@
                                 ></ECEWESummary>
                 </v-expansion-panel>
                 </div>
-                <v-expansion-panel variant="accordion" v-if="hasChangeNotificationFormDocuments">
+                <v-expansion-panel variant="accordion" v-if="hasChangeNotificationFormDocuments" class="mt-10">
                   <ChangeNotificationFormSummary
                     @isSummaryValid="isFormComplete"
                     :changeNotificationFormDocuments="summaryModel?.changeNotificationFormDocuments">
