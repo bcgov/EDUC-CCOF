@@ -193,6 +193,8 @@ export default {
       return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
     },
     isNextEnabled() {
+      if (this.isChangeRequest)
+        return this.isValidForm;
       return this.isValidForm && this.canSubmit;
     },
     filteredNavBarList() {

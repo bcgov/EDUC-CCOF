@@ -3,13 +3,13 @@
     <v-form ref="mtfiSummaryForm" v-model="isValidForm">
       <v-expansion-panel-header>
         <h4 class="blueText">Parent fees
-          <v-icon v-if="isValidForm && newCcfriHasValue" color="green" large>mdi-check-circle-outline</v-icon>
-          <v-icon v-if="!isValidForm || !newCcfriHasValue" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
-          <span v-if="!isValidForm || !newCcfriHasValue" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
+          <v-icon v-if="isValidForm && isNewCcfriValid" color="green" large>mdi-check-circle-outline</v-icon>
+          <v-icon v-if="!isValidForm || !isNewCcfriValid" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
+          <span v-if="!isValidForm || !isNewCcfriValid" style="color:#ff5252;">Your form is missing required information. Click here to view. </span>
         </h4>
       </v-expansion-panel-header>
       <v-expansion-panel-content eager>
-        <div v-for="(item , index) in oldCcfri?.childCareTypes" :key="index" v-if="newCcfriHasValue">
+        <div v-for="(item , index) in oldCcfri?.childCareTypes" :key="index" v-if="isNewCcfriValid">
           <div class="ma-0 pa-0">
             <div class="pa-0 mx-0 my-5">
               <p class="text-h6 blueText">
@@ -260,7 +260,7 @@
             </div>
           </div>
         </div>
-        <v-row v-if="!isValidForm || !newCcfriHasValue" class="d-flex justify-start pt-4">
+        <v-row v-if="!isValidForm || !isNewCcfriValid" class="d-flex justify-start pt-4">
           <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
             <v-row  no-gutters class="d-flex justify-start">
               <v-col class="d-flex justify-start">
@@ -311,7 +311,7 @@ export default {
     isLoadingComplete: {
       handler: function (val) {
         if (val) {
-          if (!this.newCcfriHasValue)
+          if (!this.isNewCcfriValid)
             this.isValidForm = false;
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
@@ -323,8 +323,8 @@ export default {
     getRoutingPath(){
       return changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.newCcfri.ccfriApplicationId, CHANGE_TYPES.MTFI);
     },
-    newCcfriHasValue() {
-      return (this.newCcfri?.childCareTypes?.length > 0);
+    isNewCcfriValid() {
+      return (this.newCcfri?.childCareTypes?.length === this.oldCcfri?.childCareTypes?.length);
     }
   },
   methods: {

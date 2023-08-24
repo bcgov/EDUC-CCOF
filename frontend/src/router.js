@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid, changeUrlSummaryDeclaration } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -55,7 +55,6 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
 import ChangeInformation from '@/components/requestChanges/ChangeInformation';
 import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
 
@@ -523,6 +522,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
       }
     },
     {
@@ -533,6 +533,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: true,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
       }
     },
     {
@@ -699,16 +700,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
-      name: 'Summary and Declaration Report Changes',
-      component: SummaryDeclarationReportChanges,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: false
-      }
-    },
-    {
       path: PATHS.ROOT.CHANGE_INFO,
       name: 'Change Request Information',
       component: ChangeInformation,
@@ -765,14 +756,14 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlSummaryDeclaration(':changeRecGuid'),
-      name: 'Summary and Declaration Change Request',
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
+      name: 'Summary and Declaration Change Notification Form',
       component: SummaryDeclarationChangeRequest,
       meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
+        pageTitle: 'Change Notification Form',
         showNavBar: false,
-        //subtitleBanner: Subtitle_Banners.ADDFACILITY
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION
       }
     },
     {

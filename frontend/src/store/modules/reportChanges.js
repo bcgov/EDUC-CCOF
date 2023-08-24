@@ -36,6 +36,10 @@ export default {
     isCRLicenseComplete: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isLicenseUploadComplete;
     },
+    isChangeNotificationFormComplete: (state) => {
+      let index = state.uploadedDocuments?.findIndex(document => document.subject === 'NOTIFICATION_FORM');
+      return (index > -1);
+    },
     // eslint-disable-next-line no-unused-vars
     changeRequestStatus: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;

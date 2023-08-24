@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-form ref="form" v-model="isValidForm">
       <v-row class="d-flex justify-center">
-        <span class="text-h5">Child Care Operating Funding Program - Request a Parent Fee Increase</span>
+        <span class="text-h5">Child Care Operating Funding Program{{ pageTitle }}</span>
       </v-row>
       <v-row class="d-flex justify-center">
         <h2>Summary and Declaration</h2>
@@ -56,11 +56,12 @@
               <v-row v-else no-gutters class="d-flex flex-column mb-2">
 
                 <!-- Change Notification Form Summary -->
-                <div class="d-flex flex-column mb-2 mt-10" v-if="hasChangeRequestType('PDF_CHANGE')">
-                  <div>
-                    THIS IS CHANGE NOTIFICATION FORM
-                  </div>
-                </div>
+                <v-expansion-panel variant="accordion" v-if="hasChangeRequestType('PDF_CHANGE')" class="mb-8 mt-8">
+                  <ChangeNotificationFormSummary
+                    @isSummaryValid="isFormComplete"
+                    :changeNotificationFormDocuments="summaryModel?.changeNotificationFormDocuments">
+                  </ChangeNotificationFormSummary>
+                </v-expansion-panel>
 
                 <!-- MTFI Summary -->
                 <v-row no-gutters class="d-flex flex-column mb-2 mt-10" v-if="hasChangeRequestType('MTFI')">
@@ -288,17 +289,19 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
-import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
+import { PATHS, CHANGE_REQUEST_TYPES, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary';
 import RFISummary from '@/components/summary/group/RFISummary';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary';
 
 
 export default {
   components: {
     MTFISummary,
+    ChangeNotificationFormSummary,
     RFISummary,
     NavButton
   },
@@ -331,6 +334,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges', ['getChangeNotificationActionId']),
+    ...mapState('navBar', ['changeType']),
     ...mapState('organization', ['organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'model']),
@@ -362,6 +367,13 @@ export default {
     },
     isDeclarationBDisplayed() {
       return (this.model.enabledDeclarationB || this.hasChangeRequestType('MTFI'));
+    },
+    pageTitle() {
+      let changeRequestTypes = this.summaryModel?.changeRequestTypes;
+      if (changeRequestTypes?.length === 1) {
+        return changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) ? ' - Request a Parent Fee Increase' : '';
+      }
+      return ''
     }
   },
   methods: {
@@ -388,6 +400,9 @@ export default {
       }
     },
     previous() {
+      if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
+        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, this.$route.params?.changeRecGuid, this.getChangeNotificationActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      }
       this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
