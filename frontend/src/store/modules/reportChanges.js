@@ -36,6 +36,10 @@ export default {
     isCRLicenseComplete: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isLicenseUploadComplete;
     },
+    isChangeNotificationFormComplete: (state) => {
+      let index = state.uploadedDocuments?.findIndex(document => document.subject === 'NOTIFICATION_FORM');
+      return (index > -1);
+    },
     // eslint-disable-next-line no-unused-vars
     changeRequestStatus: (state, getters, rootState) => {
       return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
@@ -145,12 +149,6 @@ export default {
         state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
       }
     },
-    // setMTFIFacilities:(state, value) => {
-    //   state.mtfiFacilities = value;
-    // },
-    // addToMtfiFacilities: (state, payload) => {
-    //   payload?.forEach(facility => state.mtfiFacilities.push(facility));
-    // },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
@@ -221,7 +219,9 @@ export default {
         commit('setChangeRequestId', response?.changeRequestId);
         commit('setChangeActionId', response?.changeActions[0]?.changeActionId);
         let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
-        mtfiChangeActions?.forEach(changeAction => commit('addToMtfiFacilities', changeAction.mtfi));
+        let mtfiFacilities = [];
+        mtfiChangeActions?.forEach(changeAction => mtfiFacilities.push(changeAction.mtfi));
+        commit('setMTFIFacilities', ...mtfiFacilities);
         return response;
       } catch(e) {
         console.log(`Failed to get change request with error - ${e}`);

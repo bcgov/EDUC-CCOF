@@ -121,7 +121,6 @@ export const PATHS = {
   CHANGE_NOTIFICATION_FORM: '/notification-form',
   CHANGE_NOTIFICATION_DIALOGUE: '/notification-dialogue',
   CHANGE_MTFI: 'midterm-fee-increase',
-  CHANGE_NOTIFICATION_DECLARATION: '/notification-declaration',
   CHANGE_NEW_FACILITY_OTHER: '/other-changes',
   MTFI_INFO: '/mtfi-instructions',
 
@@ -146,10 +145,6 @@ export function changeUrl(suffix, changeRecGuid = ':changeRecGuid', changeType =
 
 export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
-}
-
-export function changeUrlSummaryDeclaration(changeRecGuid = ':changeRecGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
-  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${PATHS.SUMMARY_DECLARATION}`;
 }
 
 export const NAV_BAR_GROUPS = {
