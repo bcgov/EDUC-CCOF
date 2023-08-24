@@ -2,7 +2,6 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
-//import { isChangeRequest } from '@/utils/common';
 
 function parseLicenseCategories(licenseCategories, rootState) {
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
@@ -240,7 +239,8 @@ export default {
         } // end FOR loop
 
         summaryModel.allDocuments = null;
-        await commit('isLoadingComplete', true );
+        if (!changeRecGuid)
+          commit('isLoadingComplete', true );
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
@@ -294,6 +294,7 @@ export default {
         await Promise.all(changeRequestTypes.map(async changeType => {
           switch (changeType) {
             case CHANGE_REQUEST_TYPES.NEW_FACILITY:
+              await dispatch('loadChangeRequestSummaryForAddNewFacility', payload);
               break;
             case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
               await dispatch('loadChangeRequestSummaryForMtfi', payload);
@@ -308,6 +309,24 @@ export default {
         commit('isLoadingComplete', true );
       } catch (error) {
         console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
+        throw error;
+      }
+    },
+
+    async loadChangeRequestSummaryForAddNewFacility({ state, commit }, payload) {
+      try {
+        let summaryModel = state.summaryModel;
+        let changeRequestECEWE = {
+          optInECEWE: payload?.optInECEWE,
+          belongsToUnion: payload?.belongsToUnion,
+          applicableSector: payload?.applicableSector,
+          fundingModel: payload?.fundingModel,
+          confirmation: payload?.confirmation,
+        };
+        summaryModel.ecewe = changeRequestECEWE;
+        commit('summaryModel', summaryModel);
+      } catch (error) {
+        console.log(`Failed to load Summary for change request Add New Facility - ${error}`);
         throw error;
       }
     },

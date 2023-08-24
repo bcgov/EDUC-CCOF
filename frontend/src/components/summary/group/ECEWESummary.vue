@@ -3,7 +3,7 @@
     <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-header>
       <h4 style="color:#003466;">Early Childhood Educator-Wage Enhancement (ECE-WE)
-        <v-icon v-if="isValidForm" color="green" large>mdi-check-circle-outline</v-icon>
+        <v-icon v-if="isValidForm && !this.isProcessing" color="green" large>mdi-check-circle-outline</v-icon>
         <v-icon v-if="!isValidForm && !this.isProcessing" color="#ff5252" large>mdi-alert-circle-outline</v-icon>
         <span v-if="!isValidForm && !this.isProcessing" style="color:#ff5252;">Your form is missing required information. Click here to view.</span>
       </h4>
@@ -166,7 +166,7 @@ export default {
     },
     getRoutingPath(){
       if(this.isChangeRequest){
-        return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.changeRecGuid);
+        return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
       }
       else if(this.eceweFacility){
         return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);

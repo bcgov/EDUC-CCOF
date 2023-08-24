@@ -1,4 +1,4 @@
-import {PATHS} from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
@@ -270,14 +270,15 @@ export default {
   },
   actions: {
     // preload change request details needed for the navBar
-    async loadChangeRequest({state, commit}, changeRequestId) {
+    async loadChangeRequest({state, commit, dispatch}, changeRequestId) {
       if (!state.changeRequestMap.get(changeRequestId)) {
         checkSession();
         try {
           let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
-          console.log('THIS IS CHANGE REQUEST RESPONSE = ');
-          console.log(response);
           commit('addChangeRequestToStore', {changeRequestId: changeRequestId, changeRequestModel: response});
+          let changeNotificationAction = response?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
+          if (changeNotificationAction)
+            await dispatch('reportChanges/loadChangeRequestDocs', changeNotificationAction.changeActionId, { root: true });
         } catch(e) {
           console.log(`Failed to get change request with error - ${e}`);
           throw e;
