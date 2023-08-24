@@ -83,7 +83,7 @@ export const PATHS = {
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
-    CHANGE_NEW_FACILITY: '/change/new/group/facility',
+    CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     CHANGE_INFO: '/change/information',
   },
   PREFIX: {
@@ -148,8 +148,8 @@ export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid 
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
-export function changeUrlSummaryDeclaration(changeRecGuid = ':changeRecGuid') {
-  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${PATHS.SUMMARY_DECLARATION}`;
+export function changeUrlSummaryDeclaration(changeRecGuid = ':changeRecGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
+  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${PATHS.SUMMARY_DECLARATION}`;
 }
 
 export const NAV_BAR_GROUPS = {

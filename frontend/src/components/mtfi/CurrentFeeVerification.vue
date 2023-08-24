@@ -450,9 +450,9 @@ export default {
       if(!this.changeRequestStatus){
         return false;
       }
-      if(this.changeRequestStatus!=='INCOMPLETE'){
-        return true;
-      }
+      // if(this.changeRequestStatus!=='INCOMPLETE'){
+      //   return true;
+      // }
       return false;
     }
   },
@@ -590,8 +590,7 @@ export default {
       this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
     },
     async next() {
-      await this.save(false);
-
+      this.save(false);
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
 
@@ -625,10 +624,10 @@ export default {
     },
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
+      this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
       if (this.hasModelChanged()){
         this.processing = true;
-        console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
-        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
+        console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);     
 
         try {
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes

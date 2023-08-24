@@ -776,7 +776,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlSummaryDeclaration(':changeRecGuid'),
+      path: changeUrlSummaryDeclaration(':changeRecGuid',CHANGE_TYPES.MTFI),
       name: 'Summary and Declaration MTFI',
       component: SummaryDeclarationChangeRequest,
       meta: {
