@@ -14,7 +14,7 @@ import authStore from './store/modules/auth';
 import store from './store/index';
 import Login from '@/components/Login.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid, changeUrlSummaryDeclaration } from '@/utils/constants';
+import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
 
 import MinistryLogin from '@/components/MinistryLogin';
 import Impersonate from '@/components/Impersonate';
@@ -522,6 +522,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
       }
     },
     {
@@ -755,17 +756,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlSummaryDeclaration(':changeRecGuid'),
-      name: 'Summary and Declaration Change Request',
-      component: SummaryDeclarationChangeRequest,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: true,
-        subtitleBanner: Subtitle_Banners.CHANGEREQUEST
-      }
-    },
-    {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'Summary and Declaration Change Notification Form',
       component: SummaryDeclarationChangeRequest,
@@ -773,6 +763,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION
       }
     },
     {

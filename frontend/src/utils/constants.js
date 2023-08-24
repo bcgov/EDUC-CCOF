@@ -147,10 +147,6 @@ export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid 
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
-export function changeUrlSummaryDeclaration(changeRecGuid = ':changeRecGuid') {
-  return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeRecGuid}${PATHS.SUMMARY_DECLARATION}`;
-}
-
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
