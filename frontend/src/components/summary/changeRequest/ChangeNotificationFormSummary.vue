@@ -37,7 +37,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters v-if="!isChangeNotificationFormComplete">
-              <v-col :cols="6" style="" class="summary-value-missing">
+              <v-col :cols="6" class="summary-value-missing">
                 Required
               </v-col>
             </v-row>
