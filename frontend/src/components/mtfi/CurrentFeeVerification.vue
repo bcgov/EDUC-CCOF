@@ -591,7 +591,6 @@ export default {
     },
     async next() {
       await this.save(false);
-
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
 
@@ -625,11 +624,11 @@ export default {
     },
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
+      this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
       try {
         if (this.hasModelChanged()){
           this.processing = true;
           console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
-          this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});

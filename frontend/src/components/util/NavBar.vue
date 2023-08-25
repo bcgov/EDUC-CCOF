@@ -184,11 +184,9 @@ export default {
       console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
         if(this.changeType==='nf'){
-          console.log('calling new Fac build nav bar');
           this.buildNewFacilityNavBar();
         }
         else if(this.changeType ==='mtfi'){
-          console.log('call mtfi build nav bar');
           this.buildMTFINavBar();
         }
       } else {
@@ -269,7 +267,7 @@ export default {
       this.items.push({
         title: 'Supporting Document',
         link: { name: 'change-request-Supporting-Document-Upload', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-        isAccessible: true, //change this when change req logic more complete
+        isAccessible: isCCOFGroupComplete, //change this when change req logic more complete
         icon: 'mdi-information',
         isActive: 'change-request-Supporting-Document-Upload' === this.$route.name,
         expanded: false,
@@ -361,7 +359,7 @@ export default {
         {
           title: 'Opt in / Opt out',
           link: { name: 'change-request-ccfri-home', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-          isAccessible: true, //Change - when newFacilityCCOF is complete
+          isAccessible: isCCOFGroupComplete, //Change - when newFacilityCCOF is complete
           icon: this.getCheckbox(this.isCCFRIOptInComplete()),
           isActive: 'change-request-ccfri-home' === this.$route.name,
           position: positionIndex++,
@@ -629,18 +627,21 @@ export default {
     },
     addNewFacilityConfirmationToCCOFNavbar() {
       let link;
+      let isAccessible;
       if (this.isChangeRequest) {
         link = {
           name: 'change-request-new-facility-confirmation',
           params: {changeRecGuid: this.$route.params.changeRecGuid}
         };
+        isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = { name: 'Application Confirmation'};
+        isAccessible= this.ccofConfirmationEnabled;
       }
       return {
         title: 'Add Facility',
         link: link,
-        isAccessible: this.ccofConfirmationEnabled,
+        isAccessible: isAccessible,
         icon: 'mdi-information',
         isActive: link.name === this.$route.name,
         position: positionIndex++,
@@ -649,18 +650,21 @@ export default {
     },
     addLicenceUploadToCCOFNavbar() {
       let link;
+      let isAccessible;
       if (this.isChangeRequest) {
         link = {
           name: 'Change Request Licence Upload',
           params: {changeRecGuid: this.$route.params.changeRecGuid}
         };
+        isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = {name: 'Licence Upload'};
+        isAccessible= this.ccofConfirmationEnabled;
       }
       return {
         title: 'Licence Upload',
         link: link,
-        isAccessible: this.ccofConfirmationEnabled,
+        isAccessible: isAccessible,
         icon: this.isChangeRequest? this.getCheckbox(this.isCRLicenseComplete): this.getCheckbox(this.isLicenseUploadComplete),
         isActive: this.isChangeRequest? 'Change Request Licence Upload' === this.$route.name : 'Licence Upload' === this.$route.name,
         position: positionIndex++,
@@ -671,7 +675,6 @@ export default {
       return this.navBarList?.length>0;
     },
     getMTFINavigation(){
-      console.log('building MTFI Nav');
       let items = [];
       items.push(
         {
@@ -883,7 +886,7 @@ export default {
         {
           title: 'Eligibility',
           link: { name: 'change-request-ECEWE-Eligibility', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-          isAccessible: true, //change this when change req logic more complete
+          isAccessible: isCCOFGroupComplete, //change this when change req logic more complete
           icon: this.getCheckbox(this.isCREceweComplete),
           isActive: 'change-request-ECEWE-Eligibility' === this.$route.name,
           position: positionIndex++,
@@ -894,7 +897,7 @@ export default {
         {
           title: 'Facility',
           link: { name: 'change-request-ECEWE-Facilities', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-          isAccessible: this.isEceweComplete,
+          isAccessible: this.isCREceweComplete,
           icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
           isActive: 'change-request-ECEWE-Facilities' === this.$route.name,
           position: positionIndex++,
