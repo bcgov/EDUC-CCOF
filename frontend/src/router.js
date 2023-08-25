@@ -55,7 +55,12 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import SummaryDeclarationReportChanges from '@/components/requestChanges/SummaryDeclarationReportChanges';
+import ChangeInformation from '@/components/requestChanges/ChangeInformation';
+import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
+
+import MtfiInfo from '@/components/mtfi/MTFIInfo';
+import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
+import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
 
 Vue.prototype.moment = moment;
 
@@ -517,6 +522,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
       }
     },
     {
@@ -527,6 +533,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: true,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
       }
     },
     {
@@ -634,18 +641,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CCFRI_RFI),
-      name: 'change-request-ccfri-request-info',
-      component: CCFRIRequestMoreInfo,
-      meta: {
-        pageTitle: 'CCFRI Request More Info',
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCFRI,
-        requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
-    },
-    {
       path: changeUrlGuid(PATHS.CCFRI_NMF),
       name: 'change-request-new-facilities',
       component: NMF,
@@ -705,13 +700,94 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION,  ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
-      name: 'Summary and Declaration Report Changes',
-      component: SummaryDeclarationReportChanges,
+      path: PATHS.ROOT.CHANGE_INFO,
+      name: 'Change Request Information',
+      component: ChangeInformation,
       meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        pageTitle: 'Change Request Information',
         requiresAuth: true,
-        showNavBar: false
+        showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_INFO,  ':changeRecGuid', CHANGE_TYPES.MTFI),
+      name: 'Midterm Fee Increase Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
+      name: 'Midterm-Fee-Increase-Information',
+      component: MtfiInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: false,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, ':changeRecGuid', CHANGE_TYPES.MTFI),
+      name: 'Midterm Fee Increase Select Facilities',
+      component: MtfiSelectFacility,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'CCFRI Fee Verification',
+      component: MtfiFeeVerification,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
+      name: 'Summary and Declaration Change Notification Form',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: 'Change Notification Form',
+        showNavBar: false,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI),
+      name: 'Summary and Declaration MTFI',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.MTFI
       }
     },
   ]
@@ -723,7 +799,7 @@ router.beforeEach((to, _from, next) => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
       }else {
-        store.dispatch('auth/getUserInfo').then(() => {
+        store.dispatch('auth/getUserInfo', to).then(() => {
           store.commit('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);

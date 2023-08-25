@@ -50,7 +50,7 @@
 
           </SmallCard>
 
-          <SmallCard  class= "col-lg-6 " :disable="false">
+          <SmallCard  class= "col-lg-6 " :disable="!isMtfiEnabled()">
             <template #content class="px-10">
               <p class="text-h6 text-center">Parent fee increase (MTFI)</p>
               <p class="px-2 text-center">
@@ -59,7 +59,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToMTFI()" >Update parent fees</v-btn>
+                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" >Update parent fees</v-btn>
                 </v-row>
               </template>
 
@@ -174,7 +174,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl} from '@/utils/constants';
+import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
@@ -247,7 +247,7 @@ export default {
             submissionDate: changeRequest?.firstSubmissionDate,
             submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
             priority: changeRequest?.priority
-          }
+          };
         });
       }
       return allChangeRequests;
@@ -304,7 +304,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('reportChanges', ['loadChangeRequest', 'deleteChangeRequest', 'createChangeRequest', 'cancelChangeRequest']),
+    ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -412,6 +412,7 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
     continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
+      this.processing = true;
       let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
       if (changeType == 'PDF_CHANGE'){
         this.goToChangeForm(changeActionId, changeRequestId);
@@ -423,7 +424,8 @@ export default {
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.setChangeActionId(changeActionId);
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
@@ -431,7 +433,7 @@ export default {
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         this.goToChangeForm(changeActionId, changeRequestId);
       } else if (currentCR?.unlockDeclaration) {
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId, CHANGE_TYPES.CHANGE_NOTIFICATION));
       } else {
         this.goToChangeForm(changeActionId, changeRequestId);
       }
@@ -459,6 +461,7 @@ export default {
       }
     },
     updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
+      this.processing = true;
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       if (changeType == 'PDF_CHANGE'){
@@ -469,7 +472,7 @@ export default {
       }
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
       }
     },
     async createNewChangeRequest(changeType){
@@ -504,15 +507,13 @@ export default {
 
     },
     async goToMTFI(changeRequestId = null){
-
+      //if no change request GUID, the next page will create the change request.
       if (!changeRequestId){
-        let newReq = await this.createNewChangeRequest('PARENT_FEE_CHANGE');
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, newReq.changeRequestId ));
+        this.$router.push(PATHS.MTFI_INFO);
       }
       else{
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId));
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
       }
-
     },
 
     confirmCancelChangeRequest(requestId, requestType, requestStatus, submissionDate) {
@@ -528,7 +529,7 @@ export default {
       try {
         await this.cancelChangeRequest(this.cancelChangeRequestId);
         this.cancelChangeRequestId = undefined;
-        this.setSuccessAlert('Success! Your change request have been canceled.');
+        this.setSuccessAlert('Success! Your change request has been cancelled.');
       }
       catch(error){
         this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');
@@ -553,14 +554,21 @@ export default {
     sortChangeActions(changeRequest, order) {
       return _.sortBy(changeRequest.changeActions, 'createdOn', order);
     },
+    isMtfiEnabled(){
+      //requirements state only one mtfi can be in prograss at a time. Provider may start another MTFI as soon as the last one is completed.
+      let found =  this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && el.externalStatus == "In Progress");
+      return !found;
+    },
+    buttonColor(isDisabled) {
+      return isDisabled ? '#909090' : '#003366';
+    },
   },
   async mounted() {
     this.processing = true;
-    await this.loadChangeRequest();
+    await this.getChangeRequestList();
     this.processing = false;
   },
   beforeRouteLeave(_to, _from, next) {
-    //this.$store.commit('ccfriApp/model', this.model);
     next();
   },
   components: { SmallCard, NavButton }

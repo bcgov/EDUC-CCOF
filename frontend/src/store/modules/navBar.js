@@ -1,5 +1,7 @@
-import {PATHS} from '@/utils/constants';
-
+import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
+import {checkSession} from '@/utils/session';
+import ApiService from '@/common/apiService';
+import {ApiRoutes} from '@/utils/constants';
 
 function getActiveIndex(items) {
   let foundIndex = -1;
@@ -29,12 +31,44 @@ function getNavBarAtPositionIndex(items, index) {
   }
   return foundItem;
 }
+//Add additional facility details to the navBar
+function decoarateNavBar(state, facilityKey) {
+  state.navBarList.forEach(nav => {
+    const facility = state.userProfileList.find(el => el.facilityId === nav[facilityKey]);
+    if (facility) {
+      nav.facilityName = facility.facilityName;
+      nav.facilityId = facility.facilityId;
+    }
+  });
+}
+//find the change action details details(the data element below change Action)
+function getChangeActionDetails(state, detailsProperty, detailsKey, detailsId) {
+  let item = null;
+  let change = state.changeRequestMap.get(state.changeRequestId);
+  if (change?.changeActions && change.changeActions.length > 0) {
+    let details = change.changeActions[0][detailsProperty];
+    item = details?.find(el => el[detailsKey] == detailsId);
+  }
+  return item;
+}
+
 function filterNavBar(state) {
-  if (state.changeRequestId) {
+  //Mitchel - Since most CRs will be making changes to existing facilities
+  //only grabs facilities from specific change request when new facility CR so far
+  if (state.changeType ==='nf') {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
   // VIET - temporary removed to fix issue in the Landing page (empty navBarList)
   // need to check with Rob to see if we need to check this programYearId
   // } else if (state.programYearId) {
+  } else if (state.changeType === 'mtfi') {
+    const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
+    if (changeActions && changeActions.length > 0) {
+      state.navBarList = changeActions[0].mtfi; //for there is only 1 change action for the MTFI
+      decoarateNavBar(state, 'ccfriFacilityId');
+    } else {
+      state.navBarList = null;
+    }
+
   } else {
     state.navBarList = state.userProfileList.filter(el => !el.changeRequestId); //TODO: This will take FACILITY.STATUS as well
   }
@@ -46,9 +80,11 @@ export default {
     navBarItems: [], // The UI Navbar list structure shown on the left panel
     navBarList: [], // the filtered list  used by the navBar to generate the left panel
     userProfileList: [], // the full list of items loaded by user profile
+    changeRequestMap: new Map(),
     refreshNavBar: 1,  //The navbar watches this value and refreshes itself when this changes.
     canSubmit: true,
     changeRequestId: null,
+    changeType: null,
     programYearId: null,
     currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
@@ -62,9 +98,21 @@ export default {
       state.changeRequestId = value;
       filterNavBar(state);
     },
+
     setUrlDetails: (state, to) => {
       console.log('to url is: ', to);
       state.currentUrl = to.fullPath;
+
+      if (to.fullPath?.startsWith(PATHS.PREFIX.CHANGE_REQUEST)) {
+        const arr = to.fullPath.split('/');
+        if (arr?.length > 2) {
+          state.changeType=arr[2];
+        } else {
+          state.changeType = null;
+        }
+      } else {
+        state.changeType = null;
+      }
       if (to?.params?.changeRecGuid) {
         state.changeRequestId = to.params.changeRecGuid;
         state.programYearId = null;
@@ -91,7 +139,12 @@ export default {
      * and reforce the navbar to refresh
     ************************************************/
     setNavBarValue: (state, { facilityId, property, value}) => {
-      const userProfileItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      let userProfileItem;
+      if (state.changeType === 'mtfi') {
+        userProfileItem =  getChangeActionDetails(state, 'mtfi', 'ccfriFacilityId', facilityId);
+      } else {
+        userProfileItem = state.userProfileList.find(item => item.facilityId == facilityId);
+      }
       if (userProfileItem) {
         userProfileItem[property] = value;
         filterNavBar(state);
@@ -115,7 +168,12 @@ export default {
       }
     },
     setNavBarCCFRIComplete: (state, { ccfriId, complete }) => {
-      let userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      let userProfileItem;
+      if (state.changeType === 'mtfi') {
+        userProfileItem =  getChangeActionDetails(state, 'mtfi', 'ccfriApplicationId', ccfriId);
+      } else {
+        userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      }
       if (userProfileItem) {
         userProfileItem.isCCFRIComplete = complete;
         filterNavBar(state);
@@ -131,7 +189,12 @@ export default {
       }
     },
     setNavBarRFIComplete: (state, { ccfriId, complete }) => {
-      let userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      let userProfileItem;
+      if (state.changeType === 'mtfi') {
+        userProfileItem =  getChangeActionDetails(state, 'mtfi', 'ccfriApplicationId', ccfriId);
+      } else {
+        userProfileItem = state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      }
       if (userProfileItem) {
         userProfileItem.isRfiComplete = complete;
         filterNavBar(state);
@@ -160,20 +223,16 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-
+    addChangeRequestToStore: (state, {changeRequestId, changeRequestModel}) => {
+      state.changeRequestMap.set(changeRequestId, changeRequestModel);
+    },
+    removeChangeMap:(state) => {
+      state.changeRequestMap.clear();  
+    }
   },
   getters: {
     isChangeRequest: (state) => {
       return state.currentUrl?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
-    },
-    getChangeType: (state, getters) => {
-      if (getters.isChangeRequest) {
-        const arr = state.currentUrl.split('/');
-        if (arr?.length > 2) {
-          return arr[2];
-        }
-      }
-      return null;
     },
     nextPath: (state) => {
       const index = getActiveIndex(state.navBarItems);
@@ -200,8 +259,31 @@ export default {
       if (!ccfriId) {
         return null;
       }
-      return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      if(state.changeType==='mtfi'){
+        return getChangeActionDetails(state, 'mtfi', 'ccfriApplicationId', ccfriId);
+      }
+      else{
+        return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
+      }
     },
 
+  },
+  actions: {
+    // preload change request details needed for the navBar
+    async loadChangeRequest({state, commit, dispatch}, changeRequestId) {
+      if (!state.changeRequestMap.get(changeRequestId)) {
+        checkSession();
+        try {
+          let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+          commit('addChangeRequestToStore', {changeRequestId: changeRequestId, changeRequestModel: response});
+          let changeNotificationAction = response?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
+          if (changeNotificationAction)
+            await dispatch('reportChanges/loadChangeRequestDocs', changeNotificationAction.changeActionId, { root: true });
+        } catch(e) {
+          console.log(`Failed to get change request with error - ${e}`);
+          throw e;
+        }
+      }
+    },
   }
 };
