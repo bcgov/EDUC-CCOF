@@ -88,10 +88,10 @@ export default {
       return pcfUrlGuid(PATHS.LICENSE_UPLOAD, this.programYearId, this.ccfriId );
     },
     getLicenceDocumentFileName() {
-      return  this.documents.find(doc => doc.documentType === 'Facility Licence')?.filename;
+      return  this.documents.find(doc => doc.documentType === 'Facility License')?.filename;
     },
     getSupportingDocuments() {
-      this.supportingDocumentItems = this.documents.filter(doc => doc.documentType !== 'Facility Licence');
+      this.supportingDocumentItems = this.documents.filter(doc => doc.documentType !== 'Facility License');
     }
   },
   data() {
