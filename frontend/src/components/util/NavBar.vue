@@ -327,8 +327,7 @@ export default {
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
       this.addNewSupportingDocumentsToNavbar();
-      if(this.getChangeNotificationActionId)
-        this.addReportChangeNavigationToNavBar();
+      this.addReportChangeNavigationToNavBar();
 
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
