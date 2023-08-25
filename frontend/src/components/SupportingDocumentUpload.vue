@@ -164,7 +164,7 @@
           </v-row>
           <v-row>
             <v-col cols="12" style="text-align: center;">
-              <v-btn dark color="secondary" class="mr-10" @click="dialog = false">Back</v-btn>
+              <v-btn dark color="secondary" class="mr-10" @click="backSelected()">Back</v-btn>
               <v-btn dark color="primary" @click="confirmNoSelected()">Continue</v-btn>
             </v-col>
           </v-row>
@@ -329,7 +329,10 @@ export default {
     ...mapMutations('reportChanges', ['addChangeNotificationId','deleteChangeNotificationId']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
 
-    
+    backSelected() {
+      this.otherChanges = 'Yes';
+      this.dialog = false;
+    },
     noReportChanges() {
       let changeNotificationId = this.getChangeNotificationActionId;
       console.log('change action id: ', changeNotificationId);
