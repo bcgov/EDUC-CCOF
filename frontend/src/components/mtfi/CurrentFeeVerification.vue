@@ -13,7 +13,7 @@
       <span class="text-h5">Facility Name: {{ getCurrentFacility?.facilityName }}</span>
     </div>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">License Number: {{ getCurrentFacility?.facilityAccountNumber }}</span>
+      <span class="text-h5">Licence Number: {{ getCurrentFacility?.facilityAccountNumber }}</span>
     </div>
 
 

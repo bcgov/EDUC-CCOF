@@ -59,7 +59,7 @@
               These could include:
               <ul>
                 <li class="pb-0 font-italic">
-                  Community Care and Assisted Living Act License
+                  Community Care and Assisted Living Act Licence
                 </li>
                 <li>
                   Proof of name change document
