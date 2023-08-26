@@ -36,7 +36,7 @@ function getProgramYear(selectedGuid, programYearList){
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
 
   if (currentRFI.prevYearFeesCorrect || (rootState.navBar.changeType == 'mtfi') && currentRFI.previousCcfriId ) {
-    let previousRFI = getters.getCCFRIById(currentRFI.previousCcfriId);
+    let previousRFI = getters.getPreviousApprovedFeesByFacilityId(currentRFI.facilityId);
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
   //MTFI can be done on a new PCF or renewal - so it may not have previous CCFRI. If no previous CCFRI, base median off current year.
@@ -85,6 +85,7 @@ export default {
     ccfriId: {},
     ccfriStore :{},
     ccfriMedianStore: {},
+    previousFeeStore: {},
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -96,6 +97,9 @@ export default {
     getCCFRIMedianById: (state) => (ccfriId) => {
       return state.ccfriMedianStore[ccfriId];
     },
+    getPreviousApprovedFeesByFacilityId: (state) => (facilityId) => {
+      return state.previousFeeStore[facilityId];
+    },
   },
   mutations: {
     model(state, value) { state.model = value;},
@@ -106,6 +110,11 @@ export default {
     addCCFRIToStore: (state, {ccfriId, CCFRIFacilityModel} ) => {
       if (ccfriId) {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;
+      }
+    },
+    addPreviousApprovedParentFees: (state, {facilityId, parentFeeModel} ) => {
+      if (facilityId) {
+        state.previousFeeStore[facilityId] = parentFeeModel;
       }
     },
     removeCCFRIFromStore:(state, ccfriId ) => {
@@ -274,7 +283,7 @@ export default {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
       //console.log('what is loaded in loadFac', CCFRIFacilityModel);
-      await dispatch('getPreviousCCFRI' ,ccfriId);
+      // await dispatch('getPreviousCCFRI' ,ccfriId);
 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
@@ -287,11 +296,10 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});
-
-          if(response.data.previousCcfriId){
-            let oldCcfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${response.data.previousCcfriId}`);
-            commit('addCCFRIToStore', {ccfriId: response.data.previousCcfriId, CCFRIFacilityModel: oldCcfri.data});
-          }
+          // if(response.data.previousCcfriId){
+          //   let oldCcfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${response.data.previousCcfriId}`);
+          //   commit('addCCFRIToStore', {ccfriId: response.data.previousCcfriId, CCFRIFacilityModel: oldCcfri.data});
+          // }
           commit('setCCFRIFacilityModel', response.data);
           commit('setLoadedModel', deepCloneObject(response.data));
 
@@ -301,7 +309,22 @@ export default {
         }
       }
     },
-    async decorateWithCareTypes({commit, state, rootState}, facilityId) {
+    async getPreviousApprovedFees({commit, state}, {facilityId, programYearId}) {
+      const prevFees = state.previousFeeStore[facilityId];
+      if (prevFees) {
+        return prevFees;
+      } else {
+        try {
+          const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
+          commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
+          return response.data;
+        } catch(e) {
+          console.log(`Failed to get existing Facility with error - ${e}`);
+          throw e;
+        }
+      }
+    },
+    async decorateWithCareTypes({commit, dispatch, state, rootState}, facilityId) {
       const  ccofProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
 
@@ -311,7 +334,8 @@ export default {
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
-        const prevCcfriApp = await state.ccfriStore[state.CCFRIFacilityModel.previousCcfriId];
+
+        const prevCcfriApp = await dispatch('getPreviousApprovedFees', {facilityId: facilityId, programYearId: prevProgramYear.programYearId});
 
         console.log(prevCcfriApp, 'in upper try');
 
