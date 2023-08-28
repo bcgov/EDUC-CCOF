@@ -85,8 +85,9 @@
 <script>
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
-import { NAV_BAR_GROUPS } from '@/utils/constants';
+import { NAV_BAR_GROUPS , CHANGE_TYPES } from '@/utils/constants';
 import StaticConfig from '../../common/staticConfig';
+import { times } from 'lodash';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -110,14 +111,16 @@ export default {
   },
   computed: {
     ...mapState('app', ['pageTitle','isRenewal', 'programYearList']),
-    ...mapState('navBar', ['navBarList', 'refreshNavBar', 'navBarGroup']),
+    ...mapState('navBar', ['navBarList', 'userProfileList', 'refreshNavBar', 'navBarGroup', 'changeType']),
     ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
+    ...mapState('reportChanges',['mtfiFacilities']),
+    ...mapGetters('ccfriApp', ['getCCFRIById']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
     },
@@ -155,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', ]),
+    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', 'setNavBarList']),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
@@ -180,8 +183,12 @@ export default {
       console.log('is change request: ', this.isChangeRequest);
       console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
-        console.log('calling new Fac build nav bar');
-        this.buildNewFacilityNavBar();
+        if(this.changeType==='nf'){
+          this.buildNewFacilityNavBar();
+        }
+        else if(this.changeType ==='mtfi'){
+          this.buildMTFINavBar();
+        }
       } else {
         this.buildApplicationNavBar();
       }
@@ -209,7 +216,12 @@ export default {
       let linkName;
       if (this.isChangeRequest) {
         checkbox = this.changeRequestStatus === 'SUBMITTED' && !this.unlockDeclaration;
-        linkName = 'Summary and Declaration New Facility';
+        if(this.changeType===CHANGE_TYPES.NEW_FACILITY){
+          linkName = 'Summary and Declaration New Facility';
+        }
+        else if (this.changeType===CHANGE_TYPES.MTFI){
+          linkName = 'Summary and Declaration MTFI';
+        }
       } else {
         checkbox = this.applicationStatus === 'SUBMITTED' && !this.unlockDeclaration;
         linkName = 'Summary and Declaration';
@@ -255,7 +267,7 @@ export default {
       this.items.push({
         title: 'Supporting Document',
         link: { name: 'change-request-Supporting-Document-Upload', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-        isAccessible: true, //change this when change req logic more complete
+        isAccessible: isCCOFGroupComplete, //change this when change req logic more complete
         icon: 'mdi-information',
         isActive: 'change-request-Supporting-Document-Upload' === this.$route.name,
         expanded: false,
@@ -263,30 +275,19 @@ export default {
         navBarId: navBarId++
       });
     },
-    addChangeRequestNewFacilityOtherToNavBar() {
-      this.items.push({
-        title: 'Report other changes',
-        link: { name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: this.getChangeNotificationActionId}},
-        isAccessible: true, //change this when change req logic more complete
-        icon: 'mdi-information',
-        isActive: 'new-facility-other-guid' === this.$route.name,
-        expanded: false,
-        position: positionIndex++,
-        navBarId: navBarId++
-      });
-    },
     addReportChangeNavigationToNavBar(){
-      this.items.push({
-        title: 'Report Change',
-        link: {name: 'Report Change'},
-        isAccessible: true,
-        icon: 'mdi-information',
-        isActive: 'Report Change' === this.$route.name,
-        expanded: false,
-        position: positionIndex++,
-        navBarId: navBarId++
-
-      });
+      if (this.getChangeNotificationActionId) {
+        this.items.push({
+          title: 'Change Notification Form',
+          link: {name: 'new-facility-other-guid', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: this.getChangeNotificationActionId}},
+          isAccessible: true,
+          icon: this.getCheckbox(this.isChangeNotificationFormComplete),
+          isActive: 'new-facility-other-guid' === this.$route.name,
+          expanded: false,
+          position: positionIndex++,
+          navBarId: navBarId++
+        });
+      }
     },
     buildReportChangeNavBar(){
       this.addLandingPageToNavBar();
@@ -310,7 +311,13 @@ export default {
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },
+    buildMTFINavBar(){
+      this.addLandingPageToNavBar();
+      this.items.push(this.getMTFINavigation());
+      this.addSummaryAndDeclarationToNavBar();
+      this.setNavBarItems(this.items);
 
+    },
     buildNewFacilityNavBar(){
       console.log('building new FAC nav barr');
 
@@ -320,9 +327,8 @@ export default {
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
       this.addNewSupportingDocumentsToNavbar();
-      if (this.getChangeNotificationActionId) {
-        this.addChangeRequestNewFacilityOtherToNavBar();
-      }
+      this.addReportChangeNavigationToNavBar();
+
       this.addSummaryAndDeclarationToNavBar();
       this.setNavBarItems(this.items);
     },
@@ -353,7 +359,7 @@ export default {
         {
           title: 'Opt in / Opt out',
           link: { name: 'change-request-ccfri-home', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-          isAccessible: true, //Change - when newFacilityCCOF is complete
+          isAccessible: isCCOFGroupComplete, //Change - when newFacilityCCOF is complete
           icon: this.getCheckbox(this.isCCFRIOptInComplete()),
           isActive: 'change-request-ccfri-home' === this.$route.name,
           position: positionIndex++,
@@ -600,10 +606,10 @@ export default {
       return {
         title: 'Facility',
         id: null,
-        link: {name: this.isChangeRequest? 'change-request-facility-information' : 'Facility Information'},
+        link: {name: this.isChangeRequest? 'Report Change Facility' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: this.isChangeRequest? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: this.isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };
@@ -621,18 +627,21 @@ export default {
     },
     addNewFacilityConfirmationToCCOFNavbar() {
       let link;
+      let isAccessible;
       if (this.isChangeRequest) {
         link = {
           name: 'change-request-new-facility-confirmation',
           params: {changeRecGuid: this.$route.params.changeRecGuid}
         };
+        isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = { name: 'Application Confirmation'};
+        isAccessible= this.ccofConfirmationEnabled;
       }
       return {
         title: 'Add Facility',
         link: link,
-        isAccessible: this.ccofConfirmationEnabled,
+        isAccessible: isAccessible,
         icon: 'mdi-information',
         isActive: link.name === this.$route.name,
         position: positionIndex++,
@@ -641,23 +650,83 @@ export default {
     },
     addLicenceUploadToCCOFNavbar() {
       let link;
+      let isAccessible;
       if (this.isChangeRequest) {
         link = {
           name: 'Change Request Licence Upload',
           params: {changeRecGuid: this.$route.params.changeRecGuid}
         };
+        isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = {name: 'Licence Upload'};
+        isAccessible= this.ccofConfirmationEnabled;
       }
       return {
         title: 'Licence Upload',
         link: link,
-        isAccessible: this.ccofConfirmationEnabled,
+        isAccessible: isAccessible,
         icon: this.isChangeRequest? this.getCheckbox(this.isCRLicenseComplete): this.getCheckbox(this.isLicenseUploadComplete),
         isActive: this.isChangeRequest? 'Change Request Licence Upload' === this.$route.name : 'Licence Upload' === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++
       };
+    },
+    isMTFISelectFacilitiesComplete(){
+      return this.navBarList?.length>0;
+    },
+    getMTFINavigation(){
+      let items = [];
+      items.push(
+        {
+          title: 'Select Facility',
+          link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid,changeType:CHANGE_TYPES.MTFI}},
+          isAccessible: true,
+          icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
+          isActive: 'Midterm Fee Increase Select Facilities'===this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++
+        },
+      );
+
+      if(this.navBarList?.length>0){
+        this.navBarList?.forEach((item)=>{
+          items.push({
+            title: 'Parent Fee Verification',
+            subTitle: item.facilityName,
+            id: item.facilityId,
+            link: { name: 'CCFRI Fee Verification', params: {changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId,changeType:CHANGE_TYPES.MTFI}},
+            isAccessible:true,
+            icon: this.getCheckbox(item.isCCFRIComplete),
+            isActive: 'CCFRI Fee Verification'===this.$route.name && this.$route.params.urlGuid===item.ccfriApplicationId,
+            position: positionIndex++,
+            navBarId: navBarId++
+          });
+          if (item.hasRfi || item.unlockRfi) {
+              items.push(
+                {
+                  title: 'Parent Fee Increase – RFI',
+                  subTitle: item.facilityName,
+                  id: item.facilityId,
+                  link: { name: 'change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
+                  isAccessible: true,
+                  icon: this.getCheckbox(item.isRfiComplete),
+                  isActive: 'change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                  position: positionIndex++,
+                  navBarId: navBarId++
+                },
+              );
+            }
+        });
+      }
+      let retval =   {
+        title: NAV_BAR_GROUPS.MTFI,
+        isAccessible: true,
+        icon: this.getCheckbox(this.areChildrenComplete(items)),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.MTFI),
+        items: items,
+        navBarId: navBarId++
+      };
+      return retval;
     },
     getAddNewFacilityCCOFNavigation(){
       let items = [];
@@ -817,7 +886,7 @@ export default {
         {
           title: 'Eligibility',
           link: { name: 'change-request-ECEWE-Eligibility', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-          isAccessible: true, //change this when change req logic more complete
+          isAccessible: isCCOFGroupComplete, //change this when change req logic more complete
           icon: this.getCheckbox(this.isCREceweComplete),
           isActive: 'change-request-ECEWE-Eligibility' === this.$route.name,
           position: positionIndex++,
@@ -828,7 +897,7 @@ export default {
         {
           title: 'Facility',
           link: { name: 'change-request-ECEWE-Facilities', params: {changeRecGuid: this.$route.params.changeRecGuid}},
-          isAccessible: this.isEceweComplete,
+          isAccessible: this.isCREceweComplete,
           icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
           isActive: 'change-request-ECEWE-Facilities' === this.$route.name,
           position: positionIndex++,

@@ -15,7 +15,7 @@
       </v-row>
       <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0">
+          <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
@@ -134,7 +134,7 @@
                       </v-expansion-panel>
                     </div>
                 </div>
-                <div v-if="!this.isRenewal">
+                <div v-if="!this.isRenewal" class="mt-10">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
                                 :ecewe-facility="null" :isProcessing="isProcessing"
@@ -142,6 +142,12 @@
                                 ></ECEWESummary>
                 </v-expansion-panel>
                 </div>
+                <v-expansion-panel variant="accordion" v-if="hasChangeNotificationFormDocuments" class="mt-10">
+                  <ChangeNotificationFormSummary
+                    @isSummaryValid="isFormComplete"
+                    :changeNotificationFormDocuments="summaryModel?.changeNotificationFormDocuments">
+                  </ChangeNotificationFormSummary>
+                </v-expansion-panel>
               </v-row>
             </v-expansion-panels>
 
@@ -328,7 +334,7 @@
 </template>
 <script>
 
-import {PATHS} from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -341,6 +347,7 @@ import NMFSummary from '@/components/summary/group/NMFSummary';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
 import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -358,6 +365,7 @@ export default {
     CCFRISummary,
     ECEWESummary,
     CCOFSummaryFamily,
+    ChangeNotificationFormSummary,
     NavButton
   },
   mixins: [alertMixin],
@@ -403,6 +411,9 @@ export default {
     },
     numberOfPanelsToExpand() {
       return this.$refs["v-expansion-panels"]?.$children.length;
+    },
+    hasChangeNotificationFormDocuments() {
+      return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
     }
   },
   data() {
@@ -422,7 +433,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus']),
+    ...mapActions('summaryDeclaration', ['loadDeclaration', 'loadChangeRequestDeclaration' , 'updateDeclaration', 'loadSummary', 'updateApplicationStatus', 'loadChangeRequestSummaryDeclaration']),
     ...mapMutations('application',['setIsEceweComplete', 'setIsLicenseUploadComplete']),
     ...mapMutations('navBar', ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     ...mapMutations('organization', ['setIsOrganizationComplete']),
@@ -440,7 +451,7 @@ export default {
       this.isLoading = true;
       try {
         if(this.isChangeRequest){
-          await this.loadChangeRequestDeclaration(this.$route.params?.changeRecGuid);
+          await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
         }
         else{
           await this.loadDeclaration();
@@ -675,11 +686,8 @@ export default {
       this.printableVersion = true;
     }
     await this.loadSummary(this.$route.params?.changeRecGuid);
-
-    if (!this.unlockDeclaration) {
-      await this.loadData();
-      this.model = this.$store.state.summaryDeclaration.model ?? model;
-    }
+    await this.loadData();
+    this.model = this.$store.state.summaryDeclaration.model ?? model;
 
     if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
       // Establish the server time

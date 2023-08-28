@@ -59,7 +59,7 @@
               These could include:
               <ul>
                 <li class="pb-0 font-italic">
-                  Community Care and Assisted Living Act License
+                  Community Care and Assisted Living Act Licence
                 </li>
                 <li>
                   Proof of name change document
@@ -90,7 +90,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS, changeUrlGuid } from '@/utils/constants';
+import { PATHS, changeUrl } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ChangeFileUpload from './ChangeFileUpload.vue';
@@ -130,7 +130,8 @@ export default {
   },
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapGetters('navBar', ['getChangeType', 'nextPath', 'previousPath']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath']),
+    ...mapState('navBar', ['changeType']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
     isReadOnly() {
@@ -145,12 +146,12 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('app', ['setCcfriOptInComplete', 'forceNavBarRefresh']),
+    ...mapMutations('app', ['setCcfriOptInComplete']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
-    ...mapActions('reportChanges', ['createChangeRequest','loadChangeRequest', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
+    ...mapActions('reportChanges', ['createChangeRequest','getChangeRequestList', 'loadChangeRequestDocs', 'saveUploadedDocuments', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setUploadedDocument']),
     previous() {
-      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+      if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
         this.$router.push(this.previousPath);
       } else {
         this.$router.push(PATHS.ROOT.CHANGE_LANDING);
@@ -164,6 +165,7 @@ export default {
         await this.$refs.childRef.save(false);
         await this.$refs.childRef2.save(false);
         await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+        this.forceNavBarRefresh();
         if (showNotification) {
           this.setSuccessAlert('Success! Request for Information has been saved.');
         }
@@ -175,10 +177,10 @@ export default {
       this.isLoading = false;
     },
     next() {
-      if (this.getChangeType === CHANGE_TYPES.NEW_FACILITY) {
+      if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
         this.$router.push(this.nextPath);
       } else {
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_DECLARATION, this.$route.params?.changeRecGuid, this.$route.params?.urlGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, this.$route.params?.changeRecGuid, CHANGE_TYPES.CHANGE_NOTIFICATION));
       }
     },
     async validateForm() {

@@ -16,7 +16,7 @@
             Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE funding assessment.
           </v-row>
           <v-row class="pa-6 pt-2 text-body-2">
-            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls, and xlsx.
+            The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.
           </v-row>
           <v-data-table v-if="!isLoading"
             :headers="headers"
@@ -127,9 +127,9 @@
               <p class="text-h5 text--primary">
                 Would you like to report any other changes to your licence or service?
               </p>
-              <v-radio-group required v-model="otherChanges" :rules = "rules.required">
+              <v-radio-group required v-model="otherChanges" :rules = "rules.required" :disabled="isLocked">
                 <v-radio label="Yes" value="Yes"/>
-                <v-radio label="No" value="No"/>
+                <v-radio label="No" value="No" @click="noReportChanges()"/>
               </v-radio-group>
             </div>
           </v-card-text>
@@ -142,6 +142,35 @@
         :isSaveDisabled="!isSaveDisabled || isLocked" :isNextDisabled="!isNextEnabled" :isProcessing="isProcessing || isLoading"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
+
+    <v-dialog v-model="dialog" persistent max-width="525px">
+      <v-card>
+        <v-container class="pt-0">
+          <v-row>
+            <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+              <v-card-title class="white--text">Please confirm</v-card-title>
+            </v-col>
+            <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: left;">
+              <p class="pt-4">Are you sure you want to change your response? This will remove any documents uploaded to the Change Notification Form section.</p>
+              <p class="pt-4">Select "Continue" to confirm.</p>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: center;">
+              <v-btn dark color="secondary" class="mr-10" @click="backSelected()">Back</v-btn>
+              <v-btn dark color="primary" @click="confirmNoSelected()">Continue</v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-form>
 </template>
 
@@ -169,7 +198,7 @@ export default {
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
-    ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapState('reportChanges', ['userProfileChangeRequests','loadedChangeRequest']),
     ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus', 'getChangeNotificationActionId']),
     isLocked() {
       if (this.isChangeRequest) {
@@ -193,6 +222,8 @@ export default {
       return this.isValidForm &&( (newFilesAdded.length > 0) || this.uploadedDocuments?.deletedItems?.length > 0);
     },
     isNextEnabled() {
+      if (this.isChangeRequest)
+        return this.isValidForm;
       return this.isValidForm && this.canSubmit;
     },
     filteredNavBarList() {
@@ -233,6 +264,7 @@ export default {
 
   data() {
     return {
+      dialog: false,
       isLoading: false,
       isProcessing: false,
       rules,
@@ -295,8 +327,24 @@ export default {
     ...mapActions('supportingDocumentUpload', ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     ...mapActions('reportChanges', ['createChangeAction', 'deleteChangeAction']),
     ...mapMutations('reportChanges', ['addChangeNotificationId','deleteChangeNotificationId']),
-    ...mapMutations('navBar', ['forceNavBarRefresh']),    
+    ...mapMutations('navBar', ['forceNavBarRefresh']),
 
+    backSelected() {
+      this.otherChanges = 'Yes';
+      this.dialog = false;
+    },
+    noReportChanges() {
+      let changeNotificationId = this.getChangeNotificationActionId;
+      console.log('change action id: ', changeNotificationId);
+      if (changeNotificationId) {
+        this.dialog = true;
+      }
+      
+    },
+    confirmNoSelected() {
+      this.otherChanges = 'No';
+      this.dialog = false;
+    },
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -310,7 +358,7 @@ export default {
               const results = await this.createChangeAction({changeRequestId: this.changeRequestId, type: 'documents' });
               console.log('change action id: ', results.changeActionId);
               this.addChangeNotificationId({changeRequestId: this.changeRequestId, changeNotificationActionId: results.changeActionId});
-              changeNotificationId = results.changeActionId
+              changeNotificationId = results.changeActionId;
             }
             this.$router.push(changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId));
           } else {
@@ -471,7 +519,7 @@ export default {
         facility.changeRequestNewFacilityId = facilityInfo.changeRequestNewFacilityId;
         this.facilityNames.push(facility);
       }
-    },
+    }
   }
 };
 </script>

@@ -580,14 +580,15 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'RFISummary',
   computed: {
     ...mapState('summaryDeclaration', ['isLoadingComplete']),
+    ...mapGetters('navBar', ['isChangeRequest']),
   },
   props: {
     rfiApp: {
@@ -620,6 +621,8 @@ export default {
   },
   methods: {
     getLink(){
+      if (this.isChangeRequest)
+        return changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI);
       return pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.ccfriId );
     },
     getValueString(val){

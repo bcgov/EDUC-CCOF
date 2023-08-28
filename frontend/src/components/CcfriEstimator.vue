@@ -563,7 +563,7 @@
                             <v-row style="font-size:14px;" justify="center">
                               <v-col align="center" style="padding-top:3px;">
                                 <span :style="'color:'+(active ? '#9D2AB1' : 'black')">
-                                  {{(n.rate==0 || n.rate==null || n.rate==undefined || n.rate == 'N/A') ? 'N/A' : '$'+ (n.rate % 1 == 0 ? n.rate % 1 : (Math.round(n.rate * 100) / 100).toFixed(2))}}
+                                  {{(n.rate==0 || n.rate==null || n.rate==undefined || n.rate == 'N/A') ? 'N/A' : '$'+ (n.rate % 1 == 0 ? n.rate : (Math.round(n.rate * 100) / 100).toFixed(2))}}
                                 </span>
                               </v-col>
                             </v-row>
@@ -1611,4 +1611,15 @@ div.ma-1.fill-height.v-card.v-card--disabled.v-sheet.theme--light {
 .v-data-footer__select {
   text-align: left !important;
 }
+
+div.v-slide-group__prev.v-slide-group__prev--disabled span i  {
+  caret-color: #7B7C7E !important;
+  color: #7B7C7E !important;
+}
+
+div.v-slide-group__next.v-slide-group__next--disabled span i  {
+  caret-color: #7B7C7E !important;
+  color: #7B7C7E !important;
+}
+
 </style>
