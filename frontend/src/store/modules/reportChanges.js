@@ -229,7 +229,6 @@ export default {
       }
     },
 
-    //TODO: add it to the store
     async createChangeRequest({commit, rootState }, changeType) {
 
       console.log('creating a change REQ');
@@ -246,6 +245,7 @@ export default {
 
         commit('setChangeRequestId', response?.data?.changeRequestId);
         commit('setChangeActionId', response?.data?.changeActionId);
+        commit('addUserProfileChangeRequests', response?.data?.changeRequestId);
         console.log(response);
         return response.data;
       } catch (error) {

@@ -25,7 +25,7 @@
     </div>
     <LargeButtonContainer v-else>
       <v-form ref="isValidForm" value="false" v-model="isValidForm" >
-        <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
+        <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12" min-width="500px"
           :disabled="!(ccfriOptInStatus==1) || isReadOnly"
           v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus } , index) in filteredUserProfileList" :key="index">
           <v-card-text>
@@ -36,7 +36,7 @@
                 <p class="text--primary">Licence #: {{licenseNumber}}</p>
               </v-col>
               <v-col v-if="ccfriOptInStatus==1" class="d-flex align-center justify-center">
-                <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]" :disabled="isReadOnly"></v-checkbox>
+                <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]" :disabled="isReadOnly" :loading="processing"></v-checkbox>
               </v-col>
             </v-row>
           </v-card-text>

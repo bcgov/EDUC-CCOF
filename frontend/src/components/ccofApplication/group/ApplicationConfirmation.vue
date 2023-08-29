@@ -28,7 +28,7 @@
 
           <v-row justify="center">
             <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()" :disabled="isLocked">Yes</v-btn>
-            <v-btn color="secondary" outlined x-large style="margin: 2em;" @click="next()" :disabled="isLocked">No</v-btn>
+            <v-btn color="secondary" outlined x-large style="margin: 2em;" @click="next()" >No</v-btn>
           </v-row>
         </v-container>
       </v-card>
@@ -102,9 +102,6 @@ export default {
         else if(this.changeRequestStatus!=='INCOMPLETE'){
           return true;
         }
-        return false;
-      }
-      if (this.unlockBaseFunding) {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');

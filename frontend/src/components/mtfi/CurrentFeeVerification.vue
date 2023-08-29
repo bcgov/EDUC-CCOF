@@ -13,7 +13,7 @@
       <span class="text-h5">Facility Name: {{ getCurrentFacility?.facilityName }}</span>
     </div>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">License Number: {{ getCurrentFacility?.facilityAccountNumber }}</span>
+      <span class="text-h5">Licence Number: {{ getCurrentFacility?.facilityAccountNumber }}</span>
     </div>
 
 
@@ -630,11 +630,11 @@ export default {
     },
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
+      this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
       try {
         if (this.hasModelChanged()){
           this.processing = true;
           console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
-          this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
