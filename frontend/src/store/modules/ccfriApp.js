@@ -51,6 +51,9 @@ function getPreviousCareType(currentRFI, careType, previousProgramYearId, getter
 function isOver3Percent(currentFees, previousFees, percentValue) {
   let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 21;
   let previousFeeFrequency = previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 21;
+  console.log(`Current Fee Frequency: ${currentFeeFrequency}, Previous Fee Frequency: ${previousFeeFrequency}`);
+  console.log(`Previous Fee Feb: ${previousFees.approvedFeeFeb}, Previous Fee March: ${previousFees.approvedFeeMar}`);
+  console.log(`Current Fee Feb: ${currentFees.approvedFeeFeb}, Current Fee March: ${currentFees.approvedFeeMar}`);
   if (previousFees.approvedFeeFeb == previousFees.approvedFeeMar) {
     if ((currentFees.approvedFeeJan * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue ||
         (currentFees.approvedFeeFeb * currentFeeFrequency) - (previousFees.approvedFeeMar * previousFeeFrequency) > percentValue ||
@@ -73,6 +76,7 @@ function isOver3Percent(currentFees, previousFees, percentValue) {
       return true;
     }
   }
+  console.log('Fees not over 3% for ');
   return false;
 }
 

@@ -21,16 +21,14 @@
     <div class="row pt-4 justify-center">
       <span class="text-h6">Our records show this facility's approved parent fees for  are as follows:</span>
     </div>
-
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
-
       <div v-if="loading">
         <v-skeleton-loader max-height="475px"  :loading="loading" type="image, image"></v-skeleton-loader>
         <br><br>
         <v-skeleton-loader max-height="475px"  :loading="loading" type="image, image"></v-skeleton-loader>
       </div>
 
-      <div v-else>
+      <div v-else-if="currentPcfCcfri.childCareTypes?.length > 0">
         <div v-for="(item , index) in currentPcfCcfri.childCareTypes" :key="index">
             <v-card
 
@@ -319,6 +317,13 @@
                 </v-card-text>
              </v-card>
       </div>
+      <div v-else>
+        <div class="row pt-4 justify-center pb-3">
+          <span class="text-h6">No Approved Parent fees have been found for this facility.</span>
+          <span class="text-h6">Please go back to 'Select Facility' and remove this Facility from your selection.</span>
+
+        </div>
+      </div>
 
       <v-dialog v-model="areFeesCorrect" persistent max-width="600px">
         <v-card>
@@ -592,11 +597,11 @@ export default {
     async next() {
       await this.save(false);
 
-      this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
+      // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
 
       //always check for RFI regardless of new or renewal state
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
+      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
       if (this.rfi3percentCategories.length > 0) {
         if (this.currentFacility.hasRfi) {
           //already has RFI. just go to the next page
