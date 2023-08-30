@@ -221,6 +221,17 @@ async function postApplicationSummaryDocument(payload) {
   }
 }
 
+async function getDocument(annotationId){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationId=' + annotationId;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error(' getApplicationDocument Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
 async function deleteDocument(annotationid){
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationid=' + annotationid;
@@ -363,6 +374,7 @@ const utils = {
   postApplicationDocument,
   getApplicationDocument,
   deleteDocument,
+  getDocument,
   postApplicationSummaryDocument,
   sleep,
   getChangeActionDocument,
