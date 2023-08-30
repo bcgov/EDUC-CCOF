@@ -296,22 +296,24 @@ const OrganizationFacilityMappings = [
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber'},
 ];
 
-
-const UserProfileCCFRIMappings = [
+const UserProfileBaseCCFRIMappings = [
   { back: 'statuscode', front: 'ccfriStatus' },
   { back: 'ccof_ccfrioptin', front: 'ccfriOptInStatus' },
   { back: 'ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: '_ccof_facility_value', front: 'ccfriFacilityId' },
   { back: 'ccof_formcomplete', front: 'isCCFRIComplete' },
-  { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
-  { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
-  { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'},
   { back: 'ccof_has_nmf', front: 'hasNmf'},
   { back: 'ccof_has_rfi', front: 'hasRfi'},
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete'},
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'},
 ];
 
+const UserProfileCCFRIMappings = [
+  { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
+  { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
+  { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'},
+  ...UserProfileBaseCCFRIMappings
+];
 const UserProfileECEWEMappings = [
   { back: 'statuscode', front: 'eceweStatus' },
   { back: 'ccof_optintoecewe', front: 'eceweOptInStatus' },
