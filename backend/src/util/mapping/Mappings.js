@@ -305,7 +305,7 @@ const UserProfileBaseCCFRIMappings = [
   { back: 'ccof_has_nmf', front: 'hasNmf'},
   { back: 'ccof_has_rfi', front: 'hasRfi'},
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete'},
-  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'},  
+  { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete'},
 ];
 
 const UserProfileCCFRIMappings = [
