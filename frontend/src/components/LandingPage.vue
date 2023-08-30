@@ -365,7 +365,7 @@ export default {
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));
     },
     goToReportChange(){
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      this.$router.push(PATHS.ROOT.CHANGE_INFO);
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');

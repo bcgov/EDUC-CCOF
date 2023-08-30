@@ -10,9 +10,9 @@
         <br>
         <p class="px-10 text-h6">
           You must notify the Child Care Operating Funding Program within two business days of any change to:
-          
+
           <ul>
-            
+
             <li>Your facility licence</li>
             <li>Services outlined in Schedule in Schedule A of your Child Care Operating Funding Agreement</li>
           </ul>
@@ -20,7 +20,7 @@
           To ensure accurate payments, please notify us of any changes <b>before</b> submitting an enrolment report of a monthly ECE report.
         </p>
           <v-card outlined class="mx-10">
-            
+
               <v-card-title class="test">
                 <v-icon
                   x-large
@@ -28,7 +28,7 @@
                   mdi-information
                 </v-icon>
                 <span><b>Additional funding cannot be paid in the month that:</b></span></v-card-title>
-              <v-card-text>
+              <v-card-text class="pt-4">
                   <ul>
                       <li>the Funding Agreement starts</li>
                       <li>the Funding Agreement has already been modified</li>
@@ -51,7 +51,7 @@
         </p>
       </div>
       </v-row>
-      <NavButton 
+      <NavButton
       :isNextDisplayed="true" @previous="previous" @next="next"></NavButton>
     </v-container>
   </template>
