@@ -209,14 +209,14 @@
                 </div>
                  <!-- show for new org after ministry unlocks -->
                  <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
-                <div v-show="(this.isChangeRequest && !this.allFacilitiesApproved) ||((this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) )">
+                <div v-show="!isDeclarationBDisplayed">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
                 <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
-                <div v-show=" (this.model.unlockDeclaration && this.allFacilitiesApproved) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
+                <div v-show="isDeclarationBDisplayed">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -410,7 +410,20 @@ export default {
     },
     hasChangeNotificationFormDocuments() {
       return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
-    }
+    },
+    isDeclarationBDisplayed() {
+      // CCFRI-1602 - Change Request Add New Facility - Declaration B will be shown when ALL Facility ID exists. 
+      if (this.isChangeRequest) {
+        return this.allFacilitiesApproved;
+      }
+      else {
+        if (this.isRenewal) {
+          return (this.model.declarationBStatus == 1);
+        } else {
+          return (this.model.declarationBStatus == 1 && this.unlockDeclaration && this.organizationAccountNumber);
+        }
+      }
+    },
   },
   data() {
     return {

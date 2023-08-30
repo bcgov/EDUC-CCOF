@@ -351,7 +351,9 @@ export default {
       return false;
     },
     isSummaryComplete() {
-      return (this.invalidSummaryForms.length < 1 );
+      if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0)
+        return false;
+      return (this.invalidSummaryForms.length < 1);
     },
     facilities() {
       if (this.summaryModel?.mtfiFacilities) {
