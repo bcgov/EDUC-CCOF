@@ -84,6 +84,7 @@ export default {
     ...mapActions('reportChanges', ['createChangeRequest', 'createChangeRequestMTFI', 'getChangeRequest']),
     ...mapMutations('reportChanges', ['setMTFIFacilities']),
     ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
+    ...mapActions('navBar', ['reloadChangeRequest']),
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
@@ -115,12 +116,13 @@ export default {
           {
             'facilityID': this.userProfileList[0].facilityId,
             'applicationID': this.applicationId,
-            'changeActionId': this.newReq.changeActionId,
+            'changeActionId': this.newReq?.changeActionId ? this.newReq.changeActionId : this.changeActionId,
             'optInResponse': 1,
             'programYearId': this.programYearId,
             'organizationId': this.organizationId
           }
         ]);
+        await this.reloadChangeRequest(this.$route.params.changeRecGuid);
       }
       catch (error)  {
         console.log(error);
