@@ -91,9 +91,10 @@ export default {
     ...mapState('navBar', ['userProfileList','navBarList']),
     ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('reportChanges',['changeRequestStatus']),
+    
     isReadOnly() {
-      let changeRequest = this.userProfileChangeRequests.find(item => item.changeRequestId === this.$route.params.changeRecGuid);
-      return (changeRequest?.externalStatus != 'INCOMPLETE');
+      return (this.changeRequestStatus != 'INCOMPLETE');
     },
     isNextButtonDisabled() {
       return (!this.checkbox?.includes(true));

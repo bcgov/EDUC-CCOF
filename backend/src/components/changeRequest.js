@@ -3,7 +3,7 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileCCFRIMappings } = require('../util/mapping/Mappings');
+const { UserProfileBaseCCFRIMappings } = require('../util/mapping/Mappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
@@ -68,7 +68,7 @@ async function mapChangeRequestObjectForFront(data) {
   await Promise.all(  retVal.changeActions?.map(async (el) =>  {
     let changeAction = new MappableObjectForFront(el, ChangeActionRequestMappings).toJSON();
     if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
-      const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileCCFRIMappings );
+      const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
       changeAction.mtfi = mtfi;
     }
     changeList.push(changeAction);
