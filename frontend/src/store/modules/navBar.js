@@ -227,7 +227,10 @@ export default {
       state.changeRequestMap.set(changeRequestId, changeRequestModel);
     },
     removeChangeMap:(state) => {
-      state.changeRequestMap.clear();  
+      state.changeRequestMap.clear();
+    },
+    removeChangeRequest:(state, changeRequestId) => {
+      state.changeRequestMap.delete(changeRequestId);
     }
   },
   getters: {
@@ -285,5 +288,10 @@ export default {
         }
       }
     },
+    async reloadChangeRequest({commit, dispatch}, changeRequestId) {
+      commit('removeChangeRequest', changeRequestId);
+      await dispatch('loadChangeRequest', changeRequestId);
+    },
+
   }
 };

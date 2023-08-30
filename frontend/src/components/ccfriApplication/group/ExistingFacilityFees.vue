@@ -152,7 +152,7 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
-    ...mapGetters('ccfriApp', ['getCCFRIById']),
+    ...mapGetters('ccfriApp', ['getCCFRIById', 'getPreviousApprovedParentFee']),
     currentFacility(){
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
@@ -182,24 +182,11 @@ export default {
           } else {
             this.model.q1 = undefined;
           }
-          let previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
-          if (!previousCCFRI) {
-            //No previous CCFRI ID.  wait 10 seconds and try loading again.
-            console.log('no previous CCFRI id for this guid. waiting 10 seconds');
-            await sleep(10000);
-            console.log('trying again');
-            this.removeCCFRIFromStore(this.$route.params.urlGuid);
-            await this.loadCCFRIFacility(this.$route.params.urlGuid);
-            previousCCFRI = this.CCFRIFacilityModel.previousCcfriId;
-          }
-          if (previousCCFRI) {
-            await this.loadCCFRIFacility(previousCCFRI); //load this page up with the previous CCFRI data
-          }
           this.feeList = [];
-
+          const prevFees = await this.getPreviousApprovedFees({facilityId: this.CCFRIFacilityModel.facilityId, programYearId: this.previousProgramYearGuid});
           //only display last years child care fees
           const prevYearGuid = this.previousProgramYearGuid;
-          this.CCFRIFacilityModel.childCareTypes.forEach(item => {
+          prevFees?.childCareTypes?.forEach(item => {
             if (item.programYearId == prevYearGuid ){
               this.feeList.push(item);
             }
@@ -227,7 +214,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI']),
+    ...mapActions('ccfriApp', ['loadCCFRIFacility', 'getPreviousCCFRI', 'getPreviousApprovedFees']),
     ...mapMutations('ccfriApp', ['setCCFRIFacilityModel' , 'addCCFRIToStore', 'removeCCFRIFromStore']),
     previous(){
       this.$router.push(this.previousPath);

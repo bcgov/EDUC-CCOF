@@ -24,6 +24,7 @@ export const ApiRoutes = Object.freeze({
   ORGANIZATION: baseRoot + '/organization',
   FACILITY: baseRoot + '/facility',
   CCFRIFACILITY : baseRoot + '/facility/ccfri',
+  CCFRI_FEES : baseRoot + '/facility/fees',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
