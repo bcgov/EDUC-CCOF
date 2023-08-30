@@ -92,7 +92,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                  License #: {{navBarList[index].licenseNumber}}
+                  Licence #: {{navBarList[index].licenseNumber}}
               </v-col>
             </v-row>
           </v-card>

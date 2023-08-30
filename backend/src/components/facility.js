@@ -123,7 +123,6 @@ async function getLicenseCategories(req, res){
   }
 }
 
-
 async function getFacilityChildCareTypes(req, res){
   try {
     //this is actually the CCFRI guid rn
@@ -132,12 +131,7 @@ async function getFacilityChildCareTypes(req, res){
     let ccfriData = await getOperation(operation);
 
     let childCareTypes = [];
-    // let currentProgramYear;
     ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
-      // if (hasChildCareCategory(item)) {
-      //currentProgramYear = item._ccof_programyear_value;
-
-      //_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue
       childCareTypes.push(
         {
           parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
@@ -168,8 +162,6 @@ async function getFacilityChildCareTypes(req, res){
 
     ccfriData.childCareTypes = childCareTypes;
     ccfriData.dates = await getCCFRIClosureDates(req.params.ccfriId);
-
-    //log.info('theDATEs: ', ccfriData);
 
     return res.status(HttpStatus.OK).json(ccfriData);
   } catch (e) {
@@ -354,9 +346,54 @@ async function deleteFacility(req, res) {
     log.verbose('deleting change request facility', changeRequestNewFacilityId);
     await deleteOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId);
   }
-
   return res.status(HttpStatus.OK).end();
 }
+
+async function getApprovedParentFees(req, res) {
+  const facilityId = req.params.facilityId;
+  const programYearId = req.params.programYearId;
+  const operation = `accounts(${facilityId})?$select=accountid,address1_city,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,_ccof_facility_value,_ccof_programyear_value,_ccof_childcarecategory_value,ccof_frequency,ccof_availability,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar;$filter=(statuscode eq 1 and _ccof_programyear_value eq ${programYearId} and Microsoft.Dynamics.CRM.In(PropertyName='ccof_availability',PropertyValues=['100000000','100000002']) and Microsoft.Dynamics.CRM.In(PropertyName='ccof_frequency',PropertyValues=['100000000','100000002']));$orderby= _ccof_programyear_value desc)`;
+  const response = await getOperation(operation);
+
+  try {
+    let childCareTypes = [];
+    response.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
+      childCareTypes.push(
+        {
+          parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
+          childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+          childCareCategoryId: item._ccof_childcarecategory_value,
+          programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
+          programYearId: item._ccof_programyear_value,
+          approvedFeeApr: item.ccof_apr ,
+          approvedFeeAug: item.ccof_aug,
+          approvedFeeDec: item.ccof_dec,
+          approvedFeeFeb: item.ccof_feb,
+          approvedFeeJan: item.ccof_jan,
+          approvedFeeJul: item.ccof_jul,
+          approvedFeeJun: item.ccof_jun,
+          approvedFeeMar: item.ccof_mar,
+          approvedFeeMay: item.ccof_may,
+          approvedFeeNov: item.ccof_nov,
+          approvedFeeOct: item.ccof_oct,
+          approvedFeeSep: item.ccof_sep,
+          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') ),
+          orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+        }
+      );
+    }); //end for each
+    const retVal = {
+      facilityId: facilityId,
+      childCareTypes: childCareTypes
+    };
+    return res.status(200).json(retVal);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
+
+
 
 module.exports = {
   getFacility,
@@ -368,5 +405,6 @@ module.exports = {
   updateFacilityLicenseType,
   getCCFRIClosureDates,
   mapFacilityObjectForBack,
+  getApprovedParentFees
 };
 
