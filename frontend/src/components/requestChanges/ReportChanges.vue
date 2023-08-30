@@ -213,6 +213,7 @@ export default {
       cancelChangeRequestType: undefined,
       cancelChangeRequestStatus: undefined,
       cancelChangeRequestSubmissionDate: undefined,
+      endStateStatusesCR: ['Ineligible', 'Approved', 'Cancelled'],
     };
   },
   computed: {
@@ -554,10 +555,13 @@ export default {
     sortChangeActions(changeRequest, order) {
       return _.sortBy(changeRequest.changeActions, 'createdOn', order);
     },
+    // CCFRI-2489
+    // All the MTFI will have to be in one of the end state statutes.
+    // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled(){
-      //requirements state only one mtfi can be in prograss at a time. Provider may start another MTFI as soon as the last one is completed.
-      let found =  this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && el.externalStatus == "In Progress");
-      return !found;
+      let foundCRNotInEndStateStatus = this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus));
+      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(el => el.ccfriStatus == 'APPROVED');
+      return (!foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI);
     },
     buttonColor(isDisabled) {
       return isDisabled ? '#909090' : '#003366';
