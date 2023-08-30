@@ -2,8 +2,8 @@
 
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, UserProfileBaseCCFRIMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileCCFRIMappings } = require('../util/mapping/Mappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
+const { UserProfileBaseCCFRIMappings } = require('../util/mapping/Mappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
