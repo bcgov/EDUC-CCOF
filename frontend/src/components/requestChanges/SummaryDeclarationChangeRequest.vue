@@ -393,7 +393,8 @@ export default {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
+        // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
+        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: []});
         this.dialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);

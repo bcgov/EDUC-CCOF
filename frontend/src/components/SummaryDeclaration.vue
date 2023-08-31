@@ -475,7 +475,8 @@ export default {
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
         if(this.isChangeRequest){
-          await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+          // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+          await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: []});
         }
         else{
           await this.updateDeclaration({changeRequestId: undefined, reLockPayload: this.createRelockPayload()});
@@ -690,7 +691,8 @@ export default {
     await this.loadData();
     this.model = this.$store.state.summaryDeclaration.model ?? model;
 
-    if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
+    // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
+    if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
 

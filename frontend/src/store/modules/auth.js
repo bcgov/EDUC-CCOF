@@ -126,6 +126,7 @@ export default {
         commit('setUserInfo', userInfoRes.data);
         commit('application/setFromUserInfo', userInfoRes.data, { root: true });
         commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
+        commit('navBar/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
         commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
         commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });

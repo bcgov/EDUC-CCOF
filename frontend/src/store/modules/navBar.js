@@ -57,9 +57,6 @@ function filterNavBar(state) {
   //only grabs facilities from specific change request when new facility CR so far
   if (state.changeType ==='nf') {
     state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
-  // VIET - temporary removed to fix issue in the Landing page (empty navBarList)
-  // need to check with Rob to see if we need to check this programYearId
-  // } else if (state.programYearId) {
   } else if (state.changeType === 'mtfi') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
     if (changeActions && changeActions.length > 0) {
@@ -68,9 +65,14 @@ function filterNavBar(state) {
     } else {
       state.navBarList = null;
     }
-
+  // PCF
   } else {
-    state.navBarList = state.userProfileList.filter(el => !el.changeRequestId); //TODO: This will take FACILITY.STATUS as well
+    state.navBarList = state.userProfileList.filter(el => {
+      if (state.isRenewal) {
+        return (!el.changeRequestId && el.facilityAccountNumber && (el.facilityStatus === 'CCFRI Complete'));
+      }
+      return !el.changeRequestId;
+    });
   }
 }
 
@@ -88,10 +90,12 @@ export default {
     programYearId: null,
     currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
+    isRenewal: false,
   },
   mutations: {
     setNavBarItems: (state, value) => { state.navBarItems = value; },
     setCanSubmit: (state, value) => { state.canSubmit = value; },
+    setIsRenewal(state, value) { state.isRenewal = value; },
 
     setChangeRequestId: (state, value) => {
       state.programYearId = null;
