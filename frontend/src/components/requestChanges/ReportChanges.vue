@@ -469,11 +469,7 @@ export default {
       const unlockRFIList = this.getUnlockRFIListForMTFI(mtfiFacilities);
       // there is no NMF for MTFI change request
       if (unlockCCFRIList?.length > 0) {
-        if (this.organizationProviderType == 'FAMILY') {
-          this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI));
-        } else {
-          this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, changeRequestId, CHANGE_TYPES.MTFI));
-        }
+        this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI));
       } else if (unlockRFIList?.length > 0) {
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, unlockRFIList[0], CHANGE_TYPES.MTFI));
       } else {
