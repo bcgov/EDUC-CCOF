@@ -49,7 +49,10 @@ const NewFacilityMappings = [
 const MtfiMappings = [
   { back: '_ccof_facility_value', front: 'facilityId'},
   { back: '_ccof_ccfri_value', front: 'ccfriApplicationId'},
-  { back: 'ccof_change_request_mtfiid', front: 'changeRequestMtfiId'}, 
+  { back: 'ccof_change_request_mtfiid', front: 'changeRequestMtfiId'},
+  { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf'},
+  { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
+  { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
 ];
 
 
