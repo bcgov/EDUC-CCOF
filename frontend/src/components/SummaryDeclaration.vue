@@ -385,7 +385,7 @@ export default {
       } else if ((this.model.externalStatus =="INCOMPLETE" || this.model.externalStatus == "ACTION_REQUIRED") && !this.allFacilitiesApproved) {
         //allow users to submit their Dec A Change Request form without having to manually unlock
         return false;
-      } else if (this.unlockDeclaration || this.model.unlockDeclaration) {
+      } else if ((!this.isChangeRequest && this.unlockDeclaration) || (this.isChangeRequest && this.model.unlockDeclaration)) {
         //ministry unlocks declaration for PCF or Change Request New Facility
         return false;
       } else if (!this.canSubmit) {
@@ -412,9 +412,8 @@ export default {
       return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
     },
     isDeclarationBDisplayed() {
-      // CCFRI-1602 - Change Request Add New Facility - Declaration B will be shown when ALL Facility ID exists. 
       if (this.isChangeRequest) {
-        return this.allFacilitiesApproved;
+        return this.model?.enabledDeclarationB;
       }
       else {
         if (this.isRenewal) {

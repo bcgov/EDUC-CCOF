@@ -36,7 +36,7 @@ const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
 
 
-const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
 
 async function renewCCOFApplication(req, res) {
@@ -588,6 +588,16 @@ async function getFacilityChangeData(changeActionId){
   return mappedData;
 }
 
+async function getMTFIChangeData(changeActionId) {
+  let mappedData = [];
+  let operation = `ccof_change_request_mtfis?$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let response = await getOperation(operation);
+  response?.value.forEach(fac => {
+    mappedData.push( new MappableObjectForFront(fac, MtfiMappings).toJSON());
+  });
+  return mappedData;
+}
+
 async function getChangeRequestsFromApplicationId(applicationId){
   try {
     let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
@@ -607,6 +617,9 @@ async function getChangeRequestsFromApplicationId(applicationId){
         if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
           mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
         }
+        else if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
+          mappedChangeAction = {...mappedChangeAction, mtfiFacilities: await getMTFIChangeData(mappedChangeAction.changeActionId)};
+        }
         mappedChangeAction.changeType = getLabelFromValue(mappedChangeAction.changeType, CHANGE_REQUEST_TYPES);
         return mappedChangeAction;
       }));
@@ -618,7 +631,7 @@ async function getChangeRequestsFromApplicationId(applicationId){
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
-    //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 
 }

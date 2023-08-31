@@ -318,6 +318,7 @@ export default {
     };
   },
   async beforeMount() {
+    this.$store.commit('summaryDeclaration/isMainLoading', true);
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
     // Determine:
     //   - which user declaration text version (status a or b) will display

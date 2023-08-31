@@ -461,19 +461,57 @@ export default {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
     },
+    mtfiActionRequiredRoute(changeRequestId) {
+      const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      const mtfiChangeAction = currentCR?.changeActions?.find(el => el.changeType === 'PARENT_FEE_CHANGE');
+      const mtfiFacilities = mtfiChangeAction?.mtfiFacilities;
+      const unlockCCFRIList = this.getUnlockCCFRIListForMTFI(mtfiFacilities);
+      const unlockRFIList = this.getUnlockRFIListForMTFI(mtfiFacilities);
+      // there is no NMF for MTFI change request
+      if (unlockCCFRIList?.length > 0) {
+        if (this.organizationProviderType == 'FAMILY') {
+          this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI));
+        } else {
+          this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, changeRequestId, CHANGE_TYPES.MTFI));
+        }
+      } else if (unlockRFIList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, unlockRFIList[0], CHANGE_TYPES.MTFI));
+      } else {
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId, CHANGE_TYPES.MTFI));
+      }
+    },
+    getUnlockCCFRIListForMTFI(mtfiFacilities) {
+      let unlockList = [];
+      mtfiFacilities?.forEach((facility) => {
+        if (facility.unlockCcfri)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    getUnlockRFIListForMTFI(mtfiFacilities) {
+      let unlockList = [];
+      mtfiFacilities?.forEach((facility) => {
+        if (facility.unlockRfi)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
     updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
       this.processing = true;
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
-      if (changeType == 'PDF_CHANGE'){
+      switch (changeType) {
+      case 'PDF_CHANGE':
         this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
-      }
-      else if (changeType == 'NEW_FACILITY') {
+        break;
+      case 'NEW_FACILITY':
         this.newFacilityActionRequiredRoute(changeRequestId, index);
-      }
-      else if (changeType == 'PARENT_FEE_CHANGE'){
-        this.setChangeRequestId(changeRequestId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
+        break;
+      case 'PARENT_FEE_CHANGE':
+        this.mtfiActionRequiredRoute(changeRequestId);
+        break;
+      default:
+        break;
       }
     },
     async createNewChangeRequest(changeType){

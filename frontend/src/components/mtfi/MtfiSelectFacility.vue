@@ -86,7 +86,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['programYearId', 'applicationId']),
+    ...mapState('application', ['programYearId', 'applicationId', 'isRenewal']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList','navBarList']),
     ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
@@ -100,8 +100,10 @@ export default {
       return (!this.checkbox?.includes(true));
     },
     filteredUserProfileList() {
+      if (this.isRenewal) {
+        return this.userProfileList.filter(el => !el.changeRequestId && el.facilityAccountNumber);
+      }
       return this.userProfileList.filter(el => !el.changeRequestId);
-      // return this.userProfileList.filter(el => el.changeRequestId);
     }
   },
   async beforeMount() {
