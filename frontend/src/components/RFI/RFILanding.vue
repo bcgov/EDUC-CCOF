@@ -1612,7 +1612,7 @@ export default {
       if (this.currentFacility?.unlockRfi === 1) {
         return false;
       }else if(this.isChangeRequest){
-        if (!this.changeRequestStatus){
+        if (!this.changeRequestStatus||this.currentFacility.unlockRfi){
           return false;
         }
         else if(this.changeRequestStatus!=='INCOMPLETE'){

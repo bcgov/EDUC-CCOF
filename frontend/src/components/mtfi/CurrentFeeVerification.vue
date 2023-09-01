@@ -443,16 +443,16 @@ export default {
     ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
     ...mapState('application', ['programYearId']),
     ...mapState('navBar', ['navBarList', 'userProfileList']),
-    ...mapGetters('navBar', ['previousPath', 'nextPath']),
+    ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
     getCurrentFacility(){
-      return this.userProfileList.find(el => el.facilityId == this.CCFRIFacilityModel.facilityId);
+      return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     isReadOnly(){
-      if(!this.changeRequestStatus){
+      if(!this.changeRequestStatus||this.getCurrentFacility.unlockCcfri){
         return false;
       }
       if(this.changeRequestStatus!=='INCOMPLETE'){
