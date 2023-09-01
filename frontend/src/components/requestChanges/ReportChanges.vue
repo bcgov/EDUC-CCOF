@@ -29,7 +29,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" >Add new facility</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" :loading="processing">Add new facility</v-btn>
                 </v-row>
               </template>
 
@@ -44,7 +44,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" >Upload a Change Notification Form</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" :loading="processing">Upload a Change Notification Form</v-btn>
                 </v-row>
               </template>
 
@@ -59,7 +59,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" >Update parent fees</v-btn>
+                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" :loading="processing">Update parent fees</v-btn>
                 </v-row>
               </template>
 

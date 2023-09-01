@@ -132,7 +132,9 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     async next() {
-      await this.save(false);
+      if (!this.isReadOnly) {
+        await this.save(false);
+      }
       this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.navBarList[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
     },
     validateForm() {
@@ -203,7 +205,10 @@ export default {
   },
   mounted() {
   },
-  beforeRouteLeave(_to, _from, next) {
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isReadOnly && !this.loading) {
+      await this.save(false);
+    }
     next();
   },
   components: {LargeButtonContainer,NavButton}

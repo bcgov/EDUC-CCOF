@@ -69,9 +69,9 @@ function filterNavBar(state) {
   } else {
     state.navBarList = state.userProfileList.filter(el => {
       if (state.isRenewal) {
-        return (!el.changeRequestId && el.facilityAccountNumber && (el.facilityStatus === 'CCFRI Complete'));
+        return (el.facilityAccountNumber && (el.facilityStatus === 'CCFRI Complete'));
       }
-      return !el.changeRequestId;
+      return (!el.changeRequestId || (el.facilityAccountNumber && (el.facilityStatus === 'CCFRI Complete')));
     });
   }
 }
