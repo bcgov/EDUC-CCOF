@@ -364,6 +364,16 @@ const router = new VueRouter({
       }
     },
     {
+      path: pcfUrl(PATHS.SUMMARY_DECLARATION) + '/printable',
+      name: 'Printable Summary',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false
+      }
+    },
+    {
       path: pcfUrl(PATHS.CCFRI_HOME),
       name: 'ccfri-home',
       component: CcfriEceLandingPage,

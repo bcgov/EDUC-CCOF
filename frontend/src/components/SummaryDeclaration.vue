@@ -47,7 +47,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple accordion>
+            <v-expansion-panels ref="v-expansion-panels" focusable multiple accordion v-model="expand">
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader v-if="isMainLoading" :loading="isMainLoading"
@@ -286,6 +286,7 @@
             <v-row v-if="!isProcessing">
               <v-col class="pt-0">
                 <v-text-field
+                  id="signatureTextField"
                   v-if="!isProcessing"
                   outlined
                   v-model="model.orgContactName"
@@ -299,7 +300,7 @@
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
         :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
-        @previous="previous" @submit="submit"></NavButton>
+        @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
         persistent
@@ -408,6 +409,9 @@ export default {
         return facility.facilityInfo.facilityAccountNumber;
       });
     },
+    numberOfPanelsToExpand() {
+      return this.$refs["v-expansion-panels"]?.$children.length;
+    },
     hasChangeNotificationFormDocuments() {
       return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
     }
@@ -424,6 +428,8 @@ export default {
       summaryModelFacilities: [],
       invalidSummaryForms: [],
       payload: {},
+      printableVersion: false,
+      expand: [],
     };
   },
   methods: {
@@ -552,8 +558,11 @@ export default {
       }
       this.updateNavBarStatus(formObj, isComplete);
     },
-
-
+    expandAllPanels() {
+      for (let i = 0; i < this.numberOfPanelsToExpand; i ++) {
+        this.expand.push(i);
+      }
+    },
     updateNavBarStatus(formObj, isComplete) {
       if (formObj) {
         if (this.isChangeRequest) {
@@ -673,6 +682,9 @@ export default {
   },
   async mounted() {
     this.isProcessing = true;
+    if (this.$route.path.endsWith('printable')) {
+      this.printableVersion = true;
+    }
     await this.loadSummary(this.$route.params?.changeRecGuid);
     await this.loadData();
     this.model = this.$store.state.summaryDeclaration.model ?? model;
@@ -702,6 +714,9 @@ export default {
     }
     this.summaryKey = this.summaryKey + 1;
     this.isProcessing = false;
+    if (this.printableVersion) {
+      this.expandAllPanels();
+    }
   },
 
   watch: {
@@ -709,6 +724,8 @@ export default {
       handler: function (val) {
         if (val) {
           setTimeout(() => {
+            console.log(this.$refs["v-expansion-panels"]);
+            console.log(this.$refs["v-expansion-panels"].$children.length);
             const keys = Object.keys(this.payload);
             console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.

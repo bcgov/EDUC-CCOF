@@ -103,7 +103,8 @@ export default {
         agreeConsentCertify:state.model.agreeConsentCertify,
         orgContactName:state.model.orgContactName,
         declarationAStatus:state.model?.declarationAStatus,
-        declarationBStatus:state.model?.declarationBStatus };
+        declarationBStatus:state.model?.declarationBStatus,
+        summaryDeclarationApplicationName: state.summaryModel?.application?.name};
       try {
         if ((Object.keys(reLockPayload).length > 0)) {
           payload = {...payload, ...reLockPayload};

@@ -427,6 +427,14 @@ const ChangeRequestMappings = [
   //{ back: '', front: ''}, // null,
 ];
 
+const PdfDocumentMappings = [
+  {back: 'annotationid', front: 'annotationId'},
+  {back: 'filename', front: 'fileName'},
+  {back: 'subject', front: 'subject'},
+  {back: 'filesize', front: 'fileSize'},
+  {back: 'createdon', front: 'createDate'},
+];
+
 module.exports = {
   OrganizationMappings,
   FacilityMappings,
@@ -458,5 +466,6 @@ module.exports = {
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
   ChangeRequestMappings,
-  UserProfileChangeRequestNewFacilityMappings
+  UserProfileChangeRequestNewFacilityMappings,
+  PdfDocumentMappings
 };
