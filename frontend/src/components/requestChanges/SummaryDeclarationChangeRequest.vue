@@ -318,6 +318,7 @@ export default {
     };
   },
   async beforeMount() {
+    this.$store.commit('summaryDeclaration/isMainLoading', true);
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
     // Determine:
     //   - which user declaration text version (status a or b) will display
@@ -351,7 +352,9 @@ export default {
       return false;
     },
     isSummaryComplete() {
-      return (this.invalidSummaryForms.length < 1 );
+      if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0)
+        return false;
+      return (this.invalidSummaryForms.length < 1);
     },
     facilities() {
       if (this.summaryModel?.mtfiFacilities) {
@@ -391,7 +394,8 @@ export default {
       this.isProcessing = true;
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
-        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
+        // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
+        await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: []});
         this.dialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);

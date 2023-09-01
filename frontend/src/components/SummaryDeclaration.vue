@@ -209,14 +209,14 @@
                 </div>
                  <!-- show for new org after ministry unlocks -->
                  <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
-                <div v-show="(this.isChangeRequest && !this.allFacilitiesApproved) ||((this.model.declarationAStatus == 1 && this.isRenewal) || (this.model.declarationAStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber) )">
+                <div v-show="!isDeclarationBDisplayed">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
                     ministries to validate the accuracy of any information that I have provided.</p>
                 </div>
                 <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
-                <div v-show=" (this.model.unlockDeclaration && this.allFacilitiesApproved) || ((this.model.declarationBStatus == 1 && this.isRenewal ) || (this.model.declarationBStatus == 1 && !this.isRenewal && this.unlockDeclaration && this.organizationAccountNumber))">
+                <div v-show="isDeclarationBDisplayed">
                   <p>I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                     information provided is true and complete to the best of my knowledge and belief.</p>
                   <p>I consent to the Ministry contacting other branches within the Ministry and other Province
@@ -386,7 +386,7 @@ export default {
       } else if ((this.model.externalStatus =="INCOMPLETE" || this.model.externalStatus == "ACTION_REQUIRED") && !this.allFacilitiesApproved) {
         //allow users to submit their Dec A Change Request form without having to manually unlock
         return false;
-      } else if (this.unlockDeclaration || this.model.unlockDeclaration) {
+      } else if ((!this.isChangeRequest && this.unlockDeclaration) || (this.isChangeRequest && this.model.unlockDeclaration)) {
         //ministry unlocks declaration for PCF or Change Request New Facility
         return false;
       } else if (!this.canSubmit) {
@@ -414,7 +414,19 @@ export default {
     },
     hasChangeNotificationFormDocuments() {
       return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
-    }
+    },
+    isDeclarationBDisplayed() {
+      if (this.isChangeRequest) {
+        return this.model?.enabledDeclarationB;
+      }
+      else {
+        if (this.isRenewal) {
+          return (this.model.declarationBStatus == 1);
+        } else {
+          return (this.model.declarationBStatus == 1 && this.unlockDeclaration && this.organizationAccountNumber);
+        }
+      }
+    },
   },
   data() {
     return {
@@ -468,7 +480,8 @@ export default {
       try {
         this.$store.commit('summaryDeclaration/model', this.model);
         if(this.isChangeRequest){
-          await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+          // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
+          await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: []});
         }
         else{
           await this.updateDeclaration({changeRequestId: undefined, reLockPayload: this.createRelockPayload()});
@@ -689,7 +702,8 @@ export default {
     await this.loadData();
     this.model = this.$store.state.summaryDeclaration.model ?? model;
 
-    if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
+    // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
+    if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
 

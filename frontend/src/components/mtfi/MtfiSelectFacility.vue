@@ -26,8 +26,8 @@
     <LargeButtonContainer v-else>
       <v-form ref="isValidForm" value="false" v-model="isValidForm" >
         <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12" min-width="500px"
-          :disabled="!(ccfriOptInStatus==1) || isReadOnly"
-          v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus } , index) in filteredUserProfileList" :key="index">
+          :disabled="isFacilityDisabled(ccfriOptInStatus, ccfriStatus) || isReadOnly"
+          v-for="({facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus, ccfriStatus} , index) in filteredUserProfileList" :key="index">
           <v-card-text>
             <v-row>
               <v-col class="col-12 col-xl-10 col-lg-10 col-md-9">
@@ -86,7 +86,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['programYearId', 'applicationId']),
+    ...mapState('application', ['programYearId', 'applicationId', 'isRenewal']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList','navBarList']),
     ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
@@ -100,8 +100,10 @@ export default {
       return (!this.checkbox?.includes(true));
     },
     filteredUserProfileList() {
+      if (this.isRenewal) {
+        return this.userProfileList.filter(el => !el.changeRequestId && el.facilityAccountNumber);
+      }
       return this.userProfileList.filter(el => !el.changeRequestId);
-      // return this.userProfileList.filter(el => el.changeRequestId);
     }
   },
   async beforeMount() {
@@ -123,11 +125,16 @@ export default {
     ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList', 'addToNavBar','removeChangeMap']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     ...mapActions('navBar',['loadChangeRequest']),
+    isFacilityDisabled(ccfriOptInStatus, ccfriStatus)  {
+      return (ccfriOptInStatus == 0 || ccfriStatus != 'APPROVED');
+    },
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     async next() {
-      await this.save(false);
+      if (!this.isReadOnly) {
+        await this.save(false);
+      }
       this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, this.$route.params.changeRecGuid, this.navBarList[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI));
     },
     validateForm() {
@@ -198,7 +205,10 @@ export default {
   },
   mounted() {
   },
-  beforeRouteLeave(_to, _from, next) {
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isReadOnly && !this.loading) {
+      await this.save(false);
+    }
     next();
   },
   components: {LargeButtonContainer,NavButton}

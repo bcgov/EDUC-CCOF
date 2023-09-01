@@ -29,7 +29,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" >Add new facility</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" :loading="processing">Add new facility</v-btn>
                 </v-row>
               </template>
 
@@ -44,7 +44,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" >Upload a Change Notification Form</v-btn>
+                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" :loading="processing">Upload a Change Notification Form</v-btn>
                 </v-row>
               </template>
 
@@ -59,7 +59,7 @@
             </template>
               <template #button class="ma-0 pa-0 ">
                 <v-row justify="space-around">
-                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" >Update parent fees</v-btn>
+                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" :loading="processing">Update parent fees</v-btn>
                 </v-row>
               </template>
 
@@ -213,6 +213,7 @@ export default {
       cancelChangeRequestType: undefined,
       cancelChangeRequestStatus: undefined,
       cancelChangeRequestSubmissionDate: undefined,
+      endStateStatusesCR: ['Ineligible', 'Approved', 'Cancelled'],
     };
   },
   computed: {
@@ -460,19 +461,53 @@ export default {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
       }
     },
+    mtfiActionRequiredRoute(changeRequestId) {
+      const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      const mtfiChangeAction = currentCR?.changeActions?.find(el => el.changeType === 'PARENT_FEE_CHANGE');
+      const mtfiFacilities = mtfiChangeAction?.mtfiFacilities;
+      const unlockCCFRIList = this.getUnlockCCFRIListForMTFI(mtfiFacilities);
+      const unlockRFIList = this.getUnlockRFIListForMTFI(mtfiFacilities);
+      // there is no NMF for MTFI change request
+      if (unlockCCFRIList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI));
+      } else if (unlockRFIList?.length > 0) {
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, unlockRFIList[0], CHANGE_TYPES.MTFI));
+      } else {
+        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId, CHANGE_TYPES.MTFI));
+      }
+    },
+    getUnlockCCFRIListForMTFI(mtfiFacilities) {
+      let unlockList = [];
+      mtfiFacilities?.forEach((facility) => {
+        if (facility.unlockCcfri)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    getUnlockRFIListForMTFI(mtfiFacilities) {
+      let unlockList = [];
+      mtfiFacilities?.forEach((facility) => {
+        if (facility.unlockRfi)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
     updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
       this.processing = true;
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
-      if (changeType == 'PDF_CHANGE'){
+      switch (changeType) {
+      case 'PDF_CHANGE':
         this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
-      }
-      else if (changeType == 'NEW_FACILITY') {
+        break;
+      case 'NEW_FACILITY':
         this.newFacilityActionRequiredRoute(changeRequestId, index);
-      }
-      else if (changeType == 'PARENT_FEE_CHANGE'){
-        this.setChangeRequestId(changeRequestId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId,CHANGE_TYPES.MTFI));
+        break;
+      case 'PARENT_FEE_CHANGE':
+        this.mtfiActionRequiredRoute(changeRequestId);
+        break;
+      default:
+        break;
       }
     },
     async createNewChangeRequest(changeType){
@@ -554,10 +589,13 @@ export default {
     sortChangeActions(changeRequest, order) {
       return _.sortBy(changeRequest.changeActions, 'createdOn', order);
     },
+    // CCFRI-2489
+    // All the MTFI will have to be in one of the end state statutes.
+    // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled(){
-      //requirements state only one mtfi can be in prograss at a time. Provider may start another MTFI as soon as the last one is completed.
-      let found =  this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && el.externalStatus == "In Progress");
-      return !found;
+      let foundCRNotInEndStateStatus = this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus));
+      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(el => el.ccfriStatus == 'APPROVED');
+      return (!foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI);
     },
     buttonColor(isDisabled) {
       return isDisabled ? '#909090' : '#003366';
