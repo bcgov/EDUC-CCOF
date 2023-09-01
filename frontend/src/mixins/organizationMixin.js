@@ -56,7 +56,7 @@ export default {
       }
       this.processing = false;
       this.loading = false;
-      this.setIsOrganizationComplete(this.isValidForm);
+      // this.setIsOrganizationComplete(this.isValidForm);
       this.setIsStarted(true);
     }
   },
