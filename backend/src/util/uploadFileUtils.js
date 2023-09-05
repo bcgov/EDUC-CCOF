@@ -1,6 +1,5 @@
 'use strict';
 const log = require('../components/logger');
-// const {convertHeicDocumentToJpgWithWorker} = require('./workerThreadUtils');
 const {Worker} = require('node:worker_threads');
 
 function getFileExtension(fileName) {
@@ -18,9 +17,10 @@ async function convertHeicDocumentToJpg(document) {
   }
 
   const heicBuffer = Buffer.from(document.documentbody, 'base64');
-  const jpgBuffer = await _convertHeicDocumentToJpgWithWorker(heicBuffer);
 
   log.verbose('convertHeicDocumentToJpg :: coverting from heic', {...document, documentbody: 'OMITTED'});
+
+  const jpgBuffer = await _convertHeicDocumentToJpgWithWorker(heicBuffer);
 
   document.documentbody = jpgBuffer.toString('base64');
   document.filesize = jpgBuffer.byteLength;
