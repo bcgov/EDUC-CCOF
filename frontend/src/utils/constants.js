@@ -93,6 +93,7 @@ export const PATHS = {
   },
   //These are all suffixes.
   SELECT_APPLICATION_TYPE: '/select-application-type',
+  NEW_APPLICATION_INTERMEDIATE: '/new-application-intermediate',
   RENEW_CONFIRM: '/group/renew',
 
   CCOF_GROUP_ORG: '/group/organization',

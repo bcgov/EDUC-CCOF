@@ -32,6 +32,7 @@ import Eligibility from '@/components/ccofApplication/family/Eligibility';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
+import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
@@ -133,6 +134,15 @@ const router = new VueRouter({
       path: pcfUrl(PATHS.SELECT_APPLICATION_TYPE),
       name: 'Select CCOF Application Type',
       component: CcofApplicationTypeSelector,
+      meta: {
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
+      }
+    },
+    {
+      path: pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE),
+      name: 'Confirm this is a New Application and not a Renewal',
+      component: CcofNewApplicationIntermediate,
       meta: {
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.APPLICATION
