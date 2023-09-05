@@ -1,6 +1,7 @@
 'use strict';
-const convert = require('heic-convert');
 const log = require('../components/logger');
+// const {convertHeicDocumentToJpgWithWorker} = require('./workerThreadUtils');
+const {Worker} = require('node:worker_threads');
 
 function getFileExtension(fileName) {
   if (fileName)
@@ -17,11 +18,7 @@ async function convertHeicDocumentToJpg(document) {
   }
 
   const heicBuffer = Buffer.from(document.documentbody, 'base64');
-  const jpgBuffer = await convert({
-    buffer: heicBuffer,
-    format: 'JPEG',
-    quality: 0.5
-  });
+  const jpgBuffer = await _convertHeicDocumentToJpgWithWorker(heicBuffer);
 
   log.verbose('convertHeicDocumentToJpg :: coverting from heic', {...document, documentbody: 'OMITTED'});
 
@@ -33,6 +30,24 @@ async function convertHeicDocumentToJpg(document) {
   log.verbose('convertHeicDocumentToJpg :: converted to jpg', {...document, documentbody: 'OMITTED'});
 
   return document;
+}
+
+async function _convertHeicDocumentToJpgWithWorker(workerData) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(`${__dirname}/workerThreadFunctions/convertHeicWorker.js`, {workerData: workerData});
+
+    worker.on('message', result => {
+      //messages sent on worker threads are converted to Int8Arrays. So we need to covert this back to a buffer for processing.
+      const parsedResult = Buffer.from(result);
+      resolve(parsedResult);
+    });
+    worker.on('error', error => reject(error));
+    worker.on('exit', code => {
+      if (code !== 0) {
+        reject(new Error(`Worker stopped with exit code ${code}`));
+      }
+    });
+  });
 }
 
 module.exports = {
