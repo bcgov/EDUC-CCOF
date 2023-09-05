@@ -3,10 +3,9 @@ const convert = require('heic-convert');
 const log = require('../../components/logger');
 
 async function convertHeicWithWorkerPool(heicInt8Array){
-  const heicBuffer = Buffer.from(heicInt8Array); //messages sent on worker threads are converted to Int8Arrays. So we need to covert this back to a buffer for processing.
   log.verbose('convertHeicWithWorkerPool :: converting HEIC');
   const jpgBuffer = await convert({
-    buffer: heicBuffer,
+    buffer: heicInt8Array,
     format: 'JPEG',
     quality: 0.5
   });
