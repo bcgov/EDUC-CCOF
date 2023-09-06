@@ -114,7 +114,7 @@ async function updateCCFRIApplication(req, res) {
       //only bind CCFRI application to main application if this facility is completed during a new application
       //ccfri application for change request should only bind to their respective changeAction (done below)
       //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.
-      // if (!facility.changeRequestFacilityId){
+      // if (!facility.changeRequestNewFacilityId){
       //   payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
       // }
       log.info('patch ccfri payload' , payload);
@@ -135,8 +135,8 @@ async function updateCCFRIApplication(req, res) {
       }
 
       //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
-      if(facility.changeRequestFacilityId){
-        let resp = await updateChangeRequestNewFacility(facility.changeRequestFacilityId,
+      if(facility.changeRequestNewFacilityId){
+        let resp = await updateChangeRequestNewFacility(facility.changeRequestNewFacilityId,
           {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId? facility.ccfriApplicationId : response})`}
         );
         retVal.push(resp);
@@ -576,7 +576,7 @@ function checkKey(key, obj) {
 async function getFacilityChangeData(changeActionId){
   let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
-  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
 
