@@ -98,13 +98,7 @@ export default {
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (isChangeRequest(this)) {
-        if(this.isCCOFUnlocked||!this.changeRequestStatus){
-          return false;
-        }
-        else if(this.changeRequestStatus!=='INCOMPLETE'){
-          return true;
-        }
-        return false;
+        return (this.changeRequestStatus !== 'INCOMPLETE');
       }
       return (this.applicationStatus === 'SUBMITTED');
     }
