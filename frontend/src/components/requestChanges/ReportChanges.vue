@@ -52,9 +52,12 @@
 
           <SmallCard  class= "col-lg-6 " :disable="!isMtfiEnabled()">
             <template #content class="px-10">
-              <p class="text-h6 text-center">Parent fee increase (MTFI)</p>
+              <p class="text-h6 text-center">Mid-Term Fee Increase</p>
               <p class="px-2 text-center">
-                Text description to be provided by the ministry.
+                Request a parent fee increase for a facility after you have received approval for the CCFRI.
+              </p>
+              <p class="px-2 text-center">
+                You may need to provide details about your expenses.
               </p>
             </template>
               <template #button class="ma-0 pa-0 ">
