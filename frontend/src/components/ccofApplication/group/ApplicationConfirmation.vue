@@ -9,9 +9,9 @@
 
           <v-row justify="center" style="padding-top: 2em;">
             <ul style="list-style: none">
-              <li v-for="item in facilityList" :key="item.facilityId" style="">
+              <li v-for="item in navBarList" :key="item.facilityId" style="">
                 <router-link :to="getRoutingPath(item.facilityId)"><span>{{ item.facilityName }}</span></router-link>
-                <v-btn v-if="!isLocked && facilityList.length > 1" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+                <v-btn v-if="!isLocked && navBarList.length > 1" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
                   <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </li>
@@ -73,6 +73,7 @@
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { isChangeRequest } from '@/utils/common';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   data() {
@@ -80,13 +81,14 @@ export default {
       dialog: false,
       deleteFacilityName: undefined,
       deleteFacilityId: undefined,
-      deletechangeRequestNewFacilityId: undefined,
+      deleteChangeRequestNewFacilityId: undefined,
       processing: false,
       deleteCcfriId: undefined,
       deleteEceweId: undefined,
       deleteCcofBaseFundingId: undefined,
     };
   },
+  mixins: [alertMixin],
   computed: {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
@@ -96,27 +98,15 @@ export default {
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (isChangeRequest(this)) {
-        if(this.isCCOFUnlocked||!this.changeRequestStatus){
-          return false;
-        }
-        else if(this.changeRequestStatus!=='INCOMPLETE'){
-          return true;
-        }
-        return false;
+        return (this.changeRequestStatus !== 'INCOMPLETE');
       }
       return (this.applicationStatus === 'SUBMITTED');
-    },
-    facilityList() {
-      if (isChangeRequest(this)) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
     }
   },
   methods: {
     ...mapMutations('application', ['setCcofConfirmationEnabled']),
     ...mapActions('facility', ['deleteFacility']),
+    ...mapActions('reportChanges', ['getChangeRequest']),
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -145,7 +135,7 @@ export default {
     confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
-      this.deletechangeRequestNewFacilityId = changeRequestNewFacilityId,
+      this.deleteChangeRequestNewFacilityId = changeRequestNewFacilityId;
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;
@@ -153,13 +143,23 @@ export default {
     },
     async deleteApplication() {
       this.processing = true;
-      await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deletechangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
-      this.processing = false;
-      this.dialog = false;
+      try {
+        await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deleteChangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});  
+      } catch (error) {
+        this.setFailureAlert('An error occurred while deleting facility. Please try again later.');
+      } finally {
+        this.processing = false;
+        this.dialog = false;
+      }
     }
   },
-  mounted() {
+  async mounted() {
     this.setCcofConfirmationEnabled(true);
+    if (isChangeRequest(this)) {
+      let index = this.navBarList.findIndex(facility => facility.changeRequestNewFacilityId)
+      if (index === -1)
+        await this.getChangeRequest(this.$route.params.changeRecGuid);
+    }
   },
 
 };

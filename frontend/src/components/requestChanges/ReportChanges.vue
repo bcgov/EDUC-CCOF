@@ -52,9 +52,12 @@
 
           <SmallCard  class= "col-lg-6 " :disable="!isMtfiEnabled()">
             <template #content class="px-10">
-              <p class="text-h6 text-center">Parent fee increase (MTFI)</p>
+              <p class="text-h6 text-center">Mid-Term Fee Increase</p>
               <p class="px-2 text-center">
-                Text description to be provided by the ministry.
+                Request a parent fee increase for a facility after you have received approval for the CCFRI.
+              </p>
+              <p class="px-2 text-center">
+                You may need to provide details about your expenses.
               </p>
             </template>
               <template #button class="ma-0 pa-0 ">
@@ -121,7 +124,7 @@
             <v-btn
               v-if="isUpdateButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="updateButton(item.index, item.changeType, item.changeActionId, item.changeRequestId)"
+              @click="updateButton(item.changeType, item.changeActionId, item.changeRequestId)"
               outlined
               :width="changeHistoryButtonWidth"
             >
@@ -439,10 +442,12 @@ export default {
         this.goToChangeForm(changeActionId, changeRequestId);
       }
     },
-    newFacilityActionRequiredRoute(changeRequestId, index) {
+    newFacilityActionRequiredRoute(changeRequestId) {
       let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      const newFacilityChangeAction = unlockChangeRequest.changeActions?.find(changeAction => changeAction.changeType === 'NEW_FACILITY');
       if (currentCR?.unlockCCOF) {
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId));
       } else if (currentCR?.unlockLicenseUpload) {
         this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, changeRequestId));
       } else if (this.unlockCCFRIList?.length > 0) {
@@ -458,7 +463,7 @@ export default {
       } else if (currentCR?.unlockDeclaration) {
         this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId));
       } else {
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, this.changeRequestStore[index].changeActions[0].facilities[0].facilityId));
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId));
       }
     },
     mtfiActionRequiredRoute(changeRequestId) {
@@ -492,7 +497,7 @@ export default {
       });
       return unlockList;
     },
-    updateButton(index, changeType, changeActionId = null,  changeRequestId = null){
+    updateButton(changeType, changeActionId = null,  changeRequestId = null){
       this.processing = true;
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
@@ -501,7 +506,7 @@ export default {
         this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
         break;
       case 'NEW_FACILITY':
-        this.newFacilityActionRequiredRoute(changeRequestId, index);
+        this.newFacilityActionRequiredRoute(changeRequestId);
         break;
       case 'PARENT_FEE_CHANGE':
         this.mtfiActionRequiredRoute(changeRequestId);

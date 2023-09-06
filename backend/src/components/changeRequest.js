@@ -2,7 +2,7 @@
 
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 const { UserProfileBaseCCFRIMappings } = require('../util/mapping/Mappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
@@ -33,7 +33,7 @@ function mapChangeRequestForBack(data, changeType) {
 
 // get Change Action details.  depending on the entity, we may want to get details 2 level below change action
 async function getChangeActionDetails(changeActionId, changeDetailEntity, changeDetailMapper, joiningTable, joiningTableMapping) {
-  if (joiningTable) {
+  if (changeActionId && changeDetailEntity && changeDetailMapper) {
     try {
       let operation;
       if (joiningTable) {
@@ -70,6 +70,9 @@ async function mapChangeRequestObjectForFront(data) {
     if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
       const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
       changeAction.mtfi = mtfi;
+    } else if (changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY) {
+      const newFacilities = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_new_facilities', NewFacilityMappings);
+      changeAction.newFacilities = newFacilities;
     }
     changeList.push(changeAction);
   }));
@@ -201,9 +204,9 @@ function buildNewFacilityPayload(req) {
   return facility;
 }
 
-async function updateChangeRequestNewFacility(changeRequestFacilityId, payload){
+async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload){
   try{
-    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestFacilityId, payload);
+    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
     return response;
   }
   catch(e){
