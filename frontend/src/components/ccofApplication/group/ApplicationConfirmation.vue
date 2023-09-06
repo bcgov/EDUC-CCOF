@@ -135,7 +135,7 @@ export default {
     confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
-      this.deleteChangeRequestNewFacilityId = changeRequestNewFacilityId,
+      this.deleteChangeRequestNewFacilityId = changeRequestNewFacilityId;
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;

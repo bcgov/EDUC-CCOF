@@ -212,16 +212,16 @@ export default {
         commit('setLoadedChangeRequest', response);
         commit('setChangeRequestId', response?.changeRequestId);
 
-        let changeAction = undefined;
+        let changeAction;
         switch (rootState.navBar.changeType) {
           case CHANGE_TYPES.NEW_FACILITY:
-            changeAction = response?.changeActions.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);            
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);            
             break;
           case CHANGE_TYPES.CHANGE_NOTIFICATION:
-            changeAction = response?.changeActions.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE);
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE);
             break;
           case CHANGE_TYPES.MTFI:
-            changeAction = response?.changeActions.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
             break;
         }
         commit('setChangeActionId', changeAction?.changeActionId);
