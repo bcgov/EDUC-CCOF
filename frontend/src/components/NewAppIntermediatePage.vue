@@ -1,17 +1,23 @@
 <template>
-    <v-container fluid class="pa-12">
-        <v-row class="" align="stretch" justify="space-around">
-                <v-row class="d-flex justify-center text-h5" style="color:#003466;">
-                    Weclcome {{ this.userInfo.organizationName }} to CCOF!
-                </v-row>
-                <v-row class="d-flex justify-center">
-                    <p>If you or your ogranization are already in agreement and have active funding with the Child
-                        Care Operating Funding program, do not submit a new application and call the program
-                        directly at 1-888-338-6622 (Option 2).</p>
-                </v-row>
-                <v-btn dark class="blueButton" @click="backToLanding()">Cancel</v-btn>
-                <v-btn dark class="blueButton" @click="newApplication()">Start Application</v-btn>
-        </v-row>
+    <v-container>
+        <div class="row pt-4 justify-center">
+            <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+                Weclcome {{ this.userInfo.organizationName }} to CCOF!
+            </v-row>
+            <v-row class="d-flex justify-center">
+                <p>If you or your ogranization are already in agreement and have active funding with the Child
+                    Care Operating Funding program, do not submit a new application and call the program
+                    directly at 1-888-338-6622 (Option 2).</p>
+            </v-row>
+            <v-row class="d-flex justify-center">
+                <v-col class="d-flex justify-center">
+                    <v-btn dark class="blueButton" @click="backToLanding()">Cancel</v-btn>
+                </v-col>
+                <v-col class="d-flex justify-center">
+                    <v-btn dark class="blueButton" @click="newApplication()">Start Application</v-btn>
+                </v-col>
+            </v-row>
+        </div>
     </v-container>
 </template>
   
@@ -22,11 +28,11 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
     name: 'NewAppIntermediatePage',
-    components: {  },
+    components: {},
     mixins: [alertMixin],
     data() {
         return {
-            
+
         };
     },
     computed: {
@@ -48,4 +54,11 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.rowSize {
+    max-width: 60%;
+    text-align: center;
+}
+</style>
   
