@@ -76,6 +76,10 @@ export default {
       checkSession();
       try {
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.application.applicationId)).data;
+        if (payload.unlockDeclaration){
+          payload.agreeConsentCertify = null;
+          payload.orgContactName = null;
+        }
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
