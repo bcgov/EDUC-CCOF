@@ -1,5 +1,6 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:lts-alpine3.13
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0-alpine3.18
 
+ENV NPM_CONFIG_CACHE /tmp/npm
 RUN mkdir -p /logs \
     && chmod 755 /logs
 
@@ -11,14 +12,14 @@ RUN npm ci
 
 COPY . /opt/app-root/src
 
-# Installs latest Chromium package.
 RUN apk upgrade --no-cache --available \
-    && apk add --no-cache dbus chromium chromium-chromedriver
+    && apk add --no-cache chromium-swiftshader nss freetype harfbuzz ca-certificates ttf-freefont ghostscript
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
-    CHROME_PATH=/usr/lib/chromium/
-
-ENV CHROMIUM_FLAGS="--disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-gpu"
+    CHROME_PATH=/usr/lib/chromium/ \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    GHOSTSCRIPT_PATH=/usr/bin/gs
 
 EXPOSE 443 8080
 CMD ["npm", "start"]

@@ -7,7 +7,8 @@ const {
   deleteOperationWithObjectId,
   sleep,
   getLabelFromValue,
-  updateChangeRequestNewFacility
+  updateChangeRequestNewFacility,
+  postApplicationSummaryDocument
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
@@ -34,7 +35,8 @@ const {
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
-
+const puppeteer = require('puppeteer');
+const {compress} = require('compress-pdf');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -417,10 +419,92 @@ async function submitApplication(req, res) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
       }
     }
+    printPdf(req).then();
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
+}
+
+async function printPdf(req, numOfRetries = 0)  {
+  let url = `${req.headers.referer}/printable`;
+
+  log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);
+  log.verbose('printPdf :: correlationId is', req.session.correlationID);
+  log.verbose('printPdf :: applicationId is', req.params.applicationId);
+  log.verbose('printPdf :: url path is', url);
+
+  const browser = await puppeteer.launch({
+    headless: true, //setting this to 'new' will crash on openshift
+    dumpio: true,
+    args: [
+      '--no-sandbox',
+      '--disable-software-rasterizer',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ]
+  }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
+
+  try {
+    log.verbose('printPdf :: starting new page');
+    const page = await browser.newPage();
+
+    await page.setRequestInterception(true);
+    await page.setDefaultTimeout(300000); //set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
+
+    page.on('request', (request) => {
+      const headers = request.headers();
+      headers['cookie'] = req.headers.cookie;
+      request.continue({ headers });
+    });
+
+    log.verbose('printPdf :: starting page load');
+    await page.goto(url, {waitUntil: 'networkidle0'});
+    await page.waitForSelector('#signatureTextField', {visible: true});
+    log.verbose('printPdf :: page loaded starting pdf creation');
+    const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
+    log.verbose('printPdf :: pdf buffer created starting compression');
+    const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
+    log.verbose('printPdf :: compression completed for applicationId', req.params.applicationId);
+    await browser.close();
+
+    let payload = {
+      ccof_applicationid: req.params.applicationId,
+      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+      filesize: compressedPdfBuffer.byteLength,
+      subject: 'APPLICATION SUMMARY',
+      documentbody: compressedPdfBuffer.toString('base64')
+    };
+
+    await postApplicationSummaryDocument(payload);
+  } catch (e) {
+    log.error(e);
+    await browser.close();
+
+    if (numOfRetries >= 3) {
+      log.info('printPdf :: maximum number of retries reached');
+      log.error(`printPdf :: unable to save pdf for application id ${req.params.applicationId}`);
+
+    } else {
+      let retryCount = numOfRetries + 1;
+      log.info('printPdf :: failed retrying');
+      log.info(`printPdf :: retry count ${retryCount}`);
+      await printPdf(req, retryCount);
+    }
+  }
+}
+
+//returns current date in DDMMMYYYY format when saving pdf file name
+function getCurrentDateForPdfFileName() {
+  const date = new Date();
+  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+  });
+  const month = dateTimeFormatter.format(date).toUpperCase();
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  return `${day}${month}${year}`;
 }
 
 function getFacilityInMap(map, facilityId) {

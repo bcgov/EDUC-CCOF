@@ -1,6 +1,10 @@
 'use strict';
-const convert = require('heic-convert');
 const log = require('../components/logger');
+const workerpool = require('workerpool');
+const pool = workerpool.pool(`${__dirname}/workerThreadFunctions/convertHeicWorker.js`, {
+  minWorkers: 2,
+  maxWorkers: 4
+});
 
 function getFileExtension(fileName) {
   if (fileName)
@@ -17,13 +21,10 @@ async function convertHeicDocumentToJpg(document) {
   }
 
   const heicBuffer = Buffer.from(document.documentbody, 'base64');
-  const jpgBuffer = await convert({
-    buffer: heicBuffer,
-    format: 'JPEG',
-    quality: 0.5
-  });
 
   log.verbose('convertHeicDocumentToJpg :: coverting from heic', {...document, documentbody: 'OMITTED'});
+  log.verbose('convertHeicDocumentToJpg :: worker pool statistics', pool.stats());
+  const jpgBuffer = Buffer.from(await pool.exec('convertHeicWithWorkerPool', [heicBuffer]));
 
   document.documentbody = jpgBuffer.toString('base64');
   document.filesize = jpgBuffer.byteLength;

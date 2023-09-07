@@ -31,6 +31,7 @@
     "atob": "^2.1.2",
     "axios": "^0.21.2",
     "body-parser": "^1.20.1",
+    "compress-pdf": "0.3.7",
     "config": "^3.3.3",
     "connect-redis": "^5.1.0",
     "cors": "^2.8.5",
@@ -42,8 +43,8 @@
     "express-validator": "^6.9.2",
     "fast-safe-stringify": "^2.0.7",
     "has-ansi": "^4.0.0",
-    "helmet": "^4.4.1",
     "heic-convert": "1.2.4",
+    "helmet": "^4.4.1",
     "http-status-codes": "^1.4.0",
     "ioredis": "^4.27.6",
     "jest-junit": "^7.0.0",
@@ -59,12 +60,14 @@
     "passport-jwt": "^4.0.1",
     "passport-openidconnect-keycloak-idp": "^0.1.6",
     "path": "0.12.7",
+    "puppeteer": "21.0.3",
     "querystring": "0.2.0",
     "redlock": "^4.2.0",
     "strip-ansi": "^6.0.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.0"
+    "winston-daily-rotate-file": "^4.5.0",
+    "workerpool": "^6.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.16",

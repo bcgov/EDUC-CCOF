@@ -205,6 +205,33 @@ async function getApplicationDocument(applicationID){
   }
 }
 
+async function postApplicationSummaryDocument(payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationSummaryDocument';
+  log.info('postApplicationSummaryDocument Url', url);
+  if (log.isDebugEnabled()) {
+    log.debug(`postApplicationSummaryDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postApplicationSummaryDocument', response);
+    return response.data;
+  } catch (e) {
+    log.error('postOperation Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+  }
+}
+
+async function getDocument(annotationId){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationId=' + annotationId;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error(' getApplicationDocument Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
 async function deleteDocument(annotationid){
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationid=' + annotationid;
@@ -347,6 +374,8 @@ const utils = {
   postApplicationDocument,
   getApplicationDocument,
   deleteDocument,
+  getDocument,
+  postApplicationSummaryDocument,
   sleep,
   getChangeActionDocument,
   postChangeActionDocument,
