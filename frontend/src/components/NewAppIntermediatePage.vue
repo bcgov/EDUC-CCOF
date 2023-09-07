@@ -1,6 +1,6 @@
 <template>
-    <v-container>
-        <div class="row pt-4 justify-center">
+    <v-container fluid class="pa-12">
+        <div class="pt-4 justify-center">
             <v-row class="d-flex justify-center text-h5" style="color:#003466;">
                 Weclcome {{ this.userInfo.organizationName }} to CCOF!
             </v-row>
@@ -25,10 +25,11 @@
 import { mapGetters, mapState, mapMutations } from 'vuex';
 import { PATHS, pcfUrl, } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import NavButton from '@/components/util/NavButton';
 
 export default {
     name: 'NewAppIntermediatePage',
-    components: {},
+    components: { NavButton },
     mixins: [alertMixin],
     data() {
         return {

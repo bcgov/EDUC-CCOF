@@ -46,8 +46,7 @@
           </p>
         </template>
         <template #button>
-          <v-btn dark class="blueButton" @click="newApplicationIntermediatePage()" v-if="ccofStatus === CCOF_STATUS_NEW">Start
-            Application</v-btn>
+          <v-btn dark class="blueButton" @click="newApplicationIntermediatePage()" v-if="ccofStatus === CCOF_STATUS_NEW">Start Application</v-btn>
           <v-btn dark class="blueButton" @click="actionRequiredOrganizationRoute()" v-else-if="ccofStatus === CCOF_STATUS_ACTION_REQUIRED">Update your PCF</v-btn>
           <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
             <p class="text-h5 blueText">Status: Incomplete</p>
