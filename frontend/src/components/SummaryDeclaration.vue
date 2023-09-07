@@ -687,8 +687,10 @@ export default {
   async mounted() {
     this.isProcessing = true;
     await this.loadSummary(this.$route.params?.changeRecGuid);
-    await this.loadData();
-    this.model = this.$store.state.summaryDeclaration.model ?? model;
+    if (!this.unlockDeclaration) {
+      await this.loadData();
+      this.model = this.$store.state.summaryDeclaration.model ?? model;
+    }
 
     // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
     if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
