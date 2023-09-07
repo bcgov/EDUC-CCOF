@@ -596,7 +596,10 @@ export default {
     },
     async next() {
       // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-
+      if (!this.isReadOnly && !this.loading) {
+        this.$store.commit('ccfriApp/model', this.model);
+        await this.save(false);
+      }
       //always check for RFI regardless of new or renewal state
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
@@ -651,10 +654,6 @@ export default {
     //this.model = this.$store.state.ccfriApp.model ?? model;
   },
   async beforeRouteLeave(_to, _from, next) {
-    if (!this.isReadOnly && !this.loading) {
-      this.$store.commit('ccfriApp/model', this.model);
-      this.save(false);
-    }
     next();
   },
   components: {NavButton}
