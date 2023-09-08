@@ -45,6 +45,8 @@ export const ApiRoutes = Object.freeze({
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
+  PDFS: baseRoot + '/pdf',
+  PDF: baseRoot + '/pdf/getDocument',
 });
 
 export const PAGE_TITLES = Object.freeze({

@@ -51,10 +51,12 @@ async function getPdfs(req, res) {
     }
 
     for (let document of requestChangeResponse.value) {
-      let documentForFront = new MappableObjectForFront(document.ccof_applicationsummary_Annotations[0], PdfDocumentMappings);
-      documentForFront.data.type = type;
-      documentForFront.data.fiscalYear = fiscalYear;
-      documentList.push(documentForFront);
+      if(document?.ccof_applicationsummary_Annotations?.length>0){
+        let documentForFront = new MappableObjectForFront(document.ccof_applicationsummary_Annotations[0], PdfDocumentMappings);
+        documentForFront.data.type = type;
+        documentForFront.data.fiscalYear = fiscalYear;
+        documentList.push(documentForFront);
+      }
     }
 
     return res.status(HttpStatus.CREATED).json(documentList);
