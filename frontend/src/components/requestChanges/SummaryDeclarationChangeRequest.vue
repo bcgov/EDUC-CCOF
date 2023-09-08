@@ -44,7 +44,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple accordion v-model="expand">
+            <v-expansion-panels ref="v-expansion-panels" focusable multiple accordion v-model="expand">
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader
@@ -354,7 +354,7 @@ export default {
       return false;
     },
     numberOfPanelsToExpand() {
-      return this.summaryModel?.changeActions?.length;
+      return this.$refs["v-expansion-panels"]?.$children.length;
     },
     isSummaryComplete() {
       if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0)
@@ -422,7 +422,7 @@ export default {
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }
-        if (this.printableVersion) {
+      if (this.printableVersion) {
         this.expandAllPanels();
       }
       // this.updateNavBarStatus(formObj, isComplete);
