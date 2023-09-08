@@ -49,7 +49,7 @@ router.get('/ccfri/:ccfriId', passport.authenticate('jwt', {session: false}),isV
  * Get Parent Fees for a facility
  *
  */
-router.get('/fees/:facilityId/year/:programYearId', // passport.authenticate('jwt', {session: false}),isValidBackendToken,
+router.get('/fees/:facilityId/year/:programYearId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty(),
     param('programYearId', 'URL param: [programYearId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();

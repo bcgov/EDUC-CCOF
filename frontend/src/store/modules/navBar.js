@@ -215,11 +215,10 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-    setNavBarFacilityChangeRequest: (state, { facilityId, changeRequestFacilityId }) => {
-      console.log('setting new fac ID!');
+    setNavBarFacilityChangeRequest: (state, { facilityId, changeRequestNewFacilityId }) => {
       let navBarItem = state.userProfileList.find(item => item.facilityId == facilityId);
       if (navBarItem) {
-        navBarItem.changeRequestFacilityId = changeRequestFacilityId;
+        navBarItem.changeRequestNewFacilityId = changeRequestNewFacilityId;
         filterNavBar(state);
       }
     },

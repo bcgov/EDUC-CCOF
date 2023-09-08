@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import {isEmpty} from 'lodash';
-import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
+import { CHANGE_REQUEST_TYPES, CHANGE_TYPES } from '@/utils/constants';
 
 /*
 change REQUEST guid is what we need for saving and loading.
@@ -169,15 +169,11 @@ export default {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
             store.push(element);
             //in the future we may not want to assume a new facility change is not the first of the array?
-
             element.changeActions.forEach((changeAction) => {
               if (changeAction.changeType == "NEW_FACILITY"){
+                const newFacilities = changeAction.facilities;
+                newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
                 newFacList.push(changeAction); //we may not need this now
-
-                //set New Facility change request ID in nav bar so we can filter by it.
-                //we may not need to set it here, depends what Hoang is doing on dynamics side.
-                commit('navBar/setNavBarFacilityChangeRequest', {facilityId: changeAction.facilityId, changeRequestFacilityId: changeAction.changeRequestFacilityId}, { root: true });
-
               }
             });
 
@@ -208,20 +204,39 @@ export default {
     },
 
     // GET Change Request's details using changeRequestID
-    async getChangeRequest({commit}, changeRequestId) {
+    async getChangeRequest({commit, rootState}, changeRequestId) {
       console.log('trying to get change req for: ', changeRequestId);
       checkSession();
       try {
         let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
-        console.log('THIS IS CHANGE REQUEST RESPONSE = ');
-        console.log(response);
         commit('setLoadedChangeRequest', response);
         commit('setChangeRequestId', response?.changeRequestId);
-        commit('setChangeActionId', response?.changeActions[0]?.changeActionId);
+
+        let changeAction;
+        switch (rootState.navBar.changeType) {
+          case CHANGE_TYPES.NEW_FACILITY:
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);            
+            break;
+          case CHANGE_TYPES.CHANGE_NOTIFICATION:
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE);
+            break;
+          case CHANGE_TYPES.MTFI:
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+            break;
+        }
+        commit('setChangeActionId', changeAction?.changeActionId);
+
         let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
         let mtfiFacilities = [];
         mtfiChangeActions?.forEach(changeAction => mtfiFacilities.push(changeAction.mtfi));
         commit('setMTFIFacilities', ...mtfiFacilities);
+
+        const newFacilityChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);
+        newFacilityChangeActions?.forEach(changeAction => {
+          let newFacilities = changeAction.newFacilities;
+          newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
+        });
+
         return response;
       } catch(e) {
         console.log(`Failed to get change request with error - ${e}`);
