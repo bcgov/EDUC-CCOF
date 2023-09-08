@@ -422,7 +422,6 @@ export default {
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }
-      console.log(this.printableVersion);
         if (this.printableVersion) {
         this.expandAllPanels();
       }
