@@ -117,11 +117,9 @@ objects:
      openshift.io/host.generated: 'true'
    labels:
      app: "${APP_NAME}-${BRANCH}"
-#   name: "${APP_NAME}-backend"
-   name: "derek-test-route-backend"
+   name: "${APP_NAME}-backend"
   spec:
-#   host: "${HOST_ROUTE}"
-   host: "derek-test-route-b43d2d-dev.apps.silver.devops.gov.bc.ca"
+   host: "${HOST_ROUTE}"
    path: /api
    port:
      targetPort: 8080-tcp
@@ -130,7 +128,7 @@ objects:
      termination: edge
    to:
      kind: Service
-     name: "derek-test-route-backend"
+     name: "${APP_NAME}-backend"
      weight: 100
    wildcardPolicy: None
 - apiVersion: autoscaling/v2

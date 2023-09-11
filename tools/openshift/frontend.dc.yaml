@@ -107,11 +107,9 @@
         openshift.io/host.generated: 'true'
       labels:
         app: "${APP_NAME}-${BRANCH}"
-#      name: "${APP_NAME}-frontend-https"
-      name: "derek-test-route"
+      name: "${APP_NAME}-frontend-https"
     spec:
-#      host: "${HOST_ROUTE}"
-      host: "derek-test-route-b43d2d-dev.apps.silver.devops.gov.bc.ca"
+      host: "${HOST_ROUTE}"
       port:
         targetPort: 2015-tcp
       tls:
