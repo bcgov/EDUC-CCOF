@@ -110,27 +110,29 @@ objects:
     selector:
       app: "${APP_NAME}-${BRANCH}"
       deploymentconfig: "${APP_NAME}-backend"
-# - apiVersion: v1
-#   kind: Route
-#   metadata:
-#     annotations:
-#       openshift.io/host.generated: 'true'
-#     labels:
-#       app: "${APP_NAME}-${BRANCH}"
-#     name: "${APP_NAME}-backend"
-#   spec:
-#     host: "${HOST_ROUTE}"
-#     path: /api
-#     port:
-#       targetPort: 8080-tcp
-#     tls:
-#       insecureEdgeTerminationPolicy: Redirect
-#       termination: edge
-#     to:
-#       kind: Service
-#       name: "${APP_NAME}-backend"
-#       weight: 100
-#     wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+   annotations:
+     openshift.io/host.generated: 'true'
+   labels:
+     app: "${APP_NAME}-${BRANCH}"
+#   name: "${APP_NAME}-backend"
+   name: "derek-test-route-backend"
+  spec:
+#   host: "${HOST_ROUTE}"
+   host: "derek-test-route-b43d2d-dev.apps.silver.devops.gov.bc.ca"
+   path: /api
+   port:
+     targetPort: 8080-tcp
+   tls:
+     insecureEdgeTerminationPolicy: Redirect
+     termination: edge
+   to:
+     kind: Service
+     name: "derek-test-route-backend"
+     weight: 100
+   wildcardPolicy: None
 - apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:
