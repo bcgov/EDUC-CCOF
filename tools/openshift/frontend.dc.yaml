@@ -120,7 +120,7 @@
         termination: edge
       to:
         kind: Service
-        name: "${APP_NAME}-frontend-${BRANCH}"
+        name: "${APP_NAME}-frontend"
         weight: 100
       wildcardPolicy: None
   - apiVersion: autoscaling/v2
