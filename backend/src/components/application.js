@@ -428,9 +428,9 @@ async function submitApplication(req, res) {
   }
 }
 
-async function printPdf(req, )  {
+async function printPdf(req)  {
   let numOfRetries = 0;
-  let url = `${req.headers.referer}`; //change back jb testing removed /printable
+  let url = `${req.headers.referer}/printable`;
 
   log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);
   log.verbose('printPdf :: correlationId is', req.session.correlationID);
@@ -471,19 +471,29 @@ async function printPdf(req, )  {
     log.verbose('printPdf :: compression completed for applicationId', req.params.applicationId);
     await browser.close();
 
-    let payload = {
-      //ccof_applicationid: req.params.applicationId,
-      ccof_change_requestid: req.params.changeRequestId,
-      //filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-      filename: `testPDFMTFI.pdf`,
-      filesize: compressedPdfBuffer.byteLength,
-      subject: 'APPLICATION SUMMARY',
-      documentbody: compressedPdfBuffer.toString('base64')
-    };
-
+    let payload;
+    //if the body contains an application ID, the summary dec is for PCF. Else, it should be a change request.
+    //if we want to, we could explicitly check the body for a change request id?
+    if(req.params.applicationId){
+      payload = {
+        ccof_applicationid: req.params.applicationId,
+        filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+        filesize: compressedPdfBuffer.byteLength,
+        subject: 'APPLICATION SUMMARY',
+        documentbody: compressedPdfBuffer.toString('base64')
+      };
+    }
+    else {
+      payload = {
+        ccof_change_requestid: req.params.changeRequestId,
+        filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+        filesize: compressedPdfBuffer.byteLength,
+        subject: 'CHANGE REQUEST SUMMARY',
+        documentbody: compressedPdfBuffer.toString('base64')
+      };
+    }
 
     return payload;
-    //await postApplicationSummaryDocument(payload);
   } catch (e) {
     log.error(e);
     await browser.close();

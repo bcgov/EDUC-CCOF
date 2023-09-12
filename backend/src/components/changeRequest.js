@@ -111,13 +111,16 @@ async function updateChangeRequest(req, res){
 
   try {
     log.verbose('update change Request: payload', changeRequest);
-    //let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
+    let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
 
     //is change req complete ? (status 2 i think )
-    const pdfPayload = await printPdf(req);
-    await postChangeRequestSummaryDocument(pdfPayload);
-    return res.status(HttpStatus.OK).json();
-    //return res.status(HttpStatus.OK).json(response);
+
+    if (changeRequest.ccof_externalstatus == 2){
+      const pdfPayload = await printPdf(req);
+      await postChangeRequestSummaryDocument(pdfPayload);
+    }
+
+    return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
