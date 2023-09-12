@@ -116,8 +116,7 @@ async function updateChangeRequest(req, res){
     //is change req complete ? (status 2 i think )
 
     if (changeRequest.ccof_externalstatus == 2){
-      const pdfPayload = await printPdf(req);
-      await postChangeRequestSummaryDocument(pdfPayload);
+      printPdf(req).then();
     }
 
     return res.status(HttpStatus.OK).json(response);

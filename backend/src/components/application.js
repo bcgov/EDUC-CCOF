@@ -8,7 +8,8 @@ const {
   sleep,
   getLabelFromValue,
   updateChangeRequestNewFacility,
-  postApplicationSummaryDocument
+  postApplicationSummaryDocument,
+  postChangeRequestSummaryDocument,
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
@@ -419,9 +420,8 @@ async function submitApplication(req, res) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
       }
     }
-    const pdfPayload = await printPdf(req);
-    log.info('PDF PAYLOAD', pdfPayload);
-    await postApplicationSummaryDocument(pdfPayload);
+
+    printPdf(req).then();
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -482,6 +482,8 @@ async function printPdf(req)  {
         subject: 'APPLICATION SUMMARY',
         documentbody: compressedPdfBuffer.toString('base64')
       };
+
+      await postApplicationSummaryDocument(payload);
     }
     else {
       payload = {
@@ -491,6 +493,8 @@ async function printPdf(req)  {
         subject: 'CHANGE REQUEST SUMMARY',
         documentbody: compressedPdfBuffer.toString('base64')
       };
+
+      await postChangeRequestSummaryDocument(payload);
     }
 
     return payload;
