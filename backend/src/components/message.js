@@ -25,7 +25,7 @@ function sortByPropertyDesc(property){
 
 async function getAllMessages(req, res) {
   try {
-    let operation = 'emails?$select=activityid,createdon,description,lastopenedtime ,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' + req.params.organizationId + ' and statecode eq 1)';
+    let operation = 'emails?$select=activityid,createdon,description,lastopenedtime,_ccof_program_year_value,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' + req.params.organizationId + ' and statecode eq 1)';
     log.info('operation: ', operation);
     let operationResponse = await getOperation(operation);
     operationResponse.value.sort(sortByPropertyDesc('createdon'));

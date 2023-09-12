@@ -85,11 +85,13 @@ export default {
           value: 'isRead'
         },
         { text: 'Subjects', value: 'subject' },
+        { text: 'Fiscal Year', value: 'programYearValue'},
         { text: 'Date Received', value: 'dateReceived' }
       ],
       message: {
         sender: '',
         subject:'',
+        programYearValue: '',
         dateReceived:'',
         messageContent: '',
       },
@@ -115,6 +117,7 @@ export default {
     rowClickHandler(item,row) {
       this.message.subject = item.subject;
       this.message.dateReceived = item.dateReceived;
+      this.message.programYearValue = item.programYearValue;
       this.message.messageContent = item.messageContent;
       this.message.sender = 'From: My ChildcareBC Services';
       row.select(true);
