@@ -6,11 +6,12 @@ const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings } = req
 const { UserProfileBaseCCFRIMappings } = require('../util/mapping/Mappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
+const { printPdf } = require('./application');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
 
-const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
+const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument, postChangeRequestSummaryDocument} = require('./utils');
 const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
 
 function mapChangeRequestForBack(data, changeType) {
@@ -107,8 +108,13 @@ async function updateChangeRequest(req, res){
 
   try {
     log.verbose('update change Request: payload', changeRequest);
-    let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
-    return res.status(HttpStatus.OK).json(response);
+    //let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
+
+    //is change req complete ? (status 2 i think )
+    const pdfPayload = await printPdf(req);
+    await postChangeRequestSummaryDocument(pdfPayload);
+    return res.status(HttpStatus.OK).json();
+    //return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }

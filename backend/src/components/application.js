@@ -419,15 +419,18 @@ async function submitApplication(req, res) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
       }
     }
-    printPdf(req).then();
+    const pdfPayload = await printPdf(req);
+    log.info('PDF PAYLOAD', pdfPayload);
+    await postApplicationSummaryDocument(pdfPayload);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
-async function printPdf(req, numOfRetries = 0)  {
-  let url = `${req.headers.referer}/printable`;
+async function printPdf(req, )  {
+  let numOfRetries = 0;
+  let url = `${req.headers.referer}`; //change back jb testing removed /printable
 
   log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);
   log.verbose('printPdf :: correlationId is', req.session.correlationID);
@@ -469,14 +472,18 @@ async function printPdf(req, numOfRetries = 0)  {
     await browser.close();
 
     let payload = {
-      ccof_applicationid: req.params.applicationId,
-      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+      //ccof_applicationid: req.params.applicationId,
+      ccof_change_requestid: req.params.changeRequestId,
+      //filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+      filename: `testPDFMTFI.pdf`,
       filesize: compressedPdfBuffer.byteLength,
       subject: 'APPLICATION SUMMARY',
       documentbody: compressedPdfBuffer.toString('base64')
     };
 
-    await postApplicationSummaryDocument(payload);
+
+    return payload;
+    //await postApplicationSummaryDocument(payload);
   } catch (e) {
     log.error(e);
     await browser.close();
@@ -734,5 +741,6 @@ module.exports = {
   updateStatusForApplicationComponents,
   getChangeRequest,
   patchCCFRIApplication,
-  deleteCCFRIApplication
+  deleteCCFRIApplication,
+  printPdf
 };

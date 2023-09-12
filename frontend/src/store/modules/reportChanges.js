@@ -318,14 +318,14 @@ export default {
         if (index > -1) {
           state.changeRequestStore[index].externalStatus = newStatus;
           commit('setChangeRequestStore', state.changeRequestStore);
-        };
+        }
       }
     },
 
     updateExternalStatusInUserProfileChangeRequests({state, commit}, {changeRequestId, newStatus}) {
       let index = state.userProfileChangeRequests?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
       if (index > -1) {
-        state.userProfileChangeRequests[index].externalStatus = newStatus; 
+        state.userProfileChangeRequests[index].externalStatus = newStatus;
         commit('setUserProfileChangeRequests', state.userProfileChangeRequests);
       }
     },
