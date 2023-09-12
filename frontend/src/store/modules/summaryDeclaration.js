@@ -76,6 +76,10 @@ export default {
       checkSession();
       try {
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + rootState.application.applicationId)).data;
+        if (payload && rootState.application.unlockDeclaration) {
+          payload.agreeConsentCertify = null;
+          payload.orgContactName = null;
+        }
         commit('model', payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
@@ -355,6 +359,7 @@ export default {
             mtfiFacility.oldCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
 
             mtfiFacility.newCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.ccfriApplicationId}`)).data;
+            mtfiFacility.newCcfri.childCareTypes = mtfiFacility.newCcfri?.childCareTypes?.filter(item => item.programYearId === rootState.application.programYearId);
             mtfiFacility.newCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
             
             if (mtfiFacility.hasRfi || mtfiFacility.unlockRfi)

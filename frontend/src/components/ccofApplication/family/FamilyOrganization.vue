@@ -18,7 +18,7 @@
 
             <v-row>
               <v-col>
-                <v-text-field :disabled="isLocked" outlined required v-model="model.contactName"
+                <v-text-field :disabled="isLocked" outlined required v-model="model.nameOfCareProvider"
                   label="Name of Care Provider (if registered company)" />
               </v-col>
               <v-col>

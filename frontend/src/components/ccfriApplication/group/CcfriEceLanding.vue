@@ -253,7 +253,7 @@ export default {
             facilityID : this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
             ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
-            changeRequestFacilityId: this.navBarList[i].changeRequestNewFacilityId? this.navBarList[i].changeRequestNewFacilityId : undefined,
+            changeRequestNewFacilityId: this.navBarList[i].changeRequestNewFacilityId? this.navBarList[i].changeRequestNewFacilityId : undefined,
             //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
             //so it can be linked in the backend. It works with the above hardcoded guid ^
             //I did not implement fully because it sounds like we might get that info back from profiderProfile

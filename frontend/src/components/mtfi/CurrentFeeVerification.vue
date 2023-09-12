@@ -10,10 +10,10 @@
     </div>
     <br>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Facility Name: {{ getCurrentFacility?.facilityName }}</span>
+      <span class="text-h5">Facility Name: {{ currentFacility?.facilityName }}</span>
     </div>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Licence Number: {{ getCurrentFacility?.facilityAccountNumber }}</span>
+      <span class="text-h5">Licence Number: {{ currentFacility?.licenseNumber }}</span>
     </div>
 
 
@@ -355,7 +355,7 @@
 
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="!isValidForm" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly || loading" :isNextDisabled="!isValidForm" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -595,15 +595,16 @@ export default {
       this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
     },
     async next() {
-      await this.save(false);
-
       // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-
+      if (!this.isReadOnly && !this.loading) {
+        this.$store.commit('ccfriApp/model', this.model);
+        await this.save(false);
+      }
       //always check for RFI regardless of new or renewal state
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
       if (this.rfi3percentCategories.length > 0) {
-        if (this.currentFacility.hasRfi) {
+        if (this.getCurrentFacility.hasRfi) {
           //already has RFI. just go to the next page
           this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
         } else {
@@ -611,7 +612,7 @@ export default {
         }
       } else {
         //no need for RFI.
-        if (this.currentFacility.hasRfi) {
+        if (this.getCurrentFacility.hasRfi) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
         }
         this.$router.push(this.nextPath);
@@ -636,7 +637,7 @@ export default {
           this.processing = true;
           console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi:  this.rfi3percentCategories.length > 0});
+          await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
           this.processing = false;
         }
@@ -652,8 +653,7 @@ export default {
   mounted() {
     //this.model = this.$store.state.ccfriApp.model ?? model;
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
+  async beforeRouteLeave(_to, _from, next) {
     next();
   },
   components: {NavButton}

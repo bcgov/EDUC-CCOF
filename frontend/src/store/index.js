@@ -19,6 +19,7 @@ import message from '@/store/modules/message.js';
 import summaryDeclaration from '@/store/modules/summaryDeclaration.js';
 
 import reportChanges from '@/store/modules/reportChanges.js';
+import document from '@/store/modules/document.js';
 
 Vue.use(Vuex);
 
@@ -39,6 +40,7 @@ export default new Vuex.Store({
     supportingDocumentUpload,
     summaryDeclaration,
     navBar,
-    reportChanges
+    reportChanges,
+    document
   }
 });

@@ -40,10 +40,8 @@ const ChangeActionRequestMappings = [
 ];
 
 const NewFacilityMappings = [
-  { back: '_ccof_facility_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName'}, // 6,
-  { back: '_ccof_facility_value', front: 'facilityId'}, // 6,
-  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestFacilityId'}, // FE name might change?
-  // { back: '_ccof_facility_value', front: 'facilityId'},
+  { back: '_ccof_facility_value', front: 'facilityId'},
+  { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId'},
 ];
 
 const MtfiMappings = [
