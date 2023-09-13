@@ -19,7 +19,6 @@
           <v-data-table
             :headers="headers"
             :items="allItems"
-            :height = "maxChangeHistoryTableHeight"
             mobile-breakpoint="md"
             fixed-header
             class="elevation-4 my-4"
@@ -31,13 +30,12 @@
             </template>
             <template v-slot:item.PDF="{ item }">
               <router-link
-                :to="{
-                path: 'api/pdf/getDocument/'+item.annotationId
-                }"
+                :to=getPDFPath(item.annotationId)
                 target="_blank"
                 >
                 {{item.fileName}}
               </router-link>
+              (PDF, {{item.fileSize}}Kb)
             </template>
           </v-data-table>
         </v-container>
@@ -89,50 +87,25 @@
         return false;
       },
       allItems() {
-        let allItems = [];    
-        //if (this.changeRequestStore?.length > 0) {
+        let allItems = []; 
         allItems =  this.pdfs?.map((submission, index) => {
-          //let sortedSubmissions = this.sortChangeActions(changeRequest, 'desc');
           return {
             index: index,
             annotationId: submission?.annotationId,
-            appId: submission?.fileName.split('_')[0],
-            type: submission?.type,
+            appId: submission?.appId,
+            type: submission?.subject,
             fiscalYear: submission?.fiscalYear.replace(/[^\d/]/g, ''),
             submissionDate: submission?.createDate,
             submissionDateString: this.getSubmissionDateString(submission?.createDate),
             fileName: submission?.fileName,
-            fileSize: submission?.fileSize/1000,
+            fileSize: Math.round(submission?.fileSize/100)/10,
           };
         });
         //}
         return allItems;
       },
-      // Table should be vertically scrollable once rows > 8
-      maxChangeHistoryTableHeight() {
-        return this.allItems?.length > 8 ? 53 * 9 : undefined;
-      },
       headers() {
         return this.headersGroup;
-      },
-      maxfacilityNamesStringLength() {
-        if (this.$vuetify.breakpoint.width > 3500) {
-          return ('--maxLength: 700px');
-        }
-        switch (this.$vuetify.breakpoint.name) {
-        case 'xl':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px');
-        case 'lg':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10)) + 'px');
-        case 'md':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
-        case 'sm':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
-        case 'xs':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px');
-        default:
-          return ('--maxLength: 100px');
-        }
       },
 
     },
@@ -143,28 +116,9 @@
       previous() {
         this.$router.push(PATHS.ROOT.HOME);
       },
-      getProgramYearString(programYearId) {
-        let label = this.programYearList?.list?.find(programYear => programYear.programYearId == programYearId)?.name;
-        return label?.replace(/[^\d/]/g, '');
-      },
-      getChangeTypeString(changeType){
-        switch(changeType){
-        case 'PDF_CHANGE':
-          return "Report other changes";
-        case 'NEW_FACILITY':
-          return "Add new facility(s)";
-        case 'PARENT_FEE_CHANGE':
-          return 'Midterm Fee Increase';
-  
-        default:
-          return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
-        }
-      },
-      // getPDFList(applicationId){
-      //   let pdfList =[];
-      //   pdfList = this.getPDFs(applicationId);
-      //   return pdfList;
-      // },
+      getPDFPath(annotationId) {
+      return ApiRoutes.PDF+annotationId;
+    },
 
      
       getSubmissionDateString(date) {
@@ -176,10 +130,6 @@
       },
       next() {
         this.$router.push(PATHS.ROOT.HOME);
-      },
-
-      sortChangeActions(changeRequest, order) {
-        return _.sortBy(changeRequest.changeActions, 'createdOn', order);
       },
     },
     async mounted() {
