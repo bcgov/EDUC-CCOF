@@ -233,8 +233,7 @@ export default {
           //console.log('da previous care type', previousCareType);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
-            //let difference = compareChildCareFees(careType, previousCareType);
-            let allowedDifference = threePercentMedian[careType.childCareCategory];
+            let allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
             //console.log('difference', difference);
             if (allowedDifference) {
               console.log(`Testing RFI median difference using [${allowedDifference}] for [${careType.childCareCategory}]`);
@@ -283,7 +282,7 @@ export default {
         throw e;
       }
     },
-    async loadCCFRIFacility({getters, commit, dispatch}, ccfriId) {
+    async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
       //console.log('what is loaded in loadFac', CCFRIFacilityModel);
