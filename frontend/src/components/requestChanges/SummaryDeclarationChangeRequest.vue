@@ -242,6 +242,7 @@
             <v-row v-if="!isProcessing">
               <v-col class="pt-0">
                 <v-text-field
+                  id="signatureTextField"
                   v-if="!isProcessing"
                   outlined
                   v-model="model.orgContactName"
@@ -381,7 +382,7 @@ export default {
       if (changeRequestTypes?.length === 1) {
         return changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) ? ' - Request a Parent Fee Increase' : '';
       }
-      return ''
+      return '';
     }
   },
   methods: {
