@@ -469,8 +469,6 @@ export default {
           this.loading = true;
           let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
           this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
-          // await this.loadCCFRIFacility(this.currentFacility.ccfriApplicationId); //load the old ccfri into the store
-
 
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
@@ -483,7 +481,6 @@ export default {
           //sort the child care types so they match the cards of the old CCFRI fees
           for (const childCareType of this.currentPcfCcfri.childCareTypes){
             let careCategory = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareType.childCareCategoryId && el.programYearId == this.programYearId);
-            console.log('=-=---- found care category: ', careCategory);
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
             if (!careCategory.feeFrequency){
               let fees = {
