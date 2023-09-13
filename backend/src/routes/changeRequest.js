@@ -45,7 +45,7 @@ router.get('/:changeRequestId', passport.authenticate('jwt', {session: false}),i
  * Update Change Request
  */
 
-router.patch('/:changeRequestId', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+router.patch('/:changeRequestId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('changeRequestId', 'URL param: [changeRequestId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return updateChangeRequest(req, res);
@@ -143,11 +143,11 @@ router.delete('/mtfi/:mtfiId/', passport.authenticate('jwt', {session: false}),i
   });
 
 
-  /**
+/**
  * Update Change Request MTFI
  */
 
-router.patch('/mtfi/:mtfiId/', //passport.authenticate('jwt', {session: false}),isValidBackendToken,
+router.patch('/mtfi/:mtfiId/', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('mtfiId', 'URL param: [mtfiId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return updateChangeRequestMTFI(req, res);
