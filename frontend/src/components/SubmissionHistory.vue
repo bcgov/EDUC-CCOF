@@ -26,14 +26,13 @@
             disable-pagination hide-default-footer
             :sort-by="['priority', 'submissionDate']"
             :sort-desc="[true, true]"
-            :custom-filter="filterItems"
           >
             <template v-slot:item.facilityNames="{ item }">
             </template>
             <template v-slot:item.PDF="{ item }">
               <router-link
                 :to="{
-                path: ApiRoutes.PDF+'/'+item.annotationId
+                path: 'api/pdf/getDocument/'+item.annotationId
                 }"
                 target="_blank"
                 >
@@ -92,18 +91,18 @@
       allItems() {
         let allItems = [];    
         //if (this.changeRequestStore?.length > 0) {
-        allItems =  this.pdfs?.map((changeRequest, index) => {
+        allItems =  this.pdfs?.map((submission, index) => {
           //let sortedSubmissions = this.sortChangeActions(changeRequest, 'desc');
           return {
             index: index,
-            annotationId: changeRequest?.annotationId,
-            appId: changeRequest?.fileName.split('_')[0],
-            type: changeRequest?.type,
-            fiscalYear: changeRequest?.fiscalYear.replace(/[^\d/]/g, ''),
-            submissionDate: changeRequest?.createDate,
-            submissionDateString: this.getSubmissionDateString(changeRequest?.createDate),
-            fileName: changeRequest?.fileName,
-            fileSize: changeRequest?.fileSize/1000,
+            annotationId: submission?.annotationId,
+            appId: submission?.fileName.split('_')[0],
+            type: submission?.type,
+            fiscalYear: submission?.fiscalYear.replace(/[^\d/]/g, ''),
+            submissionDate: submission?.createDate,
+            submissionDateString: this.getSubmissionDateString(submission?.createDate),
+            fileName: submission?.fileName,
+            fileSize: submission?.fileSize/1000,
           };
         });
         //}
@@ -141,9 +140,6 @@
       ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
       ...mapActions('document',['getPDFs']),
       ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
-      filterItems(items, serach,filter){
-        items.filter(r=>filter(r.type > search))
-      },
       previous() {
         this.$router.push(PATHS.ROOT.HOME);
       },
@@ -188,7 +184,6 @@
     },
     async mounted() {
       this.processing = true;
-      //await this.getChangeRequestList();
       await this.getPDFs(this.applicationId);
       this.processing = false;
     },
