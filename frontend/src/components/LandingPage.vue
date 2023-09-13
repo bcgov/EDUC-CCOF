@@ -126,8 +126,8 @@
     </v-row>
 
     <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
-      <v-row v-if="navBarList?.length > 2" no-gutters>
-        <v-col class="col-12 col-md-6 px-4 mt-4">
+      <v-row no-gutters justify="space-between">
+        <v-col class="col-12 col-md-8">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -137,8 +137,13 @@
             filled
             label="Filter by Facility Name "
             v-model="input"
-            :bind="input">
+            :bind="input"
+            v-if="navBarList?.length > 2">
           </v-text-field>
+        </v-col>
+        <!-- LOOK BAD ON SMALL SCREEN -->
+        <v-col class="col-12 col-md-3">
+          <FiscalYearSlider @selectProgramYear="selectProgramYear"></FiscalYearSlider>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-around">
@@ -178,6 +183,7 @@
 
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
+import FiscalYearSlider from '@/components/common/FiscalYearSlider';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import { PATHS, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
@@ -488,9 +494,12 @@ export default {
     isRFIUnlock(ccfriApplicationId) {
       return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
     },
+    selectProgramYear(programYearId) {
+      console.log('selectProgramYear == ' + programYearId);
+    }
   },
 
-  components: { SmallCard, MessagesToolbar}
+  components: { SmallCard, MessagesToolbar, FiscalYearSlider }
 };
 </script>
 
