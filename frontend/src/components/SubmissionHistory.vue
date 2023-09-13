@@ -26,27 +26,19 @@
             disable-pagination hide-default-footer
             :sort-by="['priority', 'submissionDate']"
             :sort-desc="[true, true]"
+            :custom-filter="filterItems"
           >
             <template v-slot:item.facilityNames="{ item }">
             </template>
             <template v-slot:item.PDF="{ item }">
-              <!-- <v-btn
-                class="blueOutlinedButton mr-3 my-2"
-                @click=""
-                outlined
-                :width="changeHistoryButtonWidth"
-              >
-                Download
-              </v-btn> -->
               <router-link
                 :to="{
-                path: 'api/pdf/getDocument/'+item.changeRequestId
+                path: ApiRoutes.PDF+'/'+item.annotationId
                 }"
                 target="_blank"
                 >
                 {{item.fileName}}
               </router-link>
-              ({{item.fileSize}} Kb?)
             </template>
           </v-data-table>
         </v-container>
@@ -63,6 +55,7 @@
   import { PATHS } from '@/utils/constants';
   import alertMixin from '@/mixins/alertMixin';
   import NavButton from './util/NavButton.vue';
+  import {ApiRoutes} from '@/utils/constants';
   
   
   
@@ -79,7 +72,7 @@
         ],
         headersGroup: [
           { text: 'Application/Change Request ID', value: 'appId', class: 'tableHeader'},
-          { text: 'Type', value: 'changeType', class: 'tableHeader' },
+          { text: 'Type', value: 'type', class: 'tableHeader' },
           { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' }, 
           { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
           { text: 'PDF', value: 'PDF', class: 'tableHeader' },
@@ -97,19 +90,15 @@
         return false;
       },
       allItems() {
-        let allItems = [];
-        console.log('Trying to get List of PDFs');
-        
+        let allItems = [];    
         //if (this.changeRequestStore?.length > 0) {
         allItems =  this.pdfs?.map((changeRequest, index) => {
           //let sortedSubmissions = this.sortChangeActions(changeRequest, 'desc');
-          console.log(this.pdfs);
-          console.log(changeRequest);
           return {
             index: index,
             annotationId: changeRequest?.annotationId,
             appId: changeRequest?.fileName.split('_')[0],
-            changeType: changeRequest?.type,
+            type: changeRequest?.type,
             fiscalYear: changeRequest?.fiscalYear.replace(/[^\d/]/g, ''),
             submissionDate: changeRequest?.createDate,
             submissionDateString: this.getSubmissionDateString(changeRequest?.createDate),
@@ -118,8 +107,6 @@
           };
         });
         //}
-        console.log('is it getting here');
-        console.log(allItems);
         return allItems;
       },
       // Table should be vertically scrollable once rows > 8
@@ -154,6 +141,9 @@
       ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
       ...mapActions('document',['getPDFs']),
       ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
+      filterItems(items, serach,filter){
+        items.filter(r=>filter(r.type > search))
+      },
       previous() {
         this.$router.push(PATHS.ROOT.HOME);
       },
@@ -199,9 +189,7 @@
     async mounted() {
       this.processing = true;
       //await this.getChangeRequestList();
-      console.log('~~~~~~~~~~~Trying to get PDFs~~~~~~~~~~');
       await this.getPDFs(this.applicationId);
-      console.log('~~~~~~~~~~~~~~~~~~~~~');
       this.processing = false;
     },
     beforeRouteLeave(_to, _from, next) {
