@@ -439,7 +439,6 @@ export default {
         else{
           this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, changeRequestId, CHANGE_TYPES.MTFI));
         }
-        //this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
