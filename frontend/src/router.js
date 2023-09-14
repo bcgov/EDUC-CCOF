@@ -833,7 +833,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/SubmissionHistory',
+      path: PATHS.ROOT.SUBMISSION_HISTORY,
       name: 'submission-history',
       component: SubmissionHistory,
       meta: {

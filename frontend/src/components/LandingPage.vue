@@ -56,6 +56,9 @@
             <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Approved</p>
             <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
             <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
+            <p class="mt-4">
+              <router-link class='text-decoration-underline' :to=" PATHS.ROOT.SUBMISSION_HISTORY ">View submission history</router-link>
+            </p>
           </div>
         </template>
       </SmallCard>

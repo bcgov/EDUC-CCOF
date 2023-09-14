@@ -88,6 +88,7 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     CHANGE_INFO: '/change/information',
+    SUBMISSION_HISTORY: '/submission-history'
   },
   PREFIX: {
     PCF: '/pcf',
