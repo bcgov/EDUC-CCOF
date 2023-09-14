@@ -191,7 +191,7 @@
 
           <v-card-title v-show="model.isSchoolProperty === 'yes'">Group Child Care (School Age Care on School Grounds)</v-card-title>
 
-          <v-card-subtitle>Please indicate each service that your facility offers</v-card-subtitle>
+          <v-card-subtitle v-show="model.isSchoolProperty === 'yes'">Please indicate each service that your facility offers</v-card-subtitle>
 
           <v-container v-show="model.isSchoolProperty === 'yes'">
             <v-row>

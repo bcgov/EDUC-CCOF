@@ -97,42 +97,42 @@
 
                       <div class="feeTitle ">
                         <span >April:</span>
-                        <v-text-field class="" dense flat solo hide-details readonly type="number" :disabled="false"  :rules="feeRules"
+                        <v-text-field tabindex="-1" class="" dense flat solo hide-details readonly type="number" :disabled="false"  :rules="feeRules"
                           v-model.number="item.approvedFeeApr" @input="convertBlankNumberToNull(item,'approvedFeeApr')" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class=" ">May:</span>
-                        <v-text-field  class="" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                        <v-text-field  tabindex="-1" class="" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
                           v-model.number="item.approvedFeeMay" @input="convertBlankNumberToNull(item,'approvedFeeMay')" label="May" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class="">June:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
                           v-model.number="item.approvedFeeJun" @input="convertBlankNumberToNull(item,'approvedFeeJun')" label="June" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                       <span class="">July:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
                           v-model.number="item.approvedFeeJul" @input="convertBlankNumberToNull(item,'approvedFeeJul')" label="July" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class=" ">Aug:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
                           v-model.number="item.approvedFeeAug" @input="convertBlankNumberToNull(item,'approvedFeeAug')" label="August" prefix="$" />
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class="">Sept:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
                           v-model.number="item.approvedFeeSep" @input="convertBlankNumberToNull(item,'approvedFeeSep')" label="September" prefix="$" />
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
@@ -194,42 +194,42 @@
 
                       <div class="feeTitle ">
                         <span >Oct:</span>
-                        <v-text-field class="" dense flat solo hide-details readonly type="number" :disabled="false"  :rules="feeRules"
+                        <v-text-field tabindex="-1" class="" dense flat solo hide-details readonly type="number" :disabled="false"  :rules="feeRules"
                           v-model.number="item.approvedFeeOct" @input="convertBlankNumberToNull(item,'approvedFeeApr')" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class=" ">Nov:</span>
-                        <v-text-field  class="" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                        <v-text-field  tabindex="-1" class="" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
                           v-model.number="item.approvedFeeNov" @input="convertBlankNumberToNull(item,'approvedFeeMay')" label="May" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class="">Dec:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
                           v-model.number="item.approvedFeeDec" @input="convertBlankNumberToNull(item,'approvedFeeJun')" label="June" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                       <span class="">Jan:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false" :rules="feeRules"
                           v-model.number="item.approvedFeeJan" @input="convertBlankNumberToNull(item,'approvedFeeJul')" label="July" prefix="$"/>
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class=" ">Feb:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
                           v-model.number="item.approvedFeeFeb" @input="convertBlankNumberToNull(item,'approvedFeeAug')" label="August" prefix="$" />
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
 
                       <div class="feeTitle">
                         <span class="">Mar:</span>
-                        <v-text-field type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
+                        <v-text-field tabindex="-1" type="number" dense flat solo hide-details readonly @wheel="$event.target.blur()" :disabled="false"  :rules="feeRules"
                           v-model.number="item.approvedFeeMar" @input="convertBlankNumberToNull(item,'approvedFeeSep')" label="September" prefix="$" />
                           <v-divider class="border-opacity-100" vertical></v-divider>
                       </div>
@@ -469,21 +469,18 @@ export default {
           this.loading = true;
           let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
           this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
-          await this.loadCCFRIFacility(this.currentFacility.ccfriApplicationId); //load the old ccfri into the store
 
-          this.currentPcfCcfri = this.getCCFRIById(this.currentFacility.ccfriApplicationId); //set old CCFRI to display fees
+          this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
-
-          await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
+          await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
 
           let arr = [];
 
           //sort the child care types so they match the cards of the old CCFRI fees
           for (const childCareType of this.currentPcfCcfri.childCareTypes){
-            let careCategory = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareType.childCareCategoryId);
-
+            let careCategory = this.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == childCareType.childCareCategoryId && el.programYearId == this.programYearId);
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
             if (!careCategory.feeFrequency){
               let fees = {
@@ -530,7 +527,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousCCFRI', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
+    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousApprovedFees', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
     ...mapMutations('navBar',['setNavBarCCFRIComplete','setNavBarValue']),
@@ -596,7 +593,10 @@ export default {
     },
     async next() {
       // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-
+      if (!this.isReadOnly && !this.loading) {
+        this.$store.commit('ccfriApp/model', this.model);
+        await this.save(false);
+      }
       //always check for RFI regardless of new or renewal state
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
@@ -632,7 +632,6 @@ export default {
       try {
         if (this.hasModelChanged()){
           this.processing = true;
-          console.log('old ccfri', this.currentPcfCcfri.ccfriApplicationId);
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
@@ -651,10 +650,6 @@ export default {
     //this.model = this.$store.state.ccfriApp.model ?? model;
   },
   async beforeRouteLeave(_to, _from, next) {
-    if (!this.isReadOnly && !this.loading) {
-      this.$store.commit('ccfriApp/model', this.model);
-      this.save(false);
-    }
     next();
   },
   components: {NavButton}

@@ -63,6 +63,8 @@ import MtfiInfo from '@/components/mtfi/MTFIInfo';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
 
+import SubmissionHistory from '@/components/SubmissionHistory';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -720,6 +722,16 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION) +'/printable',
+      name: 'Printable Summary and Declaration New Facility',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
       path: PATHS.ROOT.CHANGE_INFO,
       name: 'Change Request Information',
       component: ChangeInformation,
@@ -787,6 +799,26 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION) + '/printable',
+      name: 'Printable Change Notification Summary',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: 'Printable Change Notification Summary',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI) + '/printable',
+      name: 'Printable MTFI Summary',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: 'Printable MTFI Summary',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Summary and Declaration MTFI',
       component: SummaryDeclarationChangeRequest,
@@ -808,6 +840,16 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: PATHS.ROOT.SUBMISSION_HISTORY,
+      name: 'submission-history',
+      component: SubmissionHistory,
+      meta: {
+        pageTitle: 'submission-history',
+        showNavBar: false,
+        requiresAuth: true,
       }
     },
   ]
