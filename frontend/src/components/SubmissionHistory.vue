@@ -19,7 +19,6 @@
           <v-data-table
             :headers="headers"
             :items="allItems"
-            :height = "maxChangeHistoryTableHeight"
             mobile-breakpoint="md"
             fixed-header
             class="elevation-4 my-4"
@@ -30,23 +29,13 @@
             <template v-slot:item.facilityNames="{ item }">
             </template>
             <template v-slot:item.PDF="{ item }">
-              <!-- <v-btn
-                class="blueOutlinedButton mr-3 my-2"
-                @click=""
-                outlined
-                :width="changeHistoryButtonWidth"
-              >
-                Download
-              </v-btn> -->
               <router-link
-                :to="{
-                path: 'api/pdf/getDocument/'+item.changeRequestId
-                }"
+                :to=getPDFPath(item.annotationId)
                 target="_blank"
                 >
                 {{item.fileName}}
               </router-link>
-              ({{item.fileSize}} Kb?)
+              (PDF, {{item.fileSize}}Kb)
             </template>
           </v-data-table>
         </v-container>
@@ -63,6 +52,7 @@
   import { PATHS } from '@/utils/constants';
   import alertMixin from '@/mixins/alertMixin';
   import NavButton from './util/NavButton.vue';
+  import {ApiRoutes} from '@/utils/constants';
   
   
   
@@ -79,7 +69,7 @@
         ],
         headersGroup: [
           { text: 'Application/Change Request ID', value: 'appId', class: 'tableHeader'},
-          { text: 'Type', value: 'changeType', class: 'tableHeader' },
+          { text: 'Type', value: 'type', class: 'tableHeader' },
           { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' }, 
           { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
           { text: 'PDF', value: 'PDF', class: 'tableHeader' },
@@ -97,56 +87,25 @@
         return false;
       },
       allItems() {
-        let allItems = [];
-        console.log('Trying to get List of PDFs');
-        
-        //if (this.changeRequestStore?.length > 0) {
-        allItems =  this.pdfs?.map((changeRequest, index) => {
-          //let sortedSubmissions = this.sortChangeActions(changeRequest, 'desc');
-          console.log(this.pdfs);
-          console.log(changeRequest);
+        let allItems = []; 
+        allItems =  this.pdfs?.map((submission, index) => {
           return {
             index: index,
-            annotationId: changeRequest?.annotationId,
-            appId: changeRequest?.fileName.split('_')[0],
-            changeType: changeRequest?.type,
-            fiscalYear: changeRequest?.fiscalYear.replace(/[^\d/]/g, ''),
-            submissionDate: changeRequest?.createDate,
-            submissionDateString: this.getSubmissionDateString(changeRequest?.createDate),
-            fileName: changeRequest?.fileName,
-            fileSize: changeRequest?.fileSize/1000,
+            annotationId: submission?.annotationId,
+            appId: submission?.appId,
+            type: submission?.subject,
+            fiscalYear: submission?.fiscalYear.replace(/[^\d/]/g, ''),
+            submissionDate: submission?.createDate,
+            submissionDateString: this.getSubmissionDateString(submission?.createDate),
+            fileName: submission?.fileName,
+            fileSize: Math.round(submission?.fileSize/100)/10,
           };
         });
         //}
-        console.log('is it getting here');
-        console.log(allItems);
         return allItems;
-      },
-      // Table should be vertically scrollable once rows > 8
-      maxChangeHistoryTableHeight() {
-        return this.allItems?.length > 8 ? 53 * 9 : undefined;
       },
       headers() {
         return this.headersGroup;
-      },
-      maxfacilityNamesStringLength() {
-        if (this.$vuetify.breakpoint.width > 3500) {
-          return ('--maxLength: 700px');
-        }
-        switch (this.$vuetify.breakpoint.name) {
-        case 'xl':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px');
-        case 'lg':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10)) + 'px');
-        case 'md':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
-        case 'sm':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
-        case 'xs':
-          return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px');
-        default:
-          return ('--maxLength: 100px');
-        }
       },
 
     },
@@ -157,28 +116,9 @@
       previous() {
         this.$router.push(PATHS.ROOT.HOME);
       },
-      getProgramYearString(programYearId) {
-        let label = this.programYearList?.list?.find(programYear => programYear.programYearId == programYearId)?.name;
-        return label?.replace(/[^\d/]/g, '');
-      },
-      getChangeTypeString(changeType){
-        switch(changeType){
-        case 'PDF_CHANGE':
-          return "Report other changes";
-        case 'NEW_FACILITY':
-          return "Add new facility(s)";
-        case 'PARENT_FEE_CHANGE':
-          return 'Midterm Fee Increase';
-  
-        default:
-          return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
-        }
-      },
-      // getPDFList(applicationId){
-      //   let pdfList =[];
-      //   pdfList = this.getPDFs(applicationId);
-      //   return pdfList;
-      // },
+      getPDFPath(annotationId) {
+      return ApiRoutes.PDF+annotationId;
+    },
 
      
       getSubmissionDateString(date) {
@@ -191,17 +131,10 @@
       next() {
         this.$router.push(PATHS.ROOT.HOME);
       },
-
-      sortChangeActions(changeRequest, order) {
-        return _.sortBy(changeRequest.changeActions, 'createdOn', order);
-      },
     },
     async mounted() {
       this.processing = true;
-      //await this.getChangeRequestList();
-      console.log('~~~~~~~~~~~Trying to get PDFs~~~~~~~~~~');
       await this.getPDFs(this.applicationId);
-      console.log('~~~~~~~~~~~~~~~~~~~~~');
       this.processing = false;
     },
     beforeRouteLeave(_to, _from, next) {
