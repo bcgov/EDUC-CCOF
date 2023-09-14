@@ -1,11 +1,11 @@
 <template>
     <v-container>
 
-  
+
       <v-form ref="isValidForm" value="false" v-model="isValidForm">
-  
+
         <v-container>
-  
+
           <v-row no-gutters id="change-request-history">
             <v-col class= "col-lg-12 mt-10">
               <h2>Submission History</h2>
@@ -40,23 +40,22 @@
           </v-data-table>
         </v-container>
       </v-form>
-  
+
       <NavButton :isNextDisplayed="false" :isSaveDisplayed="false"
            :isNextDisabled="true" :isProcessing="processing"
           @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
     </v-container>
   </template>
-  
+
   <script>
   import { mapState, mapMutations, mapActions } from 'vuex';
-  import { PATHS } from '@/utils/constants';
+  import { PATHS, ApiRoutes } from '@/utils/constants';
   import alertMixin from '@/mixins/alertMixin';
   import NavButton from './util/NavButton.vue';
-  import {ApiRoutes} from '@/utils/constants';
-  
-  
-  
-  
+
+
+
+
   export default {
     mixins: [alertMixin],
     data() {
@@ -70,7 +69,7 @@
         headersGroup: [
           { text: 'Application/Change Request ID', value: 'appId', class: 'tableHeader'},
           { text: 'Type', value: 'type', class: 'tableHeader' },
-          { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' }, 
+          { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
           { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
           { text: 'PDF', value: 'PDF', class: 'tableHeader' },
         ],
@@ -87,7 +86,7 @@
         return false;
       },
       allItems() {
-        let allItems = []; 
+        let allItems = [];
         allItems =  this.pdfs?.map((submission, index) => {
           return {
             index: index,
@@ -120,7 +119,7 @@
       return ApiRoutes.PDF+annotationId;
     },
 
-     
+
       getSubmissionDateString(date) {
         if (date) {
           // date display format: YYYY/MM/DD
@@ -169,4 +168,3 @@
     text-overflow: ellipsis; /* give the beautiful '...' effect */
   }
   </style>
-  
