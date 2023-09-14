@@ -119,7 +119,7 @@ export default {
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
-    ...mapState('reportChanges',['mtfiFacilities']),
+    ...mapState('reportChanges',['mtfiFacilities','userProfileChangeRequests','changeRequestId']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
@@ -215,7 +215,8 @@ export default {
       let checkbox; //true will show checkmark, false will not
       let linkName;
       if (this.isChangeRequest) {
-        checkbox = this.changeRequestStatus === 'SUBMITTED' && !this.unlockDeclaration;
+        const currentCR = this.userProfileChangeRequests.find(item => item.changeRequestId === this.changeRequestId);
+        checkbox = this.changeRequestStatus === 'SUBMITTED' && !currentCR?.unlockDeclaration;
         if(this.changeType===CHANGE_TYPES.NEW_FACILITY){
           linkName = 'Summary and Declaration New Facility';
         }

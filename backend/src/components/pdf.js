@@ -38,25 +38,28 @@ async function getPdfs(req, res) {
     const operationSummaryDeclaration = `ccof_applicationsummaries?$filter=_ccof_application_value eq ${req.params.applicationId}&$expand=ccof_applicationsummary_Annotations($select=annotationid,filename,subject,filesize, createdon)`;
     const summaryDeclarationResponse = await getOperation(operationSummaryDeclaration);
 
-    const operationRequestChange = `ccof_change_requests?$filter=_ccof_application_value eq ${req.params.applicationId}&$expand=ccof_change_request_Annotations($select=annotationid,filename,subject,filesize, createdon)`;
+    const operationRequestChange = `ccof_change_request_summaries?$select=ccof_name&$expand=ccof_change_request_summary_Annotations($select=filename,annotationid,subject,filesize,createdon),ccof_changerequest($select=ccof_change_requestid, ccof_name,_ccof_application_value,ccof_changetypes)&$filter=(ccof_changerequest/_ccof_application_value eq ${req.params.applicationId})`;
     const requestChangeResponse = await getOperation(operationRequestChange);
 
-    let documentList = [];
-
+    let documentList = []
+    
     for (let document of summaryDeclarationResponse.value) {
       let documentForFront = new MappableObjectForFront(document.ccof_applicationsummary_Annotations[0], PdfDocumentMappings);
-      documentForFront.data.type = type;
+      documentForFront.data.appId = document['_ccof_application_value@OData.Community.Display.V1.FormattedValue'];
+      documentForFront.data.subject = type;
       documentForFront.data.fiscalYear = fiscalYear;
       documentList.push(documentForFront);
     }
-
+    
     for (let document of requestChangeResponse.value) {
-      let documentForFront = new MappableObjectForFront(document.ccof_applicationsummary_Annotations[0], PdfDocumentMappings);
-      documentForFront.data.type = type;
-      documentForFront.data.fiscalYear = fiscalYear;
-      documentList.push(documentForFront);
+      if(document?.ccof_change_request_summary_Annotations?.length>0){
+        let documentForFront = new MappableObjectForFront(document.ccof_change_request_summary_Annotations[0], PdfDocumentMappings);
+        documentForFront.data.appId = document.ccof_changerequest.ccof_name;
+        documentForFront.data.subject = document.ccof_changerequest['ccof_changetypes@OData.Community.Display.V1.FormattedValue'];
+        documentForFront.data.fiscalYear = fiscalYear;
+        documentList.push(documentForFront);
+      }
     }
-
     return res.status(HttpStatus.CREATED).json(documentList);
   } catch (e) {
     log.error('error', e);
