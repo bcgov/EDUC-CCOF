@@ -44,7 +44,7 @@
                 <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color:#003466;">Summary</v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels focusable multiple accordion>
+            <v-expansion-panels ref="v-expansion-panels" focusable multiple accordion v-model="expand">
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader
@@ -242,6 +242,7 @@
             <v-row v-if="!isProcessing">
               <v-col class="pt-0">
                 <v-text-field
+                  id="signatureTextField"
                   v-if="!isProcessing"
                   outlined
                   v-model="model.orgContactName"
@@ -255,7 +256,7 @@
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
         :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
-        @previous="previous" @submit="submit"></NavButton>
+        @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
         persistent
@@ -315,6 +316,8 @@ export default {
       summaryKey: 1,
       invalidSummaryForms: [],
       payload: {},
+      printableVersion: false,
+      expand: [],
     };
   },
   async beforeMount() {
@@ -351,6 +354,9 @@ export default {
       }
       return false;
     },
+    numberOfPanelsToExpand() {
+      return this.$refs["v-expansion-panels"]?.$children.length;
+    },
     isSummaryComplete() {
       if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0)
         return false;
@@ -376,12 +382,16 @@ export default {
       if (changeRequestTypes?.length === 1) {
         return changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) ? ' - Request a Parent Fee Increase' : '';
       }
-      return ''
+      return '';
     }
   },
   methods: {
     ...mapActions('summaryDeclaration', ['updateDeclaration', 'loadChangeRequestSummaryDeclaration']),
-
+    expandAllPanels() {
+      for (let i = 0; i < this.numberOfPanelsToExpand; i ++) {
+        this.expand.push(i);
+      }
+    },
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
         this.isValidForm = true;
@@ -413,6 +423,9 @@ export default {
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }
+      if (this.printableVersion) {
+        this.expandAllPanels();
+      }
       // this.updateNavBarStatus(formObj, isComplete);
     },
     hasChangeRequestType(changeType) {
@@ -426,6 +439,11 @@ export default {
       }
     }
   },
+  async mounted(){
+      if (this.$route.path.endsWith('printable')) {
+        this.printableVersion = true;
+      }
+    },
 };
 </script>
 

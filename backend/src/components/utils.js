@@ -221,6 +221,22 @@ async function postApplicationSummaryDocument(payload) {
   }
 }
 
+async function postChangeRequestSummaryDocument(payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeRequestSummaryDocument';
+  log.info('postChangeRequestSummaryDocument Url', url);
+  if (log.isDebugEnabled()) {
+    log.debug(`postChangeRequestSummaryDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postChangeRequestSummaryDocument', response);
+    return response.data;
+  } catch (e) {
+    log.error('postOperation Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+  }
+}
+
 async function getDocument(annotationId){
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationId=' + annotationId;
@@ -379,7 +395,8 @@ const utils = {
   sleep,
   getChangeActionDocument,
   postChangeActionDocument,
-  updateChangeRequestNewFacility
+  updateChangeRequestNewFacility,
+  postChangeRequestSummaryDocument,
 };
 
 module.exports = utils;

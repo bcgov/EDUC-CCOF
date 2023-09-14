@@ -89,7 +89,6 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
     async next() {
-
       this.loading = true;
 
       if (!this.$route.params.changeRecGuid){
@@ -98,6 +97,7 @@ export default {
         this.$route.params.changeRecGuid = this.newReq.changeRequestId;
       }
 
+      //below code i think can be removed as now only new CR sees this page?
       if(this.organizationProviderType == 'FAMILY'){ // && mtfi does not exist yet?
 
         if (this.mtfiFacilities?.length == 0){
