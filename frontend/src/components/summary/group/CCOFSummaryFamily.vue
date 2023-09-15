@@ -91,7 +91,7 @@
               </v-col>
               <v-col class="d-flex justify-start">
                 <span class="summary-label pt-3">From:</span>
-                <v-text-field placeholder="Required" :value="this.funding?.propertyFrom12hr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.hoursFrom12hr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
               <v-col class="d-flex justify-start">
                 <span class="summary-label pt-3">To:</span>
