@@ -91,7 +91,7 @@
               </v-col>
               <v-col class="d-flex justify-start">
                 <span class="summary-label pt-3">From:</span>
-                <v-text-field placeholder="Required" :value="this.funding?.hoursFrom12hr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.propertyFrom12hr" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
               </v-col>
               <v-col class="d-flex justify-start">
                 <span class="summary-label pt-3">To:</span>
@@ -204,16 +204,16 @@
                 <span class="summary-value"><b>4 hours or less </b>extended child care</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-end">
-                <v-text-field   :value="this.funding?.extendedChildCareUnder36Months4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.extendedChildCareUnder36Months4OrLess" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex">
-                <v-text-field   :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field   :value="this.funding?.extendedChildCareSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.extendedChildCareSchoolAge4OrLess" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.multiAgeCare4OrLess" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.multiAgeCare4OrLess" class="summary-value" dense flat solo hide-details readonly :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -223,16 +223,16 @@
                 <span class="summary-value"><b>More than 4 hours</b> extended child care</span>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.extendedChildCareUnder36Months4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.extendedChildCareUnder36Months4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.extendedChildCareSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.extendedChildCareSchoolAge4OrMore" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
               <v-col cols="12" class="d-flex justify-center">
-                <v-text-field  :value="this.funding?.multiAgeCare4more" class="summary-value" dense flat solo hide-details readonly></v-text-field>
+                <v-text-field placeholder="Required" :value="this.funding?.multiAgeCare4more" class="summary-value" dense flat solo hide-details readonly></v-text-field>
               </v-col>
             </v-row>
           </v-col>
