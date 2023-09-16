@@ -471,7 +471,9 @@ export default {
           this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
 
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
+
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
+          this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
