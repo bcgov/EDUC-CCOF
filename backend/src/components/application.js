@@ -701,12 +701,16 @@ async function getMTFIChangeData(changeActionId) {
   });
   return mappedData;
 }
-
+//and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
 async function getChangeRequestsFromApplicationId(applicationId){
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=['${applicationId}', 'a489daa6-513a-ee11-bdf4-000d3a09d499']))`;
+    //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
+
+    log.info('ALL CHANGE REQZ');
+    log.info(changeRequests);
 
     let payload = [];
 
@@ -735,7 +739,7 @@ async function getChangeRequestsFromApplicationId(applicationId){
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+    throw e;
   }
 
 }
