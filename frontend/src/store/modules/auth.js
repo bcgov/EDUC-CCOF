@@ -113,7 +113,9 @@ export default {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
     },
-    async getUserInfo({state, commit, dispatch, rootGetters}, to){
+    async getUserInfo({state, commit, dispatch, rootState, rootGetters}, to){
+
+
       //This method is called by the router.
       //Only hit the API service if the info has not already been loaded.
       if (!state.isUserInfoLoaded) {
@@ -126,7 +128,10 @@ export default {
         commit('setUserInfo', userInfoRes.data);
         commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
         await dispatch('application/loadApplicationFromStore', rootGetters['application/latestProgramYearId'], { root: true });
-        commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
+
+        console.log('testingggggg');
+        //console.log(
+        commit('navBar/setUserProfileList', rootState.application.applicationMap.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
         commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });

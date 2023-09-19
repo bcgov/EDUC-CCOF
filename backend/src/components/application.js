@@ -702,24 +702,14 @@ async function getMTFIChangeData(changeActionId) {
   return mappedData;
 }
 //and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
-async function getChangeRequestsFromApplicationId(applicationId){
+async function getChangeRequestsFromApplicationId(applicationIds){
 
-  log.info('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
-  log.info(applicationId);
   let str = '[';
 
   const regex = new RegExp('([^,]+)' , 'g');
-
-  log.info(regex, 'REG EX');
-
-  const found = applicationId.match(regex);
-
-  log.info(found);
-  log.info(found[0]);
-
+  const found = applicationIds.match(regex);
   found.forEach((app, index) => {
     str = str + `'${app}'`;
-
     if (index != found.length -1 ){
       str = str + ',';
     }
@@ -727,7 +717,6 @@ async function getChangeRequestsFromApplicationId(applicationId){
       str = str + ']';
     }
   });
-
 
   log.info(str);
 

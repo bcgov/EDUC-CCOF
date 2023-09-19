@@ -98,8 +98,9 @@ async function getUserInfo(req, res) {
       application.ccofProgramYearStatus = getLabelFromValue(ap.ccof_ProgramYear?.statuscode, PROGRAM_YEAR_STATUS_CODES);
       application.ccofApplicationStatus = getLabelFromValue(ap.ccofStatus, CCOF_STATUS_CODES, 'NEW');
       applicationList.push(application);
-    });
 
+      application.facilityList = parseFacilityData(ap, userResponse.facilities);
+    });
   }
 
   /*
@@ -128,7 +129,7 @@ async function getUserInfo(req, res) {
 
   });
 */
-  resData.facilityList = parseFacilityData(userResponse);
+  //resData.facilityList = parseFacilityData(userResponse.facilities);
   let results = {
     ...resData,
     ...organization,
@@ -180,16 +181,21 @@ function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, 
   }
 }
 
-function parseFacilityData(userResponse) {
-  let facilityMap  = new Map(userResponse.facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+function parseFacilityData(application, facilities) {
+  log.info('PARSE FACILITIES CALLED');
+  //log.info (application);
+  log.info(facilities);
 
-  if (userResponse.application) {
+
+  let facilityMap  = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+
+  if (application) {
     facilityMap.forEach((value, key, map) => {
-      let ccfriInfo = userResponse.application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
+      let ccfriInfo = application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
       ccfriInfo = new MappableObjectForFront(ccfriInfo, UserProfileCCFRIMappings).data;
-      let eceweInfo = userResponse.application.ccof_ccof_application_ccof_applicationecewe_application?.find(item => item['_ccof_facility_value'] === key);
+      let eceweInfo = application.ccof_ccof_application_ccof_applicationecewe_application?.find(item => item['_ccof_facility_value'] === key);
       eceweInfo = new MappableObjectForFront(eceweInfo, UserProfileECEWEMappings).data;
-      let baseFunding = userResponse.application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
+      let baseFunding = application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
       baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
       // let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
       let returnValue = {
