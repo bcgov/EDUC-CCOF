@@ -455,8 +455,7 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['lookupInfo']),
-    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId']),
-    ...mapState('app', ['isRenewal', 'rfiList']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),

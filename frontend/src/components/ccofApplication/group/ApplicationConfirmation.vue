@@ -144,7 +144,7 @@ export default {
     async deleteApplication() {
       this.processing = true;
       try {
-        await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deleteChangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});  
+        await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deleteChangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
       } catch (error) {
         this.setFailureAlert('An error occurred while deleting facility. Please try again later.');
       } finally {
