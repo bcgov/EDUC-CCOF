@@ -110,9 +110,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle','isRenewal', 'programYearList']),
+    ...mapState('app', ['pageTitle', 'programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'refreshNavBar', 'navBarGroup', 'changeType']),
-    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete']),
+    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete', 'isRenewal']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
