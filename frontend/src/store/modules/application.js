@@ -45,28 +45,31 @@ export default {
     setIsLicenseUploadComplete(state, value) { state.isLicenseUploadComplete = value; },
 
     addApplicationsToMap: (state, applicationList) => {
+      const map = new Map(state.applicationMap);
       applicationList?.forEach(el => {
-        state.applicationMap.set(el.ccofProgramYearId, el);
+        map.set(el.ccofProgramYearId, el);
       });
+      state.applicationMap = map;
     },
 
   },
   getters: {
     formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, ''),
-    latestProgramYearId: state => {
+    latestProgramYearId: state => { //TODO: figure out async issue that happens intermittently.
       let currentGuid;
       let futureGuid;
+      let lastGuid;
       state.applicationMap.forEach((value, key) => {
-        console.log('value is: ', value);
-        console.log('key is: ', key);
         if (value.ccofProgramYearStatus === 'FUTURE') {
           futureGuid = key;
         }
         if (value.ccofProgramYearStatus === 'CURRENT') {
           currentGuid = key;
         }
+        lastGuid = key;
       });
-      return futureGuid ? futureGuid : currentGuid;
+      return futureGuid ? futureGuid : currentGuid ? currentGuid : lastGuid; //TODO: add order to provider fiscal profile and then return the latest one based on the order.
+
     },
     applicationIds: state => {
       const applicationIds = [];
