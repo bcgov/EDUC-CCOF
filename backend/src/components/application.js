@@ -703,18 +703,46 @@ async function getMTFIChangeData(changeActionId) {
 }
 //and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
 async function getChangeRequestsFromApplicationId(applicationId){
+
+  log.info('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
+  log.info(applicationId);
+  let str = '[';
+
+  const regex = new RegExp('([^,]+)' , 'g');
+
+  log.info(regex, 'REG EX');
+
+  const found = applicationId.match(regex);
+
+  log.info(found);
+  log.info(found[0]);
+
+  found.forEach((app, index) => {
+    str = str + `'${app}'`;
+
+    if (index != found.length -1 ){
+      str = str + ',';
+    }
+    else{
+      str = str + ']';
+    }
+  });
+
+
+  log.info(str);
+
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=['${applicationId}', 'a489daa6-513a-ee11-bdf4-000d3a09d499']))`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
     //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
-    log.info('ALL CHANGE REQZ');
-    log.info(changeRequests);
+    // log.info('ALL CHANGE REQZ');
+    // log.info(changeRequests);
 
     let payload = [];
 
-    log.verbose(changeRequests);
+    //log.verbose(changeRequests);
     await Promise.all(changeRequests.map(async (request) => {
 
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
@@ -735,7 +763,7 @@ async function getChangeRequestsFromApplicationId(applicationId){
       payload.push(req);
     }));
 
-    log.info('final payload', payload);
+    //log.info('final payload', payload);
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
