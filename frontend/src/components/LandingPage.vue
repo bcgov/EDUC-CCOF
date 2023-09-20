@@ -57,7 +57,7 @@
             <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
             <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
             <p class="mt-4">
-              <a class='text-decoration-underline' :href="PATHS.ROOT.SUBMISSION_HISTORY">View submission history</a>
+              <router-link class='text-decoration-underline' :to=" PATHS.ROOT.SUBMISSION_HISTORY ">View submission history</router-link>
             </p>
           </div>
         </template>

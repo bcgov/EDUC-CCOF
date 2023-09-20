@@ -428,8 +428,7 @@ async function submitApplication(req, res) {
   }
 }
 
-async function printPdf(req)  {
-  let numOfRetries = 0;
+async function printPdf(req, numOfRetries = 0) {
   let url = `${req.headers.referer}/printable`;
 
   log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);

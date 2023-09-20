@@ -222,7 +222,7 @@ export default {
   computed: {
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests']),
+    ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests', 'mtfiFacilities']),
     ...mapState('organization', ['organizationProviderType',]),
     ...mapState('navBar', ['userProfileList']),
     isReadOnly() {
@@ -308,7 +308,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
+    ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest','getChangeRequest']),
     ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -411,7 +411,7 @@ export default {
     routeToFacilityAdd(){
       this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
-    continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
+    async continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
       this.processing = true;
       let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
       if (changeType == 'PDF_CHANGE'){
@@ -425,7 +425,15 @@ export default {
       else if (changeType == 'PARENT_FEE_CHANGE'){
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
+
+        if(this.organizationProviderType == 'FAMILY'){ // i need to load the new CCFRI id here then
+          await this.getChangeRequest(changeRequestId);
+          this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, this.mtfiFacilities[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI)); //dont think this will work!
+          //this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
+        }
+        else{
+          this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, changeRequestId, CHANGE_TYPES.MTFI));
+        }
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
