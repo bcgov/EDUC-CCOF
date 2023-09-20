@@ -180,11 +180,8 @@ async function getCCFRIClosureDates(ccfriId){
 
   data.forEach((date) => {
 
-    let formattedStartDate = new Date(date.ccof_startdate).toISOString().slice(0, 10);
-    // formattedStartDate.
-
-    let formattedEndDate = new Date(date.ccof_enddate).toISOString().slice(0, 10);
-    // formattedEndDate.toISOString().slice(0, 10);
+    let formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
+    let formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
 
     closureDates.push({
       'closureDateId' : date.ccof_application_ccfri_closureid,
