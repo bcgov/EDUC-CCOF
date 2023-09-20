@@ -158,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', 'setNavBarList']),
+    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit']),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);

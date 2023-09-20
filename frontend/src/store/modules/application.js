@@ -81,7 +81,7 @@ export default {
     latestApplicationId: (state, getters) => state.applicationMap.get(getters.latestProgramYearId)?.applicationId
   },
   actions: {
-    async loadApplicationFromStore({ state, commit}, programYearId) {
+    async loadApplicationFromStore({ state, commit, rootState}, programYearId) {
       console.log('loadApplicationFromStore called with programYearId: ', programYearId);
       const application = state.applicationMap.get(programYearId);
       if (application) {
@@ -104,6 +104,8 @@ export default {
 
         commit('navBar/setIsRenewal', (application.applicationType === 'RENEW'), { root: true });
 
+        console.log();
+        commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(programYearId).facilityList, { root: true });
       }
     },
 

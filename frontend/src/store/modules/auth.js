@@ -129,9 +129,10 @@ export default {
         commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
         await dispatch('application/loadApplicationFromStore', rootGetters['application/latestProgramYearId'], { root: true });
 
-        console.log('testingggggg');
-        //console.log(
-        commit('navBar/setUserProfileList', rootState.application.applicationMap.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
+        //page will break if it's a new application and there is no facility list yet, below code fixes that.
+        if (rootState.application?.applicationMap?.size > 0){
+          commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
+        }
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
         commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
