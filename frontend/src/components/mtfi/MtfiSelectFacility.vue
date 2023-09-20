@@ -11,11 +11,18 @@
       <span class="text-h6 font-weight-bold blueText">{{this.organizationName}}</span>
     </div>
     <v-row no-gutters class="justify-center align-center pt-12">
-      <v-icon
-        x-large
-        class="pr-5 noticeInfoIcon">
-        mdi-help-circle
-      </v-icon>
+      <v-tooltip top color="#003366">
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon
+            x-large
+            v-bind="attrs" v-on="on"
+            class="pr-5 noticeInfoIcon"
+          >
+            mdi-help-circle
+          </v-icon>
+        </template>
+        <span>You can request a Mid-term Fee Increase after the facility has been approved for the fiscal year.</span>
+      </v-tooltip>
       <div class="text-h5">
         Please select which facility you would like to update
       </div>
@@ -59,7 +66,7 @@ import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
-import { isChangeRequest } from '@/utils/common';
+import { isFacilityAvailable } from '@/utils/common';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -92,18 +99,19 @@ export default {
     ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
-    
+
     isReadOnly() {
       return (this.changeRequestStatus != 'INCOMPLETE');
     },
     isNextButtonDisabled() {
       return (!this.checkbox?.includes(true));
     },
+    // CCFRI-2584 - All facilties displayed in the PCF should be shown on the MTFI Select Facility page -> same logic as filterNavBar() in navBar.js
     filteredUserProfileList() {
       if (this.isRenewal) {
-        return this.userProfileList.filter(el => !el.changeRequestId && el.facilityAccountNumber);
+        return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
       }
-      return this.userProfileList.filter(el => !el.changeRequestId);
+      return this.userProfileList.filter(el => (!el.changeRequestId || el.facilityAccountNumber) && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
     }
   },
   async beforeMount() {
@@ -127,6 +135,10 @@ export default {
     ...mapActions('navBar',['loadChangeRequest']),
     isFacilityDisabled(ccfriOptInStatus, ccfriStatus)  {
       return (ccfriOptInStatus == 0 || ccfriStatus != 'APPROVED');
+    },
+    isMtfiCreated(facility) {
+      let index = this.mtfiFacilities?.findIndex(item => item.facilityId === facility?.facilityId);
+      return index > -1;
     },
     previous() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
@@ -200,7 +212,7 @@ export default {
       } catch (error)  {
         console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }  
+      }
     },
   },
   mounted() {
