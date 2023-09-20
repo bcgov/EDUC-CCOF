@@ -46,7 +46,8 @@
           </p>
         </template>
         <template #button>
-          <v-btn dark class="blueButton" @click="newApplication()" v-if="ccofStatus === CCOF_STATUS_NEW">Start Application</v-btn>
+          <v-btn dark class="blueButton" @click="newApplicationIntermediatePage()" v-if="ccofStatus === CCOF_STATUS_NEW">Start
+            Application</v-btn>
           <v-btn dark class="blueButton" @click="actionRequiredOrganizationRoute()" v-else-if="ccofStatus === CCOF_STATUS_ACTION_REQUIRED">Update your PCF</v-btn>
           <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
             <p class="text-h5 blueText">Status: Incomplete</p>
@@ -56,6 +57,9 @@
             <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Approved</p>
             <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
             <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
+            <p class="mt-4">
+              <router-link class='text-decoration-underline' :to=" PATHS.ROOT.SUBMISSION_HISTORY ">View submission history</router-link>
+            </p>
           </div>
         </template>
       </SmallCard>
@@ -366,6 +370,10 @@ export default {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     ...mapMutations('navBar', ['refreshNavBarList']),
+    newApplicationIntermediatePage() {
+      this.setIsRenewal(false);
+      this.$router.push(pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, this.programYearList.newApp.programYearId));
+    },
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));

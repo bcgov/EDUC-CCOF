@@ -16,7 +16,7 @@
           </v-img>
         </v-col>
       </v-row>
-      <v-row justify="center">
+      <v-row v-show="false" justify="center">
         <v-col cols="12" class="pt-1" align="center">
           <v-card class="elevation-0"  max-width="1448">
             <v-col class="py-2">

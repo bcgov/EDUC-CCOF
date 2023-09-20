@@ -119,7 +119,7 @@
 
               <v-col class="col-md-3 col-12">
                 <v-text-field placeholder="Required" readonly dense flat solo hide-details
-                  :value="obj.feesPaidWhileClosed === 1 ? 'Yes' : 'No'" :rules="rules.required"></v-text-field>
+                  :value="getYesNoValue(obj.feesPaidWhileClosed)" :rules="rules.required"></v-text-field>
               </v-col>
             </v-row> <!-- end v for-->
           </v-row> <!-- end v if -->
@@ -161,7 +161,7 @@ import { isChangeRequest } from '@/utils/common';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid  } from '@/utils/constants';
 import rules from '@/utils/rules';
 import {mapState} from 'vuex';
-
+import globalMixin from '@/mixins/globalMixin';
 
 
 export default {
@@ -183,6 +183,7 @@ export default {
       required: false
     }
   },
+  mixins: [globalMixin],
   data() {
     return {
       PATHS,

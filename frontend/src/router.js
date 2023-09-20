@@ -32,6 +32,7 @@ import Eligibility from '@/components/ccofApplication/family/Eligibility';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
+import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
@@ -61,6 +62,8 @@ import SummaryDeclarationChangeRequest from '@/components/requestChanges/Summary
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
+
+import SubmissionHistory from '@/components/SubmissionHistory';
 
 Vue.prototype.moment = moment;
 
@@ -133,6 +136,15 @@ const router = new VueRouter({
       path: pcfUrl(PATHS.SELECT_APPLICATION_TYPE),
       name: 'Select CCOF Application Type',
       component: CcofApplicationTypeSelector,
+      meta: {
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
+      }
+    },
+    {
+      path: pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE),
+      name: 'Confirm this is a New Application and not a Renewal',
+      component: CcofNewApplicationIntermediate,
       meta: {
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.APPLICATION
@@ -710,6 +722,16 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION) +'/printable',
+      name: 'Printable Summary and Declaration New Facility',
+      component: SummaryDeclaration,
+      meta: {
+        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
       path: PATHS.ROOT.CHANGE_INFO,
       name: 'Change Request Information',
       component: ChangeInformation,
@@ -777,6 +799,26 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION) + '/printable',
+      name: 'Printable Change Notification Summary',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: 'Printable Change Notification Summary',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
+      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI) + '/printable',
+      name: 'Printable MTFI Summary',
+      component: SummaryDeclarationChangeRequest,
+      meta: {
+        pageTitle: 'Printable MTFI Summary',
+        requiresAuth: true,
+        showNavBar: false,
+      }
+    },
+    {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI),
       name: 'Summary and Declaration MTFI',
       component: SummaryDeclarationChangeRequest,
@@ -798,6 +840,16 @@ const router = new VueRouter({
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.MTFI
+      }
+    },
+    {
+      path: PATHS.ROOT.SUBMISSION_HISTORY,
+      name: 'submission-history',
+      component: SubmissionHistory,
+      meta: {
+        pageTitle: 'submission-history',
+        showNavBar: false,
+        requiresAuth: true,
       }
     },
   ]

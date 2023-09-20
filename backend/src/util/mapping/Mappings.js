@@ -39,6 +39,7 @@ const FacilityMappings = [
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
+  { back: 'ccof_facilitystatus@OData.Community.Display.V1.FormattedValue', front: 'facilityStatus' }, 
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
@@ -346,6 +347,7 @@ const ProgramYearMappings = [
 const MessageMappings = [
   { back: 'activityid', front: 'messageId' },
   { back: 'createdon', front: 'dateReceived' },
+  { back: '_ccof_program_year_value@OData.Community.Display.V1.FormattedValue', front: 'programYearValue'},
   { back: 'description', front: 'messageContent' },
   { back: 'lastopenedtime', front: 'lastOpenedTime' },
   { back: 'subject', front: 'subject' },

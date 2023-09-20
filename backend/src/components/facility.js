@@ -84,7 +84,7 @@ function mapCCFRIObjectForFront(data) {
 async function getFacility(req, res) {
   try {
     //,_ccof_change_request_value
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber'; //+ getMappingString(FacilityMappings);
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
 
@@ -180,11 +180,8 @@ async function getCCFRIClosureDates(ccfriId){
 
   data.forEach((date) => {
 
-    let formattedStartDate = new Date(date.ccof_startdate).toISOString().slice(0, 10);
-    // formattedStartDate.
-
-    let formattedEndDate = new Date(date.ccof_enddate).toISOString().slice(0, 10);
-    // formattedEndDate.toISOString().slice(0, 10);
+    let formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
+    let formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
 
     closureDates.push({
       'closureDateId' : date.ccof_application_ccfri_closureid,

@@ -8,7 +8,8 @@ const {
   sleep,
   getLabelFromValue,
   updateChangeRequestNewFacility,
-  postApplicationSummaryDocument
+  postApplicationSummaryDocument,
+  postChangeRequestSummaryDocument,
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
@@ -419,6 +420,7 @@ async function submitApplication(req, res) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
       }
     }
+
     printPdf(req).then();
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -426,7 +428,7 @@ async function submitApplication(req, res) {
   }
 }
 
-async function printPdf(req, numOfRetries = 0)  {
+async function printPdf(req, numOfRetries = 0) {
   let url = `${req.headers.referer}/printable`;
 
   log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);
@@ -468,15 +470,33 @@ async function printPdf(req, numOfRetries = 0)  {
     log.verbose('printPdf :: compression completed for applicationId', req.params.applicationId);
     await browser.close();
 
-    let payload = {
-      ccof_applicationid: req.params.applicationId,
-      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-      filesize: compressedPdfBuffer.byteLength,
-      subject: 'APPLICATION SUMMARY',
-      documentbody: compressedPdfBuffer.toString('base64')
-    };
+    let payload;
+    //if the body contains an application ID, the summary dec is for PCF. Else, it should be a change request.
+    //if we want to, we could explicitly check the body for a change request id?
+    if(req.params.applicationId){
+      payload = {
+        ccof_applicationid: req.params.applicationId,
+        filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+        filesize: compressedPdfBuffer.byteLength,
+        subject: 'APPLICATION SUMMARY',
+        documentbody: compressedPdfBuffer.toString('base64')
+      };
 
-    await postApplicationSummaryDocument(payload);
+      await postApplicationSummaryDocument(payload);
+    }
+    else {
+      payload = {
+        ccof_change_requestid: req.params.changeRequestId,
+        filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+        filesize: compressedPdfBuffer.byteLength,
+        subject: 'CHANGE REQUEST SUMMARY',
+        documentbody: compressedPdfBuffer.toString('base64')
+      };
+
+      await postChangeRequestSummaryDocument(payload);
+    }
+
+    return payload;
   } catch (e) {
     log.error(e);
     await browser.close();
@@ -660,12 +680,15 @@ function checkKey(key, obj) {
 async function getFacilityChangeData(changeActionId){
   let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
-  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
 
   newFacData.value.forEach(fac => {
-    mappedData.push( new MappableObjectForFront(fac, NewFacilityMappings).toJSON());
+    let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
+    mappedFacility.facilityName = fac.ccof_facility['name'];
+    mappedFacility.facilityStatus = fac.ccof_facility['ccof_facilitystatus@OData.Community.Display.V1.FormattedValue'];
+    mappedData.push(mappedFacility);
   });
 
   log.info('faccccc data post mapping', mappedData);
@@ -747,5 +770,6 @@ module.exports = {
   updateStatusForApplicationComponents,
   getChangeRequest,
   patchCCFRIApplication,
-  deleteCCFRIApplication
+  deleteCCFRIApplication,
+  printPdf
 };
