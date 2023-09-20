@@ -157,7 +157,8 @@ export default {
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
     previousProgramYearGuid(){
-      const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
+      //updated this to no longer look at the auth store for program year ID
+      const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId );
       return programYear.previousYearId;
     },
     previousProgramYearLabel(){
