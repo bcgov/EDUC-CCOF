@@ -76,11 +76,13 @@
             <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
             <h2 v-else>Change History</h2>
           </v-col>
-          <v-text-field
+          <!-- <v-text-field
             v-if="!viewOlderRequestActive"
             v-model="search"
             label="Search by facility name">
           </v-text-field>
+        NOT SURE IF THIS IS ACTUALLY WHAT THE REQUIREMENTS WANT
+        -->
         </v-row>
         <v-row v-if="processing">
           <v-col >
