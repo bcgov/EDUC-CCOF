@@ -226,13 +226,6 @@ export default {
         return this.isValidForm;
       return this.isValidForm && this.canSubmit;
     },
-    filteredNavBarList() {
-      if (this.isChangeRequest) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
-    },
   },
 
   async mounted() {
@@ -470,7 +463,7 @@ export default {
       this.isLoading = true;
       try {
         await this.getDocuments(this.applicationId);
-        this.uploadedDocuments = this.getUploadedDocuments.filter(document => this.filteredNavBarList.findIndex(item => item.facilityId == document.ccof_facility) > -1);
+        this.uploadedDocuments = this.getUploadedDocuments.filter(document => this.navBarList.findIndex(item => item.facilityId == document.ccof_facility) > -1);
       } catch (e) {
         console.error(e);
       } finally {
@@ -511,7 +504,7 @@ export default {
       this.uploadedDocuments[index].description = item.description;
     },
     async mapFacilityData() {
-      for (let facilityInfo of this.filteredNavBarList) {
+      for (let facilityInfo of this.navBarList) {
         const facility = {};
         facility.facilityId = facilityInfo.facilityId;
         facility.facilityName = facilityInfo.facilityName;
