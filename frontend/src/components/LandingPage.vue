@@ -183,8 +183,8 @@
 
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
-import FiscalYearSlider from '@/components/common/FiscalYearSlider';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
+import FiscalYearSlider from './guiComponents/FiscalYearSlider';
 import { PATHS, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 
