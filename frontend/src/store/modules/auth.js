@@ -126,6 +126,7 @@ export default {
           userInfoRes = await ApiService.getUserInfo();
         }
         commit('setUserInfo', userInfoRes.data);
+<<<<<<< HEAD
         commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
         await dispatch('application/loadApplicationFromStore', rootGetters['application/latestProgramYearId'], { root: true });
 
@@ -133,6 +134,13 @@ export default {
         if (rootState.application?.applicationMap?.size > 0){
           commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
         }
+=======
+        commit('application/setFromUserInfo', userInfoRes.data, { root: true });
+        commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
+        commit('navBar/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
+        commit('navBar/setApplicationStatus', [userInfoRes.data.applicationStatus, userInfoRes.data.ccofApplicationStatus], { root: true });
+        commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
+>>>>>>> 8c5197e8663fccaa06f5d9215e664cd5d8325d8d
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
         commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });

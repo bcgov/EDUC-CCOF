@@ -2,6 +2,7 @@ import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import {checkSession} from '@/utils/session';
 import ApiService from '@/common/apiService';
 import {ApiRoutes} from '@/utils/constants';
+import { isFacilityAvailable } from '@/utils/common';
 
 function getActiveIndex(items) {
   let foundIndex = -1;
@@ -66,12 +67,27 @@ function filterNavBar(state) {
       state.navBarList = null;
     }
   // PCF
+  // CCFRI-2682
+  // If the PCF is RENEW and NOT SUBMITTED, the PCF will display all facilities having Facility ID and facility status is NOT in (“Closed”, “Cancelled”, Blank).
+  // If the PCF is RENEW and ALREADY SUBMITTED, the PCF will display all facilities having Facility ID and active in that Submitted application.
+  // If the PCF is NEW and APPROVED, the PCF will display all facilities added from that PCF or having Facility ID.
+  // If the PCF is NEW and NOT APPROVED, the PCF will display all facilities added from that PCF.
   } else {
     state.navBarList = state.userProfileList.filter(el => {
+      const isFacilityActive = el.ccofBaseFundingId || el.ccfriApplicationId || el.eceweApplicationId;
       if (state.isRenewal) {
-        return (el.facilityAccountNumber && (el.facilityStatus === 'CCFRI Complete'));
+        if (state.applicationStatus === 'DRAFT') {
+          return (el.facilityAccountNumber && isFacilityAvailable(el));
+        } else {
+          return (el.facilityAccountNumber && isFacilityActive);
+        }
+      } else {
+        if (state.applicationStatus === 'APPROVED') {
+          return ((!el.changeRequestId || el.facilityAccountNumber) && isFacilityActive);
+        } else {
+          return (!el.changeRequestId);
+        }
       }
-      return (!el.changeRequestId || (el.facilityAccountNumber && (el.facilityStatus === 'CCFRI Complete')));
     });
   }
 }
@@ -91,14 +107,15 @@ export default {
     currentUrl: null,
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     isRenewal: false,
+    applicationStatus: null,
   },
   mutations: {
     setNavBarItems: (state, value) => { state.navBarItems = value; },
     setCanSubmit: (state, value) => { state.canSubmit = value; },
-    setIsRenewal: (state, value) => { state.isRenewal = value; },
-    setCurrentUrl: (state, value) => { state.currentUrl = value;},
-    setChangeType: (state, value) => { state.changeType = value;},
-
+    setIsRenewal(state, value) { state.isRenewal = value; },
+    setApplicationStatus(state, [applicationStatus, ccofApplicationStatus]) {
+      state.applicationStatus = (applicationStatus === 'SUBMITTED' && ccofApplicationStatus === 'ACTIVE') ? 'APPROVED' : applicationStatus;
+    },
     setChangeRequestId: (state, value) => {
       state.programYearId = null;
       state.changeRequestId = value;

@@ -680,12 +680,15 @@ function checkKey(key, obj) {
 async function getFacilityChangeData(changeActionId){
   let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
-  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
 
   newFacData.value.forEach(fac => {
-    mappedData.push( new MappableObjectForFront(fac, NewFacilityMappings).toJSON());
+    let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
+    mappedFacility.facilityName = fac.ccof_facility['name'];
+    mappedFacility.facilityStatus = fac.ccof_facility['ccof_facilitystatus@OData.Community.Display.V1.FormattedValue'];
+    mappedData.push(mappedFacility);
   });
 
   log.info('faccccc data post mapping', mappedData);

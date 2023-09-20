@@ -194,7 +194,7 @@ import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl } from '@/utils/constant
 import alertMixin from '@/mixins/alertMixin';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
-
+import { isFacilityAvailable } from '@/utils/common';
 
 
 export default {
@@ -375,12 +375,7 @@ export default {
       //change in backend, only returns 1 at a time rn
       let action = changeActions.find(el => el.changeType == "NEW_FACILITY");
       if (action?.facilities) {
-        action.facilities.forEach(fac => {
-          const facilityUserProfileList = this.userProfileList?.find(item => item.facilityId === fac.facilityId);
-          if (facilityUserProfileList?.facilityName) {
-            str = str + `${facilityUserProfileList?.facilityName}, `;
-          }
-        });
+        action.facilities.forEach(fac => str = str + `${fac.facilityName}, `);
       }
       return str.slice(0, -2);
     },
@@ -630,7 +625,7 @@ export default {
     // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled(){
       let foundCRNotInEndStateStatus = this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus));
-      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(el => el.ccfriStatus == 'APPROVED');
+      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(el => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el));
       return (!foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI);
     },
     buttonColor(isDisabled) {

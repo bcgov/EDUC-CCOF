@@ -10,7 +10,7 @@
             </v-row>
             <v-data-table v-if="!isLoading"
                           :headers="headers"
-                          :items="filteredLicenseUploadData"
+                          :items="licenseUploadData"
                           class="elevation-1"
                           hide-default-header
                           hide-default-footer
@@ -82,13 +82,6 @@ export default {
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
-    filteredLicenseUploadData() {
-      if (this.isChangeRequest) {
-        return this.licenseUploadData.filter(el => el.changeRequestId === this.changeRequestId);
-      } else {
-        return this.licenseUploadData.filter(el => !el.changeRequestId);
-      }
-    },
     isLocked() {
       if(this.isChangeRequest){
         if(this.isLicenseUploadUnlocked||!this.changeRequestStatus){
@@ -121,7 +114,7 @@ export default {
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
         const uploadedLicenceCount = this.getUploadedLicenses.filter(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === facilityId).length;
-        const deletedLicenceCount = this.filteredLicenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
+        const deletedLicenceCount = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
         let fileMapLicencePerFacilityCount =  0;
         if(this.fileMap.size > 0 && this.fileMap.get(facilityId)){
           fileMapLicencePerFacilityCount = this.fileMap.get(facilityId)?.length;
