@@ -99,7 +99,7 @@
         </template>
         <template #button>
           <v-row no-gutters>
-            <v-col v-if="isUpdateChangeRequestDisplayed" class="col-12 mb-3">
+            <v-col v-if="isLoadingComplete && isUpdateChangeRequestDisplayed" class="col-12 mb-3">
               <v-btn @click="goToChangeRequestHistory()" :color='buttonColor(false)' dark>
                 Update change request
               </v-btn>
@@ -214,11 +214,12 @@ export default {
           body: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
         },
       ],
-      CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:'
+      CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:',
+      isLoadingComplete: false
     };
   },
 
-  created () {
+  async created () {
     this.CCOF_STATUS_NEW = 'NEW';
     this.CCOF_STATUS_COMPLETE = 'COMPLETE';
     this.CCOF_STATUS_CONTINUE = 'CONTINUE';
@@ -231,8 +232,11 @@ export default {
     this.RENEW_STATUS_APPROVED = 'APPROVED';
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
 
+    this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
+    await this.getChangeRequestList();
+    this.isLoadingComplete = true;
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -242,7 +246,7 @@ export default {
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
-    ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapState('reportChanges', ['userProfileChangeRequests','changeRequestStore']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;
@@ -362,14 +366,15 @@ export default {
       return !!(this.organizationAccountNumber && this.fundingAgreementNumber);
     },
     isUpdateChangeRequestDisplayed() {
-      let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
-      return changeRequestStatuses?.includes("WITH_PROVIDER");
+      const index = this.changeRequestStore?.findIndex(changeRequest => changeRequest.externalStatus === 3); // 3 is Action Required
+      return index > -1;
     }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     ...mapMutations('navBar', ['refreshNavBarList']),
+    ...mapActions('reportChanges', ['getChangeRequestList']),
     newApplicationIntermediatePage() {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, this.programYearList.newApp.programYearId));

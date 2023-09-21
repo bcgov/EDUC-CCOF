@@ -57,7 +57,9 @@ function filterNavBar(state) {
   //Mitchel - Since most CRs will be making changes to existing facilities
   //only grabs facilities from specific change request when new facility CR so far
   if (state.changeType ==='nf') {
-    state.navBarList = state.userProfileList.filter(el => el.changeRequestId == state.changeRequestId);
+    const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
+    const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    state.navBarList = newFacilityChangeAction?.newFacilities;
   } else if (state.changeType === 'mtfi') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
     if (changeActions && changeActions.length > 0) {
@@ -116,6 +118,8 @@ export default {
     setApplicationStatus(state, [applicationStatus, ccofApplicationStatus]) {
       state.applicationStatus = (applicationStatus === 'SUBMITTED' && ccofApplicationStatus === 'ACTIVE') ? 'APPROVED' : applicationStatus;
     },
+    setCurrentUrl(state, value) { state.currentUrl = value; },
+    setChangeType(state, value) { state.changeType = value; },
     setChangeRequestId: (state, value) => {
       state.programYearId = null;
       state.changeRequestId = value;
