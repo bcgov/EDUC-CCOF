@@ -124,6 +124,8 @@ export default {
           userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
         } else {
           userInfoRes = await ApiService.getUserInfo();
+          console.log('dataaaaa');
+          console.log(userInfoRes.data);
         }
         commit('setUserInfo', userInfoRes.data);
         commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
@@ -132,9 +134,10 @@ export default {
         //page will break if it's a new application and there is no facility list yet, below code fixes that.
         if (rootState.application?.applicationMap?.size > 0){
           commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
+          commit('organization/setOrganizationProviderType', rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']).organizationProviderType, { root: true });
         }
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
-        commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
+
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
         commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
         commit('organization/setFundingAgreementNumber', userInfoRes.data?.fundingAgreementNumber, { root: true });
