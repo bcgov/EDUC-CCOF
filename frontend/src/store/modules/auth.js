@@ -124,6 +124,8 @@ export default {
           userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
         } else {
           userInfoRes = await ApiService.getUserInfo();
+          console.log('dataaaaa');
+          console.log(userInfoRes.data);
         }
         commit('setUserInfo', userInfoRes.data);
         commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
