@@ -216,7 +216,7 @@ export default {
       let linkName;
       if (this.isChangeRequest) {
         const currentCR = this.userProfileChangeRequests.find(item => item.changeRequestId === this.changeRequestId);
-        checkbox = this.changeRequestStatus === 'SUBMITTED' && !currentCR?.unlockDeclaration;
+        checkbox = ['SUBMITTED','APPROVED'].includes(this.changeRequestStatus) && !currentCR?.unlockDeclaration;
         if(this.changeType===CHANGE_TYPES.NEW_FACILITY){
           linkName = 'Summary and Declaration New Facility';
         }

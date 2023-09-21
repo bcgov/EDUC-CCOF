@@ -172,17 +172,8 @@ export default {
     isSaveBtnDisabled() {
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
     },
-    filteredECEWEFacilityList() {
-      if (isChangeRequest(this)) {
-        console.log('filteredECEWEFacilityList = this.$store.state.eceweApp.facilities');
-        console.log(this.$store.state.eceweApp.facilities);
-        return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.$store.state.eceweApp.facilities?.filter(el => !el.changeRequestId);
-      }
-    },
     facilities: {
-      get() { return this.filteredECEWEFacilityList; },
+      get() { return this.$store.state.eceweApp.facilities; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     isReadOnly() {
