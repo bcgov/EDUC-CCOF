@@ -347,7 +347,7 @@ const ProgramYearMappings = [
 const MessageMappings = [
   { back: 'activityid', front: 'messageId' },
   { back: 'createdon', front: 'dateReceived' },
-  { back: '_ccof_program_year_value@OData.Community.Display.V1.FormattedValue', front: 'programYearValue'},
+  { back: 'ccof_program_year', front: 'programYearValue'},
   { back: 'description', front: 'messageContent' },
   { back: 'lastopenedtime', front: 'lastOpenedTime' },
   { back: 'subject', front: 'subject' },
