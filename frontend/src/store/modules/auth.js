@@ -131,10 +131,14 @@ export default {
 
         //page will break if it's a new application and there is no facility list yet, below code fixes that.
         if (rootState.application?.applicationMap?.size > 0){
-          commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
+          const latestApplication = rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']);
+          commit('navBar/setUserProfileList', latestApplication?.facilityList, { root: true });
+          commit('organization/setOrganizationProviderType', latestApplication?.organizationProviderType, { root: true });
+          commit('navBar/setApplicationStatus', [latestApplication?.applicationStatus, latestApplication?.ccofApplicationStatus], { root: true });
         }
+        console.log('getUserInfo --------------------------- ');
+        console.log(userInfoRes.data);
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
-        commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
         commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
         commit('organization/setFundingAgreementNumber', userInfoRes.data?.fundingAgreementNumber, { root: true });
