@@ -704,16 +704,37 @@ async function getMTFIChangeData(changeActionId) {
   });
   return mappedData;
 }
+//and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
+async function getChangeRequestsFromApplicationId(applicationIds){
 
-async function getChangeRequestsFromApplicationId(applicationId){
+  let str = '[';
+
+  const regex = new RegExp('([^,]+)' , 'g');
+  const found = applicationIds.match(regex);
+  found.forEach((app, index) => {
+    str = str + `'${app}'`;
+    if (index != found.length -1 ){
+      str = str + ',';
+    }
+    else{
+      str = str + ']';
+    }
+  });
+
+  log.info(str);
+
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
+    //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
+    // log.info('ALL CHANGE REQZ');
+    // log.info(changeRequests);
+
     let payload = [];
 
-    log.verbose(changeRequests);
+    //log.verbose(changeRequests);
     await Promise.all(changeRequests.map(async (request) => {
 
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
@@ -734,11 +755,11 @@ async function getChangeRequestsFromApplicationId(applicationId){
       payload.push(req);
     }));
 
-    log.info('final payload', payload);
+    //log.info('final payload', payload);
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+    throw e;
   }
 
 }

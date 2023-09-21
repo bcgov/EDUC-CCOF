@@ -113,7 +113,9 @@ export default {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
     },
-    async getUserInfo({state, commit, dispatch}, to){
+    async getUserInfo({state, commit, dispatch, rootState, rootGetters}, to){
+
+
       //This method is called by the router.
       //Only hit the API service if the info has not already been loaded.
       if (!state.isUserInfoLoaded) {
@@ -124,11 +126,13 @@ export default {
           userInfoRes = await ApiService.getUserInfo();
         }
         commit('setUserInfo', userInfoRes.data);
-        commit('application/setFromUserInfo', userInfoRes.data, { root: true });
-        commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
-        commit('navBar/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
-        commit('navBar/setApplicationStatus', [userInfoRes.data.applicationStatus, userInfoRes.data.ccofApplicationStatus], { root: true });
-        commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
+        commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
+        await dispatch('application/loadApplicationFromStore', rootGetters['application/latestProgramYearId'], { root: true });
+
+        //page will break if it's a new application and there is no facility list yet, below code fixes that.
+        if (rootState.application?.applicationMap?.size > 0){
+          commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']).facilityList, { root: true });
+        }
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
         commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });

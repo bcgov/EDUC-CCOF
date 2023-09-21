@@ -5,7 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_STATUS_CODES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES} = require('../util/constants');
+const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_STATUS_CODES, CHANGE_REQUEST_STATUS_CODES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES} = require('../util/constants');
 const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings } = require('../util/mapping/Mappings');
 const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -80,22 +80,30 @@ async function getUserInfo(req, res) {
     creatUser(req);
     return res.status(HttpStatus.OK).json(resData);
   }
-  if (userResponse === {}){
+  if (userResponse == {}){
     // If no data back, then no associated Organization/Facilities, return empty orgination data
     return res.status(HttpStatus.OK).json(resData);
   }
 
   let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
+  let applicationList = [];
+  if (userResponse.application && userResponse.application.length > 0 ) {
+    userResponse.application.forEach( ap => {
+      let application = new MappableObjectForFront(ap, UserProfileApplicationMappings).data;
+      application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
+      application.applicationStatus = getLabelFromValue(application.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
+      application.applicationType = getLabelFromValue(application.applicationType, CCOF_APPLICATION_TYPES);
+      application.ccofProgramYearId = ap.ccof_ProgramYear?.ccof_program_yearid;
+      application.ccofProgramYearName = ap.ccof_ProgramYear?.ccof_name;
+      application.ccofProgramYearStatus = getLabelFromValue(ap.ccof_ProgramYear?.statuscode, PROGRAM_YEAR_STATUS_CODES);
+      application.ccofApplicationStatus = getLabelFromValue(ap.ccofStatus, CCOF_STATUS_CODES, 'NEW');
+      applicationList.push(application);
 
-  let application = new MappableObjectForFront(userResponse.application, UserProfileApplicationMappings).data;
-  application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
-  application.applicationStatus = getLabelFromValue(application.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
-  application.applicationType = getLabelFromValue(application.applicationType, CCOF_APPLICATION_TYPES);
-  application.ccofProgramYearId = userResponse.application?.ccof_ProgramYear?.ccof_program_yearid;
-  application.ccofProgramYearName = userResponse.application?.ccof_ProgramYear?.ccof_name;
-  application.ccofApplicationStatus = getLabelFromValue(application.ccofStatus, CCOF_STATUS_CODES, 'NEW');
+      application.facilityList = parseFacilityData(ap, userResponse.facilities);
+    });
+  }
 
-
+  /*
   const changeRequests = [];
   userResponse.application?.ccof_ccof_change_request_Application_ccof_appl?.forEach(el => {
     const item = new MappableObjectForFront(el, UserProfileChangeRequestMappings).data;
@@ -120,13 +128,13 @@ async function getUserInfo(req, res) {
     changeRequests.push(item);
 
   });
-
-  resData.facilityList = parseFacilityData(userResponse);
+*/
+  //resData.facilityList = parseFacilityData(userResponse.facilities);
   let results = {
     ...resData,
     ...organization,
-    ...application,
-    changeRequests: changeRequests
+    applications: applicationList
+    // changeRequests: changeRequests
   };
   return res.status(HttpStatus.OK).json(results);
 }
@@ -135,9 +143,9 @@ async function getUserProfile(userGuid, userName) {
   try {
     let url = undefined;
     if (userGuid) {
-      url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userId=${userGuid}&userName=${userName}`;
+      url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderFiscalProfile?userId=${userGuid}&userName=${userName}`;
     } else {
-      url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderProfile?userName=${userName}`;
+      url = config.get('dynamicsApi:apiEndpoint') + `/api/ProviderFiscalProfile?userName=${userName}`;
     }
 
     log.verbose('UserProfile Url is', url);
@@ -173,25 +181,30 @@ function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, 
   }
 }
 
-function parseFacilityData(userResponse) {
-  let facilityMap  = new Map(userResponse.facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+function parseFacilityData(application, facilities) {
+  log.info('PARSE FACILITIES CALLED');
+  //log.info (application);
+  log.info(facilities);
 
-  if (userResponse.application) {
+
+  let facilityMap  = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+
+  if (application) {
     facilityMap.forEach((value, key, map) => {
-      let ccfriInfo = userResponse.application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
+      let ccfriInfo = application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
       ccfriInfo = new MappableObjectForFront(ccfriInfo, UserProfileCCFRIMappings).data;
-      let eceweInfo = userResponse.application.ccof_ccof_application_ccof_applicationecewe_application?.find(item => item['_ccof_facility_value'] === key);
+      let eceweInfo = application.ccof_ccof_application_ccof_applicationecewe_application?.find(item => item['_ccof_facility_value'] === key);
       eceweInfo = new MappableObjectForFront(eceweInfo, UserProfileECEWEMappings).data;
-      let baseFunding = userResponse.application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
+      let baseFunding = application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
       baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
-      let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
+      // let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
       let returnValue = {
         ...value,
         ...ccfriInfo,
         ...eceweInfo,
         ...baseFunding,
       };
-      updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, key);
+      // updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, key);
       map.set(key, returnValue);
     });
   }

@@ -121,35 +121,15 @@ export default {
       state.changeRequestId = value;
       filterNavBar(state);
     },
-
-    setUrlDetails: (state, to) => {
-      console.log('to url is: ', to);
-      state.currentUrl = to.fullPath;
-
-      if (to.fullPath?.startsWith(PATHS.PREFIX.CHANGE_REQUEST)) {
-        const arr = to.fullPath.split('/');
-        if (arr?.length > 2) {
-          state.changeType=arr[2];
-        } else {
-          state.changeType = null;
-        }
-      } else {
-        state.changeType = null;
-      }
-      if (to?.params?.changeRecGuid) {
-        state.changeRequestId = to.params.changeRecGuid;
-        state.programYearId = null;
-        filterNavBar(state);
-      } else if (to?.params?.programYearGuid) {
-        state.changeRequestId = null;
-        state.programYearId = to.params.programYearGuid;
-        filterNavBar(state);
-      } else {
-        state.programYearId = null;
-        state.changeRequestId = null;
-        state.navBarList = [];
-      }
-
+    setProgramYearId: (state, value) => {
+      state.programYearId = value;
+      state.changeRequestId = null;
+      filterNavBar(state);
+    },
+    clearNavBarList: state => {
+      state.programYearId = null;
+      state.changeRequestId = null;
+      state.navBarList = [];
     },
     forceNavBarRefresh(state) {
       state.refreshNavBar = state.refreshNavBar + 1;
@@ -314,6 +294,28 @@ export default {
       commit('removeChangeRequest', changeRequestId);
       await dispatch('loadChangeRequest', changeRequestId);
     },
+    async setUrlDetails({commit, dispatch}, to) {
+      console.log('to url is: ', to);
+      commit('setCurrentUrl', to.fullPath);
 
+      if (to.fullPath?.startsWith(PATHS.PREFIX.CHANGE_REQUEST)) {
+        const arr = to.fullPath.split('/');
+        if (arr?.length > 2) {
+          commit('setChangeType', arr[2]);
+        } else {
+          commit('setChangeType', null);
+        }
+      } else {
+        commit('setChangeType', null);
+      }
+      if (to?.params?.changeRecGuid) {
+        commit('setChangeRequestId', to.params.changeRecGuid);
+      } else if (to?.params?.programYearGuid) {
+        commit('setProgramYearId', to.params.programYearGuid);
+        await dispatch('application/loadApplicationFromStore', to.params.programYearGuid, { root: true });
+      } else {
+        commit('clearNavBarList');
+      }
+    },
   }
 };

@@ -152,15 +152,18 @@ export default {
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
-    async getChangeRequestList({commit, rootState}, ) {
+    async getChangeRequestList({commit, rootGetters, rootState}, ) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
-      console.log('loading change req for: ', rootState.application.applicationId);
+      console.log('loading change req for: ');
+
+      console.log(rootGetters['application/applicationIds']);
+      //console.log('loading change req for: ', rootState.application.applicationId);
 
       checkSession();
       let store = [];
       try {
-        let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootState.application.applicationId);
+        let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootGetters['application/applicationIds']);
         //console.log(response);
 
         let newFacList = [];
@@ -214,15 +217,15 @@ export default {
 
         let changeAction;
         switch (rootState.navBar.changeType) {
-          case CHANGE_TYPES.NEW_FACILITY:
-            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);            
-            break;
-          case CHANGE_TYPES.CHANGE_NOTIFICATION:
-            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE);
-            break;
-          case CHANGE_TYPES.MTFI:
-            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
-            break;
+        case CHANGE_TYPES.NEW_FACILITY:
+          changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);
+          break;
+        case CHANGE_TYPES.CHANGE_NOTIFICATION:
+          changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE);
+          break;
+        case CHANGE_TYPES.MTFI:
+          changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+          break;
         }
         commit('setChangeActionId', changeAction?.changeActionId);
 
