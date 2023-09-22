@@ -25,6 +25,7 @@
             disable-pagination hide-default-footer
             :sort-by="['priority', 'submissionDate']"
             :sort-desc="[true, true]"
+            v-if="!processing"
           >
             <template v-slot:item.facilityNames="{ item }">
             </template>
@@ -48,14 +49,14 @@
   </template>
 
   <script>
-  import { mapState, mapMutations, mapActions } from 'vuex';
+  import { mapState, mapActions } from 'vuex';
   import { PATHS, ApiRoutes } from '@/utils/constants';
   import alertMixin from '@/mixins/alertMixin';
   import NavButton from './util/NavButton.vue';
 
 
-
-
+  
+  
   export default {
     mixins: [alertMixin],
     data() {
@@ -77,10 +78,7 @@
       };
     },
     computed: {
-      ...mapState('app', ['programYearList']),
-      ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-      ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests']),
-      ...mapState('navBar', ['userProfileList']),
+      ...mapState('application', ['applicationId']),
       ...mapState('document',['pdfs']),
       isReadOnly() {
         return false;
@@ -109,9 +107,7 @@
 
     },
     methods: {
-      ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
       ...mapActions('document',['getPDFs']),
-      ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
       previous() {
         this.$router.push(PATHS.ROOT.HOME);
       },

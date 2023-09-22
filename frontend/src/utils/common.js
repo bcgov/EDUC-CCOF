@@ -50,3 +50,7 @@ export function sortByFacilityId(value) {
 export async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function isFacilityAvailable(facility) {
+  return (facility?.facilityStatus && !['Closed','Cancelled'].includes(facility?.facilityStatus));
+}
