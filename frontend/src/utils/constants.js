@@ -31,6 +31,7 @@ export const ApiRoutes = Object.freeze({
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   MESSAGE: baseRoot + '/messages',
+  APPLICATION: baseRoot + '/application',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',

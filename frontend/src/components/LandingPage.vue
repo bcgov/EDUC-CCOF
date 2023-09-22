@@ -52,6 +52,7 @@
           <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
             <p class="text-h5 blueText">Status: Incomplete</p>
             <v-btn dark class="blueButton" @click="continueApplication()">Continue Application</v-btn>
+            <v-btn  v-if="isCancelPcfButtonEnabled" dark class="redButton ml-4" @click="openDialog()">Cancel Application</v-btn>
           </div>
           <div v-else>
             <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Approved</p>
@@ -63,6 +64,34 @@
           </div>
         </template>
       </SmallCard>
+
+      <v-dialog
+        v-model="showDeleteDialog"
+        persistent
+        max-width="700px">
+        <v-card>
+          <v-container class="pt-0">
+            <v-row>
+              <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+                <v-card-title class="white--text">Cancel Application Warning</v-card-title>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="text-align: center;">
+                <p>By clicking continue, all of your application data will be deleted. You will have to re-enter all information. Please be sure about this!</p>
+                <p class="pt-4">Are you very very sure??</p>
+                <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
+                <v-btn dark color="primary" @click="deletePcf()">Continue</v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-dialog>
 
       <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.renewalYearLabel}`" :disable="!isRenewEnabled">
         <template #content>
@@ -194,6 +223,7 @@ export default {
       input: '',
       PATHS: PATHS,
       results : {},
+      showDeleteDialog: false,
       ccofNewApplicationText: [
         {
           title: 'CCOF Base Funding',
@@ -358,12 +388,22 @@ export default {
     isUpdateChangeRequestDisplayed() {
       let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
       return changeRequestStatuses?.includes("WITH_PROVIDER");
+    },
+    isCancelPcfButtonEnabled(){
+      return this.applicationStatus === "DRAFT" && this.applicationType === "NEW" && this.ccofApplicationStatus === "NEW";
     }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
+    ...mapActions('application', ['deletePcfApplication']),
     ...mapMutations('navBar', ['refreshNavBarList']),
+    closeDialog() {
+      this.showDeleteDialog = false;
+    },
+    openDialog() {
+      this.showDeleteDialog = true;
+    },
     newApplicationIntermediatePage() {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, this.programYearList.newApp.programYearId));
@@ -445,6 +485,15 @@ export default {
         console.info(error);
       }
     },
+
+    async deletePcf() {
+      try {
+        await this.deletePcfApplication();
+        location.reload(); //force a refresh because we just nuked all the data
+      } catch (error) {
+        console.info(error);
+      }
+    },
     actionRequiredOrganizationRoute() {
       if (this.unlockLicenseUpload)
         this.goToLicenseUpload();
@@ -508,6 +557,9 @@ export default {
 }
 .blueButton {
   background-color: #003366 !important;
+}
+.redButton {
+  background-color: #cc0f0f !important;
 }
 .blueText {
   color: rgb(0, 52, 102) !important;
