@@ -460,7 +460,6 @@ export default {
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
     currentFacility(){

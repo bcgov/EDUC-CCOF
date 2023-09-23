@@ -77,7 +77,6 @@ export default {
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),

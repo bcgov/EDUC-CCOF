@@ -317,7 +317,7 @@ export default {
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    ...mapState('reportChanges', ['loadedChangeRequest','userProfileChangeRequests']),
+    ...mapState('reportChanges', ['loadedChangeRequest']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     filteredNavBarList() {
       if (this.isChangeRequest) {
@@ -378,7 +378,7 @@ export default {
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     isReadOnly(question) {
       if (this.isChangeRequest) {
-        if (this.isEceweUnlocked || !this.changeRequestStatus) 
+        if (this.isEceweUnlocked || !this.changeRequestStatus)
           return (((question == 'optInECEWE') && this.optinECEWEChangeRequestReadonly)
             || ((question == 'belongsToUnion') && this.belongsToUnionChangeRequestReadonly));
         else if(this.changeRequestStatus!=='INCOMPLETE'){
