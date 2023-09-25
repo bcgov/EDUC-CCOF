@@ -93,7 +93,6 @@ export default {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {

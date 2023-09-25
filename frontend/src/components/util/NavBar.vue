@@ -119,7 +119,7 @@ export default {
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
-    ...mapState('reportChanges',['mtfiFacilities','userProfileChangeRequests','changeRequestId']),
+    ...mapState('reportChanges',['mtfiFacilities','changeRequestMap','changeRequestId']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
@@ -215,7 +215,7 @@ export default {
       let checkbox; //true will show checkmark, false will not
       let linkName;
       if (this.isChangeRequest) {
-        const currentCR = this.userProfileChangeRequests.find(item => item.changeRequestId === this.changeRequestId);
+        const currentCR = this.changeRequestMap.get(this.changeRequestId);
         checkbox = ['SUBMITTED','APPROVED'].includes(this.changeRequestStatus) && !currentCR?.unlockDeclaration;
         if(this.changeType===CHANGE_TYPES.NEW_FACILITY){
           linkName = 'Summary and Declaration New Facility';
@@ -703,20 +703,20 @@ export default {
             navBarId: navBarId++
           });
           if (item.hasRfi || item.unlockRfi) {
-              items.push(
-                {
-                  title: 'Parent Fee Increase – RFI',
-                  subTitle: item.facilityName,
-                  id: item.facilityId,
-                  link: { name: 'change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
-                  isAccessible: true,
-                  icon: this.getCheckbox(item.isRfiComplete),
-                  isActive: 'change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
-                  position: positionIndex++,
-                  navBarId: navBarId++
-                },
-              );
-            }
+            items.push(
+              {
+                title: 'Parent Fee Increase - RFI',
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
+                isAccessible: true,
+                icon: this.getCheckbox(item.isRfiComplete),
+                isActive: 'change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                position: positionIndex++,
+                navBarId: navBarId++
+              },
+            );
+          }
         });
       }
       let retval =   {

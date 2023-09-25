@@ -172,7 +172,7 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest','userProfileChangeRequests']),
+    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapState('navBar', ['changeRequestId']),

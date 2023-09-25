@@ -96,7 +96,7 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId', 'isRenewal']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList','navBarList']),
-    ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 

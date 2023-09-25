@@ -198,7 +198,7 @@ export default {
     ...mapState('application', ['isRenewal','unlockSupportingDocuments','applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
-    ...mapState('reportChanges', ['userProfileChangeRequests','loadedChangeRequest']),
+    ...mapState('reportChanges', ['loadedChangeRequest']),
     ...mapGetters('reportChanges',['isSupportingDocumentsUnlocked','changeRequestStatus', 'getChangeNotificationActionId']),
     isLocked() {
       if (this.isChangeRequest) {
@@ -332,7 +332,7 @@ export default {
       if (changeNotificationId) {
         this.dialog = true;
       }
-      
+
     },
     confirmNoSelected() {
       this.otherChanges = 'No';

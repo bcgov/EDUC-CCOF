@@ -124,7 +124,7 @@ export default {
           state.model.externalStatus = 'SUBMITTED';
           commit('model', state.model);
           dispatch('reportChanges/updateExternalStatusInChangeRequestStore', {changeRequestId: changeRequestId, newStatus: 2}, { root: true });
-          dispatch('reportChanges/updateExternalStatusInUserProfileChangeRequests', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
+          dispatch('reportChanges/updateExternalStatusInChangeRequestMap', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
           return response;
         }
         else{
