@@ -178,38 +178,38 @@
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareUnder36Months4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrLess')" :rules="rules.notRequired" label="Family Child Care (under 36 months)" />
+                    v-model.number="model.extendedChildCareUnder36Months4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrLess')" :rules="rules.required" label="Family Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrLess')" :rules="rules.notRequired" label="Family Child Care (36 months to School Age)" />
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrLess')" :rules="rules.required" label="Family Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrLess')" :rules="rules.notRequired" label="Family Child Care (School Age / School age care on School Grounds)" />
+                    v-model.number="model.extendedChildCareSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrLess')" :rules="rules.required" label="Family Child Care (School Age / School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.multiAgeCare4OrLess" @input="convertBlankNumberToNull(model,'multiAgeCare4OrLess')" :rules="rules.notRequired" label="Multi-Age Care" />
+                    v-model.number="model.multiAgeCare4OrLess" @input="convertBlankNumberToNull(model,'multiAgeCare4OrLess')" :rules="rules.required" label="Multi-Age Care" />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareUnder36Months4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrMore')" :rules="rules.notRequired" label="Family Child Care (under 36 months)" />
+                    v-model.number="model.extendedChildCareUnder36Months4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrMore')" :rules="rules.required" label="Family Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrMore')" :rules="rules.notRequired" label="Family Child Care (36 months to School Age)" />
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrMore')" :rules="rules.required" label="Family Child Care (36 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrMore')" :rules="rules.notRequired" label="Family Child Care (School Age/ School age care on School Grounds)" />
+                    v-model.number="model.extendedChildCareSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrMore')" :rules="rules.required" label="Family Child Care (School Age/ School age care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.multiAgeCare4more" @input="convertBlankNumberToNull(model,'multiAgeCare4more')" :rules="rules.notRequired" label="Multi-Age Care" />
+                    v-model.number="model.multiAgeCare4more" @input="convertBlankNumberToNull(model,'multiAgeCare4more')" :rules="rules.required" label="Multi-Age Care" />
                 </v-row>
               </v-col>
             </v-row>
