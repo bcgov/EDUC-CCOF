@@ -132,7 +132,7 @@
     <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
       <v-row no-gutters>
         <v-col class="col-12 col-md-6 ml-4 mb-4">
-          <h2>Fiscal Year: {{ this.selectedProgramYear?.name }}</h2>
+          <h2>Fiscal Year: {{ getProgramYearName }}</h2>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-between">
@@ -251,11 +251,18 @@ export default {
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
-    ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
+    ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     ...mapState('reportChanges', ['changeRequestStore']),
     facilityList() {
-      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYear?.programYearId);
+      if (this.selectedProgramYear)
+        return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYear?.programYearId);
+      return this.getFacilityListForPCFByProgramYearId(this.programYearId);
+    },
+    getProgramYearName() {
+      if (this.selectedProgramYear)
+        return this.selectedProgramYear?.name;
+      return this.programYearLabel?.slice(0,-3);
     },
     filteredFacilityList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
