@@ -106,7 +106,6 @@ export default {
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestId']),
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    ...mapState('reportChanges', ['userProfileChangeRequests']),
     ...mapGetters('reportChanges', ['changeRequestStatus']),
     isReadOnly() {
       if (this.unlockedFacilities) {

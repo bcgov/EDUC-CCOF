@@ -1,7 +1,4 @@
 import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
-import {checkSession} from '@/utils/session';
-import ApiService from '@/common/apiService';
-import {ApiRoutes} from '@/utils/constants';
 import { filterFacilityListForPCF } from '@/utils/common';
 
 function getActiveIndex(items) {
@@ -52,14 +49,54 @@ function getChangeActionDetails(state, detailsProperty, detailsKey, detailsId) {
   }
   return item;
 }
-
+function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
+  const navBarFacilities = [];
+  if (changeAction) {
+    changeAction.newFacilities?.forEach(el => {
+      const facility = userProfileList.find(f => f.facilityId === el.facilityId);
+      if (facility) {
+        navBarFacilities.push({
+          facilityId: facility.facilityId,
+          facilityName: facility.facilityName,
+          facilityAccountNumber: facility.facilityAccountNumber,
+          isFacilityComplete: facility.isFacilityComplete,
+          licenseNumber: facility.licenseNumber,
+          facilityStatus: facility.facilityStatus,
+          unlockRfi: el.unlockRfi,
+          unlockCcfri: el.unlockCcfri,
+          unlockNmf: el.unlockNmf,
+          ccfriStatus: el.ccfri?.ccfriStatus,
+          ccfriOptInStatus: el.ccfri?.ccfriOptInStatus,
+          ccfriApplicationId: el.ccfri?.ccfriApplicationId,
+          ccfriFacilityId: el.ccfri?.ccfriFacilityId,
+          isCCFRIComplete: el.ccfri?.isCCFRIComplete,
+          hasNmf: el.ccfri?.hasNmf,
+          hasRfi: el.ccfri?.hasRfi,
+          isNmfComplete: el.ccfri?.isNmfComplete,
+          isRfiComplete: el.ccfri?.isRfiComplete,
+          eceweStatus: el.ecewe?.eceweStatus,
+          eceweOptInStatus: el.ecewe?.eceweOptInStatus,
+          eceweApplicationId: el.ecewe?.eceweApplicationId,
+          eceweFacilityId: el.ecewe?.eceweFacilityId,
+          ccofBaseFundingId: el.baseFunding?.ccofBaseFundingId,
+          ccofBaseFundingStatus: el.baseFunding?.ccofBaseFundingStatus,
+          isCCOFComplete: el.baseFunding?.isCCOFComplete
+        });
+      }
+    });
+  }
+  return navBarFacilities;
+}
 function filterNavBar(state) {
   //Mitchel - Since most CRs will be making changes to existing facilities
   //only grabs facilities from specific change request when new facility CR so far
   if (state.changeType ==='nf') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
+    console.log('change action: ', changeActions);
     const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
-    state.navBarList = newFacilityChangeAction?.newFacilities;
+    const navBa = getFacilityListFromNewFacilityCR(state.userProfileList, newFacilityChangeAction);
+    console.log('nav bar list: ----', navBa);
+    state.navBarList = navBa;
   } else if (state.changeType === 'mtfi') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
     if (changeActions && changeActions.length > 0) {
@@ -80,7 +117,6 @@ export default {
     navBarItems: [], // The UI Navbar list structure shown on the left panel
     navBarList: [], // the filtered list  used by the navBar to generate the left panel
     userProfileList: [], // the full list of items loaded by user profile
-    changeRequestMap: new Map(),
     refreshNavBar: 1,  //The navbar watches this value and refreshes itself when this changes.
     canSubmit: true,
     changeRequestId: null,
@@ -90,6 +126,8 @@ export default {
     navBarGroup: '', //defines which nav bar group is opened (CCOF, CCFRI, ECEWE)
     isRenewal: false,
     applicationStatus: null,
+    changeRequestMap: new Map(), //TODO: merge these two
+
   },
   mutations: {
     setNavBarItems: (state, value) => { state.navBarItems = value; },
@@ -217,7 +255,7 @@ export default {
     },
     removeChangeRequest:(state, changeRequestId) => {
       state.changeRequestMap.delete(changeRequestId);
-    }
+    },
   },
   getters: {
     isChangeRequest: (state) => {
@@ -259,20 +297,13 @@ export default {
   },
   actions: {
     // preload change request details needed for the navBar
-    async loadChangeRequest({state, commit, dispatch}, changeRequestId) {
-      if (!state.changeRequestMap.get(changeRequestId)) {
-        checkSession();
-        try {
-          let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
-          commit('addChangeRequestToStore', {changeRequestId: changeRequestId, changeRequestModel: response});
-          let changeNotificationAction = response?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
-          if (changeNotificationAction)
-            await dispatch('reportChanges/loadChangeRequestDocs', changeNotificationAction.changeActionId, { root: true });
-        } catch(e) {
-          console.log(`Failed to get change request with error - ${e}`);
-          throw e;
-        }
+    async loadChangeRequest({commit, dispatch}, changeRequestId) {
+      let changeRequest = await dispatch('reportChanges/getChangeRequest', changeRequestId, { root: true});
+      let changeNotificationAction = changeRequest?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
+      if (changeNotificationAction) {
+        await dispatch('reportChanges/loadChangeRequestDocs', changeNotificationAction.changeActionId, { root: true });
       }
+      commit('addChangeRequestToStore', {changeRequestId: changeRequestId, changeRequestModel: changeRequest});
     },
     async reloadChangeRequest({commit, dispatch}, changeRequestId) {
       commit('removeChangeRequest', changeRequestId);
@@ -293,10 +324,11 @@ export default {
         commit('setChangeType', null);
       }
       if (to?.params?.changeRecGuid) {
+        await dispatch('loadChangeRequest', to.params.changeRecGuid);
         commit('setChangeRequestId', to.params.changeRecGuid);
       } else if (to?.params?.programYearGuid) {
-        commit('setProgramYearId', to.params.programYearGuid);
         await dispatch('application/loadApplicationFromStore', to.params.programYearGuid, { root: true });
+        commit('setProgramYearId', to.params.programYearGuid);
       } else {
         commit('clearNavBarList');
       }

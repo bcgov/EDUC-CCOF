@@ -15,7 +15,6 @@ export default {
     ...mapState('app', ['familyLicenseCategory']),
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
     ...mapState('navBar',['changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {

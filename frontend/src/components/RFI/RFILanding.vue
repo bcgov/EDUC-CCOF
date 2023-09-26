@@ -1600,7 +1600,6 @@ export default {
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
     ...mapState('navBar',['changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),

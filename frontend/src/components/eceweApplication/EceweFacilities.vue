@@ -164,7 +164,6 @@ export default {
     ...mapState('app', ['fundingModelTypeList']),
     ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);

@@ -253,7 +253,7 @@ export default {
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
-    ...mapState('reportChanges', ['userProfileChangeRequests','changeRequestStore']),
+    ...mapState('reportChanges', ['changeRequestStore']),
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYear?.programYearId);
     },

@@ -239,7 +239,7 @@ export default {
   computed: {
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId', 'programYearId']),
-    ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests', 'mtfiFacilities']),
+    ...mapState('reportChanges', ['changeRequestStore', 'mtfiFacilities']),
     ...mapState('organization', ['organizationProviderType',]),
     ...mapState('navBar', ['userProfileList']),
     isReadOnly() {
@@ -461,7 +461,7 @@ export default {
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
-      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      let currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         this.goToChangeForm(changeActionId, changeRequestId);
       } else if (currentCR?.unlockDeclaration) {
@@ -471,9 +471,9 @@ export default {
       }
     },
     newFacilityActionRequiredRoute(changeRequestId) {
-      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
-      const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
-      const newFacilityChangeAction = unlockChangeRequest.changeActions?.find(changeAction => changeAction.changeType === 'NEW_FACILITY');
+      const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      // const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      const newFacilityChangeAction = currentCR.changeActions?.find(changeAction => changeAction.changeType === 'NEW_FACILITY');
       if (currentCR?.unlockCCOF) {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId));
       } else if (currentCR?.unlockLicenseUpload) {

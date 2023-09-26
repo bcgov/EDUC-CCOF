@@ -3,7 +3,7 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings } = require('../util/mapping/Mappings');
+const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings} = require('../util/mapping/Mappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
 const { printPdf } = require('./application');
@@ -31,6 +31,30 @@ function mapChangeRequestForBack(data, changeType) {
   }
   return changeRequestForBack;
 }
+
+async function getChangeActionNewFacilitityDetails(changeActionId) {
+  if (changeActionId) {
+    try {
+      let operation = `ccof_change_request_new_facilities?$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=ccof_ccfri($select=${getMappingString(UserProfileBaseCCFRIMappings)}),ccof_ecewe($select=${getMappingString(UserProfileECEWEMappings)}),ccof_CCOF($select=${getMappingString(UserProfileBaseFundingMappings)})`;
+      let changeActionDetails = await getOperation(operation);
+      let details = changeActionDetails?.value;
+      let retVal = [];
+      details?.forEach(el => {
+        let data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();
+        data.ccfri = new MappableObjectForFront(el.ccof_ccfri, UserProfileBaseCCFRIMappings).toJSON();
+        data.ecewe = new MappableObjectForFront(el.ccof_ecewe, UserProfileECEWEMappings).toJSON();
+        data.baseFunding = new MappableObjectForFront(el.ccof_CCOF, UserProfileBaseFundingMappings).toJSON();
+        retVal.push(data);
+      });
+      return retVal;
+    } catch (e) {
+      log.error('Unable to get change action details',e);
+    }
+  } else {
+    return undefined;
+  }
+}
+
 
 // get Change Action details.  depending on the entity, we may want to get details 2 level below change action
 async function getChangeActionDetails(changeActionId, changeDetailEntity, changeDetailMapper, joiningTable, joiningTableMapping) {
@@ -72,7 +96,7 @@ async function mapChangeRequestObjectForFront(data) {
       const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
       changeAction.mtfi = mtfi;
     } else if (changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY) {
-      const newFacilities = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_new_facilities', NewFacilityMappings);
+      const newFacilities = await getChangeActionNewFacilitityDetails(changeAction.changeActionId);
       changeAction.newFacilities = newFacilities;
     }
     changeList.push(changeAction);
