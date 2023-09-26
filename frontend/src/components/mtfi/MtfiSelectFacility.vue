@@ -108,10 +108,7 @@ export default {
     },
     // CCFRI-2584 - All facilties displayed in the PCF should be shown on the MTFI Select Facility page -> same logic as filterNavBar() in navBar.js
     filteredUserProfileList() {
-      if (this.isRenewal) {
-        return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
-      }
-      return this.userProfileList.filter(el => (!el.changeRequestId || el.facilityAccountNumber) && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
+      return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
     }
   },
   async beforeMount() {

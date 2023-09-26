@@ -1,43 +1,45 @@
 <template>
-  <v-sheet
-    class="mx-auto"
-    elevation="0"
-    max-width="400"
+  <v-item-group
+    v-model="activeIndex"
+    class="text-center"
+    mandatory
   >
-    <v-slide-group
-      v-model="selectedIndex"
-      center-active
+    <v-btn
+      text x-small
+      class="px-0"
+      :class="isPrevHidden"
+      @click="previous"
     >
-      <v-slide-item
-        v-for="(programYear, index) in mappedProgramYearList"
-        :key="index"
-        v-slot="{ active }"
+      <v-icon>mdi-chevron-left</v-icon>
+    </v-btn>
+    <v-item
+      v-for="(programYear, index) in programYearSlidingWindow"
+      :key="index"
+      v-slot="{ active }"
+    >
+      <v-btn
+        text
+        class="px-2"
+        @click="selectProgramYear(programYear)"
+        :class="active ? 'selected' : ''"
       >
-        <v-card
-          class="ma-4 fiscalYearCard"
-          height="auto"
-          width="60"
-          @click="selectProgramYear(programYear, index)"
-          elevation="0"
-        >
-          <v-row
-            class="fill-height"
-            align="center"
-            justify="center"
-          >
-            <div :class="active ? 'selected' : ''">
-              {{ programYear.name }}
-            </div>
-          </v-row>
-        </v-card>
-      </v-slide-item>
-    </v-slide-group>
-  </v-sheet>
+        {{ programYear.name }}
+      </v-btn>
+    </v-item>
+    <v-btn
+      text x-small
+      class="px-0"
+      :class="isNextHidden"
+      @click="next"
+    >
+      <v-icon>mdi-chevron-right</v-icon>
+    </v-btn>
+  </v-item-group>
 </template>
 
 <script>
 
-import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
+import { mapState } from 'vuex';
 import { sortBy } from 'lodash';
 
 
@@ -45,31 +47,93 @@ export default {
   name: 'FiscalYearSlider',
   data() {
     return {
-      selectedIndex: null,
+      selectedProgramYearIndex: undefined,
+      activeIndex: undefined,
     }
   },
   created() {
-    this.selectedIndex = this.mappedProgramYearList.findIndex(item => item.status === 'CURRENT');
+    this.selectedProgramYearIndex = this.programYearList?.findIndex(item => item.status === 'CURRENT');
+    this.updateActiveIndex();
+    if (this.selectedProgramYearIndex > -1)
+      this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex]);
   },
   computed: {
-    ...mapGetters('app', ['programYearList']),
-    mappedProgramYearList() {
-      const sortedProgramYearList = sortBy(this.programYearList.list,[function(o) { return o.order; }]);
-      const mappedProgramYearList = sortedProgramYearList.map(item => {
-        return {
-          name: item.name.slice(0,-3),
-          programYearId: item.programYearId,
-          status: item.status,
-        }
+    ...mapState('application', ['applicationMap']),
+    programYearList() {
+      let programYearList = [];
+      this.applicationMap.forEach(item => {
+        programYearList.push({
+          name: item.ccofProgramYearName.slice(0,-3),
+          programYearId: item.ccofProgramYearId,
+          status: item.ccofProgramYearStatus,
+        });
       });
-      return mappedProgramYearList;
-    }
+      programYearList = sortBy(programYearList,[function(o) { return o.name; }]);
+      return programYearList;
+    },
+    programYearSlidingWindow() {
+      if (this.programYearList?.length > 3) {
+        const firstIndex = 0;
+        const lastIndex = this.programYearList?.length - 1;
+        switch (this.selectedProgramYearIndex) {
+        case firstIndex:
+          return this.programYearList?.slice(0, 3);
+        case lastIndex:
+          return this.programYearList?.slice(-3);
+        default:
+          return this.programYearList?.slice(this.selectedProgramYearIndex - 1, this.selectedProgramYearIndex + 2);
+        }
+      }
+      return this.programYearList;
+    },
+    isPrevHidden() {
+      const isHidden = (this.selectedProgramYearIndex < 1) ? 'hide' : '';
+      return isHidden;
+    },
+    isNextHidden() {
+      const isHidden = (this.selectedProgramYearIndex >= (this.programYearList?.length - 1)) ? 'hide' : '';
+      return isHidden;
+    },
   },
   methods: {
-    selectProgramYear(programYear, index) {
-      this.selectedIndex = index;
-      this.$emit('selectProgramYear', programYear.programYearId)
-    }
+    updateActiveIndex() {
+      const firstIndex = 0;
+      const lastIndex = this.programYearList?.length - 1;
+      if (this.programYearList?.length > 3) {
+        switch (this.selectedProgramYearIndex) {
+        case firstIndex:
+          this.activeIndex = 0;
+          break;
+        case lastIndex:
+          this.activeIndex = 2;
+          break;
+        default:
+          this.activeIndex = 1;
+          break;
+        }
+      } else {
+        this.activeIndex = this.selectedProgramYearIndex;
+      }
+    },
+    selectProgramYear(programYear) {
+      this.selectedProgramYearIndex = this.programYearList?.findIndex(item => item.programYearId === programYear?.programYearId);
+      this.$emit('selectProgramYear', programYear)
+      this.updateActiveIndex();
+    },
+    previous() {
+      if (this.selectedProgramYearIndex > 0) {
+        this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex - 1]);
+        this.selectedProgramYearIndex = this.selectedProgramYearIndex - 1;
+        this.updateActiveIndex();
+      }
+    },
+    next() {
+      if (this.selectedProgramYearIndex < (this.programYearList?.length - 1)) {
+        this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex + 1]);
+        this.selectedProgramYearIndex = this.selectedProgramYearIndex + 1;
+        this.updateActiveIndex();
+      }
+    },
   }
 };
 </script>
@@ -77,6 +141,9 @@ export default {
 <style scoped>
 .selected {
   font-weight: bold;
-  font-size: 105%;
+  font-size: 110%;
+}
+.hide {
+  display: none;
 }
 </style>

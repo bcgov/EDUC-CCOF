@@ -1,3 +1,5 @@
+import { filterFacilityListForPCF } from '@/utils/common';
+
 export default {
   namespaced: true,
   state: {
@@ -78,7 +80,16 @@ export default {
       });
       return applicationIds;
     },
-    latestApplicationId: (state, getters) => state.applicationMap.get(getters.latestProgramYearId)?.applicationId
+    latestApplicationId: (state, getters) => state.applicationMap.get(getters.latestProgramYearId)?.applicationId,
+    getFacilityListForPCFByProgramYearId: state => (selectedProgramYearId) => {
+      const programYearId = selectedProgramYearId ? selectedProgramYearId : state.latestProgramYearId;
+      const selectedApplication = state.applicationMap.get(programYearId);
+      const applicationStatus = selectedApplication?.applicationStatus;
+      const isRenewal = selectedApplication?.applicationType === 'RENEW';
+      let facilityList = selectedApplication?.facilityList;
+      facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
+      return facilityList;
+    },
   },
   actions: {
     async loadApplicationFromStore({ state, commit, rootState}, programYearId) {

@@ -54,3 +54,29 @@ export async function sleep(ms) {
 export function isFacilityAvailable(facility) {
   return (facility?.facilityStatus && !['Closed','Cancelled'].includes(facility?.facilityStatus));
 }
+
+// NEW PCF:
+// - APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
+// - OTHER STATUSES - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank).
+// RENEWAL:
+// - APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
+// - OTHER STATUSES - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank) and have Facility ID.
+export function filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) {
+  const filteredFacilityList = facilityList.filter(el => {
+    const isFacilityActive = el.ccofBaseFundingId || el.ccfriApplicationId || el.eceweApplicationId;
+    if (isRenewal) {
+      if (applicationStatus === 'APPROVED') {
+        return (el.facilityAccountNumber && isFacilityActive);
+      } else {
+        return (el.facilityAccountNumber && isFacilityAvailable(el));
+      }
+    } else {
+      if (applicationStatus === 'APPROVED') {
+        return (el.facilityAccountNumber && isFacilityActive);
+      } else {
+        return isFacilityAvailable(el);
+      }
+    }
+  });
+  return filteredFacilityList;
+}
