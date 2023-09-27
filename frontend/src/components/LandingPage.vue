@@ -70,7 +70,7 @@
             Current providers must renew their Funding Agreement every year. For more information, visit the government website:
           </p>
           <p>
-            <a class='text-decoration-underline' href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
+            <a class='text-decoration-underline' style="pointer-events: all;" href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
           </p>
           <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the PCF: Approved</div>
           <div v-else-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
