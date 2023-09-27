@@ -1612,6 +1612,10 @@ div.ma-1.fill-height.v-card.v-card--disabled.v-sheet.theme--light {
   text-align: left !important;
 }
 
+.v-text-field__details {
+  overflow: visible;
+}
+
 div.v-slide-group__prev.v-slide-group__prev--disabled span i  {
   caret-color: #7B7C7E !important;
   color: #7B7C7E !important;
