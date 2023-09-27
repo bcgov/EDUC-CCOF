@@ -58,7 +58,7 @@
                 <span>{{navBarList[index].facilityName}}</span>
               </v-col>
               <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                  Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
+                  Status: Opt-{{uiFacilities[index].optInOrOut == 1?'In':'Out'}}
               </v-col>
               <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
                 <v-radio-group
