@@ -238,4 +238,7 @@ export default {
 .fa-chevron-right:before {
   color: #0FC3ED !important;
 }
+.v-input__slot{
+  padding-top: 0px
+}
 </style>
