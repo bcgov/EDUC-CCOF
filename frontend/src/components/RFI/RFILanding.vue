@@ -1609,7 +1609,7 @@ export default {
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility?.unlockRfi === 1) {
+      if (this.currentFacility?.unlockRfi) {
         return false;
       }else if(this.isChangeRequest){
         if (!this.changeRequestStatus||this.currentFacility.unlockRfi){

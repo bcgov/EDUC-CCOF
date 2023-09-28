@@ -124,7 +124,7 @@ export default {
     ...mapGetters('navBar',['isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     isLocked() {
-      if (this.currentFacility.unlockRfi === 1) {
+      if (this.currentFacility.unlockRfi) {
         return false;
       } else if(this.isChangeRequest){
         if (!this.changeRequestStatus){
