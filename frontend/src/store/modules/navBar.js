@@ -107,7 +107,9 @@ function filterNavBar(state) {
     }
   // PCF
   } else {
-    state.navBarList = filterFacilityListForPCF(state.userProfileList, state.isRenewal, state.applicationStatus);
+    const applicationStatus = (state.applicationStatus === 'SUBMITTED' && state.ccofApplicationStatus === 'ACTIVE')
+                              ? 'APPROVED' : state.applicationStatus;
+    state.navBarList = filterFacilityListForPCF(state.userProfileList, state.isRenewal, applicationStatus);
   }
 }
 

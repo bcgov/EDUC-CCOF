@@ -52,13 +52,13 @@ export default {
     }
   },
   created() {
-    this.selectedProgramYearIndex = this.programYearList?.findIndex(item => item.status === 'CURRENT');
+    this.selectedProgramYearIndex = this.programYearList?.findIndex(item => item.programYearId === this.programYearId);
     this.updateActiveIndex();
     if (this.selectedProgramYearIndex > -1)
       this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex]);
   },
   computed: {
-    ...mapState('application', ['applicationMap']),
+    ...mapState('application', ['applicationMap', 'programYearId']),
     programYearList() {
       let programYearList = [];
       this.applicationMap.forEach(item => {

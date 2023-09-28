@@ -84,7 +84,8 @@ export default {
     getFacilityListForPCFByProgramYearId: state => (selectedProgramYearId) => {
       const programYearId = selectedProgramYearId ? selectedProgramYearId : state.latestProgramYearId;
       const selectedApplication = state.applicationMap.get(programYearId);
-      const applicationStatus = selectedApplication?.applicationStatus;
+      const applicationStatus = (selectedApplication?.applicationStatus === 'SUBMITTED' && selectedApplication?.ccofApplicationStatus === 'ACTIVE')
+                              ? 'APPROVED' : selectedApplication?.applicationStatus;
       const isRenewal = selectedApplication?.applicationType === 'RENEW';
       let facilityList = selectedApplication?.facilityList;
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
