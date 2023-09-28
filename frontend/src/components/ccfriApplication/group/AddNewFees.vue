@@ -206,8 +206,7 @@
           <div class="px-md-12 px-7">
             <br>
             <div>
-              <p>Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays. </a> Only indicate the date of closures where parent fees are charged.
-              </p>
+              <p> Do you charge parent fees at this facility for any closures on business days (other than designated holidays)? Only indicate the date of closures where parent fees are charged. </p>
             </div>
             <v-radio-group
               required
