@@ -25,6 +25,7 @@ const ChangeRequestMappings = [
   { back: 'ccof_ecewe_selecttheapplicablefundingmode', front: 'fundingModel' },
   { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_declaration', front: 'enabledDeclarationB' },
+
   ...UserProfileChangeRequestMappings
   // { back: 'ccof_change_request_new_facilityid', front: 'changeFacilityID'},
 ];
@@ -56,6 +57,22 @@ const MtfiMappings = [
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri'},
 ];
 
+const ChangeRequestUnlockMapping = [
+  { back: 'ccof_applicationid', front: 'applicationId' },
+  { back: 'statuscode', front: 'applicationStatus' },
+  { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
+  { back: 'ccof_applicationtype', front: 'applicationType' },
+  { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
+  { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
+  { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
+  { back: 'ccof_unlock_licence_upload', front: 'isLicenseUploadUnlocked' },
+  { back: 'ccof_unlock_supporting_document', front: 'isSupportingDocumentsUnlocked' },
+  { back: 'ccof_unlock_ccof', front: 'isCCOFUnlocked' },
+  { back: 'ccof_unlock_ecewe', front: 'isEceweUnlocked' },
+  { back: 'ccof_ccofstatus', front: 'ccofStatus' },
+  { back: 'ccof_unlock_other_changes_document', front: 'isOtherDocumentsUnlocked' },
+  { back: 'ccof_unlock_change_request', front: 'isChangeRequestUnlocked' },
+];
 
 module.exports = {
   ChangeRequestMappings,
@@ -63,6 +80,7 @@ module.exports = {
   NewFacilityMappings,
   MtfiMappings,
   UserProfileChangeRequestMappings,
+  ChangeRequestUnlockMapping,
 };
 
 // const ChangeRequestMappings = [
