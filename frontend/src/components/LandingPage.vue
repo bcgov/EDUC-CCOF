@@ -130,8 +130,13 @@
     </v-row>
 
     <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
+      <v-row no-gutters>
+        <v-col class="col-12 col-md-6 ml-4 mb-4">
+          <h2>Fiscal Year: {{ getProgramYearName }}</h2>
+        </v-col>
+      </v-row>
       <v-row no-gutters justify="space-between">
-        <v-col class="col-12 col-md-8">
+        <v-col class="col-12 col-md-8 ml-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -142,17 +147,17 @@
             label="Filter by Facility Name "
             v-model="input"
             :bind="input"
-            v-if="navBarList?.length > 2">
+            v-if="this.facilityList?.length > 2">
           </v-text-field>
         </v-col>
         <!-- LOOK BAD ON SMALL SCREEN -->
         <v-col class="col-12 col-md-3">
-          <FiscalYearSlider @selectProgramYear="selectProgramYear"></FiscalYearSlider>
+          <FiscalYearSlider @selectProgramYear="selectProgramYear" v-if="applicationIds?.length > 1"></FiscalYearSlider>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
-          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredList" :key="facilityId">
+          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredFacilityList" :key="facilityId">
           <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
               <p class="text-h5 text--primary text-center" v-if="facilityAccountNumber">Facility ID: {{facilityAccountNumber}}</p>
@@ -189,7 +194,7 @@ import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from './guiComponents/FiscalYearSlider';
-import { PATHS, pcfUrl, pcfUrlGuid } from '@/utils/constants';
+import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -215,7 +220,8 @@ export default {
         },
       ],
       CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:',
-      isLoadingComplete: false
+      isLoadingComplete: false,
+      selectedProgramYear: undefined
     };
   },
 
@@ -235,23 +241,34 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    await this.getChangeRequestList();
+    await this.getChangeRequestList(this.latestProgramYearId);
     this.isLoadingComplete = true;
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['renewalYearLabel']),
+    ...mapGetters('application', ['latestProgramYearId', 'applicationIds', 'getFacilityListForPCFByProgramYearId']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
-    ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
+    ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
     ...mapState('reportChanges', ['changeRequestStore']),
-    filteredList() {
+    facilityList() {
+      if (this.selectedProgramYear)
+        return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYear?.programYearId);
+      return this.getFacilityListForPCFByProgramYearId(this.programYearId);
+    },
+    getProgramYearName() {
+      if (this.selectedProgramYear)
+        return this.selectedProgramYear?.name;
+      return this.programYearLabel?.slice(0,-3);
+    },
+    filteredFacilityList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.navBarList;
+        return this.facilityList;
       }
-      return this.navBarList.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
+      return this.facilityList?.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     isCCFRIandECEWEComplete() {
       if (!this.navBarList) {
@@ -366,9 +383,9 @@ export default {
       return !!(this.organizationAccountNumber && this.fundingAgreementNumber);
     },
     isUpdateChangeRequestDisplayed() {
-      const index = this.changeRequestStore?.findIndex(changeRequest => changeRequest.externalStatus === 3); // 3 is Action Required
+      const index = this.changeRequestStore?.findIndex(changeRequest => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED);
       return index > -1;
-    }
+    },
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
@@ -507,8 +524,8 @@ export default {
     isRFIUnlock(ccfriApplicationId) {
       return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
     },
-    selectProgramYear(programYearId) {
-      console.log('selectProgramYear == ' + programYearId);
+    selectProgramYear(programYear) {
+      this.selectedProgramYear = programYear;
     }
   },
 

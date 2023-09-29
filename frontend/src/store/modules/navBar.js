@@ -1,5 +1,5 @@
 import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
-import { isFacilityAvailable } from '@/utils/common';
+import { filterFacilityListForPCF } from '@/utils/common';
 
 function getActiveIndex(items) {
   let foundIndex = -1;
@@ -106,28 +106,8 @@ function filterNavBar(state) {
       state.navBarList = null;
     }
   // PCF
-  // CCFRI-2682
-  // If the PCF is RENEW and NOT SUBMITTED, the PCF will display all facilities having Facility ID and facility status is NOT in (“Closed”, “Cancelled”, Blank).
-  // If the PCF is RENEW and ALREADY SUBMITTED, the PCF will display all facilities having Facility ID and active in that Submitted application.
-  // If the PCF is NEW and APPROVED, the PCF will display all facilities added from that PCF or having Facility ID.
-  // If the PCF is NEW and NOT APPROVED, the PCF will display all facilities added from that PCF.
   } else {
-    state.navBarList = state.userProfileList.filter(el => {
-      const isFacilityActive = el.ccofBaseFundingId || el.ccfriApplicationId || el.eceweApplicationId;
-      if (state.isRenewal) {
-        if (state.applicationStatus === 'DRAFT') {
-          return (el.facilityAccountNumber && isFacilityAvailable(el));
-        } else {
-          return (el.facilityAccountNumber && isFacilityActive);
-        }
-      } else {
-        if (state.applicationStatus === 'APPROVED') {
-          return ((!el.changeRequestId || el.facilityAccountNumber) && isFacilityActive);
-        } else {
-          return (!el.changeRequestId);
-        }
-      }
-    });
+    state.navBarList = filterFacilityListForPCF(state.userProfileList, state.isRenewal, state.applicationStatus);
   }
 }
 
