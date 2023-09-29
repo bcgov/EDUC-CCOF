@@ -104,7 +104,7 @@
                   <v-row>
                     <v-col>
                       <label>If you only offer care for <strong>4 days or fewer </strong> per week, enter daily parent fees.</label><br>
-                      <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If you do not charge a parent fee (e.g. if the facility is closed) enter zero.</label>
+                      <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If there is a month where you do not charge a parent fee, enter zero.</label>
                     </v-col>
                   </v-row>
                   <v-row>
