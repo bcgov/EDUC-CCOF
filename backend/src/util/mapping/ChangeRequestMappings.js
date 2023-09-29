@@ -25,6 +25,7 @@ const ChangeRequestMappings = [
   { back: 'ccof_ecewe_selecttheapplicablefundingmode', front: 'fundingModel' },
   { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_declaration', front: 'enabledDeclarationB' },
+  { back: 'ccof_indicator_unlock', front: 'isChangeRequestUnlocked' },
 
   ...UserProfileChangeRequestMappings
   // { back: 'ccof_change_request_new_facilityid', front: 'changeFacilityID'},
