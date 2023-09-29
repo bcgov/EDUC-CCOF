@@ -433,9 +433,11 @@ const ChangeRequestMappings = [
 const PdfDocumentMappings = [
   {back: 'annotationid', front: 'annotationId'},
   {back: 'filename', front: 'fileName'},
-  {back: 'subject', front: 'subject'},
+  {back: 'type', front: 'type'},
+  {back: 'submissiondate', front: 'submissionDate'},
+  {back: 'fiscalyear', front: 'fiscalYear'},
+  {back: 'id', front: 'appId'},
   {back: 'filesize', front: 'fileSize'},
-  {back: 'createdon', front: 'createDate'},
 ];
 
 module.exports = {
