@@ -272,10 +272,17 @@ export default {
           };
         });
       }
+      console.log('all change reqz');
+      console.log(allChangeRequests);
       return allChangeRequests;
     },
+    getPrevProgramYearId(){
+      return this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId ).previousYearId;
+    },
     currentChangeRequests(){
-      return this.allChangeRequests.filter(el => el.programYearId == this.programYearId);
+      return this.allChangeRequests.filter(
+        el => (el.programYearId == this.programYearId)
+        || (el.programYearId == this.getPrevProgramYearId && (el.externalStatus == "In Progress" || el.externalStatus == "Submitted"  || el.externalStatus == "Action Required" )));
     },
     pastChangeRequests(){
       return this.allChangeRequests.filter(el => el.programYearId != this.programYearId);
