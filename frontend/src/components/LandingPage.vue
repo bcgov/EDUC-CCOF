@@ -258,7 +258,7 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    await this.getChangeRequestList(this.latestProgramYearId);
+    await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },
   computed: {
