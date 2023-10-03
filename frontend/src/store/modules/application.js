@@ -1,4 +1,4 @@
-import { filterFacilityListForPCF } from '@/utils/common';
+import { filterFacilityListForPCF, checkApplicationUnlocked } from '@/utils/common';
 
 export default {
   namespaced: true,
@@ -83,11 +83,18 @@ export default {
     latestApplicationId: (state, getters) => state.applicationMap.get(getters.latestProgramYearId)?.applicationId,
     getFacilityListForPCFByProgramYearId: state => (selectedProgramYearId) => {
       const programYearId = selectedProgramYearId ? selectedProgramYearId : state.latestProgramYearId;
-      const selectedApplication = state.applicationMap.get(programYearId);
-      const applicationStatus = (selectedApplication?.applicationStatus === 'SUBMITTED' && selectedApplication?.ccofApplicationStatus === 'ACTIVE')
-                              ? 'APPROVED' : selectedApplication?.applicationStatus;
-      const isRenewal = selectedApplication?.applicationType === 'RENEW';
+      const selectedApplication = state.applicationMap?.get(programYearId);
       let facilityList = selectedApplication?.facilityList;
+
+      const isApplicationUnlocked = checkApplicationUnlocked(selectedApplication);
+      const isRenewal = selectedApplication?.applicationType === 'RENEW';
+      let applicationStatus = selectedApplication?.applicationStatus;
+      if (isApplicationUnlocked) {
+        applicationStatus = 'ACTION_REQUIRED'
+      } else if (selectedApplication?.applicationStatus === 'SUBMITTED' && selectedApplication?.ccofApplicationStatus === 'ACTIVE') {
+        applicationStatus = 'APPROVED';
+      }
+
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
       return facilityList;
     },

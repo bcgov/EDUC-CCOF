@@ -62,7 +62,7 @@
           <div v-else>
             <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
               <div v-for="item in getActionRequiredApplicationsForCCOFCard">
-                <v-btn dark class="blueButton my-2" @click="actionRequiredOrganizationRoute()">
+                <v-btn dark class="blueButton my-2" @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)">
                   Update {{ item.ccofProgramYearName?.slice(0,-3) }} PCF
                 </v-btn>
               </div>
@@ -73,7 +73,9 @@
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
             </div>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-            <router-link class='text-decoration-underline' :to="PATHS.ROOT.SUBMISSION_HISTORY">View submission history</router-link>   
+            <router-link v-if="isSubmissionHistoryDisplayed" class='text-decoration-underline' :to="PATHS.ROOT.SUBMISSION_HISTORY">
+              View submission history
+            </router-link>
           </div>
         </template>
       </SmallCard>
@@ -146,7 +148,7 @@
     <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
       <v-row no-gutters>
         <v-col class="col-12 col-md-6 ml-4 mb-4">
-          <h2>Fiscal Year: {{ getProgramYearName }}</h2>
+          <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-between">
@@ -161,17 +163,16 @@
             label="Filter by Facility Name "
             v-model="input"
             :bind="input"
-            v-if="this.facilityList?.length > 2">
+            v-if="facilityListForFacilityCards?.length > 2">
           </v-text-field>
         </v-col>
-        <!-- LOOK BAD ON SMALL SCREEN -->
         <v-col class="col-12 col-md-3">
           <FiscalYearSlider @selectProgramYear="selectProgramYear" v-if="applicationIds?.length > 1"></FiscalYearSlider>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
-          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredFacilityList" :key="facilityId">
+          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredFacilityListForFacilityCards" :key="facilityId">
           <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
               <p class="text-h5 text--primary text-center" v-if="facilityAccountNumber">Facility ID: {{facilityAccountNumber}}</p>
@@ -190,7 +191,7 @@
                 <strong v-else> {{eceweStatus}} </strong>
               </p>
             </v-card-text>
-            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(ccfriApplicationId) || isNMFUnlock(ccfriApplicationId) || isRFIUnlock(ccfriApplicationId)">
+            <v-row justify="center" no-gutters class="mb-4" v-if="isFacilityCardUnlock(ccfriApplicationId)">
               <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(ccfriApplicationId)">Update your PCF</v-btn>
             </v-row>
           </v-card>
@@ -210,6 +211,8 @@ import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from './guiComponents/FiscalYearSlider';
 import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import { checkApplicationUnlocked } from '@/utils/common';
+
 
 export default {
   name: 'LandingPage',
@@ -271,51 +274,26 @@ export default {
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());
       return applicationList?.filter(application => {
-        const isCcfriUnlocked = application.facilityList?.find(facility => facility.unlockCcfri);
-        const isRfiUnlocked = application.facilityList?.find(facility => facility.unlockRfi);
-        const isNmfUnlocked = application.facilityList?.find(facility => facility.unlockNmf);
         const isLatestRenewApplication = (application.ccofProgramYearId === this.latestProgramYearId) && (application.applicationType === 'RENEW');
-        const isApplicationUnlocked = application?.unlockBaseFunding || application?.unlockLicenseUpload || application?.unlockEcewe
-                                    || application?.unlockSupportingDocuments || application?.unlockDeclaration
-                                    || isCcfriUnlocked || isRfiUnlocked || isNmfUnlocked;
+        const isApplicationUnlocked = checkApplicationUnlocked(application);
         return (!isLatestRenewApplication && isApplicationUnlocked);
-        // return (isApplicationUnlocked);
       });
     },
-    facilityList() {
+    facilityListForFacilityCards() {
       if (this.selectedProgramYear)
         return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYear?.programYearId);
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
-    getProgramYearName() {
+    programYearNameForFacilityCards() {
       if (this.selectedProgramYear)
         return this.selectedProgramYear?.name;
       return this.programYearLabel?.slice(0,-3);
     },
-    filteredFacilityList() {
+    filteredFacilityListForFacilityCards() {
       if (this.input === '' || this.input === ' ' || this.input === null){
-        return this.facilityList;
+        return this.facilityListForFacilityCards;
       }
-      return this.facilityList?.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
-    },
-    isCCFRIandECEWEComplete() {
-      if (!this.navBarList) {
-        return false;
-      }
-      let enabled = true;
-      //TODO: uncomment out this code
-      // let navBarLength = this.navBarList?.length;
-      // for (let i = 0; i < navBarLength; i ++) {
-      //   if (this.navBarList[i].eceweStatus === 'NOT STARTED' || this.navBarList[i].ccfriStatus === 'NOT STARTED '
-      //     || this.navBarList[i].eceweStatus === 'DRAFT' || this.navBarList[i].ccfriStatus === 'DRAFT'
-      //     || this.navBarList[i].eceweStatus === 'ACTION_REQUIRED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED'
-      //     || this.navBarList[i].eceweStatus === 'SUBMITTED' || this.navBarList[i].ccfriStatus === 'ACTION_REQUIRED') {
-      //     enabled = false;
-      //     i = navBarLength;  //Can't break a foreach in javascript, so end the for loop.
-      //   }
-      // }
-      console.log('isCCFRIandECEWEComplete: ', enabled);
-      return enabled;
+      return this.facilityListForFacilityCards?.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     isWithinRenewDate() {
       let isEnabled = (this.userInfo.serverTime > this.programYearList?.renewal?.intakeStart
@@ -328,8 +306,7 @@ export default {
         if (this.applicationStatus === 'DRAFT') {
           return false;
         } else if (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') {
-          let isEnabled = this.isCCFRIandECEWEComplete
-            && this.isWithinRenewDate
+          let isEnabled = this.isWithinRenewDate
             && this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
             && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
           return isEnabled;
@@ -382,7 +359,7 @@ export default {
     },
     unlockCCFRIList() {
       let unlockList = [];
-      this.facilityList?.forEach((facility) => {
+      this.navBarList?.forEach((facility) => {
         if (facility.unlockCcfri)
           unlockList.push(facility.ccfriApplicationId);
       });
@@ -390,7 +367,7 @@ export default {
     },
     unlockNMFList() {
       let unlockList = [];
-      this.facilityList?.forEach((facility) => {
+      this.navBarList?.forEach((facility) => {
         if (facility.unlockNmf)
           unlockList.push(facility.ccfriApplicationId);
       });
@@ -398,7 +375,7 @@ export default {
     },
     unlockRFIList() {
       let unlockList = [];
-      this.facilityList?.forEach((facility) => {
+      this.navBarList?.forEach((facility) => {
         if (facility.unlockRfi)
           unlockList.push(facility.ccfriApplicationId);
       });
@@ -414,6 +391,11 @@ export default {
       const index = this.changeRequestStore?.findIndex(changeRequest => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED);
       return index > -1;
     },
+    isSubmissionHistoryDisplayed() {
+      const applicationList = Array.from(this.applicationMap?.values());
+      const index = applicationList?.findIndex(application => application.applicationStatus != 'DRAFT');
+      return (index > -1);
+    }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
@@ -443,49 +425,40 @@ export default {
     },
     continueApplication() {
       this.setIsRenewal(false);
-      console.log('continueApplication .organizationProviderType', this.organizationProviderType);
       this.$router.push(pcfUrl(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG, this.programYearId));
     },
     goToCCOFOrganizationInfo() {
       this.$router.push(pcfUrl(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG, this.programYearId));
     },
-    goToCCOFFunding(programYearId) {
-      let firstFacilityId = this.navBarList[0]?.facilityId;
-      let navBar = this.$store.getters['navBar/getNavByFacilityId'](firstFacilityId);
-      if (navBar?.ccofBaseFundingId) {
-        this.$router.push(pcfUrlGuid(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar?.ccofBaseFundingId));
+    goToCCOFFunding(programYearId, facilityList) {
+      if (facilityList?.length > 0) {
+        const ccofBaseFundingId = facilityList[0].ccofBaseFundingId;
+        if (ccofBaseFundingId && programYearId) {
+          this.$router.push(pcfUrlGuid(this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, programYearId, ccofBaseFundingId));
+        }
       }
     },
-    goToLicenseUpload(programYearId) {
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
+    goToLicenseUpload(programYearId = this.programYearId) {
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
     },
-    goToCCFRI(ccfriApplicationId, programYearId) {
-      let path = this.isRenewal? PATHS.CCFRI_CURRENT_FEES : PATHS.CCFRI_NEW_FEES;
-      if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(path, this.programYearId, ccfriApplicationId));
-      else
-        this.$router.push(pcfUrlGuid(path, this.programYearId, this.unlockCCFRIList[0]));
+    goToCCFRI(ccfriApplicationId, application) {
+      let path = application?.isRenewal ? PATHS.CCFRI_CURRENT_FEES : PATHS.CCFRI_NEW_FEES;
+      this.$router.push(pcfUrlGuid(path, application?.ccofProgramYearId, ccfriApplicationId));
     },
     goToNMF(ccfriApplicationId, programYearId) {
-      if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, ccfriApplicationId));
-      else
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.unlockNMFList[0]));
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_NMF, programYearId, ccfriApplicationId));
     },
     goToRFI(ccfriApplicationId, programYearId) {
-      if (ccfriApplicationId)
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, ccfriApplicationId));
-      else
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.unlockRFIList[0]));
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, programYearId, ccfriApplicationId));
     },
     goToECEWE(programYearId) {
-      this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
+      this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, programYearId));
     },
-    goToSupportingDocumentUpload(programYearId) {
-      this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
+    goToSupportingDocumentUpload(programYearId = this.programYearId) {
+      this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, programYearId));
     },
-    goToSummaryDeclaration(programYearId) {
-      this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, this.programYearId));
+    goToSummaryDeclaration(programYearId = this.programYearId) {
+      this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, programYearId));
     },
     viewApplication(type) {
       if (type === 'NEW') {
@@ -502,30 +475,37 @@ export default {
       }
     },
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
-      if (this.unlockLicenseUpload)
+      let application = this.applicationMap?.get(programYearId);
+      const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
+      const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
+      const unlockRFIList = this.getUnlockRFIList(facilityList);
+      const unlockNMFList = this.getUnlockNMFList(facilityList);
+      if (application?.unlockLicenseUpload)
         this.goToLicenseUpload(programYearId);
-      else if (this.unlockBaseFunding && (this.applicationType === 'NEW'))
-        this.goToCCOFFunding(programYearId);
-      else if (this.unlockEcewe)
+      else if (application?.unlockBaseFunding && (application?.applicationType === 'NEW'))
+        this.goToCCOFFunding(programYearId, facilityList);
+      else if (application?.unlockEcewe)
         this.goToECEWE(programYearId);
-      else if (this.unlockSupportingDocuments)
+      else if (application?.unlockSupportingDocuments)
         this.goToSupportingDocumentUpload(programYearId);
-      else if (this.unlockCCFRIList.length > 0 )
-        this.goToCCFRI(programYearId);
-      else if (this.unlockNMFList.length > 0 )
-        this.goToNMF(programYearId);
-      else if (this.unlockRFIList.length > 0 )
-        this.goToRFI(programYearId);
-      else if (this.unlockDeclaration)
+      else if (unlockCCFRIList?.length > 0)
+        this.goToCCFRI(unlockCCFRIList[0], application);
+      else if (unlockNMFList?.length > 0)
+        this.goToNMF(unlockNMFList[0], programYearId);
+      else if (unlockRFIList?.length > 0)
+        this.goToRFI(unlockRFIList[0], programYearId);
+      else if (application?.unlockDeclaration)
         this.goToSummaryDeclaration(programYearId);
     },
-    actionRequiredFacilityRoute(ccfriApplicationId, programYearId = this.programYearId) {
-      if (this.isCCFRIUnlock(ccfriApplicationId))
-        this.goToCCFRI(ccfriApplicationId);
-      else if (this.isNMFUnlock(ccfriApplicationId))
-        this.goToNMF(ccfriApplicationId);
-      else if (this.isRFIUnlock(ccfriApplicationId))
-        this.goToRFI(ccfriApplicationId);
+    actionRequiredFacilityRoute(ccfriApplicationId) {
+      const programYearId = this.selectedProgramYear?.programYearId ? this.selectedProgramYear?.programYearId : this.programYearId;
+      const application = this.applicationMap?.get(programYearId);
+      if (this.isCCFRIUnlock(ccfriApplicationId, application))
+        this.goToCCFRI(ccfriApplicationId, application);
+      else if (this.isNMFUnlock(ccfriApplicationId, application))
+        this.goToNMF(ccfriApplicationId, programYearId);
+      else if (this.isRFIUnlock(ccfriApplicationId, application))
+        this.goToRFI(ccfriApplicationId, programYearId);
     },
     buttonColor(isDisabled) {
       return isDisabled ? '#909090' : '#003366';
@@ -543,20 +523,56 @@ export default {
       }
       return 'col-lg-3';
     },
-    isCCFRIUnlock(ccfriApplicationId) {
-      return (this.applicationStatus === 'SUBMITTED' && this.unlockCCFRIList.includes(ccfriApplicationId));
+    isFacilityCardUnlock(ccfriApplicationId) {
+      const programYearId = this.selectedProgramYear?.programYearId ? this.selectedProgramYear?.programYearId : this.programYearId;
+      let application = this.applicationMap?.get(programYearId);
+      return (this.isCCFRIUnlock(ccfriApplicationId, application)
+            || this.isNMFUnlock(ccfriApplicationId, application)
+            || this.isRFIUnlock(ccfriApplicationId, application));
     },
-    isNMFUnlock(ccfriApplicationId) {
-      return (this.applicationStatus === 'SUBMITTED' && this.unlockNMFList.includes(ccfriApplicationId));
+    isCCFRIUnlock(ccfriApplicationId, application) {
+      const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
+      const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
+      return (application?.applicationStatus === 'SUBMITTED' && unlockCCFRIList.includes(ccfriApplicationId));
     },
-    isRFIUnlock(ccfriApplicationId) {
-      return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
+    isNMFUnlock(ccfriApplicationId, application) {
+      const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
+      const unlockNMFList = this.getUnlockNMFList(facilityList);
+      return (application?.applicationStatus === 'SUBMITTED' && unlockNMFList.includes(ccfriApplicationId));
+    },
+    isRFIUnlock(ccfriApplicationId, application) {
+      const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
+      const unlockRFIList = this.getUnlockRFIList(facilityList);
+      return (application?.applicationStatus === 'SUBMITTED' && unlockRFIList.includes(ccfriApplicationId));
+    },
+    getUnlockCCFRIList(facilityList) {
+      let unlockList = [];
+      facilityList?.forEach((facility) => {
+        if (facility.unlockCcfri)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    getUnlockNMFList(facilityList) {
+      let unlockList = [];
+      facilityList?.forEach((facility) => {
+        if (facility.unlockNmf)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    getUnlockRFIList(facilityList) {
+      let unlockList = [];
+      facilityList?.forEach((facility) => {
+        if (facility.unlockRfi)
+          unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;
-    }
+    },
   },
-
   components: { SmallCard, MessagesToolbar, FiscalYearSlider }
 };
 </script>

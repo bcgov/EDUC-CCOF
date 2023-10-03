@@ -80,3 +80,14 @@ export function filterFacilityListForPCF(facilityList, isRenewal, applicationSta
   });
   return filteredFacilityList;
 }
+
+export function checkApplicationUnlocked(application) {
+  const facilityList = application?.facilityList;
+  const isCCFRIUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockCcfri) > -1;
+  const isNMFUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockNmf) > -1;
+  const isRFIUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockRfi) > -1;
+  const isApplicationUnlocked = (application?.unlockBaseFunding && application?.applicationType === 'NEW') || application?.unlockLicenseUpload ||
+                              application?.unlockEcewe || application?.unlockSupportingDocuments || application?.unlockDeclaration ||
+                              isCCFRIUnlocked || isNMFUnlocked || isRFIUnlocked;
+  return isApplicationUnlocked;
+}
