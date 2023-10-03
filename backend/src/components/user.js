@@ -182,10 +182,6 @@ function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, 
 }
 
 function parseFacilityData(application, facilities) {
-  log.info('PARSE FACILITIES CALLED');
-  //log.info (application);
-  log.info(facilities);
-
 
   let facilityMap  = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 

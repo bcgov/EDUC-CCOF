@@ -46,19 +46,22 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     isCCOFUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockCCOF;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isCCOFUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isEceweUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockEcewe;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isEceweUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isLicenseUploadUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockLicenseUpload;
+      console.log(state.changeRequestMap.get(rootState.navBar.changeRequestId));
+      console.log(state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked);
+
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isSupportingDocumentsUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockSupportingDocuments;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isSupportingDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isDeclarationUnlocked:(state,getters,rootState) => {
@@ -66,15 +69,15 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     isChangeRequestUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockChangeRequest;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.isChangeRequestUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isOtherDocumentsUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockOtherChangesDocuments;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.isOtherDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     getChangeNotificationActionId:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeNotificationActionId;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
     }
   },
   mutations: {
@@ -155,7 +158,7 @@ export default {
     async getChangeRequestList({commit, rootGetters}, applicationIds) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
-      console.log('loading change req for: ');
+      console.log('loading change reqs for application list: ');
 
       console.log(rootGetters['application/applicationIds']);
       //console.log('loading change req for: ', rootState.application.applicationId);

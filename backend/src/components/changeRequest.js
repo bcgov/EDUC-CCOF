@@ -3,7 +3,8 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings} = require('../util/mapping/Mappings');
+const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, UserProfileApplicationMappings} = require('../util/mapping/Mappings');
+const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
 const { printPdf } = require('./application');
@@ -89,16 +90,20 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
 
 async function mapChangeRequestObjectForFront(data) {
   let retVal = new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+
   let changeList = [];
   await Promise.all(  retVal.changeActions?.map(async (el) =>  {
     let changeAction = new MappableObjectForFront(el, ChangeActionRequestMappings).toJSON();
     if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
       const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
       changeAction.mtfi = mtfi;
-    } else if (changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY) {
+    }
+    else if (changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY) {
       const newFacilities = await getChangeActionNewFacilitityDetails(changeAction.changeActionId);
       changeAction.newFacilities = newFacilities;
     }
+    let unlockVals = new MappableObjectForFront(el, ChangeRequestUnlockMapping).toJSON();
+    changeAction = {...changeAction, ...unlockVals};
     changeList.push(changeAction);
   }));
   retVal.changeActions = changeList;
@@ -110,16 +115,12 @@ async function mapChangeRequestObjectForFront(data) {
 
 // get Change Request
 async function getChangeRequest(req, res) {
-  log.info('get changeRequest called');
-
   try {
-    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon)`;
+    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon,ccof_unlock_ecewe,ccof_unlock_ccof,ccof_unlock_supporting_document,ccof_unlock_other_changes_document,ccof_unlock_change_request,ccof_unlock_licence_upload)`;
     let changeRequest = await getOperation(operation);
     changeRequest = await mapChangeRequestObjectForFront(changeRequest);
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
     changeRequest.externalStatus = getLabelFromValue(changeRequest.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
-    log.info(changeRequest);
-    log.info(CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
     return res.status(HttpStatus.OK).json(changeRequest);
   } catch (e) {
     console.log('e', e);
@@ -167,7 +168,7 @@ async function createChangeRequest(req, res) {
     else if(changeType === 'PDF_CHANGE'){
       changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
     }
-    log.info('change type', changeType);
+    //log.info('change type', changeType);
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
     let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
