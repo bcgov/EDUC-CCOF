@@ -10,7 +10,7 @@
             <v-row>
                 <v-col>
                     <div class="px-md-12 px-7">
-                        <p style="font-weight: bold;">Submit a change notificatin form to update:</p>
+                        <p style="font-weight: bold;">Submit a change notification form to update:</p>
                         <ul style="line-height: 70%">
                             <li>Capacity</li>
                             <li>Facility name</li>
