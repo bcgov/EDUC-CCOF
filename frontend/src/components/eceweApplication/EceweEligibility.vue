@@ -27,7 +27,7 @@
             </v-icon>
           </span>
           <span>
-            <strong>Note:</strong> Please read and understand the full eligibility requirements in the <u>ECE-WE Funding Guildelines</u>.  All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
+            <strong>Note:</strong> Please read and understand the full eligibility requirements in the <u>ECE-WE Funding Guidelines</u>.  All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
           </span>
         </v-alert>
       </v-row>
@@ -378,7 +378,7 @@ export default {
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     isReadOnly(question) {
       if (this.isChangeRequest) {
-        if (this.isEceweUnlocked || !this.changeRequestStatus) 
+        if (this.isEceweUnlocked || !this.changeRequestStatus)
           return (((question == 'optInECEWE') && this.optinECEWEChangeRequestReadonly)
             || ((question == 'belongsToUnion') && this.belongsToUnionChangeRequestReadonly));
         else if(this.changeRequestStatus!=='INCOMPLETE'){

@@ -11,7 +11,7 @@
           Upload Supporting Documents (for example receipts, quotes, invoices and/or budget/finance documents here:)
         </v-row>
         <v-row class="pa-6 pt-2 text-body-2">
-          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, png, pdf, docx, doc, xls,
+          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls,
           and
           xlsx.
         </v-row>
@@ -97,6 +97,7 @@ import alertMixin from '@/mixins/alertMixin';
 import rules from '@/utils/rules';
 import {deepCloneObject} from '@/utils/common';
 import {mapGetters, mapState} from 'vuex';
+import {CHANGE_TYPES } from '@/utils/constants';
 
 export default {
   mixins: [alertMixin],
@@ -120,7 +121,7 @@ export default {
   computed: {
     ...mapState('application', ['applicationStatus']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
-    ...mapState('navBar',['changeRequestId']),
+    ...mapState('navBar',['changeRequestId', 'changeType']),
     ...mapGetters('navBar',['isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     isLocked() {
@@ -247,7 +248,7 @@ export default {
         reader.readAsBinaryString(file);
         reader.onload = () => {
           const doc = {
-            filename: getFileNameWithMaxNameLength(file.name),
+            filename: this.changeType == CHANGE_TYPES.MTFI? getFileNameWithMaxNameLength(`MTFI_${file.name}`) : getFileNameWithMaxNameLength(file.name),
             filesize: file.size,
             documentbody: window.btoa(reader.result)
           };
