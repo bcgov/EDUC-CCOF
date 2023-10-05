@@ -14,7 +14,6 @@ export default {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
-    ...mapState('reportChanges', ['userProfileChangeRequests']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),

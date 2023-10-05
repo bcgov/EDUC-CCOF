@@ -1,3 +1,5 @@
+import { filterFacilityListForPCF, checkApplicationUnlocked } from '@/utils/common';
+
 export default {
   namespaced: true,
   state: {
@@ -19,6 +21,7 @@ export default {
     isLicenseUploadComplete: false,
 
     ccofConfirmationEnabled: false,
+    applicationMap: new Map(),
 
   },
   mutations: {
@@ -43,49 +46,87 @@ export default {
     setIsEceweComplete(state, value) { state.isEceweComplete = value; },
     setIsLicenseUploadComplete(state, value) { state.isLicenseUploadComplete = value; },
 
-    setFromUserInfo(state, userInfo) {
-      console.log('setFromUserInfo called: ', userInfo);
-      state.applicationId = userInfo.applicationId;
-      state.applicationStatus = userInfo.applicationStatus;
-      state.applicationType = userInfo.applicationType;
-      state.ccofApplicationStatus = userInfo.ccofApplicationStatus;
-      state.programYearId = userInfo.ccofProgramYearId;
-      state.programYearLabel = userInfo.ccofProgramYearName;
-      state.isRenewal = (userInfo.applicationType === 'RENEW');
-      state.formattedProgramYear = userInfo.ccofProgramYearName?.replace(/[^\d/]/g, '');
-
-      state.unlockBaseFunding = userInfo.unlockBaseFunding;
-      state.unlockDeclaration = userInfo.unlockDeclaration;
-      state.unlockEcewe = userInfo.unlockEcewe;
-      state.unlockLicenseUpload = userInfo.unlockLicenseUpload;
-      state.unlockSupportingDocuments = userInfo.unlockSupportingDocuments;
-
-      state.isEceweComplete = userInfo.isEceweComplete;
-      state.isLicenseUploadComplete = userInfo.isLicenseUploadComplete;
-    }
-  },
-  getters: {
-    formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, '')
-  },
-  actions: {
-    loadFromUserinfo({ commit }, userInfo) {
-      commit('setAapplicationId', userInfo.applicationId);
-      commit('setApplicationStatus', userInfo.applicationStatus);
-      commit('setApplicationType', userInfo.applicationType);
-      commit('setCcofApplicationStatus', userInfo.ccofApplicationStatus);
-      commit('setProgramYearId', userInfo.ccofProgramYearId);
-      commit('setProgramYearLabel', userInfo.ccofProgramYearName);
-      commit('setIsRenewal', (userInfo.applicationType === 'RENEW'));
-
-      commit('setUnlockBaseFunding', userInfo.unlockBaseFunding);
-      commit('setUnlockDeclaration', userInfo.unlockDeclaration);
-      commit('setUnlockEcewe', userInfo.unlockEcewe);
-      commit('setUnlockLicenseUpload', userInfo.unlockLicenseUpload);
-      commit('setUnlockSupportingDocuments', userInfo.unlockSupportingDocuments);
-
-      commit('setIsEceweComplete', userInfo.isEceweComplete);
-      commit('setIsLicenseUploadComplete', userInfo.isLicenseUploadComplete);
+    addApplicationsToMap: (state, applicationList) => {
+      const map = new Map(state.applicationMap);
+      applicationList?.forEach(el => {
+        map.set(el.ccofProgramYearId, el);
+      });
+      state.applicationMap = map;
     },
 
   },
+  getters: {
+    formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, ''),
+    latestProgramYearId: state => { //TODO: figure out async issue that happens intermittently.
+      let currentGuid;
+      let futureGuid;
+      let lastGuid;
+      state.applicationMap.forEach((value, key) => {
+        if (value.ccofProgramYearStatus === 'FUTURE') {
+          futureGuid = key;
+        }
+        if (value.ccofProgramYearStatus === 'CURRENT') {
+          currentGuid = key;
+        }
+        lastGuid = key;
+      });
+      return futureGuid ? futureGuid : currentGuid ? currentGuid : lastGuid; //TODO: add order to provider fiscal profile and then return the latest one based on the order.
+
+    },
+    applicationIds: state => {
+      const applicationIds = [];
+      state.applicationMap.forEach(value => {
+        applicationIds.push(value.applicationId);
+      });
+      return applicationIds;
+    },
+    latestApplicationId: (state, getters) => state.applicationMap.get(getters.latestProgramYearId)?.applicationId,
+    getFacilityListForPCFByProgramYearId: state => (selectedProgramYearId) => {
+      const programYearId = selectedProgramYearId ? selectedProgramYearId : state.latestProgramYearId;
+      const selectedApplication = state.applicationMap?.get(programYearId);
+      let facilityList = selectedApplication?.facilityList;
+
+      const isApplicationUnlocked = checkApplicationUnlocked(selectedApplication);
+      const isRenewal = selectedApplication?.applicationType === 'RENEW';
+      let applicationStatus = selectedApplication?.applicationStatus;
+      if (isApplicationUnlocked) {
+        applicationStatus = 'ACTION_REQUIRED'
+      } else if (selectedApplication?.applicationStatus === 'SUBMITTED' && selectedApplication?.ccofApplicationStatus === 'ACTIVE') {
+        applicationStatus = 'APPROVED';
+      }
+
+      facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
+      return facilityList;
+    },
+  },
+  actions: {
+    async loadApplicationFromStore({ state, commit, rootState}, programYearId) {
+      console.log('loadApplicationFromStore called with programYearId: ', programYearId);
+      const application = state.applicationMap.get(programYearId);
+      if (application) {
+        console.log('loadApplicationFromStore found for guid : ', application);
+        commit('setApplicationId', application.applicationId);
+        commit('setApplicationStatus', application.applicationStatus);
+        commit('setApplicationType', application.applicationType);
+        commit('setCcofApplicationStatus', application.ccofApplicationStatus);
+        commit('setProgramYearId', application.ccofProgramYearId);
+        commit('setProgramYearLabel', application.ccofProgramYearName);
+        commit('setIsRenewal', (application.applicationType === 'RENEW'));
+        commit('setUnlockBaseFunding', application.unlockBaseFunding);
+        commit('setUnlockDeclaration', application.unlockDeclaration);
+        commit('setUnlockEcewe', application.unlockEcewe);
+        commit('setUnlockLicenseUpload', application.unlockLicenseUpload);
+        commit('setUnlockSupportingDocuments', application.unlockSupportingDocuments);
+
+        commit('setIsEceweComplete', application.isEceweComplete);
+        commit('setIsLicenseUploadComplete', application.isLicenseUploadComplete);
+
+        commit('navBar/setIsRenewal', (application.applicationType === 'RENEW'), { root: true });
+
+        console.log();
+        commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(programYearId).facilityList, { root: true });
+      }
+    },
+
+  }
 };

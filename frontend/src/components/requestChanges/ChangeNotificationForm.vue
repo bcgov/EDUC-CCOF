@@ -133,9 +133,9 @@ export default {
     ...mapGetters('navBar', ['nextPath', 'previousPath']),
     ...mapState('navBar', ['changeType']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
+    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'changeRequestMap']),
     isReadOnly() {
-      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid);
+      let currentCR = this.changeRequestMap.get(this.$route.params?.changeRecGuid);
       if (currentCR && currentCR.length > 0) {
         currentCR = currentCR[0];
       }
