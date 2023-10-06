@@ -39,6 +39,9 @@ async function getChangeActionNewFacilitityDetails(changeActionId) {
       let operation = `ccof_change_request_new_facilities?$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=ccof_ccfri($select=${getMappingString(UserProfileBaseCCFRIMappings)}),ccof_ecewe($select=${getMappingString(UserProfileECEWEMappings)}),ccof_CCOF($select=${getMappingString(UserProfileBaseFundingMappings)})`;
       let changeActionDetails = await getOperation(operation);
       let details = changeActionDetails?.value;
+
+      log.info('!!!!!!!!!!');
+      log.info(details);
       let retVal = [];
       details?.forEach(el => {
         let data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();

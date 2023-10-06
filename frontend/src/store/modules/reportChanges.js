@@ -46,22 +46,19 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     isCCOFUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isCCOFUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isCCOFUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isEceweUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isEceweUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isEceweUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isLicenseUploadUnlocked:(state,getters,rootState) => {
-      console.log(state.changeRequestMap.get(rootState.navBar.changeRequestId));
-      console.log(state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked);
-
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isSupportingDocumentsUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isSupportingDocumentsUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isSupportingDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isDeclarationUnlocked:(state,getters,rootState) => {
@@ -73,11 +70,11 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     isOtherDocumentsUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.isOtherDocumentsUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.isOtherDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     getChangeNotificationActionId:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
     }
   },
   mutations: {

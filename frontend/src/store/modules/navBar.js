@@ -65,9 +65,9 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           unlockRfi: el.unlockRfi,
           unlockCcfri: el.unlockCcfri,
           unlockNmf: el.unlockNmf,
-          ccfriStatus: el.ccfri?.ccfriStatus,
-          ccfriOptInStatus: el.ccfri?.ccfriOptInStatus,
-          ccfriApplicationId: el.ccfri?.ccfriApplicationId,
+          ccfriStatus: el.ccfri?.ccfriStatus ? el.ccfri?.ccfriStatus : facility.ccfriStatus,
+          ccfriOptInStatus: el.ccfri?.ccfriOptInStatus? el.ccfri.ccfriOptInStatus : facility.ccfriOptInStatus,
+          ccfriApplicationId: el.ccfri?.ccfriApplicationId? el.ccfri?.ccfriApplicationId : facility.ccfriApplicationId,
           ccfriFacilityId: el.ccfri?.ccfriFacilityId,
           isCCFRIComplete: el.ccfri?.isCCFRIComplete,
           hasNmf: el.ccfri?.hasNmf,
@@ -85,6 +85,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
       }
     });
   }
+  console.log(navBarFacilities);
   return navBarFacilities;
 }
 function filterNavBar(state) {
