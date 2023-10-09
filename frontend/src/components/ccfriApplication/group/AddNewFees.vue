@@ -405,7 +405,7 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, CHANGE_TYPES } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
@@ -456,10 +456,10 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
-    ...mapState('navBar', ['navBarList','changeRequestId']),
+    ...mapState('navBar', ['navBarList','changeRequestId', 'changeType']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest', 'getChangeActionNewFacByFacilityId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
     currentFacility(){
@@ -606,6 +606,12 @@ export default {
         // this.processing = true;
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
+        if(this.changeType == CHANGE_TYPES.NEW_FACILITY){
+          let newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
+
+          newFac.ccfri.isCCFRIComplete =  this.isFormComplete();
+        }
+
         try {
           this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
@@ -625,6 +631,9 @@ export default {
           //window.location.reload(true);
         }
         this.processing = false;
+
+        //this.refreshNavBarList();
+        this.forceNavBarRefresh();
       }
     }
   }

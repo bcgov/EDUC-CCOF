@@ -65,9 +65,9 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           unlockRfi: el.unlockRfi,
           unlockCcfri: el.unlockCcfri,
           unlockNmf: el.unlockNmf,
-          ccfriStatus: el.ccfri?.ccfriStatus ? el.ccfri?.ccfriStatus : facility.ccfriStatus,
-          ccfriOptInStatus: el.ccfri?.ccfriOptInStatus? el.ccfri.ccfriOptInStatus : facility.ccfriOptInStatus,
-          ccfriApplicationId: el.ccfri?.ccfriApplicationId? el.ccfri?.ccfriApplicationId : facility.ccfriApplicationId,
+          ccfriStatus: el.ccfri?.ccfriStatus,
+          ccfriOptInStatus: el.ccfri?.ccfriOptInStatus,
+          ccfriApplicationId: el.ccfri?.ccfriApplicationId,
           ccfriFacilityId: el.ccfri?.ccfriFacilityId,
           isCCFRIComplete: el.ccfri?.isCCFRIComplete,
           hasNmf: el.ccfri?.hasNmf,
@@ -85,7 +85,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
       }
     });
   }
-  console.log(navBarFacilities);
+  //console.log(navBarFacilities);
   return navBarFacilities;
 }
 function filterNavBar(state) {
@@ -296,6 +296,11 @@ export default {
         return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
       }
     },
+    getChangeActionNewFacByFacilityId: (state) => (facilityId) => {
+      //this fn returns the data structure of the newFac data in the navbar. We can use this to update it on the individual pages so the navbar works
+      //correctly before refresh and reload from dynamics.
+      return state?.changeRequestMap.get(state.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities?.find(el => el.facilityId == facilityId);
+    }
 
   },
   actions: {

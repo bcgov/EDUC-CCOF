@@ -105,20 +105,19 @@ export default {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestId']),
-    ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestId']),
-    ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    ...mapGetters('reportChanges', ['changeRequestStatus']),
+    ...mapGetters('navBar', ['previousPath', 'isChangeRequest', 'getChangeActionNewFacByFacilityId']),
+    ...mapGetters('reportChanges', ['changeRequestStatus', ]),
     ...mapState('reportChanges', ['changeRequestMap',]),
     isReadOnly() {
-      console.log('read only called');
+      //console.log('read only called');
       if (this.unlockedFacilities) {
         return false;
       }
       if (this.isChangeRequest) {
-        console.log('is change req');
-        console.log(this.changeRequestStatus);
+        // console.log('is change req');
+        // console.log(this.changeRequestStatus);
         if (!this.changeRequestStatus) {
-          console.log('no status');
+          //console.log('no status');
           return false;
         }
         return (this.changeRequestStatus != 'INCOMPLETE');
@@ -217,12 +216,16 @@ export default {
 
       for (let i = 0; i < this.navBarList.length; i++) {
         //change this to only send payloads with value chosen --- don't send undefined
+        let newFac = this.getChangeActionNewFacByFacilityId(this.navBarList[i].facilityId);
         if (!ccfriOptInOrOut[i]) {
           continue;
         }
         if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
           let userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
-          if (userProfileFacility) {
+          if (newFac) {
+            newFac.ccfri.ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          }
+          else {
             userProfileFacility.ccfriOptInStatus = this.ccfriOptInOrOut[i];
           }
           payload.push({
@@ -230,7 +233,7 @@ export default {
             facilityID: this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
             ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
-            changeRequestNewFacilityId: userProfileFacility.changeRequestNewFacilityId ? userProfileFacility.changeRequestNewFacilityId : undefined,
+            changeRequestNewFacilityId: newFac?.changeRequestNewFacilityId? newFac.changeRequestNewFacilityId : undefined,
 
           });
         }
@@ -239,8 +242,6 @@ export default {
       this.refreshNavBarList();
       if (payload.length > 0) {
         try {
-          console.log('DA PAY LOAD ');
-          console.log(payload);
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
 
           console.log(response.data);
@@ -249,17 +250,14 @@ export default {
               this.userProfileList.find(facility => {
                 if (facility.facilityId == item.facilityId) {
                   facility.ccfriApplicationId = item.ccfriApplicationId;
-                }
-              });
-              this.navBarList.find(facility => {
-                console.log('da FAC');
-                console.log(facility);
-                if (facility.facilityId == item.facilityId) {
-                  facility.ccfriApplicationId = item.ccfriApplicationId;
+                  //if this is a CR new facility - update the change action data in the navBar so the navBar will always be up to date without a reload to dynamics
+                  let newFac = this.getChangeActionNewFacByFacilityId(item.facilityId);
+                  if (newFac){
+                    newFac.ccfri.ccfriApplicationId =  item.ccfriApplicationId;
+                  }
                 }
               });
 
-              //let changeActionNewFac = this.changeRequestMap.get(this.changeRequestId)?.changeActions?.newFacilities;
             }
           });
           this.refreshNavBarList();
