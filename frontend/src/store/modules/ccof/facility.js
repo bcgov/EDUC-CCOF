@@ -111,6 +111,7 @@ export default {
                 programYearId: rootState.application.programYearId,
                 changeType: 'NEW_FACILITY'
               };
+              console.log('calling create change rec new fac');
               const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
               commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });

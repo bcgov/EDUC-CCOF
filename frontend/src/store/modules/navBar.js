@@ -93,10 +93,10 @@ function filterNavBar(state) {
   //only grabs facilities from specific change request when new facility CR so far
   if (state.changeType ==='nf') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
-    console.log('change action: ', changeActions);
+    //console.log('change action: ', changeActions);
     const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     const navBa = getFacilityListFromNewFacilityCR(state.userProfileList, newFacilityChangeAction);
-    console.log('nav bar list: ----', navBa);
+    //console.log('nav bar list: ----', navBa);
     state.navBarList = navBa;
   } else if (state.changeType === 'mtfi') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
@@ -230,6 +230,33 @@ export default {
       }
     },
     addToNavBar: (state, payload) => {
+      console.log('add to navBar Called');
+      console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
+
+      //save the newly created fac data into the change request map so it can be the source of truth
+      if(payload.changeRequestId){
+        let newFacilityObj = {
+          baseFunding: payload,
+          ccfri : {},
+          changeRequestNewFacilityId : payload.changeRequestNewFacilityId,
+          ecewe: {},
+          facilityId: payload.facilityId,
+          unlockCcfri: false,
+          unlockNmf: false,
+          unlockRfi: false,
+        };
+
+        //if (!state.changeRequestMap.get(payload.changeRequestId)?.changeActions){
+          state.changeRequestMap.get(payload.changeRequestId).changeActions.push({
+            changeActionId: payload.changeActionId,
+            changeType: 100000005,
+            applicationStatus: 1,
+            newFacilities: []
+          });
+        //}
+
+        state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
+      }
       state.userProfileList.push(payload);
       filterNavBar(state);
       state.refreshNavBar++;

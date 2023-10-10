@@ -110,7 +110,8 @@ export default {
     addNewChangeRequestToMap:(state, value) => {
       const item = {
         changeRequestId: value,
-        externalStatus: 'INCOMPLETE'
+        externalStatus: 'INCOMPLETE',
+        changeActions: [],
       };
       state.changeRequestMap.set(value, item);
       state.changeRequestMap = new Map(state.changeRequestMap); // // done to trigger reactive getter
