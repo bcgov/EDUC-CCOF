@@ -128,7 +128,8 @@
       </SmallCard>
     </v-row>
 
-    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
+    <v-skeleton-loader class="mt-12" :loading="!isLoadingComplete" type="paragraph, text@3, text@3, paragraph" v-if="!isLoadingComplete"></v-skeleton-loader>
+    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-else-if="navBarList?.length > 0">
       <v-row v-if="navBarList?.length > 2" no-gutters>
         <v-col class="col-12 col-md-6 px-4 mt-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
@@ -146,27 +147,25 @@
       </v-row>
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
-          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredList" :key="facilityId">
+          v-for="facility in filteredList" :key="facility?.facilityId">
           <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
-              <p class="text-h5 text--primary text-center" v-if="facilityAccountNumber">Facility ID: {{facilityAccountNumber}}</p>
-              <p class="text-h5 text--primary text-center" v-if="facilityName">Facility Name: {{facilityName}}</p>
-              <p class="text-h5 text--primary text-center" v-if="licenseNumber">Licence Number: {{licenseNumber}}</p>
+              <p class="text-h5 text--primary text-center" v-if="facility?.facilityAccountNumber">Facility ID: {{facility?.facilityAccountNumber}}</p>
+              <p class="text-h5 text--primary text-center" v-if="facility?.facilityName">Facility Name: {{facility?.facilityName}}</p>
+              <p class="text-h5 text--primary text-center" v-if="facility?.licenseNumber">Licence Number: {{facility?.licenseNumber}}</p>
               <br>
               <p class="blueText">
                 Child Care Fee Reduction Initiative (CCFRI) Status:
-                <strong v-if="ccfriOptInStatus === 0"> OPTED OUT </strong>
-                <strong v-else> {{ccfriStatus}} </strong>
+                <strong> {{getCcfriStatusForFacilityCard(facility)}}</strong>
               </p>
               <br>
               <p class="blueText">
                 Early Childhood Educator Wage Enhancement (ECE-WE) Status:
-                <strong v-if="eceweOptInStatus === 0"> OPTED OUT </strong>
-                <strong v-else> {{eceweStatus}} </strong>
+                <strong> {{getEceweStatusForFacilityCard(facility)}}</strong>
               </p>
             </v-card-text>
-            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(ccfriApplicationId) || isNMFUnlock(ccfriApplicationId) || isRFIUnlock(ccfriApplicationId)">
-              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(ccfriApplicationId)">Update your PCF</v-btn>
+            <v-row justify="center" no-gutters class="mb-4" v-if="isCCFRIUnlock(facility?.ccfriApplicationId) || isNMFUnlock(facility?.ccfriApplicationId) || isRFIUnlock(facility?.ccfriApplicationId)">
+              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)">Update your PCF</v-btn>
             </v-row>
           </v-card>
         </v-col>
@@ -179,6 +178,7 @@
 </template>
 <script>
 
+import _ from 'lodash';
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
@@ -207,11 +207,12 @@ export default {
           body: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
         },
       ],
-      CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:'
+      CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:',
+      isLoadingComplete: false
     };
   },
 
-  created () {
+  async created () {
     this.CCOF_STATUS_NEW = 'NEW';
     this.CCOF_STATUS_COMPLETE = 'COMPLETE';
     this.CCOF_STATUS_CONTINUE = 'CONTINUE';
@@ -224,8 +225,11 @@ export default {
     this.RENEW_STATUS_APPROVED = 'APPROVED';
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
 
+    this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
+    await this.getChangeRequestList();
+    this.isLoadingComplete = true;
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
@@ -235,7 +239,7 @@ export default {
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
-    ...mapState('reportChanges', ['userProfileChangeRequests']),
+    ...mapState('reportChanges', ['userProfileChangeRequests', 'changeRequestStore']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
         return this.navBarList;
@@ -357,12 +361,23 @@ export default {
     isUpdateChangeRequestDisplayed() {
       let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
       return changeRequestStatuses?.includes("WITH_PROVIDER");
+    },
+    mtfiChangeRequestList() {
+      let result = [];
+      if (this.changeRequestStore?.length > 0) {
+        result = this.changeRequestStore.filter(changeRequest => {
+          let index = changeRequest.changeActions?.findIndex(changeAction => changeAction.changeType === 'PARENT_FEE_CHANGE');
+          return index > -1;
+        });
+      }
+      return result;
     }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     ...mapMutations('navBar', ['refreshNavBarList']),
+    ...mapActions('reportChanges', ['getChangeRequestList']),
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));
@@ -491,6 +506,43 @@ export default {
     isRFIUnlock(ccfriApplicationId) {
       return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
     },
+    getLastSubmittedMTFIChangeRequest(facilityId) {
+      let lastMTFIChangeRequest;
+      if (this.mtfiChangeRequestList?.length > 0) {
+        let mtfiChangeRequestListForFacility = this.mtfiChangeRequestList?.filter(item => {
+          if (item.firstSubmissionDate) {
+            const mtfiChangeAction = item.changeActions?.find(changeAction => (changeAction.changeType === 'PARENT_FEE_CHANGE'));
+            const index = mtfiChangeAction?.mtfiFacilities?.findIndex(fac => fac.facilityId === facilityId);
+            return (index > -1);
+          }
+          return false;
+        });
+        if (mtfiChangeRequestListForFacility?.length > 0) {
+          mtfiChangeRequestListForFacility = _.orderBy(mtfiChangeRequestListForFacility, 'firstSubmissionDate', 'desc');
+          lastMTFIChangeRequest = mtfiChangeRequestListForFacility[0];
+        }
+      }
+      return lastMTFIChangeRequest;
+    },
+    getCcfriStatusForFacilityCard(facility) {
+      if (facility?.ccfriOptInStatus === 0)
+        return 'OPTED OUT';
+      else {
+        const lastMTFIChangeRequest = this.getLastSubmittedMTFIChangeRequest(facility?.facilityId);
+        if (lastMTFIChangeRequest?.changeActions?.length > 0) {
+          const mtfiFacility = lastMTFIChangeRequest.changeActions[0].mtfiFacilities?.find(item => item.facilityId === facility?.facilityId);
+          return mtfiFacility?.ccfriStatus;
+        }
+        return facility?.ccfriStatus;
+      }
+    },
+    getEceweStatusForFacilityCard(facility) {
+      if (facility?.eceweOptInStatus === 0)
+        return 'OPTED OUT';
+      else {
+        return facility?.eceweStatus;
+      }
+    }
   },
 
   components: { SmallCard, MessagesToolbar}
