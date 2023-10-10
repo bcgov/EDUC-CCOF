@@ -507,7 +507,7 @@ export default {
       return (this.applicationStatus === 'SUBMITTED' && this.unlockRFIList.includes(ccfriApplicationId));
     },
     getLastSubmittedMTFIChangeRequest(facilityId) {
-      let lastMTFIChangeRequest = undefined;
+      let lastMTFIChangeRequest;
       if (this.mtfiChangeRequestList?.length > 0) {
         let mtfiChangeRequestListForFacility = this.mtfiChangeRequestList?.filter(item => {
           if (item.firstSubmissionDate) {
