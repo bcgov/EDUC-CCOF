@@ -75,6 +75,12 @@ export default {
     // eslint-disable-next-line no-unused-vars
     getChangeNotificationActionId:(state,getters,rootState) => {
       return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
+    },
+    isAnyChangeRequestActive:(state) => {
+      //Status of : "In Progress" "Submitted" "Action Required";
+      console.log(state.changeRequestStore.some((el) => el.status == 1 || el.status == 2 || el.status == 3));
+      return state?.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
+      //return true;
     }
   },
   mutations: {
