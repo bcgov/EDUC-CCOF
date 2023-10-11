@@ -325,7 +325,7 @@
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
-        :isSubmitDisabled="!isPageComplete() || isReadOnly  " :isProcessing="isProcessing"
+        :isSubmitDisabled="!isPageComplete() || isReadOnly || isAnyChangeRequestActive " :isProcessing="isProcessing"
         @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"

@@ -60,7 +60,7 @@ export default {
     // }
   },
   actions: {
-    async saveFacility({ state, commit, rootState }, { isChangeRequest, changeRequestId }) {
+    async saveFacility({ state, commit, rootState, dispatch }, { isChangeRequest, changeRequestId }) {
 
       checkSession();
       console.log('saveFacility- state model: ', state.facilityModel);
@@ -116,6 +116,7 @@ export default {
               commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
               commit('navBar/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
+              //await dispatch('navBar/loadChangeRequest', changeRequestId);
               commit('reportChanges/addNewChangeRequestToMap', changeRequestResponse.data?.changeRequestId, { root: true });
               changeActionId = changeRequestResponse.data?.changeActionId;
             }

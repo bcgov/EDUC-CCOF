@@ -216,10 +216,12 @@ export default {
 
       for (let i = 0; i < this.navBarList.length; i++) {
         //change this to only send payloads with value chosen --- don't send undefined
-        let newFac = this.getChangeActionNewFacByFacilityId(this.navBarList[i].facilityId);
         if (!ccfriOptInOrOut[i]) {
           continue;
         }
+
+        let newFac = this.getChangeActionNewFacByFacilityId(this.navBarList[i].facilityId);
+
         if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
           let userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
           if (newFac) {

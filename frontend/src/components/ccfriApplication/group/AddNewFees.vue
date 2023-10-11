@@ -330,8 +330,32 @@
 
                 <span class="white--text"> . </span>
                 <v-row v-if="obj.isIllegal">
-                  <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
-                </v-row>
+
+                  <v-card width="100%" class="mx-3 my-10" >
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                Invalid Dates
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-card-text>
+              It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.<br><br>
+              <br>
+
+
+            </v-card-text>
+          </v-card>
+        </v-row>
+                  <!-- <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
+                </v-row> -->
 
                 <v-divider></v-divider>
               </v-row> <!-- end v for-->
@@ -585,17 +609,21 @@ export default {
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
+      obj.isIllegal = false;
       dates.forEach(date => {
         if (this.chosenDates.includes(date)){
           console.log('bad date');
           obj.isIllegal = true;
+          return;
         }
+        //obj.isIllegal = false;
       });
+      console.log('done the loop');
 
-      //obj.isIllegal = true;
+      //obj.isIllegal = false;
     },
     hasIllegalDates(){
-      return this.CCFRIFacilityModel.dates.some(el => el.isIllegal);
+      return this.CCFRIFacilityModel?.dates?.some(el => el.isIllegal);
     },
     hasDataToDelete(){
       //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
@@ -608,24 +636,22 @@ export default {
     },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
+      this.getAllowedDates();
     },
     toRfi() {
       this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
     },
     previous() {
-      console.log(this.getAllowedDates());
-      console.log('has illegal dates?');
-      console.log(this.hasIllegalDates());
-      // if (this.isReadOnly){
-      //   this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
-      // }
-      // else if (this.isRenewal){
-      //   this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));
-      // }
-      // else{
-      //   this.$router.push(this.previousPath);
-      // }
+      if (this.isReadOnly){
+        this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
+      }
+      else if (this.isRenewal){
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));
+      }
+      else{
+        this.$router.push(this.previousPath);
+      }
 
     },
     async next() {

@@ -231,8 +231,10 @@ export default {
     },
     addToNavBar: (state, payload) => {
       console.log('add to navBar Called');
-      console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
-
+      try{
+        console.log(state.changeRequestMap.get(payload.changeRequestId));
+      // state.changeRequestMap.get(payload.changeRequestId).changeActions = [];
+      // console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
       //save the newly created fac data into the change request map so it can be the source of truth
       if(payload.changeRequestId){
         let newFacilityObj = {
@@ -246,20 +248,28 @@ export default {
           unlockRfi: false,
         };
 
-        //if (!state.changeRequestMap.get(payload.changeRequestId)?.changeActions){
+        if (!state.changeRequestMap.get(payload.changeRequestId)?.changeActions){
+          let q = [];
+          state.changeRequestMap.get(payload.changeRequestId).changeActions = q;
+          console.log(state.changeRequestMap.get(payload.changeRequestId).changeActions);
           state.changeRequestMap.get(payload.changeRequestId).changeActions.push({
             changeActionId: payload.changeActionId,
             changeType: 100000005,
             applicationStatus: 1,
             newFacilities: []
           });
-        //}
+        }
 
         state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
       }
       state.userProfileList.push(payload);
       filterNavBar(state);
       state.refreshNavBar++;
+      }
+      catch(error){
+        console.log(error);
+      }
+
     },
     deleteFromNavBar: (state, facilityId) => {
       state.userProfileList = state.userProfileList.filter(item => item.facilityId !== facilityId);
