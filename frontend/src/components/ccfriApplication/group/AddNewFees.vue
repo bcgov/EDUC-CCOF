@@ -229,9 +229,9 @@
             <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
 
 
-              <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
+              <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color='#003366'>
 
-                <v-col class="col-md-1 col-12 mx-0">
+                <v-col color='#003366' class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
                     large
@@ -246,11 +246,18 @@
                 <v-col class="col-md-3 col-12">
                   <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field  :disabled="isReadOnly" outlined :rules="rules" v-model="obj.formattedStartDate"  label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field  :disabled="isReadOnly"
+                    outlined
+                    :rules="rules"
+                     v-model="obj.formattedStartDate"
+                      label="Select Start Date (YYYY-MM-DD)"
+                      readonly v-bind="attrs"
+                       v-on="on">
+
                     </v-text-field>
                   </template>
                     <v-date-picker
-
+                      :allowed-dates="allowedDates"
                       clearable
                       v-model="obj.formattedStartDate"
                       @input="obj.calendarMenu1 = false">
@@ -280,6 +287,8 @@
                       :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate"
                       @input="obj.calendarMenu2 = false"
+                      :allowed-dates="allowedDates"
+                      @click:date="isDateLegal(obj)"
 
                       >
 
@@ -295,6 +304,7 @@
                     outlined
                     clearable
                     :rules="rules"
+                    color="red"
                   ></v-text-field>
                 </v-col>
 
@@ -319,6 +329,10 @@
                 </v-col>
 
                 <span class="white--text"> . </span>
+                <v-row v-if="obj.isIllegal">
+                  <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
+                </v-row>
+
                 <v-divider></v-divider>
               </v-row> <!-- end v for-->
               <br><br>
@@ -368,7 +382,7 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly || hasIllegalDates()" :isNextDisabled="loading || !isFormComplete() || this.hasIllegalDates()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -434,6 +448,7 @@ export default {
       processing: false,
       facilityProgramYears: [],
       isValidForm : false,
+      chosenDates: [],
 
       feeRules: [
         (v) => !isNaN(parseFloat(v))  || 'Must be a number',
@@ -442,6 +457,9 @@ export default {
       ],
 
       rules: [
+        (v) => !!v  || 'Required.',
+      ],
+      calenderRules: [
         (v) => !!v  || 'Required.',
       ],
       dateRules: [
@@ -520,7 +538,64 @@ export default {
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
+      this.getAllowedDates();
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
+    },
+    allowedDates(val){
+
+      //console.log (this.allowedDates());
+      let chosenDates = ["2023-10-01", "2023-10-10", "2023-10-11"];
+
+      return !this.chosenDates.includes(val);
+    },
+    getAllowedDates(){
+      console.log((this.CCFRIFacilityModel.dates));
+      this.chosenDates = [];
+      this.CCFRIFacilityModel.dates.forEach(dateObj => {
+        const startDate = new Date(dateObj.formattedStartDate);
+        const endDate = new Date (dateObj.formattedEndDate);
+
+        let currentDate = new Date(startDate.getTime());
+
+        while (currentDate <= endDate) {
+          console.log();
+          this.chosenDates.push(currentDate.toISOString().substring(0,10));
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+
+        //return dates;
+      });
+
+      console.log(this.chosenDates);
+    },
+    isDateLegal(obj){
+      console.log('clicked');
+
+      const startDate = new Date(obj.formattedStartDate);
+      const endDate = new Date (obj.formattedEndDate);
+
+      let dates = [];
+
+      let currentDate = new Date(startDate.getTime());
+
+      while (currentDate <= endDate) {
+        console.log();
+        dates.push(currentDate.toISOString().substring(0,10));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      dates.forEach(date => {
+        if (this.chosenDates.includes(date)){
+          console.log('bad date');
+          obj.isIllegal = true;
+        }
+      });
+
+      //obj.isIllegal = true;
+    },
+    hasIllegalDates(){
+      return this.CCFRIFacilityModel.dates.some(el => el.isIllegal);
     },
     hasDataToDelete(){
       //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
@@ -539,15 +614,18 @@ export default {
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
     },
     previous() {
-      if (this.isReadOnly){
-        this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
-      }
-      else if (this.isRenewal){
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));
-      }
-      else{
-        this.$router.push(this.previousPath);
-      }
+      console.log(this.getAllowedDates());
+      console.log('has illegal dates?');
+      console.log(this.hasIllegalDates());
+      // if (this.isReadOnly){
+      //   this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
+      // }
+      // else if (this.isRenewal){
+      //   this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));
+      // }
+      // else{
+      //   this.$router.push(this.previousPath);
+      // }
 
     },
     async next() {
