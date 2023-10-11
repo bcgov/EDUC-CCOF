@@ -122,7 +122,7 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                      :ecewe-facility="facility.ecewe"
+                                      :eceweFacility="facility.ecewe"
                                       :isProcessing="isProcessing"
                                       :changeRecGuid="facility.changeRequestId"
                                       :programYearId="summaryModel?.application?.programYearId"
@@ -130,14 +130,15 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <UploadedDocumentsSummary @isSummaryValid="isFormComplete"
-                                                  :documents="facility.documents"></UploadedDocumentsSummary>
+                                                  :documents="facility.documents"
+                                                  :programYearId="summaryModel?.application?.programYearId"></UploadedDocumentsSummary>
                       </v-expansion-panel>
                     </div>
                 </div>
                 <div v-if="!this.isRenewal" class="mt-10">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                :ecewe-facility="null" :isProcessing="isProcessing"
+                                :eceweFacility="null" :isProcessing="isProcessing"
                                 :programYearId="summaryModel?.application?.programYearId"
                                 ></ECEWESummary>
                 </v-expansion-panel>
