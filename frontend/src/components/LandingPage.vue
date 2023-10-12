@@ -228,7 +228,8 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    await this.getChangeRequestList();
+    if (this.applicationId)
+      await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },
   computed: {
@@ -238,7 +239,7 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'ccofApplicationStatus', 'unlockBaseFunding',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationId']),
     ...mapState('reportChanges', ['userProfileChangeRequests', 'changeRequestStore']),
     filteredList() {
       if (this.input === '' || this.input === ' ' || this.input === null){
