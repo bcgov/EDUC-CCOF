@@ -778,6 +778,30 @@ async function getChangeRequest(req, res){
 
 }
 
+async function deletePcfApplication(req, res){
+  try {
+    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
+    let application = await getOperation(operation);
+
+    //loop thru to grab facility ID's and delete all of them
+    await Promise.all(application['ccof_application_basefunding_Application'].map(async (facility) => {
+      await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
+      //log.info(response);
+    }));
+
+    //delete the application
+    await deleteOperationWithObjectId('ccof_applications', req.params.applicationId);
+
+    //and delete the org. We must delete the org otherwise the user will be linked to multiple orgs in dynamics
+    await deleteOperationWithObjectId('accounts', application['_ccof_organization_value']);
+
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error('An error occurred while deleting PCF', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -792,5 +816,6 @@ module.exports = {
   getChangeRequest,
   patchCCFRIApplication,
   deleteCCFRIApplication,
-  printPdf
+  printPdf,
+  deletePcfApplication
 };

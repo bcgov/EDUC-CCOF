@@ -57,6 +57,7 @@
             <p class="text-h5 blueText">Status: Incomplete</p>
             <v-btn dark class="blueButton" @click="continueApplication()">Continue Application</v-btn>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+            <v-btn  v-if="isCancelPcfButtonEnabled" dark class="redButton ml-4" @click="openDialog()">Cancel Application</v-btn>
           </div>
 
           <div v-else>
@@ -79,6 +80,34 @@
           </div>
         </template>
       </SmallCard>
+
+      <v-dialog
+        v-model="showDeleteDialog"
+        persistent
+        max-width="700px">
+        <v-card>
+          <v-container class="pt-0">
+            <v-row>
+              <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+                <v-card-title class="white--text">Cancel Application Warning</v-card-title>
+              </v-col>
+              <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" style="text-align: center;">
+                <p>By clicking continue, all of your application data will be deleted. You will have to re-enter all information. Please be sure about this!</p>
+                <p class="pt-4">Are you very very sure??</p>
+                <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
+                <v-btn dark color="primary" @click="deletePcf()">Continue</v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-dialog>
 
       <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.renewalYearLabel}`" :disable="!isRenewEnabled">
         <template #content>
@@ -222,6 +251,7 @@ export default {
       input: '',
       PATHS: PATHS,
       results : {},
+      showDeleteDialog: false,
       ccofNewApplicationText: [
         {
           title: 'CCOF Base Funding',
@@ -395,13 +425,25 @@ export default {
       const applicationList = Array.from(this.applicationMap?.values());
       const index = applicationList?.findIndex(application => application.applicationStatus != 'DRAFT');
       return (index > -1);
+      let changeRequestStatuses = this.userProfileChangeRequests?.map(changeRequest => changeRequest.status);
+      return changeRequestStatuses?.includes("WITH_PROVIDER");
+    },
+    isCancelPcfButtonEnabled(){
+      return this.applicationStatus === "DRAFT" && this.applicationType === "NEW" && this.ccofApplicationStatus === "NEW";
     }
   },
   methods: {
     ...mapMutations('app', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
+    ...mapActions('application', ['deletePcfApplication']),
     ...mapMutations('navBar', ['refreshNavBarList']),
     ...mapActions('reportChanges', ['getChangeRequestList']),
+    closeDialog() {
+      this.showDeleteDialog = false;
+    },
+    openDialog() {
+      this.showDeleteDialog = true;
+    },
     newApplicationIntermediatePage() {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, this.programYearList.newApp.programYearId));
@@ -474,28 +516,32 @@ export default {
         console.info(error);
       }
     },
-    actionRequiredOrganizationRoute(programYearId = this.programYearId) {
-      let application = this.applicationMap?.get(programYearId);
-      const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
-      const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
-      const unlockRFIList = this.getUnlockRFIList(facilityList);
-      const unlockNMFList = this.getUnlockNMFList(facilityList);
-      if (application?.unlockLicenseUpload)
-        this.goToLicenseUpload(programYearId);
-      else if (application?.unlockBaseFunding && (application?.applicationType === 'NEW'))
-        this.goToCCOFFunding(programYearId, facilityList);
-      else if (application?.unlockEcewe)
-        this.goToECEWE(programYearId);
-      else if (application?.unlockSupportingDocuments)
-        this.goToSupportingDocumentUpload(programYearId);
-      else if (unlockCCFRIList?.length > 0)
-        this.goToCCFRI(unlockCCFRIList[0], application);
-      else if (unlockNMFList?.length > 0)
-        this.goToNMF(unlockNMFList[0], programYearId);
-      else if (unlockRFIList?.length > 0)
-        this.goToRFI(unlockRFIList[0], programYearId);
-      else if (application?.unlockDeclaration)
-        this.goToSummaryDeclaration(programYearId);
+
+    async deletePcf() {
+      try {
+        await this.deletePcfApplication();
+        location.reload(); //force a refresh because we just nuked all the data
+      } catch (error) {
+        console.info(error);
+      }
+    },
+    actionRequiredOrganizationRoute() {
+      if (this.unlockLicenseUpload)
+        this.goToLicenseUpload();
+      else if (this.unlockBaseFunding && (this.applicationType === 'NEW'))
+        this.goToCCOFFunding();
+      else if (this.unlockEcewe)
+        this.goToECEWE();
+      else if (this.unlockSupportingDocuments)
+        this.goToSupportingDocumentUpload();
+      else if (this.unlockCCFRIList.length > 0 )
+        this.goToCCFRI();
+      else if (this.unlockNMFList.length > 0 )
+        this.goToNMF();
+      else if (this.unlockRFIList.length > 0 )
+        this.goToRFI();
+      else if (this.unlockDeclaration)
+        this.goToSummaryDeclaration();
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
       const programYearId = this.selectedProgramYear?.programYearId ? this.selectedProgramYear?.programYearId : this.programYearId;
@@ -583,6 +629,9 @@ export default {
 }
 .blueButton {
   background-color: #003366 !important;
+}
+.redButton {
+  background-color: #cc0f0f !important;
 }
 .blueText {
   color: rgb(0, 52, 102) !important;
