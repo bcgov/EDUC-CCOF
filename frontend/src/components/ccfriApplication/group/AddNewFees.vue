@@ -450,6 +450,24 @@ import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
 
+function dateFunction (date1, date2){
+
+  const startDate = new Date(date1);
+  const endDate = new Date (date2);
+
+  let dates = [];
+
+  let currentDate = new Date(startDate.getTime());
+
+  while (currentDate <= endDate) {
+    console.log();
+    dates.push(currentDate.toISOString().substring(0,10));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return dates;
+}
+
 export default {
   components: { NavButton },
   mixins: [alertMixin, globalMixin],
@@ -562,65 +580,28 @@ export default {
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
-      this.getAllowedDates();
+      this.updateChosenDates();
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
     },
     allowedDates(val){
-
-      //console.log (this.allowedDates());
-      let chosenDates = ["2023-10-01", "2023-10-10", "2023-10-11"];
-
       return !this.chosenDates.includes(val);
     },
-    getAllowedDates(){
-      console.log((this.CCFRIFacilityModel.dates));
+    updateChosenDates(){
       this.chosenDates = [];
       this.CCFRIFacilityModel.dates.forEach(dateObj => {
-        const startDate = new Date(dateObj.formattedStartDate);
-        const endDate = new Date (dateObj.formattedEndDate);
-
-        let currentDate = new Date(startDate.getTime());
-
-        while (currentDate <= endDate) {
-          console.log();
-          this.chosenDates.push(currentDate.toISOString().substring(0,10));
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-
-        //return dates;
+        this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
       });
-
-      console.log(this.chosenDates);
     },
     isDateLegal(obj){
-      console.log('clicked');
-
-      const startDate = new Date(obj.formattedStartDate);
-      const endDate = new Date (obj.formattedEndDate);
-
-      let dates = [];
-
-      let currentDate = new Date(startDate.getTime());
-
-      while (currentDate <= endDate) {
-        console.log();
-        dates.push(currentDate.toISOString().substring(0,10));
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
+      let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
       obj.isIllegal = false;
+
       dates.forEach(date => {
         if (this.chosenDates.includes(date)){
-          console.log('bad date');
           obj.isIllegal = true;
           return;
         }
-        //obj.isIllegal = false;
       });
-      console.log('done the loop');
-
-      //obj.isIllegal = false;
     },
     hasIllegalDates(){
       return this.CCFRIFacilityModel?.dates?.some(el => el.isIllegal);
@@ -636,7 +617,7 @@ export default {
     },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
-      this.getAllowedDates();
+      this.updateChosenDates();
     },
     toRfi() {
       this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
