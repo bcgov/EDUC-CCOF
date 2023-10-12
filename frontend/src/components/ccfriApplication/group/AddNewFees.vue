@@ -104,7 +104,7 @@
                   <v-row>
                     <v-col>
                       <label>If you only offer care for <strong>4 days or fewer </strong> per week, enter daily parent fees.</label><br>
-                      <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If you do not charge a parent fee (e.g. if the facility is closed) enter zero.</label>
+                      <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If there is a month where you do not charge a parent fee, enter zero.</label>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -206,8 +206,7 @@
           <div class="px-md-12 px-7">
             <br>
             <div>
-              <p>Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays. </a> Only indicate the date of closures where parent fees are charged.
-              </p>
+              <p> Do you charge parent fees at this facility for any closures on business days (other than designated holidays)? Only indicate the date of closures where parent fees are charged. </p>
             </div>
             <v-radio-group
               required
@@ -405,7 +404,7 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl} from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
@@ -541,6 +540,9 @@ export default {
     previous() {
       if (this.isReadOnly){
         this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
+      }
+      else if(this.isChangeRequest){
+        this.$router.push(changeUrl(PATHS.CCFRI_HOME, this.changeRequestId));
       }
       else if (this.isRenewal){
         this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));

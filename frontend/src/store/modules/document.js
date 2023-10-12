@@ -39,14 +39,11 @@ export default {
       const documents = getters.unsubmittedDocuments.filter(document => document.documentID !== documentID);
       commit('setUnsubmittedDocuments', documents);
     },
-    async getPDFs({commit}, applicationId) {
-      console.log('trying to get pdfs for ', applicationId);
+    async getPDFs({commit}, organizationId) {
       checkSession();
       try {
-        let response = (await ApiService.apiAxios.get(ApiRoutes.PDFS + '/' + applicationId))?.data;
-        console.log('THIS IS PDFs RESPONSE = ');
-        console.log(response);
-        commit('setPDFs',response);
+        let response = await ApiService.apiAxios.get(ApiRoutes.PDFS + '/' + organizationId);
+        commit('setPDFs',response?.data);
         return response;
       } catch(e) {
         console.log(`Failed to get pdfs with error - ${e}`);

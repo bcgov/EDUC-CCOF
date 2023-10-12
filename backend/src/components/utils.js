@@ -237,6 +237,18 @@ async function postChangeRequestSummaryDocument(payload) {
   }
 }
 
+async function getSubmissionPDFHistory(organizationId){
+  try {
+    const url = config.get('dynamicsApi:apiEndpoint') + '/api/SubmissionPDFHistory?OrgId=' + organizationId;
+    log.info('get Data Url', url);
+    const response = await axios.get(url, getHttpHeader());
+    return response.data;
+  } catch (e) {
+    log.error(' getSubmissionPDFHistory Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+  }
+}
+
 async function getDocument(annotationId){
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationId=' + annotationId;
@@ -397,6 +409,7 @@ const utils = {
   postChangeActionDocument,
   updateChangeRequestNewFacility,
   postChangeRequestSummaryDocument,
+  getSubmissionPDFHistory
 };
 
 module.exports = utils;

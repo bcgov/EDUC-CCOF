@@ -16,7 +16,8 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   APPLICATION_STATUS_CODES,
   CCOF_STATUS_CODES,
-  CHANGE_REQUEST_TYPES
+  CHANGE_REQUEST_TYPES,
+  CCFRI_STATUS_CODES
 } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -25,6 +26,7 @@ const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
+  UserProfileBaseCCFRIMappings,
   UserProfileCCFRIMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
@@ -38,6 +40,7 @@ const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
 const puppeteer = require('puppeteer');
 const {compress} = require('compress-pdf');
+const { getChangeActionDetails }  = require('./changeRequest');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -696,13 +699,11 @@ async function getFacilityChangeData(changeActionId){
 }
 
 async function getMTFIChangeData(changeActionId) {
-  let mappedData = [];
-  let operation = `ccof_change_request_mtfis?$filter=_ccof_change_action_value eq ${changeActionId}`;
-  let response = await getOperation(operation);
-  response?.value.forEach(fac => {
-    mappedData.push( new MappableObjectForFront(fac, MtfiMappings).toJSON());
+  let mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
+  mtfi?.forEach(item => {
+    item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
   });
-  return mappedData;
+  return mtfi;
 }
 //and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
 async function getChangeRequestsFromApplicationId(applicationIds){

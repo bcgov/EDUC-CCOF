@@ -145,7 +145,8 @@
       </SmallCard>
     </v-row>
 
-    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-if="navBarList?.length > 0">
+    <v-skeleton-loader class="mt-12" :loading="!isLoadingComplete" type="paragraph, text@3, text@3, paragraph" v-if="!isLoadingComplete"></v-skeleton-loader>
+    <v-card class="rounded-lg elevation-0 pa-4 mt-8" outlined v-else-if="navBarList?.length > 0">
       <v-row no-gutters>
         <v-col class="col-12 col-md-6 ml-4 mb-4">
           <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
@@ -172,27 +173,25 @@
       </v-row>
       <v-row no-gutters justify="space-around">
         <v-col class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
-          v-for="({facilityName, facilityId, ccfriApplicationId, ccfriStatus, eceweStatus, ccfriOptInStatus, eceweOptInStatus, facilityAccountNumber, licenseNumber}) in filteredFacilityListForFacilityCards" :key="facilityId">
+          v-for="facility in filteredFacilityListForFacilityCards" :key="facility?.facilityId">
           <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
-              <p class="text-h5 text--primary text-center" v-if="facilityAccountNumber">Facility ID: {{facilityAccountNumber}}</p>
-              <p class="text-h5 text--primary text-center" v-if="facilityName">Facility Name: {{facilityName}}</p>
-              <p class="text-h5 text--primary text-center" v-if="licenseNumber">Licence Number: {{licenseNumber}}</p>
+              <p class="text-h5 text--primary text-center" v-if="facility?.facilityAccountNumber">Facility ID: {{facility?.facilityAccountNumber}}</p>
+              <p class="text-h5 text--primary text-center" v-if="facility?.facilityName">Facility Name: {{facility?.facilityName}}</p>
+              <p class="text-h5 text--primary text-center" v-if="facility?.licenseNumber">Licence Number: {{facility?.licenseNumber}}</p>
               <br>
               <p class="blueText">
                 Child Care Fee Reduction Initiative (CCFRI) Status:
-                <strong v-if="ccfriOptInStatus === 0"> OPTED OUT </strong>
-                <strong v-else> {{ccfriStatus}} </strong>
+                <strong> {{getCcfriStatusForFacilityCard(facility)}}</strong>
               </p>
               <br>
               <p class="blueText">
                 Early Childhood Educator Wage Enhancement (ECE-WE) Status:
-                <strong v-if="eceweOptInStatus === 0"> OPTED OUT </strong>
-                <strong v-else> {{eceweStatus}} </strong>
+                <strong> {{getEceweStatusForFacilityCard(facility)}}</strong>
               </p>
             </v-card-text>
-            <v-row justify="center" no-gutters class="mb-4" v-if="isFacilityCardUnlock(ccfriApplicationId)">
-              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(ccfriApplicationId)">Update your PCF</v-btn>
+            <v-row justify="center" no-gutters class="mb-4" v-if="isFacilityCardUnlock(facility?.ccfriApplicationId)">
+              <v-btn class="blueButton" dark width="80%" align="center" @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)">Update your PCF</v-btn>
             </v-row>
           </v-card>
         </v-col>
@@ -205,6 +204,7 @@
 </template>
 <script>
 
+import _ from 'lodash';
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
@@ -395,6 +395,16 @@ export default {
       const applicationList = Array.from(this.applicationMap?.values());
       const index = applicationList?.findIndex(application => application.applicationStatus != 'DRAFT');
       return (index > -1);
+    },
+    mtfiChangeRequestList() {
+      let result = [];
+      if (this.changeRequestStore?.length > 0) {
+        result = this.changeRequestStore.filter(changeRequest => {
+          let index = changeRequest.changeActions?.findIndex(changeAction => changeAction.changeType === 'PARENT_FEE_CHANGE');
+          return index > -1;
+        });
+      }
+      return result;
     }
   },
   methods: {
@@ -572,6 +582,43 @@ export default {
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;
     },
+    getLastSubmittedMTFIChangeRequest(facilityId) {
+      let lastMTFIChangeRequest;
+      if (this.mtfiChangeRequestList?.length > 0) {
+        let mtfiChangeRequestListForFacility = this.mtfiChangeRequestList?.filter(item => {
+          if (item.firstSubmissionDate) {
+            const mtfiChangeAction = item.changeActions?.find(changeAction => (changeAction.changeType === 'PARENT_FEE_CHANGE'));
+            const index = mtfiChangeAction?.mtfiFacilities?.findIndex(fac => fac.facilityId === facilityId);
+            return (index > -1);
+          }
+          return false;
+        });
+        if (mtfiChangeRequestListForFacility?.length > 0) {
+          mtfiChangeRequestListForFacility = _.orderBy(mtfiChangeRequestListForFacility, 'firstSubmissionDate', 'desc');
+          lastMTFIChangeRequest = mtfiChangeRequestListForFacility[0];
+        }
+      }
+      return lastMTFIChangeRequest;
+    },
+    getCcfriStatusForFacilityCard(facility) {
+      if (facility?.ccfriOptInStatus === 0)
+        return 'OPTED OUT';
+      else {
+        const lastMTFIChangeRequest = this.getLastSubmittedMTFIChangeRequest(facility?.facilityId);
+        if (lastMTFIChangeRequest?.changeActions?.length > 0) {
+          const mtfiFacility = lastMTFIChangeRequest.changeActions[0].mtfiFacilities?.find(item => item.facilityId === facility?.facilityId);
+          return mtfiFacility?.ccfriStatus;
+        }
+        return facility?.ccfriStatus;
+      }
+    },
+    getEceweStatusForFacilityCard(facility) {
+      if (facility?.eceweOptInStatus === 0)
+        return 'OPTED OUT';
+      else {
+        return facility?.eceweStatus;
+      }
+    }
   },
   components: { SmallCard, MessagesToolbar, FiscalYearSlider }
 };
