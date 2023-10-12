@@ -327,6 +327,22 @@ export default {
         }
       }
     },
+    async getClosureDates({commit, state}, ccfriId) {
+      // const prevFees = state.previousFeeStore[facilityId];
+      // if (prevFees) {
+      //   return prevFees;
+      // } else {
+      try {
+        console.log(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
+        //commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
+        return response.data;
+      } catch(e) {
+        console.log(`Failed to get existing Facility with error - ${e}`);
+        throw e;
+      }
+      //}
+    },
     async decorateWithCareTypes({commit, dispatch, state, rootState}, facilityId) {
       const  ccofProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
