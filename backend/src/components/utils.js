@@ -347,7 +347,7 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
       let retVal = [];
       details?.forEach(el => {
         let data = new MappableObjectForFront(el, changeDetailMapper).toJSON();
-        let joinData = undefined;
+        let joinData;
         if (joiningTable) {
           joinData = new MappableObjectForFront(el[joiningTable], joiningTableMapping).toJSON();
         }
