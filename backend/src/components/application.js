@@ -10,6 +10,7 @@ const {
   updateChangeRequestNewFacility,
   postApplicationSummaryDocument,
   postChangeRequestSummaryDocument,
+  getChangeActionDetails
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
@@ -40,7 +41,6 @@ const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
 const puppeteer = require('puppeteer');
 const {compress} = require('compress-pdf');
-const { getChangeActionDetails }  = require('./changeRequest');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 

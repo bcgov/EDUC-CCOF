@@ -360,6 +360,5 @@ module.exports = {
   updateChangeRequestMTFI,
   deleteChangeAction,
   getChangeRequestMTFIByCcfriId,
-  deleteChangeRequestMTFI,
-  getChangeActionDetails
+  deleteChangeRequestMTFI
 };
