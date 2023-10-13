@@ -410,6 +410,7 @@ import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
+import ApiService from '@/common/apiService';
 
 export default {
   components: { NavButton },
@@ -535,9 +536,18 @@ export default {
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
-    toRfi() {
-      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
-      this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
+    async toRfi() {
+      try {
+        this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
+        if (this.currentFacility?.unlockCcfri) {
+          this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'unlockRfi', value: true});
+          await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, {'unlockRfi': 1});
+        }
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occured while navigating to RFI.');
+      }
     },
     previous() {
       if (this.isReadOnly){
