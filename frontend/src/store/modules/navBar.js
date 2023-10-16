@@ -91,12 +91,14 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
 function filterNavBar(state) {
   //Mitchel - Since most CRs will be making changes to existing facilities
   //only grabs facilities from specific change request when new facility CR so far
+
+  console.log(state.changeRequestMap);
   if (state.changeType ==='nf') {
-    const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
-    //console.log('change action: ', changeActions);
-    const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    const newFacilityChangeAction = state.changeRequestMap.get(state.changeRequestId)?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    console.log('change action: ', newFacilityChangeAction);
+    //const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     const navBa = getFacilityListFromNewFacilityCR(state.userProfileList, newFacilityChangeAction);
-    //console.log('nav bar list: ----', navBa);
+    console.log('nav bar list: ----', navBa);
     state.navBarList = navBa;
   } else if (state.changeType === 'mtfi') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
@@ -157,6 +159,7 @@ export default {
       state.navBarList = [];
     },
     forceNavBarRefresh(state) {
+      console.log('nav refersh?');
       state.refreshNavBar = state.refreshNavBar + 1;
     },
     setUserProfileList: (state, value) => {state.userProfileList = value; },
@@ -231,40 +234,12 @@ export default {
     },
     addToNavBar: (state, payload) => {
       console.log('add to navBar Called');
+      console.log(payload);
       try{
-        console.log(state.changeRequestMap.get(payload.changeRequestId));
-      // state.changeRequestMap.get(payload.changeRequestId).changeActions = [];
-      // console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
-      //save the newly created fac data into the change request map so it can be the source of truth
-      if(payload.changeRequestId){
-        let newFacilityObj = {
-          baseFunding: payload,
-          ccfri : {},
-          changeRequestNewFacilityId : payload.changeRequestNewFacilityId,
-          ecewe: {},
-          facilityId: payload.facilityId,
-          unlockCcfri: false,
-          unlockNmf: false,
-          unlockRfi: false,
-        };
 
-        if (!state.changeRequestMap.get(payload.changeRequestId)?.changeActions){
-          let q = [];
-          state.changeRequestMap.get(payload.changeRequestId).changeActions = q;
-          console.log(state.changeRequestMap.get(payload.changeRequestId).changeActions);
-          state.changeRequestMap.get(payload.changeRequestId).changeActions.push({
-            changeActionId: payload.changeActionId,
-            changeType: 100000005,
-            applicationStatus: 1,
-            newFacilities: []
-          });
-        }
-
-        state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
-      }
-      state.userProfileList.push(payload);
-      filterNavBar(state);
-      state.refreshNavBar++;
+        state.userProfileList.push(payload);
+        filterNavBar(state);
+        state.refreshNavBar++;
       }
       catch(error){
         console.log(error);

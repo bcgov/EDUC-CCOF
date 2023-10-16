@@ -80,6 +80,7 @@ export default {
       //Status of : "In Progress" "Submitted" "Action Required";
       console.log((rootGetters['navBar/isChangeRequest']));
       //return false;
+      //await this.getChangeRequestList();
       //for PCF
       // if (!rootGetters['navBar/isChangeRequest']){
       //   return false;
@@ -118,14 +119,17 @@ export default {
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
     },//may not need this now
-    addNewChangeRequestToMap:(state, value) => {
+    addNewChangeRequestToMap:(state, model) => {
+      console.log('addNew CR to map called');
       const item = {
-        changeRequestId: value,
+        changeRequestId: model.changeRequestId,
         externalStatus: 'INCOMPLETE',
         changeActions: [],
       };
-      state.changeRequestMap.set(value, item);
+      state.changeRequestMap.set(model.changeRequestId, model);
       state.changeRequestMap = new Map(state.changeRequestMap); // // done to trigger reactive getter
+      console.log('done cr map, it looks like this');
+      console.log(state.changeRequestMap);
     },
     setCRIsEceweComplete:(state, value) => {
       let cr = state.changeRequestMap.get(value.changeRequestId);
@@ -160,6 +164,43 @@ export default {
         delete cr.changeNotificationActionId;
         state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
+    },
+    addNewFacilityDataToCRMap: (state, payload) => {
+      console.log('add to CR map Called in Report Changes');
+      console.log(payload);
+      try{
+        console.log(state);
+        // state.changeRequestMap.get(payload.changeRequestId).changeActions = [];
+        // console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
+        //save the newly created fac data into the change request map so it can be the source of truth
+        //console.log(state.changeRequestMap.get(payload.changeRequestId).changeActions);
+
+        const newFacilityObj = {
+          baseFunding: {
+            ccofBaseFundingId: payload.ccofBaseFundingId,
+            ccofBaseFundingStatus: payload.ccofBaseFundingStatus,
+            isCCOFComplete: payload.isCCOFComplete,
+          },
+          ccfri: {},
+          changeRequestNewFacilityId: payload.changeRequestNewFacilityId,
+          ecewe: {},
+          facilityId: payload.facilityId,
+          unlockCcfri:false,
+          unlockNmf:false,
+          unlockRfi:false,
+
+        };
+
+
+        state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
+
+        //state.userProfileList.push(payload);
+        //rootState.navBar.refreshNavBar++;
+      }
+      catch(error){
+        console.log(error);
+      }
+
     },
   },
   actions: {
