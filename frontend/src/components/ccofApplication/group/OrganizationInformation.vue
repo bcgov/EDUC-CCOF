@@ -104,8 +104,9 @@
 
               <v-row>
                 <v-col>
+                  <v-card-subtitle> Type of Organization </v-card-subtitle>
                   <v-radio-group :disabled="isLocked" v-model="model.organizationType" :rules="rules.required"
-                    label="Type of Organization">
+                    label="">
                     <v-radio v-for="item in this.organizationTypeList" :key="item.id" :label="item.name" :value="item.id"></v-radio>
                   </v-radio-group>
                 </v-col>
