@@ -35,17 +35,17 @@ function getProgramYear(selectedGuid, programYearList){
 
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
   //TODO: review this.
-  console.log('CURRENTRFI', currentRFI);
+  //console.log('CURRENTRFI', currentRFI);
   // Lookup previous years approved parent fees
   if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.app.isRenewal ) ) {
-    console.log('if');
+    //console.log('if');
     let previousRFI = getters.getPreviousApprovedFeesByFacilityId({facilityId: currentRFI.facilityId, previousProgramYearId: previousProgramYearId});
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
   //MTFI can be done on a new PCF or renewal - so it may not have previous CCFRI. If no previous CCFRI, base median off current year.
   //keep as elif because PCF RFI may call this but not satisfy the above if statement
   else if(rootState.navBar.changeType == 'mtfi' && !rootState.app.isRenewal ){
-    console.log('elif');
+    //console.log('elif');
     return currentRFI.childCareTypes.find(item => { return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == rootState.application.programYearId); });
   }
   //else - this will return undefined and RFI will be not be triggered
@@ -210,7 +210,7 @@ export default {
 
       try {
         let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-        console.log('the res is:' , res);
+        //console.log('the res is:' , res);
         return res;
       } catch (error) {
         console.log(error);
