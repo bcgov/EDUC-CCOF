@@ -103,7 +103,7 @@
                   <v-container v-else class="ma-0 pa-0">
                   <v-row>
                     <v-col>
-                      <label>If you only offer care for <strong>4 days or fewer </strong> per week, enter daily parent fees.</label><br>
+                      <label>If you only offer care for <strong>4 days or fewer </strong> per week, select daily parent fee.</label><br>
                       <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If there is a month where you do not charge a parent fee, enter zero.</label>
                     </v-col>
                   </v-row>
