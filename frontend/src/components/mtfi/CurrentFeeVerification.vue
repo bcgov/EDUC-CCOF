@@ -19,7 +19,7 @@
 
     <br><br>
     <div class="row pt-4 justify-center">
-      <span class="text-h6">Our records show this facility's approved parent fees for  are as follows:</span>
+      <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
     </div>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
       <div v-if="loading">
