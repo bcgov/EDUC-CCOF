@@ -460,7 +460,7 @@ export default {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
@@ -565,9 +565,9 @@ export default {
 
     },
     async next() {
-      this.rfi3percentCategories = await this.getCcfriOver3percent();
-      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.isRenewal) {
+      //do not call RFI fee caluclation on NEW PCF or CR NEW FAC
+      if (this.isRenewal && !this.isChangeRequest) {
+        console.log('calculating RFI');
         this.rfi3percentCategories = await this.getCcfriOver3percent();
         if (this.rfi3percentCategories.length > 0) {
           if (this.currentFacility.hasRfi) {
@@ -584,7 +584,8 @@ export default {
           this.$router.push(this.nextPath);
         }
       } else {
-        //Not renewal.
+        console.log("RFI calulation not needed.");
+        //Not renewal or CR
         this.$router.push(this.nextPath);
       }
     },
