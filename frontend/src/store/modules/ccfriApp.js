@@ -207,7 +207,6 @@ export default {
 
       try {
         let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-        //console.log('the res is:' , res);
         return res;
       } catch (error) {
         console.log(error);
