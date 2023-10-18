@@ -400,8 +400,11 @@ export default {
       let result = [];
       if (this.changeRequestStore?.length > 0) {
         result = this.changeRequestStore.filter(changeRequest => {
-          let index = changeRequest.changeActions?.findIndex(changeAction => changeAction.changeType === 'PARENT_FEE_CHANGE');
-          return index > -1;
+          if (changeRequest.programYearId === this.selectedProgramYear?.programYearId) {
+            let index = changeRequest.changeActions?.findIndex(changeAction => changeAction.changeType === 'PARENT_FEE_CHANGE');
+            return (index > -1);
+          }
+          return false;
         });
       }
       return result;
