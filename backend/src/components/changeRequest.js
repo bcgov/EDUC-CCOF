@@ -47,6 +47,8 @@ async function getChangeActionNewFacilitityDetails(changeActionId) {
         let data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();
         data.ccfri = new MappableObjectForFront(el.ccof_ccfri, UserProfileBaseCCFRIMappings).toJSON();
         data.ecewe = new MappableObjectForFront(el.ccof_ecewe, UserProfileECEWEMappings).toJSON();
+        //log.info('1111111111111111111111111111111');
+        log.info(data.ecewe);
         data.baseFunding = new MappableObjectForFront(el.ccof_CCOF, UserProfileBaseFundingMappings).toJSON();
         retVal.push(data);
       });

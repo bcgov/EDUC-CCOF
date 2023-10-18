@@ -12,7 +12,7 @@
       </v-row>
 
       <v-row>
-          <v-card width="100%" class="mx-3 my-10" v-if="isAnyChangeRequestActive">
+          <v-card width="100%" class="mx-3 my-10" v-if="isAnyChangeRequestActive && !this.isChangeRequest">
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
@@ -325,7 +325,7 @@
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
-        :isSubmitDisabled="!isPageComplete() || isReadOnly || isAnyChangeRequestActive " :isProcessing="isProcessing"
+        :isSubmitDisabled="!isPageComplete() || isReadOnly || (isAnyChangeRequestActive && !this.isChangeRequest) " :isProcessing="isProcessing"
         @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
