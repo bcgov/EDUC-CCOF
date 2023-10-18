@@ -19,7 +19,7 @@
 
     <br><br>
     <div class="row pt-4 justify-center">
-      <span class="text-h6">Our records show this facility's approved parent fees for  are as follows:</span>
+      <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
     </div>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
       <div v-if="loading">
@@ -397,12 +397,13 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl, ApiRoutes } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
+import ApiService from '@/common/apiService';
 
 
 let model = { };
@@ -442,7 +443,7 @@ export default {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['programYearId', 'isRenewal']),
-    ...mapState('navBar', ['navBarList', 'userProfileList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     areFeesCorrect() {
@@ -589,9 +590,28 @@ export default {
     isFormComplete(){
       return this.isValidForm; //false makes button clickable, true disables button
     },
-    toRfi() {
-      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
-      this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
+    getMtfiFacility(facilityId) {
+      let mtfiFacility;
+      const changeRequest = this.changeRequestMap?.get(this.$route.params.changeRecGuid);
+      if (changeRequest?.changeActions?.length > 0) {
+        const mtfiDetails = changeRequest?.changeActions[0].mtfi;
+        mtfiFacility = mtfiDetails?.find(item => item.facilityId === facilityId);
+      }
+      return mtfiFacility;
+    },
+    async toRfi() {
+      try {
+        this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
+        if (this.getCurrentFacility.unlockCcfri) {
+          this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'unlockRfi', value: true});
+          const mtfiFacility = this.getMtfiFacility(this.currentFacility.facilityId);
+          await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + mtfiFacility?.changeRequestMtfiId, {'ccof_unlock_rfi': true});
+        }
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occured while navigating to RFI.');
+      }
     },
     async next() {
       // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);

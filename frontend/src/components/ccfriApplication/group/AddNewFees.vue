@@ -103,7 +103,7 @@
                   <v-container v-else class="ma-0 pa-0">
                   <v-row>
                     <v-col>
-                      <label>If you only offer care for <strong>4 days or fewer </strong> per week, enter daily parent fees.</label><br>
+                      <label>If you only offer care for <strong>4 days or fewer </strong> per week, select daily parent fee.</label><br>
                       <label>Enter your <strong>highest {{item.feeFrequency?.toLowerCase()}} parent fee before CCFRI is applied</strong> in every month below. If there is a month where you do not charge a parent fee, enter zero.</label>
                     </v-col>
                   </v-row>
@@ -410,6 +410,7 @@ import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
+import ApiService from '@/common/apiService';
 
 export default {
   components: { NavButton },
@@ -458,7 +459,8 @@ export default {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
     currentFacility(){
@@ -533,9 +535,18 @@ export default {
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
     },
-    toRfi() {
-      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
-      this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
+    async toRfi() {
+      try {
+        this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
+        if (this.currentFacility?.unlockCcfri) {
+          this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'unlockRfi', value: true});
+          await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, {'unlockRfi': 1});
+        }
+        this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occured while navigating to RFI.');
+      }
     },
     previous() {
       if (this.isReadOnly){
@@ -553,9 +564,9 @@ export default {
 
     },
     async next() {
-      this.rfi3percentCategories = await this.getCcfriOver3percent();
-      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.isRenewal) {
+      //do not call RFI fee caluclation on NEW PCF or CR NEW FAC
+      if (this.isRenewal && !this.isChangeRequest) {
+        console.log('calculating RFI');
         this.rfi3percentCategories = await this.getCcfriOver3percent();
         if (this.rfi3percentCategories.length > 0) {
           if (this.currentFacility.hasRfi) {
@@ -572,7 +583,8 @@ export default {
           this.$router.push(this.nextPath);
         }
       } else {
-        //Not renewal.
+        console.log("RFI calulation not needed.");
+        //Not renewal or CR
         this.$router.push(this.nextPath);
       }
     },

@@ -258,7 +258,8 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    await this.getChangeRequestList();
+    if (this.applicationId)
+      await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },
   computed: {
@@ -269,7 +270,7 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore']),
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());

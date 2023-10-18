@@ -9,6 +9,7 @@ const {ApiError} = require('./error');
 const jsonwebtoken = require('jsonwebtoken');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
+const { MappableObjectForFront, getMappingString } = require('../util/mapping/MappableObject');
 let discovery = null;
 
 function sleep(ms) {
@@ -330,6 +331,36 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
   }
 }
 
+// get Change Action details.  depending on the entity, we may want to get details 2 level below change action
+async function getChangeActionDetails(changeActionId, changeDetailEntity, changeDetailMapper, joiningTable, joiningTableMapping) {
+  if (changeActionId && changeDetailEntity && changeDetailMapper) {
+    try {
+      let operation;
+      if (joiningTable) {
+        operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=${joiningTable}($select=${getMappingString(joiningTableMapping)})`;
+      } else {
+        operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'`;
+      }
+
+      let changeActionDetails = await getOperation(operation);
+      let details = changeActionDetails?.value;
+      let retVal = [];
+      details?.forEach(el => {
+        let data = new MappableObjectForFront(el, changeDetailMapper).toJSON();
+        let joinData;
+        if (joiningTable) {
+          joinData = new MappableObjectForFront(el[joiningTable], joiningTableMapping).toJSON();
+        }
+        retVal.push({...data, ...joinData});
+      });
+      return retVal;
+    } catch (e) {
+      log.error('Unable to get change action details',e);
+    }
+  } else {
+    return undefined;
+  }
+}
 
 function getHttpHeader() {
   let headers = null;
@@ -409,7 +440,8 @@ const utils = {
   postChangeActionDocument,
   updateChangeRequestNewFacility,
   postChangeRequestSummaryDocument,
-  getSubmissionPDFHistory
+  getSubmissionPDFHistory,
+  getChangeActionDetails
 };
 
 module.exports = utils;

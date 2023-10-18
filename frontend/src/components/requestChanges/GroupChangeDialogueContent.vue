@@ -33,7 +33,7 @@
                         <ul>
                             <li><a href='https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf'>Update banking information</a></li>
                         </ul>
-                        <p>Email: <a href="mailto:cccda@gov.bc.ca">cccda@gov.bc.ca</a></p>
+                        <p>Email: <a href="mailto:ccdda@gov.bc.ca">ccdda@gov.bc.ca</a></p>
                         <p>Mailing address:</p>
                         Child Care Operating Funding<br />
                         PO Box 9965 Stn Prov Govt<br />
