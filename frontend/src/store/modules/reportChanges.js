@@ -85,7 +85,7 @@ export default {
       // if (!rootGetters['navBar/isChangeRequest']){
       //   return false;
       // }
-      console.log(state.changeRequestStore.some((el) => el.status == 1 || el.status == 2 || el.status == 3));
+      //console.log(state.changeRequestStore.some((el) => el.status == 1 || el.status == 2 || el.status == 3));
       return state?.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
     }
   },

@@ -34,18 +34,18 @@ function getProgramYear(selectedGuid, programYearList){
 }
 
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
-
-  if (currentRFI.prevYearFeesCorrect || (rootState.navBar.changeType == 'mtfi') && currentRFI.previousCcfriId ) {
-    let previousRFI = getters.getPreviousApprovedFeesByFacilityId(currentRFI.facilityId);
+  //console.log('CURRENTRFI', currentRFI);
+  // Lookup previous years approved parent fees for most RFI scenarios
+  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.application.isRenewal ) ) {
+    let previousRFI = getters.getPreviousApprovedFeesByFacilityId({facilityId: currentRFI.facilityId, previousProgramYearId: previousProgramYearId});
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
   //MTFI can be done on a new PCF or renewal - so it may not have previous CCFRI. If no previous CCFRI, base median off current year.
-  else if (rootState.navBar.changeType == 'mtfi' && !rootState.application.isRenewal ) {
+  //keep as elif because PCF RFI may call this but not satisfy the above if statement
+  else if(rootState.navBar.changeType == 'mtfi' && !rootState.application.isRenewal ){
     return currentRFI.childCareTypes.find(item => { return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == rootState.application.programYearId); });
   }
-  else {
-    return currentRFI.childCareTypes.find(item => { return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
-  }
+  //else - this will return undefined and RFI will be not be triggered
 }
 
 function isOver3Percent(currentFees, previousFees, percentValue) {
@@ -90,6 +90,7 @@ export default {
     ccfriStore :{},
     ccfriMedianStore: {},
     previousFeeStore: {},
+    previousClosureDates: {}, //used for MTFI
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -101,8 +102,8 @@ export default {
     getCCFRIMedianById: (state) => (ccfriId) => {
       return state.ccfriMedianStore[ccfriId];
     },
-    getPreviousApprovedFeesByFacilityId: (state) => (facilityId) => {
-      return state.previousFeeStore[facilityId];
+    getPreviousApprovedFeesByFacilityId: (state) => ({facilityId: facilityId, previousProgramYearId: programYearId}) => {
+      return state.previousFeeStore[`${facilityId}-${programYearId}`];
     },
   },
   mutations: {
@@ -116,9 +117,9 @@ export default {
         state.ccfriStore[ccfriId] = CCFRIFacilityModel;
       }
     },
-    addPreviousApprovedParentFees: (state, {facilityId, parentFeeModel} ) => {
+    addPreviousApprovedParentFees: (state, {facilityId, programYearId, parentFeeModel} ) => {
       if (facilityId) {
-        state.previousFeeStore[facilityId] = parentFeeModel;
+        state.previousFeeStore[`${facilityId}-${programYearId}`] = parentFeeModel;
       }
     },
     removeCCFRIFromStore:(state, ccfriId ) => {
@@ -207,7 +208,6 @@ export default {
 
       try {
         let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
-        console.log('the res is:' , res);
         return res;
       } catch (error) {
         console.log(error);
@@ -313,13 +313,13 @@ export default {
       }
     },
     async getPreviousApprovedFees({commit, state}, {facilityId, programYearId}) {
-      const prevFees = state.previousFeeStore[facilityId];
+      const prevFees = state.previousFeeStore[`${facilityId}-${programYearId}`];
       if (prevFees) {
         return prevFees;
       } else {
         try {
           const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
-          commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
+          commit('addPreviousApprovedParentFees', {facilityId: facilityId, programYearId: programYearId, parentFeeModel: response.data});
           return response.data;
         } catch(e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
@@ -335,6 +335,7 @@ export default {
       try {
         console.log(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
         const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
+        state.previousClosureDates = response.data;
         //commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
         return response.data;
       } catch(e) {
@@ -353,7 +354,6 @@ export default {
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
-
         const prevCcfriApp = await dispatch('getPreviousApprovedFees', {facilityId: facilityId, programYearId: prevProgramYear.programYearId});
 
         console.log(prevCcfriApp, 'in upper try');
@@ -378,7 +378,7 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.application.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
+        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
           console.log('show all the cards');
           response.data.forEach(item => {
 
@@ -406,7 +406,7 @@ export default {
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
-        if (rootState.application.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
+        if (rootState.app.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
           console.log('prevCCFRI IS:' , prevCcfriApp);
           response.data.forEach(item => {
 

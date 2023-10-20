@@ -169,11 +169,11 @@ async function getFacilityChildCareTypes(req, res){
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
-
+//a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function returnCCFRIClosureDates(req, res){
   try {
     const dateData = {dates: await getCCFRIClosureDates(req.params.ccfriId)};
-    return res.status(HttpStatus.OK).json( dateData);
+    return res.status(HttpStatus.OK).json(dateData);
 
   } catch (e) {
     log.error('failed with error', e);
