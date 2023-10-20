@@ -145,6 +145,8 @@ export default {
                 isChangeRequestUnlocked:false,
                 isEceweComplete:false,
                 isLicenseUploadComplete:false,
+                isLicenseUploadComplete:false,
+                isLicenseUploadComplete:false,
                 latestSubmissionDate:null,
                 optInECEWE:null,
                 orgContactName:null,
@@ -227,7 +229,6 @@ export default {
     },
     async deleteFacility({ commit }, facilityObj) {
       checkSession();
-
       await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityObj.facilityId, {data: facilityObj});
 
       commit('deleteFromStore', facilityObj.facilityId);
