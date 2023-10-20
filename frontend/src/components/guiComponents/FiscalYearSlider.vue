@@ -5,9 +5,10 @@
     mandatory
   >
     <v-btn
-      text x-small
-      class="px-0"
-      :class="isPrevHidden"
+      tile outlined
+      min-width='20px'
+      class="pa-0"
+      :disabled="isPrevDisabled"
       @click="previous"
     >
       <v-icon>mdi-chevron-left</v-icon>
@@ -18,8 +19,8 @@
       v-slot="{ active }"
     >
       <v-btn
-        text
-        class="px-2"
+        tile outlined
+        class="px-4 ma-0"
         @click="selectProgramYear(programYear)"
         :class="active ? 'selected' : ''"
       >
@@ -27,9 +28,10 @@
       </v-btn>
     </v-item>
     <v-btn
-      text x-small
-      class="px-0"
-      :class="isNextHidden"
+      tile outlined
+      min-width='20px'
+      class="pa-0"
+      :disabled="isNextDisabled"
       @click="next"
     >
       <v-icon>mdi-chevron-right</v-icon>
@@ -86,13 +88,11 @@ export default {
       }
       return this.programYearList;
     },
-    isPrevHidden() {
-      const isHidden = (this.selectedProgramYearIndex < 1) ? 'hide' : '';
-      return isHidden;
+    isPrevDisabled() {
+      return (this.selectedProgramYearIndex < 1);
     },
-    isNextHidden() {
-      const isHidden = (this.selectedProgramYearIndex >= (this.programYearList?.length - 1)) ? 'hide' : '';
-      return isHidden;
+    isNextDisabled() {
+      return (this.selectedProgramYearIndex >= (this.programYearList?.length - 1));
     },
   },
   methods: {
@@ -140,10 +140,10 @@ export default {
 
 <style scoped>
 .selected {
+  border: 0px !important;
+  background-color: #234075 !important;
+  color: white;
   font-weight: bold;
-  font-size: 110%;
-}
-.hide {
-  display: none;
+  font-size: 104%;
 }
 </style>

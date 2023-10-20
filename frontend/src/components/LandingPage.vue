@@ -61,7 +61,7 @@
 
           <div v-else>
             <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
-              <div v-for="item in getActionRequiredApplicationsForCCOFCard">
+              <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
                 <v-btn dark class="blueButton my-2" @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)">
                   Update {{ item.ccofProgramYearName?.slice(0,-3) }} PCF
                 </v-btn>
@@ -153,7 +153,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-between">
-        <v-col class="col-12 col-md-8 ml-4">
+        <v-col class="col-12 col-md-7 ml-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -167,8 +167,11 @@
             v-if="facilityListForFacilityCards?.length > 2">
           </v-text-field>
         </v-col>
-        <v-col class="col-12 col-md-3">
-          <FiscalYearSlider @selectProgramYear="selectProgramYear" v-if="applicationIds?.length > 1"></FiscalYearSlider>
+        <v-col class="col-12 col-md-4">
+          <v-row class="justify-right align-center mr-4">
+            <strong class="pr-4">Select fiscal year: </strong>
+            <FiscalYearSlider @selectProgramYear="selectProgramYear" v-if="applicationIds?.length > 1"></FiscalYearSlider>
+          </v-row>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-around">
@@ -258,8 +261,7 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    if (this.applicationId)
-      await this.getChangeRequestList();
+    await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },
   computed: {
@@ -270,7 +272,7 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap', 'applicationId']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap']),
     ...mapState('reportChanges', ['changeRequestStore']),
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());

@@ -155,7 +155,7 @@ export default {
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
-    async getChangeRequestList({commit, rootGetters}, applicationIds) {
+    async getChangeRequestList({commit, rootGetters}) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
       console.log('loading change reqs for application list: ');
@@ -167,11 +167,9 @@ export default {
       let store = [];
       try {
         let response;
-        if (!applicationIds)
-          response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootGetters['application/applicationIds']);
-        else
+        const applicationIds = rootGetters['application/applicationIds'];
+        if (applicationIds?.length > 0)
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
-        //console.log(response);
 
         let newFacList = [];
         if (!isEmpty(response.data)) {
