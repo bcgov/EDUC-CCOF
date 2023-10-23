@@ -404,7 +404,7 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl} from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
@@ -583,6 +583,9 @@ export default {
           }
           this.$router.push(this.nextPath);
         }
+      } else if (this.isChangeRequest && (this.currentFacility?.unlockRfi || this.currentFacility?.hasRfi)) {
+        this.setNavBarValue({ facilityId: this.currentFacility?.facilityId, property: 'hasRfi', value: true});
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.changeRequestId, this.$route.params.urlGuid));
       } else {
         console.log("RFI calulation not needed.");
         //Not renewal or CR
