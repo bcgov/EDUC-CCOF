@@ -153,7 +153,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-between">
-        <v-col class="col-12 col-md-7 ml-4">
+        <v-col class="col-12 col-lg-7 ml-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -167,10 +167,10 @@
             v-if="facilityListForFacilityCards?.length > 2">
           </v-text-field>
         </v-col>
-        <v-col class="col-12 col-md-4">
+        <v-col class="col-12 col-lg-4" v-if="applicationIds?.length > 1">
           <v-row class="justify-right align-center mr-4">
-            <strong class="pr-4">Select fiscal year: </strong>
-            <FiscalYearSlider @selectProgramYear="selectProgramYear" v-if="applicationIds?.length > 1"></FiscalYearSlider>
+            <h3 class="mr-4">Select fiscal year: </h3>
+            <FiscalYearSlider @selectProgramYear="selectProgramYear"></FiscalYearSlider>
           </v-row>
         </v-col>
       </v-row>
