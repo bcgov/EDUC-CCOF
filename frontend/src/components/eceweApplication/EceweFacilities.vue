@@ -144,7 +144,6 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
-import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -162,7 +161,8 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['fundingModelTypeList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId', ]),
+    ...mapGetters('navBar', ['previousPath', 'isChangeRequest', 'getChangeActionNewFacByFacilityId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     isNextBtnDisabled() {
@@ -177,7 +177,7 @@ export default {
     },
     isReadOnly() {
       //will only return true if set by a ministry user in dynamics
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         if(this.isEceweUnlocked||!this.changeRequestStatus){
           return false;
         }
@@ -228,14 +228,14 @@ export default {
       });
     },
     previous() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
       } else {
         this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
       }
     },
     next() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
       } else {
         this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
@@ -270,9 +270,23 @@ export default {
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach(el => {
+            console.log('this is el');
+            console.log(el);
             let facility = this.userProfileList.find(f => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
+            }
+
+            //update the CR map with the data so navbar will work properly for CR new fac
+            if(this.isChangeRequest){
+              let newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
+
+              newFac.ecewe =  {
+                eceweOptInStatus: el.optInOrOut,
+                eceweApplicationId: el.eceweApplicationId,
+                eceweFacilityId : el.facilityId,
+              };
+              console.log('newfac', newFac);
             }
           });
           this.refreshNavBarList();

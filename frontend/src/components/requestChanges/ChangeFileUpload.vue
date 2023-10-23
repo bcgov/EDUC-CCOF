@@ -21,7 +21,7 @@
                     <v-btn
                       color="primary"
                       class="ml-2 white--text v-skeleton-loader-small-button"
-                      :disabled="isReadOnly"
+                      :disabled="false"
                       @click="addNew">
                       <v-icon dark>mdi-plus</v-icon>
                       Add
@@ -44,7 +44,7 @@
                             class="pt-0"
                             :id="String(item.id)"
                             :accept="fileAccept"
-                            :disabled="isReadOnly"
+                            :disabled="false"
                             placeholder="Select your file"
                             :error-messages="fileInputError"
                             @change="selectFile"

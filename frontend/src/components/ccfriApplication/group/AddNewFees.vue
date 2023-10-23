@@ -228,9 +228,9 @@
             <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
 
 
-              <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index">
+              <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color='#003366'>
 
-                <v-col class="col-md-1 col-12 mx-0">
+                <v-col color='#003366' class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
                     large
@@ -245,11 +245,18 @@
                 <v-col class="col-md-3 col-12">
                   <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field  :disabled="isReadOnly" outlined :rules="rules" v-model="obj.formattedStartDate"  label="Select Start Date (YYYY-MM-DD)" readonly v-bind="attrs" v-on="on">
+                    <v-text-field  :disabled="isReadOnly"
+                    outlined
+                    :rules="rules"
+                     v-model="obj.formattedStartDate"
+                      label="Select Start Date (YYYY-MM-DD)"
+                      readonly v-bind="attrs"
+                       v-on="on">
+
                     </v-text-field>
                   </template>
                     <v-date-picker
-
+                      :allowed-dates="allowedDates"
                       clearable
                       v-model="obj.formattedStartDate"
                       @input="obj.calendarMenu1 = false">
@@ -279,6 +286,8 @@
                       :min="obj.formattedStartDate"
                       v-model="obj.formattedEndDate"
                       @input="obj.calendarMenu2 = false"
+                      :allowed-dates="allowedDates"
+                      @click:date="isDateLegal(obj)"
 
                       >
 
@@ -294,6 +303,7 @@
                     outlined
                     clearable
                     :rules="rules"
+                    color="red"
                   ></v-text-field>
                 </v-col>
 
@@ -318,6 +328,34 @@
                 </v-col>
 
                 <span class="white--text"> . </span>
+                <v-row v-if="obj.isIllegal">
+
+                  <v-card width="100%" class="mx-3 my-10" >
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                Invalid Dates
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-card-text>
+              It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.<br><br>
+              <br>
+
+
+            </v-card-text>
+          </v-card>
+        </v-row>
+                  <!-- <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
+                </v-row> -->
+
                 <v-divider></v-divider>
               </v-row> <!-- end v for-->
               <br><br>
@@ -367,7 +405,7 @@
       </v-card>
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly" :isNextDisabled="loading || !isFormComplete()" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly || hasIllegalDates()" :isNextDisabled="loading || !isFormComplete() || this.hasIllegalDates()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -404,13 +442,31 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
 import ApiService from '@/common/apiService';
+
+function dateFunction (date1, date2){
+
+  const startDate = new Date(date1);
+  const endDate = new Date (date2);
+
+  let dates = [];
+
+  let currentDate = new Date(startDate.getTime());
+
+  while (currentDate <= endDate) {
+    console.log();
+    dates.push(currentDate.toISOString().substring(0,10));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return dates;
+}
 
 export default {
   components: { NavButton },
@@ -434,6 +490,7 @@ export default {
       processing: false,
       facilityProgramYears: [],
       isValidForm : false,
+      chosenDates: [],
 
       feeRules: [
         (v) => !isNaN(parseFloat(v))  || 'Must be a number',
@@ -442,6 +499,9 @@ export default {
       ],
 
       rules: [
+        (v) => !!v  || 'Required.',
+      ],
+      calenderRules: [
         (v) => !!v  || 'Required.',
       ],
       dateRules: [
@@ -456,10 +516,10 @@ export default {
   computed: {
     ...mapGetters('app', ['lookupInfo']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
-    ...mapState('navBar', ['navBarList','changeRequestId']),
+    ...mapState('navBar', ['navBarList','changeRequestId', 'changeType']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest', 'getChangeActionNewFacByFacilityId']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
@@ -521,7 +581,31 @@ export default {
     ...mapMutations('ccfriApp', ['setFeeModel', 'addModelToStore', 'deleteChildCareTypes', 'setLoadedModel']),
     ...mapMutations('navBar', ['addToRfiNavBarStore', 'forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
     addRow () {
+      this.updateChosenDates();
       this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
+    },
+    allowedDates(val){
+      return !this.chosenDates.includes(val);
+    },
+    updateChosenDates(){
+      this.chosenDates = [];
+      this.CCFRIFacilityModel.dates.forEach(dateObj => {
+        this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
+      });
+    },
+    isDateLegal(obj){
+      let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+      obj.isIllegal = false;
+
+      dates.forEach(date => {
+        if (this.chosenDates.includes(date)){
+          obj.isIllegal = true;
+          return;
+        }
+      });
+    },
+    hasIllegalDates(){
+      return this.CCFRIFacilityModel?.dates?.some(el => el.isIllegal);
     },
     hasDataToDelete(){
       //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
@@ -534,6 +618,7 @@ export default {
     },
     removeIndex(index){
       this.CCFRIFacilityModel.dates.splice(index, 1);
+      this.updateChosenDates();
     },
     async toRfi() {
       try {
@@ -623,6 +708,12 @@ export default {
         // this.processing = true;
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete()});
 
+        if(this.changeType == CHANGE_TYPES.NEW_FACILITY){
+          let newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
+
+          newFac.ccfri.isCCFRIComplete =  this.isFormComplete();
+        }
+
         try {
           this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
@@ -642,6 +733,9 @@ export default {
           //window.location.reload(true);
         }
         this.processing = false;
+
+        //this.refreshNavBarList();
+        this.forceNavBarRefresh();
       }
     }
   }

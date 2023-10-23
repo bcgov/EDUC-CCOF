@@ -75,7 +75,7 @@ export default {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
-    ...mapMutations('navBar', ['setNavBarFacilityComplete']),
+    ...mapMutations('navBar', ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
     isSameAddressChecked() {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
@@ -131,6 +131,8 @@ export default {
       this.processing = true;
       try {
         await this.saveFacility({ isChangeRequest: isChangeRequest(this), changeRequestId: this.$route.params.changeRecGuid });
+        //this.refreshNavBarList();
+        this.forceNavBarRefresh();
         if (isSave) {
           this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
         }

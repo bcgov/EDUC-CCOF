@@ -93,10 +93,10 @@ export default {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
     ...mapState('organization', ['organizationProviderType']),
-    ...mapGetters('navBar', ['previousPath']),
+    ...mapGetters('navBar', ['previousPath', 'getChangeActionNewFacByFacilityId', 'isChangeRequest']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         return (this.changeRequestStatus !== 'INCOMPLETE');
       }
       return (this.applicationStatus === 'SUBMITTED');
@@ -110,7 +110,7 @@ export default {
       this.$router.push(this.previousPath);
     },
     getRoutingPath(facilityId) {
-      if(isChangeRequest(this)){
+      if(this.isChangeRequest){
         return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, facilityId);
       }
       else {
@@ -118,14 +118,14 @@ export default {
       }
     },
     addAnotherFacility() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         this.$router.push(changeUrl(PATHS.CCOF_GROUP_FACILITY, this.$route.params.changeRecGuid));
       } else {
         this.$router.push(pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId));
       }
     },
     async next() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, this.$route.params.changeRecGuid));
       } else {
         this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
@@ -134,7 +134,7 @@ export default {
     confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
-      this.deleteChangeRequestNewFacilityId = changeRequestNewFacilityId;
+      this.deleteChangeRequestNewFacilityId = this.getChangeActionNewFacByFacilityId(facilityId)?.changeRequestNewFacilityId;
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;
@@ -154,8 +154,8 @@ export default {
   },
   async mounted() {
     this.setCcofConfirmationEnabled(true);
-    if (isChangeRequest(this)) {
-      let index = this.navBarList.findIndex(facility => facility.changeRequestNewFacilityId)
+    if (this.isChangeRequest) {
+      let index = this.navBarList.findIndex(facility => facility.changeRequestNewFacilityId);
       if (index === -1)
         await this.getChangeRequest(this.$route.params.changeRecGuid);
     }
