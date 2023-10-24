@@ -196,9 +196,9 @@
             v-if="facilityListForFacilityCards?.length > 2">
           </v-text-field>
         </v-col>
-        <v-col class="col-12 col-lg-4" v-if="applicationIds?.length > 1">
+        <v-col class="col-12 col-lg-4">
           <v-row class="justify-right align-center mr-4">
-            <h3 class="mr-4">Select fiscal year: </h3>
+            <h3 class="mr-4" v-if="applicationIds?.length > 1">Select fiscal year: </h3>
             <FiscalYearSlider @selectProgramYear="selectProgramYear"></FiscalYearSlider>
           </v-row>
         </v-col>

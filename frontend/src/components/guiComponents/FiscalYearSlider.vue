@@ -3,6 +3,7 @@
     v-model="activeIndex"
     class="text-center"
     mandatory
+    v-if="this.applicationMap?.length > 1"
   >
     <v-btn
       tile outlined
