@@ -158,16 +158,17 @@ async function getUserProfile(userGuid, userName) {
 
 function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, facilityId) {
   for (const changeRequest of changeRequestList) {
-    //todo -mk check statuscode
     let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter(item =>item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     for (const changeActionNewFacility of changeActionNewFacilityList) {
       let result = changeActionNewFacility?.ccof_change_request_new_facility_change_act.find(item => item['_ccof_facility_value'] === facilityId);
       if (result) {
         returnValue.changeRequestId = changeRequest?.ccof_change_requestid;
-        returnValue.unlockCcfri = result?.ccof_unlock_ccfri;
-        returnValue.unlockNmf = result?.ccof_unlock_nmf_rfi;
-        returnValue.unlockRfi = result?.ccof_unlock_rfi;
-
+        //RLO - if facilityAccountNumber exists, then then don't update the facility statuses, since this is now part of the PCF
+        if (!returnValue.facilityAccountNumber) {
+          returnValue.unlockCcfri = result?.ccof_unlock_ccfri;
+          returnValue.unlockNmf = result?.ccof_unlock_nmf_rfi;
+          returnValue.unlockRfi = result?.ccof_unlock_rfi;
+        }
       }
     }
   }
