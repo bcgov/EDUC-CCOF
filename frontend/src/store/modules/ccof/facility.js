@@ -145,8 +145,6 @@ export default {
                 isChangeRequestUnlocked:false,
                 isEceweComplete:false,
                 isLicenseUploadComplete:false,
-                isLicenseUploadComplete:false,
-                isLicenseUploadComplete:false,
                 latestSubmissionDate:null,
                 optInECEWE:null,
                 orgContactName:null,

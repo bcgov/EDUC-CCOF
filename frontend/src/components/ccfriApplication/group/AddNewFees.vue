@@ -460,7 +460,6 @@ function dateFunction (date1, date2){
   let currentDate = new Date(startDate.getTime());
 
   while (currentDate <= endDate) {
-    console.log();
     dates.push(currentDate.toISOString().substring(0,10));
     currentDate.setDate(currentDate.getDate() + 1);
   }
