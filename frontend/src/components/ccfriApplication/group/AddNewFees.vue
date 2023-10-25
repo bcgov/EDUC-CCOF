@@ -563,6 +563,8 @@ export default {
             //this.closureFees = 'Yes';
           }
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
+
+          this.updateChosenDates();
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -599,7 +601,6 @@ export default {
       dates.forEach(date => {
         if (this.chosenDates.includes(date)){
           obj.isIllegal = true;
-          return;
         }
       });
     },

@@ -284,7 +284,7 @@
                 </v-card-text>
             </v-card>
 
-            <v-card  elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+            <v-card  v-if="arePrevFeesCorrect()" elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
               rounded
               tiled
@@ -321,9 +321,11 @@
                     ></v-radio>
                   </v-radio-group>
 
+
                   <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000 ">
                     <!-- below will let user view, but not change closure dates from CCFRI application-->
-                    <v-row  v-for="(obj, index) in previousClosureDates.dates" :key="index" color='#003366'>
+                    <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
+                    <v-row  v-for="(obj, index) in previousClosureDates.dates" :key="(index + 1000)" color='black'>
                       <v-col color='#003366' class="col-md-1 col-12 mx-0">
                         <v-icon
                           :disabled="true"
@@ -333,67 +335,35 @@
                         </v-icon>
                       </v-col>
 
-
                       <v-col class="col-md-3 col-12">
-                        <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field  :disabled="isReadOnly"
+                          <v-text-field  :disabled="true"
                           outlined
                           :rules="rules"
                           v-model="obj.formattedStartDate"
-                            label="Select Start Date (YYYY-MM-DD)"
-                            readonly v-bind="attrs"
-                            v-on="on">
+                          label="Start Date (YYYY-MM-DD)"
+                          readonly
+                          >
 
                           </v-text-field>
-                        </template>
-                          <v-date-picker
-                            :allowed-dates="allowedDates"
-                            clearable
-                            v-model="obj.formattedStartDate"
-                            @input="obj.calendarMenu1 = false">
-
-                          </v-date-picker>
-                      </v-menu>
                       </v-col>
 
                       <v-col class="col-md-3 col-12">
-                        <v-menu  v-model="obj.calendarMenu2"
-                        :close-on-content-click="false"
-                        :nudge-right="40" transition="scale-transition"
-                        offset-y min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field :disabled="isReadOnly"
+                          <v-text-field :disabled="true"
                           outlined
                           required
                           v-model="obj.formattedEndDate"
-                          label="Select End Date (YYYY-MM-DD)"
+                          label="End Date (YYYY-MM-DD)"
                           readonly
-                          :rules="rules"
-                          v-bind="attrs" v-on="on">
+                          >
                           </v-text-field>
-                        </template>
-                          <v-date-picker
-                            clearable
-                            :min="obj.formattedStartDate"
-                            v-model="obj.formattedEndDate"
-                            @input="obj.calendarMenu2 = false"
-                            :allowed-dates="allowedDates"
-                            @click:date="isDateLegal(obj)"
-
-                            >
-
-                          </v-date-picker>
-                      </v-menu>
                       </v-col>
 
                       <v-col class="col-md-3 col-12 ">
                         <v-text-field
-                        :disabled="isReadOnly"
+                        :disabled="true"
                           v-model="obj.closureReason"
                           label="Closure Reason"
                           outlined
-                          clearable
                           :rules="rules"
                           color="red"
                         ></v-text-field>
@@ -401,12 +371,11 @@
 
                       <v-col class="col-md-2 col-12 mt-n10">
                         <v-radio-group
-                          :disabled="isReadOnly"
+                          :disabled="true"
                           row
                           v-model="obj.feesPaidWhileClosed"
                           label="Did parents pay for this closure?"
                           :rules="dateRules"
-
                         >
                           <v-radio
                             label="Yes"
@@ -552,8 +521,6 @@
                   </v-card-text>
                 </v-card>
               </v-row>
-                        <!-- <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
-                      </v-row> -->
 
                       <v-divider></v-divider>
                     </v-row> <!-- end v for-->
@@ -646,7 +613,7 @@
 
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly || loading" :isNextDisabled="!isValidForm" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly || loading || hasIllegalDates()" :isNextDisabled="!isValidForm || hasIllegalDates()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -716,7 +683,7 @@ function dateFunction (date1, date2){
 let model = { };
 
 export default {
-  name: 'CcfriLandingPage',
+  name: 'MTFI-Fees',
   mixins: [alertMixin, globalMixin],
   data() {
     return {
@@ -740,6 +707,9 @@ export default {
         (v)  => v <=  9999|| 'Max fee is $9999.00',
         (v) => v >= 0  || 'Input a positve number',
       ],
+      dateRules: [
+        v => (typeof v === 'number') || 'Required.',
+      ],
       dateObj: {
         datePicker1: undefined,
         datePicker2: undefined,
@@ -747,6 +717,7 @@ export default {
         feesPaidWhileClosed: undefined,
       },
       closureFees: 'No',
+      chosenDates: [],
 
     };
   },
@@ -837,7 +808,16 @@ export default {
           //rules surronding overlapping dates still apply.
           if (this.previousClosureDates.dates.length > 0){
             this.CCFRIFacilityModel.hasClosureFees = 100000000;
+            //this.chosenDates = [...this.CCFRIFacilityModel.dates , ...this.previousClosureDates.dates];
           }
+          else {
+            //.chosenDates = this.CCFRIFacilityModel.dates;
+          }
+
+          this.updateChosenDates();
+
+          console.log('combined dates: ');
+          console.log(this.chosenDates);
 
           this.loading = false;
 
@@ -877,6 +857,15 @@ export default {
       this.CCFRIFacilityModel.dates.forEach(dateObj => {
         this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
       });
+
+      if (this.previousClosureDates.dates.length > 0){
+        this.previousClosureDates.dates.forEach(dateObj => {
+          this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
+        });
+      }
+
+      console.log('chosen dates look like: ');
+      console.log(this.chosenDates);
     },
     isDateLegal(obj){
       let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
@@ -885,7 +874,6 @@ export default {
       dates.forEach(date => {
         if (this.chosenDates.includes(date)){
           obj.isIllegal = true;
-          return;
         }
       });
     },
@@ -977,12 +965,17 @@ export default {
       }
     },
     previous() {
-      if(this.organizationProviderType == 'FAMILY'){
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
-      }
-      else{
-        this.$router.push(this.previousPath);
-      }
+      console.log('combined dates: ');
+          console.log(this.chosenDates);
+      console.log('new dates: ');
+          console.log(this.CCFRIFacilityModel.dates);
+
+      // if(this.organizationProviderType == 'FAMILY'){
+      //   this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
+      // }
+      // else{
+      //   this.$router.push(this.previousPath);
+      // }
     },
     validateForm() {
 
