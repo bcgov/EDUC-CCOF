@@ -10,7 +10,33 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
-      <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+
+      <v-row>
+          <v-card width="100%" class="mx-3 my-10" v-if="isAnyChangeRequestActive && !this.isChangeRequest">
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                You have a change request for the {{ this.formattedProgramYear }} funding term still in progress.
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-card-text>
+              The {{this.formattedProgramYear}} Program Confirmation Form cannot be submitted until the change is complete.<br><br>
+              <br>
+
+              <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn>
+            </v-card-text>
+          </v-card>
+        </v-row>
+
+      <v-row v-if="!isAnyChangeRequestActive" class="d-flex justify-center text-h5" style="color:#003466;">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
       <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
@@ -122,7 +148,7 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                      :ecewe-facility="facility.ecewe"
+                                      :eceweFacility="facility.ecewe"
                                       :isProcessing="isProcessing"
                                       :changeRecGuid="facility.changeRequestId"
                                       :programYearId="summaryModel?.application?.programYearId"
@@ -130,14 +156,15 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <UploadedDocumentsSummary @isSummaryValid="isFormComplete"
-                                                  :documents="facility.documents"></UploadedDocumentsSummary>
+                                                  :documents="facility.documents"
+                                                  :programYearId="summaryModel?.application?.programYearId"></UploadedDocumentsSummary>
                       </v-expansion-panel>
                     </div>
                 </div>
                 <div v-if="!this.isRenewal" class="mt-10">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                :ecewe-facility="null" :isProcessing="isProcessing"
+                                :eceweFacility="null" :isProcessing="isProcessing"
                                 :programYearId="summaryModel?.application?.programYearId"
                                 ></ECEWESummary>
                 </v-expansion-panel>
@@ -299,7 +326,7 @@
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
-        :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
+        :isSubmitDisabled="!isPageComplete() || isReadOnly || (isAnyChangeRequestActive && !this.isChangeRequest) " :isProcessing="isProcessing"
         @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
@@ -379,7 +406,7 @@ export default {
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'isAnyChangeRequestActive']),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -458,7 +485,9 @@ export default {
       }
       return this.isValidForm;
     },
-
+    goToChangeRequestHistory() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
+    },
     async loadData() {
       this.isLoading = true;
       try {

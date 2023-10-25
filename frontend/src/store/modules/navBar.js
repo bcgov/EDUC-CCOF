@@ -85,15 +85,18 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
       }
     });
   }
+  //console.log(navBarFacilities);
   return navBarFacilities;
 }
 function filterNavBar(state) {
   //Mitchel - Since most CRs will be making changes to existing facilities
   //only grabs facilities from specific change request when new facility CR so far
+
+  console.log(state.changeRequestMap);
   if (state.changeType ==='nf') {
-    const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
-    console.log('change action: ', changeActions);
-    const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    const newFacilityChangeAction = state.changeRequestMap.get(state.changeRequestId)?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    console.log('change action: ', newFacilityChangeAction);
+    //const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     const navBa = getFacilityListFromNewFacilityCR(state.userProfileList, newFacilityChangeAction);
     console.log('nav bar list: ----', navBa);
     state.navBarList = navBa;
@@ -156,6 +159,7 @@ export default {
       state.navBarList = [];
     },
     forceNavBarRefresh(state) {
+      console.log('nav refersh?');
       state.refreshNavBar = state.refreshNavBar + 1;
     },
     setUserProfileList: (state, value) => {state.userProfileList = value; },
@@ -229,9 +233,18 @@ export default {
       }
     },
     addToNavBar: (state, payload) => {
-      state.userProfileList.push(payload);
-      filterNavBar(state);
-      state.refreshNavBar++;
+      console.log('add to navBar Called');
+      console.log(payload);
+      try{
+
+        state.userProfileList.push(payload);
+        filterNavBar(state);
+        state.refreshNavBar++;
+      }
+      catch(error){
+        console.log(error);
+      }
+
     },
     deleteFromNavBar: (state, facilityId) => {
       state.userProfileList = state.userProfileList.filter(item => item.facilityId !== facilityId);
@@ -295,6 +308,11 @@ export default {
         return state.userProfileList.find(item => item.ccfriApplicationId == ccfriId);
       }
     },
+    getChangeActionNewFacByFacilityId: (state) => (facilityId) => {
+      //this fn returns the data structure of the newFac data in the navbar. We can use this to update it on the individual pages so the navbar works
+      //correctly before refresh and reload from dynamics.
+      return state?.changeRequestMap.get(state.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities?.find(el => el.facilityId == facilityId);
+    }
 
   },
   actions: {

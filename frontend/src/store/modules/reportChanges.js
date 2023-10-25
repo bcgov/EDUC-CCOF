@@ -46,22 +46,19 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     isCCOFUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isCCOFUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isCCOFUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isEceweUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isEceweUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isEceweUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isLicenseUploadUnlocked:(state,getters,rootState) => {
-      console.log(state.changeRequestMap.get(rootState.navBar.changeRequestId));
-      console.log(state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked);
-
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isSupportingDocumentsUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isSupportingDocumentsUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isSupportingDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isDeclarationUnlocked:(state,getters,rootState) => {
@@ -73,11 +70,23 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     isOtherDocumentsUnlocked:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.isOtherDocumentsUnlocked;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.isOtherDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     getChangeNotificationActionId:(state,getters,rootState) => {
-      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
+    },
+    isAnyChangeRequestActive:(state, rootGetters) => {
+      //Status of : "In Progress" "Submitted" "Action Required";
+      console.log((rootGetters['navBar/isChangeRequest']));
+      //return false;
+      //await this.getChangeRequestList();
+      //for PCF
+      // if (!rootGetters['navBar/isChangeRequest']){
+      //   return false;
+      // }
+      console.log(state.changeRequestStore.some((el) => el.status == 1 || el.status == 2 || el.status == 3));
+      return state?.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
     }
   },
   mutations: {
@@ -110,13 +119,17 @@ export default {
     setNewFacilityList:(state, newFacilityList) => {
       state.newFacilityList = newFacilityList;
     },//may not need this now
-    addNewChangeRequestToMap:(state, value) => {
+    addNewChangeRequestToMap:(state, model) => {
+      console.log('addNew CR to map called');
       const item = {
-        changeRequestId: value,
-        externalStatus: 'INCOMPLETE'
+        changeRequestId: model.changeRequestId,
+        externalStatus: 'INCOMPLETE',
+        changeActions: [],
       };
-      state.changeRequestMap.set(value, item);
+      state.changeRequestMap.set(model.changeRequestId, model);
       state.changeRequestMap = new Map(state.changeRequestMap); // // done to trigger reactive getter
+      console.log('done cr map, it looks like this');
+      console.log(state.changeRequestMap);
     },
     setCRIsEceweComplete:(state, value) => {
       let cr = state.changeRequestMap.get(value.changeRequestId);
@@ -152,10 +165,47 @@ export default {
         state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },
+    addNewFacilityDataToCRMap: (state, payload) => {
+      console.log('add to CR map Called in Report Changes');
+      console.log(payload);
+      try{
+        console.log(state);
+        // state.changeRequestMap.get(payload.changeRequestId).changeActions = [];
+        // console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
+        //save the newly created fac data into the change request map so it can be the source of truth
+        //console.log(state.changeRequestMap.get(payload.changeRequestId).changeActions);
+
+        const newFacilityObj = {
+          baseFunding: {
+            ccofBaseFundingId: payload.ccofBaseFundingId,
+            ccofBaseFundingStatus: payload.ccofBaseFundingStatus,
+            isCCOFComplete: payload.isCCOFComplete,
+          },
+          ccfri: {},
+          changeRequestNewFacilityId: payload.changeRequestNewFacilityId,
+          ecewe: {},
+          facilityId: payload.facilityId,
+          unlockCcfri:false,
+          unlockNmf:false,
+          unlockRfi:false,
+
+        };
+
+
+        state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
+
+        //state.userProfileList.push(payload);
+        //rootState.navBar.refreshNavBar++;
+      }
+      catch(error){
+        console.log(error);
+      }
+
+    },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
-    async getChangeRequestList({commit, rootGetters}, applicationIds) {
+    async getChangeRequestList({commit, rootGetters}) {
 
       //is it better/ worse to load from route state vs. passing in application ID?
       console.log('loading change reqs for application list: ');
@@ -167,11 +217,9 @@ export default {
       let store = [];
       try {
         let response;
-        if (!applicationIds)
-          response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootGetters['application/applicationIds']);
-        else
+        const applicationIds = rootGetters['application/applicationIds'];
+        if (applicationIds?.length > 0)
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
-        //console.log(response);
 
         let newFacList = [];
         if (!isEmpty(response.data)) {
@@ -273,7 +321,7 @@ export default {
         'changeType' : changeType,
       };
       try {
-        let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);
+        let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload); //does this need to be here for every change request?
 
         commit('setChangeRequestId', response?.data?.changeRequestId);
         commit('setChangeActionId', response?.data?.changeActionId);

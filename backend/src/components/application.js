@@ -10,13 +10,15 @@ const {
   updateChangeRequestNewFacility,
   postApplicationSummaryDocument,
   postChangeRequestSummaryDocument,
+  getChangeActionDetails
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   APPLICATION_STATUS_CODES,
   CCOF_STATUS_CODES,
-  CHANGE_REQUEST_TYPES
+  CHANGE_REQUEST_TYPES,
+  CCFRI_STATUS_CODES
 } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -25,6 +27,7 @@ const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
+  UserProfileBaseCCFRIMappings,
   UserProfileCCFRIMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
@@ -696,13 +699,11 @@ async function getFacilityChangeData(changeActionId){
 }
 
 async function getMTFIChangeData(changeActionId) {
-  let mappedData = [];
-  let operation = `ccof_change_request_mtfis?$filter=_ccof_change_action_value eq ${changeActionId}`;
-  let response = await getOperation(operation);
-  response?.value.forEach(fac => {
-    mappedData.push( new MappableObjectForFront(fac, MtfiMappings).toJSON());
+  let mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
+  mtfi?.forEach(item => {
+    item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
   });
-  return mappedData;
+  return mtfi;
 }
 //and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
 async function getChangeRequestsFromApplicationId(applicationIds){
@@ -778,6 +779,30 @@ async function getChangeRequest(req, res){
 
 }
 
+async function deletePcfApplication(req, res){
+  try {
+    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
+    let application = await getOperation(operation);
+
+    //loop thru to grab facility ID's and delete all of them
+    await Promise.all(application['ccof_application_basefunding_Application'].map(async (facility) => {
+      await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
+      //log.info(response);
+    }));
+
+    //delete the application
+    await deleteOperationWithObjectId('ccof_applications', req.params.applicationId);
+
+    //and delete the org. We must delete the org otherwise the user will be linked to multiple orgs in dynamics
+    await deleteOperationWithObjectId('accounts', application['_ccof_organization_value']);
+
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error('An error occurred while deleting PCF', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -792,5 +817,6 @@ module.exports = {
   getChangeRequest,
   patchCCFRIApplication,
   deleteCCFRIApplication,
-  printPdf
+  printPdf,
+  deletePcfApplication
 };

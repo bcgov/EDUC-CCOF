@@ -39,7 +39,6 @@ const FacilityMappings = [
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
-  { back: 'ccof_facilitystatus@OData.Community.Display.V1.FormattedValue', front: 'facilityStatus' }, 
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
@@ -54,6 +53,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_feecorrectccfri', front: 'existingFeesCorrect' },
   { back: 'ccof_chargefeeccfri', front: 'hasClosureFees' },
   { back: 'ccof_applicationccfriid', front: 'ccfriApplicationId' },
+  { back: 'ccof_unlock_rfi', front: 'unlockRfi'},
 
   // XXXXXXXXXXXXX: 'licenseEffectiveDate',
   // XXXXXXXXXXXXX: 'hasReceivedFunding',
@@ -434,9 +434,11 @@ const ChangeRequestMappings = [
 const PdfDocumentMappings = [
   {back: 'annotationid', front: 'annotationId'},
   {back: 'filename', front: 'fileName'},
-  {back: 'subject', front: 'subject'},
+  {back: 'type', front: 'type'},
+  {back: 'submissiondate', front: 'submissionDate'},
+  {back: 'fiscalyear', front: 'fiscalYear'},
+  {back: 'id', front: 'appId'},
   {back: 'filesize', front: 'fileSize'},
-  {back: 'createdon', front: 'createDate'},
 ];
 
 module.exports = {

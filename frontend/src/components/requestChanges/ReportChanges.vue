@@ -364,7 +364,7 @@ export default {
       case 'NEW_FACILITY':
         return "Add new facility(s)";
       case 'PARENT_FEE_CHANGE':
-        return 'Midterm Fee Increase';
+        return 'Mid-Term Fee Increase';
 
       default:
         return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category

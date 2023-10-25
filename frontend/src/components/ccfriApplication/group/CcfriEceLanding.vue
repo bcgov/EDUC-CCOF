@@ -105,19 +105,22 @@ export default {
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestId']),
-    ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    ...mapGetters('reportChanges', ['changeRequestStatus']),
+    ...mapGetters('navBar', ['previousPath', 'isChangeRequest', 'getChangeActionNewFacByFacilityId']),
+    ...mapGetters('reportChanges', ['changeRequestStatus', ]),
+    ...mapState('reportChanges', ['changeRequestMap',]),
     isReadOnly() {
+      //console.log('read only called');
       if (this.unlockedFacilities) {
         return false;
       }
       if (this.isChangeRequest) {
+        // console.log('is change req');
+        // console.log(this.changeRequestStatus);
         if (!this.changeRequestStatus) {
+          //console.log('no status');
           return false;
         }
-        else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
+        return (this.changeRequestStatus != 'INCOMPLETE');
       }
       return (this.applicationStatus === 'SUBMITTED');
     },
@@ -188,7 +191,7 @@ export default {
       }
       //if application is a change request, go to add new fees
       else if (isChangeRequest(this)) {
-        this.$router.push(changeUrlGuid(PATHS.CCFRI_NEW_FEES, firstOptInFacility.changeRequestId, firstOptInFacility.ccfriApplicationId));
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.$route.params.changeRecGuid, firstOptInFacility.ccfriApplicationId));
 
       }
       //if application locked, send to add new fees
@@ -216,9 +219,15 @@ export default {
         if (!ccfriOptInOrOut[i]) {
           continue;
         }
+
+        let newFac = this.getChangeActionNewFacByFacilityId(this.navBarList[i].facilityId);
+
         if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          const userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
-          if (userProfileFacility) {
+          let userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
+          if (newFac) {
+            newFac.ccfri.ccfriOptInStatus = this.ccfriOptInOrOut[i];
+          }
+          else {
             userProfileFacility.ccfriOptInStatus = this.ccfriOptInOrOut[i];
           }
           payload.push({
@@ -226,10 +235,8 @@ export default {
             facilityID: this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
             ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
-            changeRequestNewFacilityId: this.navBarList[i].changeRequestNewFacilityId ? this.navBarList[i].changeRequestNewFacilityId : undefined,
-            //toDo: check if is Change request first, then if so, attached the change request Facility ID GUID
-            //so it can be linked in the backend. It works with the above hardcoded guid ^
-            //I did not implement fully because it sounds like we might get that info back from profiderProfile
+            changeRequestNewFacilityId: newFac?.changeRequestNewFacilityId? newFac.changeRequestNewFacilityId : undefined,
+
           });
         }
       }//end for loop
@@ -239,15 +246,23 @@ export default {
         try {
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
 
+          console.log(response.data);
           response.data.forEach(item => {
             if (item.ccfriApplicationId) {
               this.userProfileList.find(facility => {
                 if (facility.facilityId == item.facilityId) {
                   facility.ccfriApplicationId = item.ccfriApplicationId;
+                  //if this is a CR new facility - update the change action data in the navBar so the navBar will always be up to date without a reload to dynamics
+                  let newFac = this.getChangeActionNewFacByFacilityId(item.facilityId);
+                  if (newFac){
+                    newFac.ccfri.ccfriApplicationId =  item.ccfriApplicationId;
+                  }
                 }
               });
+
             }
           });
+          this.refreshNavBarList();
           this.forceNavBarRefresh();
           if (withAlert) {
             this.setSuccessAlert('Success! CCFRI Opt In status has been saved.');

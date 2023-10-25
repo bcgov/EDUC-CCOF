@@ -19,7 +19,7 @@
 
     <br><br>
     <div class="row pt-4 justify-center">
-      <span class="text-h6">Our records show this facility's approved parent fees for  are as follows:</span>
+      <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
     </div>
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
       <div v-if="loading">
@@ -397,12 +397,13 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl, ApiRoutes } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
+import ApiService from '@/common/apiService';
 
 
 let model = { };
@@ -442,7 +443,7 @@ export default {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['programYearId', 'isRenewal']),
-    ...mapState('navBar', ['navBarList', 'userProfileList']),
+    ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     areFeesCorrect() {
@@ -469,14 +470,17 @@ export default {
           this.loading = true;
           let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
           this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
-
+          // const test = this.getClosureDates(this.currentFacility.ccfriApplicationId);
+          // console.log(test);
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
-
+          console.log('hey');
+          console.log(this.currentPcfCcfri);
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
           this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
+
 
           let arr = [];
 
@@ -529,7 +533,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousApprovedFees', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
+    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousApprovedFees', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian', 'getClosureDates' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
     ...mapMutations('navBar',['setNavBarCCFRIComplete','setNavBarValue']),
@@ -589,9 +593,28 @@ export default {
     isFormComplete(){
       return this.isValidForm; //false makes button clickable, true disables button
     },
-    toRfi() {
-      this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
-      this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
+    getMtfiFacility(facilityId) {
+      let mtfiFacility;
+      const changeRequest = this.changeRequestMap?.get(this.$route.params.changeRecGuid);
+      if (changeRequest?.changeActions?.length > 0) {
+        const mtfiDetails = changeRequest?.changeActions[0].mtfi;
+        mtfiFacility = mtfiDetails?.find(item => item.facilityId === facilityId);
+      }
+      return mtfiFacility;
+    },
+    async toRfi() {
+      try {
+        this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true});
+        if (this.getCurrentFacility.unlockCcfri) {
+          this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'unlockRfi', value: true});
+          const mtfiFacility = this.getMtfiFacility(this.currentFacility.facilityId);
+          await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + mtfiFacility?.changeRequestMtfiId, {'ccof_unlock_rfi': true});
+        }
+        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occured while navigating to RFI.');
+      }
     },
     async next() {
       // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);

@@ -60,11 +60,11 @@ export default {
     // }
   },
   actions: {
-    async saveFacility({ state, commit, rootState }, { isChangeRequest, changeRequestId }) {
+    async saveFacility({ state, commit, rootState, dispatch }, { isChangeRequest, changeRequestId }) {
 
       checkSession();
-      console.log('saveFacility- state model: ', state.facilityModel);
-      console.log('saveFacility- loaded model: ', state.loadedModel);
+      // console.log('saveFacility- state model: ', state.facilityModel);
+      // console.log('saveFacility- loaded model: ', state.loadedModel);
       if (isEqual(state.facilityModel, state.loadedModel)) {
         console.info('no model changes');
         return;
@@ -94,7 +94,7 @@ export default {
         console.log('creating change request?', isChangeRequest);
         // else create a new facility.  If is a change request, hit the change request endpoint
         if (isChangeRequest) {
-          console.log('changeRequestId: ', changeRequestId);
+          // console.log('changeRequestId: ', changeRequestId);
           try {
             let changeActionId;
             if (changeRequestId) {
@@ -111,16 +111,55 @@ export default {
                 programYearId: rootState.application.programYearId,
                 changeType: 'NEW_FACILITY'
               };
+              console.log('calling create change rec new fac');
               const changeRequestResponse = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_FAC, changeRequestPayload);
               commit('reportChanges/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
               commit('reportChanges/setChangeActionId', changeRequestResponse.data?.changeActionId, { root: true });
               commit('navBar/setChangeRequestId', changeRequestResponse.data?.changeRequestId, { root: true });
-              commit('reportChanges/addNewChangeRequestToMap', changeRequestResponse.data?.changeRequestId, { root: true });
+              //await dispatch('navBar/loadChangeRequest', changeRequestId);
+              const changeRequestNewFacilityModel = {
+
+                changeRequestId: changeRequestResponse.data?.changeRequestId,
+                agreeConsentCertify:null,
+                applicableSector:null,
+                applicationId: rootState.application.applicationId,
+                belongsToUnion:null,
+                changeActions: [{
+                  applicationStatus:1,
+                  changeActionId: changeRequestResponse.data?.changeActionId,
+                  changeType:100000005,
+                  isCCOFUnlocked:false,
+                  isChangeRequestUnlocked:false,
+                  isEceweUnlocked:false,
+                  isLicenseUploadUnlocked:false,
+                  isOtherDocumentsUnlocked:false,
+                  isSupportingDocumentsUnlocked:false,
+                  newFacilities: [],
+
+                }],
+                confirmation:null,
+                enabledDeclarationB:false,
+                externalStatus:"INCOMPLETE",
+                firstSubmissionDate:null,
+                fundingModel:null,
+                isChangeRequestUnlocked:false,
+                isEceweComplete:false,
+                isLicenseUploadComplete:false,
+                latestSubmissionDate:null,
+                optInECEWE:null,
+                orgContactName:null,
+                programYearId: rootState.application.programYearId,
+                providerType:"GROUP",
+                status:1,
+                unlockDeclaration:false,
+
+              };
+              await commit('reportChanges/addNewChangeRequestToMap', changeRequestNewFacilityModel ,{ root: true });
               changeActionId = changeRequestResponse.data?.changeActionId;
             }
             let response = await ApiService.apiAxios.post(`${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`, payload);
             commit('setFacilityId', response.data?.facilityId);
-            commit('navBar/addToNavBar', {
+            const navBarPayload = {
               facilityName: state.facilityModel.facilityName,
               facilityId: state.facilityId,
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
@@ -130,7 +169,10 @@ export default {
               changeActionId: rootState.reportChanges.changeActionId,
               changeRequestNewFacilityId: response.data?.changeRequestNewFacilityId,
               facilityStatus: 'New',
-            }, { root: true });
+              isCCOFComplete: false, //funding page must be complete to be true
+            };
+            commit('reportChanges/addNewFacilityDataToCRMap', navBarPayload, { root: true });
+            commit('navBar/addToNavBar', navBarPayload, { root: true });
             commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
 
             return response;
@@ -143,7 +185,7 @@ export default {
           try {
             let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
             commit('setFacilityId', response.data?.facilityId);
-            commit('navBar/addToNavBar', {
+            commit('reportChanges/addNewFacilityDataToCRMap', {
               facilityName: state.facilityModel.facilityName,
               facilityId: state.facilityId,
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
@@ -185,7 +227,6 @@ export default {
     },
     async deleteFacility({ commit }, facilityObj) {
       checkSession();
-
       await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityObj.facilityId, {data: facilityObj});
 
       commit('deleteFromStore', facilityObj.facilityId);

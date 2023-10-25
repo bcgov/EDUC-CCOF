@@ -1,4 +1,6 @@
 import { filterFacilityListForPCF, checkApplicationUnlocked } from '@/utils/common';
+import ApiService from '@/common/apiService';
+import { ApiRoutes } from '@/utils/constants';
 
 export default {
   namespaced: true,
@@ -53,7 +55,16 @@ export default {
       });
       state.applicationMap = map;
     },
+    async deletePcfApplication({state}){
+      console.log('delete PCF clicked');
+      //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
 
+      const response = await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state.applicationId);
+
+      console.log(response);
+
+      window.reload();
+    }
   },
   getters: {
     formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, ''),

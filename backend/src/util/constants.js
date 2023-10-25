@@ -87,7 +87,12 @@ const CCFRI_STATUS_CODES = Object.freeze({
   SUBMITTED: 1,
   NOT_APPROVED: 4,
   INELIGIBLE: 5,
-  ACTION_REQUIRED: 6
+  ACTION_REQUIRED: 6,
+  'Opt-Out': 7,
+  'New': 8,
+  'MTFI Requested': 9,
+  'MTFI Approved': 10,
+  'MTFI Action Required': 13,
 });
 
 const ECEWE_STATUS_CODES = Object.freeze({

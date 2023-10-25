@@ -13,8 +13,8 @@ router.get('/getDocument/:annotationId', auth.refreshJWT,isValidBackendToken, [
 });
 
 //Gets all the pdfs for summaryDeclaration and changeRequest submissions
-router.get('/:applicationId', passport.authenticate('jwt', {session: false}, undefined),isValidBackendToken, [
-  param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
+router.get('/:organizationId', passport.authenticate('jwt', {session: false}, undefined),isValidBackendToken, [
+  param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],  (req, res) => {
   return getPdfs(req, res);
 });
 
