@@ -75,6 +75,7 @@ export default {
         let response;
         if (isChangeRequest) {
           delete payload.applicationId;
+          console.log('ece we payload', payload);
           response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
         } else {
           response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
