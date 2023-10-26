@@ -36,7 +36,7 @@ function getProgramYear(selectedGuid, programYearList){
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
   //console.log('CURRENTRFI', currentRFI);
   // Lookup previous years approved parent fees for most RFI scenarios
-  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.app.isRenewal ) ) {
+  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.application.isRenewal ) ) {
     let previousRFI = getters.getPreviousApprovedFeesByFacilityId({facilityId: currentRFI.facilityId, previousProgramYearId: previousProgramYearId});
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
@@ -90,6 +90,7 @@ export default {
     ccfriStore :{},
     ccfriMedianStore: {},
     previousFeeStore: {},
+    previousClosureDates: {}, //used for MTFI
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -334,6 +335,7 @@ export default {
       try {
         console.log(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
         const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
+        state.previousClosureDates = response.data;
         //commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
         return response.data;
       } catch(e) {
@@ -376,7 +378,7 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.application.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
+        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
           console.log('show all the cards');
           response.data.forEach(item => {
 
@@ -404,7 +406,7 @@ export default {
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
-        if (rootState.application.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
+        if (rootState.app.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
           console.log('prevCCFRI IS:' , prevCcfriApp);
           response.data.forEach(item => {
 
