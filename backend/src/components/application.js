@@ -434,9 +434,9 @@ async function submitApplication(req, res) {
 async function printPdf(req, numOfRetries = 0) {
   let url = `${req.headers.referer}/printable`;
 
-  log.verbose('printPdf :: user is',req.session?.passport?.user?.displayName);
+  log.info('printPdf :: user is',req.session?.passport?.user?.displayName);
   log.verbose('printPdf :: correlationId is', req.session.correlationID);
-  log.verbose('printPdf :: applicationId is', req.params.applicationId);
+  log.info('printPdf :: applicationId is', req.params.applicationId);
   log.verbose('printPdf :: url path is', url);
 
   const browser = await puppeteer.launch({
@@ -451,7 +451,7 @@ async function printPdf(req, numOfRetries = 0) {
   }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
 
   try {
-    log.verbose('printPdf :: starting new page');
+    log.info('printPdf :: starting new page');
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
@@ -463,14 +463,14 @@ async function printPdf(req, numOfRetries = 0) {
       request.continue({ headers });
     });
 
-    log.verbose('printPdf :: starting page load');
+    log.info('printPdf :: starting page load');
     await page.goto(url, {waitUntil: 'networkidle0'});
     await page.waitForSelector('#signatureTextField', {visible: true});
-    log.verbose('printPdf :: page loaded starting pdf creation');
+    log.info('printPdf :: page loaded starting pdf creation');
     const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
-    log.verbose('printPdf :: pdf buffer created starting compression');
+    log.info('printPdf :: pdf buffer created starting compression');
     const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
-    log.verbose('printPdf :: compression completed for applicationId', req.params.applicationId);
+    log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
     await browser.close();
 
     let payload;
