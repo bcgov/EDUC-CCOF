@@ -130,9 +130,9 @@ export default {
         if(rootGetters['navBar/isChangeRequest']){
           console.log('this is a change req, build from newFacilities list');
 
-          let newFac = rootState.reportChanges.changeRequestMap.get(rootState.navBar.changeRequestId).changeActions[0].newFacilities;
+          let newFac = rootState?.reportChanges?.changeRequestMap?.get(rootState?.navBar?.changeRequestId).changeActions[0]?.newFacilities;
 
-          facilityPayload =  newFac.map(facility => ({
+          facilityPayload =  newFac?.map(facility => ({
             eceweApplicationId: null,
             facilityId: facility.facilityId,
             optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
@@ -159,9 +159,9 @@ export default {
         if(rootGetters['navBar/isChangeRequest']){
           console.log('this is a change req, build from newFacilities list');
 
-          let newFac = rootState.reportChanges.changeRequestMap.get(rootState.navBar.changeRequestId).changeActions[0].newFacilities;
+          let newFac = rootState?.reportChanges?.changeRequestMap?.get(rootState?.navBar?.changeRequestId).changeActions[0]?.newFacilities;
 
-          facilityPayload =  newFac.map(facility => ({
+          facilityPayload =  newFac?.map(facility => ({
             eceweApplicationId: getEceweApplicationId(facility.facilityId),
             facilityId: facility.facilityId,
             optInOrOut:  getOptInOrOut(facility.facilityId),

@@ -365,7 +365,7 @@ export default {
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities', 'loadECEWEModelFromChangeRequest']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
-    ...mapMutations('application', ['setIsEceweCompleteInMap']),
+    ...mapMutations('application', ['setIsEceweCompleteInMap', 'setIsEceweComplete']),
     ...mapMutations('reportChanges', ['setCRIsEceweComplete']),
     ...mapActions('reportChanges', ['getChangeRequest']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
@@ -499,6 +499,7 @@ export default {
           this.setCRIsEceweComplete({changeRequestId: this.changeRequestId, isComplete: this.enableButtons});
         }
         else {
+          this.setIsEceweComplete(this.enableButtons);
           this.setIsEceweCompleteInMap(this.enableButtons);
         }
         this.forceNavBarRefresh();
