@@ -36,7 +36,7 @@ function getProgramYear(selectedGuid, programYearList){
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
   //console.log('CURRENTRFI', currentRFI);
   // Lookup previous years approved parent fees for most RFI scenarios
-  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.app.isRenewal ) ) {
+  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.application.isRenewal ) ) {
     let previousRFI = getters.getPreviousApprovedFeesByFacilityId({facilityId: currentRFI.facilityId, previousProgramYearId: previousProgramYearId});
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
@@ -90,6 +90,7 @@ export default {
     ccfriStore :{},
     ccfriMedianStore: {},
     previousFeeStore: {},
+    previousClosureDates: {}, //used for MTFI
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -334,6 +335,7 @@ export default {
       try {
         console.log(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
         const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
+        state.previousClosureDates = response.data;
         //commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
         return response.data;
       } catch(e) {

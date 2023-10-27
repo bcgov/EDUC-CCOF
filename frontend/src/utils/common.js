@@ -91,3 +91,14 @@ export function checkApplicationUnlocked(application) {
                               isCCFRIUnlocked || isNMFUnlocked || isRFIUnlocked;
   return isApplicationUnlocked;
 }
+
+export function isAnyApplicationUnlocked (applicationList){
+  return applicationList.some(application => {
+    return checkApplicationUnlocked(application);
+  });
+}
+
+export function  isAnyChangeRequestActive(changeRequestList) {
+  //Status of : "In Progress" "Submitted" "Action Required";
+  return changeRequestList.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
+}

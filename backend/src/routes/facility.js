@@ -61,8 +61,7 @@ router.get('/fees/:facilityId/year/:programYearId', passport.authenticate('jwt',
  *
  */
 router.get('/dates/:ccfriId', passport.authenticate('jwt', {session: false}),isValidBackendToken,
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty(),
-    param('programYearId', 'URL param: [programYearId] is required').not().isEmpty()], (req, res) => {
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
     validationResult(req).throw();
     return returnCCFRIClosureDates(req, res);
   });

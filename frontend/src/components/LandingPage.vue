@@ -109,7 +109,7 @@
         </v-card>
       </v-dialog>
 
-      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.renewalYearLabel}`" :disable="!isRenewEnabled">
+      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${this.renewalYearLabel}`" :disable="!isRenewEnabled ">
         <template #content>
           <p class="text-h6">Renew my Funding Agreement</p>
           <p>
