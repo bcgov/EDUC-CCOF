@@ -180,8 +180,6 @@ export default {
       isCCOFGroupComplete = false;
 
       this.items = [];
-      // console.log('is change request: ', this.isChangeRequest);
-      // console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
         if(this.changeType==='nf'){
           this.buildNewFacilityNavBar();
@@ -604,18 +602,13 @@ export default {
       return retval;
     },
     addNewFacilityToCCOFNavbar() {
-      console.log('this.$route.name ============== ')
-      console.log(this.$route.name);
-      console.log('this.$route.params.urlGuid ============== ')
-      console.log(this.$route.params.urlGuid);
-      //change-request-facility-information
       return {
         title: 'Facility',
         id: null,
-        link: {name: this.isChangeRequest? 'Report Change Facility' : 'Facility Information'},
+        link: {name: this.isChangeRequest? 'change-request-facility-information' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: this.isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: this.isChangeRequest? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };
