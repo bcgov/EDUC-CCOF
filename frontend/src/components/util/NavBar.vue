@@ -604,6 +604,11 @@ export default {
       return retval;
     },
     addNewFacilityToCCOFNavbar() {
+      console.log('this.$route.name ============== ')
+      console.log(this.$route.name);
+      console.log('this.$route.params.urlGuid ============== ')
+      console.log(this.$route.params.urlGuid);
+      //change-request-facility-information
       return {
         title: 'Facility',
         id: null,

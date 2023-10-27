@@ -32,10 +32,15 @@ export default {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');
-    }
-  },
+    },
+    isModelEmpty() {
+      return !(Object.values(this.model)?.some(item => item));
+    },
+},
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if (!this.isModelEmpty) {
+      await this.save(false);
+    }
     next();
   },
   watch: {
