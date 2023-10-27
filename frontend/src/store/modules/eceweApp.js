@@ -63,7 +63,7 @@ export default {
         commit('setLoadedModel', eceweModel);
       }
     },
-    async saveECEWE({ state, commit , rootState}, {isFormComplete, isChangeRequest, changeRequestId}) {
+    async saveECEWE({ state, commit}, {isFormComplete, isChangeRequest, changeRequestId}) {
       try {
         if (isEqual(state.eceweModel, state.loadedModel) && state.isStarted) {
           return;
@@ -72,14 +72,10 @@ export default {
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
         payload.isEceweComplete = isFormComplete;
-        console.log('form complete? ', isFormComplete);
-        // let currApp = rootState.application.applicationMap?.get(rootState.application.programYearId);
-        // currApp.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
         let response;
         if (isChangeRequest) {
           delete payload.applicationId;
-          console.log('ece we payload CR', payload);
           response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
         } else {
           response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
@@ -105,7 +101,6 @@ export default {
         checkSession();
         payload = JSON.parse(JSON.stringify(payload));
         try {
-          console.log('save fac payload', payload);
           let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
           let updatedFacilities = state.facilities;
           response?.data?.facilities?.forEach(facility => {
@@ -129,9 +124,6 @@ export default {
     /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
     async initECEWEFacilities({ state, commit, rootState, rootGetters }, navBarList) {
       let facilityPayload;
-      console.log('passedIN LIST');
-      console.log(navBarList);
-      //console.log(rootGetters['navBar/isChangeRequest']);
       if (state.facilities?.length == 0) {
         console.log(' No facilities payload, create from the narBarList.');
 
@@ -147,8 +139,6 @@ export default {
             changeRequestId: rootState.navBar.changeRequestId ? rootState.navBar.changeRequestId: null,
             changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
           }));
-
-          console.log(facilityPayload);
         }
         else{
 
@@ -178,8 +168,6 @@ export default {
             changeRequestId: rootState.navBar.changeRequestId ? rootState.navBar.changeRequestId: null,
             changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
           }));
-
-          console.log(facilityPayload);
         }
         else{
           facilityPayload = navBarList.map(facility => ({

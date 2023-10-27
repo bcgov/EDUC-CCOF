@@ -319,13 +319,6 @@ export default {
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
     ...mapState('reportChanges', ['loadedChangeRequest']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
-    // filteredNavBarList() {
-    //   if (this.isChangeRequest) {
-    //     return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-    //   } else {
-    //     return this.navBarList.filter(el => !el.changeRequestId);
-    //   }
-    // },
     filteredECEWEFacilityList() {
       if (this.isChangeRequest) {
         return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
