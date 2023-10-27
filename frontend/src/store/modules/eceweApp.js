@@ -3,6 +3,7 @@ import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
 import { sortByFacilityId, isNullOrBlank } from '@/utils/common';
+import facility from './ccof/facility';
 
 export default {
   namespaced: true,
@@ -62,7 +63,7 @@ export default {
         commit('setLoadedModel', eceweModel);
       }
     },
-    async saveECEWE({ state, commit }, {isFormComplete, isChangeRequest, changeRequestId}) {
+    async saveECEWE({ state, commit , rootState}, {isFormComplete, isChangeRequest, changeRequestId}) {
       try {
         if (isEqual(state.eceweModel, state.loadedModel) && state.isStarted) {
           return;
@@ -71,11 +72,14 @@ export default {
         let payload = JSON.parse(JSON.stringify(state.eceweModel));
         delete payload.facilities;
         payload.isEceweComplete = isFormComplete;
+        console.log('form complete? ', isFormComplete);
+        // let currApp = rootState.application.applicationMap?.get(rootState.application.programYearId);
+        // currApp.isEceweComplete = isFormComplete;
         commit('setLoadedModel', {...state.eceweModel});
         let response;
         if (isChangeRequest) {
           delete payload.applicationId;
-          console.log('ece we payload', payload);
+          console.log('ece we payload CR', payload);
           response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
         } else {
           response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
@@ -101,6 +105,7 @@ export default {
         checkSession();
         payload = JSON.parse(JSON.stringify(payload));
         try {
+          console.log('save fac payload', payload);
           let response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + state.applicationId, payload);
           let updatedFacilities = state.facilities;
           response?.data?.facilities?.forEach(facility => {
@@ -122,29 +127,67 @@ export default {
       }
     },
     /* Initalizes\creates the facilities payload depending on if ecewe facilities exist or not. */
-    async initECEWEFacilities({ state, commit }, navBarList) {
+    async initECEWEFacilities({ state, commit, rootState, rootGetters }, navBarList) {
       let facilityPayload;
+      console.log('passedIN LIST');
+      console.log(navBarList);
+      //console.log(rootGetters['navBar/isChangeRequest']);
       if (state.facilities?.length == 0) {
         console.log(' No facilities payload, create from the narBarList.');
-        // No facilities payload, create from the narBarList.
-        facilityPayload = navBarList.map(facility => ({
-          eceweApplicationId: null,
-          facilityId: facility.facilityId,
-          optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
-          changeRequestId: facility.changeRequestId ? facility.changeRequestId : null,
-          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
-        }));
-      } else {
+
+        if(rootGetters['navBar/isChangeRequest']){
+          console.log('this is a change req, build from newFacilities list');
+
+          let newFac = rootState.reportChanges.changeRequestMap.get(rootState.navBar.changeRequestId).changeActions[0].newFacilities;
+
+          facilityPayload =  newFac.map(facility => ({
+            eceweApplicationId: null,
+            facilityId: facility.facilityId,
+            optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
+            changeRequestId: rootState.navBar.changeRequestId ? rootState.navBar.changeRequestId: null,
+            changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
+          }));
+
+          console.log(facilityPayload);
+        }
+        else{
+
+          // No facilities payload, create from the narBarList.
+          facilityPayload = navBarList.map(facility => ({
+            eceweApplicationId: null,
+            facilityId: facility.facilityId,
+            optInOrOut: state.eceweModel.fundingModel === state.fundingModelTypes[0].id ? 0 : null,
+          }));
+        }
+      }
+
+      else {
         // A payload already exists, recreate to include any new facilities which could have been added to navBarList
         // since last creation.
         console.log('A payload already exists, recreate');
-        facilityPayload = navBarList.map(facility => ({
-          facilityId: facility.facilityId,
-          eceweApplicationId: getEceweApplicationId(facility.facilityId),
-          optInOrOut: getOptInOrOut(facility.facilityId),
-          changeRequestId: facility.changeRequestId ? facility.changeRequestId : null,
-          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
-        }));
+
+        if(rootGetters['navBar/isChangeRequest']){
+          console.log('this is a change req, build from newFacilities list');
+
+          let newFac = rootState.reportChanges.changeRequestMap.get(rootState.navBar.changeRequestId).changeActions[0].newFacilities;
+
+          facilityPayload =  newFac.map(facility => ({
+            eceweApplicationId: getEceweApplicationId(facility.facilityId),
+            facilityId: facility.facilityId,
+            optInOrOut:  getOptInOrOut(facility.facilityId),
+            changeRequestId: rootState.navBar.changeRequestId ? rootState.navBar.changeRequestId: null,
+            changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null
+          }));
+
+          console.log(facilityPayload);
+        }
+        else{
+          facilityPayload = navBarList.map(facility => ({
+            facilityId: facility.facilityId,
+            eceweApplicationId: getEceweApplicationId(facility.facilityId),
+            optInOrOut: getOptInOrOut(facility.facilityId),
+          }));
+        }
       }
       commit('setFacilities', facilityPayload);
       function getEceweApplicationId(facilityId) {

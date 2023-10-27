@@ -46,7 +46,16 @@ export default {
     setUnlockSupportingDocuments(state, value) { state.unlockSupportingDocuments = value; },
 
     setIsEceweComplete(state, value) { state.isEceweComplete = value; },
+    setIsEceweCompleteInMap(state, value){
+      console.log('set value ', value);
+      let app = state.applicationMap?.get(state.programYearId);
+      app.isEceweComplete = value;
+    },
     setIsLicenseUploadComplete(state, value) { state.isLicenseUploadComplete = value; },
+    setIsLicenseUploadCompleteInMap(state, value) {
+      let app = state.applicationMap?.get(state.programYearId);
+      app.isLicenseUploadComplete = value;
+    },
 
     addApplicationsToMap: (state, applicationList) => {
       const map = new Map(state.applicationMap);

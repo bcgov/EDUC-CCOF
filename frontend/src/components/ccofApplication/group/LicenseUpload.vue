@@ -188,7 +188,7 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
-    ...mapMutations('application', ['setIsLicenseUploadComplete']),
+    ...mapMutations('application', ['setIsLicenseUploadCompleteInMap']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
     previous() {
@@ -228,7 +228,7 @@ export default {
         if (this.isChangeRequest) {
           this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled});
         } else {
-          this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
+          this.setIsLicenseUploadCompleteInMap(!this.nextButtonDisabled);
         }
         this.forceNavBarRefresh();
         if (showConfirmation) {

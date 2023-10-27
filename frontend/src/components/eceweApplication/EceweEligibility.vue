@@ -319,13 +319,13 @@ export default {
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
     ...mapState('reportChanges', ['loadedChangeRequest']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
-    filteredNavBarList() {
-      if (this.isChangeRequest) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
-    },
+    // filteredNavBarList() {
+    //   if (this.isChangeRequest) {
+    //     return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+    //   } else {
+    //     return this.navBarList.filter(el => !el.changeRequestId);
+    //   }
+    // },
     filteredECEWEFacilityList() {
       if (this.isChangeRequest) {
         return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -353,7 +353,7 @@ export default {
       let response = await this.loadData();
       if (response) {
         this.setIsStarted(true);
-        this.initECEWEFacilities(this.filteredNavBarList);
+        this.initECEWEFacilities(this.navBarList);
         let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
         this.setLoadedFacilities(copyFacilities);
         this.model = {...this.eceweModel};
@@ -372,7 +372,7 @@ export default {
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities', 'loadECEWEModelFromChangeRequest']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
-    ...mapMutations('application', ['setIsEceweComplete']),
+    ...mapMutations('application', ['setIsEceweCompleteInMap']),
     ...mapMutations('reportChanges', ['setCRIsEceweComplete']),
     ...mapActions('reportChanges', ['getChangeRequest']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
@@ -474,7 +474,7 @@ export default {
       //   }
       //   return facility;
       // });
-      this.filteredNavBarList.forEach(facility => {
+      this.navBarList.forEach(facility => {
         facility.eceweOptInStatus = 0;
       });
       this.facilities.forEach(facility => {
@@ -504,8 +504,9 @@ export default {
         }
         if (this.isChangeRequest) {
           this.setCRIsEceweComplete({changeRequestId: this.changeRequestId, isComplete: this.enableButtons});
-        } else {
-          this.setIsEceweComplete(this.enableButtons);
+        }
+        else {
+          this.setIsEceweCompleteInMap(this.enableButtons);
         }
         this.forceNavBarRefresh();
 
@@ -529,6 +530,7 @@ export default {
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.');
+        console.log(error);
       } finally {
         this.isProcessing = false;
       }

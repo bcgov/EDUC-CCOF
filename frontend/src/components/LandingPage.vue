@@ -125,10 +125,16 @@
           </div>
         </template>
         <template #button>
-          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement</v-btn>
-          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
-          <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
-          <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else>View Application</v-btn>
+          <!-- wait for CR list to be loaded before starting a renewal- to not allow user to start renewal if there is active change request -->
+          <div v-if="!isLoadingComplete">
+            <v-skeleton-loader class="ma-0 pa-0" type="chip"></v-skeleton-loader>
+          </div>
+          <div v-else>
+            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement</v-btn>
+            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
+            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
+            <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else>View Application</v-btn>
+          </div>
         </template>
       </SmallCard>
 
