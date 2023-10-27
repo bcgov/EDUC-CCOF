@@ -57,7 +57,7 @@
             <p class="text-h5 blueText">Status: Incomplete</p>
             <v-btn dark class="blueButton" @click="continueApplication()">Continue Application</v-btn>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-            <v-btn  v-if="isCancelPcfButtonEnabled" dark class="redButton ml-4" @click="openDialog()">Cancel Application</v-btn>
+            <v-btn v-if="isCancelPcfButtonEnabled" dark class="redButton" @click="openDialog()">Cancel Application</v-btn>
           </div>
 
           <div v-else>

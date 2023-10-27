@@ -123,6 +123,7 @@ export default {
     this.isLoading = false;
   },
   async beforeRouteLeave(_to, _from, next) {
+    this.isLoading = true;
     if(!this.isReadOnly){
       await this.save(false);
     }
