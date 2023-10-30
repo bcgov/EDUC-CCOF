@@ -17,7 +17,6 @@ export default {
     loadedChangeRequest: undefined,
     changeRequestStore : {},
     uploadedDocuments: [],
-    newFacilityList: [], //may not need this now
     mtfiFacilities: [],
     changeRequestMap: new Map(), //TODO: merge these two
   },
@@ -27,7 +26,6 @@ export default {
     changeRequestId: state => state.changeRequestId,
     loadedChangeRequest: state => state.loadedChangeRequest,
     getUploadedDocuments: state => state.uploadedDocuments,
-    getChangeRequestFacilities: state => state.newFacilityList,
     // eslint-disable-next-line no-unused-vars
     isCREceweComplete: (state, getters, rootState) => {
       return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.isEceweComplete;
@@ -116,11 +114,7 @@ export default {
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
     },
-    setNewFacilityList:(state, newFacilityList) => {
-      state.newFacilityList = newFacilityList;
-    },//may not need this now
     addNewChangeRequestToMap:(state, model) => {
-      console.log('addNew CR to map called');
       const item = {
         changeRequestId: model.changeRequestId,
         externalStatus: 'INCOMPLETE',
@@ -128,8 +122,6 @@ export default {
       };
       state.changeRequestMap.set(model.changeRequestId, model);
       state.changeRequestMap = new Map(state.changeRequestMap); // // done to trigger reactive getter
-      console.log('done cr map, it looks like this');
-      console.log(state.changeRequestMap);
     },
     setCRIsEceweComplete:(state, value) => {
       let cr = state.changeRequestMap.get(value.changeRequestId);
@@ -166,14 +158,8 @@ export default {
       }
     },
     addNewFacilityDataToCRMap: (state, payload) => {
-      console.log('add to CR map Called in Report Changes');
-      console.log(payload);
       try{
-        console.log(state);
-        // state.changeRequestMap.get(payload.changeRequestId).changeActions = [];
-        // console.log(state.changeRequestMap.get(payload.changeRequestId)?.changeActions);
         //save the newly created fac data into the change request map so it can be the source of truth
-        //console.log(state.changeRequestMap.get(payload.changeRequestId).changeActions);
 
         const newFacilityObj = {
           baseFunding: {
@@ -191,14 +177,10 @@ export default {
 
         };
 
-
         state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
-
-        //state.userProfileList.push(payload);
-        //rootState.navBar.refreshNavBar++;
       }
       catch(error){
-        console.log(error);
+       // console.log(error);
       }
 
     },
@@ -206,13 +188,6 @@ export default {
   actions: {
     // GET a list of all Change Requests for an application using applicationID
     async getChangeRequestList({commit, rootGetters}) {
-
-      //is it better/ worse to load from route state vs. passing in application ID?
-      console.log('loading change reqs for application list: ');
-
-      console.log(rootGetters['application/applicationIds']);
-      //console.log('loading change req for: ', rootState.application.applicationId);
-
       checkSession();
       let store = [];
       try {
@@ -221,7 +196,6 @@ export default {
         if (applicationIds?.length > 0)
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
 
-        let newFacList = [];
         if (!isEmpty(response)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
@@ -231,14 +205,9 @@ export default {
               if (changeAction.changeType == "NEW_FACILITY"){
                 const newFacilities = changeAction.facilities;
                 newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
-                newFacList.push(changeAction); //we may not need this now
               }
             });
-
           });
-
-          commit('setNewFacilityList', newFacList);
-          //may not need this either
         }
 
         /*Ministry requirements want change request shown in the order of:

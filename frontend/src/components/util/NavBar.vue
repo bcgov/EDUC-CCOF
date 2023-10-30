@@ -142,7 +142,7 @@ export default {
   watch:{
     navRefresh: {
       handler() {
-        // console.log('BuildNavBar called - trigged by navRefresh - computed value');
+        console.log('BuildNavBar called - trigged by navRefresh - computed value');
         this.buildNavBar();
       },
       immediate: true,
@@ -150,7 +150,7 @@ export default {
     },
     refreshNavBar: {
       handler() {
-        // console.log('BuildNavBar called - trigged by navBarRefresh - forced refresh');
+        console.log('BuildNavBar called - trigged by navBarRefresh - forced refresh');
         this.buildNavBar();
       },
       immediate: true,
@@ -180,8 +180,6 @@ export default {
       isCCOFGroupComplete = false;
 
       this.items = [];
-      // console.log('is change request: ', this.isChangeRequest);
-      // console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
         if(this.changeType==='nf'){
           this.buildNewFacilityNavBar();
@@ -320,10 +318,7 @@ export default {
 
     },
     buildNewFacilityNavBar(){
-      // console.log('building new FAC nav barr');
-
       this.addLandingPageToNavBar();
-      //this.items.push(this.getCCOFNavigation());//JB
       this.items.push(this.getAddNewFacilityCCOFNavigation());
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());

@@ -47,7 +47,6 @@ export default {
 
     setIsEceweComplete(state, value) { state.isEceweComplete = value; },
     setIsEceweCompleteInMap(state, value){
-      console.log('set value ', value);
       let app = state.applicationMap?.get(state.programYearId);
       app.isEceweComplete = value;
     },
@@ -65,13 +64,8 @@ export default {
       state.applicationMap = map;
     },
     async deletePcfApplication({state}){
-      console.log('delete PCF clicked');
       //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-
-      const response = await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state.applicationId);
-
-      console.log(response);
-
+      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state.applicationId);
       window.reload();
     }
   },
@@ -143,7 +137,6 @@ export default {
 
         commit('navBar/setIsRenewal', (application.applicationType === 'RENEW'), { root: true });
 
-        console.log();
         commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(programYearId).facilityList, { root: true });
       }
     },
