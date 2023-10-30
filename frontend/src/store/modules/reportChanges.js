@@ -222,7 +222,7 @@ export default {
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
 
         let newFacList = [];
-        if (!isEmpty(response.data)) {
+        if (!isEmpty(response)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
             store.push(element);

@@ -233,18 +233,11 @@ export default {
       }
     },
     addToNavBar: (state, payload) => {
-      console.log('add to navBar Called');
-      console.log(payload);
-      try{
-
-        state.userProfileList.push(payload);
-        filterNavBar(state);
-        state.refreshNavBar++;
-      }
-      catch(error){
-        console.log(error);
-      }
-
+      // console.log('add to navBar Called');
+      // console.log(payload);
+      state.userProfileList.push(payload);
+      filterNavBar(state);
+      state.refreshNavBar++;
     },
     deleteFromNavBar: (state, facilityId) => {
       state.userProfileList = state.userProfileList.filter(item => item.facilityId !== facilityId);

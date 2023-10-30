@@ -453,7 +453,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setIsRenewal']),
+    ...mapMutations('application', ['setIsRenewal']),
     ...mapActions('message', ['getAllMessages']),
     ...mapActions('application', ['deletePcfApplication']),
     ...mapMutations('navBar', ['refreshNavBarList']),
