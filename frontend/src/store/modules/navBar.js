@@ -95,10 +95,10 @@ function filterNavBar(state) {
   console.log(state.changeRequestMap);
   if (state.changeType ==='nf') {
     const newFacilityChangeAction = state.changeRequestMap.get(state.changeRequestId)?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
-    console.log('change action: ', newFacilityChangeAction);
+    //console.log('change action: ', newFacilityChangeAction);
     //const newFacilityChangeAction = changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     const navBa = getFacilityListFromNewFacilityCR(state.userProfileList, newFacilityChangeAction);
-    console.log('nav bar list: ----', navBa);
+    //console.log('nav bar list: ----', navBa);
     state.navBarList = navBa;
   } else if (state.changeType === 'mtfi') {
     const changeActions = state.changeRequestMap.get(state.changeRequestId)?.changeActions;
@@ -233,18 +233,9 @@ export default {
       }
     },
     addToNavBar: (state, payload) => {
-      console.log('add to navBar Called');
-      console.log(payload);
-      try{
-
-        state.userProfileList.push(payload);
-        filterNavBar(state);
-        state.refreshNavBar++;
-      }
-      catch(error){
-        console.log(error);
-      }
-
+      state.userProfileList.push(payload);
+      filterNavBar(state);
+      state.refreshNavBar++;
     },
     deleteFromNavBar: (state, facilityId) => {
       state.userProfileList = state.userProfileList.filter(item => item.facilityId !== facilityId);

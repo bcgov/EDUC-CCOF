@@ -283,266 +283,265 @@
                   </div>
                 </v-card-text>
             </v-card>
+        </div>
 
-            <v-card  v-if="arePrevFeesCorrect()" elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
-              min-height="230"
-              rounded
-              tiled
-              exact
-              tile
-              :ripple="false"
-            >
-              <v-card-text class="pa-0" >
-                <div class="pa-2 pa-md-4 ma-0 backG">
-                  <p class="text-h5 text--primary px-5 py-0 my-0">
-                    Do you charge parent fees at this facility for any closures on business days?
-                  </p>
-                </div>
-                <div class="px-md-12 px-7">
-                  <br>
-                  <div>
-                    <p>Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays. </a> Only indicate the date of closures where parent fees are charged.
-                    </p>
-                  </div>
-                  <v-radio-group
-                    required
-                    :disabled="isReadOnly || previousClosureDates.dates.length > 0"
-                    v-model="CCFRIFacilityModel.hasClosureFees"
-                    :rules = "rules"
-                  >
-                  <br>
-                    <v-radio
-                      label="Yes"
-                      :value="100000000"
-                    ></v-radio>
-                    <v-radio
-                      label="No"
-                      :value="100000001"
-                    ></v-radio>
-                  </v-radio-group>
-
-
-                  <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000 ">
-                    <!-- below will let user view, but not change closure dates from CCFRI application-->
-                    <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
-                    <v-row  v-for="(obj, index) in previousClosureDates.dates" :key="(index + 1000)" color='black'>
-                      <v-col color='#003366' class="col-md-1 col-12 mx-0">
-                        <v-icon
-                          :disabled="true"
-                          large
-                          color="blue darken-4"
-                          > mdi-close
-                        </v-icon>
-                      </v-col>
-
-                      <v-col class="col-md-3 col-12">
-                          <v-text-field  :disabled="true"
-                          outlined
-                          :rules="rules"
-                          v-model="obj.formattedStartDate"
-                          label="Start Date (YYYY-MM-DD)"
-                          readonly
-                          >
-
-                          </v-text-field>
-                      </v-col>
-
-                      <v-col class="col-md-3 col-12">
-                          <v-text-field :disabled="true"
-                          outlined
-                          required
-                          v-model="obj.formattedEndDate"
-                          label="End Date (YYYY-MM-DD)"
-                          readonly
-                          >
-                          </v-text-field>
-                      </v-col>
-
-                      <v-col class="col-md-3 col-12 ">
-                        <v-text-field
-                        :disabled="true"
-                          v-model="obj.closureReason"
-                          label="Closure Reason"
-                          outlined
-                          :rules="rules"
-                          color="red"
-                        ></v-text-field>
-                      </v-col>
-
-                      <v-col class="col-md-2 col-12 mt-n10">
-                        <v-radio-group
-                          :disabled="true"
-                          row
-                          v-model="obj.feesPaidWhileClosed"
-                          label="Did parents pay for this closure?"
-                          :rules="dateRules"
-                        >
-                          <v-radio
-                            label="Yes"
-                            :value = 1
-                          ></v-radio>
-                          <v-radio
-                            label="No"
-                            :value= 0
-                          ></v-radio>
-                        </v-radio-group>
-                      </v-col>
-
-                      <span class="white--text"> . </span>
-
-                      <v-divider></v-divider>
-                    </v-row> <!-- end v for-->
-                    <br><br>
+        <v-card  v-if="arePrevFeesCorrect()" elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+          min-height="230"
+          rounded
+          tiled
+          exact
+          tile
+          :ripple="false"
+        >
+          <v-card-text class="pa-0" >
+            <div class="pa-2 pa-md-4 ma-0 backG">
+              <p class="text-h5 text--primary px-5 py-0 my-0">
+                Do you charge parent fees at this facility for any closures on business days?
+              </p>
+            </div>
+            <div class="px-md-12 px-7">
+              <br>
+              <div>
+                <p>Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays. </a> Only indicate the date of closures where parent fees are charged.
+                </p>
+              </div>
+              <v-radio-group
+                required
+                :disabled="isReadOnly || previousClosureDates.dates.length > 0"
+                v-model="CCFRIFacilityModel.hasClosureFees"
+                :rules = "rules"
+              >
+              <br>
+                <v-radio
+                  label="Yes"
+                  :value="100000000"
+                ></v-radio>
+                <v-radio
+                  label="No"
+                  :value="100000001"
+                ></v-radio>
+              </v-radio-group>
 
 
-                    <!-- below will let user enter new dates-->
-                    <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color='#003366'>
+              <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000 ">
+                <!-- below will let user view, but not change closure dates from CCFRI application-->
+                <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
+                <v-row  v-for="(obj, index) in previousClosureDates.dates" :key="(index + 1000)" color='black'>
+                  <v-col color='#003366' class="col-md-1 col-12 mx-0">
+                    <v-icon
+                      :disabled="true"
+                      large
+                      color="blue darken-4"
+                      > mdi-close
+                    </v-icon>
+                  </v-col>
 
-                      <v-col color='#003366' class="col-md-1 col-12 mx-0">
-                        <v-icon
-                          :disabled="isReadOnly"
-                          large
-                          color="blue darken-4"
-                          class=""
-                          @click="removeIndex(index)"
-                          > mdi-close
-                        </v-icon>
-                      </v-col>
+                  <v-col class="col-md-3 col-12">
+                      <v-text-field  :disabled="true"
+                      outlined
+                      :rules="rules"
+                      v-model="obj.formattedStartDate"
+                      label="Start Date (YYYY-MM-DD)"
+                      readonly
+                      >
+
+                      </v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12">
+                      <v-text-field :disabled="true"
+                      outlined
+                      required
+                      v-model="obj.formattedEndDate"
+                      label="End Date (YYYY-MM-DD)"
+                      readonly
+                      >
+                      </v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12 ">
+                    <v-text-field
+                    :disabled="true"
+                      v-model="obj.closureReason"
+                      label="Closure Reason"
+                      outlined
+                      :rules="rules"
+                      color="red"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-2 col-12 mt-n10">
+                    <v-radio-group
+                      :disabled="true"
+                      row
+                      v-model="obj.feesPaidWhileClosed"
+                      label="Did parents pay for this closure?"
+                      :rules="dateRules"
+                    >
+                      <v-radio
+                        label="Yes"
+                        :value = 1
+                      ></v-radio>
+                      <v-radio
+                        label="No"
+                        :value= 0
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-col>
+
+                  <span class="white--text"> . </span>
+
+                  <v-divider></v-divider>
+                </v-row> <!-- end v for-->
+                <br><br>
 
 
-                      <v-col class="col-md-3 col-12">
-                        <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field  :disabled="isReadOnly"
-                          outlined
-                          :rules="rules"
-                          v-model="obj.formattedStartDate"
-                            label="Select Start Date (YYYY-MM-DD)"
-                            readonly v-bind="attrs"
-                            v-on="on">
+                <!-- below will let user enter new dates-->
+                <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color='#003366'>
 
-                          </v-text-field>
-                        </template>
-                          <v-date-picker
-                            :allowed-dates="allowedDates"
-                            clearable
-                            v-model="obj.formattedStartDate"
-                            @input="obj.calendarMenu1 = false">
+                  <v-col color='#003366' class="col-md-1 col-12 mx-0">
+                    <v-icon
+                      :disabled="isReadOnly"
+                      large
+                      color="blue darken-4"
+                      class=""
+                      @click="removeIndex(index)"
+                      > mdi-close
+                    </v-icon>
+                  </v-col>
 
-                          </v-date-picker>
-                      </v-menu>
-                      </v-col>
 
-                      <v-col class="col-md-3 col-12">
-                        <v-menu  v-model="obj.calendarMenu2"
-                        :close-on-content-click="false"
-                        :nudge-right="40" transition="scale-transition"
-                        offset-y min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field :disabled="isReadOnly"
-                          outlined
-                          required
-                          v-model="obj.formattedEndDate"
-                          label="Select End Date (YYYY-MM-DD)"
-                          readonly
-                          :rules="rules"
-                          v-bind="attrs" v-on="on">
-                          </v-text-field>
-                        </template>
-                          <v-date-picker
-                            clearable
-                            :min="obj.formattedStartDate"
-                            v-model="obj.formattedEndDate"
-                            @input="obj.calendarMenu2 = false"
-                            :allowed-dates="allowedDates"
-                            @click:date="isDateLegal(obj)"
+                  <v-col class="col-md-3 col-12">
+                    <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field  :disabled="isReadOnly"
+                      outlined
+                      :rules="rules"
+                      v-model="obj.formattedStartDate"
+                        label="Select Start Date (YYYY-MM-DD)"
+                        readonly v-bind="attrs"
+                        v-on="on">
 
-                            >
+                      </v-text-field>
+                    </template>
+                      <v-date-picker
+                        :allowed-dates="allowedDates"
+                        clearable
+                        v-model="obj.formattedStartDate"
+                        @input="obj.calendarMenu1 = false">
 
-                          </v-date-picker>
-                      </v-menu>
-                      </v-col>
+                      </v-date-picker>
+                  </v-menu>
+                  </v-col>
 
-                      <v-col class="col-md-3 col-12 ">
-                        <v-text-field
-                        :disabled="isReadOnly"
-                          v-model="obj.closureReason"
-                          label="Closure Reason"
-                          outlined
-                          clearable
-                          :rules="rules"
-                          color="red"
-                        ></v-text-field>
-                      </v-col>
-
-                      <v-col class="col-md-2 col-12 mt-n10">
-                        <v-radio-group
-                          :disabled="isReadOnly"
-                          row
-                          v-model="obj.feesPaidWhileClosed"
-                          label="Did parents pay for this closure?"
-                          :rules="dateRules"
+                  <v-col class="col-md-3 col-12">
+                    <v-menu  v-model="obj.calendarMenu2"
+                    :close-on-content-click="false"
+                    :nudge-right="40" transition="scale-transition"
+                    offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field :disabled="isReadOnly"
+                      outlined
+                      required
+                      v-model="obj.formattedEndDate"
+                      label="Select End Date (YYYY-MM-DD)"
+                      readonly
+                      :rules="rules"
+                      v-bind="attrs" v-on="on">
+                      </v-text-field>
+                    </template>
+                      <v-date-picker
+                        clearable
+                        :min="obj.formattedStartDate"
+                        v-model="obj.formattedEndDate"
+                        @input="obj.calendarMenu2 = false"
+                        :allowed-dates="allowedDates"
+                        @click:date="isDateLegal(obj)"
 
                         >
-                          <v-radio
-                            label="Yes"
-                            :value = 1
-                          ></v-radio>
-                          <v-radio
-                            label="No"
-                            :value= 0
-                          ></v-radio>
-                        </v-radio-group>
-                      </v-col>
 
-                      <span class="white--text"> . </span>
-                      <v-row v-if="obj.isIllegal">
+                      </v-date-picker>
+                  </v-menu>
+                  </v-col>
 
-                        <v-card width="100%" class="mx-3 my-10" >
-                  <v-row>
-                    <v-col class="py-0">
-                      <v-card-title class="py-1 noticeAlert">
-                        <span style="float:left">
-                      <v-icon
-                        x-large
-                        class="py-1 px-3 noticeAlertIcon">
-                        mdi-alert-octagon
-                      </v-icon>
-                      </span>
-                      Invalid Dates
-                      </v-card-title>
-                    </v-col>
-                  </v-row>
-                  <v-card-text>
-                    It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.<br><br>
-                    <br>
+                  <v-col class="col-md-3 col-12 ">
+                    <v-text-field
+                    :disabled="isReadOnly"
+                      v-model="obj.closureReason"
+                      label="Closure Reason"
+                      outlined
+                      clearable
+                      :rules="rules"
+                      color="red"
+                    ></v-text-field>
+                  </v-col>
 
+                  <v-col class="col-md-2 col-12 mt-n10">
+                    <v-radio-group
+                      :disabled="isReadOnly"
+                      row
+                      v-model="obj.feesPaidWhileClosed"
+                      label="Did parents pay for this closure?"
+                      :rules="dateRules"
 
-                  </v-card-text>
-                </v-card>
+                    >
+                      <v-radio
+                        label="Yes"
+                        :value = 1
+                      ></v-radio>
+                      <v-radio
+                        label="No"
+                        :value= 0
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-col>
+
+                  <span class="white--text"> . </span>
+                  <v-row v-if="obj.isIllegal">
+
+                    <v-card width="100%" class="mx-3 my-10" >
+              <v-row>
+                <v-col class="py-0">
+                  <v-card-title class="py-1 noticeAlert">
+                    <span style="float:left">
+                  <v-icon
+                    x-large
+                    class="py-1 px-3 noticeAlertIcon">
+                    mdi-alert-octagon
+                  </v-icon>
+                  </span>
+                  Invalid Dates
+                  </v-card-title>
+                </v-col>
               </v-row>
+              <v-card-text>
+                It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.<br><br>
+                <br>
 
-                      <v-divider></v-divider>
-                    </v-row> <!-- end v for-->
-                    <br><br>
 
-                      <v-container>
-                        <v-row>
-                      <v-btn
-                        @click="addRow()"
-                        class="my-5" dark color='#003366'
-                        :disabled="isReadOnly"
-                        >ADD NEW CLOSURE</v-btn>
-                        </v-row>
-                      </v-container>
-                      <br>
-
-                  </v-row>
-                </div>
               </v-card-text>
             </v-card>
+          </v-row>
 
-        </div>
+                  <v-divider></v-divider>
+                </v-row> <!-- end v for-->
+                <br><br>
+
+                  <v-container>
+                    <v-row>
+                  <v-btn
+                    @click="addRow()"
+                    class="my-5" dark color='#003366'
+                    :disabled="isReadOnly"
+                    >ADD NEW CLOSURE</v-btn>
+                    </v-row>
+                  </v-container>
+                  <br>
+
+              </v-row>
+            </div>
+          </v-card-text>
+        </v-card>
 
         <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
@@ -573,7 +572,8 @@
                     ></v-radio>
                   </v-radio-group>
                 </v-card-text>
-             </v-card>
+        </v-card>
+
       </div>
       <div v-else>
         <div class="row pt-4 justify-center pb-3">

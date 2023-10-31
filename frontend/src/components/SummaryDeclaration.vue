@@ -33,7 +33,7 @@
               The {{this.formattedProgramYear}} Program Confirmation Form cannot be submitted until the change is complete.<br><br>
               <br>
 
-              <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="isProcessing">View My Changes</v-btn>
+              <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()">View My Changes</v-btn>
             </v-card-text>
           </v-card>
         </v-row>

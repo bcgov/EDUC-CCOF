@@ -230,11 +230,9 @@ export default {
         .forEach(careType => {
           console.log(`Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`);
           let previousCareType = getPreviousCareType((currentCcfri? currentCcfri : state.CCFRIFacilityModel), careType, previousProgramYearId, getters, rootState);
-          //console.log('da previous care type', previousCareType);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
             let allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
-            //console.log('difference', difference);
             if (allowedDifference) {
               console.log(`Testing RFI median difference using [${allowedDifference}] for [${careType.childCareCategory}]`);
               if (isOver3Percent(careType, previousCareType, allowedDifference)) {
@@ -285,8 +283,6 @@ export default {
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
-      //console.log('what is loaded in loadFac', CCFRIFacilityModel);
-      // await dispatch('getPreviousCCFRI' ,ccfriId);
 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
@@ -299,10 +295,6 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});
-          // if(response.data.previousCcfriId){
-          //   let oldCcfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${response.data.previousCcfriId}`);
-          //   commit('addCCFRIToStore', {ccfriId: response.data.previousCcfriId, CCFRIFacilityModel: oldCcfri.data});
-          // }
           commit('setCCFRIFacilityModel', response.data);
           commit('setLoadedModel', deepCloneObject(response.data));
 
@@ -327,16 +319,10 @@ export default {
         }
       }
     },
-    async getClosureDates({commit, state}, ccfriId) {
-      // const prevFees = state.previousFeeStore[facilityId];
-      // if (prevFees) {
-      //   return prevFees;
-      // } else {
+    async getClosureDates({state}, ccfriId) {
       try {
-        console.log(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
         const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
         state.previousClosureDates = response.data;
-        //commit('addPreviousApprovedParentFees', {facilityId: facilityId, parentFeeModel: response.data});
         return response.data;
       } catch(e) {
         console.log(`Failed to get existing Facility with error - ${e}`);

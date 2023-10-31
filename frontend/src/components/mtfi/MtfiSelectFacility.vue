@@ -127,7 +127,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList', 'addToNavBar','removeChangeMap']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList','removeChangeMap']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     ...mapActions('navBar',['loadChangeRequest']),
     isFacilityDisabled(ccfriOptInStatus, ccfriStatus)  {

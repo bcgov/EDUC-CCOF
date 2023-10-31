@@ -185,14 +185,16 @@ export default {
           try {
             let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
             commit('setFacilityId', response.data?.facilityId);
-            commit('reportChanges/addNewFacilityDataToCRMap', {
+            const navBarPayload = {
               facilityName: state.facilityModel.facilityName,
               facilityId: state.facilityId,
               ccofBaseFundingId: response.data?.ccofBaseFundingId,
               ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
               licenseNumber: state.facilityModel.licenseNumber,
               facilityStatus: 'New',
-            }, { root: true });
+              isCCOFComplete: false, //funding page must be complete to be true
+            };
+            commit('navBar/addToNavBar', navBarPayload, { root: true });
             commit('addFacilityToStore', { facilityId: response.data?.facilityId, facilityModel: state.facilityModel });
 
             return response;
