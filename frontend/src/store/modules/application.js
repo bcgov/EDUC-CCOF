@@ -48,12 +48,18 @@ export default {
     setIsEceweComplete(state, value) { state.isEceweComplete = value; },
     setIsEceweCompleteInMap(state, value){
       let app = state.applicationMap?.get(state.programYearId);
-      app.isEceweComplete = value;
+      //it should almost always have an app.. this just solves for the case where it's a brand new PCF application, and they haven't refreshed yet
+      if(app){
+        app.isEceweComplete = value;
+      }
     },
     setIsLicenseUploadComplete(state, value) { state.isLicenseUploadComplete = value; },
     setIsLicenseUploadCompleteInMap(state, value) {
       let app = state.applicationMap?.get(state.programYearId);
-      app.isLicenseUploadComplete = value;
+
+      if (app){
+        app.isLicenseUploadComplete = value;
+      }
     },
 
     addApplicationsToMap: (state, applicationList) => {
