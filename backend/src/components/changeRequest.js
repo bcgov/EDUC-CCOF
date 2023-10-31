@@ -342,8 +342,10 @@ async function getChangeRequestMTFIByCcfriId(req, res){
     let operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
     let response = await getOperation(operation);
     let mtfiDetails = [];
+    let rfiDetails = new MappableObjectForFront(response, UserProfileBaseCCFRIMappings).toJSON();
+    //Add in the rfi details mapping so on the front when we update hasRFI for the first time, we have the value needed to update it
     response?.ccof_change_request_mtfi_application_ccfri?.forEach(mtfiFacility => {
-      mtfiDetails.push(new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON());
+      mtfiDetails.push({...new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON(), ...rfiDetails});
     });
     return res.status(HttpStatus.OK).json(mtfiDetails);
   }

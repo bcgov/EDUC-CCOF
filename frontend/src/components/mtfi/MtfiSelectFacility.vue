@@ -127,7 +127,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList', 'addToNavBar','removeChangeMap']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList','removeChangeMap']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     ...mapActions('navBar',['loadChangeRequest']),
     isFacilityDisabled(ccfriOptInStatus, ccfriStatus)  {
@@ -205,6 +205,7 @@ export default {
         if (withAlert) {
           this.setSuccessAlert('Success! Your update has been saved.');
         }
+        this.forceNavBarRefresh();
         this.refreshNavBarList();
       } catch (error)  {
         console.log(error);
