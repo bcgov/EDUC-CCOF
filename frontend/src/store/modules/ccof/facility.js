@@ -85,6 +85,11 @@ export default {
           let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + state.facilityId, payload);
           commit('addFacilityToStore', { facilityId: state.facilityId, facilityModel: state.facilityModel });
           //TODO: also find the existing value in the nav bar and update the facility Name and license number
+          commit('navBar/updateNavBar', {
+            facilityId: state.facilityId,
+            facilityName: state.facilityModel.facilityName,
+            licenseNumber: state.facilityModel.licenseNumber,
+          }, { root: true });
           return response;
         } catch (error) {
           console.log(`Failed to update existing Facility - ${error}`);
