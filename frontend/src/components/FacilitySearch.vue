@@ -232,11 +232,16 @@ export default {
 </script>
 
 <style>
-.fa-chevron-left:before {
-  color: #0FC3ED !important;
+.theme--light.v-btn.v-btn--icon {
+    color: #0FC3ED;
 }
-.fa-chevron-right:before {
-  color: #0FC3ED !important;
+
+.v-data-footer__pagination {
+    margin-left: auto !important;
+}
+
+.v-data-footer__select {
+    margin-left: 0px !important;
 }
 .v-input__slot{
   padding-top: 0px
