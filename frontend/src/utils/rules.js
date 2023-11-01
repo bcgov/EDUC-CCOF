@@ -1,5 +1,5 @@
 const rules = {
-  email: [v => /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v) || 'A valid email is required'], // https://emailregex.com/
+  email: [v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'A valid email is required'], 
   required: [function (v) {
     if (v === 0) {
       return true;
