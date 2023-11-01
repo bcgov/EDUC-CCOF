@@ -6,7 +6,6 @@ export default {
     pageTitle: null,
     subtitleBanner: '',
     showNavBar: false,
-    isRenewal: false,
 
     //Notification Details
     alertNotificationText: '',
@@ -65,9 +64,6 @@ export default {
     //Nav bar stuff
     setShowNavBar: (state, showNavBar) => {
       state.showNavBar = showNavBar;
-    },
-    setIsRenewal: (state, isRenewal) => {
-      state.isRenewal = isRenewal;
     },
     setLogoutTimerEnabled: (state, value) => {
       state.logoutTimerEnabled = value;

@@ -76,9 +76,7 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['isRenewal']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
@@ -100,17 +98,17 @@ export default {
       }
       return false;
     },
-    getFacilityList(){
-      let facilityList;
-      if (this.isChangeRequest) {
-        facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        facilityList = this.navBarList.filter(el => !el.changeRequestId);
-      }
-      return facilityList;
-    },
+    // getFacilityList(){
+    //   let facilityList;
+    //   if (this.isChangeRequest) {
+    //     facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+    //   } else {
+    //     facilityList = this.navBarList.filter(el => !el.changeRequestId);
+    //   }
+    //   return facilityList;
+    // },
     nextButtonDisabled() {
-      let facilityList = this.getFacilityList;
+      let facilityList = this.navBarList;
 
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
@@ -190,7 +188,7 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
-    ...mapMutations('application', ['setIsLicenseUploadComplete']),
+    ...mapMutations('application', ['setIsLicenseUploadCompleteInMap' , 'setIsLicenseUploadComplete']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
     previous() {
@@ -230,6 +228,7 @@ export default {
         if (this.isChangeRequest) {
           this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled});
         } else {
+          this.setIsLicenseUploadCompleteInMap(!this.nextButtonDisabled);
           this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
         }
         this.forceNavBarRefresh();
@@ -248,8 +247,8 @@ export default {
       const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
-        let facilityList = this.getFacilityList;
-        let currFac = facilityList.find(fac => fac.facilityId === facilityId);
+        //let facilityList = this.getFacilityList;
+        let currFac = this.navBarList.find(fac => fac.facilityId === facilityId);
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,

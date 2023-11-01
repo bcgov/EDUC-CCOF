@@ -96,7 +96,7 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId', 'isRenewal']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList','navBarList']),
-    ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
@@ -108,10 +108,7 @@ export default {
     },
     // CCFRI-2584 - All facilties displayed in the PCF should be shown on the MTFI Select Facility page -> same logic as filterNavBar() in navBar.js
     filteredUserProfileList() {
-      if (this.isRenewal) {
-        return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
-      }
-      return this.userProfileList.filter(el => (!el.changeRequestId || el.facilityAccountNumber) && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
+      return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
     }
   },
   async beforeMount() {
@@ -130,7 +127,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList', 'addToNavBar','removeChangeMap']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList','removeChangeMap']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     ...mapActions('navBar',['loadChangeRequest']),
     isFacilityDisabled(ccfriOptInStatus, ccfriStatus)  {

@@ -85,11 +85,13 @@ export default {
           value: 'isRead'
         },
         { text: 'Subjects', value: 'subject' },
+        { text: 'Fiscal Year', value: 'programYearValue'},
         { text: 'Date Received', value: 'dateReceived' }
       ],
       message: {
         sender: '',
         subject:'',
+        programYearValue: '',
         dateReceived:'',
         messageContent: '',
       },
@@ -115,6 +117,7 @@ export default {
     rowClickHandler(item,row) {
       this.message.subject = item.subject;
       this.message.dateReceived = item.dateReceived;
+      this.message.programYearValue = item.programYearValue;
       this.message.messageContent = item.messageContent;
       this.message.sender = 'From: My ChildcareBC Services';
       row.select(true);
@@ -157,26 +160,26 @@ export default {
 };
 </script>
 
-<style>
-  html {
-    overflow-y: auto;
-  }
-  .read {
-    font-weight: normal;
-  }
-  .unread {
-    font-weight: bold;
-  }
-  tr:hover {
-    cursor: pointer;
-  }
-  tr.v-data-table__selected {
-    background: #c2e0fa !important;
-  }
-  .v-data-table-header th {
-    white-space: nowrap;
-  }
-  .v-data-table__wrapper {
-    margin-bottom: 0px;
-  }
+<style scoped>
+:deep(html) {
+  overflow-y: auto;
+}
+:deep(.read) {
+  font-weight: normal;
+}
+:deep(.unread) {
+  font-weight: bold;
+}
+:deep(tr:hover) {
+  cursor: pointer;
+}
+:deep(tr.v-data-table__selected) {
+  background: #c2e0fa !important;
+}
+:deep(.v-data-table-header th) {
+  white-space: nowrap;
+}
+:deep(.v-data-table__wrapper) {
+  margin-bottom: 0px;
+}
 </style>

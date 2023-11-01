@@ -25,12 +25,14 @@ export const ApiRoutes = Object.freeze({
   FACILITY: baseRoot + '/facility',
   CCFRIFACILITY : baseRoot + '/facility/ccfri',
   CCFRI_FEES : baseRoot + '/facility/fees',
+  CCFRI_DATES : baseRoot + '/facility/dates',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
   FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   MESSAGE: baseRoot + '/messages',
+  APPLICATION: baseRoot + '/application',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
@@ -96,6 +98,7 @@ export const PATHS = {
   },
   //These are all suffixes.
   SELECT_APPLICATION_TYPE: '/select-application-type',
+  NEW_APPLICATION_INTERMEDIATE: '/new-application',
   RENEW_CONFIRM: '/group/renew',
 
   CCOF_GROUP_ORG: '/group/organization',
@@ -194,4 +197,11 @@ export const CHANGE_REQUEST_TYPES = {
   NEW_CATEGORY: 100000014,
 };
 
-
+export const CHANGE_REQUEST_EXTERNAL_STATUS = {
+  IN_PROGRESS: 1,
+  SUBMITTED: 2,
+  ACTION_REQUIRED: 3,
+  INELIGIBLE: 4,
+  APPROVED: 5,
+  CANCELLED: 6
+};

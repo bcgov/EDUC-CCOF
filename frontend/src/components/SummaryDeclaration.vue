@@ -10,7 +10,64 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
-      <v-row class="d-flex justify-center text-h5" style="color:#003466;">
+
+      <v-row>
+
+        <!-- Do not allow PCF to be submitted if CR is active-->
+          <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()  && !this.isChangeRequest">
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                You have a change request for the {{ this.formattedProgramYear }} funding term still in progress.
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-card-text>
+              The {{this.formattedProgramYear}} Program Confirmation Form cannot be submitted until the change is complete.<br><br>
+              <br>
+
+              <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()">View My Changes</v-btn>
+            </v-card-text>
+          </v-card>
+        </v-row>
+
+        <!-- Do not allow CR New Fac to be submitted if PCF is unlocked-->
+        <v-row class="" justify="center">
+          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" v-if="isSomeApplicationUnlocked && this.isChangeRequest">
+            <v-container class="pa-0 col-12">
+            <v-row>
+              <v-col class="pa-0">
+                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                You have an unlocked PCF application still in progress.
+                </v-card-title>
+              </v-col>
+            </v-row>
+            </v-container>
+
+            <br>
+              <p> You will be unable to submit a change request until the Program Confirmation Form is updated.</p><br>
+              <br>
+
+              <!-- <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
+
+          </v-card>
+        </v-row>
+
+      <v-row v-if="!isSomeChangeRequestActive() " class="d-flex justify-center text-h5" style="color:#003466;">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
       <v-row v-if="!this.isSummaryComplete && !this.isProcessing" justify="center">
@@ -122,7 +179,7 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="{}"
-                                      :ecewe-facility="facility.ecewe"
+                                      :eceweFacility="facility.ecewe"
                                       :isProcessing="isProcessing"
                                       :changeRecGuid="facility.changeRequestId"
                                       :programYearId="summaryModel?.application?.programYearId"
@@ -130,14 +187,15 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion">
                         <UploadedDocumentsSummary @isSummaryValid="isFormComplete"
-                                                  :documents="facility.documents"></UploadedDocumentsSummary>
+                                                  :documents="facility.documents"
+                                                  :programYearId="summaryModel?.application?.programYearId"></UploadedDocumentsSummary>
                       </v-expansion-panel>
                     </div>
                 </div>
                 <div v-if="!this.isRenewal" class="mt-10">
                 <v-expansion-panel variant="accordion">
                   <ECEWESummary @isSummaryValid="isFormComplete" :ecewe="this.summaryModel.ecewe"
-                                :ecewe-facility="null" :isProcessing="isProcessing"
+                                :eceweFacility="null" :isProcessing="isProcessing"
                                 :programYearId="summaryModel?.application?.programYearId"
                                 ></ECEWESummary>
                 </v-expansion-panel>
@@ -299,7 +357,7 @@
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
-        :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
+        :isSubmitDisabled="!isPageComplete() || isReadOnly || (isSomeChangeRequestActive()  && !this.isChangeRequest) " :isProcessing="isProcessing"
         @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
@@ -348,6 +406,7 @@ import OrganizationSummary from '@/components/summary/group/OrganizationSummary'
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
 import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary';
+import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -378,8 +437,9 @@ export default {
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete', 'applicationMap']),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete',]),
+    ...mapState('reportChanges', ['changeRequestStore',]),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -397,6 +457,11 @@ export default {
         return true;
       }
       return false;
+    },
+    isSomeApplicationUnlocked(){
+      const applicationList = Array.from(this.applicationMap?.values());
+      console.log(isAnyApplicationUnlocked(applicationList));
+      return isAnyApplicationUnlocked(applicationList);
     },
     isFacilitiesAvailable() {
       return this.summaryModel?.facilities?.length > 0;
@@ -450,6 +515,7 @@ export default {
     ...mapMutations('navBar', ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh',]),
     ...mapMutations('organization', ['setIsOrganizationComplete']),
     ...mapMutations('reportChanges', ['setCRIsLicenseComplete', 'setCRIsEceweComplete']),
+    ...mapActions('reportChanges', ['getChangeRequestList']),
     isPageComplete() {
       if ((this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) || (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)) {
         this.isValidForm = true;
@@ -458,16 +524,25 @@ export default {
       }
       return this.isValidForm;
     },
-
+    isSomeChangeRequestActive(){
+      //return false;
+      return this.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
+    },
+    goToChangeRequestHistory() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
+    },
     async loadData() {
       this.isLoading = true;
       try {
+        //always load the change request store so we can prevent PCF submission if active change request
+
         if(this.isChangeRequest){
           await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
         }
         else{
           await this.loadDeclaration();
         }
+
       } catch (error) {
         console.log('Error loading application Declaration.', error);
         this.setFailureAlert('Error loading application Declaration.');
@@ -698,6 +773,7 @@ export default {
     if (this.$route.path.endsWith('printable')) {
       this.printableVersion = true;
     }
+    await this.getChangeRequestList();
     await this.loadSummary(this.$route.params?.changeRecGuid);
     await this.loadData();
     this.model = this.$store.state.summaryDeclaration.model ?? model;

@@ -10,7 +10,7 @@
             <v-row>
                 <v-col>
                     <div class="px-md-12 px-7">
-                        <p style="font-weight: bold;">Submit a change notificatin form to update:</p>
+                        <p style="font-weight: bold;">Submit a change notification form to update:</p>
                         <ul style="line-height: 70%">
                             <li>Capacity</li>
                             <li>Facility name</li>
@@ -29,11 +29,11 @@
                             </ul>
                         </ul>
                         Select <span style="font-weight: bold;">Next</span> to complete the form
-                        <p style="font-weight: bold;">Submit the Direct Deposit Appilcation to:</p>
+                        <p style="font-weight: bold;">Submit the Direct Deposit Application to:</p>
                         <ul>
                             <li><a href='https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf'>Update banking information</a></li>
                         </ul>
-                        <p>Email: <a href="mailto:cccda@gov.bc.ca">cccda@gov.bc.ca</a></p>
+                        <p>Email: <a href="mailto:ccdda@gov.bc.ca">ccdda@gov.bc.ca</a></p>
                         <p>Mailing address:</p>
                         Child Care Operating Funding<br />
                         PO Box 9965 Stn Prov Govt<br />

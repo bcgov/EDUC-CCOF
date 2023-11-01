@@ -17,9 +17,8 @@ export default {
     loadedChangeRequest: undefined,
     changeRequestStore : {},
     uploadedDocuments: [],
-    newFacilityList: [], //may not need this now
-    userProfileChangeRequests: [],
     mtfiFacilities: [],
+    changeRequestMap: new Map(), //TODO: merge these two
   },
   getters: {
     changeRequestStore: state => state.changeRequestStore,
@@ -27,14 +26,13 @@ export default {
     changeRequestId: state => state.changeRequestId,
     loadedChangeRequest: state => state.loadedChangeRequest,
     getUploadedDocuments: state => state.uploadedDocuments,
-    getChangeRequestFacilities: state => state.newFacilityList,
     // eslint-disable-next-line no-unused-vars
     isCREceweComplete: (state, getters, rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isEceweComplete;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.isEceweComplete;
     },
     // eslint-disable-next-line no-unused-vars
     isCRLicenseComplete: (state, getters, rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.isLicenseUploadComplete;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.isLicenseUploadComplete;
     },
     isChangeNotificationFormComplete: (state) => {
       let index = state.uploadedDocuments?.findIndex(document => document.subject === 'NOTIFICATION_FORM');
@@ -42,47 +40,65 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     changeRequestStatus: (state, getters, rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.externalStatus;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.externalStatus;
     },
     // eslint-disable-next-line no-unused-vars
     isCCOFUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockCCOF;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isCCOFUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isEceweUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockEcewe;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isEceweUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isLicenseUploadUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockLicenseUpload;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isLicenseUploadUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isSupportingDocumentsUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockSupportingDocuments;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.isSupportingDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isDeclarationUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockDeclaration;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.unlockDeclaration;
     },
     // eslint-disable-next-line no-unused-vars
     isChangeRequestUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockChangeRequest;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.isChangeRequestUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     isOtherDocumentsUnlocked:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.unlockOtherChangesDocuments;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.isOtherDocumentsUnlocked;
     },
     // eslint-disable-next-line no-unused-vars
     getChangeNotificationActionId:(state,getters,rootState) => {
-      return state.userProfileChangeRequests.find(el => el.changeRequestId === rootState.navBar.changeRequestId)?.changeNotificationActionId;
+      return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
+    },
+    isAnyChangeRequestActive:(state, rootGetters) => {
+      //Status of : "In Progress" "Submitted" "Action Required";
+      //console.log((rootGetters['navBar/isChangeRequest']));
+      //return false;
+      //await this.getChangeRequestList();
+      //for PCF
+      // if (!rootGetters['navBar/isChangeRequest']){
+      //   return false;
+      // }
+      //console.log(state.changeRequestStore.some((el) => el.status == 1 || el.status == 2 || el.status == 3));
+      return state?.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
     }
   },
   mutations: {
-    addChangeRequestToStore: (state, {changeRequestId, model} ) => {
-      if (changeRequestId) {
-        state.changeRequestStore[changeRequestId] = model;
-      }
-    },//prob take this out
+    addChangeRequestToStore: (state, {changeRequestId, changeRequestModel}) => {
+      const map = new Map(state.changeRequestMap);
+      map.set(changeRequestId, changeRequestModel);
+      state.changeRequestMap = map;
+    },
+    removeChangeMap:(state) => {
+      state.changeRequestMap.clear();
+    },
+    removeChangeRequest:(state, changeRequestId) => {
+      state.changeRequestMap.delete(changeRequestId);
+    },
     setChangeRequestStore: (state, model) => {
       state.changeRequestStore = model;
     },
@@ -98,33 +114,27 @@ export default {
     setUploadedDocument: (state, documents) => {
       state.uploadedDocuments = documents;
     },
-    setNewFacilityList:(state, newFacilityList) => {
-      state.newFacilityList = newFacilityList;
-    },//may not need this now
-    setUserProfileChangeRequests:(state, value) => {
-      state.userProfileChangeRequests = value;
-    },
-    addUserProfileChangeRequests:(state, value) => {
+    addNewChangeRequestToMap:(state, model) => {
       const item = {
-        changeRequestId: value,
-        externalStatus: 'INCOMPLETE'
+        changeRequestId: model.changeRequestId,
+        externalStatus: 'INCOMPLETE',
+        changeActions: [],
       };
-      state.userProfileChangeRequests.push(item);
+      state.changeRequestMap.set(model.changeRequestId, model);
+      state.changeRequestMap = new Map(state.changeRequestMap); // // done to trigger reactive getter
     },
     setCRIsEceweComplete:(state, value) => {
-      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
-      if (index > -1) {
-        let item = state.userProfileChangeRequests[index];
-        item.isEceweComplete = value.isComplete;
-        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      let cr = state.changeRequestMap.get(value.changeRequestId);
+      if (cr) {
+        cr.isEceweComplete = value.isComplete;
+        state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },
     setCRIsLicenseComplete:(state, value) => {
-      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
-      if (index > -1) {
-        let item = state.userProfileChangeRequests[index];
-        item.isLicenseUploadComplete = value.isComplete;
-        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      let cr = state.changeRequestMap.get(value.changeRequestId);
+      if (cr) {
+        cr.isLicenseUploadComplete = value.isComplete;
+        state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },
     setMTFIFacilities:(state, value) => {
@@ -134,37 +144,59 @@ export default {
       payload?.forEach(facility => state.mtfiFacilities.push(facility));
     },
     addChangeNotificationId:(state, value) => {
-      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
-      if (index > -1) {
-        let item = state.userProfileChangeRequests[index];
-        item.changeNotificationActionId = value.changeNotificationActionId;
-        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      let cr = state.changeRequestMap.get(value.changeRequestId);
+      if (cr) {
+        cr.changeNotificationActionId = value.changeNotificationActionId;
+        state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },
     deleteChangeNotificationId:(state, value) => {
-      const index = state.userProfileChangeRequests.findIndex(el => el.changeRequestId === value.changeRequestId);
-      if (index > -1) {
-        let item = state.userProfileChangeRequests[index];
-        delete item.changeNotificationActionId;
-        state.userProfileChangeRequests.splice(index, 1, item); // done to trigger reactive getter
+      let cr = state.changeRequestMap.get(value.changeRequestId);
+      if (cr) {
+        delete cr.changeNotificationActionId;
+        state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
+    },
+    addNewFacilityDataToCRMap: (state, payload) => {
+      try{
+        //save the newly created fac data into the change request map so it can be the source of truth
+
+        const newFacilityObj = {
+          baseFunding: {
+            ccofBaseFundingId: payload.ccofBaseFundingId,
+            ccofBaseFundingStatus: payload.ccofBaseFundingStatus,
+            isCCOFComplete: payload.isCCOFComplete,
+          },
+          ccfri: {},
+          changeRequestNewFacilityId: payload.changeRequestNewFacilityId,
+          ecewe: {},
+          facilityId: payload.facilityId,
+          unlockCcfri:false,
+          unlockNmf:false,
+          unlockRfi:false,
+
+        };
+
+        state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
+      }
+      catch(error){
+       // console.log(error);
+      }
+
     },
   },
   actions: {
     // GET a list of all Change Requests for an application using applicationID
-    async getChangeRequestList({commit, rootState}, ) {
-
-      //is it better/ worse to load from route state vs. passing in application ID?
-      console.log('loading change req for: ', rootState.application.applicationId);
-
+    async getChangeRequestList({commit, rootGetters}) {
       checkSession();
       let store = [];
       try {
-        let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + rootState.application.applicationId);
-        //console.log(response);
+        let response;
+        const applicationIds = rootGetters['application/applicationIds'];
+        if (applicationIds?.length > 0)
+          response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
 
-        let newFacList = [];
-        if (!isEmpty(response.data)) {
+        if (!isEmpty(response)) {
           response.data.forEach(element => {
             element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
             store.push(element);
@@ -173,14 +205,9 @@ export default {
               if (changeAction.changeType == "NEW_FACILITY"){
                 const newFacilities = changeAction.facilities;
                 newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
-                newFacList.push(changeAction); //we may not need this now
               }
             });
-
           });
-
-          commit('setNewFacilityList', newFacList);
-          //may not need this either
         }
 
         /*Ministry requirements want change request shown in the order of:
@@ -204,18 +231,22 @@ export default {
     },
 
     // GET Change Request's details using changeRequestID
-    async getChangeRequest({commit, rootState}, changeRequestId) {
+    async getChangeRequest({state, commit, rootState}, changeRequestId) {
       console.log('trying to get change req for: ', changeRequestId);
-      checkSession();
-      try {
-        let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
-        commit('setLoadedChangeRequest', response);
-        commit('setChangeRequestId', response?.changeRequestId);
+      let changeRequest = state.changeRequestMap.get(changeRequestId);
+      if (changeRequest) {
+        return changeRequest;
+      } else {
+        checkSession();
+        try {
+          let response = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+          commit('setLoadedChangeRequest', response);
+          commit('setChangeRequestId', response?.changeRequestId);
 
-        let changeAction;
-        switch (rootState.navBar.changeType) {
+          let changeAction;
+          switch (rootState.navBar.changeType) {
           case CHANGE_TYPES.NEW_FACILITY:
-            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);            
+            changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);
             break;
           case CHANGE_TYPES.CHANGE_NOTIFICATION:
             changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE);
@@ -223,24 +254,27 @@ export default {
           case CHANGE_TYPES.MTFI:
             changeAction = response?.changeActions?.find(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
             break;
+          }
+          commit('setChangeActionId', changeAction?.changeActionId);
+
+          let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+          let mtfiFacilities = [];
+          mtfiChangeActions?.forEach(changeAction => mtfiFacilities.push(changeAction.mtfi));
+          commit('setMTFIFacilities', ...mtfiFacilities);
+
+          const newFacilityChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);
+          newFacilityChangeActions?.forEach(changeAction => {
+            let newFacilities = changeAction.newFacilities;
+            newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
+          });
+          commit('addChangeRequestToStore', {changeRequestId: changeRequestId, changeRequestModel: response});
+
+          return response;
+        } catch(e) {
+          console.log(`Failed to get change request with error - ${e}`);
+          throw e;
         }
-        commit('setChangeActionId', changeAction?.changeActionId);
 
-        let mtfiChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
-        let mtfiFacilities = [];
-        mtfiChangeActions?.forEach(changeAction => mtfiFacilities.push(changeAction.mtfi));
-        commit('setMTFIFacilities', ...mtfiFacilities);
-
-        const newFacilityChangeActions =  response?.changeActions?.filter(changeAction => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY);
-        newFacilityChangeActions?.forEach(changeAction => {
-          let newFacilities = changeAction.newFacilities;
-          newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
-        });
-
-        return response;
-      } catch(e) {
-        console.log(`Failed to get change request with error - ${e}`);
-        throw e;
       }
     },
 
@@ -256,11 +290,11 @@ export default {
         'changeType' : changeType,
       };
       try {
-        let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);
+        let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload); //does this need to be here for every change request?
 
         commit('setChangeRequestId', response?.data?.changeRequestId);
         commit('setChangeActionId', response?.data?.changeActionId);
-        commit('addUserProfileChangeRequests', response?.data?.changeRequestId);
+        commit('addNewChangeRequestToMap', response?.data?.changeRequestId);
         console.log(response);
         return response.data;
       } catch (error) {
@@ -318,7 +352,7 @@ export default {
           };
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
           dispatch('updateExternalStatusInChangeRequestStore', {changeRequestId: changeRequestId, newStatus: 6});
-          dispatch('updateExternalStatusInUserProfileChangeRequests', {changeRequestId: changeRequestId, newStatus: 'CANCELLED'});
+          dispatch('updateExternalStatusInChangeRequestMap', {changeRequestId: changeRequestId, newStatus: 'CANCELLED'});
           return response;
         } catch (e) {
           console.log(`Failed to cancel change request with error - ${e}`);
@@ -337,11 +371,11 @@ export default {
       }
     },
 
-    updateExternalStatusInUserProfileChangeRequests({state, commit}, {changeRequestId, newStatus}) {
-      let index = state.userProfileChangeRequests?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
-      if (index > -1) {
-        state.userProfileChangeRequests[index].externalStatus = newStatus;
-        commit('setUserProfileChangeRequests', state.userProfileChangeRequests);
+    updateExternalStatusInChangeRequestMap({state}, {changeRequestId, newStatus}) {
+      let cr = state.changeRequestMap.get(changeRequestId);
+      if (cr) {
+        cr.externalStatus = newStatus;
+        state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },
 
@@ -397,7 +431,7 @@ export default {
       }
     },
 
-    async createChangeRequestMTFI({state,commit}, payload) {
+    async createChangeRequestMTFI({commit}, payload) {
       console.log('Create MTFI Change Request:' , payload);
       checkSession();
       try {

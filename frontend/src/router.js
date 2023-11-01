@@ -32,6 +32,7 @@ import Eligibility from '@/components/ccofApplication/family/Eligibility';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
 
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
+import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
 import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
@@ -135,6 +136,15 @@ const router = new VueRouter({
       path: pcfUrl(PATHS.SELECT_APPLICATION_TYPE),
       name: 'Select CCOF Application Type',
       component: CcofApplicationTypeSelector,
+      meta: {
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION
+      }
+    },
+    {
+      path: pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE),
+      name: 'Confirm this is a New Application and not a Renewal',
+      component: CcofNewApplicationIntermediate,
       meta: {
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.APPLICATION
@@ -653,6 +663,18 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrlGuid(PATHS.CCFRI_RFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
       path: changeUrlGuid(PATHS.CCFRI_NMF),
       name: 'change-request-new-facilities',
       component: NMF,
@@ -822,7 +844,7 @@ const router = new VueRouter({
     },
     {
       path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
-      name: 'change-request-ccfri-request-info',
+      name: 'mtfi-change-request-ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
@@ -851,8 +873,8 @@ router.beforeEach((to, _from, next) => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
       }else {
-        store.dispatch('auth/getUserInfo', to).then(() => {
-          store.commit('navBar/setUrlDetails', to);
+        store.dispatch('auth/getUserInfo', to).then(async () => {
+          await store.dispatch('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);
           } else {

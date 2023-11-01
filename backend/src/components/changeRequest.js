@@ -3,11 +3,12 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings } = require('../util/mapping/Mappings');
+const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, UserProfileApplicationMappings} = require('../util/mapping/Mappings');
+const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
 const { printPdf } = require('./application');
-const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
 
@@ -31,6 +32,34 @@ function mapChangeRequestForBack(data, changeType) {
   }
   return changeRequestForBack;
 }
+
+async function getChangeActionNewFacilitityDetails(changeActionId) {
+  if (changeActionId) {
+    try {
+      let operation = `ccof_change_request_new_facilities?$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=ccof_ccfri($select=${getMappingString(UserProfileBaseCCFRIMappings)}),ccof_ecewe($select=${getMappingString(UserProfileECEWEMappings)}),ccof_CCOF($select=${getMappingString(UserProfileBaseFundingMappings)})`;
+      let changeActionDetails = await getOperation(operation);
+      let details = changeActionDetails?.value;
+
+      log.info('!!!!!!!!!!');
+      log.info(details);
+      let retVal = [];
+      details?.forEach(el => {
+        let data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();
+        data.ccfri = new MappableObjectForFront(el.ccof_ccfri, UserProfileBaseCCFRIMappings).toJSON();
+        data.ecewe = new MappableObjectForFront(el.ccof_ecewe, UserProfileECEWEMappings).toJSON();
+        log.info(data.ecewe);
+        data.baseFunding = new MappableObjectForFront(el.ccof_CCOF, UserProfileBaseFundingMappings).toJSON();
+        retVal.push(data);
+      });
+      return retVal;
+    } catch (e) {
+      log.error('Unable to get change action details',e);
+    }
+  } else {
+    return undefined;
+  }
+}
+
 
 // get Change Action details.  depending on the entity, we may want to get details 2 level below change action
 async function getChangeActionDetails(changeActionId, changeDetailEntity, changeDetailMapper, joiningTable, joiningTableMapping) {
@@ -65,16 +94,23 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
 
 async function mapChangeRequestObjectForFront(data) {
   let retVal = new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+
   let changeList = [];
   await Promise.all(  retVal.changeActions?.map(async (el) =>  {
     let changeAction = new MappableObjectForFront(el, ChangeActionRequestMappings).toJSON();
     if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
-      const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
+      let mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
+      mtfi?.forEach(item => {
+        item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
+      });
       changeAction.mtfi = mtfi;
-    } else if (changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY) {
-      const newFacilities = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_new_facilities', NewFacilityMappings);
+    }
+    else if (changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY) {
+      const newFacilities = await getChangeActionNewFacilitityDetails(changeAction.changeActionId);
       changeAction.newFacilities = newFacilities;
     }
+    let unlockVals = new MappableObjectForFront(el, ChangeRequestUnlockMapping).toJSON();
+    changeAction = {...changeAction, ...unlockVals};
     changeList.push(changeAction);
   }));
   retVal.changeActions = changeList;
@@ -86,16 +122,12 @@ async function mapChangeRequestObjectForFront(data) {
 
 // get Change Request
 async function getChangeRequest(req, res) {
-  log.info('get changeRequest called');
-
   try {
-    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon)`;
+    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon,ccof_unlock_ecewe,ccof_unlock_ccof,ccof_unlock_supporting_document,ccof_unlock_other_changes_document,ccof_unlock_change_request,ccof_unlock_licence_upload)`;
     let changeRequest = await getOperation(operation);
     changeRequest = await mapChangeRequestObjectForFront(changeRequest);
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType , ORGANIZATION_PROVIDER_TYPES);
     changeRequest.externalStatus = getLabelFromValue(changeRequest.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
-    log.info(changeRequest);
-    log.info(CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
     return res.status(HttpStatus.OK).json(changeRequest);
   } catch (e) {
     console.log('e', e);
@@ -143,7 +175,7 @@ async function createChangeRequest(req, res) {
     else if(changeType === 'PDF_CHANGE'){
       changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
     }
-    log.info('change type', changeType);
+    //log.info('change type', changeType);
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
     let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
@@ -310,8 +342,10 @@ async function getChangeRequestMTFIByCcfriId(req, res){
     let operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
     let response = await getOperation(operation);
     let mtfiDetails = [];
+    let rfiDetails = new MappableObjectForFront(response, UserProfileBaseCCFRIMappings).toJSON();
+    //Add in the rfi details mapping so on the front when we update hasRFI for the first time, we have the value needed to update it
     response?.ccof_change_request_mtfi_application_ccfri?.forEach(mtfiFacility => {
-      mtfiDetails.push(new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON());
+      mtfiDetails.push({...new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON(), ...rfiDetails});
     });
     return res.status(HttpStatus.OK).json(mtfiDetails);
   }
@@ -357,5 +391,5 @@ module.exports = {
   updateChangeRequestMTFI,
   deleteChangeAction,
   getChangeRequestMTFIByCcfriId,
-  deleteChangeRequestMTFI,
+  deleteChangeRequestMTFI
 };

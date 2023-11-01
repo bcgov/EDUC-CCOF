@@ -73,8 +73,16 @@
 
         <v-row no-gutters id="change-request-history">
           <v-col class= "col-lg-12 mt-10">
-            <h2>Change History</h2>
+            <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
+            <h2 v-else>Change History</h2>
           </v-col>
+          <!-- <v-text-field
+            v-if="!viewOlderRequestActive"
+            v-model="search"
+            label="Search by facility name">
+          </v-text-field>
+        NOT SURE IF THIS IS ACTUALLY WHAT THE REQUIREMENTS WANT
+        -->
         </v-row>
         <v-row v-if="processing">
           <v-col >
@@ -83,7 +91,7 @@
         </v-row>
         <v-data-table
           :headers="headers"
-          :items="allChangeRequests"
+          :items="viewOlderRequestActive? pastChangeRequests : currentChangeRequests"
           :height = "maxChangeHistoryTableHeight"
           mobile-breakpoint="md"
           fixed-header
@@ -141,6 +149,13 @@
             </v-btn>
           </template>
         </v-data-table>
+
+        <v-btn
+        @click="viewOlderRequestActive = !viewOlderRequestActive">
+          <p class="ma-0 pa-0" v-if="!viewOlderRequestActive">View Older</p>
+          <p class="ma-0 pa-0" v-else>View Current</p>
+        </v-btn>
+
         <v-dialog v-model="dialog" persistent max-width="525px">
           <v-card>
             <v-container class="pt-0">
@@ -189,6 +204,8 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
+      viewOlderRequestActive: false,
+      search: '',
       isValidForm: false,
       processing: false,
       loading: false,
@@ -221,8 +238,8 @@ export default {
   },
   computed: {
     ...mapState('app', ['programYearList']),
-    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests', 'mtfiFacilities']),
+    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId', 'programYearId']),
+    ...mapState('reportChanges', ['changeRequestStore', 'mtfiFacilities']),
     ...mapState('organization', ['organizationProviderType',]),
     ...mapState('navBar', ['userProfileList']),
     isReadOnly() {
@@ -245,6 +262,7 @@ export default {
             changeType: sortedChangeActions[0]?.changeType,
             changeTypeString: this.getChangeTypeString(sortedChangeActions[0]?.changeType),
             fiscalYear: this.getProgramYearString(changeRequest.programYearId),
+            programYearId: changeRequest.programYearId,
             facilityNames: this.createFacilityNameString(changeRequest.changeActions),
             internalStatus: this.getInternalStatusString(changeRequest.status),
             externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
@@ -254,7 +272,20 @@ export default {
           };
         });
       }
+      console.log('all change reqz');
+      console.log(allChangeRequests);
       return allChangeRequests;
+    },
+    getPrevProgramYearId(){
+      return this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId ).previousYearId;
+    },
+    currentChangeRequests(){
+      return this.allChangeRequests.filter(
+        el => (el.programYearId == this.programYearId)
+        || (el.programYearId == this.getPrevProgramYearId && (el.externalStatus == "In Progress" || el.externalStatus == "Submitted"  || el.externalStatus == "Action Required" )));
+    },
+    pastChangeRequests(){
+      return this.allChangeRequests.filter(el => el.programYearId != this.programYearId);
     },
     // Table should be vertically scrollable once rows > 8
     maxChangeHistoryTableHeight() {
@@ -333,7 +364,7 @@ export default {
       case 'NEW_FACILITY':
         return "Add new facility(s)";
       case 'PARENT_FEE_CHANGE':
-        return 'Midterm Fee Increase';
+        return 'Mid-Term Fee Increase';
 
       default:
         return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
@@ -437,7 +468,7 @@ export default {
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
-      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
+      let currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         this.goToChangeForm(changeActionId, changeRequestId);
       } else if (currentCR?.unlockDeclaration) {
@@ -447,9 +478,9 @@ export default {
       }
     },
     newFacilityActionRequiredRoute(changeRequestId) {
-      let currentCR = this.userProfileChangeRequests?.find(el=>el.changeRequestId===changeRequestId);
-      const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
-      const newFacilityChangeAction = unlockChangeRequest.changeActions?.find(changeAction => changeAction.changeType === 'NEW_FACILITY');
+      const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      // const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      const newFacilityChangeAction = currentCR.changeActions?.find(changeAction => changeAction.changeType === 'NEW_FACILITY');
       if (currentCR?.unlockCCOF) {
         this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId));
       } else if (currentCR?.unlockLicenseUpload) {
@@ -583,7 +614,7 @@ export default {
       this.dialog = false;
     },
     isViewButtonDisplayed(externalStatus) {
-      return ['Submitted','Approved','Cancelled'].includes(externalStatus);
+      return ['Submitted','Approved','Cancelled'].includes(externalStatus) ;
     },
     isContinueButtonDisplayed(externalStatus) {
       return ['In Progress'].includes(externalStatus);

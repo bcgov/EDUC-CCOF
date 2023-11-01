@@ -6,15 +6,41 @@
           class="pa-10 text-h5"
           v-text="`Child Care Operating Funding Program - ${renewalYearLabel} Program Confirmation Form`" />
       </v-row >
+    <v-row>
+          <v-card width="100%" class="mx-3 my-10" v-if="isAnyChangeRequestActive">
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                You have a change request for the {{ currentYearLabel }} funding term still in progress.
+                </v-card-title>
+              </v-col>
+            </v-row>
+            <v-card-text>
+              The {{renewalYearLabel}} Program Confirmation Form cannot be submitted until the change is complete.<br><br>
+              <br>
+
+              <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn>
+            </v-card-text>
+          </v-card>
+        </v-row>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card justify-center" width="800">
             <v-card-text>
                 Do your current licence and service details match the information found in
                 Schedule A of your most recent Funding Agreement?
+
+
             </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="fundingGroup" >
+                <v-radio-group row v-model="fundingGroup" :disabled="isAnyChangeRequestActive" >
                   <v-radio
                     label="Yes"
                     value="true"/>
@@ -62,7 +88,7 @@
           </v-card-text>
           <v-row>
             <v-col class="d-flex justify-center">
-              <v-radio-group row v-model="bankingGroup" >
+              <v-radio-group row v-model="bankingGroup" :disabled="isAnyChangeRequestActive">
                 <v-radio
                   label="Yes"
                   value="true"/>
@@ -126,7 +152,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('app', ['renewalYearLabel']),
+    ...mapGetters('app', ['renewalYearLabel', 'currentYearLabel']),
+    ...mapGetters('reportChanges', ['isAnyChangeRequestActive']),
     ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId']),
     ...mapState('app', ['programYearList']),
   },
@@ -153,6 +180,9 @@ export default {
     },
     back() {
       this.$router.push(PATHS.ROOT.HOME);
+    },
+    goToChangeRequestHistory() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
 
   },
