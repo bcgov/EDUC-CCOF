@@ -545,23 +545,28 @@ export default {
         console.info(error);
       }
     },
-    actionRequiredOrganizationRoute() {
-      if (this.unlockLicenseUpload)
-        this.goToLicenseUpload();
-      else if (this.unlockBaseFunding && (this.applicationType === 'NEW'))
-        this.goToCCOFFunding();
-      else if (this.unlockEcewe)
-        this.goToECEWE();
-      else if (this.unlockSupportingDocuments)
-        this.goToSupportingDocumentUpload();
-      else if (this.unlockCCFRIList.length > 0 )
-        this.goToCCFRI();
-      else if (this.unlockNMFList.length > 0 )
-        this.goToNMF();
-      else if (this.unlockRFIList.length > 0 )
-        this.goToRFI();
-      else if (this.unlockDeclaration)
-        this.goToSummaryDeclaration();
+    actionRequiredOrganizationRoute(programYearId = this.programYearId) {
+      let application = this.applicationMap?.get(programYearId);
+      const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
+      const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
+      const unlockRFIList = this.getUnlockRFIList(facilityList);
+      const unlockNMFList = this.getUnlockNMFList(facilityList);
+      if (application?.unlockLicenseUpload)
+        this.goToLicenseUpload(programYearId);
+      else if (application?.unlockBaseFunding && (application?.applicationType === 'NEW'))
+        this.goToCCOFFunding(programYearId, facilityList);
+      else if (application?.unlockEcewe)
+        this.goToECEWE(programYearId);
+      else if (application?.unlockSupportingDocuments)
+        this.goToSupportingDocumentUpload(programYearId);
+      else if (unlockCCFRIList?.length > 0)
+        this.goToCCFRI(unlockCCFRIList[0], application);
+      else if (unlockNMFList?.length > 0)
+        this.goToNMF(unlockNMFList[0], programYearId);
+      else if (unlockRFIList?.length > 0)
+        this.goToRFI(unlockRFIList[0], programYearId);
+      else if (application?.unlockDeclaration)
+        this.goToSummaryDeclaration(programYearId);
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
       const programYearId = this.selectedProgramYear?.programYearId ? this.selectedProgramYear?.programYearId : this.programYearId;
