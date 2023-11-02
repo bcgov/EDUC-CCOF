@@ -10,7 +10,7 @@
             </v-row>
             <v-data-table v-if="!isLoading"
                           :headers="headers"
-                          :items="filteredLicenseUploadData"
+                          :items="licenseUploadData"
                           class="elevation-1"
                           hide-default-header
                           hide-default-footer
@@ -76,20 +76,11 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['isRenewal']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
-    filteredLicenseUploadData() {
-      if (this.isChangeRequest) {
-        return this.licenseUploadData.filter(el => el.changeRequestId === this.changeRequestId);
-      } else {
-        return this.licenseUploadData.filter(el => !el.changeRequestId);
-      }
-    },
     isLocked() {
       if(this.isChangeRequest){
         if(this.isLicenseUploadUnlocked||!this.changeRequestStatus){
@@ -107,22 +98,22 @@ export default {
       }
       return false;
     },
-    getFacilityList(){
-      let facilityList;
-      if (this.isChangeRequest) {
-        facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        facilityList = this.navBarList.filter(el => !el.changeRequestId);
-      }
-      return facilityList;
-    },
+    // getFacilityList(){
+    //   let facilityList;
+    //   if (this.isChangeRequest) {
+    //     facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+    //   } else {
+    //     facilityList = this.navBarList.filter(el => !el.changeRequestId);
+    //   }
+    //   return facilityList;
+    // },
     nextButtonDisabled() {
-      let facilityList = this.getFacilityList;
+      let facilityList = this.navBarList;
 
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
         const uploadedLicenceCount = this.getUploadedLicenses.filter(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === facilityId).length;
-        const deletedLicenceCount = this.filteredLicenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
+        const deletedLicenceCount = this.licenseUploadData.filter(element => (element.deletedDocument && element.deletedDocument.annotationid && (element.facilityId === facilityId))).length;
         let fileMapLicencePerFacilityCount =  0;
         if(this.fileMap.size > 0 && this.fileMap.get(facilityId)){
           fileMapLicencePerFacilityCount = this.fileMap.get(facilityId)?.length;
@@ -197,7 +188,7 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
-    ...mapMutations('application', ['setIsLicenseUploadComplete']),
+    ...mapMutations('application', ['setIsLicenseUploadCompleteInMap' , 'setIsLicenseUploadComplete']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
     previous() {
@@ -237,6 +228,7 @@ export default {
         if (this.isChangeRequest) {
           this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled});
         } else {
+          this.setIsLicenseUploadCompleteInMap(!this.nextButtonDisabled);
           this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
         }
         this.forceNavBarRefresh();
@@ -255,8 +247,8 @@ export default {
       const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
-        let facilityList = this.getFacilityList;
-        let currFac = facilityList.find(fac => fac.facilityId === facilityId);
+        //let facilityList = this.getFacilityList;
+        let currFac = this.navBarList.find(fac => fac.facilityId === facilityId);
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,

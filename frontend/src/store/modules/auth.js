@@ -113,7 +113,9 @@ export default {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
     },
-    async getUserInfo({state, commit, dispatch}, to){
+    async getUserInfo({state, commit, dispatch, rootState, rootGetters}, to){
+
+
       //This method is called by the router.
       //Only hit the API service if the info has not already been loaded.
       if (!state.isUserInfoLoaded) {
@@ -122,24 +124,29 @@ export default {
           userInfoRes = await ApiService.getUserImpersonateInfo(state.impersonateId);
         } else {
           userInfoRes = await ApiService.getUserInfo();
+          console.log('dataaaaa');
+          console.log(userInfoRes.data);
         }
         commit('setUserInfo', userInfoRes.data);
-        commit('application/setFromUserInfo', userInfoRes.data, { root: true });
-        commit('navBar/setUserProfileList', userInfoRes.data.facilityList, { root: true });
-        commit('navBar/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
-        commit('app/setIsRenewal', (userInfoRes.data.applicationType === 'RENEW'), { root: true });
+        commit('application/addApplicationsToMap', userInfoRes.data.applications, { root: true });
+        await dispatch('application/loadApplicationFromStore', rootGetters['application/latestProgramYearId'], { root: true });
+
+        //page will break if it's a new application and there is no facility list yet, below code fixes that.
+        if (rootState.application?.applicationMap?.size > 0){
+          const latestApplication = rootState.application?.applicationMap?.get(rootGetters['application/latestProgramYearId']);
+          commit('navBar/setUserProfileList', latestApplication?.facilityList, { root: true });
+          commit('organization/setOrganizationProviderType', latestApplication?.organizationProviderType, { root: true });
+          commit('navBar/setApplicationStatus', [latestApplication?.applicationStatus, latestApplication?.ccofApplicationStatus], { root: true });
+        }
+        console.log('getUserInfo --------------------------- ');
+        console.log(userInfoRes.data);
         commit('organization/setOrganizationId', userInfoRes.data.organizationId, { root: true });
-        commit('organization/setOrganizationProviderType', userInfoRes.data.organizationProviderType, { root: true });
         commit('organization/setOrganizationName', userInfoRes.data?.organizationName, { root: true });
         commit('organization/setOrganizationAccountNumber', userInfoRes.data?.organizationAccountNumber, { root: true });
         commit('organization/setFundingAgreementNumber', userInfoRes.data?.fundingAgreementNumber, { root: true });
         commit('organization/setIsOrganizationComplete', userInfoRes.data.isOrganizationComplete, { root: true });
-        commit('reportChanges/setUserProfileChangeRequests', userInfoRes.data.changeRequests, { root: true });
         commit('setIsUserInfoLoaded', true);
         commit('setIsMinistryUser', userInfoRes.data.isMinistryUser);
-      }
-      if (to?.params?.changeRecGuid) {
-        await dispatch('navBar/loadChangeRequest', to.params.changeRecGuid,  { root: true });
       }
     },
 

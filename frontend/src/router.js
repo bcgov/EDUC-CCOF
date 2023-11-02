@@ -663,6 +663,18 @@ const router = new VueRouter({
       }
     },
     {
+      path: changeUrlGuid(PATHS.CCFRI_RFI),
+      name: 'change-request-ccfri-request-info',
+      component: CCFRIRequestMoreInfo,
+      meta: {
+        pageTitle: 'CCFRI Request More Info',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.ADDFACILITY
+      }
+    },
+    {
       path: changeUrlGuid(PATHS.CCFRI_NMF),
       name: 'change-request-new-facilities',
       component: NMF,
@@ -832,7 +844,7 @@ const router = new VueRouter({
     },
     {
       path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
-      name: 'change-request-ccfri-request-info',
+      name: 'mtfi-change-request-ccfri-request-info',
       component: CCFRIRequestMoreInfo,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
@@ -861,8 +873,8 @@ router.beforeEach((to, _from, next) => {
       if (!authStore.state.isAuthenticated) {
         next('/token-expired');
       }else {
-        store.dispatch('auth/getUserInfo', to).then(() => {
-          store.commit('navBar/setUrlDetails', to);
+        store.dispatch('auth/getUserInfo', to).then(async () => {
+          await store.dispatch('navBar/setUrlDetails', to);
           if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
             next(PATHS.ROOT.IMPERSONATE);
           } else {

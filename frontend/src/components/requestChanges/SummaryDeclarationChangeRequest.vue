@@ -10,6 +10,7 @@
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
         {{ this.userInfo.organizationName }}
       </v-row>
+
       <v-row v-if="!this.isSummaryComplete && !this.isProcessing" class="justify-center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0 col-12">
@@ -36,6 +37,31 @@
           </v-container>
         </v-card>
       </v-row>
+
+      <v-row class="d-flex justify-center">
+          <v-card width="80%" class="mx-3 my-10 justify-center" v-if="isSomeApplicationUnlocked">
+            <v-row>
+              <v-col class="py-0">
+                <v-card-title class="py-1 noticeAlert">
+                  <span style="float:left">
+                <v-icon
+                  x-large
+                  class="py-1 px-3 noticeAlertIcon">
+                  mdi-alert-octagon
+                </v-icon>
+                </span>
+                You have an unlocked PCF application still in progress.
+                </v-card-title>
+              </v-col>
+            </v-row>
+              <br>
+              <p class="ml-4">You will be unable to submit a change request until the Program Confirmation Form is updated.</p><br>
+              <br>
+
+              <!-- <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
+
+          </v-card>
+        </v-row>
       <div>
         <v-row class="d-flex justify-center">
           <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -255,7 +281,7 @@
         </v-card>
       </v-row>
       <NavButton :isSubmitDisplayed="true" class="mt-10"
-        :isSubmitDisabled="!isPageComplete() || isReadOnly" :isProcessing="isProcessing"
+        :isSubmitDisabled="!isPageComplete() || isReadOnly || isSomeApplicationUnlocked" :isProcessing="isProcessing"
         @previous="previous" @submit="submit" v-if="!printableVersion"></NavButton>
       <v-dialog
         v-model="dialog"
@@ -297,7 +323,7 @@ import NavButton from '@/components/util/NavButton';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary';
 import RFISummary from '@/components/summary/group/RFISummary';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary';
-
+import { isAnyApplicationUnlocked } from '@/utils/common';
 
 export default {
   components: {
@@ -343,7 +369,7 @@ export default {
     ...mapState('organization', ['organizationAccountNumber']),
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'model']),
-    ...mapState('application', ['isRenewal']),
+    ...mapState('application', ['isRenewal', 'applicationMap']),
     isReadOnly() {
       if (this.isMinistryUser || !this.isLoadingComplete) {
         return true;
@@ -353,6 +379,11 @@ export default {
         return true;
       }
       return false;
+    },
+    isSomeApplicationUnlocked(){
+      const applicationList = Array.from(this.applicationMap?.values());
+      console.log(isAnyApplicationUnlocked(applicationList));
+      return isAnyApplicationUnlocked(applicationList);
     },
     numberOfPanelsToExpand() {
       return this.$refs["v-expansion-panels"]?.$children.length;

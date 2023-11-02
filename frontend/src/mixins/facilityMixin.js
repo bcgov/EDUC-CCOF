@@ -1,4 +1,4 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, pcfUrlGuid} from '@/utils/constants';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, changeUrl, pcfUrlGuid, pcfUrl } from '@/utils/constants';
 import { isChangeRequest } from '@/utils/common';
 import rules from '@/utils/rules';
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
@@ -14,7 +14,6 @@ export default {
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
-    ...mapState('reportChanges', ['userProfileChangeRequests']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
@@ -33,10 +32,15 @@ export default {
         return false;
       }
       return (this.applicationStatus === 'SUBMITTED');
-    }
-  },
+    },
+    isModelEmpty() {
+      return !(Object.values(this.model)?.some(item => item));
+    },
+},
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if (!this.isModelEmpty) {
+      await this.save(false);
+    }
     next();
   },
   watch: {
@@ -76,7 +80,7 @@ export default {
     ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
     ...mapActions('organization', ['loadOrganization']),
     ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
-    ...mapMutations('navBar', ['setNavBarFacilityComplete']),
+    ...mapMutations('navBar', ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
     isSameAddressChecked() {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
@@ -88,7 +92,19 @@ export default {
       return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
-      this.$router.push(this.previousPath);
+      const defaultPath = isChangeRequest(this) ? PATHS.ROOT.CHANGE_LANDING : PATHS.ROOT.HOME;
+      // in both PCF & CR, when we add a new facility using Add Facility page (select Yes), the new blank facility is not added to NavBar => previousPath = undefined
+      if (!this.previousPath) {
+        if (this.$route.name === 'Facility Information' && this.$route.params.urlGuid == null) {
+          this.$router.push(pcfUrl(PATHS.CCOF_GROUP_CONFIRM, this.programYearId));
+        } else if (this.$route.name === 'existing-change-request-facility-information' && this.$route.params.urlGuid == null) {
+          this.$router.push(changeUrl(PATHS.CCOF_GROUP_CONFIRM, this.changeRequestId));
+        } else {
+          this.$router.push(defaultPath);
+        }
+      } else {
+        this.$router.push(this.previousPath);
+      }
     },
     async next() {
       // await this.save();
@@ -132,6 +148,8 @@ export default {
       this.processing = true;
       try {
         await this.saveFacility({ isChangeRequest: isChangeRequest(this), changeRequestId: this.$route.params.changeRecGuid });
+        //this.refreshNavBarList();
+        this.forceNavBarRefresh();
         if (isSave) {
           this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
         }

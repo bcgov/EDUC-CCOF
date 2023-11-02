@@ -52,14 +52,15 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid } from '@/utils/constants';
+import { PATHS, pcfUrl, changeUrl } from '@/utils/constants';
 import rules from '@/utils/rules';
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 
 export default {
   name: 'UploadedDocumentsSummary',
   computed: {
-    ...mapState('summaryDeclaration', ['isLoadingComplete',])
+    ...mapState('summaryDeclaration', ['isLoadingComplete',]),
+    ...mapGetters('navBar', ['isChangeRequest']),
   },
   props: {
     documents: {
@@ -85,7 +86,10 @@ export default {
   },
   methods: {
     getLink(){
-      return pcfUrlGuid(PATHS.LICENSE_UPLOAD, this.programYearId, this.ccfriId );
+      if (this.isChangeRequest) {
+        return changeUrl(PATHS.LICENSE_UPLOAD, this.$route.params?.changeRecGuid);
+      }
+      return pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId);
     },
     getLicenceDocumentFileName() {
       return  this.documents.find(doc => doc.documentType === 'Facility License')?.filename;

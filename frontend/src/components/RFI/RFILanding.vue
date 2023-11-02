@@ -1600,7 +1600,6 @@ export default {
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
     ...mapState('navBar',['changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
@@ -1609,7 +1608,7 @@ export default {
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
-      if (this.currentFacility?.unlockRfi === 1) {
+      if (this.currentFacility?.unlockRfi) {
         return false;
       }else if(this.isChangeRequest){
         if (!this.changeRequestStatus||this.currentFacility.unlockRfi){

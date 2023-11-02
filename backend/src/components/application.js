@@ -10,13 +10,15 @@ const {
   updateChangeRequestNewFacility,
   postApplicationSummaryDocument,
   postChangeRequestSummaryDocument,
+  getChangeActionDetails
 } = require('./utils');
 const {
   CCOF_APPLICATION_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   APPLICATION_STATUS_CODES,
   CCOF_STATUS_CODES,
-  CHANGE_REQUEST_TYPES
+  CHANGE_REQUEST_TYPES,
+  CCFRI_STATUS_CODES
 } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -25,6 +27,7 @@ const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
+  UserProfileBaseCCFRIMappings,
   UserProfileCCFRIMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
@@ -680,12 +683,15 @@ function checkKey(key, obj) {
 async function getFacilityChangeData(changeActionId){
   let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
-  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
 
   newFacData.value.forEach(fac => {
-    mappedData.push( new MappableObjectForFront(fac, NewFacilityMappings).toJSON());
+    let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
+    mappedFacility.facilityName = fac.ccof_facility['name'];
+    mappedFacility.facilityStatus = fac.ccof_facility['ccof_facilitystatus@OData.Community.Display.V1.FormattedValue'];
+    mappedData.push(mappedFacility);
   });
 
   log.info('faccccc data post mapping', mappedData);
@@ -693,24 +699,43 @@ async function getFacilityChangeData(changeActionId){
 }
 
 async function getMTFIChangeData(changeActionId) {
-  let mappedData = [];
-  let operation = `ccof_change_request_mtfis?$filter=_ccof_change_action_value eq ${changeActionId}`;
-  let response = await getOperation(operation);
-  response?.value.forEach(fac => {
-    mappedData.push( new MappableObjectForFront(fac, MtfiMappings).toJSON());
+  let mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
+  mtfi?.forEach(item => {
+    item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
   });
-  return mappedData;
+  return mtfi;
 }
+//and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
+async function getChangeRequestsFromApplicationId(applicationIds){
 
-async function getChangeRequestsFromApplicationId(applicationId){
+  let str = '[';
+
+  const regex = new RegExp('([^,]+)' , 'g');
+  const found = applicationIds.match(regex);
+  found.forEach((app, index) => {
+    str = str + `'${app}'`;
+    if (index != found.length -1 ){
+      str = str + ',';
+    }
+    else{
+      str = str + ']';
+    }
+  });
+
+  log.info(str);
+
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
+    //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
+    // log.info('ALL CHANGE REQZ');
+    // log.info(changeRequests);
+
     let payload = [];
 
-    log.verbose(changeRequests);
+    //log.verbose(changeRequests);
     await Promise.all(changeRequests.map(async (request) => {
 
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
@@ -731,11 +756,11 @@ async function getChangeRequestsFromApplicationId(applicationId){
       payload.push(req);
     }));
 
-    log.info('final payload', payload);
+    //log.info('final payload', payload);
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+    throw e;
   }
 
 }
@@ -754,6 +779,30 @@ async function getChangeRequest(req, res){
 
 }
 
+async function deletePcfApplication(req, res){
+  try {
+    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
+    let application = await getOperation(operation);
+
+    //loop thru to grab facility ID's and delete all of them
+    await Promise.all(application['ccof_application_basefunding_Application'].map(async (facility) => {
+      await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
+      //log.info(response);
+    }));
+
+    //delete the application
+    await deleteOperationWithObjectId('ccof_applications', req.params.applicationId);
+
+    //and delete the org. We must delete the org otherwise the user will be linked to multiple orgs in dynamics
+    await deleteOperationWithObjectId('accounts', application['_ccof_organization_value']);
+
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error('An error occurred while deleting PCF', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -768,5 +817,6 @@ module.exports = {
   getChangeRequest,
   patchCCFRIApplication,
   deleteCCFRIApplication,
-  printPdf
+  printPdf,
+  deletePcfApplication
 };

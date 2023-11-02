@@ -25,17 +25,15 @@ function sortByPropertyDesc(property){
 
 async function getAllMessages(req, res) {
   try {
-    let operation = 'emails?$select=activityid,createdon,description,lastopenedtime,_ccof_program_year_value,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' + req.params.organizationId + ' and statecode eq 1)';
+    let operation = 'emails?$select=activityid,createdon,description,lastopenedtime,ccof_program_year,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' + req.params.organizationId + ' and statecode eq 1)';
     log.info('operation: ', operation);
     let operationResponse = await getOperation(operation);
     operationResponse.value.sort(sortByPropertyDesc('createdon'));
     let allMessages = [];
     operationResponse.value.forEach(item => {
       let message = mapMessageObjectForFront(item);
-      if (message.lastOpenedTime)
-        message['isRead'] = true;
-      else
-        message['isRead'] = false;
+      message.isRead = message.lastOpenedTime ? true : false;
+      message.programYearValue = message.programYearValue?.replace(/[^\d/]/g, '');
       allMessages.push(message);
     });
     return res.status(HttpStatus.OK).json(allMessages);

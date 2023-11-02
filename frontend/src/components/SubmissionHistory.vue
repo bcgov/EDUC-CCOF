@@ -23,8 +23,9 @@
             fixed-header
             class="elevation-4 my-4"
             disable-pagination hide-default-footer
-            :sort-by="['priority', 'submissionDate']"
-            :sort-desc="[true, true]"
+            :sort-by="['submissionDate']"
+            :sort-desc="[true]"
+            v-if="!processing"
           >
             <template v-slot:item.facilityNames="{ item }">
             </template>
@@ -48,14 +49,14 @@
   </template>
 
   <script>
-  import { mapState, mapMutations, mapActions } from 'vuex';
+  import { mapState, mapActions } from 'vuex';
   import { PATHS, ApiRoutes } from '@/utils/constants';
   import alertMixin from '@/mixins/alertMixin';
   import NavButton from './util/NavButton.vue';
 
 
-
-
+  
+  
   export default {
     mixins: [alertMixin],
     data() {
@@ -77,10 +78,7 @@
       };
     },
     computed: {
-      ...mapState('app', ['programYearList']),
-      ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-      ...mapState('reportChanges', ['changeRequestStore','userProfileChangeRequests']),
-      ...mapState('navBar', ['userProfileList']),
+      ...mapState('organization', ['organizationId']),
       ...mapState('document',['pdfs']),
       isReadOnly() {
         return false;
@@ -92,10 +90,10 @@
             index: index,
             annotationId: submission?.annotationId,
             appId: submission?.appId,
-            type: submission?.subject,
+            type: submission?.type,
             fiscalYear: submission?.fiscalYear.replace(/[^\d/]/g, ''),
-            submissionDate: submission?.createDate,
-            submissionDateString: this.getSubmissionDateString(submission?.createDate),
+            submissionDate: submission?.submissionDate,
+            submissionDateString: this.getSubmissionDateString(submission?.submissionDate),
             fileName: submission?.fileName,
             fileSize: Math.round(submission?.fileSize/100)/10,
           };
@@ -109,9 +107,7 @@
 
     },
     methods: {
-      ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest']),
       ...mapActions('document',['getPDFs']),
-      ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
       previous() {
         this.$router.push(PATHS.ROOT.HOME);
       },
@@ -133,7 +129,7 @@
     },
     async mounted() {
       this.processing = true;
-      await this.getPDFs(this.applicationId);
+      await this.getPDFs(this.organizationId);
       this.processing = false;
     },
     beforeRouteLeave(_to, _from, next) {

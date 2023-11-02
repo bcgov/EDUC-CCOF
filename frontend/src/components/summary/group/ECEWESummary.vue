@@ -165,12 +165,16 @@ export default {
       return !!(this.eceweFacility);
     },
     getRoutingPath(){
-      if(this.isChangeRequest){
-        return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
+      if (this.isChangeRequest) {
+        if (!this.eceweFacility) {
+          return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
+        }
+        return changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
       }
-      else if(this.eceweFacility){
-        return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
-      }else {
+      else {
+        if (!this.eceweFacility) {
+          return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
+        }
         return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
       }
     },

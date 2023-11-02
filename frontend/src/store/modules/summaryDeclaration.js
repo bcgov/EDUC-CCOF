@@ -124,7 +124,7 @@ export default {
           state.model.externalStatus = 'SUBMITTED';
           commit('model', state.model);
           dispatch('reportChanges/updateExternalStatusInChangeRequestStore', {changeRequestId: changeRequestId, newStatus: 2}, { root: true });
-          dispatch('reportChanges/updateExternalStatusInUserProfileChangeRequests', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
+          dispatch('reportChanges/updateExternalStatusInChangeRequestMap', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
           return response;
         }
         else{
@@ -150,19 +150,10 @@ export default {
           facilities: payload.facilities,
           ecewe:undefined
         };
-        // filter out all facilities that are part of the change request --- Rob made the below code, when I pulled it in, it broke mine so commenting out for now
-        // const changeRequestList = rootState.app.navBarList.map( el => { if (el.changeRequestId) return el.facilityId;}).filter(el => el);
-        // console.log('change request List: ', changeRequestList);
 
-        // summaryModel.facilities = summaryModel.facilities?.filter(el => !changeRequestList.includes(el.facilityId));
-
-        //filter all facilites and only show the new ones associated with the changeRecGuid on the page
-        if (changeRecGuid){
-          summaryModel.facilities = summaryModel.facilities.filter(fac => {return fac.changeRequestId == changeRecGuid;});
-        }
-        else {
-          summaryModel.facilities = summaryModel.facilities.filter(fac => {return !fac.changeRequestId;});
-        }
+        summaryModel.facilities = summaryModel.facilities?.filter(fac => {
+          return rootState.navBar.navBarList?.findIndex(item => item.facilityId === fac.facilityId) > -1;
+        });
 
         commit('summaryModel', summaryModel);
         commit('isMainLoading', false);
@@ -173,7 +164,7 @@ export default {
         await commit('isSummaryLoading', isSummaryLoading );
 
         //new app only?
-        if (!rootState.app.isRenewal && payload.application?.organizationId) {
+        if (!rootState.application.isRenewal && payload.application?.organizationId) {
           summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
           commit('summaryModel', summaryModel);
           summaryModel.ecewe = (await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)).data;
@@ -352,7 +343,7 @@ export default {
             mtfiFacility.facilityName = userProfileListFacility.facilityName;
             mtfiFacility.facilityAccountNumber = userProfileListFacility.facilityAccountNumber;
             mtfiFacility.licenseNumber = userProfileListFacility.licenseNumber;
-            
+
             mtfiFacility.oldCcfriApplicationId = userProfileListFacility.ccfriApplicationId;
             mtfiFacility.oldCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.oldCcfriApplicationId}`)).data;
             mtfiFacility.oldCcfri.childCareTypes = mtfiFacility.oldCcfri?.childCareTypes?.filter(item => item.programYearId === rootState.application.programYearId);
@@ -361,7 +352,7 @@ export default {
             mtfiFacility.newCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.ccfriApplicationId}`)).data;
             mtfiFacility.newCcfri.childCareTypes = mtfiFacility.newCcfri?.childCareTypes?.filter(item => item.programYearId === rootState.application.programYearId);
             mtfiFacility.newCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
-            
+
             if (mtfiFacility.hasRfi || mtfiFacility.unlockRfi)
               mtfiFacility.rfiApp = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)).data;
             isSummaryLoading.splice(index, 1, false);

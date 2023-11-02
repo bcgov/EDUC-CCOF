@@ -84,7 +84,7 @@ function mapCCFRIObjectForFront(data) {
 async function getFacility(req, res) {
   try {
     //,_ccof_change_request_value
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber'; //+ getMappingString(FacilityMappings);
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
 
@@ -169,6 +169,17 @@ async function getFacilityChildCareTypes(req, res){
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
   }
 }
+//a wrapper fn as getCCFRIClosureDates does not take in a req/res
+async function returnCCFRIClosureDates(req, res){
+  try {
+    const dateData = {dates: await getCCFRIClosureDates(req.params.ccfriId)};
+    return res.status(HttpStatus.OK).json(dateData);
+
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
 
 async function getCCFRIClosureDates(ccfriId){
   const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
@@ -180,11 +191,8 @@ async function getCCFRIClosureDates(ccfriId){
 
   data.forEach((date) => {
 
-    let formattedStartDate = new Date(date.ccof_startdate).toISOString().slice(0, 10);
-    // formattedStartDate.
-
-    let formattedEndDate = new Date(date.ccof_enddate).toISOString().slice(0, 10);
-    // formattedEndDate.toISOString().slice(0, 10);
+    let formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
+    let formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
 
     closureDates.push({
       'closureDateId' : date.ccof_application_ccfri_closureid,
@@ -382,9 +390,10 @@ async function getApprovedParentFees(req, res) {
         }
       );
     }); //end for each
+
     const retVal = {
       facilityId: facilityId,
-      childCareTypes: childCareTypes
+      childCareTypes: childCareTypes,
     };
     return res.status(200).json(retVal);
   } catch (e) {
@@ -405,6 +414,7 @@ module.exports = {
   updateFacilityLicenseType,
   getCCFRIClosureDates,
   mapFacilityObjectForBack,
-  getApprovedParentFees
+  getApprovedParentFees,
+  returnCCFRIClosureDates
 };
 
