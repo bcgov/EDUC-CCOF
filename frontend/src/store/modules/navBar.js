@@ -237,18 +237,14 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-    updateNavBar: (state, payload) => {
-      state.userProfileList = state.userProfileList.map(item => {
-        if (item.facilityId == payload.facilityId) {
-          let newItem = item;
-          newItem.facilityName = payload.facilityName;
-          newItem.licenseNumber = payload.licenseNumber;
-          return newItem;
-        }
-        return item;
-      });
-      filterNavBar(state);
-      state.refreshNavBar++;
+    updateNavBar: (state, payload) => {  
+      let navBarItem = state.userProfileList.find(item => item.facilityId == payload.facilityId);
+      if (navBarItem) {
+        navBarItem.facilityName = payload.facilityName;
+        navBarItem.licenseNumber = payload.licenseNumber;
+        filterNavBar(state);
+        state.refreshNavBar++;
+      }
     },
     deleteFromNavBar: (state, facilityId) => {
       state.userProfileList = state.userProfileList.filter(item => item.facilityId !== facilityId);
