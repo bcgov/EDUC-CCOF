@@ -249,38 +249,38 @@
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareUnder36Months4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrLess')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Group Child Care (under 36 months)" />
+                    v-model.number="model.extendedChildCareUnder36Months4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrLess')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrLess')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Group Child Care (30 months to School Age)" />
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrLess')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrLess')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Group Child Care (School Age / School Age Care on School Grounds)" />
+                    v-model.number="model.extendedChildCareSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrLess')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Group Child Care (School Age / School Age Care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.multiAgeCare4OrLess" @input="convertBlankNumberToNull(model,'multiAgeCare4OrLess')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Multi-Age Child Care" />
+                    v-model.number="model.multiAgeCare4OrLess" @input="convertBlankNumberToNull(model,'multiAgeCare4OrLess')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Multi-Age Child Care" />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareUnder36Months4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrMore')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Group Child Care (under 36 months)" />
+                    v-model.number="model.extendedChildCareUnder36Months4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrMore')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Group Child Care (under 36 months)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrMore')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Group Child Care (30 months to School Age)" />
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrMore')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Group Child Care (30 months to School Age)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrMore')" :rules="[...rules.notrequired,rules.wholeNumber]" label="Group Child Care (School Age/ School Age Care on School Grounds)" />
+                    v-model.number="model.extendedChildCareSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrMore')" :rules="[...rules.notRequired,rules.wholeNumber]" label="Group Child Care (School Age/ School Age Care on School Grounds)" />
                 </v-row>
                 <v-row class="padded-row">
                   <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.multiAgeCare4more" @input="convertBlankNumberToNull(model,'multiAgeCare4more')" :rules="[...rules.notrequired,rules.wholeNumber]"  label="Multi-Age Child Care" />
+                    v-model.number="model.multiAgeCare4more" @input="convertBlankNumberToNull(model,'multiAgeCare4more')" :rules="[...rules.notRequired,rules.wholeNumber]"  label="Multi-Age Child Care" />
                 </v-row>
               </v-col>
             </v-row>
