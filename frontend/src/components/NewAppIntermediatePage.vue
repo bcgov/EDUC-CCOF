@@ -2,7 +2,7 @@
   <v-container>
     <div class="row pt-4 justify-center">
       <v-row class="d-flex justify-center text-h5" style="color:#003466;">
-        Weclcome {{ this.userInfo.organizationName }} to CCOF!
+        Welcome {{ this.userInfo.organizationName }} to CCOF!
       </v-row>
       <v-row class="d-flex justify-center">
         <p>If you or your ogranization are already in agreement and have active funding with the Child

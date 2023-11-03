@@ -7,7 +7,7 @@
           v-text="`Child Care Operating Funding Program - ${renewalYearLabel} Program Confirmation Form`" />
       </v-row >
     <v-row>
-          <v-card width="100%" class="mx-3 my-10" v-if="isAnyChangeRequestActive">
+          <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()">
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
@@ -40,7 +40,7 @@
             </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="fundingGroup" :disabled="isAnyChangeRequestActive" >
+                <v-radio-group row v-model="fundingGroup" :disabled="isSomeChangeRequestActive()" >
                   <v-radio
                     label="Yes"
                     value="true"/>
@@ -88,7 +88,7 @@
           </v-card-text>
           <v-row>
             <v-col class="d-flex justify-center">
-              <v-radio-group row v-model="bankingGroup" :disabled="isAnyChangeRequestActive">
+              <v-radio-group row v-model="bankingGroup" :disabled="isSomeChangeRequestActive()">
                 <v-radio
                   label="Yes"
                   value="true"/>
@@ -139,6 +139,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { PATHS, pcfUrl } from '@/utils/constants';
 import rules from '@/utils/rules';
 import NavButton from '@/components/util/NavButton';
+import {isAnyChangeRequestActive } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -153,9 +154,9 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['renewalYearLabel', 'currentYearLabel']),
-    ...mapGetters('reportChanges', ['isAnyChangeRequestActive']),
     ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId']),
     ...mapState('app', ['programYearList']),
+    ...mapState('reportChanges', ['changeRequestStore',]),
   },
   mounted() {
     this.processing = false;
@@ -174,6 +175,10 @@ export default {
       this.processing = true;
       await this.renewApplication();
       this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearList.renewal.programYearId));
+    },
+    isSomeChangeRequestActive(){
+      //Status of : "Submitted" "Action Required";
+      return isAnyChangeRequestActive(this.changeRequestStore);
     },
     validateForm() {
       this.$refs.form?.validate();
