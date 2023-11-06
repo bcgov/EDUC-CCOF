@@ -984,18 +984,13 @@ export default {
         this.$router.push(this.nextPath);
       }
     },
-    previous() {
-      console.log('combined dates: ');
-          console.log(this.chosenDates);
-      console.log('new dates: ');
-          console.log(this.CCFRIFacilityModel.dates);
-
-      // if(this.organizationProviderType == 'FAMILY'){
-      //   this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
-      // }
-      // else{
-      //   this.$router.push(this.previousPath);
-      // }
+   previous() {
+      if(this.organizationProviderType == 'FAMILY'){
+        this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
+      }
+      else{
+        this.$router.push(this.previousPath);
+      }
     },
     validateForm() {
 
