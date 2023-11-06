@@ -5,9 +5,9 @@
         Welcome {{ this.userInfo.organizationName }} to CCOF!
       </v-row>
       <v-row class="d-flex justify-center">
-        <p>If you or your ogranization are already in agreement and have active funding with the Child
-          Care Operating Funding program, do not submit a new application and call the program
-          directly at 1-888-338-6622 (Option 2).</p>
+        <p style="max-width:801px">If your organization currently receives funding from the Child Care Operating Funding
+        (CCOF) program, do not submit a new application. You can request support for
+        applying on MyCCBC by calling the program at 1-888-338-6622 (Option 2).</p>
       </v-row>
       <v-row class="d-flex justify-center">
         <v-col class="d-flex justify-center">
