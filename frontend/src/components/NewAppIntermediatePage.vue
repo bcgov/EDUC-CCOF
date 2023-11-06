@@ -2,7 +2,7 @@
   <v-container>
     <div class="row pt-4 justify-center">
       <v-row class="justify-center text-h5 pb-5" style="color:#003466" >
-        Weclcome to CCOF!
+        Welcome to CCOF!
     </v-row>
     <v-row class="justify-center pb-5" style="color:#003466">
       <p style="max-width:801px">If your organization currently receives funding from the Child Care Operating Funding
