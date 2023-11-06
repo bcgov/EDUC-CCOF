@@ -231,19 +231,20 @@ export default {
 };
 </script>
 
-<style>
-.theme--light.v-btn.v-btn--icon {
-    color: #0FC3ED;
+<style scoped>
+:deep(.theme--light.v-btn.v-btn--icon) {
+  color: #0fc3ed;
 }
 
-.v-data-footer__pagination {
+:deep(.v-data-footer__pagination) {
     margin-left: auto !important;
 }
 
-.v-data-footer__select {
+:deep(.v-data-footer__select) {
     margin-left: 0px !important;
 }
-.v-input__slot{
-  padding-top: 0px
+
+:deep(.v-input__slot) {
+  padding-top: 0px;
 }
 </style>
