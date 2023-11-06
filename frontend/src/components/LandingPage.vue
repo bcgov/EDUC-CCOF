@@ -453,9 +453,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('application', ['setIsRenewal']),
+    ...mapMutations('application', ['setIsRenewal', 'deletePcfApplication']),
     ...mapActions('message', ['getAllMessages']),
-    ...mapActions('application', ['deletePcfApplication']),
     ...mapMutations('navBar', ['refreshNavBarList']),
     ...mapActions('reportChanges', ['getChangeRequestList']),
     closeDialog() {

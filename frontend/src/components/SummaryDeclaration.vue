@@ -438,7 +438,7 @@ export default {
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete', 'applicationMap']),
-    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete',]),
+    ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', ]),
     ...mapState('reportChanges', ['changeRequestStore',]),
     isReadOnly() {
       if (this.isMinistryUser) {
@@ -525,8 +525,8 @@ export default {
       return this.isValidForm;
     },
     isSomeChangeRequestActive(){
-      //return false;
-      return this.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
+      //Status of : "Submitted" "Action Required";
+      return isAnyChangeRequestActive(this.changeRequestStore);
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');

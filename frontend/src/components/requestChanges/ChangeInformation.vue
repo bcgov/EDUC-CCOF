@@ -14,7 +14,7 @@
           <ul>
 
             <li>Your facility licence</li>
-            <li>Services outlined in Schedule in Schedule A of your Child Care Operating Funding Agreement</li>
+            <li>Services outlined in Schedule A of your Child Care Operating Funding Agreement</li>
           </ul>
           <br>
           To ensure accurate payments, please notify us of any changes <b>before</b> submitting an enrolment report of a monthly ECE report.

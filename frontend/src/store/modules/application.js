@@ -61,7 +61,6 @@ export default {
         app.isLicenseUploadComplete = value;
       }
     },
-
     addApplicationsToMap: (state, applicationList) => {
       const map = new Map(state.applicationMap);
       applicationList?.forEach(el => {
@@ -69,10 +68,18 @@ export default {
       });
       state.applicationMap = map;
     },
-    async deletePcfApplication({state}){
+    removeFacilityFromMap: (state, facilityId) => {
+      let app = state.applicationMap?.get(state.programYearId);
+      //it should almost always have an app.. this just solves for the case where it's a brand new PCF application, and they haven't refreshed yet
+      if(app){
+        app.facilityList = app.facilityList?.filter(fac => fac.facilityId != facilityId);
+        const map = new Map(state.applicationMap);
+        state.applicationMap = map;
+      }
+    },
+    async deletePcfApplication(state){
       //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state.applicationId);
-      window.reload();
+      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
     }
   },
   getters: {

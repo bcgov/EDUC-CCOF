@@ -74,18 +74,6 @@ export default {
     getChangeNotificationActionId:(state,getters,rootState) => {
       return state.changeRequestMap.get(rootState.navBar.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
     },
-    isAnyChangeRequestActive:(state, rootGetters) => {
-      //Status of : "In Progress" "Submitted" "Action Required";
-      //console.log((rootGetters['navBar/isChangeRequest']));
-      //return false;
-      //await this.getChangeRequestList();
-      //for PCF
-      // if (!rootGetters['navBar/isChangeRequest']){
-      //   return false;
-      // }
-      //console.log(state.changeRequestStore.some((el) => el.status == 1 || el.status == 2 || el.status == 3));
-      return state?.changeRequestStore?.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
-    }
   },
   mutations: {
     addChangeRequestToStore: (state, {changeRequestId, changeRequestModel}) => {

@@ -7,7 +7,7 @@
           v-text="`Child Care Operating Funding Program - ${renewalYearLabel} Program Confirmation Form`" />
       </v-row >
     <v-row>
-          <v-card width="100%" class="mx-3 my-10" v-if="isAnyChangeRequestActive">
+          <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()">
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
@@ -40,7 +40,7 @@
             </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="fundingGroup" :disabled="isAnyChangeRequestActive" >
+                <v-radio-group row v-model="fundingGroup" :disabled="isSomeChangeRequestActive()" >
                   <v-radio
                     label="Yes"
                     value="true"/>
@@ -67,15 +67,12 @@
                   </v-col>
                 </v-row>
                 <v-card-text>
-                  Once these changes have been processed, you may complete your {{renewalYearLabel}} Program Confirmation Form.<br><br>
-                  Submit the Change Notification Form:<br>
-                  <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf">
-                  https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf
-                  </a><br><br>
-                  available on the program website:<br>
-                  <a href="https://www2.gov.bc.ca/gov/content?id=F226747EC2954742B2B09BA90824D8F4">
-                  https://www2.gov.bc.ca/gov/content?id=F226747EC2954742B2B09BA90824D8F4
-                  </a>
+                  If your current license and service details do not match the information found in schedule A of your most recent funding agreement then please submit a change request.
+                  <br><br>
+
+                  Please submit a change request using the link below:
+                  <br> <br>
+                  <router-link :to="goToChangeDashboard()" > <span style="color:#3289ec; text-underline: black"><u>Go to Report a Change. This will bring you to a different page.</u></span></router-link>
                 </v-card-text>
               </v-card>
             </v-row>
@@ -88,7 +85,7 @@
           </v-card-text>
           <v-row>
             <v-col class="d-flex justify-center">
-              <v-radio-group row v-model="bankingGroup" :disabled="isAnyChangeRequestActive">
+              <v-radio-group row v-model="bankingGroup" :disabled="isSomeChangeRequestActive()">
                 <v-radio
                   label="Yes"
                   value="true"/>
@@ -139,6 +136,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { PATHS, pcfUrl } from '@/utils/constants';
 import rules from '@/utils/rules';
 import NavButton from '@/components/util/NavButton';
+import {isAnyChangeRequestActive } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -153,9 +151,9 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['renewalYearLabel', 'currentYearLabel']),
-    ...mapGetters('reportChanges', ['isAnyChangeRequestActive']),
     ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId']),
     ...mapState('app', ['programYearList']),
+    ...mapState('reportChanges', ['changeRequestStore',]),
   },
   mounted() {
     this.processing = false;
@@ -175,6 +173,10 @@ export default {
       await this.renewApplication();
       this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearList.renewal.programYearId));
     },
+    isSomeChangeRequestActive(){
+      //Status of : "Submitted" "Action Required";
+      return isAnyChangeRequestActive(this.changeRequestStore);
+    },
     validateForm() {
       this.$refs.form?.validate();
     },
@@ -184,6 +186,10 @@ export default {
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
+    goToChangeDashboard(){
+      return PATHS.ROOT.CHANGE_LANDING;
+    }
+
 
   },
 };

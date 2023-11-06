@@ -99,6 +99,6 @@ export function isAnyApplicationUnlocked (applicationList){
 }
 
 export function  isAnyChangeRequestActive(changeRequestList) {
-  //Status of : "In Progress" "Submitted" "Action Required";
-  return changeRequestList.some((el) => el.status == 1 || el.status == 2 || el.status == 3);
+  //Status of :  "Submitted" "Action Required";
+  return changeRequestList?.some((el) => el.status == 2 || el.status == 3);
 }

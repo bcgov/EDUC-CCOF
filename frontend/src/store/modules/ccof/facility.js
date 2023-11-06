@@ -232,6 +232,7 @@ export default {
       await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityObj.facilityId, {data: facilityObj});
 
       commit('deleteFromStore', facilityObj.facilityId);
+      commit('application/removeFacilityFromMap', facilityObj.facilityId, { root: true });
       commit('funding/deleteFromStore', facilityObj.facilityId, { root: true });
       commit('navBar/deleteFromNavBar', facilityObj.facilityId, { root: true });
     },
