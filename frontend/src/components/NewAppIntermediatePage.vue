@@ -56,8 +56,4 @@ export default {
 </script>
 
 <style scoped>
-.rowSize {
-  max-width: 60%;
-  text-align: center;
-}
 </style>

@@ -602,10 +602,10 @@ export default {
       return {
         title: 'Facility',
         id: null,
-        link: {name: this.isChangeRequest? 'Report Change Facility' : 'Facility Information'},
+        link: {name: this.isChangeRequest? 'change-request-facility-information' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: this.isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: this.isChangeRequest? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };
