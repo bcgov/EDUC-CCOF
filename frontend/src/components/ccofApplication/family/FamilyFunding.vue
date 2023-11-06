@@ -147,7 +147,7 @@
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="model.isExtendedHours === 'yes' ? rules.required : []"
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required,rules.wholeNumber] : []"
                   v-model.number="model.maxCapacityExtended" @input="convertBlankNumberToNull(model,'maxCapacityExtended')" label="Maximum number of spaces you offer extended hours of child care?" />
               </v-col>
             </v-row>
