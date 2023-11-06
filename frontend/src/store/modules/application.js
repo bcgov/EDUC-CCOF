@@ -77,10 +77,9 @@ export default {
         state.applicationMap = map;
       }
     },
-    async deletePcfApplication({state}){
+    async deletePcfApplication(state){
       //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state.applicationId);
-      window.reload();
+      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
     }
   },
   getters: {
