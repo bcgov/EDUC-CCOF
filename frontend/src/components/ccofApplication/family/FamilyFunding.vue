@@ -121,12 +121,12 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" :max="model.maxLicensesCapacity" outlined required :rules="[...rules.required, rules.min(0), rules.max(model.maxLicensesCapacity)]"
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" :max="model.maxLicensesCapacity" outlined required :rules="[...rules.required, rules.min(0), rules.wholeNumber, rules.max(model.maxLicensesCapacity)]"
                   v-model.number="model.maxSpaces" @input="convertBlankNumberToNull(model,'maxSpaces')" label="Maximum number of child care spaces you offer" />
                 <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required, rules.min(0)]"
+                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required, rules.wholeNumber, rules.min(0)]"
                   v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" @change="$refs.form?.validate()" label="Maximum licensed capacity" />
                 <label>(as indicated on your Community care and assisted Living Act Licence)</label>
               </v-col>
