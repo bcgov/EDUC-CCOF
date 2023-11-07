@@ -101,8 +101,8 @@
               <v-col cols="12" style="text-align: center;">
                 <p>By clicking continue, all of your application data will be deleted. You will have to re-enter all information. Please be sure about this!</p>
                 <p class="pt-4">Are you very very sure??</p>
-                <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
-                <v-btn dark color="primary" @click="deletePcf()">Continue</v-btn>
+                <v-btn :loading="!isLoadingComplete" dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
+                <v-btn :loading="!isLoadingComplete" dark color="primary" @click="deletePcf()">Continue</v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -453,8 +453,9 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('application', ['setIsRenewal', 'deletePcfApplication']),
+    ...mapMutations('application', ['setIsRenewal',]),
     ...mapActions('message', ['getAllMessages']),
+    ...mapActions('application', ['deletePcfApplication']),
     ...mapMutations('navBar', ['refreshNavBarList']),
     ...mapActions('reportChanges', ['getChangeRequestList']),
     closeDialog() {
@@ -538,7 +539,9 @@ export default {
 
     async deletePcf() {
       try {
+        this.isLoadingComplete = false;
         await this.deletePcfApplication();
+
         location.reload(); //force a refresh because we just nuked all the data
       } catch (error) {
         console.info(error);

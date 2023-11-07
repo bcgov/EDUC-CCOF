@@ -77,10 +77,6 @@ export default {
         state.applicationMap = map;
       }
     },
-    async deletePcfApplication(state){
-      //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
-    }
   },
   getters: {
     formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, ''),
@@ -153,6 +149,11 @@ export default {
         commit('navBar/setUserProfileList', rootState.application?.applicationMap?.get(programYearId).facilityList, { root: true });
       }
     },
+    async deletePcfApplication({ state}){
+      //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
+      console.log(state?.applicationId);
+      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
+    }
 
   }
 };
