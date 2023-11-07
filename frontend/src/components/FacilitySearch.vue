@@ -231,11 +231,20 @@ export default {
 };
 </script>
 
-<style>
-.fa-chevron-left:before {
-  color: #0FC3ED !important;
+<style scoped>
+:deep(.theme--light.v-btn.v-btn--icon) {
+  color: #0fc3ed;
 }
-.fa-chevron-right:before {
-  color: #0FC3ED !important;
+
+:deep(.v-data-footer__pagination) {
+    margin-left: auto !important;
+}
+
+:deep(.v-data-footer__select) {
+    margin-left: 0px !important;
+}
+
+:deep(.v-input__slot) {
+  padding-top: 0px;
 }
 </style>
