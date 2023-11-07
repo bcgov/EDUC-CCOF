@@ -21,7 +21,7 @@ const rules = {
   maxLength(number) {
     return v => !v || v.length <= number || 'Max length exceeded';
   },
-  wholeNumber: v=>/^\d+$/.test(v) || 'A valid whole number is required',
+  wholeNumber: v => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: v => /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v) || 'A valid phone number is required' // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
 };
 
