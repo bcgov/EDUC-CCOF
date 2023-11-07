@@ -36,7 +36,7 @@ function getProgramYear(selectedGuid, programYearList){
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
   //console.log('CURRENTRFI', currentRFI);
   // Lookup previous years approved parent fees for most RFI scenarios
-  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.application.isRenewal ) ) {
+  if (currentRFI.existingFeesCorrect == 100000000 && rootState.application.isRenewal) {
     let previousRFI = getters.getPreviousApprovedFeesByFacilityId({facilityId: currentRFI.facilityId, previousProgramYearId: previousProgramYearId});
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
