@@ -15,7 +15,7 @@ export default {
     changeRequestId: undefined,
     changeActionId: undefined,
     loadedChangeRequest: undefined,
-    changeRequestStore : {},
+    changeRequestStore : [],
     uploadedDocuments: [],
     mtfiFacilities: [],
     changeRequestMap: new Map(), //TODO: merge these two
@@ -350,7 +350,7 @@ export default {
     },
 
     updateExternalStatusInChangeRequestStore({state, commit}, {changeRequestId, newStatus}) {
-      if (Object.keys(state.changeRequestStore).length > 0) {
+      if (state.changeRequestStore?.length > 0) {
         let index = state.changeRequestStore?.findIndex(changeRequest => changeRequest.changeRequestId == changeRequestId);
         if (index > -1) {
           state.changeRequestStore[index].externalStatus = newStatus;

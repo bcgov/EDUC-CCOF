@@ -676,7 +676,7 @@ export default {
         {
           title: 'Select Facility',
           link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid,changeType:CHANGE_TYPES.MTFI}},
-          isAccessible: true,
+          isAccessible: this.organizationProviderType != 'FAMILY',
           icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
           isActive: 'Midterm Fee Increase Select Facilities'===this.$route.name,
           position: positionIndex++,

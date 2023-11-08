@@ -581,14 +581,8 @@ export default {
       }
 
     },
-    async goToMTFI(changeRequestId = null){
-      //if no change request GUID, the next page will create the change request.
-      if (!changeRequestId){
-        this.$router.push(PATHS.MTFI_INFO);
-      }
-      else{
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
-      }
+    async goToMTFI(){
+      this.$router.push(PATHS.MTFI_INFO);
     },
 
     confirmCancelChangeRequest(requestId, requestType, requestStatus, submissionDate) {
