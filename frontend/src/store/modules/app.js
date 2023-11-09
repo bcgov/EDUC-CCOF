@@ -1,4 +1,5 @@
 import ApiService from '@/common/apiService';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 
 export default {
   namespaced: true,
@@ -84,6 +85,26 @@ export default {
     fundingModelTypeList: state => state.fundingModelTypeList,
     lookupInfo: state => state.lookupInfo,
     logoutCounter: state => state.logoutCounter < 0 ? 0 : state.logoutCounter,
+    getFundingUrl:  state => (programYearId) => {
+      console.log();
+      return state?.programYearList.list.find(el => el.programYearId == programYearId)?.fundingGuidelinesUrl;
+    },
+    getLanguageYearLabel:  state => (programYearId) => {
+      console.log();
+      const orderNumber = state?.programYearList.list.find(el => el.programYearId == programYearId)?.order;
+      console.log('on', orderNumber);
+      switch(orderNumber) {
+      case orderNumber < 5:
+        return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+      case 5:
+        return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
+        //case 6:
+        // For future program year - doesn't exist yet
+        //return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+      default:
+        return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL; //should never get here
+      }
+    },
   },
   actions: {
     async getLookupInfo({ commit }) {

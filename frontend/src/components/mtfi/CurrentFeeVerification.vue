@@ -637,7 +637,7 @@
               <p class="pt-4">You have entered a parent fee above the {{formattedProgramYear}} parent fee increase limit for the following care categories:<br><br>
                 <span v-for="item in rfi3percentCategories" :key="item">{{item}}<br></span>
               </p>
-              <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{formattedProgramYear}} <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>. You can continue to the Request for Information section or press back to update your fees.</p>
+              <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{formattedProgramYear}} <a :href="fundingUrl"  target="_blank">Funding Guidelines</a>. You can continue to the Request for Information section or press back to update your fees.</p>
               <p class="pt-4">Please confirm you have provided your highest full-time (i.e. over 4 hours, 5 days a week) parent fee for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for 4 days or fewer per week.</p>
               <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
               <v-btn dark color="primary" @click="toRfi()">Continue</v-btn>
@@ -732,6 +732,7 @@ export default {
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
+    ...mapGetters('app', [ 'getFundingUrl']),
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
@@ -746,7 +747,10 @@ export default {
         return true;
       }
       return false;
-    }
+    },
+    fundingUrl(){
+      return this.getFundingUrl(this.programYearId);
+    },
   },
   watch: {
     //get facilityID from here and then set it !

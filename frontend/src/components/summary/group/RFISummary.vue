@@ -174,12 +174,14 @@
           </v-col>
           <v-col class="col-12" v-if="rfiApp?.feeIncreaseDueToWage">
             <v-row no-gutters class="d-flex">
+              <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?</span>
                   <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.increaseInWriting)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
                 </v-row>
               </v-col>
+              </div>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?</span>
@@ -580,7 +582,7 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 import { mapState, mapGetters } from 'vuex';
 
@@ -589,6 +591,13 @@ export default {
   computed: {
     ...mapState('summaryDeclaration', ['isLoadingComplete']),
     ...mapGetters('navBar', ['isChangeRequest']),
+    ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
+    languageYearLabel(){
+      return this.getLanguageYearLabel(this.programYearId);
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
   },
   props: {
     rfiApp: {
