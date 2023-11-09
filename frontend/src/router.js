@@ -1,69 +1,54 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import VueMeta from 'vue-meta';
+import { CHANGE_TYPES, NAV_BAR_GROUPS, PAGE_TITLES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
 
-import moment from 'moment';
-
-import Logout from './components/Logout';
-import SessionExpired from './components/SessionExpired';
-import ErrorPage from '@/components/ErrorPage.vue';
-import LoginError from '@/components/LoginError.vue';
-import Unauthorized from '@/components/common/Unauthorized.vue';
-import authStore from './store/modules/auth';
-
-import store from './store/index';
-import Login from '@/components/Login.vue';
-import BackendSessionExpired from '@/components/BackendSessionExpired';
-import { PAGE_TITLES, PATHS, CHANGE_TYPES, NAV_BAR_GROUPS, pcfUrl, pcfUrlGuid, changeUrl, changeUrlGuid } from '@/utils/constants';
-
-import MinistryLogin from '@/components/MinistryLogin';
-import Impersonate from '@/components/Impersonate';
-import MessagesPage from '@/components/MessagesPage';
-
-import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees';
-
-
+import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
+import BackendSessionExpired from '@/components/BackendSessionExpired';
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding';
-import NMF from '@/components/RFI/NMF';
-
-import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
-import Eligibility from '@/components/ccofApplication/family/Eligibility';
-import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
-
+import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding';
+import CcfriEstimator from '@/components/CcfriEstimator';
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector';
 import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage';
-import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
-import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
-import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
-import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation';
-
+import ChangeInformation from '@/components/requestChanges/ChangeInformation';
+import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
+import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities';
-
-import SearchFacility from '@/components/FacilitySearch';
-import CcfriEstimator from '@/components/CcfriEstimator';
+import Eligibility from '@/components/ccofApplication/family/Eligibility';
+import ErrorPage from '@/components/ErrorPage.vue';
+import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation';
+import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding';
+import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization';
+import GroupFundAmount from '@/components/ccofApplication/group/FundAmount';
+import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation';
+import Impersonate from '@/components/Impersonate';
 import LandingPage from '@/components/LandingPage';
-import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
-
-import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
-import SummaryDeclaration from '@/components/SummaryDeclaration';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload';
-import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
-
-import ReportChange from '@/components/requestChanges/ReportChanges';
-import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm';
-import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue';
-
-import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import ChangeInformation from '@/components/requestChanges/ChangeInformation';
-import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
-
+import Login from '@/components/Login.vue';
+import LoginError from '@/components/LoginError.vue';
+import Logout from './components/Logout';
+import MessagesPage from '@/components/MessagesPage';
+import MinistryLogin from '@/components/MinistryLogin';
+import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
 import MtfiInfo from '@/components/mtfi/MTFIInfo';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility';
-import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification';
-
+import NMF from '@/components/RFI/NMF';
+import RenewOrganization from '@/components/ccofApplication/RenewOrganization';
+import ReportChange from '@/components/requestChanges/ReportChanges';
+import SearchFacility from '@/components/FacilitySearch';
+import SessionExpired from './components/SessionExpired';
 import SubmissionHistory from '@/components/SubmissionHistory';
+import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
+import SummaryDeclaration from '@/components/SummaryDeclaration';
+import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest';
+import SupportingDocumentUpload from '@/components/SupportingDocumentUpload';
+import Unauthorized from '@/components/common/Unauthorized.vue';
+import Vue from 'vue';
+import VueMeta from 'vue-meta';
+import VueRouter from 'vue-router';
+import authStore from './store/modules/auth';
+import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees';
+import moment from 'moment';
+import store from './store/index';
 
 Vue.prototype.moment = moment;
 
@@ -754,18 +739,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: changeUrl(PATHS.MTFI_INFO,  ':changeRecGuid', CHANGE_TYPES.MTFI),
-      name: 'Midterm Fee Increase Information',
-      component: MtfiInfo,
-      meta: {
-        pageTitle: PAGE_TITLES.MTFI,
-        requiresAuth: true,
-        showNavBar: false,
-        subtitleBanner: Subtitle_Banners.MTFI
-      }
-    },
-    {
-      path: PATHS.MTFI_INFO, //if change request is not created yet (new MTFI)
+      path: PATHS.MTFI_INFO,
       name: 'Midterm-Fee-Increase-Information',
       component: MtfiInfo,
       meta: {

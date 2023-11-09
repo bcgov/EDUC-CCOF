@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { PATHS, changeUrlGuid, changeUrl, CHANGE_TYPES } from '@/utils/constants';
+import { PATHS, changeUrlGuid, changeUrl, CHANGE_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 //import SmallCard from '../guiComponents/SmallCard.vue';
 
@@ -58,19 +58,8 @@ export default {
   },
   async beforeMount() {
     this.loading = true;
-    if(this.organizationProviderType == 'FAMILY' && this.$route.params.changeRecGuid){
-      try {
-        await this.getChangeRequest(this.$route.params.changeRecGuid);
-        // this.userProfileList?.forEach((facility, index) => {
-        //   if (this.mtfiFacilities?.find(item => item.facilityId == facility.facilityId))
-        //     this.checkbox[index] = true;
-        // });
-        this.loading = false;
-        this.refreshNavBarList();
-      } catch(error) {
-        console.log('Error loading Change Request.', error);
-        this.setFailureAlert('Error loading change request.');
-      }
+    if (this.changeRequestStore?.length === 0) {
+      await this.getChangeRequestList();
     }
     this.loading = false;
   },
@@ -78,10 +67,10 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId']),
     ...mapState('organization', ['organizationId', 'organizationName', 'organizationProviderType']),
     ...mapState('navBar', ['userProfileList']),
-    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities','changeRequestStore']),
   },
   methods: {
-    ...mapActions('reportChanges', ['createChangeRequest', 'createChangeRequestMTFI', 'getChangeRequest']),
+    ...mapActions('reportChanges', ['createChangeRequest', 'createChangeRequestMTFI', 'getChangeRequest', 'getChangeRequestList']),
     ...mapMutations('reportChanges', ['setMTFIFacilities']),
     ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
     ...mapActions('navBar', ['reloadChangeRequest']),
@@ -91,10 +80,13 @@ export default {
     async next() {
       this.loading = true;
 
-      if (!this.$route.params.changeRecGuid){
+      const activeMTFIChangeRequest = this.getActiveMTFIChangeRequest();
+      if (!activeMTFIChangeRequest){
         this.newReq = await this.createChangeRequest('PARENT_FEE_CHANGE');
-        console.log(this.newReq );
         this.$route.params.changeRecGuid = this.newReq.changeRequestId;
+      } else {
+        this.$route.params.changeRecGuid = activeMTFIChangeRequest?.changeRequestId;
+        await this.reloadChangeRequest(activeMTFIChangeRequest?.changeRequestId);
       }
 
       //below code i think can be removed as now only new CR sees this page?
@@ -128,6 +120,14 @@ export default {
         console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
+    },
+    getActiveMTFIChangeRequest() {
+      return this.changeRequestStore?.find(item => {
+        const isSameApplication = (item.applicationId === this.applicationId);
+        const isMTFIChangeRequest = (item.changeActions?.findIndex(changeAction => changeAction.changeType === 'PARENT_FEE_CHANGE') > -1);
+        const isActive = [CHANGE_REQUEST_EXTERNAL_STATUS.IN_PROGRESS, CHANGE_REQUEST_EXTERNAL_STATUS.SUBMITTED, CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED].includes(item.externalStatus);
+        return (isSameApplication && isMTFIChangeRequest && isActive);
+      });
     }
   },
 };

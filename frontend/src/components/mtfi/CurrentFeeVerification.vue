@@ -984,9 +984,9 @@ export default {
         this.$router.push(this.nextPath);
       }
     },
-   previous() {
+    previous() {
       if(this.organizationProviderType == 'FAMILY'){
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
+        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
       }
       else{
         this.$router.push(this.previousPath);
