@@ -17,7 +17,7 @@
             <li>Services outlined in Schedule A of your Child Care Operating Funding Agreement</li>
           </ul>
           <br>
-          To ensure accurate payments, please notify us of any changes <b>before</b> submitting an enrolment report of a monthly ECE report.
+          To ensure accurate payments, please notify us of any changes <b>before</b> submitting an Enrolment report or a monthly ECE report.
         </p>
           <v-card outlined class="mx-10">
 

@@ -1609,7 +1609,7 @@ export default {
       return this.getFundingUrl(this.programYearId);
     },
     languageYearLabel(){
-      return this.getLanguageYearLabel(this.programYearId);
+      return this.getLanguageYearLabel;
     },
     programYearTypes(){
       return PROGRAM_YEAR_LANGUAGE_TYPES;

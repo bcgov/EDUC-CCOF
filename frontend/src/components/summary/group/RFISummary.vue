@@ -593,7 +593,7 @@ export default {
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
     languageYearLabel(){
-      return this.getLanguageYearLabel(this.programYearId);
+      return this.getLanguageYearLabel;
     },
     programYearTypes(){
       return PROGRAM_YEAR_LANGUAGE_TYPES;

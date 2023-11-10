@@ -89,9 +89,11 @@ export default {
       console.log();
       return state?.programYearList.list.find(el => el.programYearId == programYearId)?.fundingGuidelinesUrl;
     },
-    getLanguageYearLabel:  state => (programYearId) => {
-      console.log();
-      const orderNumber = state?.programYearList.list.find(el => el.programYearId == programYearId)?.order;
+
+    //rootState.navBar
+    getLanguageYearLabel: (state, getters, rootState) => {
+      console.log(rootState?.application?.programYearId);
+      const orderNumber = state?.programYearList.list.find(el => el.programYearId == rootState?.application?.programYearId)?.order;
       console.log('on', orderNumber);
       switch(orderNumber) {
       case orderNumber < 5:
