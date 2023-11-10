@@ -226,13 +226,24 @@ export default {
       const previousProgramYearId = previousProgramYear.programYearId;
       //console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       const threePercentMedian = getters.getCCFRIMedianById(currentCcfri? currentCcfri.ccfriApplicationId : state.ccfriId);
+      console.log(threePercentMedian);
       state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
         .forEach(careType => {
           console.log(`Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`);
           let previousCareType = getPreviousCareType((currentCcfri? currentCcfri : state.CCFRIFacilityModel), careType, previousProgramYearId, getters, rootState);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
-            let allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
+            let allowedDifference;
+
+            if(careType.childCareCategory == 'Kindergarten'){
+              allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Kindergarten'] : null;
+            }
+            else if(careType.childCareCategory == 'Grade 1 to Age 12'){
+              allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Grade 1+'] : null;
+            }
+            else {
+              allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
+            }
             if (allowedDifference) {
               console.log(`Testing RFI median difference using [${allowedDifference}] for [${careType.childCareCategory}]`);
               if (isOver3Percent(careType, previousCareType, allowedDifference)) {
@@ -450,7 +461,7 @@ export default {
 
         //IF not historical year - find Kindergarten & Out of school care in child cat lookup
         //then check if they are in the CCFRI fac model. If so - rename them
-
+        console.log(rootGetters['app/getLanguageYearLabel']);
         if (rootGetters['app/getLanguageYearLabel'] != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL){
           const ooscK = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
           const ooscG = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");

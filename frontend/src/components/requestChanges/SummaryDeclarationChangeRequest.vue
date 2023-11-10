@@ -142,6 +142,11 @@
 
       <!---Declaration Start--->
       <v-row justify="center">
+
+        <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
+          Funding Agreement Number: {{ fundingAgreementNumber }}
+        </v-row>
+
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
 
             <v-row>
@@ -366,7 +371,7 @@ export default {
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges', ['getChangeNotificationActionId']),
     ...mapState('navBar', ['changeType']),
-    ...mapState('organization', ['organizationAccountNumber']),
+    ...mapState('organization', ['organizationAccountNumber', 'fundingAgreementNumber']),
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'model']),
     ...mapState('application', ['isRenewal', 'applicationMap']),
