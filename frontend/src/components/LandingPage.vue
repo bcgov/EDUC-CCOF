@@ -99,8 +99,8 @@
             </v-row>
             <v-row>
               <v-col cols="12" style="text-align: center;">
-                <p>By clicking continue, all of your application data will be deleted. You will have to re-enter all information. Please be sure about this!</p>
-                <p class="pt-4">Are you very very sure??</p>
+                <p>If you cancel your application, any information you entered will be deleted. If you create a new application, you will need to re-enter this information.</p>
+                <p class="pt-4">Are you sure you want to cancel your application and delete your information?</p>
                 <v-btn :loading="!isLoadingComplete" dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
                 <v-btn :loading="!isLoadingComplete" dark color="primary" @click="deletePcf()">Continue</v-btn>
               </v-col>

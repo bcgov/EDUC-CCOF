@@ -1,5 +1,5 @@
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
@@ -226,13 +226,24 @@ export default {
       const previousProgramYearId = previousProgramYear.programYearId;
       //console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       const threePercentMedian = getters.getCCFRIMedianById(currentCcfri? currentCcfri.ccfriApplicationId : state.ccfriId);
+      console.log(threePercentMedian);
       state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
         .forEach(careType => {
           console.log(`Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`);
           let previousCareType = getPreviousCareType((currentCcfri? currentCcfri : state.CCFRIFacilityModel), careType, previousProgramYearId, getters, rootState);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
-            let allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
+            let allowedDifference;
+
+            if(careType.childCareCategory == 'Kindergarten'){
+              allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Kindergarten'] : null;
+            }
+            else if(careType.childCareCategory == 'Grade 1 to Age 12'){
+              allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Grade 1+'] : null;
+            }
+            else {
+              allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
+            }
             if (allowedDifference) {
               console.log(`Testing RFI median difference using [${allowedDifference}] for [${careType.childCareCategory}]`);
               if (isOver3Percent(careType, previousCareType, allowedDifference)) {
@@ -330,7 +341,7 @@ export default {
       }
       //}
     },
-    async decorateWithCareTypes({commit, dispatch, state, rootState}, facilityId) {
+    async decorateWithCareTypes({commit, dispatch, state, rootState, rootGetters}, facilityId) {
       const  ccofProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
 
@@ -446,14 +457,32 @@ export default {
           }
         });
 
-
-
-
         state.CCFRIFacilityModel.childCareTypes.push(...careTypes);
+
+        //IF not historical year - find Kindergarten & Out of school care in child cat lookup
+        //then check if they are in the CCFRI fac model. If so - rename them
+        console.log(rootGetters['app/getLanguageYearLabel']);
+        if (rootGetters['app/getLanguageYearLabel'] != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL){
+          const ooscK = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
+          const ooscG = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");
+
+          //OOSC and OOSK always exist together - so we just have to find one of them in the array
+          let schoolAgeFound = state.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == ooscK.ccof_childcare_categoryid);
+          if (schoolAgeFound){
+            state.CCFRIFacilityModel.childCareTypes.forEach(category => {
+
+              if (category.childCareCategoryId == ooscK.ccof_childcare_categoryid){
+                category.childCareCategory = 'Kindergarten';
+              }
+              else if (category.childCareCategoryId == ooscG.ccof_childcare_categoryid){
+                category.childCareCategory = 'Grade 1 to Age 12';
+              }
+            });
+          }
+        }
 
         //sort them by age asc
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) => a.orderNumber - b.orderNumber);
-
         //then sort by prev year first
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) =>{
           const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase

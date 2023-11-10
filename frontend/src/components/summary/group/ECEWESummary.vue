@@ -29,6 +29,8 @@
           </v-col>
         </v-row>
       </v-col>
+    </v-row>
+    <v-row>
       <v-col v-if="ecewe?.optInECEWE == 1" cols="12" lg="6" class="pb-0 pt-0">
         <v-row no-gutters class="d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start">
@@ -39,7 +41,17 @@
       </v-col>
     </v-row>
       <v-row v-if="!facilityInformationExists()" class="d-flex justify-start">
-        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 " cols="12" lg="6" class="pb-0 pt-0">
+        <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
+          <v-col v-if="ecewe?.optInECEWE == 1" cols="12" lg="6" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
+                <span class="summary-label pt-3">Are you a public sector employer, as defined in the Public Sector Employers Act?</span>
+                <v-text-field placeholder="Required"  :value="this.getYesNoValue(ecewe?.publicSector)" class="summary-value" dense flat solo hide-details readonly :rules="rules.required" ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+        </div>
+        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.publicSector == 1 " cols="12" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Applicable Sector:</span>
@@ -86,9 +98,9 @@
 </template>
 <script>
 
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import { isChangeRequest } from '@/utils/common';
-import { PATHS, pcfUrl, changeUrl } from '@/utils/constants';
+import { PATHS, pcfUrl, changeUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import rules from '@/utils/rules';
 
 export default {
@@ -119,6 +131,13 @@ export default {
     ...mapState('application', ['formattedProgramYear']),
     ...mapState('summaryDeclaration', ['isLoadingComplete']),
     ...mapState('app', ['fundingModelTypeList']),
+    ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
   },
   data() {
     return {

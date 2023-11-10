@@ -206,7 +206,8 @@
           <div class="px-md-12 px-7">
             <br>
             <div>
-              <p> Do you charge parent fees at this facility for any closures on business days (other than designated holidays)? Only indicate the date of closures where parent fees are charged. </p>
+              <p v-if="languageYearLabel == programYearTypes.HISTORICAL"> Do you charge parent fees at this facility for any closures on business days (other than designated holidays)? Only indicate the date of closures where parent fees are charged. </p>
+              <p v-else> Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged. </p>
             </div>
             <v-radio-group
               required
@@ -429,7 +430,7 @@
                 <p class="pt-4">You have entered a parent fee above the {{formattedProgramYear}} parent fee increase limit for the following care categories:<br><br>
                   <span v-for="item in rfi3percentCategories" :key="item">{{item}}<br></span>
                 </p>
-                <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{formattedProgramYear}} <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>. You can continue to the Request for Information section or press back to update your fees.</p>
+                <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{formattedProgramYear}} <a :href="fundingUrl"  target="_blank">Funding Guidelines</a>. You can continue to the Request for Information section or press back to update your fees.</p>
                 <p class="pt-4">Please confirm you have provided your highest full-time (i.e. over 4 hours, 5 days a week) parent fee for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for 4 days or fewer per week.</p>
                 <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
                 <v-btn dark color="primary" @click="toRfi()">Continue</v-btn>
@@ -442,7 +443,7 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
@@ -513,7 +514,7 @@ export default {
     next();
   },
   computed: {
-    ...mapGetters('app', ['lookupInfo']),
+    ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
     ...mapState('navBar', ['navBarList','changeRequestId', 'changeType']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
@@ -521,9 +522,17 @@ export default {
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest', 'getChangeActionNewFacByFacilityId']),
     ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
-
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
     currentFacility(){
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
+    },
+    fundingUrl(){
+      return this.getFundingUrl(this.programYearId);
     },
     isReadOnly(){
       //if submitted, lock er up. If unlock CCFRI - unlock

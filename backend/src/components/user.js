@@ -183,6 +183,7 @@ function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, 
 
 function parseFacilityData(application, facilities) {
 
+  //all the facilites
   let facilityMap  = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
   if (application) {
@@ -206,7 +207,10 @@ function parseFacilityData(application, facilities) {
   }
   let facilityList = [];
   facilityMap.forEach((facility) => {
-    if (!_.isEmpty(facility)) {
+    // //only add a facility to the application Facility List if they have an application id shown below.
+    // //otherwise that facility does not exist in this application year.
+    //if application status is incomplete, show all available facilties so CR fac's will also appear for the draft application
+    if (facility.ccofBaseFundingId || facility.ccfriApplicationId || facility.eceweApplicationId || application.statuscode_formatted == 'Incomplete') {
       facility.ccofBaseFundingStatus = getLabelFromValue(facility.ccofBaseFundingStatus, CCOF_STATUS_CODES);
       facility.ccfriStatus = getLabelFromValue(facility.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
       facility.eceweStatus = getLabelFromValue(facility.eceweStatus, ECEWE_STATUS_CODES, 'NOT STARTED');
