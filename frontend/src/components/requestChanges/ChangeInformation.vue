@@ -57,7 +57,6 @@
   </template>
 
 <script>
-import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';

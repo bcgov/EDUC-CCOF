@@ -41,7 +41,7 @@
       </v-col>
     </v-row>
       <v-row v-if="!facilityInformationExists()" class="d-flex justify-start">
-        <div v-if="languageYearLabel == programYearTypes.FY2024_25">
+        <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
           <v-col v-if="ecewe?.optInECEWE == 1" cols="12" lg="6" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">

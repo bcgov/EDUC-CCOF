@@ -175,12 +175,12 @@
           <v-col class="col-12" v-if="rfiApp?.feeIncreaseDueToWage">
             <v-row no-gutters class="d-flex">
               <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3">Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?</span>
-                  <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.increaseInWriting)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
-                </v-row>
-              </v-col>
+                <v-col class="col-6 pr-4">
+                  <v-row no-gutters class="d-flex">
+                    <span class="summary-label pt-3">Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?</span>
+                    <v-text-field placeholder="Required" class="summary-value" :value="getValueString(rfiApp?.increaseInWriting)" dense flat solo hide-details  required :rules="rules.required" ></v-text-field>
+                  </v-row>
+                </v-col>
               </div>
               <v-col class="col-6 pr-4">
                 <v-row no-gutters class="d-flex">
