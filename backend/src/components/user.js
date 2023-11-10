@@ -187,8 +187,6 @@ function parseFacilityData(application, facilities) {
   let facilityMap  = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
   if (application) {
-    log.info('hi');
-    log.info(application.statuscode_formatted);
     facilityMap.forEach((value, key, map) => {
       let ccfriInfo = application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
       ccfriInfo = new MappableObjectForFront(ccfriInfo, UserProfileCCFRIMappings).data;
