@@ -79,7 +79,7 @@ export default {
       this.$router.push(PATHS.ROOT.HOME);
     },
     next(){
-        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
   },
   components: { NavButton}
