@@ -93,18 +93,13 @@ export default {
     //rootState.navBar
     getLanguageYearLabel: (state, getters, rootState) => {
       const orderNumber = state?.programYearList.list.find(el => el.programYearId == rootState?.application?.programYearId)?.order;
-      console.log(orderNumber);
-      switch(orderNumber) {
-      case orderNumber < 5:
+      if (orderNumber < 5){
         return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
-      case 5:
-        return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
-        //case 6:
-        // For future program year - doesn't exist yet
-        //return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
-      default:
-        return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL; //will go here if the program years continue into the future
       }
+      else if (orderNumber > 4){
+        return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
+      }
+      //could write more statements if year specific language is required
     },
   },
   actions: {
