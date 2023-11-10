@@ -96,7 +96,7 @@ export default {
       if (orderNumber < 5){
         return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
       }
-      else if (orderNumber > 4){
+      else{
         return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
       }
       //could write more statements if year specific language is required
