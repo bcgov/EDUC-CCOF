@@ -4,7 +4,7 @@ ENV NPM_CONFIG_CACHE /tmp/npm
 RUN mkdir -p /logs \
     && chmod 755 /logs
 RUN mkdir -p /tmp/npm \
-    && chmod -R 755 /tmp/npm
+    && chmod -R 777 /tmp/npm
 
 WORKDIR /opt/app-root/src
 RUN ln -s /logs .
