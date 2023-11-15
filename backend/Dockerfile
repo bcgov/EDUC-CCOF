@@ -3,8 +3,6 @@ FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0-alpine3.18
 ENV NPM_CONFIG_CACHE /tmp/npm
 RUN mkdir -p /logs \
     && chmod 755 /logs
-RUN mkdir -p /tmp/npm \
-    && chmod -R 777 /tmp/npm
 
 WORKDIR /opt/app-root/src
 RUN ln -s /logs .
@@ -22,6 +20,9 @@ ENV CHROME_BIN=/usr/bin/chromium-browser \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     GHOSTSCRIPT_PATH=/usr/bin/gs
+
+RUN mkdir -p /tmp/npm \
+    && chmod -R 777 /tmp/npm
 
 EXPOSE 443 8080
 CMD ["npm", "start"]
