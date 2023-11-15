@@ -21,5 +21,8 @@ ENV CHROME_BIN=/usr/bin/chromium-browser \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     GHOSTSCRIPT_PATH=/usr/bin/gs
 
+RUN mkdir -p /tmp/npm \
+    && chmod -R 777 /tmp/npm
+
 EXPOSE 443 8080
 CMD ["npm", "start"]
