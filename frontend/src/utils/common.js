@@ -100,5 +100,5 @@ export function isAnyApplicationUnlocked (applicationList){
 
 export function  isAnyChangeRequestActive(changeRequestList) {
   //Status of :  "Submitted" "Action Required";
-  return changeRequestList?.some((el) => el.status == 2 || el.status == 3);
+  return changeRequestList?.some((el) => (el.status == 2 || el.status == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE');
 }

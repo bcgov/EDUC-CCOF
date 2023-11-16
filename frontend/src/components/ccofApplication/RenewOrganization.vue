@@ -6,7 +6,7 @@
           class="pa-10 text-h5"
           v-text="`Child Care Operating Funding Program - ${renewalYearLabel} Program Confirmation Form`" />
       </v-row >
-    <v-row>
+        <v-row>
           <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()">
             <v-row>
               <v-col class="py-0">

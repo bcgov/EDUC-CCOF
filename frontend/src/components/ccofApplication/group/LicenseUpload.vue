@@ -2,6 +2,28 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <span>
+        <v-row>
+              <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()">
+                <v-row>
+                  <v-col class="py-0">
+                    <v-card-title class="py-1 noticeAlert">
+                      <span style="float:left">
+                    <v-icon
+                      x-large
+                      class="py-1 px-3 noticeAlertIcon">
+                      mdi-alert-octagon
+                    </v-icon>
+                    </span>
+                    You have a change request for the funding term still in progress.
+                    </v-card-title>
+                  </v-col>
+                </v-row>
+                <v-card-text>
+                  You have a change request in progress. We will complete the assessment of your Program Confirmation Form once your change has been processed.<br><br>
+                  <br>
+                </v-card-text>
+              </v-card>
+            </v-row>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
             <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.formattedProgramYear }} Program Confirmation Form</span></h3></v-card-title>
@@ -67,7 +89,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import {deepCloneObject, getFileExtension} from '@/utils/common';
+import {deepCloneObject, getFileExtension, isAnyChangeRequestActive} from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -76,6 +98,7 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
+    ...mapState('reportChanges', ['changeRequestStore',]),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
@@ -191,6 +214,10 @@ export default {
     ...mapMutations('application', ['setIsLicenseUploadCompleteInMap' , 'setIsLicenseUploadComplete']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
+    isSomeChangeRequestActive(){
+      //Status of : "Submitted" "Action Required";
+      return isAnyChangeRequestActive(this.changeRequestStore);
+    },
     previous() {
       this.$router.push(this.previousPath);
     },
