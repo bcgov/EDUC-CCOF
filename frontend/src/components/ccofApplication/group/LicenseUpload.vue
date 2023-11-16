@@ -3,7 +3,7 @@
     <v-container>
       <span>
         <v-row>
-              <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()  && isReadonly">
+              <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()  && isLocked">
                 <v-row>
                   <v-col class="py-0">
                     <v-card-title class="py-1 noticeAlert">
