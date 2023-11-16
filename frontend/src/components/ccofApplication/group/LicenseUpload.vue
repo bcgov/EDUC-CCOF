@@ -3,7 +3,7 @@
     <v-container>
       <span>
         <v-row>
-              <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()">
+              <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()  && isReadonly">
                 <v-row>
                   <v-col class="py-0">
                     <v-card-title class="py-1 noticeAlert">
@@ -14,12 +14,12 @@
                       mdi-alert-octagon
                     </v-icon>
                     </span>
-                    You have a change request for the funding term still in progress.
+                    You have a change request in progress.
                     </v-card-title>
                   </v-col>
                 </v-row>
                 <v-card-text>
-                  You have a change request in progress. We will complete the assessment of your Program Confirmation Form once your change has been processed.<br><br>
+                  We will complete the assessment of your Program Confirmation Form once your change has been processed.<br><br>
                   <br>
                 </v-card-text>
               </v-card>
