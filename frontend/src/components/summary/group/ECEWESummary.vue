@@ -51,7 +51,7 @@
             </v-row>
           </v-col>
         </div>
-        <v-col v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.publicSector == 1 " cols="12" lg="6" class="pb-0 pt-0">
+        <v-col v-if="(ecewe?.belongsToUnion == 1 && ecewe?.optInECEWE == 1 && ecewe?.publicSector == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (ecewe?.belongsToUnion == 1 && ecewe?.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) " cols="12" lg="6" class="pb-0 pt-0">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
               <span class="summary-label pt-3">Applicable Sector:</span>

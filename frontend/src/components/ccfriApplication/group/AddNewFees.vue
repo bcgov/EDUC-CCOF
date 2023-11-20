@@ -14,7 +14,8 @@
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
-        <strong>Enter the fee before CCFRI is applied. </strong> <br><br>
+        <strong>Enter the fee before CCFRI is applied. </strong>  <br><br>
+        <span v-if="languageYearLabel != programYearTypes.HISTORICAL"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
       </p>
 

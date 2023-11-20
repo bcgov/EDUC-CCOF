@@ -106,7 +106,7 @@
       </v-row>
 
       <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
-      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" class="justify-center">
+      <v-row v-if=" model.optInECEWE == 1 || isLoading" class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
