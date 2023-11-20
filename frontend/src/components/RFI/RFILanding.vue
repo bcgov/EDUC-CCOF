@@ -24,7 +24,7 @@
 
       <div class="my-10">
         <p>
-          You have entered a parent fee above the 2023/24 fee increase limit.
+          You have entered a parent fee above the {{ formattedProgramYear }} fee increase limit.
           Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy.
           See the <a :href="fundingUrl"  target="_blank">Funding Guidelines</a> for more information.
         </p>

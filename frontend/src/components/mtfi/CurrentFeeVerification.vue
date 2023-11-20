@@ -15,6 +15,10 @@
     <div class="row pt-4 justify-center">
       <span class="text-h5">Licence Number: {{ currentFacility?.licenseNumber }}</span>
     </div>
+    <br>
+    <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 justify-center">
+      <span class="text-h6"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
+    </div>
 
 
     <br><br>
@@ -655,7 +659,7 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl, ApiRoutes } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
@@ -733,6 +737,12 @@ export default {
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     ...mapGetters('app', [ 'getFundingUrl']),
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
@@ -764,8 +774,6 @@ export default {
           const test = this.getClosureDates(this.currentFacility.ccfriApplicationId);
           console.log(test);
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
-          console.log('hey');
-          console.log(this.currentPcfCcfri);
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
           this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
