@@ -55,17 +55,17 @@ export function isFacilityAvailable(facility) {
   return (facility?.facilityStatus && !['Closed','Cancelled'].includes(facility?.facilityStatus));
 }
 
-// NEW PCF:
+// NEW ORG Application:
+// - NOT APPROVED - display all facilities associated with the application
 // - APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
-// - OTHER STATUSES - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank).
-// RENEWAL:
-// - APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
-// - OTHER STATUSES - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank) and have Facility ID.
+// RENEWAL Application:
+// - NOT SUBMITTED - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank) and have Facility ID.
+// - SUBMITTED/APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
 export function filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) {
   const filteredFacilityList = facilityList.filter(el => {
     const isFacilityActive = el.ccofBaseFundingId || el.ccfriApplicationId || el.eceweApplicationId;
     if (isRenewal) {
-      if (applicationStatus === 'APPROVED') {
+      if (applicationStatus === 'SUBMITTED' || applicationStatus === 'APPROVED') {
         return (el.facilityAccountNumber && isFacilityActive);
       } else {
         return (el.facilityAccountNumber && isFacilityAvailable(el));
@@ -74,7 +74,7 @@ export function filterFacilityListForPCF(facilityList, isRenewal, applicationSta
       if (applicationStatus === 'APPROVED') {
         return (el.facilityAccountNumber && isFacilityActive);
       } else {
-        return isFacilityAvailable(el);
+        return true;
       }
     }
   });
