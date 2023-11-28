@@ -968,44 +968,38 @@ export default {
       }
     },
     async next() {
-      // moving save so we have a chance to update the hasRFI flag before saving
-      // if (!this.isReadOnly && !this.loading) {
-      //   this.$store.commit('ccfriApp/model', this.model);
-      //   await this.save(false);\
-      // }
       if (this.isReadOnly && !this.loading) {
         this.$router.push(this.nextPath);
-        //await this.save(false);
       }
       else{
         this.$store.commit('ccfriApp/model', this.model);
-      }
-      //always check for RFI regardless of new or renewal state
-      this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.rfi3percentCategories.length > 0) {
 
-        if (this.getCurrentFacility.hasRfi) {
-          //already has RFI. just go to the next page
-          await this.save(false);
-          this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
-        } else {
-          this.showRfiDialog = true;
-        }
-      }
-      else {
-        //no need for RFI.
-        if (this.getMtfiFacility(this.currentFacility.facilityId).hasRfi) {
-          this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
-          this.getMtfiFacility(this.currentFacility.facilityId).hasRfi = false; //update it in the change request as well
-          await this.save(false);
-          // Use nextTick to ensure the DOM is updated before continuing
-          await this.$nextTick();
+        //always check for RFI regardless of new or renewal state
+        this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
+        console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
+        if (this.rfi3percentCategories.length > 0) {
 
-          console.log('deleting RFI');
-          await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
+          if (this.getCurrentFacility.hasRfi) {
+            //already has RFI. just go to the next page
+            await this.save(false);
+            this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
+          } else {
+            this.showRfiDialog = true;
+          }
         }
-        this.$router.push(this.nextPath);
+        else {
+          //no need for RFI.
+          if (this.getMtfiFacility(this.currentFacility.facilityId).hasRfi) {
+            this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
+            this.getMtfiFacility(this.currentFacility.facilityId).hasRfi = false; //update it in the change request as well
+            await this.save(false);
+            // Use nextTick to ensure the DOM is updated before continuing
+            await this.$nextTick();
+            console.log('deleting RFI');
+            await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
+          }
+          this.$router.push(this.nextPath);
+        }
       }
     },
     previous() {
