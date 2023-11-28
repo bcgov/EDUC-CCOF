@@ -673,10 +673,8 @@ export default {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
             this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
-
             // Use nextTick to ensure the DOM is updated before continuing
             await this.$nextTick();
-
             console.log('deleting RFI');
             await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
             await this.$nextTick();
@@ -723,10 +721,8 @@ export default {
 
         if(this.changeType == CHANGE_TYPES.NEW_FACILITY){
           let newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
-
           newFac.ccfri.isCCFRIComplete =  this.isFormComplete();
         }
-
         try {
           this.setLoadedModel( cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
           let res = await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
@@ -734,7 +730,6 @@ export default {
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           }
-
           //remove the facility to delete from the vuex store
           this.deleteChildCareTypes();
         } catch (error) {
