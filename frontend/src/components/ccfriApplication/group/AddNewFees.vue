@@ -444,7 +444,7 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, ApiRoutes } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
@@ -559,7 +559,6 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         if (this.pastCcfriGuid){
-          //console.log(this.pastCcfriGuid);
           await this.save(false);
         }
         window.scrollTo(0,0);
@@ -674,13 +673,22 @@ export default {
           //no need for RFI.
           if (this.currentFacility.hasRfi) {
             this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
+
+            // Use nextTick to ensure the DOM is updated before continuing
+            await this.$nextTick();
+
+            console.log('deleting RFI');
+            await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
+            await this.$nextTick();
           }
           this.$router.push(this.nextPath);
         }
-      } else if (this.isChangeRequest && (this.currentFacility?.unlockRfi || this.currentFacility?.hasRfi)) {
+      }
+      else if (this.isChangeRequest && (this.currentFacility?.unlockRfi || this.currentFacility?.hasRfi)) {
         this.setNavBarValue({ facilityId: this.currentFacility?.facilityId, property: 'hasRfi', value: true});
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.changeRequestId, this.$route.params.urlGuid));
-      } else {
+      }
+      else {
         console.log("RFI calulation not needed.");
         //Not renewal or CR
         this.$router.push(this.nextPath);
@@ -697,9 +705,6 @@ export default {
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged(){
-      // console.log('model:', this.loadedModel);
-      // console.log('ccfriStore:', this.CCFRIFacilityModel);
-
       if (isEqual(this.CCFRIFacilityModel, this.loadedModel)) {
         console.info('no model changes');
         return false;
@@ -710,8 +715,6 @@ export default {
       return true;
     },
     async save(showMessage) {
-      //console.log(this.closureFees);
-      //this.hasDataToDelete();
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged() || this.hasDataToDelete()){
         this.processing = true;

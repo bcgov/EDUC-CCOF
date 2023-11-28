@@ -70,7 +70,8 @@ export function filterFacilityListForPCF(facilityList, isRenewal, applicationSta
       } else {
         return (el.facilityAccountNumber && isFacilityAvailable(el));
       }
-    } else {
+    }
+    else {
       if (applicationStatus === 'APPROVED') {
         return (el.facilityAccountNumber && isFacilityActive);
       } else {

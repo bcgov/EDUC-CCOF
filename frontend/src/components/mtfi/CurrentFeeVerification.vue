@@ -16,6 +16,9 @@
       <span class="text-h5">Licence Number: {{ currentFacility?.licenseNumber }}</span>
     </div>
     <br>
+
+
+
     <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 justify-center">
       <span class="text-h6"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
     </div>
@@ -736,7 +739,7 @@ export default {
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
-    ...mapGetters('app', [ 'getFundingUrl']),
+    ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
     languageYearLabel(){
       return this.getLanguageYearLabel;
     },
@@ -770,9 +773,7 @@ export default {
           this.loading = true;
           let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
           this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
-          console.log('current FAC', this.currentFacility);
           const test = this.getClosureDates(this.currentFacility.ccfriApplicationId);
-          console.log(test);
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
           this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
@@ -815,22 +816,14 @@ export default {
 
           this.CCFRIFacilityModel.childCareTypes = arr;
 
-          console.log(this.previousClosureDates.dates.length);
-
           //if this facility has closure fees on their PCF- make sure they are visible and included on the MTFI
           //rules surronding overlapping dates still apply.
           if (this.previousClosureDates.dates.length > 0){
             this.CCFRIFacilityModel.hasClosureFees = 100000000;
             //this.chosenDates = [...this.CCFRIFacilityModel.dates , ...this.previousClosureDates.dates];
           }
-          else {
-            //.chosenDates = this.CCFRIFacilityModel.dates;
-          }
 
           this.updateChosenDates();
-
-          console.log('combined dates: ');
-          console.log(this.chosenDates);
 
           this.loading = false;
 
@@ -966,6 +959,8 @@ export default {
           const mtfiFacility = this.getMtfiFacility(this.currentFacility.facilityId);
           await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + mtfiFacility?.changeRequestMtfiId, {'ccof_unlock_rfi': true});
         }
+        //this.$store.commit('ccfriApp/model', this.model);
+        await this.save(false);
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
       } catch (error) {
         console.log(error);
@@ -973,25 +968,42 @@ export default {
       }
     },
     async next() {
-      // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-      if (!this.isReadOnly && !this.loading) {
+      // moving save so we have a chance to update the hasRFI flag before saving
+      // if (!this.isReadOnly && !this.loading) {
+      //   this.$store.commit('ccfriApp/model', this.model);
+      //   await this.save(false);\
+      // }
+      if (this.isReadOnly && !this.loading) {
+        this.$router.push(this.nextPath);
+        //await this.save(false);
+      }
+      else{
         this.$store.commit('ccfriApp/model', this.model);
-        await this.save(false);
       }
       //always check for RFI regardless of new or renewal state
       this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
       console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
       if (this.rfi3percentCategories.length > 0) {
+
         if (this.getCurrentFacility.hasRfi) {
           //already has RFI. just go to the next page
+          await this.save(false);
           this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
         } else {
           this.showRfiDialog = true;
         }
-      } else {
+      }
+      else {
         //no need for RFI.
-        if (this.getCurrentFacility.hasRfi) {
+        if (this.getMtfiFacility(this.currentFacility.facilityId).hasRfi) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
+          this.getMtfiFacility(this.currentFacility.facilityId).hasRfi = false; //update it in the change request as well
+          await this.save(false);
+          // Use nextTick to ensure the DOM is updated before continuing
+          await this.$nextTick();
+
+          console.log('deleting RFI');
+          await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
         }
         this.$router.push(this.nextPath);
       }
@@ -1014,6 +1026,7 @@ export default {
         if (this.hasModelChanged()){
           this.processing = true;
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
+          console.log('SAVING!',  this.getNavByCCFRIId(this.$route.params.urlGuid) );
           await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
           this.processing = false;

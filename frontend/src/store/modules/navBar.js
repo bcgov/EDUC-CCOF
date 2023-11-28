@@ -170,6 +170,7 @@ export default {
      * and reforce the navbar to refresh
     ************************************************/
     setNavBarValue: (state, { facilityId, property, value}) => {
+      console.log('set navBar called with value: ' + property + ' , ' + value);
       let userProfileItem;
       if (state.changeType === 'mtfi') {
         userProfileItem =  getChangeActionDetails(state, 'mtfi', 'ccfriFacilityId', facilityId);
@@ -237,7 +238,7 @@ export default {
       filterNavBar(state);
       state.refreshNavBar++;
     },
-    updateNavBar: (state, payload) => {  
+    updateNavBar: (state, payload) => {
       let navBarItem = state.userProfileList.find(item => item.facilityId == payload.facilityId);
       if (navBarItem) {
         navBarItem.facilityName = payload.facilityName;
