@@ -439,7 +439,7 @@ export default {
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete', 'applicationMap']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', ]),
-    ...mapState('reportChanges', ['changeRequestStore', 'loadedChangeRequest']),
+    ...mapState('reportChanges', ['changeRequestStore',]),
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
