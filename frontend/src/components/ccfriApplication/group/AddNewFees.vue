@@ -530,7 +530,11 @@ export default {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     currentFacility(){
-      return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      if (this.getNavByCCFRIId(this.$route.params.urlGuid)){
+        return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      }
+      //if viewing historical CR - getNavByCCFRID will not work because fac won't be in userProfile. Load from navBarList instead
+      else return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
     },
     fundingUrl(){
       return this.getFundingUrl(this.programYearId);

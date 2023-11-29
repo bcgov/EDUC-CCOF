@@ -453,7 +453,12 @@ export default {
         //checkboxes
         return true;
       }
-      else if (this.applicationStatus === 'SUBMITTED') {
+      else if (this.isChangeRequest && !( this.model.externalStatus =="INCOMPLETE" || this.model.externalStatus == "ACTION_REQUIRED")){
+        //ensure summary dec is locked for completed CR when viewing a historical record.
+        return true;
+      }
+      else if (this.applicationStatus == 'SUBMITTED') {
+        //ensure summary dec is locked for completed CR when viewing a historical record.
         return true;
       }
       return false;
@@ -652,7 +657,7 @@ export default {
       }
     },
     updateNavBarStatus(formObj, isComplete) {
-      if (formObj) {
+      if (formObj && !this.isReadOnly) {
         if (this.isChangeRequest) {
           this.payload['changeRequestId'] = this.changeRequestId;
         }

@@ -733,7 +733,7 @@ export default {
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId', 'previousClosureDates']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
     ...mapState('organization', ['organizationProviderType']),
-    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
+    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId', 'applicationMap']),
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['programYearId', 'isRenewal']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
@@ -771,9 +771,9 @@ export default {
       async handler() {
         try {
           this.loading = true;
-          let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
-          this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
-          const test = this.getClosureDates(this.currentFacility.ccfriApplicationId);
+          let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID
+          this.currentFacility = this.applicationMap.get(this.programYearId)?.facilityList.find(el => el.facilityId == fac.facilityId); //facility from applicationMAP so we can grab the old PCF ccfriID no matter what year we are on.
+          await this.getClosureDates(this.currentFacility.ccfriApplicationId);
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
           this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
@@ -818,7 +818,7 @@ export default {
 
           //if this facility has closure fees on their PCF- make sure they are visible and included on the MTFI
           //rules surronding overlapping dates still apply.
-          if (this.previousClosureDates.dates.length > 0){
+          if (this.previousClosureDates?.dates?.length > 0){
             this.CCFRIFacilityModel.hasClosureFees = 100000000;
             //this.chosenDates = [...this.CCFRIFacilityModel.dates , ...this.previousClosureDates.dates];
           }
@@ -864,7 +864,7 @@ export default {
         this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
       });
 
-      if (this.previousClosureDates.dates.length > 0){
+      if (this.previousClosureDates?.dates?.length > 0){
         this.previousClosureDates.dates.forEach(dateObj => {
           this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
         });

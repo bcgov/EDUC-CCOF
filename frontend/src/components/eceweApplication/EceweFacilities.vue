@@ -261,6 +261,9 @@ export default {
       }
     },
     async saveFacilities(showConfirmation) {
+      if(this.isReadOnly){
+        return;
+      }
       this.isProcessing = true;
       try {
         let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
