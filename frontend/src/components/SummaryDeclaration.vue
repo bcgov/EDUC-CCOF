@@ -453,7 +453,11 @@ export default {
         //checkboxes
         return true;
       }
-      else if (this.applicationStatus == 'SUBMITTED' || this.model.externalStatus !="INCOMPLETE" || this.model.externalStatus != "ACTION_REQUIRED") {
+      else if (this.isChangeRequest && !( this.model.externalStatus =="INCOMPLETE" || this.model.externalStatus == "ACTION_REQUIRED")){
+        //ensure summary dec is locked for completed CR when viewing a historical record.
+        return true;
+      }
+      else if (this.applicationStatus == 'SUBMITTED') {
         //ensure summary dec is locked for completed CR when viewing a historical record.
         return true;
       }
