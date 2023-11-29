@@ -100,7 +100,7 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('reportChanges', ['changeRequestStore',]),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
-    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
+    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete', 'applicationMap', 'programYearId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
@@ -346,7 +346,7 @@ export default {
       this.isLoading = true;
       try {
         this.licenseUploadData = deepCloneObject(this.navBarList);
-        await this.getLicenseFiles(this.applicationId);
+        await this.getLicenseFiles(this.applicationMap?.get(this.programYearId).applicationId); //get from appMap so correct application loaded when viewing a historical CR
         this.licenseUploadData = this.licenseUploadData.map(element => {
           element['document'] = this.getUploadedLicenses.find(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === element.facilityId);
           return element;

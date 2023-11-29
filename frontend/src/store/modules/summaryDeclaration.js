@@ -141,9 +141,12 @@ export default {
     },
     async loadSummary({ commit, rootState }, changeRecGuid = undefined) {
       checkSession();
+      console.log(rootState?.application?.applicationMap.get(rootState.application?.programYearId).applicationId);
+
       try {
         commit('isMainLoading', true);
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + rootState.application.applicationId)).data;
+        //get application ID from the appMap so the page doesn't break when viewing historical CR records.
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + rootState?.application?.applicationMap?.get(rootState?.application?.programYearId)?.applicationId)).data;
         let summaryModel = {
           organization: undefined,
           application: payload.application,

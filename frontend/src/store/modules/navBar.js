@@ -55,6 +55,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
     changeAction.newFacilities?.forEach(el => {
       const facility = userProfileList.find(f => f.facilityId === el.facilityId);
       if (facility) {
+        console.log(el.baseFunding?.ccofBaseFundingId);
         navBarFacilities.push({
           facilityId: facility.facilityId,
           facilityName: facility.facilityName,
@@ -318,8 +319,13 @@ export default {
   },
   actions: {
     // preload change request details needed for the navBar
-    async loadChangeRequest({commit, dispatch}, changeRequestId) {
+    async loadChangeRequest({commit, dispatch, rootState}, changeRequestId) {
       let changeRequest = await dispatch('reportChanges/getChangeRequest', changeRequestId, { root: true});
+      if (changeRequest?.programYearId) {
+        console.log();
+        commit('application/setProgramYearId', changeRequest?.programYearId, { root: true });
+        commit('application/setProgramYearLabel', rootState.app.programYearList.list.find(el => el.programYearId == changeRequest.programYearId).name, { root: true });
+      }
       let changeNotificationAction = changeRequest?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
       if (changeNotificationAction) {
         await dispatch('reportChanges/loadChangeRequestDocs', changeNotificationAction.changeActionId, { root: true });

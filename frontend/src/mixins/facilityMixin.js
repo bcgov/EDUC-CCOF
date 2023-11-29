@@ -17,6 +17,7 @@ export default {
     ...mapState('organization', ['organizationModel', 'organizationId']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
+    ...mapGetters('navBar', ['isChangeRequest']),
 
     isLocked() {
       if (isChangeRequest(this)) {
@@ -111,10 +112,19 @@ export default {
       if (!this.$route.params.urlGuid) { //we won't have the funding guid until we save, so save first.
         await this.save(false);
       }
-      let navBar = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId);
+
+      let navBar;
+      if(this.isLocked){
+        //if the app is locked, we could be viewing a previous program year. Therefore, the userProfile won't have the data required. Load it from navBar.
+        navBar = this.navBarList.find(el => el.facilityId == this.facilityId);
+      }
+      else {
+        navBar = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId);
+      }
+
       console.log('navbar: ', navBar);
       if (navBar?.ccofBaseFundingId) {
-        if (isChangeRequest(this)) {
+        if (this.isChangeRequest) {
           this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, navBar.ccofBaseFundingId));
         } else {
           this.$router.push(pcfUrlGuid(this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar.ccofBaseFundingId));

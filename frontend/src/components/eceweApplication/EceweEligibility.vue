@@ -515,6 +515,10 @@ export default {
       });
     },
     async saveECEWEApplication(showConfirmation = true) {
+      if(this.isReadOnly()){
+        return;
+      }
+
       this.isProcessing = true;
       try {
         this.updateQuestions();
