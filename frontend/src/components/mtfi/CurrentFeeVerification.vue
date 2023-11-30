@@ -970,8 +970,10 @@ export default {
     async next() {
       if (this.isReadOnly && !this.loading) {
         this.$router.push(this.nextPath);
+        console.log('I shoudlnt save im read only ');
       }
       else{
+        this.currentPcfCcfri.existingFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect;
         this.$store.commit('ccfriApp/model', this.model);
 
         //always check for RFI regardless of new or renewal state
@@ -992,12 +994,12 @@ export default {
           if (this.getMtfiFacility(this.currentFacility.facilityId).hasRfi) {
             this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
             this.getMtfiFacility(this.currentFacility.facilityId).hasRfi = false; //update it in the change request as well
-            await this.save(false);
             // Use nextTick to ensure the DOM is updated before continuing
             await this.$nextTick();
             console.log('deleting RFI');
             await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
           }
+          await this.save(false);
           this.$router.push(this.nextPath);
         }
       }

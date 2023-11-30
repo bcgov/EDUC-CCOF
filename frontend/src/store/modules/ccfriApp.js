@@ -224,6 +224,7 @@ export default {
       const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
+      console.log('start of function currentCCFRI' , currentCcfri);
       //console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       const threePercentMedian = getters.getCCFRIMedianById(currentCcfri? currentCcfri.ccfriApplicationId : state.ccfriId);
       console.log(threePercentMedian);
@@ -265,11 +266,15 @@ export default {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
+          //response = null;
           if (response?.data) {
+            console.log('I found the median');
             commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
           } else {
+            console.log('NO median found, sleeping...');
             //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
             await sleep(10 * 1000);
+            console.log("I should have slept for 10 seconds");
             response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
             if (response?.data) {
               commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
