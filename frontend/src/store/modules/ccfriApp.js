@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { deepCloneObject } from '../../utils/common';
+import { deepCloneObject, sleep } from '../../utils/common';
 import { isEqual } from 'lodash';
 
 function isLocked(applicationStatus, navBarList, facilityId){
@@ -259,22 +259,24 @@ export default {
       console.log('over array', over3percentFacilities);
       return over3percentFacilities;
     },
-    async loadCCFisCCRIMedian({state, getters, commit}, ccfriToLoad) {
+    async loadCCFisCCRIMedian({state, getters, commit}) {
       let ccfriMedian = getters.getCCFRIMedianById(state.ccfriId);
       if (!ccfriMedian) {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
-          commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
-        } catch(e) {
-          console.log(`Failed to get CCFRI Median - ${e}`);
-          throw e;
-        }
-      }
-      else if (ccfriToLoad){
-        try {
-          let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${ccfriToLoad}/median`);
-          commit('addCCFRIMedianToStore', {ccfriId: ccfriToLoad, ccfriMedian: response.data});
+          if (response?.data) {
+            commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+          } else {
+            //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
+            await sleep(10 * 1000);
+            response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
+            if (response?.data) {
+              commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+            } else {
+              console.log(`CCFRI median from backend is blank for CCFRI: ${state.ccfriId}`);
+            }
+          }
         } catch(e) {
           console.log(`Failed to get CCFRI Median - ${e}`);
           throw e;
