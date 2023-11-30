@@ -155,6 +155,10 @@ objects:
   kind: Route
   metadata:
     annotations:
+      haproxy.router.openshift.io/rate-limit-connections: 'true'
+      haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp: '10'
+      haproxy.router.openshift.io/rate-limit-connections.rate-http: '50'
+      haproxy.router.openshift.io/timeout: 120s
       openshift.io/host.generated: 'true'
     labels:
       app: "${APP_NAME}-${BRANCH}"
