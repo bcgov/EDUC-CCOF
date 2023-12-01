@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { deepCloneObject } from '../../utils/common';
+import { deepCloneObject, sleep } from '../../utils/common';
 import { isEqual } from 'lodash';
 
 function isLocked(applicationStatus, navBarList, facilityId){
@@ -224,6 +224,7 @@ export default {
       const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
+      console.log('start of function currentCCFRI' , currentCcfri);
       //console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       const threePercentMedian = getters.getCCFRIMedianById(currentCcfri? currentCcfri.ccfriApplicationId : state.ccfriId);
       console.log(threePercentMedian);
@@ -259,22 +260,28 @@ export default {
       console.log('over array', over3percentFacilities);
       return over3percentFacilities;
     },
-    async loadCCFisCCRIMedian({state, getters, commit}, ccfriToLoad) {
+    async loadCCFisCCRIMedian({state, getters, commit}) {
       let ccfriMedian = getters.getCCFRIMedianById(state.ccfriId);
       if (!ccfriMedian) {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
-          commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
-        } catch(e) {
-          console.log(`Failed to get CCFRI Median - ${e}`);
-          throw e;
-        }
-      }
-      else if (ccfriToLoad){
-        try {
-          let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${ccfriToLoad}/median`);
-          commit('addCCFRIMedianToStore', {ccfriId: ccfriToLoad, ccfriMedian: response.data});
+          //response = null;
+          if (response?.data) {
+            console.log('I found the median');
+            commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+          } else {
+            console.log('NO median found, sleeping...');
+            //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
+            await sleep(10 * 1000);
+            console.log("I should have slept for 10 seconds");
+            response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
+            if (response?.data) {
+              commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+            } else {
+              console.log(`CCFRI median from backend is blank for CCFRI: ${state.ccfriId}`);
+            }
+          }
         } catch(e) {
           console.log(`Failed to get CCFRI Median - ${e}`);
           throw e;
