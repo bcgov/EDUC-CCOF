@@ -273,7 +273,7 @@ export default {
         },
         {
           title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
-          body: 'Providers with licensed care facilities can apply for a $4 per hour wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
+          body: 'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
         },
       ],
       CCOFCardTitle : 'Apply for Child Care Operating Funding (CCOF) including:',
