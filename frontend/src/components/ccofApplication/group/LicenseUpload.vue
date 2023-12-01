@@ -346,7 +346,12 @@ export default {
       this.isLoading = true;
       try {
         this.licenseUploadData = deepCloneObject(this.navBarList);
-        await this.getLicenseFiles(this.applicationMap?.get(this.programYearId).applicationId); //get from appMap so correct application loaded when viewing a historical CR
+        let appID = this.applicationMap?.get(this.programYearId)?.applicationId;
+
+        if (!appID){
+          appID = this.applicationId;
+        }
+        await this.getLicenseFiles(appID); //get from appMap so correct application loaded when viewing a historical CR
         this.licenseUploadData = this.licenseUploadData.map(element => {
           element['document'] = this.getUploadedLicenses.find(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === element.facilityId);
           return element;
