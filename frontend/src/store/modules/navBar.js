@@ -325,6 +325,7 @@ export default {
         console.log();
         commit('application/setProgramYearId', changeRequest?.programYearId, { root: true });
         commit('application/setProgramYearLabel', rootState.app.programYearList.list.find(el => el.programYearId == changeRequest.programYearId).name, { root: true });
+        commit('application/setApplicationId', rootState.application?.applicationMap?.get(changeRequest?.programYearId).applicationId, { root: true });
       }
       let changeNotificationAction = changeRequest?.changeActions?.find(item => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE);
       if (changeNotificationAction) {

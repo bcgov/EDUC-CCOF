@@ -348,10 +348,16 @@
               </v-col>
             </v-row>
             <v-card-text>
-              It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.<br><br>
+              It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected.
+              <br><br>
+              Closure Start Date: {{ obj.formattedStartDate }}
               <br>
+              Closure End Date: {{ obj.formattedEndDate }}
+              <br><br>
 
-
+              Please review your existing facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.
+              <br>
+              Thank you for your attention
             </v-card-text>
           </v-card>
         </v-row>

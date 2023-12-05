@@ -1,14 +1,18 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center">
-      <v-row class="justify-center text-h5 pb-5" style="color:#003466" >
+      <v-container>
+        <v-row class="justify-center text-h5 pb-5" style="color:#003466" >
         Welcome to CCOF!
-    </v-row>
-    <v-row class="justify-center pb-5" style="color:#003466">
-      <p style="max-width:801px">If your organization currently receives funding from the Child Care Operating Funding
-        (CCOF) program, do not submit a new application. You can request support for
-        applying on MyCCBC by calling the program at 1-888-338-6622 (Option 2).</p>
-    </v-row>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row class="justify-center pb-5" style="color:#003466">
+          <p style="max-width:801px">If your organization currently receives funding from the Child Care Operating Funding
+            (CCOF) program, do not submit a new application. You can request support for
+            applying on MyCCBC by calling the program at 1-888-338-6622 (Option 2).</p>
+        </v-row>
+      </v-container>
     <v-row class="justify-center">
       <v-col class="d-flex justify-center">
         <v-btn dark class="blueButton" @click="backToLanding()">Cancel</v-btn>

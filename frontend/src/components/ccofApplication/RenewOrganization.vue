@@ -76,7 +76,7 @@
                     </v-col>
                   </v-row>
                   <v-card-text>
-                    If your current license and service details do not match the information found in schedule A of your most recent funding agreement then please submit a change request.
+                    If your current licence and service details do not match the information found in schedule A of your most recent funding agreement then please submit a change request.
                     <br><br>
 
                     Please submit a change request using the link below:

@@ -522,8 +522,16 @@
                 </v-col>
               </v-row>
               <v-card-text>
-                It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.<br><br>
+                It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected.
+                <br><br>
+                Closure Start Date: {{ obj.formattedStartDate }}
                 <br>
+                Closure End Date: {{ obj.formattedEndDate }}
+                <br><br>
+
+                Please review your existing facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.
+                <br>
+                Thank you for your attention
 
 
               </v-card-text>
@@ -620,7 +628,7 @@
 
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly || loading || hasIllegalDates()" :isNextDisabled="!isValidForm || hasIllegalDates()" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly || loading || hasIllegalDates()" :isNextDisabled="!isFormComplete() || hasIllegalDates()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -940,6 +948,9 @@ export default {
       return this.CCFRIFacilityModel.childCareTypes[index].feeFrequency == this.currentPcfCcfri.childCareTypes[index].feeFrequency;
     },
     isFormComplete(){
+      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0){
+        return false;
+      }
       return this.isValidForm; //false makes button clickable, true disables button
     },
     getMtfiFacility(facilityId) {

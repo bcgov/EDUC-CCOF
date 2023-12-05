@@ -114,7 +114,7 @@ export default {
       }
 
       let navBar;
-      if(this.isLocked){
+      if(this.isChangeRequest){
         //if the app is locked, we could be viewing a previous program year. Therefore, the userProfile won't have the data required. Load it from navBar.
         navBar = this.navBarList.find(el => el.facilityId == this.facilityId);
       }
