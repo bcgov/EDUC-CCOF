@@ -271,8 +271,8 @@ export default {
         let changeRequestTypes = [];
         payload?.changeActions?.forEach(item => {
           if (!changeRequestTypes.includes(item.changeType)) {
-            changeRequestTypes.push(item.changeType)
-          };
+            changeRequestTypes.push(item.changeType);
+          }
         });
 
         // Load Declaration model
@@ -284,7 +284,7 @@ export default {
           enabledDeclarationB: payload?.enabledDeclarationB,
           declarationAStatus: payload?.declarationAStatus,
           declarationBStatus: payload?.declarationBStatus
-        }
+        };
         commit('model', declarationModel);
 
         // Load Summary model
@@ -296,18 +296,18 @@ export default {
         commit('summaryModel', summaryModel);
         await Promise.all(changeRequestTypes.map(async changeType => {
           switch (changeType) {
-            case CHANGE_REQUEST_TYPES.NEW_FACILITY:
-              await dispatch('loadChangeRequestSummaryForAddNewFacility', payload);
-              break;
-            case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
-              await dispatch('loadChangeRequestSummaryForMtfi', payload);
-              break;
-            case CHANGE_REQUEST_TYPES.PDF_CHANGE:
-              await dispatch('loadChangeRequestSummaryForChangeNotiForm', payload);
-              break;
-            default:
-              throw `Not found change request type - ${changeType}`;
-            }
+          case CHANGE_REQUEST_TYPES.NEW_FACILITY:
+            await dispatch('loadChangeRequestSummaryForAddNewFacility', payload);
+            break;
+          case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
+            await dispatch('loadChangeRequestSummaryForMtfi', payload);
+            break;
+          case CHANGE_REQUEST_TYPES.PDF_CHANGE:
+            await dispatch('loadChangeRequestSummaryForChangeNotiForm', payload);
+            break;
+          default:
+            throw `Not found change request type - ${changeType}`;
+          }
         }))
         commit('isLoadingComplete', true );
       } catch (error) {
@@ -351,7 +351,7 @@ export default {
             mtfiFacility.facilityAccountNumber = userProfileListFacility.facilityAccountNumber;
             mtfiFacility.licenseNumber = userProfileListFacility.licenseNumber;
 
-            mtfiFacility.oldCcfriApplicationId = userProfileListFacility.ccfriApplicationId;
+            mtfiFacility.oldCcfriApplicationId = rootState?.application?.applicationMap?.get(rootState?.application?.programYearId)?.facilityList?.find(el => el.facilityId == mtfiFacility.facilityId).ccfriApplicationId;
             mtfiFacility.oldCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.oldCcfriApplicationId}`)).data;
             mtfiFacility.oldCcfri.childCareTypes = mtfiFacility.oldCcfri?.childCareTypes?.filter(item => item.programYearId === rootState.application.programYearId);
             mtfiFacility.oldCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);

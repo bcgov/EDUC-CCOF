@@ -4,6 +4,28 @@ import { checkSession } from '@/utils/session';
 import { deepCloneObject, sleep } from '../../utils/common';
 import { isEqual } from 'lodash';
 
+function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, childCareTypes){
+
+  if (currentYearLanguageLabel != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL){
+    const ooscK = childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
+    const ooscG = childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");
+
+    //OOSC and OOSK always exist together - so we just have to find one of them in the array
+    let schoolAgeFound = childCareTypes.find(el => el.childCareCategoryId == ooscK.ccof_childcare_categoryid);
+    if (schoolAgeFound){
+      childCareTypes.forEach(category => {
+
+        if (category.childCareCategoryId == ooscK.ccof_childcare_categoryid){
+          category.childCareCategory = 'Kindergarten';
+        }
+        else if (category.childCareCategoryId == ooscG.ccof_childcare_categoryid){
+          category.childCareCategory = 'Grade 1 to Age 12';
+        }
+      });
+    }
+  }
+}
+
 function isLocked(applicationStatus, navBarList, facilityId){
 
   //console.log(facilityId, 'faccccc');
@@ -320,13 +342,16 @@ export default {
         }
       }
     },
-    async getPreviousApprovedFees({commit, state}, {facilityId, programYearId}) {
+    async getPreviousApprovedFees({commit, state, rootGetters, rootState}, {facilityId, programYearId}) {
       const prevFees = state.previousFeeStore[`${facilityId}-${programYearId}`];
       if (prevFees) {
         return prevFees;
       } else {
         try {
           const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
+          console.log('feeee response', response);
+          //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
+          replaceChildCareLabel(rootGetters['app/getLanguageYearLabel'], rootState?.app?.childCareCategoryList, response.data.childCareTypes );
           commit('addPreviousApprovedParentFees', {facilityId: facilityId, programYearId: programYearId, parentFeeModel: response.data});
           return response.data;
         } catch(e) {
@@ -467,24 +492,8 @@ export default {
         //IF not historical year - find Kindergarten & Out of school care in child cat lookup
         //then check if they are in the CCFRI fac model. If so - rename them
         console.log(rootGetters['app/getLanguageYearLabel']);
-        if (rootGetters['app/getLanguageYearLabel'] != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL){
-          const ooscK = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
-          const ooscG = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");
-
-          //OOSC and OOSK always exist together - so we just have to find one of them in the array
-          let schoolAgeFound = state.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == ooscK.ccof_childcare_categoryid);
-          if (schoolAgeFound){
-            state.CCFRIFacilityModel.childCareTypes.forEach(category => {
-
-              if (category.childCareCategoryId == ooscK.ccof_childcare_categoryid){
-                category.childCareCategory = 'Kindergarten';
-              }
-              else if (category.childCareCategoryId == ooscG.ccof_childcare_categoryid){
-                category.childCareCategory = 'Grade 1 to Age 12';
-              }
-            });
-          }
-        }
+        //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
+        replaceChildCareLabel(rootGetters['app/getLanguageYearLabel'], rootState?.app?.childCareCategoryList, state.CCFRIFacilityModel.childCareTypes );
 
         //sort them by age asc
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) => a.orderNumber - b.orderNumber);
