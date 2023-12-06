@@ -119,7 +119,7 @@
 <script>
 
 //userInfo.ccofProgramYearId;
-import { PATHS, pcfUrlGuid } from '@/utils/constants';
+import { PATHS, pcfUrlGuid, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { sleep, deepCloneObject } from '@/utils/common';
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -148,7 +148,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('navBar', ['previousPath', 'getNavByCCFRIId']),
-    ...mapState('app', ['programYearList']),
+    ...mapState('app', ['programYearList', 'childCareCategoryList']),
+    ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState('navBar', ['navBarList']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationId']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel']),
@@ -166,7 +167,13 @@ export default {
 
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
       return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
-    }
+    },
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
   },
   watch: {
     //get facilityID from here and then set it !
@@ -187,8 +194,18 @@ export default {
           const prevFees = await this.getPreviousApprovedFees({facilityId: this.CCFRIFacilityModel.facilityId, programYearId: this.previousProgramYearGuid});
           //only display last years child care fees
           const prevYearGuid = this.previousProgramYearGuid;
+          const ooscK = this.childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
+          const ooscG = this.childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");
           prevFees?.childCareTypes?.forEach(item => {
             if (item.programYearId == prevYearGuid ){
+              if(this.languageYearLabel != this.programYearTypes.HISTORICAL){
+                if (item.childCareCategoryId == ooscK.ccof_childcare_categoryid){
+                  item.childCareCategory = 'Kindergarten';
+                }
+                else if (item.childCareCategoryId == ooscG.ccof_childcare_categoryid){
+                  item.childCareCategory = 'Grade 1 to Age 12';
+                }
+              }
               this.feeList.push(item);
             }
           });

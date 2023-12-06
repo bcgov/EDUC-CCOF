@@ -25,7 +25,7 @@
                   mdi-alert-octagon
                 </v-icon>
                 </span>
-                You have a change request for the {{ this.formattedProgramYear }} funding term still in progress.
+                You have a change request for the  {{ getChangeRequestYear }} funding term still in progress.
                 </v-card-title>
               </v-col>
             </v-row>
@@ -440,6 +440,20 @@ export default {
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete', 'applicationMap']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', ]),
     ...mapState('reportChanges', ['changeRequestStore',]),
+    getChangeRequestYear(){
+      const currProgramYear = this.programYearList?.list?.find(el => el.programYearId == this.programYearId);
+      const prevProgramYear = this.programYearList?.list?.find(el => el.programYearId == currProgramYear.previousYearId);
+      const changeReq = this.changeRequestStore?.find((el) => (el.externalStatus == 2 || el.externalStatus == 3) && (el.changeActions[0].changeType != 'PARENT_FEE_CHANGE') && (el.programYearId == prevProgramYear.programYearId));
+      //we can have CR's open for multiple years. Show older CR first if it exists.
+      if (!this.isSomeChangeRequestActive){
+        //no change req active, so warning box is hidden. Return empty string so page doesn't break
+        return "";
+      }
+      else if (changeReq){
+        return prevProgramYear.name;
+      }
+      return currProgramYear.name;
+    },
     isReadOnly() {
       if (this.isMinistryUser) {
         return true;
@@ -529,6 +543,8 @@ export default {
       }
       return this.isValidForm;
     },
+
+
     isSomeChangeRequestActive(){
       //Status of : "Submitted" "Action Required";
       return isAnyChangeRequestActive(this.changeRequestStore);

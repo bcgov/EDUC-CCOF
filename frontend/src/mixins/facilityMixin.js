@@ -13,6 +13,7 @@ export default {
     ...mapState('facility', ['facilityModel', 'facilityId']),
     ...mapState('navBar', ['navBarList','changeRequestId']),
     ...mapState('auth', ['userInfo']),
+    ...mapState('reportChanges', ['changeRequestMap', 'changeRequestId', 'changeActionId']),
     ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
     ...mapState('organization', ['organizationModel', 'organizationId']),
     ...mapGetters('navBar', ['previousPath']),
@@ -113,21 +114,20 @@ export default {
         await this.save(false);
       }
 
-      let navBar;
-      if(this.isLocked){
-        //if the app is locked, we could be viewing a previous program year. Therefore, the userProfile won't have the data required. Load it from navBar.
-        navBar = this.navBarList.find(el => el.facilityId == this.facilityId);
+      let baseFundingId;
+      if(this.isChangeRequest){
+        baseFundingId = this.changeRequestMap?.get(this.changeRequestId)?.changeActions?.find(ca => ca.changeActionId == this.changeActionId)?.newFacilities.find(fac => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
       }
       else {
-        navBar = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId);
+        baseFundingId = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId).ccofBaseFundingId;
       }
 
-      console.log('navbar: ', navBar);
-      if (navBar?.ccofBaseFundingId) {
+      console.log('basefunding: ', baseFundingId);
+      if (baseFundingId) {
         if (this.isChangeRequest) {
-          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, navBar.ccofBaseFundingId));
+          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, baseFundingId));
         } else {
-          this.$router.push(pcfUrlGuid(this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, navBar.ccofBaseFundingId));
+          this.$router.push(pcfUrlGuid(this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, baseFundingId));
         }
       } else {
         console.log('error, should never get here');

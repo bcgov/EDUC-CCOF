@@ -9,7 +9,7 @@
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
-    <v-row v-if="!ccfri || ccfri.ccfriOptInStatus === 0" >
+    <v-row v-if="!ccfri || ccfri?.ccfriOptInStatus === 0" >
       <v-col cols="12" >
           <span  cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
           <v-text-field  cols="12" placeholder="Required" class="summary-value" :value="this.getOptInOptOut(ccfri.ccfriOptInStatus)" dense flat solo hide-details readonly :rules="rules.required" >Opt-Out</v-text-field>
