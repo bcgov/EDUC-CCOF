@@ -350,6 +350,7 @@ export default {
         try {
           const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
           console.log('feeee response', response);
+          //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
           replaceChildCareLabel(rootGetters['app/getLanguageYearLabel'], rootState?.app?.childCareCategoryList, response.data.childCareTypes );
           commit('addPreviousApprovedParentFees', {facilityId: facilityId, programYearId: programYearId, parentFeeModel: response.data});
           return response.data;
@@ -491,26 +492,8 @@ export default {
         //IF not historical year - find Kindergarten & Out of school care in child cat lookup
         //then check if they are in the CCFRI fac model. If so - rename them
         console.log(rootGetters['app/getLanguageYearLabel']);
+        //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
         replaceChildCareLabel(rootGetters['app/getLanguageYearLabel'], rootState?.app?.childCareCategoryList, state.CCFRIFacilityModel.childCareTypes );
-
-        // if (rootGetters['app/getLanguageYearLabel'] != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL){
-        //   const ooscK = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
-        //   const ooscG = rootState?.app?.childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");
-
-        //   //OOSC and OOSK always exist together - so we just have to find one of them in the array
-        //   let schoolAgeFound = state.CCFRIFacilityModel.childCareTypes.find(el => el.childCareCategoryId == ooscK.ccof_childcare_categoryid);
-        //   if (schoolAgeFound){
-        //     state.CCFRIFacilityModel.childCareTypes.forEach(category => {
-
-        //       if (category.childCareCategoryId == ooscK.ccof_childcare_categoryid){
-        //         category.childCareCategory = 'Kindergarten';
-        //       }
-        //       else if (category.childCareCategoryId == ooscG.ccof_childcare_categoryid){
-        //         category.childCareCategory = 'Grade 1 to Age 12';
-        //       }
-        //     });
-        //   }
-        // }
 
         //sort them by age asc
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) => a.orderNumber - b.orderNumber);
