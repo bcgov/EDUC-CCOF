@@ -66,7 +66,6 @@ import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
-import { isFacilityAvailable } from '@/utils/common';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -108,7 +107,7 @@ export default {
     },
     // CCFRI-2584 - All facilties displayed in the PCF should be shown on the MTFI Select Facility page -> same logic as filterNavBar() in navBar.js
     filteredUserProfileList() {
-      return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
+      return this.userProfileList.filter(el => el.facilityAccountNumber && (el.facilityStatus || this.isMtfiCreated(el)));
     }
   },
   async beforeMount() {
