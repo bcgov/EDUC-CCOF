@@ -35,9 +35,9 @@ function mapFacilityObjectForBack(data) {
   }
 
   if (data.hasReceivedFunding === 'no') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
-  } else if (data.hasReceivedFunding === 'yes') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
+  } else if (data.hasReceivedFunding === 'yes') {
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
   } else if (data.hasReceivedFunding === 'yesFacility') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000002;
   } else if (data.hasReceivedFunding) {
