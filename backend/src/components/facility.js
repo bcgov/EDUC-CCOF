@@ -33,7 +33,9 @@ function mapFacilityObjectForBack(data) {
   if (facilityForBack.ccof_facilitystartdate) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
-
+  if (facilityForBack.ccof_licensestartdate) {
+    facilityForBack.ccof_licensestartdate = facilityForBack.ccof_licensestartdate + 'T12:00:00-07:00';
+  }
   if (data.hasReceivedFunding === 'no') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
   } else if (data.hasReceivedFunding === 'yes') {
