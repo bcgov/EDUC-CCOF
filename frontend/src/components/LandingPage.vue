@@ -314,7 +314,7 @@ export default {
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());
       return applicationList?.filter(application => {
-        const isLatestRenewApplication = (application.ccofProgramYearId === this.latestProgramYearId) && (application.applicationType === 'RENEW');
+        const isLatestRenewApplication = (application.ccofProgramYearId === this.latestProgramYearId) && (this.ccofRenewStatus !== this.RENEW_STATUS_NEW) && (application.applicationType === 'RENEW');
         const isApplicationUnlocked = checkApplicationUnlocked(application);
         return (!isLatestRenewApplication && isApplicationUnlocked);
       });
