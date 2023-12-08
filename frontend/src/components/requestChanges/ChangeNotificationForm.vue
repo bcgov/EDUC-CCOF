@@ -143,7 +143,7 @@ export default {
       if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
         return false;
       }
-      return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
+      return currentCR?.externalStatus != 'INCOMPLETE';
     },
   },
   methods: {
