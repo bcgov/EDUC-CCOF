@@ -137,7 +137,6 @@ export default {
     ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'changeRequestMap']),
     isReadOnly() {
       let currentCR = this.changeRequestMap.get(this.$route.params?.changeRecGuid);
-      console.log(currentCR);
       if (currentCR && currentCR.length > 0) {
         currentCR = currentCR[0];
       }
