@@ -103,11 +103,6 @@ export default {
       state.uploadedDocuments = documents;
     },
     addNewChangeRequestToMap:(state, model) => {
-      const item = {
-        changeRequestId: model.changeRequestId,
-        externalStatus: 'INCOMPLETE',
-        changeActions: [],
-      };
       state.changeRequestMap.set(model.changeRequestId, model);
       state.changeRequestMap = new Map(state.changeRequestMap); // // done to trigger reactive getter
     },
@@ -133,15 +128,20 @@ export default {
     },
     addChangeNotificationId:(state, value) => {
       let cr = state.changeRequestMap.get(value.changeRequestId);
-      if (cr) {
-        cr.changeNotificationActionId = value.changeNotificationActionId;
+      if (cr?.changeActions) {
+        cr.changeActions.push({
+          applicationStatus:1,
+          changeActionId: value.changeNotificationActionId,
+          changeType: CHANGE_REQUEST_TYPES.PDF_CHANGE,
+          status: 1
+        });
         state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },
     deleteChangeNotificationId:(state, value) => {
       let cr = state.changeRequestMap.get(value.changeRequestId);
-      if (cr) {
-        delete cr.changeNotificationActionId;
+      if (cr?.changeActions) {
+        cr.changeActions = cr.changeActions.filter(el => el.changeType != CHANGE_REQUEST_TYPES.PDF_CHANGE);
         state.changeRequestMap = new Map(state.changeRequestMap); // done to trigger reactive getter
       }
     },

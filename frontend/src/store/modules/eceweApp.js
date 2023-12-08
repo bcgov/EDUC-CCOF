@@ -1,5 +1,5 @@
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
 import { sortByFacilityId, isNullOrBlank } from '@/utils/common';
@@ -159,8 +159,9 @@ export default {
         if(rootGetters['navBar/isChangeRequest']){
           console.log('this is a change req, build from newFacilities list');
 
-          let newFac = rootState?.reportChanges?.changeRequestMap?.get(rootState?.navBar?.changeRequestId).changeActions[0]?.newFacilities;
-
+          // let newFac = rootState?.reportChanges?.changeRequestMap?.get(rootState?.navBar?.changeRequestId).changeActions[0]?.newFacilities;
+          let newFac = rootState?.reportChanges?.changeRequestMap?.get(rootState?.navBar?.changeRequestId).changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
+          console.log('newFac is: ', newFac);
           facilityPayload =  newFac?.map(facility => ({
             eceweApplicationId: getEceweApplicationId(facility.facilityId),
             facilityId: facility.facilityId,
