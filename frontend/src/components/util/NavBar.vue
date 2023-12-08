@@ -698,20 +698,20 @@ export default {
             navBarId: navBarId++
           });
           if (item.hasRfi || item.unlockRfi) {
-              items.push(
-                {
-                  title: 'Parent Fee Increase – RFI',
-                  subTitle: item.facilityName,
-                  id: item.facilityId,
-                  link: { name: 'mtfi-change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
-                  isAccessible: true,
-                  icon: this.getCheckbox(item.isRfiComplete),
-                  isActive: 'mtfi-change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
-                  position: positionIndex++,
-                  navBarId: navBarId++
-                },
-              );
-            }
+            items.push(
+              {
+                title: 'Parent Fee Increase – RFI',
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'mtfi-change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
+                isAccessible: true,
+                icon: this.getCheckbox(item.isRfiComplete),
+                isActive: 'mtfi-change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                position: positionIndex++,
+                navBarId: navBarId++
+              },
+            );
+          }
         });
       }
       let retval =   {
