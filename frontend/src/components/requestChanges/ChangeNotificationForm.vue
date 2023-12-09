@@ -130,7 +130,7 @@ export default {
     next();
   },
   computed: {
-    ...mapGetters('reportChanges', ['getUploadedDocuments']),
+    ...mapGetters('reportChanges',['isChangeRequestUnlocked','isOtherDocumentsUnlocked','getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),
     ...mapState('navBar', ['changeType']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
@@ -140,10 +140,11 @@ export default {
       if (currentCR && currentCR.length > 0) {
         currentCR = currentCR[0];
       }
-      if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
+      if (this.isChangeRequestUnlocked ||this.isOtherDocumentsUnlocked) {
         return false;
       }
-      return currentCR?.externalStatus != 'INCOMPLETE';
+
+      return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
   },
   methods: {
