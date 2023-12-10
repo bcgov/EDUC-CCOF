@@ -948,7 +948,11 @@ export default {
       return this.CCFRIFacilityModel.childCareTypes[index].feeFrequency == this.currentPcfCcfri.childCareTypes[index].feeFrequency;
     },
     isFormComplete(){
-      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0){
+      //allow the user to submit if they had PCF closure fees, but no additional closure fees on the MTFI
+      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 &&  this.isValidForm && (this.CCFRIFacilityModel.dates.length === 0 && this.previousClosureDates.dates.length > 0)){
+        return true;
+      }
+      else if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0){
         return false;
       }
       return this.isValidForm; //false makes button clickable, true disables button
