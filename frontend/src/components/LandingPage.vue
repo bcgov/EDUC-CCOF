@@ -345,7 +345,7 @@ export default {
       if (this.applicationType === 'NEW') {
         if (this.applicationStatus === 'DRAFT') {
           return false;
-        } else if (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') {
+        } else if ((this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') && this.organizationAccountNumber && this.ccofApplicationStatus === 'ACTIVE') {
           let isEnabled = this.isWithinRenewDate
             && this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
             && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
