@@ -88,8 +88,6 @@ export default {
         let fiscalYearStartDate = `${currYear}-04-01`;
         currYear = +currYear + 1;
         let fiscalYearEndDate = `${currYear}-03-31`;
-        console.log(fiscalYearEndDate);
-        console.log(fiscalYearStartDate);
         return {startDate: fiscalYearStartDate, endDate: fiscalYearEndDate };
       }
       //should never get here
