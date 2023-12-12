@@ -587,9 +587,6 @@ export default {
             //this.closureFees = 'Yes';
           }
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
-
-          console.log('testt', this.fiscalStartAndEndDates);
-
           this.updateChosenDates();
           this.loading = false;
         } catch (error) {
