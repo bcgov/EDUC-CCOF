@@ -223,6 +223,8 @@ export default {
       console.log('trying to get change req for: ', changeRequestId);
       let changeRequest = state.changeRequestMap.get(changeRequestId);
       if (changeRequest) {
+        commit('setLoadedChangeRequest', changeRequest);
+        // commit('setChangeRequestId', changeRequest.changeRequestId); TODO: discuss if we should have this
         return changeRequest;
       } else {
         checkSession();

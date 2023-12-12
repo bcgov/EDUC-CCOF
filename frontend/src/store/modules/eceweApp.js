@@ -3,7 +3,6 @@ import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 import { isEqual } from 'lodash';
 import { sortByFacilityId, isNullOrBlank } from '@/utils/common';
-import facility from './ccof/facility';
 
 export default {
   namespaced: true,
@@ -57,13 +56,14 @@ export default {
           applicableSector: loadedChangeRequest.applicableSector,
           fundingModel: loadedChangeRequest.fundingModel,
           confirmation: loadedChangeRequest.confirmation,
+          publicSector: loadedChangeRequest.publicSector,
           facilities: state.eceweModel?.facilities
         };
         commit('setEceweModel', eceweModel);
         commit('setLoadedModel', eceweModel);
       }
     },
-    async saveECEWE({ state, commit}, {isFormComplete, isChangeRequest, changeRequestId}) {
+    async saveECEWE({ state, commit, dispatch, }, {isFormComplete, isChangeRequest, changeRequestId}) {
       try {
         if (isEqual(state.eceweModel, state.loadedModel) && state.isStarted) {
           return;
@@ -76,6 +76,14 @@ export default {
         let response;
         if (isChangeRequest) {
           delete payload.applicationId;
+          //update the ChangeRequest Map with new ECEWE values
+          let existingChangeRequest = await dispatch('reportChanges/getChangeRequest', changeRequestId, { root: true });
+          existingChangeRequest.optInECEWE = payload.optInECEWE;
+          existingChangeRequest.belongsToUnion = payload.belongsToUnion;
+          existingChangeRequest.applicableSector = payload.applicableSector;
+          existingChangeRequest.fundingModel = payload.fundingModel;
+          existingChangeRequest.confirmation = payload.confirmation;
+          existingChangeRequest.publicSector = payload.publicSector;
           response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
         } else {
           response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_ECEWE + '/' + state.applicationId, payload);
