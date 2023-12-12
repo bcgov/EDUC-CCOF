@@ -793,7 +793,6 @@ export default {
           await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
 
-
           let arr = [];
 
           //sort the child care types so they match the cards of the old CCFRI fees
