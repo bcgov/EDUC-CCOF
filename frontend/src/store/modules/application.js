@@ -80,6 +80,19 @@ export default {
   },
   getters: {
     formattedProgramYear: state => state.programYearLabel?.replace(/[^\d/]/g, ''),
+    fiscalStartAndEndDates: state => {
+      //set fiscal year dates to prevent user from choosing dates outside the current FY
+      //ASSUMPTION that fiscal year start / end dates will not move from April / March
+      if (state.programYearLabel?.length > 3 ) {
+        let currYear =  state.programYearLabel?.substring(0,4);
+        let fiscalYearStartDate = `${currYear}-04-01`;
+        currYear = +currYear + 1;
+        let fiscalYearEndDate = `${currYear}-03-31`;
+        return {startDate: fiscalYearStartDate, endDate: fiscalYearEndDate };
+      }
+      //should never get here
+      return {startDate: null, endDate: null };
+    },
     latestProgramYearId: state => { //TODO: figure out async issue that happens intermittently.
       let currentGuid;
       let futureGuid;

@@ -432,6 +432,8 @@
                       </v-text-field>
                     </template>
                       <v-date-picker
+                        :min="fiscalStartAndEndDates.startDate"
+                        :max="fiscalStartAndEndDates.endDate"
                         :allowed-dates="allowedDates"
                         clearable
                         v-model="obj.formattedStartDate"
@@ -460,6 +462,7 @@
                       <v-date-picker
                         clearable
                         :min="obj.formattedStartDate"
+                        :max="fiscalStartAndEndDates.endDate"
                         v-model="obj.formattedEndDate"
                         @input="obj.calendarMenu2 = false"
                         :allowed-dates="allowedDates"
@@ -744,6 +747,7 @@ export default {
     ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId', 'applicationMap']),
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['programYearId', 'isRenewal']),
+    ...mapGetters('application', ['fiscalStartAndEndDates']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
@@ -788,7 +792,6 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.loadCCFisCCRIMedian(); //load the CCFRI median of the existing PCf (old) CCFRI
           await this.decorateWithCareTypes(this.CCFRIFacilityModel.facilityId);
-
 
           let arr = [];
 
