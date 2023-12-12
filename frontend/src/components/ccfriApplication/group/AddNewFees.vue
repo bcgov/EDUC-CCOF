@@ -258,6 +258,8 @@
                     </v-text-field>
                   </template>
                     <v-date-picker
+                      :min="fiscalStartAndEndDates.startDate"
+                      :max="fiscalStartAndEndDates.endDate"
                       :allowed-dates="allowedDates"
                       clearable
                       v-model="obj.formattedStartDate"
@@ -286,6 +288,7 @@
                     <v-date-picker
                       clearable
                       :min="obj.formattedStartDate"
+                      :max="fiscalStartAndEndDates.endDate"
                       v-model="obj.formattedEndDate"
                       @input="obj.calendarMenu2 = false"
                       :allowed-dates="allowedDates"
@@ -480,7 +483,6 @@ export default {
   mixins: [alertMixin, globalMixin],
   data() {
     return {
-
       pastCcfriGuid: undefined,
       closureFees : 'No',
       prevFeesCorrect : undefined,
@@ -498,6 +500,8 @@ export default {
       facilityProgramYears: [],
       isValidForm : false,
       chosenDates: [],
+      fiscalYearStartDate: "",
+      fiscalYearEndDate: "",
 
       feeRules: [
         (v) => !isNaN(parseFloat(v))  || 'Must be a number',
@@ -523,6 +527,7 @@ export default {
   computed: {
     ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
+    ...mapGetters('application', ['fiscalStartAndEndDates']),
     ...mapState('navBar', ['navBarList','changeRequestId', 'changeType']),
     ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapGetters('ccfriApp', ['getClosureDateLength']),
@@ -582,6 +587,8 @@ export default {
             //this.closureFees = 'Yes';
           }
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
+
+          console.log('testt', this.fiscalStartAndEndDates);
 
           this.updateChosenDates();
           this.loading = false;
