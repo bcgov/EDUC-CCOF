@@ -468,14 +468,14 @@ export default {
       }
     },
     notificationFormActionRequiredRoute(changeActionId, changeRequestId) {
-      let currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
-      if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
-        this.goToChangeForm(changeActionId, changeRequestId);
-      } else if (currentCR?.unlockDeclaration) {
-        this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId, CHANGE_TYPES.CHANGE_NOTIFICATION));
-      } else {
-        this.goToChangeForm(changeActionId, changeRequestId);
-      }
+      // let currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      // if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
+      //   this.goToChangeForm(changeActionId, changeRequestId);
+      // } else if (currentCR?.unlockDeclaration) {
+      //   this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+      // } else {
+      this.goToChangeForm(changeActionId, changeRequestId);
+      //}
     },
     newFacilityActionRequiredRoute(changeRequestId) {
       const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
