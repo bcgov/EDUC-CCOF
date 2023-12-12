@@ -26,6 +26,7 @@ const ChangeRequestMappings = [
   { back: 'ccof_ecewe_confirmation', front: 'confirmation' },
   { back: 'ccof_declaration', front: 'enabledDeclarationB' },
   { back: 'ccof_indicator_unlock', front: 'isChangeRequestUnlocked' },
+  { back: 'ccof_public_sector_employer', front: 'publicSector' },
 
   ...UserProfileChangeRequestMappings
   // { back: 'ccof_change_request_new_facilityid', front: 'changeFacilityID'},
