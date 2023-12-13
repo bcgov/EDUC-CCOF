@@ -214,7 +214,7 @@
 
       </div>
       <!---Declaration Start--->
-      <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
+      <v-row v-if="fundingAgreementNumber  && languageYearLabel == programYearTypes.HISTORICAL" justify="center" class="pt-4 text-h5" style="color:#003466;">
         Funding Agreement Number: {{ fundingAgreementNumber }}
       </v-row>
       <v-row justify="center">
@@ -392,7 +392,7 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES  } from '@/utils/constants';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -432,6 +432,7 @@ export default {
     ...mapGetters('auth', ['userInfo', 'isMinistryUser']),
     ...mapGetters('navBar', ['getNavByFacilityId', 'getNavByFundingId','getNavByCCFRIId']),
     ...mapState('app', ['programYearList' ]),
+    ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
     ...mapState('navBar', ['canSubmit', 'navBarList', 'changeRequestId']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
@@ -440,6 +441,12 @@ export default {
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete', 'applicationMap']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', ]),
     ...mapState('reportChanges', ['changeRequestStore',]),
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
     getChangeRequestYear(){
       const currProgramYear = this.programYearList?.list?.find(el => el.programYearId == this.programYearId);
       const prevProgramYear = this.programYearList?.list?.find(el => el.programYearId == currProgramYear.previousYearId);
