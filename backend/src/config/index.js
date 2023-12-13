@@ -72,7 +72,12 @@ nconf.defaults({
     password: process.env.REDIS_PASSWORD,
     clustered: process.env.REDIS_USE_CLUSTERED,
     facilityTTL: process.env.REDIS_FACILITY_TTL
+  },
+  clamav: {
+    host: process.env.CLAMAV_HOST,
+    port: process.env.CLAMAV_PORT,
+    enabled: process.env.CLAMAV_ENABLED,
+    passOnError: process.env.CLAMAV_PASS_ON_ERROR
   }
-
 });
 module.exports = nconf;

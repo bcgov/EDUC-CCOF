@@ -395,7 +395,6 @@ export default {
           this.setSuccessAlert('Changes Successfully Saved');
         }
       } catch (e) {
-        console.log("ERROR123", e);
         if (e == "Error: Request failed with status code 406") {
           this.setFailureAlert('File has failed the virus scan.');
         } else {
