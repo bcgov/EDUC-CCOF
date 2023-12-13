@@ -13,7 +13,7 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument, postChangeRequestSummaryDocument} = require('./utils');
-const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
+const {getFileExtension, convertHeicDocumentToJpg, scanFile} = require('../util/uploadFileUtils');
 
 function mapChangeRequestForBack(data, changeType) {
   let changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -323,6 +323,12 @@ async function saveChangeRequestDocs(req, res) {
     let documents = req.body;
     for (let document of documents) {
       let documentClone = document;
+      if (!await scanFile(documentClone.documentbody)) {
+        return res.status(HttpStatus.NOT_ACCEPTABLE).json({
+          status: HttpStatus.NOT_ACCEPTABLE,
+          message: 'File has failed the virus scan'
+        });
+      }
       if (getFileExtension(documentClone.filename) === 'heic' ) {
         log.verbose(`saveChangeRequestDocs :: heic detected for file name ${documentClone.filename} starting conversion`);
         documentClone = await convertHeicDocumentToJpg(documentClone);

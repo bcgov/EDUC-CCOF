@@ -1,6 +1,9 @@
 'use strict';
 const log = require('../components/logger');
+const config = require('../config/index');
 const workerpool = require('workerpool');
+const HttpStatus = require('http-status-codes');
+const {createScanner} = require('clamdjs');
 const pool = workerpool.pool(`${__dirname}/workerThreadFunctions/convertHeicWorker.js`, {
   minWorkers: 2,
   maxWorkers: 4
@@ -16,7 +19,7 @@ async function convertHeicDocumentToJpg(document) {
 
   for (let expectedProperty of ['documentbody', 'filesize', 'filename']) {
     if (!(expectedProperty in document)) {
-      console.warn(`convertHeicDocumentToJpg :: key: ${expectedProperty} was not found. Please check the document parameter`);
+      log.warn(`convertHeicDocumentToJpg :: key: ${expectedProperty} was not found. Please check the document parameter`);
     }
   }
 
@@ -36,8 +39,30 @@ async function convertHeicDocumentToJpg(document) {
   return document;
 }
 
+async function scanFile(base64File){
+  if (config.get('clamav:enabled')) {
+    try{
+      const ClamAVScanner = createScanner(config.get('clamav:host'), Number(config.get('clamav:port')));
+      const clamAVScanResult = await ClamAVScanner.scanBuffer(Buffer.from(base64File, 'base64'), 3000, 1024 * 1024);
+      if (clamAVScanResult.includes('FOUND')) {
+        log.info('ClamAV scan found possible virus');
+        return false;
+      }
+    } catch (e) {
+      // if virus scan is not to be performed/cannot be performed
+      log.warn('ClamAV Scanner was not found: ' + e);
+      return (config.get('clamav:passOnError'));
+    }
+    log.verbose('ClamAV scan found no virus in file, allowing upload...');
+    return true;
+  } else {
+    return true;
+  }
+}
+
 module.exports = {
   convertHeicDocumentToJpg,
-  getFileExtension
+  getFileExtension,
+  scanFile
 };
 

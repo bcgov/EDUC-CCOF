@@ -2,7 +2,7 @@
 const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId,updateChangeRequestNewFacility} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
+const {getFileExtension, convertHeicDocumentToJpg, scanFile} = require('../util/uploadFileUtils');
 
 async function saveLicenses(req, res) {
   try {
@@ -10,7 +10,12 @@ async function saveLicenses(req, res) {
     let licenses = req.body.fileList;
     for (let license of licenses) {
       let licenseClone = license;
-
+      if (!await scanFile(licenseClone.documentbody)) {
+        return res.status(HttpStatus.NOT_ACCEPTABLE).json({
+          status: HttpStatus.NOT_ACCEPTABLE,
+          message: 'File has failed the virus scan'
+        });
+      }
       if (getFileExtension(licenseClone.filename) === 'heic' ) {
         log.verbose(`saveLicenses :: heic detected for file name ${licenseClone.filename} starting conversion`);
         licenseClone = await convertHeicDocumentToJpg(licenseClone);

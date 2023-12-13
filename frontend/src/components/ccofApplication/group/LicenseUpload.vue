@@ -265,7 +265,11 @@ export default {
         }
       } catch (e) {
         console.error(e);
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        if (e == "Error: Request failed with status code 406") {
+          this.setFailureAlert('File has failed the virus scan.');
+        } else {
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
+        }
       } finally {
         this.isProcessing = false;
       }

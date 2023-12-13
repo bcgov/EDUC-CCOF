@@ -395,7 +395,12 @@ export default {
           this.setSuccessAlert('Changes Successfully Saved');
         }
       } catch (e) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        console.log("ERROR123", e);
+        if (e == "Error: Request failed with status code 406") {
+          this.setFailureAlert('File has failed the virus scan.');
+        } else {
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
+        }
       } finally {
         this.isProcessing = false;
       }
@@ -413,11 +418,7 @@ export default {
         };
         payload.push(obj);
       }
-      try {
-        await this.saveUploadedDocuments(payload);
-      } catch (error) {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
+      await this.saveUploadedDocuments(payload);
     },
     async processDocumentFileDelete() {
       if (this.uploadedDocuments?.deletedItems?.length > 0) {
