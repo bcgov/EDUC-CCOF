@@ -143,7 +143,7 @@
       <!---Declaration Start--->
       <v-row justify="center">
 
-        <v-row v-if="fundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
+        <v-row v-if="fundingAgreementNumber  && languageYearLabel == programYearTypes.HISTORICAL" justify="center" class="pt-4 text-h5" style="color:#003466;">
           Funding Agreement Number: {{ fundingAgreementNumber }}
         </v-row>
 
@@ -321,7 +321,7 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES, CHANGE_TYPES, changeUrlGuid, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -375,6 +375,13 @@ export default {
     ...mapState('summaryDeclaration', ['isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'model']),
     ...mapState('application', ['isRenewal', 'applicationMap']),
+    ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
     isReadOnly() {
       if (this.isMinistryUser || !this.isLoadingComplete) {
         return true;
