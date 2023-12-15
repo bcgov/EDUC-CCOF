@@ -72,7 +72,7 @@
               <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Active</p>
               <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
-              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else-if="applicationType === 'RENEW' && applicationStatus === 'SUBMITTED'">View Application</v-btn>
+              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else-if="applicationType === 'RENEW' && applicationStatus === 'SUBMITTED' && ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED">View Application</v-btn>
             </div>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
             <router-link v-if="isSubmissionHistoryDisplayed" class='text-decoration-underline' :to="PATHS.ROOT.SUBMISSION_HISTORY">
@@ -312,13 +312,13 @@ export default {
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
-      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap']),
+      'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore']),
     getRenewYearLabel(){
       console.log('sss');
       console.log(this.applicationType);
       console.log(this.ccofRenewStatus);
-      if (this.applicationType == "NEW" && this.applicationStatus == "DRAFT" ){
+      if (this.applicationType == "NEW" && this.applicationStatus == "DRAFT"  || (!this.applicationId)){
         console.log('no year');
         return "";
       }
