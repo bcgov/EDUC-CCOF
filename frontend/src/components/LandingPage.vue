@@ -330,6 +330,7 @@ export default {
       else if (this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE || this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED  ){
         return this.formattedProgramYear;
       }
+      //should not reach here- perhaps change-
       return this.formattedProgramYear;
     },
     getActionRequiredApplicationsForCCOFCard() {
@@ -401,7 +402,7 @@ export default {
         console.log(this.applicationStatus);
         if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
-        } else if (this.programYearId == this.programYearList.renewal?.previousYearId && this.isWithinRenewDate) {
+        } else if (this.programYearId == this.programYearList.renewal?.previousYearId && this.isWithinRenewDate) { //fixme
           return this.RENEW_STATUS_NEW;
         } else if (this.isOrganizationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
