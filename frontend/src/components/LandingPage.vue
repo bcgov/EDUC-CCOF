@@ -71,8 +71,8 @@
             <div v-else>
               <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Active</p>
               <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
-              <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
-              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else-if="applicationType === 'RENEW' && applicationStatus === 'SUBMITTED' && ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED">View Application</v-btn>
+              <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Recent Application</v-btn>
+              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else-if="applicationType === 'RENEW' && applicationStatus === 'SUBMITTED' && ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED">View Recent Application</v-btn>
             </div>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
             <router-link v-if="isSubmissionHistoryDisplayed" class='text-decoration-underline' :to="PATHS.ROOT.SUBMISSION_HISTORY">
@@ -314,24 +314,19 @@ export default {
     ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore']),
+    getNextProgramYear(){
+      return this.programYearList?.list?.find(el => el.previousYearId == this.latestProgramYearId);
+    },
     getRenewYearLabel(){
-      console.log('sss');
-      console.log(this.applicationType);
-      console.log(this.ccofRenewStatus);
       if (this.applicationType == "NEW" && this.applicationStatus == "DRAFT"  || (!this.applicationId)){
-        console.log('no year');
+        //console.log('no year');
         return "";
       }
       //show the year ahead because we can't pull from application year YET
       else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW){
-        console.log(this.programYearList?.list);
-        let nameToReturn = this.programYearList?.list?.find(el => el.previousYearId == this.latestProgramYearId)?.name;
-        console.log('///////////////');
-        console.log(nameToReturn);
-        console.log(nameToReturn.substring(0,7));
+        let nameToReturn = this.getNextProgramYear?.name;
         return nameToReturn?.substring(0,7);
       }
-
       else if (this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE || this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED  ){
         return this.formattedProgramYear;
       }
@@ -362,8 +357,8 @@ export default {
       return this.facilityListForFacilityCards?.filter((fac) => fac.facilityName.toLowerCase().includes(this.input.toLowerCase()));
     },
     isWithinRenewDate() {
-      let isEnabled = (this.userInfo.serverTime > this.programYearList?.renewal?.intakeStart
-        && this.userInfo.serverTime < this.programYearList?.renewal?.intakeEnd);
+      let isEnabled = (this.userInfo.serverTime > this.getNextProgramYear?.intakeStart
+        && this.userInfo.serverTime < this.getNextProgramYear?.intakeEnd);
       console.log('isWithinRenewDate: ', isEnabled);
       return isEnabled;
     },
@@ -374,7 +369,7 @@ export default {
           return false;
         } else if ((this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') && this.organizationAccountNumber && this.ccofApplicationStatus === 'ACTIVE') {
           let isEnabled = this.isWithinRenewDate
-            && this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
+            //&& this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
             && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
           return isEnabled;
         }
@@ -498,7 +493,7 @@ export default {
     },
     renewApplication() {
       this.setIsRenewal(true);
-      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.programYearList.renewal.programYearId));
+      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.getNextProgramYear?.programYearId));
     },
     goToReportChange(){
       this.$router.push(PATHS.ROOT.CHANGE_INFO);

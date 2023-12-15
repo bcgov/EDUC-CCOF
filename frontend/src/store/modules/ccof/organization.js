@@ -77,12 +77,14 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState  }) {
+    async renewApplication({ commit, state, rootState, rootGetters  }) {
       checkSession();
-
+      let nextApp = rootState.app.programYearList?.list?.find(el => el.previousYearId == rootGetters['application/latestProgramYearId']);
+      console.log('nextAPPP');
+      console.log(nextApp);
       let payload = {
         providerType: state.organizationProviderType,
-        programYearId: rootState.app.programYearList.renewal.programYearId,
+        programYearId: nextApp?.programYearId,
         organizationId: state.organizationId,
       };
       console.log('renewApplication, payload', payload);

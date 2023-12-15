@@ -4,7 +4,7 @@
       <v-row justify="center">
         <div
           class="pa-10 text-h5"
-          v-text="`Child Care Operating Funding Program - ${renewalYearLabel} Program Confirmation Form`" />
+          v-text="`Child Care Operating Funding Program - ${getNextProgramYear.name.replace(/[^\d/]/g, '')} Program Confirmation Form`" />
       </v-row >
 
       <div v-if="processing">
@@ -162,9 +162,13 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['renewalYearLabel', 'currentYearLabel']),
-    ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId']),
+    ...mapGetters('application', ['latestProgramYearId']),
+    ...mapState('application', ['applicationStatus', 'applicationType', 'ccofApplicationStatus', 'programYearId', ]),
     ...mapState('app', ['programYearList']),
     ...mapState('reportChanges', ['changeRequestStore',]),
+    getNextProgramYear(){
+      return this.programYearList?.list?.find(el => el.previousYearId == this.latestProgramYearId);
+    },
   },
   async created(){
     this.processing = true;
@@ -177,8 +181,8 @@ export default {
     if (this.applicationStatus == 'DRAFT'
       && this.applicationType == 'RENEW'
       && this.ccofApplicationStatus == 'NEW'
-      && this.programYearId == this.programYearList.renewal?.programYearId) {
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearList.renewal.programYearId));
+      && this.programYearId ==  this.getNextProgramYear?.programYearId) {
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.getNextProgramYear.programYearId));
 
     }
   },
@@ -188,7 +192,7 @@ export default {
     async next() {
       this.processing = true;
       await this.renewApplication();
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearList.renewal.programYearId));
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.getNextProgramYear.programYearId));
     },
     isSomeChangeRequestActive(){
       //Status of : "Submitted" "Action Required";
