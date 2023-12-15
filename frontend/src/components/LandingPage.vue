@@ -120,8 +120,8 @@
           <p>
             <a class='text-decoration-underline' style="pointer-events: all;" href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
           </p>
-          <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div>
-          <div v-else-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
+          <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
+          <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
             <p class="text-h6 blueText">Status of the PCF: Submitted</p>
             <span>We will contact you if we require further information. You can view your latest submission from the button below.</span>
           </div>
