@@ -72,6 +72,7 @@
               <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Active</p>
               <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
+              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else>View Application</v-btn>
             </div>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
             <router-link v-if="isSubmissionHistoryDisplayed" class='text-decoration-underline' :to="PATHS.ROOT.SUBMISSION_HISTORY">
@@ -119,7 +120,7 @@
           <p>
             <a class='text-decoration-underline' style="pointer-events: all;" href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
           </p>
-          <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the PCF: Approved</div>
+          <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div>
           <div v-else-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
             <p class="text-h6 blueText">Status of the PCF: Submitted</p>
             <span>We will contact you if we require further information. You can view your latest submission from the button below.</span>
@@ -134,7 +135,7 @@
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement </v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
-            <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else>View Application</v-btn>
+            <v-btn :color='buttonColor(true)' :disabled=true v-else>Renew my Funding Agreement</v-btn>
           </div>
         </template>
       </SmallCard>
@@ -304,7 +305,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['renewalYearLabel']),
-    ...mapGetters('application', ['latestProgramYearId', 'applicationIds', 'getFacilityListForPCFByProgramYearId']),
+    ...mapGetters('application', ['latestProgramYearId', 'applicationIds', 'getFacilityListForPCFByProgramYearId', 'formattedProgramYear']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList']),
     ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
