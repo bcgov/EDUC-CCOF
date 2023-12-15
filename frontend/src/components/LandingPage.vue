@@ -325,7 +325,7 @@ export default {
       //show the year ahead because we can't pull from application year YET
       else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW){
         let nameToReturn = this.getNextProgramYear?.name;
-        return nameToReturn?.substring(0,7);
+        return nameToReturn?.replace(/[^\d/]/g, '');
       }
       else if (this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE || this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED  ){
         return this.formattedProgramYear;
