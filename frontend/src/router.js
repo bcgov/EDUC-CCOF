@@ -891,11 +891,11 @@ router.afterEach((to) => {
   } else {
     store.commit('app/setPageTitle', '');
   }
-  let nextApp = store.state.app.programYearList.list.find(el => el.previousYearId == store.getters['application/latestProgramYearId']);
+  let nextApp = store.state.app?.programYearList?.list?.find(el => el.previousYearId == store.getters['application/latestProgramYearId']);
   if(to?.meta?.subtitleBanner){
     if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
       if(to?.meta?.pageTitle==='Renew Organization'){
-        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',nextApp.name.replace(/[^\d/]/g, '')));
+        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',nextApp?.name.replace(/[^\d/]/g, '')));
       }
       else if(!store.getters['application/formattedProgramYear']){
         store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].newApp.name.replace(/[^\d/]/g, '')));
