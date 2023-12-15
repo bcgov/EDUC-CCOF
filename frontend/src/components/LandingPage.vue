@@ -112,7 +112,8 @@
 
       <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${renewalYearLabel}`" :disable="!isRenewEnabled ">
         <template #content>
-          <p class="text-h6">Renew my Funding Agreement {{ renewalYearLabel }}</p>
+          <!-- <p class="text-h6">Renew my Funding Agreement {{ renewalYearLabel }}</p> -->
+          <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
 
           <p>
             Current providers must renew their Funding Agreement every year. For more information, visit the government website:
@@ -122,7 +123,7 @@
           </p>
           <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
           <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
-            <p class="text-h6 blueText">Status of the PCF: Submitted</p>
+            <!-- <p class="text-h6 blueText">Status of the PCF: Submitted</p> -->
             <span>We will contact you if we require further information. You can view your latest submission from the button below.</span>
           </div>
         </template>
@@ -132,6 +133,7 @@
             <v-skeleton-loader class="ma-0 pa-0" type="chip"></v-skeleton-loader>
           </div>
           <div v-else>
+            <!-- {{ isRenewEnabled }} -->
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement </v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
@@ -312,6 +314,29 @@ export default {
     ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap']),
     ...mapState('reportChanges', ['changeRequestStore']),
+    getRenewYearLabel(){
+      console.log('sss');
+      console.log(this.applicationType);
+      console.log(this.ccofRenewStatus);
+      if (this.applicationType == "NEW" && this.applicationStatus == "DRAFT" ){
+        console.log('no year');
+        return "";
+      }
+      //show the year ahead because we can't pull from application year YET
+      else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW){
+        console.log(this.programYearList?.list);
+        let nameToReturn = this.programYearList?.list?.find(el => el.previousYearId == this.latestProgramYearId)?.name;
+        console.log('///////////////');
+        console.log(nameToReturn);
+        console.log(nameToReturn.substring(0,7));
+        return nameToReturn?.substring(0,7);
+      }
+
+      else if (this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE || this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED  ){
+        return this.formattedProgramYear;
+      }
+      return this.formattedProgramYear;
+    },
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());
       return applicationList?.filter(application => {
@@ -343,6 +368,7 @@ export default {
       return isEnabled;
     },
     isRenewEnabled() {
+      console.log('can renew?: ' , this.isWithinRenewDate);
       if (this.applicationType === 'NEW') {
         if (this.applicationStatus === 'DRAFT') {
           return false;
