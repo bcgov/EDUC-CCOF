@@ -72,7 +72,7 @@
               <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Active</p>
               <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Application</v-btn>
-              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else>View Application</v-btn>
+              <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else-if="applicationType === 'RENEW' && applicationStatus === 'SUBMITTED'">View Application</v-btn>
             </div>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
             <router-link v-if="isSubmissionHistoryDisplayed" class='text-decoration-underline' :to="PATHS.ROOT.SUBMISSION_HISTORY">
@@ -135,7 +135,7 @@
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement </v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
-            <v-btn :color='buttonColor(true)' dark :disabled=true v-else>Renew my Funding Agreement</v-btn>
+            <v-btn :color='buttonColor(true)' :disabled=true v-else>Renew my Funding Agreement</v-btn>
           </div>
         </template>
       </SmallCard>
