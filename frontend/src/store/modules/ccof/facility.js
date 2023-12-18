@@ -79,15 +79,19 @@ export default {
       let payload = { ...state.facilityModel, organizationId, applicationId: rootState.application.applicationId };
 
       //CMS was having a workflow issue related to saving the same post code repeatadly. Don't save postcode unless it has changed
-      if (state.facilityModel.postalCode.replace(/\s/g, "").toUpperCase() == state.loadedModel.postalCode.replace(/\s/g, "").toUpperCase()) {
-        console.info('no post code changes, do not save post code');
-        delete payload.postalCode;
+      try{
+        if (state?.facilityModel?.postalCode?.replace(/\s/g, "").toUpperCase() == state?.loadedModel?.postalCode?.replace(/\s/g, "").toUpperCase()) {
+          console.info('no post code changes, do not save post code');
+          delete payload.postalCode;
+        }
+        else{
+          //format the post code nice for Dynamics
+          payload.postalCode = state.facilityModel.postalCode.replace(/\s/g, "").toUpperCase();
+        }
       }
-      else{
-        //format the post code nice for Dynamics
-        payload.postalCode = state.facilityModel.postalCode.replace(/\s/g, "").toUpperCase();
+      catch(e){
+        console.log(e);
       }
-
       console.log(payload);
       commit('setLoadedModel', state.facilityModel);
 
