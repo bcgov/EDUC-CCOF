@@ -93,18 +93,24 @@ export default {
       //should never get here
       return {startDate: null, endDate: null };
     },
-    latestProgramYearId: state => { //TODO: figure out async issue that happens intermittently.
+    latestProgramYearId: (state, getters, rootState) => { //TODO: figure out async issue that happens intermittently.
+      console.log(rootState.app.programYearList.list);
       let currentGuid;
       let futureGuid;
       let lastGuid;
+
+      let highestOrder = 1; //2020/21 default
       state.applicationMap.forEach((value, key) => {
         if (value.ccofProgramYearStatus === 'FUTURE') {
           futureGuid = key;
         }
-        if (value.ccofProgramYearStatus === 'CURRENT') {
+        else if (value.ccofProgramYearStatus === 'CURRENT') {
           currentGuid = key;
         }
-        lastGuid = key;
+        else if ((rootState.app.programYearList.list.find(el => el.programYearId == key)?.order) > highestOrder){
+          highestOrder = rootState.app.programYearList.list.find(el => el.programYearId == key)?.order;
+          lastGuid = key;
+        }
       });
       return futureGuid ? futureGuid : currentGuid ? currentGuid : lastGuid; //TODO: add order to provider fiscal profile and then return the latest one based on the order.
 

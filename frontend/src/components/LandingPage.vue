@@ -365,17 +365,18 @@ export default {
     },
     isRenewEnabled() {
       console.log('can renew?: ' , this.isWithinRenewDate);
-      if (this.applicationType === 'NEW') {
-        if (this.applicationStatus === 'DRAFT') {
-          return false;
-        } else if ((this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') && this.organizationAccountNumber && this.ccofApplicationStatus === 'ACTIVE') {
-          let isEnabled = this.isWithinRenewDate
+      //if (this.applicationType === 'NEW') {
+      if (this.applicationStatus === 'DRAFT') {
+        return false;
+      } else if ((this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') && this.organizationAccountNumber && this.ccofApplicationStatus === 'ACTIVE') {
+        let isEnabled = this.isWithinRenewDate
             //&& this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
             && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
-          return isEnabled;
-        }
+        return isEnabled;
       }
-      return (this.applicationType === 'RENEW');
+      //}
+      return false;
+      //return (this.applicationType === 'RENEW');
     },
     ccofStatus() {
       if (!this.applicationType) {
@@ -402,7 +403,7 @@ export default {
         console.log(this.applicationStatus);
         if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
-        } else if (this.programYearId == this.programYearList.renewal?.previousYearId && this.isWithinRenewDate) { //fixme
+        } else if (this.isWithinRenewDate) {
           return this.RENEW_STATUS_NEW;
         } else if (this.isOrganizationUnlock) {
           return this.RENEW_STATUS_ACTION_REQUIRED;
