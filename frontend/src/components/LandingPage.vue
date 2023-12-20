@@ -69,7 +69,7 @@
               </div>
             </div>
             <div v-else>
-              <p class="text-h5 blueText mb-0" v-if="ccofStatus === CCOF_STATUS_APPROVED">Status of your funding agreement for the current fiscal year: Active</p>
+              <p class="text-h5 blueText mb-0" v-if="ccofApplicationStatus === 'ACTIVE'">Status of your funding agreement for the current fiscal year: Active</p>
               <p class="text-h5 blueText mb-0" v-else>Status: Submitted</p>
               <v-btn dark class="blueButton mt-4" @click="viewApplication('NEW')" v-if="applicationType === 'NEW'">View Recent Application</v-btn>
               <v-btn dark class="blueButton" @click="viewApplication('RENEW')" v-else-if="applicationType === 'RENEW' && applicationStatus === 'SUBMITTED' && ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED">View Recent Application</v-btn>
@@ -365,6 +365,7 @@ export default {
     },
     isRenewEnabled() {
       console.log('can renew?: ' , this.isWithinRenewDate);
+      //renew disabled because current NEW application is in progress
       if (this.applicationType === 'NEW' && this.applicationStatus === 'DRAFT') {
         return false;
       }
