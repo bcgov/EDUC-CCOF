@@ -365,10 +365,14 @@ export default {
     },
     isRenewEnabled() {
       console.log('can renew?: ' , this.isWithinRenewDate);
-      //if (this.applicationType === 'NEW') {
-      if (this.applicationStatus === 'DRAFT') {
+      if (this.applicationType === 'NEW' && this.applicationStatus === 'DRAFT') {
         return false;
-      } else if ((this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') && this.organizationAccountNumber && this.ccofApplicationStatus === 'ACTIVE') {
+      }
+      //continue renewal application
+      else if (this.applicationStatus === 'DRAFT') {
+        return true;
+      }
+      else if ((this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') && this.organizationAccountNumber && this.ccofApplicationStatus === 'ACTIVE') {
         let isEnabled = this.isWithinRenewDate
             //&& this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
             && this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
