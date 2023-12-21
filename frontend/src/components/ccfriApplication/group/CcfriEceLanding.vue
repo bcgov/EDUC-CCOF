@@ -24,11 +24,12 @@
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
         <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12 " min-width="500px" rounded tiled exact tile
-          :ripple="false" v-for="({ facilityName, facilityId, licenseNumber, ccfriOptInStatus }, index) in navBarList"
+          :ripple="false" v-for="({ facilityName, facilityId, licenseNumber, ccfriOptInStatus, facilityAccountNumber }, index) in navBarList"
           :key="facilityId">
           <v-card-text>
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
+                <p class="text--primary " v-if="facilityAccountNumber"><strong>  {{ facilityAccountNumber }}</strong></p>
                 <p class="text--primary "><strong> Facility Name: {{ facilityName }}</strong></p>
                 <p class="text--primary"> Licence: {{ licenseNumber }}</p>
                 <strong>

@@ -7,9 +7,13 @@
       </div>
       <br>
       <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+        <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+      </div>
+    <br>
+    <div class="row pt-4 justify-center" v-if="currentFacility.facilityAccountNumber">
+        <span class="text-h5">{{currentFacility.facilityAccountNumber}}</span>
     </div>
-    <br><br>
+    <br>
       <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
       <p>
         Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
@@ -541,11 +545,12 @@ export default {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     currentFacility(){
-      if (this.getNavByCCFRIId(this.$route.params.urlGuid)){
-        return this.getNavByCCFRIId(this.$route.params.urlGuid);
-      }
-      //if viewing historical CR - getNavByCCFRID will not work because fac won't be in userProfile. Load from navBarList instead
-      else return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
+      // if (this.getNavByCCFRIId(this.$route.params.urlGuid)){
+      //   return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      // }
+      // //if viewing historical CR - getNavByCCFRID will not work because fac won't be in userProfile. Load from navBarList instead
+      // else
+      return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
     },
     fundingUrl(){
       return this.getFundingUrl(this.programYearId);
