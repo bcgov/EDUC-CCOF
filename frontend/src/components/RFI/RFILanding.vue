@@ -10,8 +10,6 @@
     </v-container>
     <v-container v-else>
 
-      {{isFormComplete}}
-
       <div class="pt-4 text-center">
         <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation
           Form</p>
