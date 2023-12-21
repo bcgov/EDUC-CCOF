@@ -192,10 +192,12 @@ export default {
   computed: {
     ...mapState('application', ['formattedProgramYear']),
     ...mapState('nmfApp', ['nmfModel']),
+    ...mapState('navBar', ['navBarList']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId']),
     ...mapGetters('app', [ 'getFundingUrl']),
     currentFacility(){
-      return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
     },
     isReadOnly(){
       return (!this.currentFacility.unlockNmf);

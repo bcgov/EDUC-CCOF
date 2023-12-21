@@ -110,7 +110,7 @@
         </v-card>
       </v-dialog>
 
-      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${renewalYearLabel}`" :disable="!isRenewEnabled ">
+      <SmallCard :class="smallCardLayout('RENEW')" :title="`Renew my funding agreement for ${renewalYearLabel}`" :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled) ">
         <template #content>
           <!-- <p class="text-h6">Renew my Funding Agreement {{ renewalYearLabel }}</p> -->
           <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
@@ -136,7 +136,7 @@
             <!-- {{ isRenewEnabled }} -->
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-if="ccofRenewStatus === RENEW_STATUS_NEW" @click="renewApplication()">Renew my Funding Agreement </v-btn>
             <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" @click="continueRenewal()">Continue Renewal</v-btn>
-            <v-btn :color='buttonColor(!isRenewEnabled)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
+            <v-btn :color='buttonColor(false)' dark v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" @click="actionRequiredOrganizationRoute()">Update your PCF</v-btn>
             <v-btn :color='buttonColor(true)' :disabled=true v-else>Renew my Funding Agreement</v-btn>
           </div>
         </template>

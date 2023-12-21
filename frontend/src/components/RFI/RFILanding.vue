@@ -1597,13 +1597,14 @@ export default {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList']),
     ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId', 'programYearId']),
-    ...mapState('navBar',['changeRequestId']),
+    ...mapState('navBar',['changeRequestId', 'navBarList']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
     ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
     currentFacility() {
-      return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
     },
     fundingUrl(){
       return this.getFundingUrl(this.programYearId);
