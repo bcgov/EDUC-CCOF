@@ -165,6 +165,7 @@ export default {
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
       return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
     },
+  },
   watch: {
     //get facilityID from here and then set it !
     '$route.params.urlGuid': {
