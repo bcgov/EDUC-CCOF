@@ -53,19 +53,19 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td >January </td>
+                    <td >January {{previousProgramYearLabel}}</td>
                     <td v-for="(item , index) in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeJan }}</td>
                   </tr>
                   <tr>
-                    <td >February </td>
+                    <td >February {{previousProgramYearLabel}}</td>
                     <td v-for="(item , index) in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeFeb }}</td>
                   </tr>
                   <tr>
-                    <td >March </td>
+                    <td >March {{previousProgramYearLabel}}</td>
                     <td v-for="(item , index)  in feeList"
                     :key="index"
                      class="text-center">${{ item.approvedFeeMar }}</td>
@@ -118,7 +118,6 @@
 
 <script>
 
-//userInfo.ccofProgramYearId;
 import { PATHS, pcfUrlGuid } from '@/utils/constants';
 import { sleep, deepCloneObject } from '@/utils/common';
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
@@ -146,7 +145,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
     ...mapGetters('navBar', ['previousPath', 'getNavByCCFRIId']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList']),
@@ -162,12 +160,11 @@ export default {
       return programYear.previousYearId;
     },
     previousProgramYearLabel(){
-      const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.userInfo.ccofProgramYearId );
+      const programYear = this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId );
 
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
       return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
-    }
-  },
+    },
   watch: {
     //get facilityID from here and then set it !
     '$route.params.urlGuid': {
