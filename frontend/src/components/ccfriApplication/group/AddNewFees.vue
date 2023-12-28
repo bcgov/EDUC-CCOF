@@ -252,11 +252,12 @@
                   <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field  :disabled="isReadOnly"
-                    outlined
-                    :rules="rules"
-                     v-model="obj.formattedStartDate"
+                      outlined
+                      :rules="rules"
+                      v-model="obj.formattedStartDate"
                       label="Select Start Date (YYYY-MM-DD)"
                       readonly v-bind="attrs"
+                      @click="updateChosenDates()"
                        v-on="on">
 
                     </v-text-field>

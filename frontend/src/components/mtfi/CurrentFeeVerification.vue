@@ -427,6 +427,7 @@
                       v-model="obj.formattedStartDate"
                         label="Select Start Date (YYYY-MM-DD)"
                         readonly v-bind="attrs"
+                        @click="updateChosenDates()"
                         v-on="on">
 
                       </v-text-field>
