@@ -8,21 +8,13 @@
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
+    <br><br>
+    <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
     <br>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Facility Name: {{ currentFacility?.facilityName }}</span>
-    </div>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Licence Number: {{ currentFacility?.licenseNumber }}</span>
-    </div>
-    <br>
-
-
 
     <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 justify-center">
       <span class="text-h6"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
     </div>
-
 
     <br><br>
     <div class="row pt-4 justify-center">
@@ -682,6 +674,7 @@ import NavButton from '@/components/util/NavButton';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
 import ApiService from '@/common/apiService';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 function dateFunction (date1, date2){
 
@@ -705,6 +698,7 @@ let model = { };
 
 export default {
   name: 'MTFI-Fees',
+  components: { NavButton, FacilityHeader },
   mixins: [alertMixin, globalMixin],
   data() {
     return {
@@ -1062,7 +1056,6 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     next();
   },
-  components: {NavButton}
 };
 </script>
 

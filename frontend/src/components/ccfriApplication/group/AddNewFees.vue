@@ -9,21 +9,18 @@
       <div class="row pt-4 justify-center">
         <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
       </div>
-    <br>
-    <div class="row pt-4 justify-center" v-if="currentFacility.facilityAccountNumber">
-        <span class="text-h5">{{currentFacility.facilityAccountNumber}}</span>
-    </div>
-    <br>
-      <p class="text-h5 text-center" style="color: rgb(0, 52, 102)"> Facility Name:  {{currentFacility.facilityName}}  </p> <br><br>
-      <p>
-        Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
-        If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
-        <strong>Enter the fee before CCFRI is applied. </strong>  <br><br>
-        <span v-if="languageYearLabel != programYearTypes.HISTORICAL"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
-        Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
-      </p>
+    <br><br>
+    <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
+    <br><br>
+    <p>
+      Enter the fees you charged a new parent for full-time care at this facility for the months below. <br><br>
+      If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
+      <strong>Enter the fee before CCFRI is applied. </strong>  <br><br>
+      <span v-if="languageYearLabel != programYearTypes.HISTORICAL"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
+      Note: Fee increases will be reviewed and additional information may be requested, which may result in increased processing times. If approved, this fee will be posted on the Ministry website. <br><br>
+    </p>
 
-      <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
+    <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image, image"></v-skeleton-loader>
 
       <div v-else>
         <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
@@ -466,6 +463,7 @@ import globalMixin from '@/mixins/globalMixin';
 import { isEqual, cloneDeep } from 'lodash';
 import NavButton from '@/components/util/NavButton';
 import ApiService from '@/common/apiService';
+import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
 
 function dateFunction (date1, date2){
 
@@ -485,7 +483,7 @@ function dateFunction (date1, date2){
 }
 
 export default {
-  components: { NavButton },
+  components: { NavButton, FacilityHeader },
   mixins: [alertMixin, globalMixin],
   data() {
     return {

@@ -38,9 +38,9 @@
           <v-card-text>
             <v-row>
               <v-col class="col-12 col-xl-10 col-lg-10 col-md-9">
-                <p class="text--primary">Facility ID: {{facilityAccountNumber}}</p>
+                <p class="text--primary"> <strong> Facility ID: {{facilityAccountNumber}} </strong></p>
                 <p class="text--primary"><strong>Facility Name: {{facilityName}}</strong></p>
-                <p class="text--primary">Licence #: {{licenseNumber}}</p>
+                <p class="text--primary"><strong>Licence Number: {{licenseNumber}}</strong></p>
               </v-col>
               <v-col v-if="ccfriOptInStatus==1" class="d-flex align-center justify-center">
                 <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]" :disabled="isReadOnly" :loading="processing"></v-checkbox>
