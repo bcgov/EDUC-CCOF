@@ -4,9 +4,9 @@
       <div class="text-center pt-4">
         <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</p>
         <p class="text-h5 font-weight-bold">Parent Fees – Request for Information</p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
+        <br>
+        <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
+
       </div>
 
       <div class="px-2 my-10">
@@ -167,10 +167,12 @@
 import alertMixin from '@/mixins/alertMixin';
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import NavButton from '@/components/util/NavButton';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 let model = { x: [],  };
 
 export default {
+  components: { NavButton, FacilityHeader },
   name: 'CcfriRequestMoreInfo',
   mixins: [alertMixin],
   data() {
@@ -259,7 +261,7 @@ export default {
       this.isProcessing = false;
     }
   },
-  components: { NavButton }
+
 };
 
 

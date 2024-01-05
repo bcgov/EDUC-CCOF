@@ -14,12 +14,8 @@
         <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation
           Form</p>
         <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID:
-          {{ currentFacility?.facilityAccountNumber }} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name:
-          {{ currentFacility?.facilityName }} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number:
-          {{ currentFacility?.licenseNumber }} </p>
+        <br>
+        <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
       </div>
 
       <div class="my-10">
@@ -1501,6 +1497,7 @@ import rules from '@/utils/rules';
 import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload';
 import NavButton from '@/components/util/NavButton';
 import {PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 let model = {
   expansionList: [],
@@ -1514,6 +1511,7 @@ let model = {
 // let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
+  components: {FacilityHeader, RFIDocumentUpload, NavButton},
   mixins: [alertMixin, globalMixin],
   name: 'CcfriRequestMoreInfo',
   data() {
@@ -1901,7 +1899,7 @@ export default {
     },
   },
 
-  components: {RFIDocumentUpload, NavButton}
+
 };
 
 

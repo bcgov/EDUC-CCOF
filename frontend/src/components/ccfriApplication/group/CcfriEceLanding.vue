@@ -29,9 +29,9 @@
           <v-card-text>
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
-                <p class="text--primary " v-if="facilityAccountNumber"><strong>  {{ facilityAccountNumber }}</strong></p>
+                <p class="text--primary " v-if="facilityAccountNumber"><strong> Facility ID: {{ facilityAccountNumber }}</strong></p>
                 <p class="text--primary "><strong> Facility Name: {{ facilityName }}</strong></p>
-                <p class="text--primary"> Licence: {{ licenseNumber }}</p>
+                <p class="text--primary"><strong>Licence Number: {{ licenseNumber }}</strong> </p>
                 <strong>
                   <p class="text--primary  ">Opt In: {{ ccfriOptInStatus == "IN" ? "IN" : ccfriOptInStatus == "1" ? "IN" :
                     ccfriOptInStatus == "0" ? "OUT" : "NOT SELECTED" }} </p>

@@ -14,6 +14,7 @@
       <br>
       <v-skeleton-loader max-height="475px" v-if="loading" :loading="loading" type="image" class="pb-6"> <br><br></v-skeleton-loader>
 
+
       <v-card v-else elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
           min-height="230"
           rounded
@@ -22,15 +23,7 @@
           :ripple="false"
           >
             <v-card-text>
-              <p class="text-h5 text--primary text-center" v-if="currentFacility.facilityAccountNumber">
-                Facility ID: {{currentFacility.facilityAccountNumber}}
-              </p>
-              <p class="text-h5 text--primary text-center">
-                {{currentFacility.facilityName}}
-              </p>
-              <p class="text-h5 text--primary text-center" v-if="currentFacility.licenseNumber">
-                Licence Number: {{currentFacility.licenseNumber}}
-              </p>
+              <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
               <br>
               <!--get current year from CCOF year id -NOT first in array-->
               <p class="text-h6 text--primary text-center">
@@ -116,17 +109,19 @@
 
 </template>
 
+
 <script>
 
 import { PATHS, pcfUrlGuid } from '@/utils/constants';
-import { sleep, deepCloneObject } from '@/utils/common';
+import { deepCloneObject } from '@/utils/common';
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import ApiService from '@/common/apiService';
+import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
 
 export default {
-  components: { NavButton },
+  components: { NavButton, FacilityHeader },
   mixins: [alertMixin],
   data() {
     return {

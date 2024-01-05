@@ -9,12 +9,14 @@
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
     <br>
-    <div class="row pt-4 justify-center">
+    <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
+    <br>
+    <!-- <div class="row pt-4 justify-center">
       <span class="text-h5">Facility Name: {{ currentFacility?.facilityName }}</span>
     </div>
     <div class="row pt-4 justify-center">
       <span class="text-h5">Licence Number: {{ currentFacility?.licenseNumber }}</span>
-    </div>
+    </div> -->
     <br>
 
 
@@ -682,6 +684,7 @@ import NavButton from '@/components/util/NavButton';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
 import ApiService from '@/common/apiService';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 function dateFunction (date1, date2){
 
@@ -705,6 +708,7 @@ let model = { };
 
 export default {
   name: 'MTFI-Fees',
+  components: { NavButton, FacilityHeader },
   mixins: [alertMixin, globalMixin],
   data() {
     return {
@@ -1062,7 +1066,6 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     next();
   },
-  components: {NavButton}
 };
 </script>
 
