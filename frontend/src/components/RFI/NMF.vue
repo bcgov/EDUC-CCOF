@@ -4,14 +4,14 @@
       <div class="text-center pt-4">
         <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</p>
         <p class="text-h5 font-weight-bold">Parent Fees – Request for Information</p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID: {{currentFacility?.facilityAccountNumber}} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name: {{currentFacility?.facilityName}} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number: {{currentFacility?.licenseNumber}} </p>
+        <br>
+        <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
+
       </div>
 
       <div class="px-2 my-10">
         <p>
-          As outlined in the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>
+          As outlined in the <a :href="fundingUrl"  target="_blank">Funding Guidelines</a>
           , applications by New, New-to-CCFRI, and Modified Facilities
           will be assessed based on whether the facility’s parent fees are comparable to others in their region.
           To determine if this policy applies to your facility, please provide more information.
@@ -141,7 +141,7 @@
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
               4. Please tell us anything else you’d like us to know about how your facility’s business case
-              supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>.
+              supports setting fees higher than the Affordability Benchmarks outlined in the 2023/24 <a :href="fundingUrl"  target="_blank">Funding Guidelines</a>
             </p>
             <div class="pt-6">
               <v-textarea
@@ -167,10 +167,12 @@
 import alertMixin from '@/mixins/alertMixin';
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import NavButton from '@/components/util/NavButton';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 let model = { x: [],  };
 
 export default {
+  components: { NavButton, FacilityHeader },
   name: 'CcfriRequestMoreInfo',
   mixins: [alertMixin],
   data() {
@@ -192,12 +194,18 @@ export default {
   computed: {
     ...mapState('application', ['formattedProgramYear']),
     ...mapState('nmfApp', ['nmfModel']),
+    ...mapState('navBar', ['navBarList']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId']),
+    ...mapGetters('app', [ 'getFundingUrl']),
     currentFacility(){
-      return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
     },
     isReadOnly(){
       return (!this.currentFacility.unlockNmf);
+    },
+    fundingUrl(){
+      return this.getFundingUrl(this.programYearId);
     },
   },
   watch: {
@@ -253,7 +261,7 @@ export default {
       this.isProcessing = false;
     }
   },
-  components: { NavButton }
+
 };
 
 

@@ -38,9 +38,9 @@
           <v-card-text>
             <v-row>
               <v-col class="col-12 col-xl-10 col-lg-10 col-md-9">
-                <p class="text--primary">Facility ID: {{facilityAccountNumber}}</p>
+                <p class="text--primary"> <strong> Facility ID: {{facilityAccountNumber}} </strong></p>
                 <p class="text--primary"><strong>Facility Name: {{facilityName}}</strong></p>
-                <p class="text--primary">Licence #: {{licenseNumber}}</p>
+                <p class="text--primary"><strong>Licence Number: {{licenseNumber}}</strong></p>
               </v-col>
               <v-col v-if="ccfriOptInStatus==1" class="d-flex align-center justify-center">
                 <v-checkbox style="transform: scale(1.5)" v-model="checkbox[index]" :disabled="isReadOnly" :loading="processing"></v-checkbox>
@@ -66,7 +66,6 @@ import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
-import { isFacilityAvailable } from '@/utils/common';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;
@@ -96,7 +95,7 @@ export default {
     ...mapState('application', ['programYearId', 'applicationId', 'isRenewal']),
     ...mapState('organization', ['organizationId', 'organizationName']),
     ...mapState('navBar', ['userProfileList','navBarList']),
-    ...mapState('reportChanges', ['changeActionId','mtfiFacilities', 'userProfileChangeRequests']),
+    ...mapState('reportChanges', ['changeActionId','mtfiFacilities']),
     ...mapGetters('navBar', ['previousPath']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
 
@@ -108,10 +107,7 @@ export default {
     },
     // CCFRI-2584 - All facilties displayed in the PCF should be shown on the MTFI Select Facility page -> same logic as filterNavBar() in navBar.js
     filteredUserProfileList() {
-      if (this.isRenewal) {
-        return this.userProfileList.filter(el => el.facilityAccountNumber && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
-      }
-      return this.userProfileList.filter(el => (!el.changeRequestId || el.facilityAccountNumber) && (isFacilityAvailable(el) || this.isMtfiCreated(el)));
+      return this.userProfileList.filter(el => el.facilityAccountNumber && (el.facilityStatus || this.isMtfiCreated(el)));
     }
   },
   async beforeMount() {
@@ -130,7 +126,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList', 'addToNavBar','removeChangeMap']),
+    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList','removeChangeMap']),
     ...mapActions('reportChanges', ['createChangeRequestMTFI', 'deleteChangeRequestMTFI', 'getChangeRequest']),
     ...mapActions('navBar',['loadChangeRequest']),
     isFacilityDisabled(ccfriOptInStatus, ccfriStatus)  {

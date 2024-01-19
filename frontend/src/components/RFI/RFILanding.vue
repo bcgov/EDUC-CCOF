@@ -14,20 +14,15 @@
         <p class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation
           Form</p>
         <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityAccountNumber"> Facility ID:
-          {{ currentFacility?.facilityAccountNumber }} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.facilityName"> Facility Name:
-          {{ currentFacility?.facilityName }} </p>
-        <p class="text-h5 blueText" v-if="currentFacility?.licenseNumber"> Licence Number:
-          {{ currentFacility?.licenseNumber }} </p>
+        <br>
+        <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
       </div>
 
       <div class="my-10">
         <p>
-          You have entered a parent fee above the 2023/24 fee increase limit.
+          You have entered a parent fee above the {{ formattedProgramYear }} fee increase limit.
           Fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy.
-          See the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">CCFRI
-          Funding Guidelines</a> for more information.
+          See the <a :href="fundingUrl"  target="_blank">Funding Guidelines</a> for more information.
         </p>
         <p>
           Complete this section to provide more information about your fee increase, or click “Back” to return to the
@@ -49,8 +44,7 @@
           </div>
           <br>
           <p class="text-h6 text--primary px-md-10 px-7 py-0 my-0">
-            As outlined in the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E"
-                                  target="_blank">Funding Guidelines</a>, this exception applies to sudden and
+            As outlined in the <a :href="fundingUrl"  target="_blank">Funding Guidelines</a>, this exception applies to sudden and
             unexpected expenses that:
           </p>
           <div class="px-md-14 px-7 text--primary">
@@ -127,8 +121,7 @@
                 class="mr-5"
               > mdi-information
               </v-icon>
-              <strong>Note: See the <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E"
-                                       target="_blank">Funding Guidelines</a> for the list of eligible expenses</strong>
+              <strong>Note: See the <a :href="fundingUrl"  target="_blank">Funding Guidelines</a> for the list of eligible expenses</strong>
             </v-banner>
             <div class="px-md-12 px-7">
 
@@ -474,27 +467,27 @@
             </v-radio-group>
 
             <div v-if="model.feeIncreaseDueToWage == 1">
-              <br>
-
-              <v-radio-group
-                class="radio-label"
-                :disabled="isReadOnly"
-                :rules="rules.required"
-                required
-                row
-                v-model="model.increaseInWriting"
-                label="Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?"
-              >
-                <v-radio
-                  label="Yes"
-                  :value="1"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  :value="0"
-                ></v-radio>
-              </v-radio-group>
-
+              <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
+                <br>
+                <v-radio-group
+                  class="radio-label"
+                  :disabled="isReadOnly"
+                  :rules="rules.required"
+                  required
+                  row
+                  v-model="model.increaseInWriting"
+                  label="Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?"
+                >
+                  <v-radio
+                    label="Yes"
+                    :value="1"
+                  ></v-radio>
+                  <v-radio
+                    label="No"
+                    :value="0"
+                  ></v-radio>
+                </v-radio-group>
+              </div>
               <br>
 
               <v-radio-group
@@ -1503,6 +1496,8 @@ import {isEqual} from 'lodash';
 import rules from '@/utils/rules';
 import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload';
 import NavButton from '@/components/util/NavButton';
+import {PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 let model = {
   expansionList: [],
@@ -1516,6 +1511,7 @@ let model = {
 // let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
+  components: {FacilityHeader, RFIDocumentUpload, NavButton},
   mixins: [alertMixin, globalMixin],
   name: 'CcfriRequestMoreInfo',
   data() {
@@ -1598,14 +1594,24 @@ export default {
   computed: {
     ...mapState('rfiApp', ['rfiModel', 'loadedModel']),
     ...mapState('app', ['programYearList']),
-    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId']),
-    ...mapState('navBar',['changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
+    ...mapState('application', ['formattedProgramYear', 'applicationStatus', 'applicationId', 'programYearId']),
+    ...mapState('navBar',['changeRequestId', 'navBarList']),
     ...mapGetters('supportingDocumentUpload', ['getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'getNavByCCFRIId','isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
+    ...mapGetters('app', [ 'getFundingUrl', 'getLanguageYearLabel']),
     currentFacility() {
-      return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
+      return this.navBarList.find(el => el.ccfriApplicationId == this.$route.params.urlGuid );
+    },
+    fundingUrl(){
+      return this.getFundingUrl(this.programYearId);
+    },
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
@@ -1893,7 +1899,7 @@ export default {
     },
   },
 
-  components: {RFIDocumentUpload, NavButton}
+
 };
 
 

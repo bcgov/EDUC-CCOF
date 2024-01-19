@@ -60,7 +60,7 @@
           <!-- Add height="100%" to div directly below to have the buttons line up with each other on desktop.-->
           <v-card flat class="d-flex flex-column" >
             <v-card-title class="gov-header">
-              <h4 id="login_text">Log in My ChildCareBC Services with your primary Business BCeID</h4>
+              <h4 id="login_text">Log in to My ChildCareBC Services with your primary Business BCeID</h4>
             </v-card-title>
             <v-card-text id="login_descriptor">
               Enter your user ID and password to continue.

@@ -242,6 +242,7 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_ecewe_selecttheapplicablesector', front: 'applicableSector' },
+  { back: 'ccof_public_sector_employer', front: 'publicSector' }, //null,
 ];
 
 const ECEWEFacilityMappings = [
@@ -342,11 +343,13 @@ const ProgramYearMappings = [
   { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
   { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
+  { back: 'ccof_ccfri_funding_guidelines', front: 'fundingGuidelinesUrl' },
 ];
 
 const MessageMappings = [
   { back: 'activityid', front: 'messageId' },
   { back: 'createdon', front: 'dateReceived' },
+  { back: 'ccof_program_year', front: 'programYearValue'},
   { back: 'description', front: 'messageContent' },
   { back: 'lastopenedtime', front: 'lastOpenedTime' },
   { back: 'subject', front: 'subject' },
@@ -398,6 +401,7 @@ const ApplicationSummaryMappings = [
   { back: 'ccof_ecewe_confirmation', front: 'confirmation' }, //null,
   { back: 'ccof_ecewe_employeeunion', front: 'belongsToUnion' }, //0,
   { back: 'ccof_ecewe_selecttheapplicablefundingmodel', front: 'fundingModel' }, //null,
+  { back: 'ccof_public_sector_employer', front: 'publicSector' }, //null,
   // Unlock Details
   { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' }, //null,
   { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' }, //null,

@@ -321,7 +321,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res) {
 
 async function getECEWEApplication(req, res) {
   try {
-    let operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
+    let operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_public_sector_employer,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
     let eceweApp = await getOperation(operation);
     eceweApp = new MappableObjectForFront(eceweApp, ECEWEApplicationMappings);
     let forFrontFacilities = [];
@@ -705,16 +705,37 @@ async function getMTFIChangeData(changeActionId) {
   });
   return mtfi;
 }
+//and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
+async function getChangeRequestsFromApplicationId(applicationIds){
 
-async function getChangeRequestsFromApplicationId(applicationId){
+  let str = '[';
+
+  const regex = new RegExp('([^,]+)' , 'g');
+  const found = applicationIds.match(regex);
+  found.forEach((app, index) => {
+    str = str + `'${app}'`;
+    if (index != found.length -1 ){
+      str = str + ',';
+    }
+    else{
+      str = str + ']';
+    }
+  });
+
+  log.info(str);
+
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
+    //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
+    // log.info('ALL CHANGE REQZ');
+    // log.info(changeRequests);
+
     let payload = [];
 
-    log.verbose(changeRequests);
+    //log.verbose(changeRequests);
     await Promise.all(changeRequests.map(async (request) => {
 
       let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
@@ -735,11 +756,11 @@ async function getChangeRequestsFromApplicationId(applicationId){
       payload.push(req);
     }));
 
-    log.info('final payload', payload);
+    //log.info('final payload', payload);
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+    throw e;
   }
 
 }
@@ -758,6 +779,30 @@ async function getChangeRequest(req, res){
 
 }
 
+async function deletePcfApplication(req, res){
+  try {
+    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
+    let application = await getOperation(operation);
+
+    //loop thru to grab facility ID's and delete all of them
+    await Promise.all(application['ccof_application_basefunding_Application'].map(async (facility) => {
+      await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
+      //log.info(response);
+    }));
+
+    //delete the application
+    await deleteOperationWithObjectId('ccof_applications', req.params.applicationId);
+
+    //and delete the org. We must delete the org otherwise the user will be linked to multiple orgs in dynamics
+    await deleteOperationWithObjectId('accounts', application['_ccof_organization_value']);
+
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error('An error occurred while deleting PCF', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -772,5 +817,6 @@ module.exports = {
   getChangeRequest,
   patchCCFRIApplication,
   deleteCCFRIApplication,
-  printPdf
+  printPdf,
+  deletePcfApplication
 };

@@ -172,7 +172,7 @@ export default {
 
   computed: {
     ...mapGetters('reportChanges', ['getUploadedDocuments']),
-    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest','userProfileChangeRequests']),
+    ...mapState('reportChanges', ['uploadedDocuments', 'loadedChangeRequest', 'changeRequestMap']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('application', ['applicationStatus', 'applicationId','formattedProgramYear']),
     ...mapState('navBar', ['changeRequestId']),
@@ -191,7 +191,8 @@ export default {
           return false;
         }
       }
-      return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
+      let currentCR = this.changeRequestMap.get(this.$route.params?.changeRecGuid);
+      return currentCR?.externalStatus !== 'INCOMPLETE';
     },
   },
 

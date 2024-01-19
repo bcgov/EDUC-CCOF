@@ -33,11 +33,13 @@ function mapFacilityObjectForBack(data) {
   if (facilityForBack.ccof_facilitystartdate) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
   }
-
+  if (facilityForBack.ccof_licensestartdate) {
+    facilityForBack.ccof_licensestartdate = facilityForBack.ccof_licensestartdate + 'T12:00:00-07:00';
+  }
   if (data.hasReceivedFunding === 'no') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
-  } else if (data.hasReceivedFunding === 'yes') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
+  } else if (data.hasReceivedFunding === 'yes') {
+    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
   } else if (data.hasReceivedFunding === 'yesFacility') {
     facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000002;
   } else if (data.hasReceivedFunding) {
@@ -60,9 +62,9 @@ function mapFacilityObjectForFront(data) {
   let obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
 
   //TODO: map this if it is returned from dynamics
-  if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
+  if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
     obj.hasReceivedFunding = 'no';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
+  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
     obj.hasReceivedFunding = 'yes';
   } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000002) {
     obj.hasReceivedFunding = 'yesFacility';
@@ -164,6 +166,17 @@ async function getFacilityChildCareTypes(req, res){
     ccfriData.dates = await getCCFRIClosureDates(req.params.ccfriId);
 
     return res.status(HttpStatus.OK).json(ccfriData);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
+//a wrapper fn as getCCFRIClosureDates does not take in a req/res
+async function returnCCFRIClosureDates(req, res){
+  try {
+    const dateData = {dates: await getCCFRIClosureDates(req.params.ccfriId)};
+    return res.status(HttpStatus.OK).json(dateData);
+
   } catch (e) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
@@ -379,9 +392,10 @@ async function getApprovedParentFees(req, res) {
         }
       );
     }); //end for each
+
     const retVal = {
       facilityId: facilityId,
-      childCareTypes: childCareTypes
+      childCareTypes: childCareTypes,
     };
     return res.status(200).json(retVal);
   } catch (e) {
@@ -402,6 +416,7 @@ module.exports = {
   updateFacilityLicenseType,
   getCCFRIClosureDates,
   mapFacilityObjectForBack,
-  getApprovedParentFees
+  getApprovedParentFees,
+  returnCCFRIClosureDates
 };
 

@@ -3,8 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { getRFIMedian, getRFIApplication, createRFIApplication, updateRFIApplication} = require('../components/rfiApplication');
-const { upsertParentFees, updateCCFRIApplication, deleteCCFRIApplication, renewCCOFApplication, getApplicationSummary, getChangeRequest } = require('../components/application');
+const { deleteRfiApplication, getRFIMedian, getRFIApplication, createRFIApplication, updateRFIApplication} = require('../components/rfiApplication');
+const { upsertParentFees, updateCCFRIApplication, deleteCCFRIApplication, renewCCOFApplication, getApplicationSummary, getChangeRequest, deletePcfApplication } = require('../components/application');
 const { patchCCFRIApplication,getECEWEApplication, updateECEWEApplication, updateECEWEFacilityApplication, getCCFRIApplication, getDeclaration, submitApplication,updateStatusForApplicationComponents} = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const { param, validationResult } = require('express-validator');
@@ -46,6 +46,12 @@ router.get('/ccfri/:ccfriId/median', passport.authenticate('jwt', {session: fals
     return getRFIMedian(req, res);
   });
 
+router.delete('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
+    validationResult(req).throw();
+    return deleteRfiApplication(req, res);
+  });
+
 router.patch('/ccfri', passport.authenticate('jwt', {session: false}),isValidBackendToken, [],  (req, res) => {
   //validationResult(req).throw();
   //console.log(req.bpdy);
@@ -57,9 +63,9 @@ router.patch('/ccfri/:ccfriId/', passport.authenticate('jwt', {session: false}),
   return patchCCFRIApplication(req, res);
 });
 
-router.delete('/ccfri/:ccfriId/', passport.authenticate('jwt', {session: false}),isValidBackendToken, 
+router.delete('/ccfri/:ccfriId/', passport.authenticate('jwt', {session: false}),isValidBackendToken,
   [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()],  (req, res) => {
-  return deleteCCFRIApplication(req, res);
+    return deleteCCFRIApplication(req, res);
 });
 
 router.get('/ccfri/:ccfriId/nmf', passport.authenticate('jwt', {session: false}),isValidBackendToken,
@@ -136,6 +142,14 @@ router.get('/changeRequest/:applicationId', passport.authenticate('jwt', {sessio
   param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
   return getChangeRequest(req, res);
 });
+
+
+/* DELETE an existing PCF -- new PCF ONLY */
+
+router.delete('/:applicationId/', passport.authenticate('jwt', {session: false}),isValidBackendToken,
+  [param('applicationId', 'URL param: [applicationId] is required').not().isEmpty()],  (req, res) => {
+    return deletePcfApplication(req, res);
+  });
 
 
 module.exports = router;

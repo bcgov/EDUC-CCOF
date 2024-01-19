@@ -124,7 +124,7 @@ export default {
           state.model.externalStatus = 'SUBMITTED';
           commit('model', state.model);
           dispatch('reportChanges/updateExternalStatusInChangeRequestStore', {changeRequestId: changeRequestId, newStatus: 2}, { root: true });
-          dispatch('reportChanges/updateExternalStatusInUserProfileChangeRequests', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
+          dispatch('reportChanges/updateExternalStatusInChangeRequestMap', {changeRequestId: changeRequestId, newStatus: 'SUBMITTED'}, { root: true });
           return response;
         }
         else{
@@ -141,9 +141,16 @@ export default {
     },
     async loadSummary({ commit, rootState }, changeRecGuid = undefined) {
       checkSession();
+
+      let appID = rootState?.application?.applicationMap?.get(rootState?.application?.programYearId)?.applicationId;
+
+      if (!appID){
+        appID = rootState.application.applicationId;
+      }
       try {
         commit('isMainLoading', true);
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + rootState.application.applicationId)).data;
+        //get application ID from the appMap so the page doesn't break when viewing historical CR records.
+        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + appID)).data;
         let summaryModel = {
           organization: undefined,
           application: payload.application,
@@ -164,7 +171,7 @@ export default {
         await commit('isSummaryLoading', isSummaryLoading );
 
         //new app only?
-        if (!rootState.app.isRenewal && payload.application?.organizationId) {
+        if (!rootState.application.isRenewal && payload.application?.organizationId) {
           summaryModel.organization = (await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)).data;
           commit('summaryModel', summaryModel);
           summaryModel.ecewe = (await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)).data;
@@ -264,8 +271,8 @@ export default {
         let changeRequestTypes = [];
         payload?.changeActions?.forEach(item => {
           if (!changeRequestTypes.includes(item.changeType)) {
-            changeRequestTypes.push(item.changeType)
-          };
+            changeRequestTypes.push(item.changeType);
+          }
         });
 
         // Load Declaration model
@@ -277,7 +284,7 @@ export default {
           enabledDeclarationB: payload?.enabledDeclarationB,
           declarationAStatus: payload?.declarationAStatus,
           declarationBStatus: payload?.declarationBStatus
-        }
+        };
         commit('model', declarationModel);
 
         // Load Summary model
@@ -289,18 +296,18 @@ export default {
         commit('summaryModel', summaryModel);
         await Promise.all(changeRequestTypes.map(async changeType => {
           switch (changeType) {
-            case CHANGE_REQUEST_TYPES.NEW_FACILITY:
-              await dispatch('loadChangeRequestSummaryForAddNewFacility', payload);
-              break;
-            case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
-              await dispatch('loadChangeRequestSummaryForMtfi', payload);
-              break;
-            case CHANGE_REQUEST_TYPES.PDF_CHANGE:
-              await dispatch('loadChangeRequestSummaryForChangeNotiForm', payload);
-              break;
-            default:
-              throw `Not found change request type - ${changeType}`;
-            }
+          case CHANGE_REQUEST_TYPES.NEW_FACILITY:
+            await dispatch('loadChangeRequestSummaryForAddNewFacility', payload);
+            break;
+          case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
+            await dispatch('loadChangeRequestSummaryForMtfi', payload);
+            break;
+          case CHANGE_REQUEST_TYPES.PDF_CHANGE:
+            await dispatch('loadChangeRequestSummaryForChangeNotiForm', payload);
+            break;
+          default:
+            throw `Not found change request type - ${changeType}`;
+          }
         }))
         commit('isLoadingComplete', true );
       } catch (error) {
@@ -343,8 +350,8 @@ export default {
             mtfiFacility.facilityName = userProfileListFacility.facilityName;
             mtfiFacility.facilityAccountNumber = userProfileListFacility.facilityAccountNumber;
             mtfiFacility.licenseNumber = userProfileListFacility.licenseNumber;
-            
-            mtfiFacility.oldCcfriApplicationId = userProfileListFacility.ccfriApplicationId;
+
+            mtfiFacility.oldCcfriApplicationId = rootState?.application?.applicationMap?.get(rootState?.application?.programYearId)?.facilityList?.find(el => el.facilityId == mtfiFacility.facilityId).ccfriApplicationId;
             mtfiFacility.oldCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.oldCcfriApplicationId}`)).data;
             mtfiFacility.oldCcfri.childCareTypes = mtfiFacility.oldCcfri?.childCareTypes?.filter(item => item.programYearId === rootState.application.programYearId);
             mtfiFacility.oldCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
@@ -352,7 +359,7 @@ export default {
             mtfiFacility.newCcfri = (await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.ccfriApplicationId}`)).data;
             mtfiFacility.newCcfri.childCareTypes = mtfiFacility.newCcfri?.childCareTypes?.filter(item => item.programYearId === rootState.application.programYearId);
             mtfiFacility.newCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
-            
+
             if (mtfiFacility.hasRfi || mtfiFacility.unlockRfi)
               mtfiFacility.rfiApp = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)).data;
             isSummaryLoading.splice(index, 1, false);

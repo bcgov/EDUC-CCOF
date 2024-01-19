@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form">
+  <v-form ref="isValidForm" v-model="isValidForm">
 
     <v-container>
       <div class="row pt-4 justify-center">
@@ -27,7 +27,7 @@
             </v-icon>
           </span>
           <span>
-            <strong>Note:</strong> Please read and understand the full eligibility requirements in the <u>ECE-WE Funding Guidelines</u>.  All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
+            <strong>Note:</strong> Please read and understand the full eligibility requirements in the <u><a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/wage-enhancement"  target="_blank"> ECE-WE Funding Guidelines</a></u>.  All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
           </span>
         </v-alert>
       </v-row>
@@ -104,7 +104,47 @@
           </v-container>
         </v-card>
       </v-row>
-      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" class="justify-center">
+
+      <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
+      <v-row v-if=" model.optInECEWE == 1 || isLoading" class="justify-center">
+        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+          <v-container>
+            <v-row v-if="isLoading">
+              <v-col>
+                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
+                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+              </v-col>
+            </v-row>
+            <v-row v-if="!isLoading" class="justify-left">
+              <v-col align-self="start">
+                <v-radio-group
+                  v-model="model.publicSector"
+                  :disabled="isReadOnly()"
+                  :rules="rules.required">
+                  <template v-slot:label>
+                    <div class="radio-label text-left">Are you a public sector employer, as defined in the <u><i>Public Sector Employers Act?</i></u></div>
+                  </template>
+                  <div class="flex-left">
+                  <v-radio class="pt-2 pr-8"
+                    label="Yes"
+                    :value="1"
+                ></v-radio>
+                <v-radio
+                    class="pt-1"
+                    label="No"
+                    :value="0"
+                    @click="model.applicableSector=null"
+                  ></v-radio>
+                </div>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-row>
+    </div>
+
+      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1 && model.publicSector == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) || isLoading" class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -120,7 +160,7 @@
                   :disabled="isReadOnly()"
                   :rules="rules.required">
                   <template v-slot:label>
-                    <div class="radio-label text-left">Select the sector:</div>
+                    <div class="radio-label text-left">Select the applicable sector:</div>
                   </template>
                   <div class="flex-left">
                   <v-radio class="pt-2 pr-8"
@@ -139,7 +179,7 @@
               </v-col>
             </v-row>
           </v-container>
-          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading" class="mx-2 mb-4 justify-center">
+          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1 && model.publicSector == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (model.applicableSector == 100000001 &&  model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) || isLoading" class="mx-2 mb-4 justify-center">
             <v-row v-if="!isLoading" >
               <v-col class="py-0">
                 <v-card-title class="py-0 noticeInfo">
@@ -292,7 +332,7 @@
 
 <script>
 
-import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
+import { PATHS, changeUrl, pcfUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -308,24 +348,19 @@ export default {
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
       isProcessing: false, // flag to UI if screen is saving/processing data or not.
+      isValidForm : false,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted','eceweModel', 'loadedFacilities','optinECEWEChangeRequestReadonly', 'belongsToUnionChangeRequestReadonly']),
     ...mapState('app', ['fundingModelTypeList']),
+    ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
-    ...mapState('reportChanges', ['loadedChangeRequest','userProfileChangeRequests']),
+    ...mapState('reportChanges', ['loadedChangeRequest']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
-    filteredNavBarList() {
-      if (this.isChangeRequest) {
-        return this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        return this.navBarList.filter(el => !el.changeRequestId);
-      }
-    },
     filteredECEWEFacilityList() {
       if (this.isChangeRequest) {
         return this.$store.state.eceweApp.facilities?.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
@@ -333,16 +368,21 @@ export default {
         return this.$store.state.eceweApp.facilities?.filter(el => !el.changeRequestId);
       }
     },
+    fundingUrl(){
+      return this.getFundingUrl(this.programYearId);
+    },
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
     facilities: {
       get() { return this.filteredECEWEFacilityList; },
       set(value) { this.$store.commit('eceweApp/setFacilities', value); }
     },
     enableButtons() {
-      return (this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && (this.model.fundingModel === this.fundingModelTypeList[1].id || this.model.fundingModel === this.fundingModelTypeList[2].id) && this.model.confirmation === 1)
-            ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000000 && this.model.fundingModel === this.fundingModelTypeList[0].id)
-            ||(this.model.belongsToUnion === 1 && this.model.applicableSector == 100000001 && this.model.confirmation === 1)
-            ||this.model.belongsToUnion === 0
-            ||this.model.optInECEWE === 0;
+      return this.isValidForm;
     },
   },
   async mounted() {
@@ -353,7 +393,7 @@ export default {
       let response = await this.loadData();
       if (response) {
         this.setIsStarted(true);
-        this.initECEWEFacilities(this.filteredNavBarList);
+        this.initECEWEFacilities(this.navBarList);
         let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
         this.setLoadedFacilities(copyFacilities);
         this.model = {...this.eceweModel};
@@ -372,7 +412,7 @@ export default {
   methods: {
     ...mapActions('eceweApp', ['loadECEWE', 'saveECEWE', 'initECEWEFacilities', 'saveECEWEFacilities', 'loadECEWEModelFromChangeRequest']),
     ...mapMutations('eceweApp', ['setIsStarted', 'setEceweModel', 'setApplicationId', 'setFundingModelTypes', 'setLoadedFacilities']),
-    ...mapMutations('application', ['setIsEceweComplete']),
+    ...mapMutations('application', ['setIsEceweCompleteInMap', 'setIsEceweComplete']),
     ...mapMutations('reportChanges', ['setCRIsEceweComplete']),
     ...mapActions('reportChanges', ['getChangeRequest']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
@@ -413,7 +453,7 @@ export default {
       }
     },
     validateForm() {
-      this.$refs.form?.validate();
+      this.$refs.isValidForm?.validate();
     },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
@@ -467,14 +507,7 @@ export default {
     optOutFacilities() {
       //this was modified by JB to try and fix bugs with the checkmarks.
       //instead of running map - I update the facility and nav bar with the opt out status.
-
-      // this.facilities = this.facilities.map(facility => {
-      //   if (facility.optInOrOut != 0) {
-      //     facility.optInOrOut = 0;
-      //   }
-      //   return facility;
-      // });
-      this.filteredNavBarList.forEach(facility => {
+      this.navBarList.forEach(facility => {
         facility.eceweOptInStatus = 0;
       });
       this.facilities.forEach(facility => {
@@ -482,6 +515,10 @@ export default {
       });
     },
     async saveECEWEApplication(showConfirmation = true) {
+      if(this.isReadOnly()){
+        return;
+      }
+
       this.isProcessing = true;
       try {
         this.updateQuestions();
@@ -504,8 +541,10 @@ export default {
         }
         if (this.isChangeRequest) {
           this.setCRIsEceweComplete({changeRequestId: this.changeRequestId, isComplete: this.enableButtons});
-        } else {
+        }
+        else {
           this.setIsEceweComplete(this.enableButtons);
+          this.setIsEceweCompleteInMap(this.enableButtons);
         }
         this.forceNavBarRefresh();
 
@@ -529,6 +568,7 @@ export default {
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.');
+        console.log(error);
       } finally {
         this.isProcessing = false;
       }

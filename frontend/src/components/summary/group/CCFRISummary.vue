@@ -9,7 +9,7 @@
       </h4>
     </v-expansion-panel-header>
     <v-expansion-panel-content eager  >
-    <v-row v-if="!ccfri || ccfri.ccfriOptInStatus === 0" >
+    <v-row v-if="!ccfri || ccfri?.ccfriOptInStatus === 0" >
       <v-col cols="12" >
           <span  cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
           <v-text-field  cols="12" placeholder="Required" class="summary-value" :value="this.getOptInOptOut(ccfri.ccfriOptInStatus)" dense flat solo hide-details readonly :rules="rules.required" >Opt-Out</v-text-field>
@@ -213,7 +213,7 @@ export default {
 
       //if the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
       //this checks for all licenses available for the facility, and displays what is missing to the user.
-      if (this.ccfri?.childCareTypes.length < this.ccfri?.childCareLicenses?.length){
+      if (this.ccfri?.childCareTypes?.length < this.ccfri?.childCareLicenses?.length){
         let childCareTypesArr = [];
 
         const findChildCareTypes = ((yearToSearch, checkForMissingPrevFees = false) => {

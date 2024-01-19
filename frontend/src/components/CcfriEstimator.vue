@@ -1592,6 +1592,11 @@ div.v-select__selection.v-select__selection--comma {
     transform: scale(1);
   }
 }
+
+.v-card {
+  overflow-wrap: inherit;
+  overflow: hidden;
+}
 div.ma-1.fill-height.v-card.v-card--link.v-sheet.theme--light {
     border: 1px solid grey !important;
 }
@@ -1610,6 +1615,10 @@ div.ma-1.fill-height.v-card.v-card--disabled.v-sheet.theme--light {
 }
 .v-data-footer__select {
   text-align: left !important;
+}
+
+.v-text-field__details {
+  overflow: visible;
 }
 
 div.v-slide-group__prev.v-slide-group__prev--disabled span i  {

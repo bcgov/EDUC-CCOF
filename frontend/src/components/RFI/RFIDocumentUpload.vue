@@ -120,7 +120,6 @@ export default {
 
   computed: {
     ...mapState('application', ['applicationStatus']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapState('navBar',['changeRequestId', 'changeType']),
     ...mapGetters('navBar',['isChangeRequest']),
     ...mapGetters('reportChanges',['changeRequestStatus']),

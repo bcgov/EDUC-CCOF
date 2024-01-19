@@ -14,10 +14,10 @@
           <ul>
 
             <li>Your facility licence</li>
-            <li>Services outlined in Schedule in Schedule A of your Child Care Operating Funding Agreement</li>
+            <li>Services outlined in Schedule A of your Child Care Operating Funding Agreement</li>
           </ul>
           <br>
-          To ensure accurate payments, please notify us of any changes <b>before</b> submitting an enrolment report of a monthly ECE report.
+          To ensure accurate payments, please notify us of any changes <b>before</b> submitting an Enrolment report or a monthly ECE report.
         </p>
           <v-card outlined class="mx-10">
 
@@ -57,7 +57,6 @@
   </template>
 
 <script>
-import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { PATHS } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
@@ -80,7 +79,7 @@ export default {
       this.$router.push(PATHS.ROOT.HOME);
     },
     next(){
-        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
     },
   },
   components: { NavButton}

@@ -69,6 +69,7 @@ export default {
           commit('application/setApplicationId', response.data?.applicationId, { root: true });
           commit('application/setApplicationStatus', response.data?.applicationStatus, { root: true });
           commit('application/setApplicationType', response.data?.applicationType, { root: true });
+          commit('application/setCcofApplicationStatus', "NEW", { root: true });
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
@@ -76,12 +77,14 @@ export default {
         }
       }
     },
-    async renewApplication({ commit, state, rootState  }) {
+    async renewApplication({ commit, state, rootState, rootGetters  }) {
       checkSession();
-
+      let nextApp = rootState.app.programYearList?.list?.find(el => el.previousYearId == rootGetters['application/latestProgramYearId']);
+      console.log('nextAPPP');
+      console.log(nextApp);
       let payload = {
         providerType: state.organizationProviderType,
-        programYearId: rootState.app.programYearList.renewal.programYearId,
+        programYearId: nextApp?.programYearId,
         organizationId: state.organizationId,
       };
       console.log('renewApplication, payload', payload);

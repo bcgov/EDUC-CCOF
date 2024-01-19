@@ -1,8 +1,30 @@
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
-import { deepCloneObject } from '../../utils/common';
+import { deepCloneObject, sleep } from '../../utils/common';
 import { isEqual } from 'lodash';
+
+function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, childCareTypes){
+
+  if (currentYearLanguageLabel != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL){
+    const ooscK = childCareCategoryList?.find(el => el.ccof_name=="OOSC-K");
+    const ooscG = childCareCategoryList?.find(el => el.ccof_name=="OOSC-G");
+
+    //OOSC and OOSK always exist together - so we just have to find one of them in the array
+    let schoolAgeFound = childCareTypes.find(el => el.childCareCategoryId == ooscK.ccof_childcare_categoryid);
+    if (schoolAgeFound){
+      childCareTypes.forEach(category => {
+
+        if (category.childCareCategoryId == ooscK.ccof_childcare_categoryid){
+          category.childCareCategory = 'Kindergarten';
+        }
+        else if (category.childCareCategoryId == ooscG.ccof_childcare_categoryid){
+          category.childCareCategory = 'Grade 1 to Age 12';
+        }
+      });
+    }
+  }
+}
 
 function isLocked(applicationStatus, navBarList, facilityId){
 
@@ -36,13 +58,13 @@ function getProgramYear(selectedGuid, programYearList){
 function getPreviousCareType(currentRFI, careType, previousProgramYearId, getters, rootState) {
   //console.log('CURRENTRFI', currentRFI);
   // Lookup previous years approved parent fees for most RFI scenarios
-  if ((currentRFI.existingFeesCorrect == 100000000 && currentRFI.previousCcfriId) || (rootState.navBar.changeType == 'mtfi' && rootState.app.isRenewal ) ) {
+  if (currentRFI.existingFeesCorrect == 100000000 && rootState.application.isRenewal) {
     let previousRFI = getters.getPreviousApprovedFeesByFacilityId({facilityId: currentRFI.facilityId, previousProgramYearId: previousProgramYearId});
     return previousRFI.childCareTypes.find(item =>{ return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId); });
   }
   //MTFI can be done on a new PCF or renewal - so it may not have previous CCFRI. If no previous CCFRI, base median off current year.
   //keep as elif because PCF RFI may call this but not satisfy the above if statement
-  else if(rootState.navBar.changeType == 'mtfi' && !rootState.app.isRenewal ){
+  else if(rootState.navBar.changeType == 'mtfi' && !rootState.application.isRenewal ){
     return currentRFI.childCareTypes.find(item => { return (item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == rootState.application.programYearId); });
   }
   //else - this will return undefined and RFI will be not be triggered
@@ -90,6 +112,7 @@ export default {
     ccfriStore :{},
     ccfriMedianStore: {},
     previousFeeStore: {},
+    previousClosureDates: {}, //used for MTFI
   },
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -225,15 +248,24 @@ export default {
       const previousProgramYearId = previousProgramYear.programYearId;
       //console.log('getCcfriOver3percent.currentRFI: ', state.CCFRIFacilityModel);
       const threePercentMedian = getters.getCCFRIMedianById(currentCcfri? currentCcfri.ccfriApplicationId : state.ccfriId);
+      console.log(threePercentMedian);
       state.CCFRIFacilityModel.childCareTypes.filter( filterItem => filterItem.programYearId == currentProgramYearId)
         .forEach(careType => {
           console.log(`Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`);
           let previousCareType = getPreviousCareType((currentCcfri? currentCcfri : state.CCFRIFacilityModel), careType, previousProgramYearId, getters, rootState);
-          //console.log('da previous care type', previousCareType);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
-            let allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
-            //console.log('difference', difference);
+            let allowedDifference;
+
+            if(careType.childCareCategory == 'Kindergarten'){
+              allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Kindergarten'] : null;
+            }
+            else if(careType.childCareCategory == 'Grade 1 to Age 12'){
+              allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Grade 1+'] : null;
+            }
+            else {
+              allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
+            }
             if (allowedDifference) {
               console.log(`Testing RFI median difference using [${allowedDifference}] for [${careType.childCareCategory}]`);
               if (isOver3Percent(careType, previousCareType, allowedDifference)) {
@@ -249,22 +281,27 @@ export default {
       console.log('over array', over3percentFacilities);
       return over3percentFacilities;
     },
-    async loadCCFisCCRIMedian({state, getters, commit}, ccfriToLoad) {
+    async loadCCFisCCRIMedian({state, getters, commit}) {
       let ccfriMedian = getters.getCCFRIMedianById(state.ccfriId);
       if (!ccfriMedian) {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
-          commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
-        } catch(e) {
-          console.log(`Failed to get CCFRI Median - ${e}`);
-          throw e;
-        }
-      }
-      else if (ccfriToLoad){
-        try {
-          let response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${ccfriToLoad}/median`);
-          commit('addCCFRIMedianToStore', {ccfriId: ccfriToLoad, ccfriMedian: response.data});
+          //response = null;
+          if (response?.data) {
+            commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+          } else {
+            console.log('NO median found, sleeping...');
+            //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
+            await sleep(10 * 1000);
+            //console.log("I should have slept for 10 seconds");
+            response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${state.ccfriId}/median`);
+            if (response?.data) {
+              commit('addCCFRIMedianToStore', {ccfriId: state.ccfriId, ccfriMedian: response.data});
+            } else {
+              console.log(`CCFRI median from backend is blank for CCFRI: ${state.ccfriId}`);
+            }
+          }
         } catch(e) {
           console.log(`Failed to get CCFRI Median - ${e}`);
           throw e;
@@ -284,8 +321,6 @@ export default {
     async loadCCFRIFacility({getters, commit}, ccfriId) {
       commit('setCcfriId', ccfriId);
       let CCFRIFacilityModel = getters.getCCFRIById(ccfriId);
-      //console.log('what is loaded in loadFac', CCFRIFacilityModel);
-      // await dispatch('getPreviousCCFRI' ,ccfriId);
 
       if (CCFRIFacilityModel) {
         commit('setCCFRIFacilityModel', CCFRIFacilityModel);
@@ -298,10 +333,6 @@ export default {
         try {
           let response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${ccfriId}`);
           commit('addCCFRIToStore', {ccfriId: ccfriId, CCFRIFacilityModel: response.data});
-          // if(response.data.previousCcfriId){
-          //   let oldCcfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${response.data.previousCcfriId}`);
-          //   commit('addCCFRIToStore', {ccfriId: response.data.previousCcfriId, CCFRIFacilityModel: oldCcfri.data});
-          // }
           commit('setCCFRIFacilityModel', response.data);
           commit('setLoadedModel', deepCloneObject(response.data));
 
@@ -311,13 +342,16 @@ export default {
         }
       }
     },
-    async getPreviousApprovedFees({commit, state}, {facilityId, programYearId}) {
+    async getPreviousApprovedFees({commit, state, rootGetters, rootState}, {facilityId, programYearId}) {
       const prevFees = state.previousFeeStore[`${facilityId}-${programYearId}`];
       if (prevFees) {
         return prevFees;
       } else {
         try {
           const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
+          console.log('feeee response', response);
+          //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
+          replaceChildCareLabel(rootGetters['app/getLanguageYearLabel'], rootState?.app?.childCareCategoryList, response.data.childCareTypes );
           commit('addPreviousApprovedParentFees', {facilityId: facilityId, programYearId: programYearId, parentFeeModel: response.data});
           return response.data;
         } catch(e) {
@@ -326,7 +360,18 @@ export default {
         }
       }
     },
-    async decorateWithCareTypes({commit, dispatch, state, rootState}, facilityId) {
+    async getClosureDates({state}, ccfriId) {
+      try {
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
+        state.previousClosureDates = response.data;
+        return response.data;
+      } catch(e) {
+        console.log(`Failed to get existing Facility with error - ${e}`);
+        throw e;
+      }
+      //}
+    },
+    async decorateWithCareTypes({commit, dispatch, state, rootState, rootGetters}, facilityId) {
       const  ccofProgramYearId = rootState.application.programYearId;
       const programYearList = rootState.app.programYearList.list;
 
@@ -360,7 +405,7 @@ export default {
 
         //display ALL previous year fee cards if it's the first time CCFRI application OR prev fees are incorrect OR if prev CCFRI is not found
         //JB - changed the logic to not show all years cards if the application is locked. This should hopefully solve a bug where a locked application was incorrectly loading previous year fees.
-        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.app.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
+        if ((rootState.navBar.changeType != 'mtfi') && ( !rootState.application.isRenewal || rootState.navBar.isChangeRequest || state.CCFRIFacilityModel.existingFeesCorrect != 100000000 || (!prevCcfriApp && !isLocked(rootState.application.applicationStatus, rootState.navBar.navBarList, state.loadedModel.facilityId)) )){
           console.log('show all the cards');
           response.data.forEach(item => {
 
@@ -388,7 +433,7 @@ export default {
           first check if we are missing fee cards from last year. This can happen when a user has a new license for this year.
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
-        if (rootState.app.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
+        if (rootState.application.isRenewal && state.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp){
           console.log('prevCCFRI IS:' , prevCcfriApp);
           response.data.forEach(item => {
 
@@ -442,14 +487,16 @@ export default {
           }
         });
 
-
-
-
         state.CCFRIFacilityModel.childCareTypes.push(...careTypes);
+
+        //IF not historical year - find Kindergarten & Out of school care in child cat lookup
+        //then check if they are in the CCFRI fac model. If so - rename them
+        console.log(rootGetters['app/getLanguageYearLabel']);
+        //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
+        replaceChildCareLabel(rootGetters['app/getLanguageYearLabel'], rootState?.app?.childCareCategoryList, state.CCFRIFacilityModel.childCareTypes );
 
         //sort them by age asc
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) => a.orderNumber - b.orderNumber);
-
         //then sort by prev year first
         state.CCFRIFacilityModel.childCareTypes.sort((a, b) =>{
           const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase

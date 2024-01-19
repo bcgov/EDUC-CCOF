@@ -1,4 +1,5 @@
 import ApiService from '@/common/apiService';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 
 export default {
   namespaced: true,
@@ -6,7 +7,6 @@ export default {
     pageTitle: null,
     subtitleBanner: '',
     showNavBar: false,
-    isRenewal: false,
 
     //Notification Details
     alertNotificationText: '',
@@ -66,9 +66,6 @@ export default {
     setShowNavBar: (state, showNavBar) => {
       state.showNavBar = showNavBar;
     },
-    setIsRenewal: (state, isRenewal) => {
-      state.isRenewal = isRenewal;
-    },
     setLogoutTimerEnabled: (state, value) => {
       state.logoutTimerEnabled = value;
     },
@@ -88,6 +85,22 @@ export default {
     fundingModelTypeList: state => state.fundingModelTypeList,
     lookupInfo: state => state.lookupInfo,
     logoutCounter: state => state.logoutCounter < 0 ? 0 : state.logoutCounter,
+    getFundingUrl:  state => (programYearId) => {
+      console.log();
+      return state?.programYearList.list.find(el => el.programYearId == programYearId)?.fundingGuidelinesUrl;
+    },
+
+    //rootState.navBar
+    getLanguageYearLabel: (state, getters, rootState) => {
+      const orderNumber = state?.programYearList.list.find(el => el.programYearId == rootState?.application?.programYearId)?.order;
+      if (orderNumber < 5){
+        return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+      }
+      else{
+        return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
+      }
+      //could write more statements if year specific language is required
+    },
   },
   actions: {
     async getLookupInfo({ commit }) {

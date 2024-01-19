@@ -8,14 +8,13 @@
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
+    <br><br>
+    <FacilityHeader :facilityAccountNumber="currentFacility?.facilityAccountNumber" :facilityName="currentFacility.facilityName" :licenseNumber="currentFacility?.licenseNumber"></FacilityHeader>
     <br>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Facility Name: {{ currentFacility?.facilityName }}</span>
-    </div>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Licence Number: {{ currentFacility?.licenseNumber }}</span>
-    </div>
 
+    <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 justify-center">
+      <span class="text-h6"> <strong>New for 2024/25:</strong>  CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"  target="_blank">BCSSA region lookup</a> to find your region.</span> <br><br>
+    </div>
 
     <br><br>
     <div class="row pt-4 justify-center">
@@ -283,8 +282,278 @@
                   </div>
                 </v-card-text>
             </v-card>
-
         </div>
+
+        <v-card  v-if="arePrevFeesCorrect()" elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12 "
+          min-height="230"
+          rounded
+          tiled
+          exact
+          tile
+          :ripple="false"
+        >
+          <v-card-text class="pa-0" >
+            <div class="pa-2 pa-md-4 ma-0 backG">
+              <p class="text-h5 text--primary px-5 py-0 my-0">
+                Do you charge parent fees at this facility for any closures on business days?
+              </p>
+            </div>
+            <div class="px-md-12 px-7">
+              <br>
+              <div>
+                <p>Do you charge parent fees at this facility for any closures on business days? Indicate the facility closures on business days within the current fiscal year other than <a href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"> British Columbia Statutory Holidays. </a> Only indicate the date of closures where parent fees are charged.
+                </p>
+              </div>
+              <v-radio-group
+                required
+                :disabled="isReadOnly || previousClosureDates.dates.length > 0"
+                v-model="CCFRIFacilityModel.hasClosureFees"
+                :rules = "rules"
+              >
+              <br>
+                <v-radio
+                  label="Yes"
+                  :value="100000000"
+                ></v-radio>
+                <v-radio
+                  label="No"
+                  :value="100000001"
+                ></v-radio>
+              </v-radio-group>
+
+
+              <v-row v-if = "closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000 ">
+                <!-- below will let user view, but not change closure dates from CCFRI application-->
+                <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
+                <v-row  v-for="(obj, index) in previousClosureDates.dates" :key="(index + 1000)" color='black'>
+                  <v-col color='#003366' class="col-md-1 col-12 mx-0">
+                    <v-icon
+                      :disabled="true"
+                      large
+                      color="blue darken-4"
+                      > mdi-close
+                    </v-icon>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12">
+                      <v-text-field  :disabled="true"
+                      outlined
+                      :rules="rules"
+                      v-model="obj.formattedStartDate"
+                      label="Start Date (YYYY-MM-DD)"
+                      readonly
+                      >
+
+                      </v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12">
+                      <v-text-field :disabled="true"
+                      outlined
+                      required
+                      v-model="obj.formattedEndDate"
+                      label="End Date (YYYY-MM-DD)"
+                      readonly
+                      >
+                      </v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12 ">
+                    <v-text-field
+                    :disabled="true"
+                      v-model="obj.closureReason"
+                      label="Closure Reason"
+                      outlined
+                      :rules="rules"
+                      color="red"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-2 col-12 mt-n10">
+                    <v-radio-group
+                      :disabled="true"
+                      row
+                      v-model="obj.feesPaidWhileClosed"
+                      label="Did parents pay for this closure?"
+                      :rules="dateRules"
+                    >
+                      <v-radio
+                        label="Yes"
+                        :value = 1
+                      ></v-radio>
+                      <v-radio
+                        label="No"
+                        :value= 0
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-col>
+
+                  <span class="white--text"> . </span>
+
+                  <v-divider></v-divider>
+                </v-row> <!-- end v for-->
+                <br><br>
+
+
+                <!-- below will let user enter new dates-->
+                <v-row  v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color='#003366'>
+
+                  <v-col color='#003366' class="col-md-1 col-12 mx-0">
+                    <v-icon
+                      :disabled="isReadOnly"
+                      large
+                      color="blue darken-4"
+                      class=""
+                      @click="removeIndex(index)"
+                      > mdi-close
+                    </v-icon>
+                  </v-col>
+
+
+                  <v-col class="col-md-3 col-12">
+                    <v-menu  v-model="obj.calendarMenu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field  :disabled="isReadOnly"
+                      outlined
+                      :rules="rules"
+                      v-model="obj.formattedStartDate"
+                        label="Select Start Date (YYYY-MM-DD)"
+                        readonly v-bind="attrs"
+                        @click="updateChosenDates()"
+                        v-on="on">
+
+                      </v-text-field>
+                    </template>
+                      <v-date-picker
+                        :min="fiscalStartAndEndDates.startDate"
+                        :max="fiscalStartAndEndDates.endDate"
+                        :allowed-dates="allowedDates"
+                        clearable
+                        v-model="obj.formattedStartDate"
+                        @input="obj.calendarMenu1 = false">
+
+                      </v-date-picker>
+                  </v-menu>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12">
+                    <v-menu  v-model="obj.calendarMenu2"
+                    :close-on-content-click="false"
+                    :nudge-right="40" transition="scale-transition"
+                    offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field :disabled="isReadOnly"
+                      outlined
+                      required
+                      v-model="obj.formattedEndDate"
+                      label="Select End Date (YYYY-MM-DD)"
+                      readonly
+                      :rules="rules"
+                      @click="updateChosenDates()"
+                      v-bind="attrs" v-on="on">
+                      </v-text-field>
+                    </template>
+                      <v-date-picker
+                        clearable
+                        :min="obj.formattedStartDate"
+                        :max="fiscalStartAndEndDates.endDate"
+                        v-model="obj.formattedEndDate"
+                        @input="obj.calendarMenu2 = false"
+                        :allowed-dates="allowedDates"
+                        @click:date="isDateLegal(obj)"
+
+                        >
+
+                      </v-date-picker>
+                  </v-menu>
+                  </v-col>
+
+                  <v-col class="col-md-3 col-12 ">
+                    <v-text-field
+                    :disabled="isReadOnly"
+                      v-model="obj.closureReason"
+                      label="Closure Reason"
+                      outlined
+                      clearable
+                      :rules="rules"
+                      color="red"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col class="col-md-2 col-12 mt-n10">
+                    <v-radio-group
+                      :disabled="isReadOnly"
+                      row
+                      v-model="obj.feesPaidWhileClosed"
+                      label="Did parents pay for this closure?"
+                      :rules="dateRules"
+
+                    >
+                      <v-radio
+                        label="Yes"
+                        :value = 1
+                      ></v-radio>
+                      <v-radio
+                        label="No"
+                        :value= 0
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-col>
+
+                  <span class="white--text"> . </span>
+                  <v-row v-if="obj.isIllegal">
+
+                    <v-card width="100%" class="mx-3 my-10" >
+              <v-row>
+                <v-col class="py-0">
+                  <v-card-title class="py-1 noticeAlert">
+                    <span style="float:left">
+                  <v-icon
+                    x-large
+                    class="py-1 px-3 noticeAlertIcon">
+                    mdi-alert-octagon
+                  </v-icon>
+                  </span>
+                  Invalid Dates
+                  </v-card-title>
+                </v-col>
+              </v-row>
+              <v-card-text>
+                It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected.
+                <br><br>
+                Closure Start Date: {{ obj.formattedStartDate }}
+                <br>
+                Closure End Date: {{ obj.formattedEndDate }}
+                <br><br>
+
+                Please review your existing facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates.
+                <br>
+                Thank you for your attention
+
+
+              </v-card-text>
+            </v-card>
+          </v-row>
+
+                  <v-divider></v-divider>
+                </v-row> <!-- end v for-->
+                <br><br>
+
+                  <v-container>
+                    <v-row>
+                  <v-btn
+                    @click="addRow()"
+                    class="my-5" dark color='#003366'
+                    :disabled="isReadOnly"
+                    >ADD NEW CLOSURE</v-btn>
+                    </v-row>
+                  </v-container>
+                  <br>
+
+              </v-row>
+            </div>
+          </v-card-text>
+        </v-card>
 
         <v-card elevation="6" class="pa-4 mx-auto my-10 rounded-lg col-12 "
               min-height="230"
@@ -315,7 +584,8 @@
                     ></v-radio>
                   </v-radio-group>
                 </v-card-text>
-             </v-card>
+        </v-card>
+
       </div>
       <div v-else>
         <div class="row pt-4 justify-center pb-3">
@@ -355,7 +625,7 @@
 
 
       <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly || loading" :isNextDisabled="!isValidForm" :isProcessing="processing"
+        :isSaveDisabled="isReadOnly || loading || hasIllegalDates()" :isNextDisabled="!isFormComplete() || hasIllegalDates()" :isProcessing="processing"
         @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
 
       <v-dialog
@@ -379,7 +649,7 @@
               <p class="pt-4">You have entered a parent fee above the {{formattedProgramYear}} parent fee increase limit for the following care categories:<br><br>
                 <span v-for="item in rfi3percentCategories" :key="item">{{item}}<br></span>
               </p>
-              <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{formattedProgramYear}} <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">Funding Guidelines</a>. You can continue to the Request for Information section or press back to update your fees.</p>
+              <p>Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in the {{formattedProgramYear}} <a :href="fundingUrl"  target="_blank">Funding Guidelines</a>. You can continue to the Request for Information section or press back to update your fees.</p>
               <p class="pt-4">Please confirm you have provided your highest full-time (i.e. over 4 hours, 5 days a week) parent fee for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for 4 days or fewer per week.</p>
               <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
               <v-btn dark color="primary" @click="toRfi()">Continue</v-btn>
@@ -397,19 +667,38 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES, changeUrl, ApiRoutes } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import globalMixin from '@/mixins/globalMixin';
 import NavButton from '@/components/util/NavButton';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
 import ApiService from '@/common/apiService';
+import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
+function dateFunction (date1, date2){
+
+  const startDate = new Date(date1);
+  const endDate = new Date (date2);
+
+  let dates = [];
+
+  let currentDate = new Date(startDate.getTime());
+
+  while (currentDate <= endDate) {
+    console.log();
+    dates.push(currentDate.toISOString().substring(0,10));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return dates;
+}
 
 let model = { };
 
 export default {
-  name: 'CcfriLandingPage',
+  name: 'MTFI-Fees',
+  components: { NavButton, FacilityHeader },
   mixins: [alertMixin, globalMixin],
   data() {
     return {
@@ -433,19 +722,38 @@ export default {
         (v)  => v <=  9999|| 'Max fee is $9999.00',
         (v) => v >= 0  || 'Input a positve number',
       ],
+      dateRules: [
+        v => (typeof v === 'number') || 'Required.',
+      ],
+      dateObj: {
+        datePicker1: undefined,
+        datePicker2: undefined,
+        closureReason : '',
+        feesPaidWhileClosed: undefined,
+      },
+      closureFees: 'No',
+      chosenDates: [],
 
     };
   },
   computed: {
-    ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
+    ...mapState('ccfriApp', ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId', 'previousClosureDates']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
     ...mapState('organization', ['organizationProviderType']),
-    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId']),
-    ...mapState('app', ['isRenewal', 'ccfriOptInComplete', 'programYearList']),
-    ...mapState('application', ['programYearId']),
+    ...mapState('application', ['applicationStatus',  'formattedProgramYear', 'programYearId', 'applicationId', 'applicationMap']),
+    ...mapState('app', ['programYearList']),
+    ...mapState('application', ['programYearId', 'isRenewal']),
+    ...mapGetters('application', ['fiscalStartAndEndDates']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestMap']),
     ...mapGetters('navBar', ['previousPath', 'nextPath','getNavByCCFRIId']),
     ...mapGetters('reportChanges',['changeRequestStatus']),
+    ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
+    languageYearLabel(){
+      return this.getLanguageYearLabel;
+    },
+    programYearTypes(){
+      return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
     areFeesCorrect() {
       return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
     },
@@ -460,7 +768,10 @@ export default {
         return true;
       }
       return false;
-    }
+    },
+    fundingUrl(){
+      return this.getFundingUrl(this.programYearId);
+    },
   },
   watch: {
     //get facilityID from here and then set it !
@@ -468,11 +779,10 @@ export default {
       async handler() {
         try {
           this.loading = true;
-          let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID in userProfile
-          this.currentFacility = this.userProfileList?.find(el => el.facilityId == fac.facilityId); //facility from userProfile with old CCFRI
-
+          let fac = this.navBarList?.find(el => el.ccfriApplicationId == this.$route.params.urlGuid); //find the facility in navBar so we can look up the old CCFRI ID
+          this.currentFacility = this.applicationMap.get(this.programYearId)?.facilityList.find(el => el.facilityId == fac.facilityId); //facility from applicationMAP so we can grab the old PCF ccfriID no matter what year we are on.
+          await this.getClosureDates(this.currentFacility.ccfriApplicationId);
           this.currentPcfCcfri = await this.getPreviousApprovedFees({facilityId: this.currentFacility.facilityId, programYearId: this.programYearId});
-
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(el => el.programYearId == this.programYearId); //filter so only current fiscal years appear
           this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
@@ -513,8 +823,18 @@ export default {
 
           this.CCFRIFacilityModel.childCareTypes = arr;
 
-          //will have to only display the previous years fee - some logic will have to be done here for that
+          //if this facility has closure fees on their PCF- make sure they are visible and included on the MTFI
+          //rules surronding overlapping dates still apply.
+          if (this.previousClosureDates?.dates?.length > 0){
+            this.CCFRIFacilityModel.hasClosureFees = 100000000;
+            //this.chosenDates = [...this.CCFRIFacilityModel.dates , ...this.previousClosureDates.dates];
+          }
+
+          this.updateChosenDates();
+
           this.loading = false;
+
+
         } catch (error) {
           console.log(error);
 
@@ -530,10 +850,49 @@ export default {
 
   },
   methods: {
-    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousApprovedFees', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian' ]),
+    ...mapActions('ccfriApp', ['saveCcfri', 'loadCCFRIFacility', 'getPreviousApprovedFees', 'decorateWithCareTypes', 'getCcfriOver3percent', 'loadCCFisCCRIMedian', 'getClosureDates' ]),
     ...mapActions('reportChanges', ['updateChangeRequestMTFI']),
     ...mapMutations('ccfriApp', ['setLoadedModel', 'setCCFRIFacilityModel']),
     ...mapMutations('navBar',['setNavBarCCFRIComplete','setNavBarValue']),
+    addRow () {
+      this.updateChosenDates();
+      this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
+    },
+    removeIndex(index){
+      this.CCFRIFacilityModel.dates.splice(index, 1);
+      this.updateChosenDates();
+    },
+    allowedDates(val){
+      return !this.chosenDates.includes(val);
+    },
+    updateChosenDates(){
+      this.chosenDates = [];
+      this.CCFRIFacilityModel.dates.forEach(dateObj => {
+        this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
+      });
+
+      if (this.previousClosureDates?.dates?.length > 0){
+        this.previousClosureDates.dates.forEach(dateObj => {
+          this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
+        });
+      }
+
+      console.log('chosen dates look like: ');
+      console.log(this.chosenDates);
+    },
+    isDateLegal(obj){
+      let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+      obj.isIllegal = false;
+
+      dates.forEach(date => {
+        if (this.chosenDates.includes(date)){
+          obj.isIllegal = true;
+        }
+      });
+    },
+    hasIllegalDates(){
+      return this.CCFRIFacilityModel?.dates?.some(el => el.isIllegal);
+    },
     cancel() {
       this.dialog = false;
       this.CCFRIFacilityModel.existingFeesCorrect = null;
@@ -588,6 +947,13 @@ export default {
       return this.CCFRIFacilityModel.childCareTypes[index].feeFrequency == this.currentPcfCcfri.childCareTypes[index].feeFrequency;
     },
     isFormComplete(){
+      //allow the user to submit if they had PCF closure fees, but no additional closure fees on the MTFI
+      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 &&  this.isValidForm && (this.CCFRIFacilityModel.dates.length === 0 && this.previousClosureDates.dates.length > 0)){
+        return true;
+      }
+      else if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0){
+        return false;
+      }
       return this.isValidForm; //false makes button clickable, true disables button
     },
     getMtfiFacility(facilityId) {
@@ -607,6 +973,8 @@ export default {
           const mtfiFacility = this.getMtfiFacility(this.currentFacility.facilityId);
           await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/mtfi/' + mtfiFacility?.changeRequestMtfiId, {'ccof_unlock_rfi': true});
         }
+        //this.$store.commit('ccfriApp/model', this.model);
+        await this.save(false);
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
       } catch (error) {
         console.log(error);
@@ -614,32 +982,45 @@ export default {
       }
     },
     async next() {
-      // this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-      if (!this.isReadOnly && !this.loading) {
-        this.$store.commit('ccfriApp/model', this.model);
-        await this.save(false);
-      }
-      //always check for RFI regardless of new or renewal state
-      this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-      console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
-      if (this.rfi3percentCategories.length > 0) {
-        if (this.getCurrentFacility.hasRfi) {
-          //already has RFI. just go to the next page
-          this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
-        } else {
-          this.showRfiDialog = true;
-        }
-      } else {
-        //no need for RFI.
-        if (this.getCurrentFacility.hasRfi) {
-          this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
-        }
+      if (this.isReadOnly && !this.loading) {
         this.$router.push(this.nextPath);
+        console.log('I shoudlnt save im read only ');
+      }
+      else{
+        this.currentPcfCcfri.existingFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect;
+        this.$store.commit('ccfriApp/model', this.model);
+
+        //always check for RFI regardless of new or renewal state
+        this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
+        console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
+        if (this.rfi3percentCategories.length > 0) {
+
+          if (this.getCurrentFacility.hasRfi) {
+            //already has RFI. just go to the next page
+            await this.save(false);
+            this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.$route.params.urlGuid, CHANGE_TYPES.MTFI));
+          } else {
+            this.showRfiDialog = true;
+          }
+        }
+        else {
+          //no need for RFI.
+          if (this.getMtfiFacility(this.currentFacility.facilityId).hasRfi) {
+            this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false});
+            this.getMtfiFacility(this.currentFacility.facilityId).hasRfi = false; //update it in the change request as well
+            // Use nextTick to ensure the DOM is updated before continuing
+            await this.$nextTick();
+            console.log('deleting RFI');
+            await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
+          }
+          await this.save(false);
+          this.$router.push(this.nextPath);
+        }
       }
     },
     previous() {
       if(this.organizationProviderType == 'FAMILY'){
-        this.$router.push(changeUrl(PATHS.MTFI_INFO, this.$route.params.changeRecGuid, CHANGE_TYPES.MTFI ));
+        this.$router.push(PATHS.ROOT.CHANGE_LANDING);
       }
       else{
         this.$router.push(this.previousPath);
@@ -655,6 +1036,7 @@ export default {
         if (this.hasModelChanged()){
           this.processing = true;
           this.setLoadedModel( deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
+          console.log('SAVING!',  this.getNavByCCFRIId(this.$route.params.urlGuid) );
           await this.saveCcfri({isFormComplete: this.isFormComplete(), hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi});
           this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete()});
           this.processing = false;
@@ -674,7 +1056,6 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     next();
   },
-  components: {NavButton}
 };
 </script>
 

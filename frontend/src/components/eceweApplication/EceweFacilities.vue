@@ -50,15 +50,15 @@
           <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
             <v-row>
               <v-col cols="12" class="d-flex">
-                <span>{{navBarList[index].facilityAccountNumber}}</span>
+                <span><strong> Facility ID: {{navBarList[index].facilityAccountNumber}}</strong></span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="5" class="flex-column">
-                <span>{{navBarList[index].facilityName}}</span>
+                <span><strong> Facility Name: {{navBarList[index].facilityName}}</strong></span>
               </v-col>
               <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                  Status: Opt {{uiFacilities[index].optInOrOut == 1?'in':'out'}}
+                  <strong> Status: Opt-{{uiFacilities[index].optInOrOut == 1?'In':'Out'}} </strong>
               </v-col>
               <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
                 <v-radio-group
@@ -92,7 +92,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                  Licence #: {{navBarList[index].licenseNumber}}
+                  <strong>Licence Number: {{navBarList[index].licenseNumber}}</strong>
               </v-col>
             </v-row>
           </v-card>
@@ -144,7 +144,6 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import NavButton from '@/components/util/NavButton';
 import rules from '@/utils/rules';
-import { isChangeRequest } from '@/utils/common';
 
 export default {
   components: { NavButton },
@@ -162,9 +161,9 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapState('eceweApp', ['isStarted', 'eceweModel']),
     ...mapState('app', ['fundingModelTypeList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId']),
+    ...mapState('navBar', ['navBarList', 'userProfileList','changeRequestId', ]),
+    ...mapGetters('navBar', ['previousPath', 'isChangeRequest', 'getChangeActionNewFacByFacilityId']),
     ...mapState('application', ['formattedProgramYear', 'programYearId', 'applicationStatus', 'unlockEcewe', 'applicationId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
     ...mapGetters('reportChanges',['isEceweUnlocked','changeRequestStatus']),
     isNextBtnDisabled() {
       return this.uiFacilities.some(item => item.optInOrOut === null);
@@ -178,7 +177,7 @@ export default {
     },
     isReadOnly() {
       //will only return true if set by a ministry user in dynamics
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         if(this.isEceweUnlocked||!this.changeRequestStatus){
           return false;
         }
@@ -229,14 +228,14 @@ export default {
       });
     },
     previous() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
       } else {
         this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
       }
     },
     next() {
-      if (isChangeRequest(this)) {
+      if (this.isChangeRequest) {
         this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
       } else {
         this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
@@ -262,6 +261,9 @@ export default {
       }
     },
     async saveFacilities(showConfirmation) {
+      if(this.isReadOnly){
+        return;
+      }
       this.isProcessing = true;
       try {
         let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
@@ -271,9 +273,23 @@ export default {
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach(el => {
+            console.log('this is el');
+            console.log(el);
             let facility = this.userProfileList.find(f => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
+            }
+
+            //update the CR map with the data so navbar will work properly for CR new fac
+            if(this.isChangeRequest){
+              let newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
+
+              newFac.ecewe =  {
+                eceweOptInStatus: el.optInOrOut,
+                eceweApplicationId: el.eceweApplicationId,
+                eceweFacilityId : el.facilityId,
+              };
+              console.log('newfac', newFac);
             }
           });
           this.refreshNavBarList();

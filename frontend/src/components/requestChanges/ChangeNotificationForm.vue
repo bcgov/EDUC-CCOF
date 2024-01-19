@@ -123,25 +123,27 @@ export default {
     this.isLoading = false;
   },
   async beforeRouteLeave(_to, _from, next) {
+    this.isLoading = true;
     if(!this.isReadOnly){
       await this.save(false);
     }
     next();
   },
   computed: {
-    ...mapGetters('reportChanges', ['getUploadedDocuments']),
+    ...mapGetters('reportChanges',['isChangeRequestUnlocked','isOtherDocumentsUnlocked','getUploadedDocuments']),
     ...mapGetters('navBar', ['nextPath', 'previousPath']),
     ...mapState('navBar', ['changeType']),
     ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId']),
-    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'userProfileChangeRequests']),
+    ...mapState('reportChanges', ['unsubmittedDocuments', 'changeRequestStore', 'loadedChangeRequest', 'uploadedDocuments', 'changeRequestMap']),
     isReadOnly() {
-      let currentCR = this.userProfileChangeRequests.find(el=>el.changeRequestId===this.$route.params?.changeRecGuid);
+      let currentCR = this.changeRequestMap.get(this.$route.params?.changeRecGuid);
       if (currentCR && currentCR.length > 0) {
         currentCR = currentCR[0];
       }
-      if (currentCR?.unlockChangeRequest || currentCR?.unlockOtherChangesDocuments) {
+      if (this.isChangeRequestUnlocked ||this.isOtherDocumentsUnlocked) {
         return false;
       }
+
       return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
   },

@@ -1,5 +1,5 @@
 const rules = {
-  email: [v => /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v) || 'A valid email is required'], // https://emailregex.com/
+  email: [v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'A valid email is required'], 
   required: [function (v) {
     if (v === 0) {
       return true;
@@ -21,6 +21,7 @@ const rules = {
   maxLength(number) {
     return v => !v || v.length <= number || 'Max length exceeded';
   },
+  wholeNumber: v => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: v => /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v) || 'A valid phone number is required' // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
 };
 

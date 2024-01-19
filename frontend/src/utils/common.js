@@ -54,3 +54,52 @@ export async function sleep(ms) {
 export function isFacilityAvailable(facility) {
   return (facility?.facilityStatus && !['Closed','Cancelled'].includes(facility?.facilityStatus));
 }
+
+// NEW ORG Application:
+// - NOT APPROVED - display all facilities associated with the application
+// - APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
+// RENEWAL Application:
+// - NOT SUBMITTED - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank) and have Facility ID.
+// - SUBMITTED/APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
+export function filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) {
+  const filteredFacilityList = facilityList.filter(el => {
+    const isFacilityActive = el.ccofBaseFundingId || el.ccfriApplicationId || el.eceweApplicationId;
+    if (isRenewal) {
+      if (applicationStatus === 'SUBMITTED' || applicationStatus === 'APPROVED') {
+        return (el.facilityAccountNumber && isFacilityActive);
+      } else {
+        return (el.facilityAccountNumber && isFacilityAvailable(el));
+      }
+    }
+    else {
+      if (applicationStatus === 'APPROVED') {
+        return (el.facilityAccountNumber && isFacilityActive);
+      } else {
+        return true;
+      }
+    }
+  });
+  return filteredFacilityList;
+}
+
+export function checkApplicationUnlocked(application) {
+  const facilityList = application?.facilityList;
+  const isCCFRIUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockCcfri) > -1;
+  const isNMFUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockNmf) > -1;
+  const isRFIUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockRfi) > -1;
+  const isApplicationUnlocked = (application?.unlockBaseFunding && application?.applicationType === 'NEW') || application?.unlockLicenseUpload ||
+                              application?.unlockEcewe || application?.unlockSupportingDocuments || application?.unlockDeclaration ||
+                              isCCFRIUnlocked || isNMFUnlocked || isRFIUnlocked;
+  return isApplicationUnlocked;
+}
+
+export function isAnyApplicationUnlocked (applicationList){
+  return applicationList.some(application => {
+    return checkApplicationUnlocked(application);
+  });
+}
+
+export function  isAnyChangeRequestActive(changeRequestList) {
+  //Status of :  "Submitted" "Action Required";
+  return changeRequestList?.some((el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE');
+}

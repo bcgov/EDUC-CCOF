@@ -1,4 +1,4 @@
-import {ORGANIZATION_PROVIDER_TYPES} from '@/utils/constants';
+import {ORGANIZATION_PROVIDER_TYPES, CHANGE_TYPES} from '@/utils/constants';
 import rules from '@/utils/rules';
 import formatTime from '@/utils/formatTime';
 import {mapActions, mapState, mapMutations, mapGetters} from 'vuex';
@@ -14,9 +14,8 @@ export default {
     ...mapState('organization', ['organizationProviderType']),
     ...mapState('app', ['familyLicenseCategory']),
     ...mapState('application', ['unlockBaseFunding', 'applicationStatus']),
-    ...mapState('navBar',['changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest']),
+    ...mapState('navBar',['changeRequestId', 'changeType']),
+    ...mapGetters('navBar', ['nextPath', 'previousPath','isChangeRequest', 'getChangeActionNewFacByFacilityId']),
     ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
@@ -65,11 +64,19 @@ export default {
       this.setNavBarFundingComplete({fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete});
       try {
         await this.saveFunding();
+
+        if(this.changeType == CHANGE_TYPES.NEW_FACILITY){
+          let newFac = this.getChangeActionNewFacByFacilityId(this.fundingModel.facilityId);
+          console.log(newFac);
+
+          newFac.baseFunding.isCCOFComplete =  this.model.isCCOFComplete;
+        }
         if (isSave) {
           this.setSuccessAlert('Success! Funding information has been saved.');
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
+        console.log(error);
       }
       this.processing = false;
     },

@@ -110,16 +110,16 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['pageTitle','isRenewal', 'programYearList']),
+    ...mapState('app', ['pageTitle', 'programYearList']),
     ...mapState('navBar', ['navBarList', 'userProfileList', 'refreshNavBar', 'navBarGroup', 'changeType']),
-    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete']),
+    ...mapState('application', ['applicationStatus', 'isEceweComplete','unlockDeclaration', 'programYearId', 'isLicenseUploadComplete', 'isRenewal']),
     ...mapState('organization', ['organizationProviderType', 'organizationAccountNumber', 'isOrganizationComplete']),
     ...mapGetters('facility', ['isNewFacilityStarted']),
     ...mapGetters('funding', ['isNewFundingStarted']),
     ...mapGetters('navBar', ['isChangeRequest']),
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('reportChanges', ['isCREceweComplete', 'isCRLicenseComplete', 'changeRequestStatus', 'getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
-    ...mapState('reportChanges',['mtfiFacilities','userProfileChangeRequests','changeRequestId']),
+    ...mapState('reportChanges',['mtfiFacilities','changeRequestMap','changeRequestId']),
     ...mapGetters('ccfriApp', ['getCCFRIById']),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
@@ -158,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit', 'setNavBarList']),
+    ...mapMutations('navBar', ['setNavBarItems', 'setCanSubmit']),
     setActive(item) {
       this.items[1].expanded = false;
       let index = this.items.findIndex(obj => obj.title === item.title);
@@ -180,8 +180,6 @@ export default {
       isCCOFGroupComplete = false;
 
       this.items = [];
-      console.log('is change request: ', this.isChangeRequest);
-      console.log('is change request: ', this.$route.path);
       if (this.isChangeRequest) {
         if(this.changeType==='nf'){
           this.buildNewFacilityNavBar();
@@ -215,7 +213,7 @@ export default {
       let checkbox; //true will show checkmark, false will not
       let linkName;
       if (this.isChangeRequest) {
-        const currentCR = this.userProfileChangeRequests.find(item => item.changeRequestId === this.changeRequestId);
+        const currentCR = this.changeRequestMap.get(this.changeRequestId);
         checkbox = ['SUBMITTED','APPROVED'].includes(this.changeRequestStatus) && !currentCR?.unlockDeclaration;
         if(this.changeType===CHANGE_TYPES.NEW_FACILITY){
           linkName = 'Summary and Declaration New Facility';
@@ -320,10 +318,7 @@ export default {
 
     },
     buildNewFacilityNavBar(){
-      console.log('building new FAC nav barr');
-
       this.addLandingPageToNavBar();
-      //this.items.push(this.getCCOFNavigation());//JB
       this.items.push(this.getAddNewFacilityCCOFNavigation());
       this.items.push(this.getAddNewCCFRINavigation()); //JB
       this.items.push(this.getAddNewECEWENavigation());
@@ -607,10 +602,10 @@ export default {
       return {
         title: 'Facility',
         id: null,
-        link: {name: this.isChangeRequest? 'Report Change Facility' : 'Facility Information'},
+        link: {name: this.isChangeRequest? 'change-request-facility-information' : 'Facility Information'},
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
-        isActive: this.isChangeRequest? 'Report Change Facility' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+        isActive: this.isChangeRequest? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++
       };
@@ -681,7 +676,7 @@ export default {
         {
           title: 'Select Facility',
           link: {name:'Midterm Fee Increase Select Facilities',params: {changeRecGuid: this.$route.params.changeRecGuid,changeType:CHANGE_TYPES.MTFI}},
-          isAccessible: true,
+          isAccessible: this.organizationProviderType != 'FAMILY',
           icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
           isActive: 'Midterm Fee Increase Select Facilities'===this.$route.name,
           position: positionIndex++,
@@ -703,20 +698,20 @@ export default {
             navBarId: navBarId++
           });
           if (item.hasRfi || item.unlockRfi) {
-              items.push(
-                {
-                  title: 'Parent Fee Increase – RFI',
-                  subTitle: item.facilityName,
-                  id: item.facilityId,
-                  link: { name: 'mtfi-change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
-                  isAccessible: true,
-                  icon: this.getCheckbox(item.isRfiComplete),
-                  isActive: 'mtfi-change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
-                  position: positionIndex++,
-                  navBarId: navBarId++
-                },
-              );
-            }
+            items.push(
+              {
+                title: 'Parent Fee Increase – RFI',
+                subTitle: item.facilityName,
+                id: item.facilityId,
+                link: { name: 'mtfi-change-request-ccfri-request-info', params: {changeRecGuid:this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId}},
+                isAccessible: true,
+                icon: this.getCheckbox(item.isRfiComplete),
+                isActive: 'mtfi-change-request-ccfri-request-info' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+                position: positionIndex++,
+                navBarId: navBarId++
+              },
+            );
+          }
         });
       }
       let retval =   {

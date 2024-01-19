@@ -2,6 +2,28 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <span>
+        <v-row>
+              <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()  && isLocked && !isChangeRequest">
+                <v-row>
+                  <v-col class="py-0">
+                    <v-card-title class="py-1 noticeAlert">
+                      <span style="float:left">
+                    <v-icon
+                      x-large
+                      class="py-1 px-3 noticeAlertIcon">
+                      mdi-alert-octagon
+                    </v-icon>
+                    </span>
+                    You have a change request in progress.
+                    </v-card-title>
+                  </v-col>
+                </v-row>
+                <v-card-text>
+                  We will complete the assessment of your Program Confirmation Form once your change has been processed.<br><br>
+                  <br>
+                </v-card-text>
+              </v-card>
+            </v-row>
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
             <v-card-title class="justify-center pb-0"><h3>Licence Upload<span v-if="isRenewal"> - {{ this.formattedProgramYear }} Program Confirmation Form</span></h3></v-card-title>
@@ -67,7 +89,7 @@ import rules from '@/utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import {deepCloneObject, getFileExtension} from '@/utils/common';
+import {deepCloneObject, getFileExtension, isAnyChangeRequestActive} from '@/utils/common';
 import NavButton from '@/components/util/NavButton';
 
 export default {
@@ -76,10 +98,9 @@ export default {
   props: {},
   computed: {
     ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('app', ['isRenewal']),
+    ...mapState('reportChanges', ['changeRequestStore',]),
     ...mapState('navBar', ['navBarList', 'changeRequestId']),
-    ...mapState('reportChanges',['userProfileChangeRequests']),
-    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete']),
+    ...mapState('application', ['isRenewal', 'formattedProgramYear', 'applicationStatus', 'unlockLicenseUpload', 'applicationId', 'isLicenseUploadComplete', 'applicationMap', 'programYearId']),
     ...mapGetters('licenseUpload', ['getUploadedLicenses']),
     ...mapGetters('navBar', ['nextPath', 'previousPath', 'isChangeRequest']),
     ...mapGetters('reportChanges',['isLicenseUploadUnlocked','changeRequestStatus']),
@@ -100,17 +121,17 @@ export default {
       }
       return false;
     },
-    getFacilityList(){
-      let facilityList;
-      if (this.isChangeRequest) {
-        facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-      } else {
-        facilityList = this.navBarList.filter(el => !el.changeRequestId);
-      }
-      return facilityList;
-    },
+    // getFacilityList(){
+    //   let facilityList;
+    //   if (this.isChangeRequest) {
+    //     facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
+    //   } else {
+    //     facilityList = this.navBarList.filter(el => !el.changeRequestId);
+    //   }
+    //   return facilityList;
+    // },
     nextButtonDisabled() {
-      let facilityList = this.getFacilityList;
+      let facilityList = this.navBarList;
 
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
@@ -190,9 +211,13 @@ export default {
 
   methods: {
     ...mapActions('licenseUpload', ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
-    ...mapMutations('application', ['setIsLicenseUploadComplete']),
+    ...mapMutations('application', ['setIsLicenseUploadCompleteInMap' , 'setIsLicenseUploadComplete']),
     ...mapMutations('navBar', ['forceNavBarRefresh']),
     ...mapMutations('reportChanges', ['setCRIsLicenseComplete']),
+    isSomeChangeRequestActive(){
+      //Status of : "Submitted" "Action Required";
+      return isAnyChangeRequestActive(this.changeRequestStore);
+    },
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -230,6 +255,7 @@ export default {
         if (this.isChangeRequest) {
           this.setCRIsLicenseComplete({changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled});
         } else {
+          this.setIsLicenseUploadCompleteInMap(!this.nextButtonDisabled);
           this.setIsLicenseUploadComplete(!this.nextButtonDisabled);
         }
         this.forceNavBarRefresh();
@@ -248,8 +274,8 @@ export default {
       const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
-        let facilityList = this.getFacilityList;
-        let currFac = facilityList.find(fac => fac.facilityId === facilityId);
+        //let facilityList = this.getFacilityList;
+        let currFac = this.navBarList.find(fac => fac.facilityId === facilityId);
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,
@@ -320,7 +346,12 @@ export default {
       this.isLoading = true;
       try {
         this.licenseUploadData = deepCloneObject(this.navBarList);
-        await this.getLicenseFiles(this.applicationId);
+        let appID = this.applicationMap?.get(this.programYearId)?.applicationId;
+
+        if (!appID){
+          appID = this.applicationId;
+        }
+        await this.getLicenseFiles(appID); //get from appMap so correct application loaded when viewing a historical CR
         this.licenseUploadData = this.licenseUploadData.map(element => {
           element['document'] = this.getUploadedLicenses.find(uploadedDocsInServer => uploadedDocsInServer.ccof_facility === element.facilityId);
           return element;

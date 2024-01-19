@@ -57,6 +57,25 @@ function formatDate(data, columnName) {
   return data;
 }
 
+async function deleteRfiApplication(req, res){
+  let query = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId} and statuscode eq 1)`;
+
+  try {
+    const response = await getOperation(query);
+
+    //there should only every be one RFI application per ccfri app.
+    //if array empty - don't try to delete anything.
+    if (response?.value?.length > 0) {
+      log.info(response.value[0]);
+      await deleteOperationWithObjectId('ccof_rfipfis', response.value[0].ccof_rfipfiid);
+    }
+
+    return res.status(HttpStatus.OK).json({});
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+  }
+}
 
 async function getRFIApplication(req, res) {
   let query  = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi,ccof_rfipfi_ccof_rfipfi_IndegenousService`;
@@ -71,7 +90,7 @@ async function getRFIApplication(req, res) {
       rfiApplication.data['expenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map(el=> formatDate(new MappableObjectForFront(el,ExpenseInformationMappings).data, 'date'));
       rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map(el=> formatDate(new MappableObjectForFront(el,OtherFundingProgramMappings).data, 'date'));
       rfiApplication.data['indigenousExpenseList'] = response.value[0].ccof_rfipfi_ccof_rfipfi_IndegenousService?.map(el=> formatDate(new MappableObjectForFront(el,IndigenousExpenseMappings).data, 'date'));
-      
+
       return res.status(HttpStatus.OK).json(rfiApplication);
     } else {
       return res.status(HttpStatus.OK).json({});
@@ -158,7 +177,7 @@ async function updateRFIApplication(req, res) {
         payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiexpenseinfos', payload);
         await sleep(100);
-      });    
+      });
     }
 
     //rfipfiid, entityName, selectorName, filterName) {
@@ -172,7 +191,7 @@ async function updateRFIApplication(req, res) {
         payload['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansionindigenouscommunities', payload);
         await sleep(100);
-      });    
+      });
     }
 
     return res.status(HttpStatus.OK).json(friApplicationResponse);
@@ -218,4 +237,5 @@ module.exports = {
   createRFIApplication,
   updateRFIApplication,
   getRFIMedian,
+  deleteRfiApplication
 };
