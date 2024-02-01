@@ -214,8 +214,8 @@
 
       </div>
       <!---Declaration Start--->
-      <v-row v-if="fundingAgreementNumber  && languageYearLabel == programYearTypes.HISTORICAL" justify="center" class="pt-4 text-h5" style="color:#003466;">
-        Funding Agreement Number: {{ fundingAgreementNumber }}
+      <v-row v-if="getFundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
+        Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
       <v-row justify="center">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -435,7 +435,7 @@ export default {
     ...mapGetters('app', ['getFundingUrl', 'getLanguageYearLabel']),
     ...mapGetters('navBar', ['previousPath', 'isChangeRequest']),
     ...mapState('navBar', ['canSubmit', 'navBarList', 'changeRequestId']),
-    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'isOrganizationComplete']),
+    ...mapState('organization', ['organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState('summaryDeclaration', ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
     ...mapState('application', ['formattedProgramYear', 'isRenewal', 'programYearId', 'unlockBaseFunding', 'isLicenseUploadComplete',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus','isEceweComplete', 'applicationMap']),
@@ -446,6 +446,9 @@ export default {
     },
     programYearTypes(){
       return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
+    getFundingAgreementNumber(){
+      return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
     },
     getChangeRequestYear(){
       const currProgramYear = this.programYearList?.list?.find(el => el.programYearId == this.programYearId);

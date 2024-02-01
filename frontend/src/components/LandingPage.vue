@@ -189,6 +189,7 @@
       <v-row no-gutters>
         <v-col class="col-12 col-md-6 ml-4 mb-4">
           <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
+          <h2 v-if="getFundingAgreementNumberByYear">Funding Agreement Number: {{ getFundingAgreementNumberByYear }}</h2>
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-between">
@@ -310,7 +311,7 @@ export default {
     ...mapGetters('application', ['latestProgramYearId', 'applicationIds', 'getFacilityListForPCFByProgramYearId', 'formattedProgramYear']),
     ...mapState('app', ['programYearList']),
     ...mapState('navBar', ['navBarList']),
-    ...mapState('organization', ['fundingAgreementNumber', 'organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
+    ...mapState('organization', ['organizationAccountNumber', 'organizationProviderType', 'organizationId', 'organizationName', 'organizationAccountNumber']),
     ...mapState('application', ['applicationType', 'programYearId', 'programYearLabel', 'ccofApplicationStatus', 'unlockBaseFunding', 'isRenewal',
       'unlockDeclaration', 'unlockEcewe', 'unlockLicenseUpload', 'unlockSupportingDocuments', 'applicationStatus', 'applicationMap', 'applicationId']),
     ...mapState('reportChanges', ['changeRequestStore']),
@@ -332,6 +333,11 @@ export default {
       }
       //should not reach here- perhaps change-
       return this.formattedProgramYear;
+    },
+    getFundingAgreementNumberByYear(){
+      if (this.selectedProgramYear)
+        return this.applicationMap?.get(this.selectedProgramYear.programYearId)?.fundingAgreementNumber;
+      return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
     },
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());
@@ -454,7 +460,10 @@ export default {
       return (this.applicationType === 'RENEW') || (this.ccofStatus === this.CCOF_STATUS_APPROVED);
     },
     isReportChangeButtonEnabled() {
-      return !!(this.organizationAccountNumber && this.fundingAgreementNumber);
+      if (this.applicationType === 'RENEW' && this.organizationAccountNumber){
+        return true;
+      }
+      return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
     },
     isUpdateChangeRequestDisplayed() {
       const index = this.changeRequestStore?.findIndex(changeRequest => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED);
