@@ -6,7 +6,7 @@ const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_STATUS_CODES, CHANGE_REQUEST_STATUS_CODES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES} = require('../util/constants');
-const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings } = require('../util/mapping/Mappings');
+const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings, fundingAgreementMappings} = require('../util/mapping/Mappings');
 const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
@@ -87,7 +87,13 @@ async function getUserInfo(req, res) {
 
   let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
   let applicationList = [];
+
   if (userResponse.application && userResponse.application.length > 0 ) {
+    //call the funding agreement table and load that to the application
+    let operation = `ccof_funding_agreements?$filter=_ccof_organization_value eq '${organization.organizationId}'`;
+    let fundingAgreementDetails = (await getOperation(operation)).value;
+    //log.info(fundingAgreementDetails);
+
     userResponse.application.forEach( ap => {
       let application = new MappableObjectForFront(ap, UserProfileApplicationMappings).data;
       application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
@@ -97,44 +103,28 @@ async function getUserInfo(req, res) {
       application.ccofProgramYearName = ap.ccof_ProgramYear?.ccof_name;
       application.ccofProgramYearStatus = getLabelFromValue(ap.ccof_ProgramYear?.statuscode, PROGRAM_YEAR_STATUS_CODES);
       application.ccofApplicationStatus = getLabelFromValue(application.ccofStatus, CCOF_STATUS_CODES, 'NEW');
-      applicationList.push(application);
-
       application.facilityList = parseFacilityData(ap, userResponse.facilities);
+
+      //add in funding agreement details based on the fiscal year
+      let fundingAgreementForFront = null;
+      for (const fundingAgreementObj of fundingAgreementDetails){
+        if (fundingAgreementObj._ccof_programyear_value != application.ccofProgramYearId){
+          continue;
+        }
+        else if (!fundingAgreementForFront ||fundingAgreementObj.ccof_version > fundingAgreementForFront.ccof_version ){
+          fundingAgreementForFront = fundingAgreementObj;
+        }
+      }
+      fundingAgreementForFront = new MappableObjectForFront(fundingAgreementForFront, fundingAgreementMappings).data;
+      application = {...application, ...fundingAgreementForFront};
+
+      applicationList.push(application);
     });
   }
-
-  /*
-  const changeRequests = [];
-  userResponse.application?.ccof_ccof_change_request_Application_ccof_appl?.forEach(el => {
-    const item = new MappableObjectForFront(el, UserProfileChangeRequestMappings).data;
-    item.status = getLabelFromValue(item.status, CHANGE_REQUEST_STATUS_CODES);
-    item.externalStatus = getLabelFromValue(item.externalStatus , CHANGE_REQUEST_EXTERNAL_STATUS_CODES);
-    let changeActionNewFacilityList = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
-    for (const changeActionNewFacility of changeActionNewFacilityList) {
-      item.unlockEcewe = changeActionNewFacility?.ccof_unlock_ecewe;
-      item.unlockCCOF = changeActionNewFacility?.ccof_unlock_ccof;
-      item.unlockSupportingDocuments = changeActionNewFacility?.ccof_unlock_supporting_document;
-      item.unlockLicenseUpload = changeActionNewFacility?.ccof_unlock_licence_upload;
-    }
-    let changeActionOtherChanges = el?.ccof_change_action_change_request?.filter(item => item.ccof_changetype !== CHANGE_REQUEST_TYPES.NEW_FACILITY);
-    for (const changeActionOthers of changeActionOtherChanges){
-      item.unlockChangeRequest = changeActionOthers?.ccof_unlock_change_request;
-      item.unlockOtherChangesDocuments = changeActionOthers?.ccof_unlock_other_changes_document;
-      if (changeActionOthers.ccof_changetype === CHANGE_REQUEST_TYPES.PDF_CHANGE) {
-        item.changeNotificationActionId = changeActionOthers.ccof_change_actionid;
-      }
-    }
-
-    changeRequests.push(item);
-
-  });
-*/
-  //resData.facilityList = parseFacilityData(userResponse.facilities);
   let results = {
     ...resData,
     ...organization,
     applications: applicationList
-    // changeRequests: changeRequests
   };
   return res.status(HttpStatus.OK).json(results);
 }

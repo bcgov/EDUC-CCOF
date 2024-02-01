@@ -12,7 +12,6 @@ export default {
     organizationAccountNumber: null,
     isOrganizationComplete: false,
     isStarted: false,
-    fundingAgreementNumber: null,
     organizationModel: {},
     loadedModel: {},
   },
@@ -22,7 +21,6 @@ export default {
     setOrganizationName: (state, organizationName) => { state.organizationName = organizationName; },
     setOrganizationAccountNumber: (state, organizationAccountNumber) => { state.organizationAccountNumber = organizationAccountNumber; },
     setIsStarted: (state, isStarted) => { state.isStarted = isStarted; },
-    setFundingAgreementNumber: (state, fundingAgreementNumber) => { state.fundingAgreementNumber = fundingAgreementNumber; },
     setOrganizationModel(state, model) { state.organizationModel = model; },
     setLoadedModel(state, model) { state.loadedModel = model; },
     setIsOrganizationComplete: (state, value) => { state.isOrganizationComplete = value; }
