@@ -214,7 +214,7 @@
 
       </div>
       <!---Declaration Start--->
-      <v-row v-if="getFundingAgreementNumber" justify="center" class="pt-4 text-h5" style="color:#003466;">
+      <v-row v-if="getFundingAgreementNumber && !this.isChangeRequest" justify="center" class="pt-4 text-h5" style="color:#003466;">
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
       <v-row justify="center">
