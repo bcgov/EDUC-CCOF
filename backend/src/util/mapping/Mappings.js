@@ -447,8 +447,6 @@ const PdfDocumentMappings = [
 const fundingAgreementMappings = [
   { back: 'ccof_version', front: 'fundingAgreementOrderNumber'}, // null,
   { back: 'ccof_name', front: 'fundingAgreementNumber'}, // null,
-  { back: 'ccof_contractstatus', front: 'fundingAgreementStatusCode'}, // false,
-  { back: 'ccof_contractstatus@OData.Community.Display.V1.FormattedValue', front: 'fundingAgreementStatusLabel'}, // null,
 ];
 
 module.exports = {
