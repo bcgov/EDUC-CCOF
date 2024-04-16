@@ -8,6 +8,9 @@ coverage
 dist
 **/e2e/videos
 node_modules
+Session.vim
+.vim/
+
 # Ignore only top-level package-lock.json
 /package-lock.json
 
@@ -16,6 +19,8 @@ local.*
 local-*.*
 .env.local
 .env.*.local
+.envrc
+.direnv/
 
 # Log files
 npm-debug.log*

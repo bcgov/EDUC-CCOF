@@ -120,7 +120,7 @@ const ExpenseInformationMappings = [
   { back: 'ccof_expensedescription', front: 'description'},
   { back: 'ccof_dateofexpense', front: 'date'},
   { back: 'ccof_paymentfrequencydetails', front: 'frequency'},
-  { back: 'ccof_expenseamount', front: 'expense'},
+  { back: 'ccof_expenseamountt', front: 'expense'},
 ];
 
 const OtherFundingProgramMappings = [
