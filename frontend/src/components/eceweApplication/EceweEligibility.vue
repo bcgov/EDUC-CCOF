@@ -144,7 +144,7 @@
       </v-row>
     </div>
 
-      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1 && model.publicSector == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) || isLoading" class="justify-center">
+      <v-row v-if="(model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) || isLoading" class="justify-center">
         <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
           <v-container>
             <v-row v-if="isLoading">
@@ -179,7 +179,7 @@
               </v-col>
             </v-row>
           </v-container>
-          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1 && model.publicSector == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (model.applicableSector == 100000001 &&  model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) || isLoading" class="mx-2 mb-4 justify-center">
+          <v-card v-if="(model.applicableSector == 100000001 && model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel != programYearTypes.HISTORICAL) || (model.applicableSector == 100000001 &&  model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) || isLoading" class="mx-2 mb-4 justify-center">
             <v-row v-if="!isLoading" >
               <v-col class="py-0">
                 <v-card-title class="py-0 noticeInfo">
