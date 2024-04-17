@@ -167,8 +167,8 @@ export default {
 
         state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
       }
-      catch(error){
-       // console.log(error);
+      catch(error) {
+        // Pass.
       }
 
     },
@@ -184,7 +184,7 @@ export default {
         if (applicationIds?.length > 0)
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
 
-         if (!isEmpty(response)) {
+        if (!isEmpty(response)) {
           for (const element of response.data) {
 
 
@@ -213,7 +213,6 @@ export default {
               }
             });
           }
-          // response.data.forEach((element) => {});
         }
 
         /*Ministry requirements want change request shown in the order of:
