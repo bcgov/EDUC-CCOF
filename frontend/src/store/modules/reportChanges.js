@@ -184,18 +184,36 @@ export default {
         if (applicationIds?.length > 0)
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
 
-        if (!isEmpty(response)) {
-          response.data.forEach(element => {
-            element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
+         if (!isEmpty(response)) {
+          for (const element of response.data) {
+
+
+            if (element?.changeActions[0]?.facilities?.length === 0) {
+              continue;
+            }
+            element.createdOnDate = new Date(
+              element.createdOnDate
+            ).toLocaleDateString();
             store.push(element);
-            //in the future we may not want to assume a new facility change is not the first of the array?
+
             element.changeActions.forEach((changeAction) => {
-              if (changeAction.changeType == "NEW_FACILITY"){
+              if (changeAction.changeType == "NEW_FACILITY") {
                 const newFacilities = changeAction.facilities;
-                newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
+                newFacilities?.forEach((facility) =>
+                  commit(
+                    "navBar/setNavBarFacilityChangeRequest",
+                    {
+                      facilityId: facility.facilityId,
+                      changeRequestNewFacilityId:
+                        facility.changeRequestNewFacilityId,
+                    },
+                    { root: true }
+                  )
+                );
               }
             });
-          });
+          }
+          // response.data.forEach((element) => {});
         }
 
         /*Ministry requirements want change request shown in the order of:
@@ -211,7 +229,7 @@ export default {
         });
 
         commit('setChangeRequestStore', store);
-        console.log('sorted store:' , store);
+
       } catch(e) {
         console.log(`Failed to get load change req with error - ${e}`);
         throw e;

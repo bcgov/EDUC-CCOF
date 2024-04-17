@@ -688,10 +688,12 @@ async function getFacilityChangeData(changeActionId){
   log.info(newFacData, 'new fac data before mapping');
 
   newFacData.value.forEach(fac => {
-    let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
-    mappedFacility.facilityName = fac.ccof_facility['name'];
-    mappedFacility.facilityStatus = fac.ccof_facility['ccof_facilitystatus@OData.Community.Display.V1.FormattedValue'];
-    mappedData.push(mappedFacility);
+    if (fac.ccof_facility) {
+      let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
+      mappedFacility.facilityName = fac.ccof_facility['name'];
+      mappedFacility.facilityStatus = fac.ccof_facility['ccof_facilitystatus@OData.Community.Display.V1.FormattedValue'];
+      mappedData.push(mappedFacility);
+    }
   });
 
   log.info('faccccc data post mapping', mappedData);
