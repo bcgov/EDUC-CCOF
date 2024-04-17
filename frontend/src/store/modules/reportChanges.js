@@ -167,8 +167,8 @@ export default {
 
         state.changeRequestMap.get(payload.changeRequestId)?.changeActions?.find(el => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY).newFacilities.push(newFacilityObj);
       }
-      catch(error){
-       // console.log(error);
+      catch(error) {
+        // Pass.
       }
 
     },
@@ -185,17 +185,34 @@ export default {
           response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds);
 
         if (!isEmpty(response)) {
-          response.data.forEach(element => {
-            element.createdOnDate = new Date(element.createdOnDate).toLocaleDateString();
+          for (const element of response.data) {
+
+
+            if (element?.changeActions[0]?.facilities?.length === 0) {
+              continue;
+            }
+            element.createdOnDate = new Date(
+              element.createdOnDate
+            ).toLocaleDateString();
             store.push(element);
-            //in the future we may not want to assume a new facility change is not the first of the array?
+
             element.changeActions.forEach((changeAction) => {
-              if (changeAction.changeType == "NEW_FACILITY"){
+              if (changeAction.changeType == "NEW_FACILITY") {
                 const newFacilities = changeAction.facilities;
-                newFacilities?.forEach(facility => commit('navBar/setNavBarFacilityChangeRequest', {facilityId: facility.facilityId, changeRequestNewFacilityId: facility.changeRequestNewFacilityId}, { root: true }));
+                newFacilities?.forEach((facility) =>
+                  commit(
+                    "navBar/setNavBarFacilityChangeRequest",
+                    {
+                      facilityId: facility.facilityId,
+                      changeRequestNewFacilityId:
+                        facility.changeRequestNewFacilityId,
+                    },
+                    { root: true }
+                  )
+                );
               }
             });
-          });
+          }
         }
 
         /*Ministry requirements want change request shown in the order of:
@@ -211,7 +228,7 @@ export default {
         });
 
         commit('setChangeRequestStore', store);
-        console.log('sorted store:' , store);
+
       } catch(e) {
         console.log(`Failed to get load change req with error - ${e}`);
         throw e;

@@ -272,8 +272,7 @@ export default {
           };
         });
       }
-      console.log('all change reqz');
-      console.log(allChangeRequests);
+
       return allChangeRequests;
     },
     getPrevProgramYearId(){
