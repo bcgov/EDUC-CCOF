@@ -1,4 +1,4 @@
-name: 3 TEST - Deploy Frontend
+name: 3 UAT - Deploy Frontend
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
