@@ -117,18 +117,36 @@ jobs:
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
         # Cancel any rollouts in progress
         oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
-        || true && echo "No rollout in progress"
+            || true && echo "No rollout in progress"
 
         # Create tag for TEST env from DEV env image
-        oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-uat/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
+        oc tag \
+           ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} \
+           ${{ env.NAMESPACE }}-uat/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
-        oc process -f tools/openshift/frontend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }} -p CA_CERT="${{ env.CA_CERT }}" -p CERTIFICATE="${{ env.CERTIFICATE }}" -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
-        | oc apply -f -
+        oc process \
+           -f tools/openshift/frontend.dc.yaml \
+           -p APP_NAME=${{ env.APP_NAME }} \
+           -p REPO_NAME=${{ env.REPO_NAME }} \
+           -p BRANCH=${{ env.BRANCH }} \
+           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+           -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
+           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+           -p MIN_CPU=${{ env.MIN_CPU }} \
+           -p MAX_CPU=${{ env.MAX_CPU }} \
+           -p MIN_MEM=${{ env.MIN_MEM }} \
+           -p MAX_MEM=${{ env.MAX_MEM }} \
+           -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+           -p CA_CERT="${{ env.CA_CERT }}" \
+           -p CERTIFICATE="${{ env.CERTIFICATE }}" \
+           -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
+            | oc apply -f -
 
         # Start rollout (if necessary) and follow it
         oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
-        || true && echo "Rollout in progress"
+            || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
         oc rollout status dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
