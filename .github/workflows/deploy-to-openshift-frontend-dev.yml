@@ -24,7 +24,8 @@ env:
   REPO_NAME: "educ-ccof"
   #grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
-  APP_NAME_FRONTEND: "frontend"
+  IMAGE_NAME: "frontend"
+  APP_ENVIRONMENT: "dev"
   APP_FOLDER: "frontend"
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
   NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
@@ -111,7 +112,7 @@ jobs:
         id: build-image-frontend
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ${{ env.APP_NAME_FRONTEND }}
+          image: ${{ env.IMAGE_NAME }}
           tags: "latest"
 
           # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
@@ -146,13 +147,13 @@ jobs:
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
           oc project ${{ env.OPENSHIFT_NAMESPACE }}
           # Cancel any rollouts in progress
-          oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+          oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
           || true && echo "No rollout in progress"
 
           # Create the image stream if it doesn't exist
-          oc create imagestream ${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }} 2> /dev/null || true && echo "Frontend image stream in place"
+          oc create imagestream ${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }} 2> /dev/null || true && echo "Frontend image stream in place"
 
-          oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-${{ env.APP_NAME_FRONTEND }}-${{ env.BRANCH }}:${{ env.TAG }}
+          oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ env.TAG }}
 
           # Process and apply deployment template
           oc process -f tools/openshift/frontend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p CA_CERT="${{ env.CA_CERT }}" -p CERTIFICATE="${{ env.CERTIFICATE }}" -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
@@ -161,11 +162,11 @@ jobs:
           | oc apply -f -
 
           # Start rollout (if necessary) and follow it
-          oc rollout latest dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+          oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
           || true && echo "Rollout in progress"
 
           # Get status, returns 0 if rollout is successful
-          oc rollout status dc/${{ env.APP_NAME }}-${{ env.APP_NAME_FRONTEND }}
+          oc rollout status dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
 
     # - name: ZAP Scan
     #   uses: zaproxy/action-full-scan@v0.3.0
