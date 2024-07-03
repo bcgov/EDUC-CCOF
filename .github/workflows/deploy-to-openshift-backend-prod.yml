@@ -140,6 +140,7 @@ jobs:
            -p MIN_MEM=${{ env.MIN_MEM }} \
            -p MAX_MEM=${{ env.MAX_MEM }} \
            -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
+           -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
             | oc apply -f -
 
         # Process update-configmap

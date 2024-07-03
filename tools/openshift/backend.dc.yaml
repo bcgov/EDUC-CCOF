@@ -15,12 +15,12 @@ objects:
     labels:
       app: "${APP_NAME}-${BRANCH}"
       branch: "${BRANCH}"
-    name: "${APP_NAME}-backend"
+    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
       app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend"
+      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
     strategy:
       resources: {}
       type: Rolling
@@ -31,7 +31,7 @@ objects:
         creationTimestamp:
         labels:
           app: "${APP_NAME}-${BRANCH}"
-          deploymentconfig: "${APP_NAME}-backend"
+          deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
@@ -52,7 +52,7 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
-          name: "${APP_NAME}-backend"
+          name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
           ports:
           - containerPort: 8080
             protocol: TCP
@@ -60,7 +60,7 @@ objects:
             protocol: TCP
           envFrom:
             - configMapRef:
-                name: educ-ccof-backend-config-map
+                name: ccof-backend-${APP_ENVIRONMENT}-config-map
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 5
@@ -231,4 +231,7 @@ parameters:
   required: true
 - name: MAX_MEM
   description: The maximum amount of memory
+  required: true
+- name: APP_ENVIRONMENT
+  description: The environment being created ('dev', 'qa', 'uat', 'prod')
   required: true

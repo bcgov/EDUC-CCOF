@@ -142,6 +142,7 @@ jobs:
            -p CA_CERT="${{ env.CA_CERT }}" \
            -p CERTIFICATE="${{ env.CERTIFICATE }}" \
            -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
+           -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
             | oc apply -f -
 
         # Start rollout (if necessary) and follow it
