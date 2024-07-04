@@ -107,7 +107,7 @@
         openshift.io/host.generated: 'true'
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-frontend-https"
+      name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       host: "${HOST_ROUTE}"
       port:
