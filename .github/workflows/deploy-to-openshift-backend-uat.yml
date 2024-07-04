@@ -1,4 +1,4 @@
-name: 4 PROD - Deploy Backend
+name: 3 UAT - Deploy Backend
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-prod
+  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-test
 
   SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
@@ -25,12 +25,9 @@ env:
   #grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
   IMAGE_NAME: "backend"
-  APP_ENVIRONMENT: "prod"
-
+  APP_ENVIRONMENT: "uat"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
-
-
 
   MIN_REPLICAS: "3"
   MAX_REPLICAS: "5"
@@ -49,9 +46,9 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Deploy Backend to PROD
+    name: Deploy Backend to TEST
     runs-on: ubuntu-24.04
-    environment: prod
+    environment: test
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -120,10 +117,10 @@ jobs:
         oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
             || true && echo "No rollout in progress"
 
-        # Create tag for PROD env from DEV env image
+        # Create tag for TEST env from DEV env image
         oc tag \
            ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} \
-           ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
+           ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
         oc process \
@@ -139,20 +136,20 @@ jobs:
            -p MAX_CPU=${{ env.MAX_CPU }} \
            -p MIN_MEM=${{ env.MIN_MEM }} \
            -p MAX_MEM=${{ env.MAX_MEM }} \
-           -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
+           -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
            -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
             | oc apply -f -
 
         # Process update-configmap
         curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh \
             | bash /dev/stdin \
-                   prod \
+                   test \
                    ${{ env.APP_NAME }} \
                    ${{ env.NAMESPACE }} \
                    ${{ env.SPLUNK_TOKEN }}
 
         # Start rollout (if necessary) and follow it
-        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}} 2> /dev/null \
             || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful

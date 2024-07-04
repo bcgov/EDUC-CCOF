@@ -15,12 +15,12 @@ objects:
     labels:
       app: "${APP_NAME}-${BRANCH}"
       branch: "${BRANCH}"
-    name: "${APP_NAME}-backend"
+    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
       app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend"
+      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
     strategy:
       resources: {}
       type: Rolling
@@ -31,7 +31,7 @@ objects:
         creationTimestamp:
         labels:
           app: "${APP_NAME}-${BRANCH}"
-          deploymentconfig: "${APP_NAME}-backend"
+          deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
@@ -52,7 +52,7 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
-          name: "${APP_NAME}-backend"
+          name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
           ports:
           - containerPort: 8080
             protocol: TCP
@@ -60,7 +60,7 @@ objects:
             protocol: TCP
           envFrom:
             - configMapRef:
-                name: educ-ccof-backend-config-map
+                name: ccof-backend-${APP_ENVIRONMENT}-config-map
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 5
@@ -137,7 +137,7 @@ objects:
     creationTimestamp:
     labels:
       app: "${APP_NAME}-${BRANCH}"
-    name: "${APP_NAME}-backend"
+    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     ports:
     - name: 8080-tcp
@@ -150,7 +150,7 @@ objects:
       targetPort: 443
     selector:
       app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend"
+      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
 - apiVersion: v1
   kind: Route
   metadata:
@@ -162,7 +162,7 @@ objects:
       openshift.io/host.generated: 'true'
     labels:
       app: "${APP_NAME}-${BRANCH}"
-    name: "${APP_NAME}-backend"
+    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     host: "${HOST_ROUTE}"
     path: /api
@@ -173,7 +173,7 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: "${APP_NAME}-backend"
+      name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
       weight: 100
     wildcardPolicy: None
 - apiVersion: autoscaling/v2
@@ -184,7 +184,7 @@ objects:
     scaleTargetRef:
       apiVersion: apps.openshift.io/v1
       kind: DeploymentConfig
-      name: "${APP_NAME}-backend"
+      name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
       subresource: scale
     minReplicas: ${{MIN_REPLICAS}}
     maxReplicas: ${{MAX_REPLICAS}}
@@ -231,4 +231,7 @@ parameters:
   required: true
 - name: MAX_MEM
   description: The maximum amount of memory
+  required: true
+- name: APP_ENVIRONMENT
+  description: The environment being created ('dev', 'qa', 'uat', 'prod')
   required: true

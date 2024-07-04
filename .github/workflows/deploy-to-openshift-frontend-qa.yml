@@ -1,4 +1,4 @@
-name: 3 TEST - Deploy Backend
+name: 2 QA - Deploy Frontend
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -7,9 +7,9 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-test
+  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
-  SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
+  # SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
     # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -24,16 +24,19 @@ env:
   REPO_NAME: "educ-ccof"
   #grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
-  APP_NAME_BACKEND: "backend"
+  IMAGE_NAME: "frontend"
+  APP_ENVIRONMENT: "qa"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
+
+
 
   MIN_REPLICAS: "3"
   MAX_REPLICAS: "5"
   MIN_CPU: "50m"
-  MAX_CPU: "250m"
+  MAX_CPU: "100m"
   MIN_MEM: "200Mi"
-  MAX_MEM: "700Mi"
+  MAX_MEM: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
   CA_CERT: ${{ secrets.CA_CERT }}
@@ -45,9 +48,9 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Deploy Backend to TEST
-    runs-on: ubuntu-latest
-    environment: test
+    name: Deploy Frontend to QA
+    runs-on: ubuntu-24.04
+    environment: dev
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -104,7 +107,7 @@ jobs:
     - name: Install oc
       uses: redhat-actions/openshift-tools-installer@v1
       with:
-        oc: 4
+        oc: 4.16
 
     - name: Deploy
       run: |
@@ -113,27 +116,42 @@ jobs:
         oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
         # Cancel any rollouts in progress
-        oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }} 2> /dev/null \
-        || true && echo "No rollout in progress"
+        oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+            || true && echo "No rollout in progress"
 
-        # Create tag for TEST env from DEV env image
-        oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.APP_NAME_BACKEND }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
+        # Create tag for QA env from DEV env image
+        oc tag \
+           ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} \
+           ${{ env.NAMESPACE }}-qa/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
-        oc process -f tools/openshift/backend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
-        | oc apply -f -
-
-        # Process update-configmap
-        curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh | bash /dev/stdin test ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{ env.SPLUNK_TOKEN }}
+        oc process \
+           -f tools/openshift/frontend.dc.yaml \
+           -p APP_NAME=${{ env.APP_NAME }} \
+           -p REPO_NAME=${{ env.REPO_NAME }} \
+           -p BRANCH=${{ env.BRANCH }} \
+           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+           -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
+           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+           -p MIN_CPU=${{ env.MIN_CPU }} \
+           -p MAX_CPU=${{ env.MAX_CPU }} \
+           -p MIN_MEM=${{ env.MIN_MEM }} \
+           -p MAX_MEM=${{ env.MAX_MEM }} \
+           -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+           -p CA_CERT="${{ env.CA_CERT }}" \
+           -p CERTIFICATE="${{ env.CERTIFICATE }}" \
+           -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
+            | oc apply -f -
 
         # Start rollout (if necessary) and follow it
-        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }}} 2> /dev/null \
-        || true && echo "Rollout in progress"
+        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+            || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
-        oc rollout status dc/${{ env.APP_NAME }}-${{ env.APP_NAME_BACKEND }}
+        oc rollout status dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
 
     - name: ZAP Scan
       uses: zaproxy/action-full-scan@v0.3.0
       with:
-        target: 'https://${{ env.HOST_ROUTE }}/api'
+        target: 'https://${{ env.HOST_ROUTE }}'

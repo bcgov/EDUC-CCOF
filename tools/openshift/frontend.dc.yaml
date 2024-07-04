@@ -15,7 +15,7 @@
       labels:
         app: "${APP_NAME}-${BRANCH}"
         branch: "${BRANCH}"
-      name: "${APP_NAME}-frontend"
+      name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
@@ -31,7 +31,7 @@
           creationTimestamp:
           labels:
             app: "${APP_NAME}-${BRANCH}"
-            deploymentconfig: "${APP_NAME}-frontend"
+            deploymentconfig: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
         spec:
           containers:
           - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
@@ -51,7 +51,7 @@
               periodSeconds: 10
               successThreshold: 1
               timeoutSeconds: 1
-            name: "${APP_NAME}-frontend"
+            name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
             ports:
             - containerPort: 2015
               protocol: TCP
@@ -77,7 +77,7 @@
               secretName: ccof-frontend-cert
           - name: config-env
             configMap:
-              name: ccof-frontend-config-map
+              name: ccof-frontend-${APP_ENVIRONMENT}-config-map
       test: false
       triggers:
       - type: ConfigChange
@@ -90,7 +90,7 @@
       creationTimestamp:
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-frontend"
+      name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       ports:
       - name: 2015-tcp
@@ -99,7 +99,7 @@
         targetPort: 2015
       selector:
         app: "${APP_NAME}-${BRANCH}"
-        deploymentconfig: "${APP_NAME}-frontend"
+        deploymentconfig: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
   - apiVersion: v1
     kind: Route
     metadata:
@@ -107,7 +107,7 @@
         openshift.io/host.generated: 'true'
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-frontend-https"
+      name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       host: "${HOST_ROUTE}"
       port:
@@ -120,18 +120,18 @@
         termination: edge
       to:
         kind: Service
-        name: "${APP_NAME}-frontend"
+        name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
         weight: 100
       wildcardPolicy: None
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
-      name: "${APP_NAME}-frontend-cpu-autoscaler"
+      name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-cpu-autoscaler"
     spec:
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig
-        name: "${APP_NAME}-frontend"
+        name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
         subresource: scale
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
@@ -187,4 +187,7 @@
     required: true
   - name: PRIVATE_KEY
     description: The private key
+    required: true
+  - name: APP_ENVIRONMENT
+    description: The environment being created ('dev', 'qa', 'uat', 'prod')
     required: true
