@@ -3,6 +3,12 @@ APP_NAME=$2
 OPENSHIFT_NAMESPACE=$3
 SPLUNK_TOKEN=$4
 
+NAMESPACE_SUFFIX="$ENV_VAL"
+if [ "$ENV_VAL" = "dev" ] || [ "$ENV_VAL" = "qa" ]; then
+  NAMESPACE_SUFFIX="dev"
+fi
+readonly NAMESPACE_SUFFIX
+
 SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
 FLB_CONFIG="[SERVICE]
    Flush        1
@@ -40,7 +46,7 @@ PARSER_CONFIG="
 "
 
 echo Creating config map $APP_NAME-flb-sc-config-map
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap $APP_NAME-flb-sc-config-map \
+oc create -n "$OPENSHIFT_NAMESPACE-$NAMESPACE_SUFFIX" configmap "$APP_NAME-flb-sc-config-map" \
 --from-literal=fluent-bit.conf="$FLB_CONFIG" \
 --from-literal=parsers.conf="$PARSER_CONFIG" \
 --dry-run -o yaml | oc apply -f -
