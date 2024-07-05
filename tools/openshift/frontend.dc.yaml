@@ -20,7 +20,7 @@
       replicas: ${{MIN_REPLICAS}}
       selector:
         app: "${APP_NAME}-${BRANCH}"
-        deploymentconfig: "${APP_NAME}-frontend"
+        deploymentconfig: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
       strategy:
         resources: {}
         type: Rolling
