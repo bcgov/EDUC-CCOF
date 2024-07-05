@@ -29,8 +29,6 @@ env:
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
-
-
   MIN_REPLICAS: "1"
   MAX_REPLICAS: "2"
   MIN_CPU: "50m"
@@ -50,7 +48,7 @@ jobs:
   openshift-ci-cd:
     name: Deploy Frontend to QA
     runs-on: ubuntu-24.04
-    environment: dev
+    environment: qa
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
