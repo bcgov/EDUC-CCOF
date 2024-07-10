@@ -76,6 +76,10 @@ objects:
             limits:
               cpu: "${MAX_CPU}"
               memory: "${MAX_MEM}"
+        volumes:
+        - name: tls-certs
+          secret:
+            secretName: ccof-backend-cert
     test: false
     triggers:
     - type: ConfigChange
