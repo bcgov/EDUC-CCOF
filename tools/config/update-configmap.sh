@@ -9,8 +9,9 @@ if [ "$ENV_VAL" = "dev" ] || [ "$ENV_VAL" = "qa" ]; then
 fi
 readonly NAMESPACE_SUFFIX
 
-SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
-FLB_CONFIG="[SERVICE]
+if [ "$ENV_VAL" != 'qa' ]; then
+    SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
+    FLB_CONFIG="[SERVICE]
    Flush        1
    Daemon       Off
    Log_Level    debug
@@ -39,14 +40,16 @@ FLB_CONFIG="[SERVICE]
    Message_Key $APP_NAME
    Splunk_Token $SPLUNK_TOKEN
 "
-PARSER_CONFIG="
+    PARSER_CONFIG="
 [PARSER]
     Name        docker
     Format      json
 "
 
-echo Creating config map $APP_NAME-flb-sc-config-map
-oc create -n "$OPENSHIFT_NAMESPACE-$NAMESPACE_SUFFIX" configmap "$APP_NAME-flb-sc-config-map" \
---from-literal=fluent-bit.conf="$FLB_CONFIG" \
---from-literal=parsers.conf="$PARSER_CONFIG" \
---dry-run -o yaml | oc apply -f -
+    echo Creating config map "$APP_NAME-flb-sc-config-map"
+    oc create -n "$OPENSHIFT_NAMESPACE-$NAMESPACE_SUFFIX" \
+       configmap "$APP_NAME-flb-sc-config-map" \
+       --from-literal=fluent-bit.conf="$FLB_CONFIG" \
+       --from-literal=parsers.conf="$PARSER_CONFIG" \
+       --dry-run -o yaml | oc apply -f -
+fi
