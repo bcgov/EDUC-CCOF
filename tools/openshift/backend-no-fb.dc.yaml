@@ -40,6 +40,8 @@ objects:
           - name: tls-certs
             mountPath: "/etc/tls-certs"
             readOnly: true
+          - name: log-storage
+            mountPath: /logs
           livenessProbe:
             initialDelaySeconds: 20
             failureThreshold: 5
@@ -77,6 +79,8 @@ objects:
               cpu: "${MAX_CPU}"
               memory: "${MAX_MEM}"
         volumes:
+        - name: log-storage
+          emptyDir: {}
         - name: tls-certs
           secret:
             secretName: ccof-backend-cert
