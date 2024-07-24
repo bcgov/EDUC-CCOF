@@ -450,12 +450,18 @@ async function printPdf(req, numOfRetries = 0) {
     ]
   }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
 
+  const browserProcess = browser.process();
+  browserProcess
+    .on('exit', code => log.info(`printPdf :: browser process exited, status: ${code}`));
+  browserProcess
+    .on('close', code => log.info(`printPdf :: browser process closed, status: ${code}`));
+
   try {
     log.info('printPdf :: starting new page');
     const page = await browser.newPage();
 
+    page.setDefaultTimeout(300000); //set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
     await page.setRequestInterception(true);
-    await page.setDefaultTimeout(300000); //set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
 
     page.on('request', (request) => {
       const headers = request.headers();
@@ -471,7 +477,6 @@ async function printPdf(req, numOfRetries = 0) {
     log.info('printPdf :: pdf buffer created starting compression');
     const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
     log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
-    await browser.close();
 
     let payload;
     //if the body contains an application ID, the summary dec is for PCF. Else, it should be a change request.
@@ -502,7 +507,6 @@ async function printPdf(req, numOfRetries = 0) {
     return payload;
   } catch (e) {
     log.error(e);
-    await browser.close();
 
     if (numOfRetries >= 3) {
       log.info('printPdf :: maximum number of retries reached');
@@ -514,6 +518,8 @@ async function printPdf(req, numOfRetries = 0) {
       log.info(`printPdf :: retry count ${retryCount}`);
       await printPdf(req, retryCount);
     }
+  } finally {
+    await browser.close();
   }
 }
 
