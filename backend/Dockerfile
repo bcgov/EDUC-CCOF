@@ -13,7 +13,8 @@ RUN npm ci
 COPY . /opt/app-root/src
 
 RUN apk upgrade --no-cache --available \
-    && apk add --no-cache chromium-swiftshader nss freetype harfbuzz ca-certificates ttf-freefont ghostscript
+    && apk add --no-cache chromium-swiftshader nss freetype \
+      harfbuzz ca-certificates ttf-freefont tini ghostscript
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
@@ -25,4 +26,5 @@ RUN mkdir -p /tmp/npm \
     && chmod -R 777 /tmp/npm
 
 EXPOSE 443 8080
-CMD ["npm", "start"]
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "--max-old-space-size=450", "./src/server.js"]
