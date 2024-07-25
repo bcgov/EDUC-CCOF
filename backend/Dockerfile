@@ -27,4 +27,4 @@ RUN mkdir -p /tmp/npm \
 
 EXPOSE 443 8080
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node" "--max-old-space-size=450" "./src/server.js"]
+CMD ["node", "--max-old-space-size=450", "./src/server.js"]
