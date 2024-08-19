@@ -122,7 +122,7 @@ jobs:
         # Create tag for TEST env from DEV env image
         oc tag \
            ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} \
-           ${{ env.NAMESPACE }}-uat/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
+           ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
         oc process \
