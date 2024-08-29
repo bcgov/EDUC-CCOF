@@ -39,7 +39,7 @@
         <br>
         <p class="px-10 text-h6">
           <br>
-            <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding/report-changes" target="_blank">
+            <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes" target="_blank">
             Learn more about reporting changes</a> to your licence or service.
             <br>
             <b>Before you continue:</b>
