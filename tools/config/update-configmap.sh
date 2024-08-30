@@ -6,6 +6,10 @@ SPLUNK_TOKEN=$4
 NAMESPACE_SUFFIX="$ENV_VAL"
 if [ "$ENV_VAL" = "dev" ] || [ "$ENV_VAL" = "qa" ]; then
   NAMESPACE_SUFFIX="dev"
+elif [ "$ENV_VAL" = "uat" ] || [ "$ENV_VAL" = "efx" ]; then
+  NAMESPACE_SUFFIX="test"
+elif [ "$ENV_VAL" = "prod" ]; then
+  NAMESPACE_SUFFIX="prod"
 fi
 readonly NAMESPACE_SUFFIX
 
