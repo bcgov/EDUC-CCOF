@@ -1,25 +1,25 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import auth from '@/store/modules/auth.js';
-import app from '@/store/modules/app.js';
-import organization from '@/store/modules/ccof/organization';
-import licenseUpload from '@/store/modules/licenseUpload.js';
-import supportingDocumentUpload from '@/store/modules/supportingDocumentUpload';
-import funding from '@/store/modules/ccof/funding';
-import facility from '@/store/modules/ccof/facility';
+import auth from './modules/auth.js';
+import app from './modules/app.js';
+import organization from './modules/ccof/organization';
+import licenseUpload from './modules/licenseUpload.js';
+import supportingDocumentUpload from './modules/supportingDocumentUpload';
+import funding from './modules/ccof/funding';
+import facility from './modules/ccof/facility';
 
-import ccfriApp from '@/store/modules/ccfriApp.js';
-import application from '@/store/modules/application.js';
-import navBar from '@/store/modules/navBar.js';
+import ccfriApp from './modules/ccfriApp.js';
+import application from './modules/application.js';
+import navBar from './modules/navBar.js';
 
-import rfiApp from '@/store/modules/rfiApp.js';
-import nmfApp from '@/store/modules/nmfApp.js';
-import eceweApp from '@/store/modules/eceweApp.js';
-import message from '@/store/modules/message.js';
-import summaryDeclaration from '@/store/modules/summaryDeclaration.js';
+import rfiApp from './modules/rfiApp.js';
+import nmfApp from './modules/nmfApp.js';
+import eceweApp from './modules/eceweApp.js';
+import message from './modules/message.js';
+import summaryDeclaration from './modules/summaryDeclaration.js';
 
-import reportChanges from '@/store/modules/reportChanges.js';
-import document from '@/store/modules/document.js';
+import reportChanges from './modules/reportChanges.js';
+import document from './modules/document.js';
 
 Vue.use(Vuex);
 

@@ -70,10 +70,10 @@
 
 <script>
 
-import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants';
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { isChangeRequest } from '@/utils/common';
-import alertMixin from '@/mixins/alertMixin';
+import { isChangeRequest } from '../../../utils/common';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   data() {

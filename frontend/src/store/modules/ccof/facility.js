@@ -1,6 +1,6 @@
-import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
-import { checkSession } from '@/utils/session';
+import ApiService from '../../../common/apiService';
+import { ApiRoutes } from '../../../utils/constants';
+import { checkSession } from '../../../utils/session';
 import { isEmpty, isEqual } from 'lodash';
 
 export default {

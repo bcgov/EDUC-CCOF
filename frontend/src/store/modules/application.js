@@ -1,6 +1,6 @@
-import { filterFacilityListForPCF, checkApplicationUnlocked } from '@/utils/common';
-import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { filterFacilityListForPCF, checkApplicationUnlocked } from '../../utils/common';
+import ApiService from '../../common/apiService';
+import { ApiRoutes } from '../../utils/constants';
 
 export default {
   namespaced: true,

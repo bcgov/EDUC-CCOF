@@ -1,9 +1,9 @@
 'use strict';
 
-import {getDateFormatter} from '@/utils/format';
+import {getDateFormatter} from './format';
 import {LocalDate} from '@js-joda/core';
 import {isPlainObject, sortBy} from 'lodash';
-import { PATHS } from '@/utils/constants';
+import { PATHS } from './constants';
 
 const clone = require('rfdc')();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {

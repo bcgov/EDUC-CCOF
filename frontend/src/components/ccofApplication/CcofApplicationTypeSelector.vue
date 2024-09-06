@@ -33,10 +33,10 @@
 
 <script>
 
-import LargeCard from '@/components/guiComponents/LargeCard.vue';
-import { PATHS, pcfUrl } from '@/utils/constants';
+import LargeCard from '../../components/guiComponents/LargeCard.vue';
+import { PATHS, pcfUrl } from '../../utils/constants';
 import { mapMutations, mapState } from 'vuex';
-import NavButton from '@/components/util/NavButton';
+import NavButton from '../../components/util/NavButton';
 
 export default {
   name: 'LandingPage',

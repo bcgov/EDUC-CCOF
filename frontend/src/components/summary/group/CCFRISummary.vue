@@ -157,11 +157,11 @@
 </template>
 <script>
 import _ from 'lodash';
-import { isChangeRequest } from '@/utils/common';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid  } from '@/utils/constants';
-import rules from '@/utils/rules';
+import { isChangeRequest } from '../../../utils/common';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid  } from '../../../utils/constants';
+import rules from '../../../utils/rules';
 import {mapState} from 'vuex';
-import globalMixin from '@/mixins/globalMixin';
+import globalMixin from '../../../mixins/globalMixin';
 
 
 export default {

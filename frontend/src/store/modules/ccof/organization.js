@@ -1,6 +1,6 @@
-import ApiService from '@/common/apiService';
-import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
-import { checkSession } from '@/utils/session';
+import ApiService from '../../../common/apiService';
+import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants';
+import { checkSession } from '../../../utils/session';
 import { isEqual } from 'lodash';
 
 export default {

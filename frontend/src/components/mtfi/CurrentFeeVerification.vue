@@ -667,13 +667,13 @@
 
 
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
-import globalMixin from '@/mixins/globalMixin';
-import NavButton from '@/components/util/NavButton';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants';
+import alertMixin from '../../mixins/alertMixin';
+import globalMixin from '../../mixins/globalMixin';
+import NavButton from '../../components/util/NavButton';
 import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
-import ApiService from '@/common/apiService';
+import ApiService from '../../common/apiService';
 import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 function dateFunction (date1, date2){

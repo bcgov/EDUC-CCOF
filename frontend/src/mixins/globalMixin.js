@@ -1,4 +1,4 @@
-import {isNullOrBlank} from '@/utils/common';
+import { isNullOrBlank } from '../utils/common.js';
 
 export default {
   methods: {

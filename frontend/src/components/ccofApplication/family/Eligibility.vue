@@ -55,8 +55,8 @@
 
 <script>
 
-import facilityMixin from '@/mixins/facilityMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import facilityMixin from '../../../mixins/facilityMixin';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants';
 
 export default {
   mixins: [facilityMixin],

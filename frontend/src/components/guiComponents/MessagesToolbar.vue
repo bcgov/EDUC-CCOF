@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { PATHS } from '@/utils/constants';
+import { PATHS } from '../../utils/constants';
 import { mapGetters } from 'vuex';
 
 export default {

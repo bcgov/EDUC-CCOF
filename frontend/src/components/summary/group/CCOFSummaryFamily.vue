@@ -258,8 +258,8 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl,} from '@/utils/constants';
-import rules from '@/utils/rules';
+import { PATHS, pcfUrlGuid, pcfUrl,} from '../../../utils/constants';
+import rules from '../../../utils/rules';
 import {mapState} from 'vuex';
 
 export default {

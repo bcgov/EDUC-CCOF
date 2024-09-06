@@ -207,8 +207,8 @@
 <script>
 
 import { mapState } from 'vuex';
-import rules from '@/utils/rules';
-import { PATHS, pcfUrl } from '@/utils/constants';
+import rules from '../../../utils/rules';
+import { PATHS, pcfUrl } from '../../../utils/constants';
 
 export default {
   name: 'OrganizationSummary',

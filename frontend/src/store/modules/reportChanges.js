@@ -1,8 +1,8 @@
-import ApiService from '@/common/apiService';
-import {ApiRoutes} from '@/utils/constants';
-import {checkSession} from '@/utils/session';
+import ApiService from '../../common/apiService';
+import {ApiRoutes} from '../../utils/constants';
+import {checkSession} from '../../utils/session';
 import {isEmpty} from 'lodash';
-import { CHANGE_REQUEST_TYPES, CHANGE_TYPES } from '@/utils/constants';
+import { CHANGE_REQUEST_TYPES, CHANGE_TYPES } from '../../utils/constants';
 
 /*
 change REQUEST guid is what we need for saving and loading.

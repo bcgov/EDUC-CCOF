@@ -1,6 +1,6 @@
-import ApiService from '@/common/apiService';
-import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
-import { checkSession } from '@/utils/session';
+import ApiService from '../../common/apiService';
+import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants';
+import { checkSession } from '../../utils/session';
 import { deepCloneObject, sleep } from '../../utils/common';
 import { isEqual } from 'lodash';
 

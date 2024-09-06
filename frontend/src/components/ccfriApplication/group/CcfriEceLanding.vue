@@ -72,11 +72,11 @@
 
 import { mapState, mapMutations, mapGetters } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants';
-import ApiService from '@/common/apiService';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
-import { isChangeRequest } from '@/utils/common';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants';
+import ApiService from '../../../common/apiService';
+import alertMixin from '../../../mixins/alertMixin';
+import NavButton from '../../../components/util/NavButton';
+import { isChangeRequest } from '../../../utils/common';
 
 
 let ccfriOptInOrOut = {};

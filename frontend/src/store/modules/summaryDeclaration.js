@@ -1,7 +1,7 @@
-import ApiService from '@/common/apiService';
-import {ApiRoutes} from '@/utils/constants';
-import {checkSession} from '@/utils/session';
-import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
+import ApiService from '../../common/apiService';
+import {ApiRoutes} from '../../utils/constants';
+import {checkSession} from '../../utils/session';
+import { CHANGE_REQUEST_TYPES } from '../../utils/constants';
 
 function parseLicenseCategories(licenseCategories, rootState) {
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];

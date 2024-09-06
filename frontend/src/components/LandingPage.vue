@@ -252,9 +252,9 @@ import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from './guiComponents/FiscalYearSlider';
-import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
-import { checkApplicationUnlocked } from '@/utils/common';
+import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '../utils/constants';
+import alertMixin from '../mixins/alertMixin';
+import { checkApplicationUnlocked } from '../utils/common';
 
 
 export default {

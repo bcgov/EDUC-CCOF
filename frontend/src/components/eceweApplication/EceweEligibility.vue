@@ -332,12 +332,12 @@
 
 <script>
 
-import { PATHS, changeUrl, pcfUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import { PATHS, changeUrl, pcfUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
-import rules from '@/utils/rules';
-import { isNullOrBlank } from '@/utils/common';
+import alertMixin from '../../mixins/alertMixin';
+import NavButton from '../../components/util/NavButton';
+import rules from '../../utils/rules';
+import { isNullOrBlank } from '../../utils/common';
 
 export default {
   components: { NavButton },

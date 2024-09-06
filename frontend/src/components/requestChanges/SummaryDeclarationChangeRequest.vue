@@ -317,14 +317,14 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES, CHANGE_TYPES, changeUrlGuid, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES, CHANGE_TYPES, changeUrlGuid, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants';
 import { mapGetters, mapActions, mapState } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
-import MTFISummary from '@/components/summary/changeRequest/MTFISummary';
-import RFISummary from '@/components/summary/group/RFISummary';
-import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary';
-import { isAnyApplicationUnlocked } from '@/utils/common';
+import alertMixin from '../../mixins/alertMixin';
+import NavButton from '../../components/util/NavButton';
+import MTFISummary from '../../components/summary/changeRequest/MTFISummary';
+import RFISummary from '../../components/summary/group/RFISummary';
+import ChangeNotificationFormSummary from '../../components/summary/changeRequest/ChangeNotificationFormSummary';
+import { isAnyApplicationUnlocked } from '../../utils/common';
 
 export default {
   components: {

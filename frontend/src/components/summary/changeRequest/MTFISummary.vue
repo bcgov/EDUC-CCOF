@@ -277,9 +277,10 @@
 </template>
 
 <script>
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
-import rules from '@/utils/rules';
 import { mapState } from 'vuex';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants';
+import rules from '../../../utils/rules';
+
 
 export default {
   props: {
@@ -331,6 +332,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 .summary-label {
   color: grey;

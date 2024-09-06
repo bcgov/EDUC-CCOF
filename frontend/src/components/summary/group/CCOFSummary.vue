@@ -356,9 +356,9 @@
   </v-row>
 </template>
 <script>
-import { isChangeRequest } from '@/utils/common';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants';
-import rules from '@/utils/rules';
+import { isChangeRequest } from '../../../utils/common';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '../../../utils/constants';
+import rules from '../../../utils/rules';
 import {mapState} from 'vuex';
 
 

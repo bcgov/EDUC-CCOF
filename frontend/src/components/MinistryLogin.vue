@@ -106,7 +106,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { AuthRoutes, PATHS } from '@/utils/constants';
+import { AuthRoutes, PATHS } from '../utils/constants';
 
 export default {
   name: 'Login',

@@ -67,8 +67,8 @@
 
 
 <script>
-import Spinner from '@/components/common/Spinner';
-import { PATHS } from '@/utils/constants';
+import Spinner from './common/Spinner';
+import { PATHS } from '../utils/constants';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {

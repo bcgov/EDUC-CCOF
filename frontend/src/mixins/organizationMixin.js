@@ -1,8 +1,8 @@
-import alertMixin from '@/mixins/alertMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
-import rules from '@/utils/rules';
+import alertMixin from './alertMixin';
+import { ORGANIZATION_PROVIDER_TYPES } from '../utils/constants';
+import rules from '../utils/rules';
 import { mapActions, mapMutations, mapState, mapGetters } from 'vuex';
-import NavButton from '@/components/util/NavButton';
+import NavButton from '..n/components/util/NavButton';
 
 export default {
   components: { NavButton },

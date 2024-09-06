@@ -83,8 +83,8 @@
 </template>
 <script>
 
-import rules from '@/utils/rules';
-import { PATHS, pcfUrlGuid, } from '@/utils/constants';
+import rules from '../../../utils/rules';
+import { PATHS, pcfUrlGuid, } from '../../../utils/constants';
 import {mapState} from 'vuex';
 
 export default {

@@ -1,10 +1,10 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, changeUrl, pcfUrlGuid, pcfUrl } from '@/utils/constants';
-import { isChangeRequest } from '@/utils/common';
-import rules from '@/utils/rules';
+import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, changeUrl, pcfUrlGuid, pcfUrl } from '../utils/constants';
+import { isChangeRequest } from '../utils/common';
+import rules from '../utils/rules';
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
+import alertMixin from './alertMixin';
 import {isEmpty} from 'lodash';
-import NavButton from '@/components/util/NavButton';
+import NavButton from '../components/util/NavButton';
 
 export default {
   components: { NavButton },

@@ -27,8 +27,8 @@
 
 <script>
 import { mapGetters, mapState, mapMutations } from 'vuex';
-import { PATHS, pcfUrl, } from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
+import { PATHS, pcfUrl, } from '../utils/constants';
+import alertMixin from '../mixins/alertMixin';
 
 export default {
   name: 'NewAppIntermediatePage',

@@ -147,10 +147,10 @@
 
 <script>
 
-import organizationMixin from '@/mixins/organizationMixin';
+import organizationMixin from '../../../mixins/organizationMixin';
 import { mapGetters, mapState } from 'vuex';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
-import {isAnyChangeRequestActive } from '@/utils/common';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants';
+import {isAnyChangeRequestActive } from '../../../utils/common';
 
 
 export default {

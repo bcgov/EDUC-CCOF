@@ -73,7 +73,7 @@
 
 <script>
 import {mapGetters, mapState} from 'vuex';
-import {AuthRoutes , ApiRoutes, PATHS} from '@/utils/constants';
+import {AuthRoutes , ApiRoutes, PATHS} from '../utils/constants';
 
 export default {
   data() {

@@ -92,12 +92,12 @@
   </v-form>
 </template>
 <script>
-import {getFileExtension, getFileNameWithMaxNameLength, humanFileSize} from '@/utils/file';
-import alertMixin from '@/mixins/alertMixin';
-import rules from '@/utils/rules';
-import {deepCloneObject} from '@/utils/common';
+import {getFileExtension, getFileNameWithMaxNameLength, humanFileSize} from '../../utils/file';
+import alertMixin from '../../mixins/alertMixin';
+import rules from '../../utils/rules';
+import {deepCloneObject} from '../../utils/common';
 import {mapGetters, mapState} from 'vuex';
-import {CHANGE_TYPES } from '@/utils/constants';
+import {CHANGE_TYPES } from '../../utils/constants';
 
 export default {
   mixins: [alertMixin],

@@ -1,7 +1,7 @@
-import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
-import { checkSession } from '@/utils/session';
-import { deepCloneObject } from '@/utils/common';
+import ApiService from '../../common/apiService';
+import { ApiRoutes } from '../../utils/constants';
+import { checkSession } from '../../utils/session';
+import { deepCloneObject } from '../../utils/common';
 import { isEqual } from 'lodash';
 
 export default {

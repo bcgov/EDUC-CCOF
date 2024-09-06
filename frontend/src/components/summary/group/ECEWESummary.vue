@@ -99,9 +99,9 @@
 <script>
 
 import {mapState, mapGetters} from 'vuex';
-import { isChangeRequest } from '@/utils/common';
-import { PATHS, pcfUrl, changeUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
-import rules from '@/utils/rules';
+import { isChangeRequest } from '../../../utils/common';
+import { PATHS, pcfUrl, changeUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../../utils/constants';
+import rules from '../../../utils/rules';
 
 export default {
 

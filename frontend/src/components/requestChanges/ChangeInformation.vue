@@ -57,9 +57,9 @@
   </template>
 
 <script>
-import { PATHS } from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
+import { PATHS } from '../../utils/constants';
+import alertMixin from '../../mixins/alertMixin';
+import NavButton from '../../components/util/NavButton';
 
 export default {
   name: 'ReportChange',

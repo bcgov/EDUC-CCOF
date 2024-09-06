@@ -139,11 +139,11 @@
 
 <script>
 
-import { PATHS, changeUrl, pcfUrl } from '@/utils/constants';
+import { PATHS, changeUrl, pcfUrl } from '../../utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
-import rules from '@/utils/rules';
+import alertMixin from '../../mixins/alertMixin';
+import NavButton from '../../components/util/NavButton';
+import rules from '../../utils/rules';
 
 export default {
   components: { NavButton },

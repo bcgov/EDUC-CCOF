@@ -1488,15 +1488,15 @@
   </v-form>
 </template>
 <script>
-import alertMixin from '@/mixins/alertMixin';
-import globalMixin from '@/mixins/globalMixin';
+import alertMixin from '../../mixins/alertMixin';
+import globalMixin from '../../mixins/globalMixin';
 import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
-import {deepCloneObject} from '@/utils/common';
+import {deepCloneObject} from '../../utils/common';
 import {isEqual} from 'lodash';
-import rules from '@/utils/rules';
-import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload';
-import NavButton from '@/components/util/NavButton';
-import {PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import rules from '../../utils/rules';
+import RFIDocumentUpload from '../../components/RFI/RFIDocumentUpload';
+import NavButton from '../../components/util/NavButton';
+import {PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants';
 import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 let model = {

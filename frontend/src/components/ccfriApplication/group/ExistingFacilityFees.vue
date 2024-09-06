@@ -112,12 +112,12 @@
 
 <script>
 
-import { PATHS, pcfUrlGuid } from '@/utils/constants';
-import { deepCloneObject } from '@/utils/common';
+import { PATHS, pcfUrlGuid } from '../../../utils/constants';
+import { deepCloneObject } from '../../../utils/common';
 import { mapState, mapActions, mapGetters, mapMutations} from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
-import ApiService from '@/common/apiService';
+import alertMixin from '../../../mixins/alertMixin';
+import NavButton from '../../../components/util/NavButton';
+import ApiService from '../../../common/apiService';
 import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
 
 export default {

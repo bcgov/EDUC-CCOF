@@ -1,7 +1,7 @@
-import ApiService from '@/common/apiService';
-//import {getData, postData} from '@/store/modules/helpers';
-import {checkSession} from '@/utils/session';
-import {ApiRoutes} from '@/utils/constants';
+import ApiService from '../../common/apiService';
+//import {getData, postData} from '../../store/modules/helpers';
+import {checkSession} from '../../utils/session';
+import {ApiRoutes} from '../../utils/constants';
 
 export default {
   namespaced: true,

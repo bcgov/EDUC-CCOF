@@ -227,9 +227,9 @@
 
 <script>
 
-import fundMixing from '@/mixins/fundMixing';
-import globalMixin from '@/mixins/globalMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import fundMixing from '../../../mixins/fundMixing';
+import globalMixin from '../../../mixins/globalMixin';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants';
 
 export default {
   mixins: [fundMixing, globalMixin],

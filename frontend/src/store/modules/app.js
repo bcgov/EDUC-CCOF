@@ -1,5 +1,5 @@
-import ApiService from '@/common/apiService';
-import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants';
+import ApiService from '../../common/apiService';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants';
 
 export default {
   namespaced: true,

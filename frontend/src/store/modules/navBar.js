@@ -1,5 +1,5 @@
-import { PATHS, CHANGE_REQUEST_TYPES } from '@/utils/constants';
-import { filterFacilityListForPCF } from '@/utils/common';
+import { PATHS, CHANGE_REQUEST_TYPES } from '../../utils/constants';
+import { filterFacilityListForPCF } from '../../utils/common';
 
 function getActiveIndex(items) {
   let foundIndex = -1;

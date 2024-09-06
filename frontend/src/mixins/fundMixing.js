@@ -1,10 +1,10 @@
-import {ORGANIZATION_PROVIDER_TYPES, CHANGE_TYPES} from '@/utils/constants';
-import rules from '@/utils/rules';
-import formatTime from '@/utils/formatTime';
+import {ORGANIZATION_PROVIDER_TYPES, CHANGE_TYPES} from '../utils/constants';
+import rules from '../utils/rules';
+import formatTime from '../utils/formatTime';
 import {mapActions, mapState, mapMutations, mapGetters} from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import {isNullOrBlank} from '@/utils/common';
-import NavButton from '@/components/util/NavButton';
+import alertMixin from './alertMixin';
+import {isNullOrBlank} from '../utils/common';
+import NavButton from '../components/util/NavButton';
 
 export default {
   components: { NavButton },

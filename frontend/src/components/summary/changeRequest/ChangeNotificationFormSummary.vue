@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants';
 import { mapState, mapGetters } from 'vuex';
 
 export default {

@@ -392,21 +392,21 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES  } from '@/utils/constants';
+import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES  } from '../utils/constants';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import NavButton from '@/components/util/NavButton';
-import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary';
-import CCOFSummary from '@/components/summary/group/CCOFSummary';
-import ECEWESummary from '@/components/summary/group/ECEWESummary';
-import CCFRISummary from '@/components/summary/group/CCFRISummary';
-import RFISummary from '@/components/summary/group/RFISummary';
-import NMFSummary from '@/components/summary/group/NMFSummary';
-import OrganizationSummary from '@/components/summary/group/OrganizationSummary';
-import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary';
+import alertMixin from '../mixins/alertMixin';
+import NavButton from './util/NavButton';
+import FacilityInformationSummary from './summary/group/FacilityInformationSummary';
+import CCOFSummary from './summary/group/CCOFSummary';
+import ECEWESummary from './summary/group/ECEWESummary';
+import CCFRISummary from './summary/group/CCFRISummary';
+import RFISummary from './summary/group/RFISummary';
+import NMFSummary from './summary/group/NMFSummary';
+import OrganizationSummary from './summary/group/OrganizationSummary';
+import UploadedDocumentsSummary from './summary/group/UploadedDocumentsSummary';
 import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
-import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary';
-import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common';
+import ChangeNotificationFormSummary from './summary/changeRequest/ChangeNotificationFormSummary';
+import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '../utils/common';
 
 let model = {
   agreeConsentCertify: undefined,

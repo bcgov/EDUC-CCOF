@@ -1,5 +1,5 @@
-import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import ApiService from '../../common/apiService';
+import { ApiRoutes } from '../../utils/constants';
 
 
 export default {

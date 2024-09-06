@@ -1,8 +1,8 @@
-import ApiService from '@/common/apiService';
-import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants';
-import { checkSession } from '@/utils/session';
+import ApiService from '../../common/apiService';
+import { ApiRoutes, CHANGE_REQUEST_TYPES } from '../../utils/constants';
+import { checkSession } from '../../utils/session';
 import { isEqual } from 'lodash';
-import { sortByFacilityId, isNullOrBlank } from '@/utils/common';
+import { sortByFacilityId, isNullOrBlank } from '../../utils/common';
 
 export default {
   namespaced: true,
