@@ -319,10 +319,10 @@
 </template>
 
 <script>
-import { isChangeRequest } from '../../../utils/common';
-import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants';
-import rules from '../../../utils/rules';
 import {mapState} from 'vuex';
+import { isChangeRequest } from '../../../utils/common.js';
+import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
+import rules from '../../../utils/rules.js';
 
 export default {
   props: {

@@ -85,12 +85,12 @@
 </template>
 <script>
 
-import rules from '../../../utils/rules';
 import {mapActions, mapGetters, mapMutations, mapState,} from 'vuex';
-import alertMixin from '../../../mixins/alertMixin';
-import {getFileNameWithMaxNameLength, humanFileSize} from '../../../utils/file';
-import {deepCloneObject, getFileExtension, isAnyChangeRequestActive} from '../../../utils/common';
-import NavButton from '../../../components/util/NavButton';
+import rules from '../../../utils/rules.js';
+import alertMixin from '../../../mixins/alertMixin.js';
+import {getFileNameWithMaxNameLength, humanFileSize} from '../../../utils/file.js';
+import {deepCloneObject, getFileExtension, isAnyChangeRequestActive} from '../../../utils/common.js';
+import NavButton from '../../../components/util/NavButton.vue';
 
 export default {
   components: { NavButton },

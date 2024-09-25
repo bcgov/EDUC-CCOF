@@ -258,9 +258,9 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl,} from '../../../utils/constants';
-import rules from '../../../utils/rules';
 import {mapState} from 'vuex';
+import { PATHS, pcfUrlGuid, pcfUrl,} from '../../../utils/constants.js';
+import rules from '../../../utils/rules.js';
 
 export default {
   name: 'CCOFSummary',

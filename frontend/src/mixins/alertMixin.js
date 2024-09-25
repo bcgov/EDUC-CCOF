@@ -1,5 +1,5 @@
-import { ALERT_NOTIFICATION_TYPES } from '../utils/constants/AlertNotificationTypes';
 import {mapMutations} from 'vuex';
+import { ALERT_NOTIFICATION_TYPES } from '../utils/constants/AlertNotificationTypes.js';
 
 export default {
   data() {

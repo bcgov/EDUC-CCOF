@@ -23,12 +23,12 @@
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
-import { PATHS, CHANGE_TYPES, changeUrlGuid } from '../../utils/constants';
-import NavButton from '../../components/util/NavButton';
-import { ORGANIZATION_PROVIDER_TYPES } from '../../utils/constants';
-import alertMixin from '../../mixins/alertMixin';
-import GroupChangeDialogueContent from '../../components/requestChanges/GroupChangeDialogueContent';
-import FamilyChangeDialogueContent from '../../components/requestChanges/FamilyChangeDialogueContent';
+import { PATHS, CHANGE_TYPES, changeUrlGuid } from '../../utils/constants.js';
+import NavButton from '../../components/util/NavButton.vue';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../utils/constants.js';
+import alertMixin from '../../mixins/alertMixin.js';
+import GroupChangeDialogueContent from '../../components/requestChanges/GroupChangeDialogueContent.vue';
+import FamilyChangeDialogueContent from '../../components/requestChanges/FamilyChangeDialogueContent.vue';
 
 export default {
   name: 'ChangeNotificationDialogue',

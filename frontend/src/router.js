@@ -1,52 +1,68 @@
-import { CHANGE_TYPES, NAV_BAR_GROUPS, PAGE_TITLES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from './utils/constants';
+import {
+  CHANGE_TYPES,
+  NAV_BAR_GROUPS,
+  PAGE_TITLES,
+  PATHS,
+  changeUrl,
+  changeUrlGuid,
+  pcfUrl,
+  pcfUrlGuid,
+} from './utils/constants.js';
 
-import AddNewFees from './components/ccfriApplication/group/AddNewFees';
-import ApplicationConfirmation from './components/ccofApplication/group/ApplicationConfirmation';
-import BackendSessionExpired from './components/BackendSessionExpired';
-import CCFRIRequestMoreInfo from './components/RFI/RFILanding';
-import CcfriEceLandingPage from './components/ccfriApplication/group/CcfriEceLanding';
-import CcfriEstimator from './components/CcfriEstimator';
-import CcofApplicationTypeSelector from './components/ccofApplication/CcofApplicationTypeSelector';
-import CcofNewApplicationIntermediate from './components/NewAppIntermediatePage';
-import ChangeInformation from './components/requestChanges/ChangeInformation';
-import ChangeNotificationDialogue from './components/requestChanges/ChangeNotificationDialogue';
-import ChangeNotificationForm from './components/requestChanges/ChangeNotificationForm';
-import EceweEligibility from './components/eceweApplication/EceweEligibility';
-import EceweFacilities from './components/eceweApplication/EceweFacilities';
-import Eligibility from './components/ccofApplication/family/Eligibility';
+import AddNewFees from './components/ccfriApplication/group/AddNewFees.vue';
+import ApplicationConfirmation from './components/ccofApplication/group/ApplicationConfirmation.vue';
+import BackendSessionExpired from './components/BackendSessionExpired.vue';
+import CCFRIRequestMoreInfo from './components/RFI/RFILanding.vue';
+import CcfriEceLandingPage from './components/ccfriApplication/group/CcfriEceLanding.vue';
+import CcfriEstimator from './components/CcfriEstimator.vue';
+import CcofApplicationTypeSelector from './components/ccofApplication/CcofApplicationTypeSelector.vue';
+import CcofNewApplicationIntermediate from './components/NewAppIntermediatePage.vue';
+import ChangeInformation from './components/requestChanges/ChangeInformation.vue';
+import ChangeNotificationDialogue from './components/requestChanges/ChangeNotificationDialogue.vue';
+import ChangeNotificationForm from './components/requestChanges/ChangeNotificationForm.vue';
+import EceweEligibility from './components/eceweApplication/EceweEligibility.vue';
+import EceweFacilities from './components/eceweApplication/EceweFacilities.vue';
+import Eligibility from './components/ccofApplication/family/Eligibility.vue';
 import ErrorPage from './components/ErrorPage.vue';
-import FacilityInformation from './components/ccofApplication/group/FacilityInformation';
-import FamilyFunding from './components/ccofApplication/family/FamilyFunding';
-import FamilyOrganization from './components/ccofApplication/family/FamilyOrganization';
-import GroupFundAmount from './components/ccofApplication/group/FundAmount';
-import GroupOrganizationInformation from './components/ccofApplication/group/OrganizationInformation';
-import Impersonate from './components/Impersonate';
-import LandingPage from './components/LandingPage';
-import LicenseUpload from './components/ccofApplication/group/LicenseUpload';
+import FacilityInformation from './components/ccofApplication/group/FacilityInformation.vue';
+import FamilyFunding from './components/ccofApplication/family/FamilyFunding.vue';
+import FamilyOrganization from './components/ccofApplication/family/FamilyOrganization.vue';
+import GroupFundAmount from './components/ccofApplication/group/FundAmount.vue';
+import GroupOrganizationInformation from './components/ccofApplication/group/OrganizationInformation.vue';
+import Impersonate from './components/Impersonate.vue';
+import LandingPage from './components/LandingPage.vue';
+import LicenseUpload from './components/ccofApplication/group/LicenseUpload.vue';
 import Login from './components/Login.vue';
 import LoginError from './components/LoginError.vue';
-import Logout from './components/Logout';
-import MessagesPage from './components/MessagesPage';
-import MinistryLogin from './components/MinistryLogin';
-import MtfiFeeVerification from './components/mtfi/CurrentFeeVerification';
-import MtfiInfo from './components/mtfi/MTFIInfo';
-import MtfiSelectFacility from './components/mtfi/MtfiSelectFacility';
-import NMF from './components/RFI/NMF';
-import RenewOrganization from './components/ccofApplication/RenewOrganization';
-import ReportChange from './components/requestChanges/ReportChanges';
-import SearchFacility from './components/FacilitySearch';
-import SessionExpired from './components/SessionExpired';
-import SubmissionHistory from './components/SubmissionHistory';
-import { Subtitle_Banners } from './utils/constants/SubTitleBanners';
-import SummaryDeclaration from './components/SummaryDeclaration';
-import SummaryDeclarationChangeRequest from './components/requestChanges/SummaryDeclarationChangeRequest';
-import SupportingDocumentUpload from './components/SupportingDocumentUpload';
+import Logout from './components/Logout.vue';
+import MessagesPage from './components/MessagesPage.vue';
+import MinistryLogin from './components/MinistryLogin.vue';
+import MtfiFeeVerification from './components/mtfi/CurrentFeeVerification.vue';
+import MtfiInfo from './components/mtfi/MTFIInfo.vue';
+import MtfiSelectFacility from './components/mtfi/MtfiSelectFacility.vue';
+import NMF from './components/RFI/NMF.vue';
+import RenewOrganization from './components/ccofApplication/RenewOrganization.vue';
+import ReportChange from './components/requestChanges/ReportChanges.vue';
+import SearchFacility from './components/FacilitySearch.vue';
+import SessionExpired from './components/SessionExpired.vue';
+import SubmissionHistory from './components/SubmissionHistory.vue';
+import SummaryDeclaration from './components/SummaryDeclaration.vue';
+import SummaryDeclarationChangeRequest from './components/requestChanges/SummaryDeclarationChangeRequest.vue';
+import SupportingDocumentUpload from './components/SupportingDocumentUpload.vue';
 import Unauthorized from './components/common/Unauthorized.vue';
+import currentFees from './components/ccfriApplication/group/ExistingFacilityFees.vue';
 import Vue from 'vue';
 import VueMeta from 'vue-meta';
 import VueRouter from 'vue-router';
 import authStore from './store/modules/auth';
 import currentFees from './components/ccfriApplication/group/ExistingFacilityFees';
+
+import { appStore } from './store/app.js';
+import { applicationStore } from './store/application.js';
+import { authStore } from './store/auth.js';
+import { navBarStore } from './store/navBar.js';
+
+import { Subtitle_Banners } from './utils/constants/SubTitleBanners.js';
 import moment from 'moment';
 import store from './store/index';
 

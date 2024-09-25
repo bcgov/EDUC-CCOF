@@ -98,11 +98,11 @@
 
 <script>
 
-import rules from '../../utils/rules';
 import {mapActions, mapGetters, mapState,} from 'vuex';
-import alertMixin from '../../mixins/alertMixin';
-import {getFileNameWithMaxNameLength, humanFileSize} from '../../utils/file';
-import { deepCloneObject, getFileExtension } from '../../utils/common';
+import rules from '../../utils/rules.js';
+import alertMixin from '../../mixins/alertMixin.js';
+import {getFileNameWithMaxNameLength, humanFileSize} from '../../utils/file.js';
+import { deepCloneObject, getFileExtension } from '../../utils/common.js';
 
 export default {
   mixins: [alertMixin],

@@ -67,9 +67,9 @@
 
 
 <script>
-import Spinner from './common/Spinner';
-import { PATHS } from '../utils/constants';
 import { mapGetters, mapActions } from 'vuex';
+import Spinner from "./common/Spinner.vue";
+import { PATHS } from "../utils/constants.js";
 
 export default {
   name: 'MessagesPage',

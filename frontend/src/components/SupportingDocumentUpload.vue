@@ -176,15 +176,14 @@
 
 <script>
 
-import rules from '../utils/rules';
 import {mapActions, mapGetters, mapState, mapMutations} from 'vuex';
-import alertMixin from '../mixins/alertMixin';
-import {getFileNameWithMaxNameLength, humanFileSize} from '../utils/file';
-import { deepCloneObject, getFileExtension } from '../utils/common';
-import NavButton from './util/NavButton';
-import { PATHS, changeUrlGuid } from '../utils/constants';
-import GroupChangeDialogueContent from './requestChanges/GroupChangeDialogueContent';
-
+import rules from "../utils/rules.js";
+import alertMixin from "../mixins/alertMixin.js";
+import { getFileNameWithMaxNameLength, humanFileSize } from "../utils/file.js";
+import { deepCloneObject, getFileExtension } from "../utils/common.js";
+import NavButton from "./util/NavButton.vue";
+import { PATHS, changeUrlGuid } from "../utils/constants.js";
+import GroupChangeDialogueContent from "./requestChanges/GroupChangeDialogueContent.vue";
 
 export default {
   mixins: [alertMixin],

@@ -1,10 +1,17 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, changeUrl, pcfUrlGuid, pcfUrl } from '../utils/constants';
-import { isChangeRequest } from '../utils/common';
-import rules from '../utils/rules';
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
-import alertMixin from './alertMixin';
-import {isEmpty} from 'lodash';
-import NavButton from '../components/util/NavButton';
+import {
+  PATHS,
+  ORGANIZATION_PROVIDER_TYPES,
+  changeUrlGuid,
+  changeUrl,
+  pcfUrlGuid,
+  pcfUrl,
+} from '../utils/constants.js';
+import { isChangeRequest } from '../utils/common.js';
+import rules from '../utils/rules.js';
+import alertMixin from './alertMixin.js';
+import { isEmpty } from 'lodash';
+import NavButton from '../components/util/NavButton.vue';
 
 export default {
   components: { NavButton },

@@ -142,8 +142,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { AuthRoutes, PATHS, ApiRoutes } from '../utils/constants';
-import ApiService from '../common/apiService';
+import { AuthRoutes, PATHS, ApiRoutes } from '../utils/constants.js';
+import ApiService from '../common/apiService.js';
 
 export default {
   name: 'Login',

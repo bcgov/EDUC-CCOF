@@ -34,9 +34,9 @@
 <script>
 
 import LargeCard from '../../components/guiComponents/LargeCard.vue';
-import { PATHS, pcfUrl } from '../../utils/constants';
 import { mapMutations, mapState } from 'vuex';
-import NavButton from '../../components/util/NavButton';
+import { PATHS, pcfUrl } from '../../utils/constants.js';
+import NavButton from '../../components/util/NavButton.vue';
 
 export default {
   name: 'LandingPage',

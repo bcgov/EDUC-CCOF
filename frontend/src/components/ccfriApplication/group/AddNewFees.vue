@@ -456,13 +456,13 @@
   </v-form>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, ApiRoutes } from '../../../utils/constants';
 import { mapGetters, mapState, mapActions, mapMutations} from 'vuex';
-import alertMixin from '../../../mixins/alertMixin';
-import globalMixin from '../../../mixins/globalMixin';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, ApiRoutes } from '../../../utils/constants.js';
+import alertMixin from '../../../mixins/alertMixin.js';
+import globalMixin from '../../../mixins/globalMixin.js';
 import { isEqual, cloneDeep } from 'lodash';
-import NavButton from '../../../components/util/NavButton';
-import ApiService from '../../../common/apiService';
+import NavButton from '../../../components/util/NavButton.vue';
+import ApiService from '../../../common/apiService.js';
 import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
 
 function dateFunction (date1, date2){

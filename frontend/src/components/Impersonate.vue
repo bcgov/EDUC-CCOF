@@ -36,9 +36,9 @@
 <script>
 
 import { mapGetters, mapMutations, mapActions} from 'vuex';
-import { PATHS } from '../utils/constants';
-import rules from '../utils/rules';
-import alertMixin from '../mixins/alertMixin';
+import { PATHS } from '../utils/constants.js';
+import rules from '../utils/rules.js';
+import alertMixin from '../mixins/alertMixin.js';
 
 
 export default {

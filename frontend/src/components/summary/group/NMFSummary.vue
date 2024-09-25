@@ -83,9 +83,9 @@
 </template>
 <script>
 
-import rules from '../../../utils/rules';
-import { PATHS, pcfUrlGuid, } from '../../../utils/constants';
 import {mapState} from 'vuex';
+import rules from '../../../utils/rules.js';
+import { PATHS, pcfUrlGuid, } from '../../../utils/constants.js';
 
 export default {
   name: 'NMFSummary',

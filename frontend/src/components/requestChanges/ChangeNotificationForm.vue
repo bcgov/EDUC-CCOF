@@ -90,12 +90,12 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
-import { PATHS, changeUrl } from '../../utils/constants';
-import alertMixin from '../../mixins/alertMixin';
-import NavButton from '../../components/util/NavButton';
+import { PATHS, changeUrl } from '../../utils/constants.js';
+import alertMixin from '../../mixins/alertMixin.js';
+import NavButton from '../../components/util/NavButton.vue';
 import ChangeFileUpload from './ChangeFileUpload.vue';
-import { isNullOrBlank } from '../../utils/common';
-import { CHANGE_TYPES } from '../../utils/constants';
+import { isNullOrBlank } from '../../utils/common.js';
+import { CHANGE_TYPES } from '../../utils/constants.js';
 
 export default {
   name: 'ReportChange',

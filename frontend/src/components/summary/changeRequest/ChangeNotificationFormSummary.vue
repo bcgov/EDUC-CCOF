@@ -79,8 +79,8 @@
 </template>
 
 <script>
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants';
 import { mapState, mapGetters } from 'vuex';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants.js';
 
 export default {
   props: {

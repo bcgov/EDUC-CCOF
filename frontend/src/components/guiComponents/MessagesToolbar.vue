@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import { PATHS } from '../../utils/constants';
 import { mapGetters } from 'vuex';
+import { PATHS } from '../../utils/constants.js';
 
 export default {
   name: 'MessagesToolbar',

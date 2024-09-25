@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {ApiRoutes} from '../utils/constants';
-import AuthService from './authService';
+import {ApiRoutes} from '../utils/constants.js';
+import AuthService from './authService.js';
 //
 // Buffer concurrent requests while refresh token is being acquired
 let failedQueue = [];

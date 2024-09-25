@@ -164,9 +164,9 @@
 
 <script>
 
-import alertMixin from '../../mixins/alertMixin';
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
-import NavButton from '../../components/util/NavButton';
+import alertMixin from '../../mixins/alertMixin.js';
+import NavButton from '../../components/util/NavButton.vue';
 import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
 let model = { x: [],  };

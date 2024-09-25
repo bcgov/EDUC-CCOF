@@ -29,7 +29,7 @@
 <script>
 
 import {mapMutations, mapState} from 'vuex';
-import {ALERT_NOTIFICATION_TYPES} from '../../utils/constants/AlertNotificationTypes';
+import {ALERT_NOTIFICATION_TYPES} from '../../utils/constants/AlertNotificationTypes.js';
 
 export default {
   name: 'SnackBar',

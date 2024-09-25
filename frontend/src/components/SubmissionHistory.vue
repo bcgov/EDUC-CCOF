@@ -50,8 +50,8 @@
 
   <script>
   import { mapState, mapActions } from 'vuex';
-  import { PATHS, ApiRoutes } from '../utils/constants';
-  import alertMixin from '../mixins/alertMixin';
+  import { PATHS, ApiRoutes } from '../utils/constants.js';
+  import alertMixin from '../mixins/alertMixin.js';
   import NavButton from './util/NavButton.vue';
 
 

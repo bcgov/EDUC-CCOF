@@ -35,12 +35,12 @@
 </template>
 
 <script>
-import { PATHS, changeUrlGuid, changeUrl, CHANGE_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS } from '../../utils/constants';
-import alertMixin from '../../mixins/alertMixin';
+import { PATHS, changeUrlGuid, changeUrl, CHANGE_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS } from '../../utils/constants.js';
+import alertMixin from '../../mixins/alertMixin.js';
 //import SmallCard from '../guiComponents/SmallCard.vue';
 
-import NavButton from '../../components/util/NavButton';
 import { mapActions, mapState, mapMutations } from 'vuex';
+import NavButton from '../../components/util/NavButton.vue';
 
 export default {
   components: {NavButton},

@@ -392,21 +392,21 @@
 </template>
 <script>
 
-import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES  } from '../utils/constants';
 import {mapGetters, mapActions, mapState, mapMutations} from 'vuex';
-import alertMixin from '../mixins/alertMixin';
-import NavButton from './util/NavButton';
-import FacilityInformationSummary from './summary/group/FacilityInformationSummary';
-import CCOFSummary from './summary/group/CCOFSummary';
-import ECEWESummary from './summary/group/ECEWESummary';
-import CCFRISummary from './summary/group/CCFRISummary';
-import RFISummary from './summary/group/RFISummary';
-import NMFSummary from './summary/group/NMFSummary';
-import OrganizationSummary from './summary/group/OrganizationSummary';
-import UploadedDocumentsSummary from './summary/group/UploadedDocumentsSummary';
-import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
-import ChangeNotificationFormSummary from './summary/changeRequest/ChangeNotificationFormSummary';
-import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '../utils/common';
+import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from "../utils/constants.js";
+import alertMixin from "../mixins/alertMixin.js";
+import NavButton from "./util/NavButton.vue";
+import FacilityInformationSummary from "./summary/group/FacilityInformationSummary.vue";
+import CCOFSummary from "./summary/group/CCOFSummary.vue";
+import ECEWESummary from "./summary/group/ECEWESummary.vue";
+import CCFRISummary from "./summary/group/CCFRISummary.vue";
+import RFISummary from "./summary/group/RFISummary.vue";
+import NMFSummary from "./summary/group/NMFSummary.vue";
+import OrganizationSummary from "./summary/group/OrganizationSummary.vue";
+import UploadedDocumentsSummary from "./summary/group/UploadedDocumentsSummary.vue";
+import CCOFSummaryFamily from "./summary/group/CCOFSummaryFamily.vue";
+import ChangeNotificationFormSummary from "./summary/changeRequest/ChangeNotificationFormSummary.vue";
+import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from "../utils/common.js";
 
 let model = {
   agreeConsentCertify: undefined,

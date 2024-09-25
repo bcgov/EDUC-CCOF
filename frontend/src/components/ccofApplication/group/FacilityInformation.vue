@@ -93,8 +93,8 @@
 
 <script>
 
-import facilityMixin from '../../../mixins/facilityMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants';
+import facilityMixin from '../../../mixins/facilityMixin.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants.js';
 
 export default {
   mixins: [facilityMixin],

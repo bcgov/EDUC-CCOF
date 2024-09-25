@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {AuthRoutes} from '../utils/constants';
+import {AuthRoutes} from '../utils/constants.js';
 
 export default {
   name: 'LoginError',

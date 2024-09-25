@@ -26,7 +26,7 @@
 <script>
 import { mapActions, mapMutations, mapGetters,mapState } from 'vuex';
 import HttpStatus from 'http-status-codes';
-import StaticConfig from './common/staticConfig';
+import StaticConfig from './common/staticConfig.js';
 
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';

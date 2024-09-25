@@ -31,9 +31,9 @@
 </template>
 
 <script>
-import { AuthRoutes } from '../utils/constants';
-import ApiService from '../common/apiService';
 import { mapActions, mapGetters } from 'vuex';
+import { AuthRoutes } from '../utils/constants.js';
+import ApiService from '../common/apiService.js';
 
 function getTokenExpiredTime(jwtToken) {
   const now = Date.now().valueOf();

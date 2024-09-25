@@ -63,9 +63,9 @@
 
 import { mapState, mapMutations, mapGetters, mapActions } from 'vuex';
 import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../utils/constants';
-import alertMixin from '../../mixins/alertMixin';
-import NavButton from '../../components/util/NavButton';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../utils/constants.js';
+import alertMixin from '../../mixins/alertMixin.js';
+import NavButton from '../../components/util/NavButton.vue';
 
 let ccfriOptInOrOut = {};
 let textInput = '' ;

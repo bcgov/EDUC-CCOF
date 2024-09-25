@@ -251,10 +251,10 @@ import _ from 'lodash';
 import { mapGetters, mapState, mapMutations, mapActions} from 'vuex';
 import SmallCard from './guiComponents/SmallCard.vue';
 import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
-import FiscalYearSlider from './guiComponents/FiscalYearSlider';
-import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '../utils/constants';
-import alertMixin from '../mixins/alertMixin';
-import { checkApplicationUnlocked } from '../utils/common';
+import FiscalYearSlider from './guiComponents/FiscalYearSlider.vue';
+import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '../utils/constants.js';
+import alertMixin from '../mixins/alertMixin.js';
+import { checkApplicationUnlocked } from '../utils/common.js';
 
 
 export default {

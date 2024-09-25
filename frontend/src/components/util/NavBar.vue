@@ -85,8 +85,8 @@
 <script>
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
-import { NAV_BAR_GROUPS , CHANGE_TYPES } from '../../utils/constants';
-import StaticConfig from '../../common/staticConfig';
+import { NAV_BAR_GROUPS , CHANGE_TYPES } from '../../utils/constants.js';
+import StaticConfig from '../../common/staticConfig.js';
 import { times } from 'lodash';
 
 let positionIndex = 0;

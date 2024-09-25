@@ -278,8 +278,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants';
-import rules from '../../../utils/rules';
 
 
 export default {

@@ -114,9 +114,9 @@
 
 <script>
 
-import organizationMixin from '../../../mixins/organizationMixin';
-import globalMixin from '../../../mixins/globalMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants';
+import organizationMixin from '../../../mixins/organizationMixin.js';
+import globalMixin from '../../../mixins/globalMixin.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants.js';
 
 export default {
   mixins: [organizationMixin, globalMixin],

@@ -192,11 +192,11 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl } from '../../utils/constants';
-import alertMixin from '../../mixins/alertMixin';
+import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl } from '../../utils/constants.js';
+import alertMixin from '../../mixins/alertMixin.js';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
-import { isFacilityAvailable } from '../../utils/common';
+import { isFacilityAvailable } from '../../utils/common.js';
 
 
 export default {

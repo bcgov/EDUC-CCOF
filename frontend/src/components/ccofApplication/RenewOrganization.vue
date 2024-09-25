@@ -144,10 +144,10 @@
 <script>
 
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { PATHS, pcfUrl } from '../../utils/constants';
-import rules from '../../utils/rules';
-import NavButton from '../../components/util/NavButton';
-import {isAnyChangeRequestActive } from '../../utils/common';
+import { PATHS, pcfUrl } from '../../utils/constants.js';
+import rules from '../../utils/rules.js';
+import NavButton from '../../components/util/NavButton.vue';
+import {isAnyChangeRequestActive } from '../../utils/common.js';
 
 export default {
   components: { NavButton },

@@ -157,11 +157,11 @@
 </template>
 <script>
 import _ from 'lodash';
-import { isChangeRequest } from '../../../utils/common';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid  } from '../../../utils/constants';
-import rules from '../../../utils/rules';
-import {mapState} from 'vuex';
-import globalMixin from '../../../mixins/globalMixin';
+import { isChangeRequest } from '../../../utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid  } from '../../../utils/constants.js';
+import rules from '../../../utils/rules.js';
+import {mapState} from 'pinia';
+import globalMixin from '../../../mixins/globalMixin.js';
 
 
 export default {

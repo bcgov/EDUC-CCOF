@@ -582,9 +582,9 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../../utils/constants';
-import rules from '../../../utils/rules';
 import { mapState, mapGetters } from 'vuex';
+import { PATHS, pcfUrlGuid, changeUrlGuid, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../../utils/constants.js';
+import rules from '../../../utils/rules.js';
 
 export default {
   name: 'RFISummary',
