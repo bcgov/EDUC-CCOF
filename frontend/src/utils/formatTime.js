@@ -7,7 +7,7 @@ export default function formatTime(v) {
     return `12:${minute} AM`;
   } else if (hour < 12) {
     return `${hour}:${minute} AM`;
-  } else if (hour===12){
+  } else if (hour === 12) {
     return `${hour}:${minute} PM`;
   } else {
     return `${hour - 12}:${minute} PM`;

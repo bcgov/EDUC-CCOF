@@ -49,7 +49,7 @@
   </template>
 
   <script>
-  import { mapState, mapActions } from 'vuex';
+  import { mapState, mapActions } from 'pinia';
   import { PATHS, ApiRoutes } from '../utils/constants.js';
   import alertMixin from '../mixins/alertMixin.js';
   import NavButton from './util/NavButton.vue';

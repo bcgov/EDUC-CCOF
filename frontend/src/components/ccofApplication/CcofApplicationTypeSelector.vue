@@ -32,9 +32,11 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
+import { useAppStore } from '../../store/app.js';
+import { useOrganizationStore } from '../../store/ccof/organization.js';
 
 import LargeCard from '../../components/guiComponents/LargeCard.vue';
-import { mapMutations, mapState } from 'vuex';
 import { PATHS, pcfUrl } from '../../utils/constants.js';
 import NavButton from '../../components/util/NavButton.vue';
 
@@ -42,10 +44,10 @@ export default {
   name: 'LandingPage',
   components: { LargeCard, NavButton },
   computed: {
-    ...mapState('app', ['programYearList']),
+    ...mapState(useAppStore, ['programYearList']),
   },
   methods: {
-    ...mapMutations('organization', ['setOrganizationProviderType']),
+    ...mapActions(useOrganizationStore, ['setOrganizationProviderType']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },

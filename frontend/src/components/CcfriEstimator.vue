@@ -812,7 +812,6 @@
   </v-container>
 </template>
 <script>
-
 import FacilitySearch from './FacilitySearch.vue';
 
 const CHILDCARE_TYPE_0_TO_18 = '0 - 18 Months';

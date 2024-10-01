@@ -51,36 +51,18 @@ import SummaryDeclarationChangeRequest from './components/requestChanges/Summary
 import SupportingDocumentUpload from './components/SupportingDocumentUpload.vue';
 import Unauthorized from './components/common/Unauthorized.vue';
 import currentFees from './components/ccfriApplication/group/ExistingFacilityFees.vue';
-import Vue from 'vue';
-import VueMeta from 'vue-meta';
-import VueRouter from 'vue-router';
-import authStore from './store/modules/auth';
-import currentFees from './components/ccfriApplication/group/ExistingFacilityFees';
 
-import { appStore } from './store/app.js';
-import { applicationStore } from './store/application.js';
-import { authStore } from './store/auth.js';
-import { navBarStore } from './store/navBar.js';
+import { useAppStore } from './store/app.js';
+import { useApplicationStore } from './store/application.js';
+import { useAuthStore } from './store/auth.js';
+import { useNavBarStore } from './store/navBar.js';
 
 import { Subtitle_Banners } from './utils/constants/SubTitleBanners.js';
-import moment from 'moment';
-import store from './store/index';
 
-Vue.prototype.moment = moment;
+import { createRouter, createWebHistory } from 'vue-router';
 
-Vue.use(VueRouter);
-Vue.use(VueMeta);
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  // eslint-disable-next-line no-unused-vars
-  scrollBehavior: function(to, from, savedPosition) {
-    if (to.hash) {
-      return {selector: to.hash};
-    } else {
-      return { x: 0, y: 0 };
-    }
-  },
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: PATHS.ROOT.HOME,
@@ -95,12 +77,12 @@ const router = new VueRouter({
     {
       path: '/error',
       name: 'error',
-      component: ErrorPage
+      component: ErrorPage,
     },
     {
       path: '/logout',
       name: 'logout',
-      component: Logout
+      component: Logout,
     },
     {
       path: '/unauthorized',
@@ -110,28 +92,28 @@ const router = new VueRouter({
     {
       path: '/session-expired',
       name: 'session-expired',
-      component: SessionExpired
+      component: SessionExpired,
     },
     {
       path: '/login-error',
       name: 'login-error',
-      component: LoginError
+      component: LoginError,
     },
     {
       path: '/facility-search',
       name: 'facility-search',
       component: SearchFacility,
       meta: {
-        pageTitle: PAGE_TITLES.SearchFacility
-      }
+        pageTitle: PAGE_TITLES.SearchFacility,
+      },
     },
     {
       path: PATHS.ROOT.ESTIMATOR,
       name: 'ccfri-estimator',
       component: CcfriEstimator,
       meta: {
-        pageTitle: PAGE_TITLES.FRICalculator
-      }
+        pageTitle: PAGE_TITLES.FRICalculator,
+      },
     },
     {
       path: pcfUrl(PATHS.SELECT_APPLICATION_TYPE),
@@ -139,8 +121,8 @@ const router = new VueRouter({
       component: CcofApplicationTypeSelector,
       meta: {
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE),
@@ -148,8 +130,8 @@ const router = new VueRouter({
       component: CcofNewApplicationIntermediate,
       meta: {
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCOF_GROUP_ORG),
@@ -160,8 +142,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCOF_FAMILY_ORG),
@@ -172,8 +154,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
 
     {
@@ -185,8 +167,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY),
@@ -197,8 +179,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCOF_FAMILY_FUNDING),
@@ -209,8 +191,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING),
@@ -221,8 +203,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCOF_GROUP_FACILITY),
@@ -233,8 +215,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY),
@@ -245,8 +227,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCOF_GROUP_FUNDING),
@@ -257,8 +239,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING),
@@ -269,8 +251,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCOF_GROUP_CONFIRM),
@@ -281,8 +263,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.LICENSE_UPLOAD),
@@ -293,8 +275,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: changeUrl(PATHS.LICENSE_UPLOAD),
@@ -305,8 +287,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: pcfUrl(PATHS.RENEW_CONFIRM),
@@ -316,8 +298,8 @@ const router = new VueRouter({
         pageTitle: 'Renew Organization',
         requiresAuth: true,
         showNavBar: false,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     // {
     //   path: '/ccfri-application' + '/urlGuid',
@@ -339,8 +321,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.ECEWE_FACILITITES),
@@ -351,8 +333,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.SUPPORTING_DOCS),
@@ -362,8 +344,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.SUMMARY_DECLARATION),
@@ -373,8 +355,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.SUMMARY_DECLARATION) + '/printable',
@@ -383,8 +365,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
-        showNavBar: false
-      }
+        showNavBar: false,
+      },
     },
     {
       path: pcfUrl(PATHS.CCFRI_HOME),
@@ -395,8 +377,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCFRI_NEW_FEES),
@@ -407,8 +389,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCFRI_NEW_FEES),
@@ -419,8 +401,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCFRI_RFI),
@@ -431,8 +413,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCFRI_NMF),
@@ -443,8 +425,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES),
@@ -455,8 +437,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: pcfUrl(PATHS.CCFRI_CURRENT_FEES),
@@ -467,8 +449,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION
-      }
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
     },
     {
       path: '/login',
@@ -476,7 +458,7 @@ const router = new VueRouter({
       component: Login,
       meta: {
         pageTitle: PAGE_TITLES.LOGIN,
-      }
+      },
     },
     {
       path: '/internal',
@@ -484,7 +466,7 @@ const router = new VueRouter({
       component: MinistryLogin,
       meta: {
         pageTitle: PAGE_TITLES.LOGIN,
-      }
+      },
     },
     {
       path: PATHS.ROOT.IMPERSONATE,
@@ -492,8 +474,8 @@ const router = new VueRouter({
       component: Impersonate,
       meta: {
         pageTitle: 'Impersonate a BCeID User',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: PATHS.ROOT.MESSAGES,
@@ -501,21 +483,21 @@ const router = new VueRouter({
       component: MessagesPage,
       meta: {
         pageTitle: 'Messages Page',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
-      path: '*',
+      path: '/:catchAll(.*)',
       name: 'notfound',
       redirect: '/',
       meta: {
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/token-expired',
       name: 'backend-session-expired',
-      component: BackendSessionExpired
+      component: BackendSessionExpired,
     },
     {
       path: PATHS.ROOT.CHANGE_LANDING,
@@ -525,7 +507,7 @@ const router = new VueRouter({
         pageTitle: 'Report Changes',
         showNavBar: false,
         requiresAuth: true,
-      }
+      },
     },
     {
       path: changeUrl(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
@@ -535,10 +517,15 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
-      }
+      },
     },
     {
-      path: changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
+      path: changeUrlGuid(
+        PATHS.CHANGE_NOTIFICATION_FORM,
+        ':changeRecGuid',
+        ':urlGuid',
+        CHANGE_TYPES.CHANGE_NOTIFICATION,
+      ),
       name: 'change-notification-form-guid',
       component: ChangeNotificationForm,
       meta: {
@@ -546,7 +533,7 @@ const router = new VueRouter({
         showNavBar: false,
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
-      }
+      },
     },
     {
       path: changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER),
@@ -557,7 +544,7 @@ const router = new VueRouter({
         showNavBar: true,
         requiresAuth: true,
         subtitleBanner: Subtitle_Banners.ADDFACILITY,
-      }
+      },
     },
     {
       path: changeUrl(PATHS.CHANGE_NOTIFICATION_DIALOGUE),
@@ -567,7 +554,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
-      }
+      },
     },
     {
       path: PATHS.CHANGE_NOTIFICATION_DIALOGUE,
@@ -577,7 +564,7 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
-      }
+      },
     },
     {
       path: PATHS.ROOT.CHANGE_NEW_FACILITY, //TODO. there is no change request here.
@@ -588,8 +575,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.CCOF_GROUP_FACILITY),
@@ -600,8 +587,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrlGuid(PATHS.CCOF_GROUP_FACILITY),
@@ -612,8 +599,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrlGuid(PATHS.CCOF_GROUP_FUNDING),
@@ -624,8 +611,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.CCOF_GROUP_CONFIRM),
@@ -636,8 +623,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.CCFRI_HOME),
@@ -648,8 +635,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrlGuid(PATHS.CCFRI_NEW_FEES),
@@ -660,8 +647,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrlGuid(PATHS.CCFRI_RFI),
@@ -672,8 +659,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrlGuid(PATHS.CCFRI_NMF),
@@ -684,8 +671,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
@@ -696,9 +683,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.ECEWE_FACILITITES),
@@ -709,8 +695,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.SUPPORTING_DOCS),
@@ -720,8 +706,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
       path: changeUrl(PATHS.SUMMARY_DECLARATION),
@@ -731,18 +717,18 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY
-      }
+        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+      },
     },
     {
-      path: changeUrl(PATHS.SUMMARY_DECLARATION) +'/printable',
+      path: changeUrl(PATHS.SUMMARY_DECLARATION) + '/printable',
       name: 'Printable Summary and Declaration New Facility',
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: false,
-      }
+      },
     },
     {
       path: PATHS.ROOT.CHANGE_INFO,
@@ -752,7 +738,7 @@ const router = new VueRouter({
         pageTitle: 'Change Request Information',
         requiresAuth: true,
         showNavBar: false,
-      }
+      },
     },
     {
       path: PATHS.MTFI_INFO,
@@ -762,8 +748,8 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        subtitleBanner: Subtitle_Banners.MTFI
-      }
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
     },
     {
       path: changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, ':changeRecGuid', CHANGE_TYPES.MTFI),
@@ -774,8 +760,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
-        subtitleBanner: Subtitle_Banners.MTFI
-      }
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
     },
     {
       path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
@@ -786,8 +772,8 @@ const router = new VueRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
-        subtitleBanner: Subtitle_Banners.MTFI
-      }
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
     },
     {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
@@ -797,8 +783,8 @@ const router = new VueRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION
-      }
+        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
+      },
     },
     {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION) + '/printable',
@@ -808,7 +794,7 @@ const router = new VueRouter({
         pageTitle: 'Printable Change Notification Summary',
         requiresAuth: true,
         showNavBar: false,
-      }
+      },
     },
     {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI) + '/printable',
@@ -818,7 +804,7 @@ const router = new VueRouter({
         pageTitle: 'Printable MTFI Summary',
         requiresAuth: true,
         showNavBar: false,
-      }
+      },
     },
     {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI),
@@ -829,8 +815,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.MTFI
-      }
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
     },
     {
       path: changeUrlGuid(PATHS.CCFRI_RFI, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
@@ -841,8 +827,8 @@ const router = new VueRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.MTFI
-      }
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
     },
     {
       path: PATHS.ROOT.SUBMISSION_HISTORY,
@@ -852,78 +838,101 @@ const router = new VueRouter({
         pageTitle: 'submission-history',
         showNavBar: false,
         requiresAuth: true,
-      }
+      },
     },
-  ]
+  ],
+  scrollBehavior: function (to, _from, _savedPosition) {
+    if (to.hash) {
+      return { selector: to.hash };
+    } else {
+      return { x: 0, y: 0 };
+    }
+  },
 });
 
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
-    store.dispatch('auth/getJwtToken').then(() => {
-      if (!authStore.state.isAuthenticated) {
-        next('/token-expired');
-      }else {
-        store.dispatch('auth/getUserInfo', to).then(async () => {
-          await store.dispatch('navBar/setUrlDetails', to);
-          if (authStore.state.isMinistryUser && !authStore.state.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
-            next(PATHS.ROOT.IMPERSONATE);
-          } else {
-            next();
-          }
-        }).catch((error) => {
-          console.log('error', error);
-          if (error.response?.status == '401') {
-            next('unauthorized');
-          } else {
-            console.log('An error occurred.', error);
-            next('error');
-          }
-        });
-      }
-    }).catch(() => {
-      if (!authStore.state.userInfo) {
-        next('/login');
-      } else {
-        next('/token-expired');
-      }
-    });
-  }
-  else {
+    const authStore = useAuthStore();
+    authStore
+      .getJwtToken()
+      .then(() => {
+        if (!authStore.state.isAuthenticated) {
+          next('/token-expired');
+        } else {
+          authStore
+            .getUserInfo(to)
+            .then(async () => {
+              const navBarStore = useNavBarStore();
+              await navBarStore.setUrlDetails(to);
+              if (authStore.isMinistryUser && !authStore.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
+                next(PATHS.ROOT.IMPERSONATE);
+              } else {
+                next();
+              }
+            })
+            .catch((error) => {
+              console.log('error', error);
+              if (error.response?.status == '401') {
+                next('unauthorized');
+              } else {
+                console.log('An error occurred.', error);
+                next('error');
+              }
+            });
+        }
+      })
+      .catch(() => {
+        if (!authStore.userInfo) {
+          next('/login');
+        } else {
+          next('/token-expired');
+        }
+      });
+  } else {
     next();
   }
 });
 
 router.afterEach((to) => {
   // determine if we should show navBar
-  store.commit('app/setShowNavBar', to.meta?.showNavBar == true);
+  const appStore = useAppStore();
+  const navBarStore = useNavBarStore();
+  const applicationStore = useApplicationStore();
+  appStore.setShowNavBar(to.meta?.showNavBar == true);
   if (to && to.meta) {
-    store.commit('navBar/setNavBarGroup', to.meta.navBarGroup);
+    navBarStore.setNavBarGroup(to.meta.navBarGroup);
   } else {
-    store.commit('navBar/setNavBarGroup', '');
+    navBarStore.setNavBarGroup('');
   }
   // this section is to set page title in vue store
   if (to && to.meta) {
-    store.commit('app/setPageTitle', to.meta.pageTitle);
+    appStore.setPageTitle(to.meta.pageTitle);
   } else {
-    store.commit('app/setPageTitle', '');
+    appStore.setPageTitle('');
   }
-  let nextApp = store.state.app?.programYearList?.list?.find(el => el.previousYearId == store.getters['application/latestProgramYearId']);
-  if(to?.meta?.subtitleBanner){
-    if(to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')){
-      if(to?.meta?.pageTitle==='Renew Organization'){
-        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',nextApp?.name.replace(/[^\d/]/g, '')));
+  let nextApp = appStore?.programYearList?.list?.find(
+    (el) => el.previousYearId == useApplicationStore.latestProgramYearId,
+  );
+  if (to?.meta?.subtitleBanner) {
+    if (to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')) {
+      if (to?.meta?.pageTitle === 'Renew Organization') {
+        appStore.setSubtitleBanner(
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', nextApp?.name.replace(/[^\d/]/g, '')),
+        );
+      } else if (!applicationStore.formattedProgramYear) {
+        appStore.setSubtitleBanner(
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', appStore.programYearList.newApp.name.replace(/[^\d/]/g, '')),
+        );
+      } else {
+        appStore.setSubtitleBanner(
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', applicationStore.formattedProgramYear),
+        );
       }
-      else if(!store.getters['application/formattedProgramYear']){
-        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['app/programYearList'].newApp.name.replace(/[^\d/]/g, '')));
-      }
-      else{
-        store.commit('app/setSubtitleBanner',to.meta.subtitleBanner.replace('%PROGRAMYEAR%',store.getters['application/formattedProgramYear']));
-      }
-    }else {
-      store.commit('app/setSubtitleBanner',to.meta.subtitleBanner);
+    } else {
+      appStore.setSubtitleBanner(to.meta.subtitleBanner);
     }
   } else {
-    store.commit('app/setSubtitleBanner','');
+    appStore.setSubtitleBanner('');
   }
 });
 

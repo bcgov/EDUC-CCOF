@@ -277,7 +277,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants.js';
+import rules from '../../../utils/rules.js';
 
 
 export default {

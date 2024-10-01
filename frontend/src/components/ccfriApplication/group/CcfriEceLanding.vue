@@ -1,46 +1,76 @@
 <template>
   <v-container>
-
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation
-        Form</span>
+      <span class="text-h5"
+        >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
+      >
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
       <span class="text-h5">Confirm CCFRI participation for each facility.</span>
     </div>
-    <v-btn class="mx-0 justify-end" @click="toggleAll()" dark color='#003366' :disabled="isReadOnly">
+    <v-btn class="mx-0 justify-end" @click="toggleAll()" dark color="#003366" :disabled="isReadOnly">
       Opt in All Facilities
     </v-btn>
     <LargeButtonContainer>
-
-
       <v-form ref="isValidForm" value="false" v-model="isValidForm">
-
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
-        <v-card elevation="4" class="py-2 px-5 mx-2 my-10 rounded-lg col-12 " min-width="500px" rounded tiled exact tile
-          :ripple="false" v-for="({ facilityName, facilityId, licenseNumber, ccfriOptInStatus, facilityAccountNumber }, index) in navBarList"
-          :key="facilityId">
+        <v-card
+          elevation="4"
+          class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
+          min-width="500px"
+          rounded
+          tiled
+          exact
+          tile
+          :ripple="false"
+          v-for="(
+            { facilityName, facilityId, licenseNumber, ccfriOptInStatus, facilityAccountNumber }, index
+          ) in navBarList"
+          :key="facilityId"
+        >
           <v-card-text>
             <v-row>
               <v-col cols="" class="col-12 col-md-7">
-                <p class="text--primary " v-if="facilityAccountNumber"><strong> Facility ID: {{ facilityAccountNumber }}</strong></p>
-                <p class="text--primary "><strong> Facility Name: {{ facilityName }}</strong></p>
-                <p class="text--primary"><strong>Licence Number: {{ licenseNumber }}</strong> </p>
+                <p class="text--primary" v-if="facilityAccountNumber">
+                  <strong> Facility ID: {{ facilityAccountNumber }}</strong>
+                </p>
+                <p class="text--primary">
+                  <strong> Facility Name: {{ facilityName }}</strong>
+                </p>
+                <p class="text--primary">
+                  <strong>Licence Number: {{ licenseNumber }}</strong>
+                </p>
                 <strong>
-                  <p class="text--primary  ">Opt In: {{ ccfriOptInStatus == "IN" ? "IN" : ccfriOptInStatus == "1" ? "IN" :
-                    ccfriOptInStatus == "0" ? "OUT" : "NOT SELECTED" }} </p>
+                  <p class="text--primary">
+                    Opt In:
+                    {{
+                      ccfriOptInStatus == 'IN'
+                        ? 'IN'
+                        : ccfriOptInStatus == '1'
+                        ? 'IN'
+                        : ccfriOptInStatus == '0'
+                        ? 'OUT'
+                        : 'NOT SELECTED'
+                    }}
+                  </p>
                 </strong>
               </v-col>
               <v-col cols="" class="d-flex align-center col-12 col-md-5" v-if="!showOptStatus[index]">
-
-                <v-btn class="my-10 mx-14 justify-end" @click="toggle(index)" :showOptStatus="showOptStatus[index]" dark
-                  color='#003366' :rules="rules" :disabled="isReadOnly">
+                <v-btn
+                  class="my-10 mx-14 justify-end"
+                  @click="toggle(index)"
+                  :showOptStatus="showOptStatus[index]"
+                  dark
+                  color="#003366"
+                  :rules="rules"
+                  :disabled="isReadOnly"
+                >
                   UPDATE
                 </v-btn>
               </v-col>
@@ -56,28 +86,35 @@
           </v-card-text>
         </v-card>
       </v-form>
-
-
     </LargeButtonContainer>
 
-    <NavButton :isNextDisplayed="true" :isSaveDisplayed="true" :isSaveDisabled="isReadOnly"
-      :isNextDisabled="!isPageComplete()" :isProcessing="processing" @previous="previous" @next="next"
-      @validateForm="validateForm()" @save="save(true)"></NavButton>
+    <NavButton
+      :isNextDisplayed="true"
+      :isSaveDisplayed="true"
+      :isSaveDisabled="isReadOnly"
+      :isNextDisabled="!isPageComplete()"
+      :isProcessing="processing"
+      @previous="previous"
+      @next="next"
+      @validateForm="validateForm()"
+      @save="save(true)"
+    ></NavButton>
   </v-container>
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia';
+import { useApplicationStore } from '../../../store/application.js';
+import { useAppStore } from '../../../store/app.js';
+import { useNavBarStore } from '../../../store/navBar.js';
+import { useReportChangesStore } from '../../../store/reportChanges.js';
 
-
-
-import { mapState, mapMutations, mapGetters } from 'vuex';
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
 import ApiService from '../../../common/apiService.js';
 import alertMixin from '../../../mixins/alertMixin.js';
 import NavButton from '../../../components/util/NavButton.vue';
 import { isChangeRequest } from '../../../utils/common.js';
-
 
 let ccfriOptInOrOut = {};
 let textInput = '';
@@ -97,18 +134,27 @@ export default {
       processing: false,
       loading: false,
       ccfriOptInOrOut,
-      rules: [
-        (v) => !!v || 'Required.',
-      ],
+      rules: [(v) => !!v || 'Required.'],
     };
   },
   computed: {
-    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'programYearId', 'applicationId', 'isRenewal']),
-    ...mapState('app', ['programYearList']),
-    ...mapState('navBar', ['navBarList', 'userProfileList', 'changeRequestId']),
-    ...mapGetters('navBar', ['previousPath', 'isChangeRequest', 'getChangeActionNewFacByFacilityId']),
-    ...mapGetters('reportChanges', ['changeRequestStatus', ]),
-    ...mapState('reportChanges', ['changeRequestMap',]),
+    ...mapState(useApplicationStore, [
+      'applicationStatus',
+      'formattedProgramYear',
+      'programYearId',
+      'applicationId',
+      'isRenewal',
+    ]),
+    ...mapState(useAppStore, ['programYearList']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'userProfileList',
+      'changeRequestId',
+      'previousPath',
+      'isChangeRequest',
+      'getChangeActionNewFacByFacilityId',
+    ]),
+    ...mapState(useReportChangesStore, ['changeRequestMap', 'changeRequestStatus']),
     isReadOnly() {
       //console.log('read only called');
       if (this.unlockedFacilities) {
@@ -121,14 +167,13 @@ export default {
           //console.log('no status');
           return false;
         }
-        return (this.changeRequestStatus != 'INCOMPLETE');
+        return this.changeRequestStatus != 'INCOMPLETE';
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      return this.applicationStatus === 'SUBMITTED';
     },
     unlockedFacilities() {
-      return this.navBarList.some(facility => facility.unlockCcfri);
+      return this.navBarList.some((facility) => facility.unlockCcfri);
     },
-
   },
   beforeMount: function () {
     this.showOptStatus = new Array(this.navBarList.length).fill(false);
@@ -136,19 +181,18 @@ export default {
     this.navBarList.forEach((fac, index) => {
       if (fac.ccfriOptInStatus) {
         this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
-      }
-      else {
+      } else {
         this.$set(this.ccfriOptInOrOut, index, undefined);
       }
     });
   },
   methods: {
-    ...mapMutations('navBar', ['forceNavBarRefresh', 'refreshNavBarList']),
+    ...mapActions(useNavBarStore, ['forceNavBarRefresh', 'refreshNavBarList']),
     toggle(index) {
       this.$set(this.showOptStatus, index, true);
     },
     toggleAll() {
-      this.navBarList.forEach((fac, index) => {
+      this.navBarList.forEach((_fac, index) => {
         this.toggle(index);
         this.$set(this.ccfriOptInOrOut, index, '1');
       });
@@ -185,15 +229,15 @@ export default {
         //when ECEWE report change is integrated, add in a statement here to send to the appropirate page
         if (isChangeRequest(this)) {
           this.$router.push(changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params.changeRecGuid));
-        }
-        else {
+        } else {
           this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId));
         }
       }
       //if application is a change request, go to add new fees
       else if (isChangeRequest(this)) {
-        this.$router.push(changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.$route.params.changeRecGuid, firstOptInFacility.ccfriApplicationId));
-
+        this.$router.push(
+          changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.$route.params.changeRecGuid, firstOptInFacility.ccfriApplicationId)
+        );
       }
       //if application locked, send to add new fees
       else if (this.isReadOnly) {
@@ -201,7 +245,9 @@ export default {
       }
       //if CCFRI is being renewed, go to page that displays fees
       else if (this.isRenewal) {
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId));
+        this.$router.push(
+          pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId)
+        );
       }
       // else go directly to addNewFees page
       else {
@@ -223,12 +269,12 @@ export default {
 
         let newFac = this.getChangeActionNewFacByFacilityId(this.navBarList[i].facilityId);
 
-        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) { // only add if status has changed
-          let userProfileFacility = this.userProfileList.find(el => el.facilityId == this.navBarList[i].facilityId);
+        if (this.navBarList[i].ccfriOptInStatus != this.ccfriOptInOrOut[i]) {
+          // only add if status has changed
+          let userProfileFacility = this.userProfileList.find((el) => el.facilityId == this.navBarList[i].facilityId);
           if (newFac) {
             newFac.ccfri.ccfriOptInStatus = this.ccfriOptInOrOut[i];
-          }
-          else {
+          } else {
             userProfileFacility.ccfriOptInStatus = this.ccfriOptInOrOut[i];
           }
           payload.push({
@@ -236,11 +282,12 @@ export default {
             facilityID: this.navBarList[i].facilityId,
             optInResponse: this.ccfriOptInOrOut[i],
             ccfriApplicationId: this.navBarList[i].ccfriApplicationId,
-            changeRequestNewFacilityId: newFac?.changeRequestNewFacilityId? newFac.changeRequestNewFacilityId : undefined,
-
+            changeRequestNewFacilityId: newFac?.changeRequestNewFacilityId
+              ? newFac.changeRequestNewFacilityId
+              : undefined,
           });
         }
-      }//end for loop
+      } //end for loop
       //Refresh the filtered list
       this.refreshNavBarList();
       if (payload.length > 0) {
@@ -248,19 +295,18 @@ export default {
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
 
           console.log(response.data);
-          response.data.forEach(item => {
+          response.data.forEach((item) => {
             if (item.ccfriApplicationId) {
-              this.userProfileList.find(facility => {
+              this.userProfileList.find((facility) => {
                 if (facility.facilityId == item.facilityId) {
                   facility.ccfriApplicationId = item.ccfriApplicationId;
                   //if this is a CR new facility - update the change action data in the navBar so the navBar will always be up to date without a reload to dynamics
                   let newFac = this.getChangeActionNewFacByFacilityId(item.facilityId);
-                  if (newFac){
-                    newFac.ccfri.ccfriApplicationId =  item.ccfriApplicationId;
+                  if (newFac) {
+                    newFac.ccfri.ccfriApplicationId = item.ccfriApplicationId;
                   }
                 }
               });
-
             }
           });
           this.refreshNavBarList();
@@ -279,12 +325,12 @@ export default {
     },
   },
   mounted() {
-    this.model = this.$store.state.ccfriApp.model ?? model;
+    this.model = ccfriAppStore.model ?? model;
   },
   beforeRouteLeave(_to, _from, next) {
-    this.$store.commit('ccfriApp/model', this.model);
+    ccfriAppStore.model(this.model);
     next();
   },
-  components: { LargeButtonContainer, NavButton }
+  components: { LargeButtonContainer, NavButton },
 };
 </script>

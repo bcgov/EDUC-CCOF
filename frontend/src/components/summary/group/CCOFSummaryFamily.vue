@@ -258,9 +258,9 @@
   </v-row>
 </template>
 <script>
-import {mapState} from 'vuex';
 import { PATHS, pcfUrlGuid, pcfUrl,} from '../../../utils/constants.js';
 import rules from '../../../utils/rules.js';
+import {mapState} from 'pinia';
 
 export default {
   name: 'CCOFSummary',

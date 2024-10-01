@@ -7,12 +7,12 @@ const path = require('path');
 import flushPromises from 'flush-promises';
 
 function addPartimeDays(days, child) {
-  for (let i = 0; i < days ; i++) {
+  for (let i = 0; i < days; i++) {
     child.selectedCareType.push(1);
   }
 }
 function addFulltimeDays(days, child) {
-  for (let i = 0; i < days ; i++) {
+  for (let i = 0; i < days; i++) {
     child.selectedCareType.push(2);
   }
 }
@@ -21,7 +21,10 @@ function hasFailed(result) {
   // if (result.column > 37) {
   //   return false;
   // }
-  return (Math.abs(result.reductionAmt - result.expectedReduction) > 1) || (Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1);
+  return (
+    Math.abs(result.reductionAmt - result.expectedReduction) > 1 ||
+    Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1
+  );
 }
 
 async function loadFile(fileName) {
@@ -37,7 +40,7 @@ expect.extend({
     if (received.reductionAmt == received.expectedReduction && received.parentFeeAmt == received.expectedParentFee) {
       return {
         message: () => 'Pass',
-        pass: true
+        pass: true,
       };
     } else {
       return {
@@ -54,10 +57,10 @@ expect.extend({
               feeFrequency        [${received.parentFeeFrequency}]\n
               reductionAmt/Exp    [${received.reductionAmt}] / [${received.expectedReduction}]\n
               parentFeeAmt/Exp    [${received.parentFeeAmt}] / [${received.expectedParentFee}]`,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 describe('CcfriEstimator.js', () => {
@@ -65,22 +68,20 @@ describe('CcfriEstimator.js', () => {
     const localVue = createLocalVue();
     localVue.use(Vuetify);
     // jest.spyOn(console, 'log').mockImplementation(() => {});
-
   });
-  afterEach(() => {
-  });
+  afterEach(() => {});
 
   it('Test CCfri Estimator', async () => {
     const formStub = {
       render: () => {},
       methods: {
         validate: () => true,
-      }
+      },
     };
     const wrapper = shallowMount(CcfriEstimator, {
       stubs: {
         'v-form': formStub,
-      }
+      },
     });
     let results = [];
     let counter = 0;
@@ -109,11 +110,11 @@ describe('CcfriEstimator.js', () => {
       parentFeeAmt: wrapper.vm.results[0].actualParentFeePerChild,
       expectedParentFee: 0,
       column: 1,
-      row: 5
+      row: 5,
     };
     if (hasFailed(result)) {
       results.push(result);
-      errors ++;
+      errors++;
     } else {
       results.push(result);
     }
@@ -122,18 +123,20 @@ describe('CcfriEstimator.js', () => {
     console.info(`Tested [${counter}] number of records with [${errors}] tests failing.`);
     const excelFormat = true;
     if (excelFormat) {
-      console.info('ROW, COLUMN, TYPE_OF_CARE, CHILD_AGE_CATEGORY, APPROVED_FEE, YOUR_FEE, FREQUENCY, HALF_DAYS, FULL_DAYS, REDUCTION_AMNT, REDUCTION_EXPECTED_AMT, PARENT_FEE, EXPECTED_PARENT_FEE');
-      results.forEach(received => {
-        console.info(`${received.row},${received.column},${received.typeOfCare},${received.childAgeCategory},${received.approvedFee},${received.partTimeFee},${received.parentFeeFrequency},${received.halfDays},${received.fullDays},${received.reductionAmt},${received.expectedReduction},${received.parentFeeAmt},${received.expectedParentFee}`);
+      console.info(
+        'ROW, COLUMN, TYPE_OF_CARE, CHILD_AGE_CATEGORY, APPROVED_FEE, YOUR_FEE, FREQUENCY, HALF_DAYS, FULL_DAYS, REDUCTION_AMNT, REDUCTION_EXPECTED_AMT, PARENT_FEE, EXPECTED_PARENT_FEE',
+      );
+      results.forEach((received) => {
+        console.info(
+          `${received.row},${received.column},${received.typeOfCare},${received.childAgeCategory},${received.approvedFee},${received.partTimeFee},${received.parentFeeFrequency},${received.halfDays},${received.fullDays},${received.reductionAmt},${received.expectedReduction},${received.parentFeeAmt},${received.expectedParentFee}`,
+        );
       });
     } else {
-      results.forEach(received => {
+      results.forEach((received) => {
         console.info(`Row/Col  [${received.row}/${received.column}]   typeOfCare [${received.typeOfCare}]    AgeCat [${received.childAgeCategory}]  approvedFee [${received.approvedFee}]  partTimeFee [${received.partTimeFee}]   feeFrequency [${received.parentFeeFrequency}]\n
         halfDays [${received.halfDays}]   fullDays [${received.fullDays}]  reductionAmt/Exp [${received.reductionAmt}] / [${received.expectedReduction}]  parentFeeAmt/Exp [${received.parentFeeAmt}] / [${received.expectedParentFee}]`);
       });
-
     }
     await flushPromises();
   });
-
 });

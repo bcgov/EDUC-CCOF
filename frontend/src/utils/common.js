@@ -1,11 +1,12 @@
 'use strict';
 
-import {getDateFormatter} from './format.js';
-import {LocalDate} from '@js-joda/core';
-import {isPlainObject, sortBy} from 'lodash';
+import { getDateFormatter } from './format.js';
+import { LocalDate } from '@js-joda/core';
+import { isPlainObject, sortBy } from 'lodash';
 import { PATHS } from './constants.js';
+import useRfdc from 'rfdc';
 
-const clone = require('rfdc')();
+const clone = useRfdc();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
   const formatter = getDateFormatter(pattern);
   try {
@@ -16,7 +17,7 @@ export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
 };
 
 export function setEmptyInputParams(params, ...excludedParams) {
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (!excludedParams.includes(key)) {
       if (isPlainObject(params[key])) {
         setEmptyInputParams(params[key], ...excludedParams);
@@ -31,8 +32,7 @@ export function deepCloneObject(objectToBeCloned) {
 }
 
 export function getFileExtension(fileName) {
-  if (fileName)
-    return fileName.slice(fileName.lastIndexOf('.') + 1);
+  if (fileName) return fileName.slice(fileName.lastIndexOf('.') + 1);
   return '';
 }
 export function isNullOrBlank(value) {
@@ -44,15 +44,19 @@ export function isChangeRequest(vueForm) {
 }
 
 export function sortByFacilityId(value) {
-  return sortBy(value,[function(o) { return o.facilityId; }]);
+  return sortBy(value, [
+    function (o) {
+      return o.facilityId;
+    },
+  ]);
 }
 
 export async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function isFacilityAvailable(facility) {
-  return (facility?.facilityStatus && !['Closed','Cancelled'].includes(facility?.facilityStatus));
+  return facility?.facilityStatus && !['Closed', 'Cancelled'].includes(facility?.facilityStatus);
 }
 
 // NEW ORG Application:
@@ -62,18 +66,17 @@ export function isFacilityAvailable(facility) {
 // - NOT SUBMITTED - display all facilities associated with the application, which are not in status (Closed, Cancelled, Blank) and have Facility ID.
 // - SUBMITTED/APPROVED - display all facilities associated with the application, which have Facility ID (change requests new facilities will be filtered until approved).
 export function filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) {
-  const filteredFacilityList = facilityList.filter(el => {
+  const filteredFacilityList = facilityList.filter((el) => {
     const isFacilityActive = el.ccofBaseFundingId || el.ccfriApplicationId || el.eceweApplicationId;
     if (isRenewal) {
       if (applicationStatus === 'SUBMITTED' || applicationStatus === 'APPROVED') {
-        return (el.facilityAccountNumber && isFacilityActive);
+        return el.facilityAccountNumber && isFacilityActive;
       } else {
-        return (el.facilityAccountNumber && isFacilityAvailable(el));
+        return el.facilityAccountNumber && isFacilityAvailable(el);
       }
-    }
-    else {
+    } else {
       if (applicationStatus === 'APPROVED') {
-        return (el.facilityAccountNumber && isFacilityActive);
+        return el.facilityAccountNumber && isFacilityActive;
       } else {
         return true;
       }
@@ -84,22 +87,31 @@ export function filterFacilityListForPCF(facilityList, isRenewal, applicationSta
 
 export function checkApplicationUnlocked(application) {
   const facilityList = application?.facilityList;
-  const isCCFRIUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockCcfri) > -1;
-  const isNMFUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockNmf) > -1;
-  const isRFIUnlocked = facilityList?.findIndex(facility => isFacilityAvailable(facility) && facility.unlockRfi) > -1;
-  const isApplicationUnlocked = (application?.unlockBaseFunding && application?.applicationType === 'NEW') || application?.unlockLicenseUpload ||
-                              application?.unlockEcewe || application?.unlockSupportingDocuments || application?.unlockDeclaration ||
-                              isCCFRIUnlocked || isNMFUnlocked || isRFIUnlocked;
+  const isCCFRIUnlocked =
+    facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockCcfri) > -1;
+  const isNMFUnlocked = facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockNmf) > -1;
+  const isRFIUnlocked = facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockRfi) > -1;
+  const isApplicationUnlocked =
+    (application?.unlockBaseFunding && application?.applicationType === 'NEW') ||
+    application?.unlockLicenseUpload ||
+    application?.unlockEcewe ||
+    application?.unlockSupportingDocuments ||
+    application?.unlockDeclaration ||
+    isCCFRIUnlocked ||
+    isNMFUnlocked ||
+    isRFIUnlocked;
   return isApplicationUnlocked;
 }
 
-export function isAnyApplicationUnlocked (applicationList){
-  return applicationList.some(application => {
+export function isAnyApplicationUnlocked(applicationList) {
+  return applicationList.some((application) => {
     return checkApplicationUnlocked(application);
   });
 }
 
-export function  isAnyChangeRequestActive(changeRequestList) {
+export function isAnyChangeRequestActive(changeRequestList) {
   //Status of :  "Submitted" "Action Required";
-  return changeRequestList?.some((el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE');
+  return changeRequestList?.some(
+    (el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE',
+  );
 }

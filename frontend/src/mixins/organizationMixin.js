@@ -1,4 +1,11 @@
-import { mapActions, mapMutations, mapState, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'pinia';
+import { useAppStore } from '../store/app.js';
+import { useOrganizationStore } from '../store/ccof/organization.js';
+import { useFacilityStore } from '../store/ccof/facility.js';
+import { useAuthStore } from '../store/auth.js';
+import { useApplicationStore } from '../store/application.js';
+import { useNavBarStore } from '../store/navBar.js';
+
 import alertMixin from './alertMixin.js';
 import { ORGANIZATION_PROVIDER_TYPES } from '../utils/constants.js';
 import rules from '../utils/rules.js';
@@ -8,19 +15,18 @@ export default {
   components: { NavButton },
   mixins: [alertMixin],
   computed: {
-    ...mapState('app', ['organizationTypeList', 'navBarList']),
-    ...mapState('organization', ['isStarted', 'organizationId', 'organizationModel']),
-    ...mapState('facility', ['facilityList']),
-    ...mapState('auth', ['userInfo']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding']),
-    ...mapGetters('navBar', ['nextPath', 'previousPath']),
+    ...mapState(useAppStore, ['organizationTypeList', 'navBarList']),
+    ...mapState(useOrganizationStore, ['isStarted', 'organizationId', 'organizationModel']),
+    ...mapState(useFacilityStore, ['facilityList']),
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding']),
+    ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
-    }
-
+      return this.applicationStatus === 'SUBMITTED';
+    },
   },
   data() {
     return {
@@ -30,7 +36,6 @@ export default {
       loading: false,
       isValidForm: true,
       businessId: this.businessId,
-
     };
   },
   async mounted() {
@@ -65,10 +70,15 @@ export default {
     next();
   },
   methods: {
-    ...mapActions('organization', ['saveOrganization', 'loadOrganization']),
-    ...mapMutations('organization', ['setIsStarted', 'setIsOrganizationComplete', 'setOrganizationModel']),
+    ...mapActions(useOrganizationStore, [
+      'saveOrganization',
+      'loadOrganization',
+      'setIsStarted',
+      'setIsOrganizationComplete',
+      'setOrganizationModel',
+    ]),
     validateIncorporationNumber(organizationTypeId, incorporationNumber) {
-      const selectedOrgType = this.organizationTypeList.find(obj => obj.id === organizationTypeId)?.name;
+      const selectedOrgType = this.organizationTypeList.find((obj) => obj.id === organizationTypeId)?.name;
       if (!incorporationNumber) {
         if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
           return ['This field is required'];
@@ -76,7 +86,7 @@ export default {
       }
       return [];
     },
-    isSameAddressChecked () {
+    isSameAddressChecked() {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
         this.model.city2 = '';
@@ -117,6 +127,6 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
-    }
-  }
+    },
+  },
 };

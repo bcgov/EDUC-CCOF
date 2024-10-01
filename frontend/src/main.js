@@ -1,15 +1,11 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import vuetify from './plugins/vuetify.js';
-import App from './App.vue';
 import router from './router.js';
-import store from './store.js';
+import { createPinia } from 'pinia';
 
-export const eventBus = new Vue();
+import AppComponent from './App.vue';
 
-Vue.config.productionTip = false;
-new Vue({
-  vuetify,
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app');
+const app = createApp(AppComponent);
+const pinia = createPinia();
+
+app.use(pinia).use(router).use(vuetify).mount('#app');

@@ -206,7 +206,7 @@
 </template>
 <script>
 
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import rules from '../../../utils/rules.js';
 import { PATHS, pcfUrl } from '../../../utils/constants.js';
 

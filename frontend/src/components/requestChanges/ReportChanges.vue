@@ -1,78 +1,80 @@
 <template>
   <v-container>
-
     <div class="row pt-4 justify-center text-center">
-    <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
-    <!-- <span class="text-h5">What would you like to change?</span> -->
+      <!-- <span class="text-h5">What would you like to change?</span> -->
     </div>
 
     <v-form ref="isValidForm" value="false" v-model="isValidForm">
-
       <v-container>
-
         <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row class="d-flex justify-start">
-
-
-          <SmallCard  class= "col-lg-6 " :disable="false" v-if="this.organizationProviderType == 'GROUP'">
+          <SmallCard class="col-lg-6" :disable="false" v-if="this.organizationProviderType == 'GROUP'">
             <template #content class="px-10">
-              <p class="text-h6 text-center "> Add a New facility to an existing organization </p>
+              <p class="text-h6 text-center">Add a New facility to an existing organization</p>
               <p class="px-2 text-center">
-                This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE information ready.
+                This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
+                information ready.
               </p>
               <p class="px-2 text-center">
                 You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
               </p>
             </template>
-              <template #button class="ma-0 pa-0 ">
-                <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" :loading="processing">Add new facility</v-btn>
-                </v-row>
-              </template>
-
+            <template #button class="ma-0 pa-0">
+              <v-row justify="space-around">
+                <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" :loading="processing"
+                  >Add new facility</v-btn
+                >
+              </v-row>
+            </template>
           </SmallCard>
 
-          <SmallCard  class= "col-lg-6 " :disable="false">
+          <SmallCard class="col-lg-6" :disable="false">
             <template #content class="px-10">
               <p class="text-h6 text-center">Report changes to your Licence or service</p>
               <p class="px-2 text-center">
-                Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other supporting documents ready.
+                Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
+                supporting documents ready.
               </p>
             </template>
-              <template #button class="ma-0 pa-0 ">
-                <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" :loading="processing">Upload a Change Notification Form</v-btn>
-                </v-row>
-              </template>
-
+            <template #button class="ma-0 pa-0">
+              <v-row justify="space-around">
+                <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" :loading="processing"
+                  >Upload a Change Notification Form</v-btn
+                >
+              </v-row>
+            </template>
           </SmallCard>
 
-          <SmallCard  class= "col-lg-6 " :disable="!isMtfiEnabled()">
+          <SmallCard class="col-lg-6" :disable="!isMtfiEnabled()">
             <template #content class="px-10">
               <p class="text-h6 text-center">Mid-Term Fee Increase</p>
               <p class="px-2 text-center">
                 Request a parent fee increase for a facility after you have received approval for the CCFRI.
               </p>
-              <p class="px-2 text-center">
-                You may need to provide details about your expenses.
-              </p>
+              <p class="px-2 text-center">You may need to provide details about your expenses.</p>
             </template>
-              <template #button class="ma-0 pa-0 ">
-                <v-row justify="space-around">
-                  <v-btn dark class="mb-10" :color='buttonColor(!isMtfiEnabled())' :disable="!isMtfiEnabled()" @click="goToMTFI()" :loading="processing">Update parent fees</v-btn>
-                </v-row>
-              </template>
-
+            <template #button class="ma-0 pa-0">
+              <v-row justify="space-around">
+                <v-btn
+                  dark
+                  class="mb-10"
+                  :color="buttonColor(!isMtfiEnabled())"
+                  :disable="!isMtfiEnabled()"
+                  @click="goToMTFI()"
+                  :loading="processing"
+                  >Update parent fees</v-btn
+                >
+              </v-row>
+            </template>
           </SmallCard>
-
-
         </v-row>
 
         <v-row no-gutters id="change-request-history">
-          <v-col class= "col-lg-12 mt-10">
+          <v-col class="col-lg-12 mt-10">
             <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
             <h2 v-else>Change History</h2>
           </v-col>
@@ -85,19 +87,20 @@
         -->
         </v-row>
         <v-row v-if="processing">
-          <v-col >
+          <v-col>
             <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
           </v-col>
         </v-row>
         <v-data-table
           :headers="headers"
-          :items="viewOlderRequestActive? pastChangeRequests : currentChangeRequests"
-          :height = "maxChangeHistoryTableHeight"
+          :items="viewOlderRequestActive ? pastChangeRequests : currentChangeRequests"
+          :height="maxChangeHistoryTableHeight"
           mobile-breakpoint="md"
           fixed-header
           :item-class="getChangeRequestStyle"
           class="elevation-4 my-4"
-          disable-pagination hide-default-footer
+          disable-pagination
+          hide-default-footer
           :sort-by="['priority', 'submissionDate']"
           :sort-desc="[true, true]"
           v-else
@@ -141,7 +144,14 @@
             <v-btn
               v-if="isCancelButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton my-2"
-              @click="confirmCancelChangeRequest(item.changeRequestId, item.changeTypeString, item.externalStatus, item.submissionDateString)"
+              @click="
+                confirmCancelChangeRequest(
+                  item.changeRequestId,
+                  item.changeTypeString,
+                  item.externalStatus,
+                  item.submissionDateString
+                )
+              "
               outlined
               :width="changeHistoryButtonWidth"
             >
@@ -150,8 +160,7 @@
           </template>
         </v-data-table>
 
-        <v-btn
-        @click="viewOlderRequestActive = !viewOlderRequestActive">
+        <v-btn @click="viewOlderRequestActive = !viewOlderRequestActive">
           <p class="ma-0 pa-0" v-if="!viewOlderRequestActive">View Older</p>
           <p class="ma-0 pa-0" v-else>View Current</p>
         </v-btn>
@@ -160,23 +169,28 @@
           <v-card>
             <v-container class="pt-0">
               <v-row>
-                <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
+                <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
                   <v-card-title class="white--text font-weight-bold">Cancel a change request</v-card-title>
                 </v-col>
-                <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
-                </v-col>
+                <v-col cols="5" class="d-flex justify-end" style="background-color: #234075"> </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
+                <v-col cols="12" style="background-color: #ffc72c; padding: 2px"></v-col>
               </v-row>
               <v-row class="pa-6">
                 <p>Are you sure you want to cancel this change request?</p>
-                <p class="pt-2">[{{cancelChangeRequestType}}]  [{{cancelChangeRequestStatus}}]  [{{cancelChangeRequestSubmissionDate}}]</p>
-                <p class="pt-2">You will not be able to resume a cancelled request. They will be viewable in your change history.</p>
+                <p class="pt-2">
+                  [{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}] [{{
+                    cancelChangeRequestSubmissionDate
+                  }}]
+                </p>
+                <p class="pt-2">
+                  You will not be able to resume a cancelled request. They will be viewable in your change history.
+                </p>
               </v-row>
               <v-row class="d-flex justify-right">
-                  <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
-                  <v-btn dark color="primary" :loading="processing" @click="cancel()">Continue</v-btn>
+                <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
+                <v-btn dark color="primary" :loading="processing" @click="cancel()">Continue</v-btn>
               </v-row>
             </v-container>
           </v-card>
@@ -184,20 +198,32 @@
       </v-container>
     </v-form>
 
-    <NavButton :isNextDisplayed="false" :isSaveDisplayed="false"
-         :isNextDisabled="true" :isProcessing="processing"
-        @previous="previous" @next="false" @validateForm="validateForm()" @save="save(true)"></NavButton>
+    <NavButton
+      :isNextDisplayed="false"
+      :isSaveDisplayed="false"
+      :isNextDisabled="true"
+      :isProcessing="processing"
+      @previous="previous"
+      @next="false"
+      @validateForm="validateForm()"
+      @save="save(true)"
+    ></NavButton>
   </v-container>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
-import { PATHS, CHANGE_TYPES, changeUrlGuid , changeUrl } from '../../utils/constants.js';
+import { mapState, mapActions } from 'pinia';
+import { useAppStore } from '../../store/app.js';
+import { useApplicationStore } from '../../store/application.js';
+import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useOrganizationStore } from '../../store/ccof/organization.js';
+import { useNavBarStore } from '../../store/navBar.js';
+
+import { PATHS, CHANGE_TYPES, changeUrlGuid, changeUrl } from '../../utils/constants.js';
 import alertMixin from '../../mixins/alertMixin.js';
 import SmallCard from '../guiComponents/SmallCard.vue';
 import NavButton from '../util/NavButton.vue';
 import { isFacilityAvailable } from '../../utils/common.js';
-
 
 export default {
   name: 'ReportChange',
@@ -209,11 +235,9 @@ export default {
       isValidForm: false,
       processing: false,
       loading: false,
-      rules: [
-        (v) => !!v || 'Required.',
-      ],
+      rules: [(v) => !!v || 'Required.'],
       headersGroup: [
-        { text: 'Change Requests', value: 'changeTypeString', class: 'tableHeader'},
+        { text: 'Change Requests', value: 'changeTypeString', class: 'tableHeader' },
         { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
         { text: 'Facility(s) name', value: 'facilityNames', class: 'tableHeader' },
         { text: 'Status', value: 'externalStatus', class: 'tableHeader' },
@@ -221,7 +245,7 @@ export default {
         { text: ' ', value: 'actions', align: 'start', sortable: false },
       ],
       headersFamily: [
-        { text: 'Change Requests', value: 'changeTypeString', class: 'tableHeader'},
+        { text: 'Change Requests', value: 'changeTypeString', class: 'tableHeader' },
         { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
         { text: 'Status', value: 'externalStatus', class: 'tableHeader' },
         { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
@@ -237,16 +261,16 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['programYearList']),
-    ...mapState('application', ['applicationStatus', 'formattedProgramYear', 'applicationId', 'programYearId']),
-    ...mapState('reportChanges', ['changeRequestStore', 'mtfiFacilities']),
-    ...mapState('organization', ['organizationProviderType',]),
-    ...mapState('navBar', ['userProfileList']),
+    ...mapState(useAppStore, ['programYearList']),
+    ...mapState(useApplicationStore, ['applicationStatus', 'formattedProgramYear', 'applicationId', 'programYearId']),
+    ...mapState(useReportChangesStore, ['changeRequestStore', 'mtfiFacilities']),
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
+    ...mapState(useNavBarStore, ['userProfileList']),
     isReadOnly() {
       if (this.unlockedFacilities) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      return this.applicationStatus === 'SUBMITTED';
     },
     allChangeRequests() {
       let allChangeRequests = [];
@@ -268,23 +292,28 @@ export default {
             externalStatus: this.getExternalStatusString(changeRequest.externalStatus),
             submissionDate: changeRequest?.firstSubmissionDate,
             submissionDateString: this.getSubmissionDateString(changeRequest?.firstSubmissionDate),
-            priority: changeRequest?.priority
+            priority: changeRequest?.priority,
           };
         });
       }
 
       return allChangeRequests;
     },
-    getPrevProgramYearId(){
-      return this.programYearList.list.find(({ programYearId }) =>  programYearId == this.programYearId ).previousYearId;
+    getPrevProgramYearId() {
+      return this.programYearList.list.find(({ programYearId }) => programYearId == this.programYearId).previousYearId;
     },
-    currentChangeRequests(){
+    currentChangeRequests() {
       return this.allChangeRequests.filter(
-        el => (el.programYearId == this.programYearId)
-        || (el.programYearId == this.getPrevProgramYearId && (el.externalStatus == "In Progress" || el.externalStatus == "Submitted"  || el.externalStatus == "Action Required" )));
+        (el) =>
+          el.programYearId == this.programYearId ||
+          (el.programYearId == this.getPrevProgramYearId &&
+            (el.externalStatus == 'In Progress' ||
+              el.externalStatus == 'Submitted' ||
+              el.externalStatus == 'Action Required'))
+      );
     },
-    pastChangeRequests(){
-      return this.allChangeRequests.filter(el => el.programYearId != this.programYearId);
+    pastChangeRequests() {
+      return this.allChangeRequests.filter((el) => el.programYearId != this.programYearId);
     },
     // Table should be vertically scrollable once rows > 8
     maxChangeHistoryTableHeight() {
@@ -295,51 +324,54 @@ export default {
     },
     maxfacilityNamesStringLength() {
       if (this.$vuetify.breakpoint.width > 3500) {
-        return ('--maxLength: 700px');
+        return '--maxLength: 700px';
       }
       switch (this.$vuetify.breakpoint.name) {
-      case 'xl':
-        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px');
-      case 'lg':
-        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10)) + 'px');
-      case 'md':
-        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
-      case 'sm':
-        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px');
-      case 'xs':
-        return ('--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px');
-      default:
-        return ('--maxLength: 100px');
+        case 'xl':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px';
+        case 'lg':
+          return '--maxLength: ' + Math.floor(this.$vuetify.breakpoint.width / 10) + 'px';
+        case 'md':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+        case 'sm':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+        case 'xs':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px';
+        default:
+          return '--maxLength: 100px';
       }
     },
     unlockCCFRIList() {
       let unlockList = [];
       this.userProfileList?.forEach((facility) => {
-        if (facility.unlockCcfri)
-          unlockList.push(facility.ccfriApplicationId);
+        if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     unlockNMFList() {
       let unlockList = [];
       this.userProfileList?.forEach((facility) => {
-        if (facility.unlockNmf)
-          unlockList.push(facility.ccfriApplicationId);
+        if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     unlockRFIList() {
       let unlockList = [];
       this.userProfileList?.forEach((facility) => {
-        if (facility.unlockRfi)
-          unlockList.push(facility.ccfriApplicationId);
+        if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
   },
   methods: {
-    ...mapActions('reportChanges', ['getChangeRequestList', 'createChangeRequest', 'cancelChangeRequest','getChangeRequest']),
-    ...mapMutations('reportChanges', ['setChangeRequestId', 'setChangeActionId']),
+    ...mapActions(useReportChangesStore, [
+      'getChangeRequestList',
+      'createChangeRequest',
+      'cancelChangeRequest',
+      'getChangeRequest',
+      'setChangeRequestId',
+      'setChangeActionId',
+    ]),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
@@ -353,115 +385,121 @@ export default {
     //   return currentFutureYears?.includes(programYearId);
     // },
     getProgramYearString(programYearId) {
-      let label = this.programYearList?.list?.find(programYear => programYear.programYearId == programYearId)?.name;
+      let label = this.programYearList?.list?.find((programYear) => programYear.programYearId == programYearId)?.name;
       return label?.replace(/[^\d/]/g, '');
     },
-    getChangeTypeString(changeType){
-      switch(changeType){
-      case 'PDF_CHANGE':
-        return "Report other changes";
-      case 'NEW_FACILITY':
-        return "Add new facility(s)";
-      case 'PARENT_FEE_CHANGE':
-        return 'Mid-Term Fee Increase';
+    getChangeTypeString(changeType) {
+      switch (changeType) {
+        case 'PDF_CHANGE':
+          return 'Report other changes';
+        case 'NEW_FACILITY':
+          return 'Add new facility(s)';
+        case 'PARENT_FEE_CHANGE':
+          return 'Mid-Term Fee Increase';
 
-      default:
-        return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
+        default:
+          return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
       }
     },
-    createFacilityNameString(changeActions){
-
+    createFacilityNameString(changeActions) {
       //TODO - add more logic to grab facility name from relevent change request. IE: MTFI
 
       //did it this way so if there are many change Actions, it checks all of them to see if there is a new facility. Maybe change in the future
-      if (!changeActions.find(el => el.changeType == "NEW_FACILITY")){
-        return "- - - -";
+      if (!changeActions.find((el) => el.changeType == 'NEW_FACILITY')) {
+        return '- - - -';
       }
 
-      let str = "";
+      let str = '';
 
       //change in backend, only returns 1 at a time rn
-      let action = changeActions.find(el => el.changeType == "NEW_FACILITY");
+      let action = changeActions.find((el) => el.changeType == 'NEW_FACILITY');
       if (action?.facilities) {
-        action.facilities.forEach(fac => str = str + `${fac.facilityName}, `);
+        action.facilities.forEach((fac) => (str = str + `${fac.facilityName}, `));
       }
       return str.slice(0, -2);
     },
-    getExternalStatusString(status){
-      switch (status){
-      case 1:
-        return "In Progress";
-      case 2:
-        return "Submitted";
-      case 3:
-        return "Action Required";
-      case 4:
-        return "Ineligible";
-      case 5 :
-        return "Approved";
-      case 6:
-        return "Cancelled";
-      default:
-        return "Unknown"; //should never happen!
+    getExternalStatusString(status) {
+      switch (status) {
+        case 1:
+          return 'In Progress';
+        case 2:
+          return 'Submitted';
+        case 3:
+          return 'Action Required';
+        case 4:
+          return 'Ineligible';
+        case 5:
+          return 'Approved';
+        case 6:
+          return 'Cancelled';
+        default:
+          return 'Unknown'; //should never happen!
       }
     },
-    getInternalStatusString(status){
-      switch (status){
-      case 1:
-        return "Incomplete";
-      case 3:
-        return "Submitted";
-      case 4:
-        return "Processing";
-      case 5:
-        return "WITH_PROVIDER";
-      case 6:
-        return "Ineligible";
-      case 7:
-        return "Approved";
-      case 8:
-        return "Cancelled";
-      default:
-        return "Unknown"; //should never happen!
+    getInternalStatusString(status) {
+      switch (status) {
+        case 1:
+          return 'Incomplete';
+        case 3:
+          return 'Submitted';
+        case 4:
+          return 'Processing';
+        case 5:
+          return 'WITH_PROVIDER';
+        case 6:
+          return 'Ineligible';
+        case 7:
+          return 'Approved';
+        case 8:
+          return 'Cancelled';
+        default:
+          return 'Unknown'; //should never happen!
       }
     },
     getSubmissionDateString(date) {
       if (date) {
         // date display format: YYYY/MM/DD
-        return new Date(date).toLocaleDateString("zh-CN",{ year: 'numeric', month: '2-digit', day: '2-digit' });
+        return new Date(date).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
       }
-      return "- - - -";
+      return '- - - -';
     },
-    getChangeRequestStyle(changeRequest){
+    getChangeRequestStyle(changeRequest) {
       return changeRequest.externalStatus == 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    routeToFacilityAdd(){
+    routeToFacilityAdd() {
       this.$router.push(PATHS.ROOT.CHANGE_NEW_FACILITY);
     },
-    async continueButton(changeType, changeActionId = null,  changeRequestId = null, index){
+    async continueButton(changeType, changeActionId = null, changeRequestId = null, index) {
       this.processing = true;
       let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
-      if (changeType == 'PDF_CHANGE'){
+      if (changeType == 'PDF_CHANGE') {
         this.goToChangeForm(changeActionId, changeRequestId);
-      }
-      else if (changeType == 'NEW_FACILITY'){
+      } else if (changeType == 'NEW_FACILITY') {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId));
-      }
-      else if (changeType == 'PARENT_FEE_CHANGE'){
+        this.$router.push(
+          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId)
+        );
+      } else if (changeType == 'PARENT_FEE_CHANGE') {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
 
-        if(this.organizationProviderType == 'FAMILY'){ // i need to load the new CCFRI id here then
+        if (this.organizationProviderType == 'FAMILY') {
+          // i need to load the new CCFRI id here then
           await this.getChangeRequest(changeRequestId);
-          this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, this.mtfiFacilities[0]?.ccfriApplicationId, CHANGE_TYPES.MTFI)); //dont think this will work!
+          this.$router.push(
+            changeUrlGuid(
+              PATHS.MTFI_GROUP_FEE_VERIFICATION,
+              changeRequestId,
+              this.mtfiFacilities[0]?.ccfriApplicationId,
+              CHANGE_TYPES.MTFI
+            )
+          ); //dont think this will work!
           //this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
-        }
-        else{
+        } else {
           this.$router.push(changeUrl(PATHS.MTFI_GROUP_SELECT_FACILITY, changeRequestId, CHANGE_TYPES.MTFI));
         }
       }
@@ -477,11 +515,15 @@ export default {
       //}
     },
     newFacilityActionRequiredRoute(changeRequestId) {
-      const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
+      const currentCR = this.changeRequestStore?.find((el) => el.changeRequestId === changeRequestId);
       // const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
-      const newFacilityChangeAction = currentCR.changeActions?.find(changeAction => changeAction.changeType === 'NEW_FACILITY');
+      const newFacilityChangeAction = currentCR.changeActions?.find(
+        (changeAction) => changeAction.changeType === 'NEW_FACILITY'
+      );
       if (currentCR?.unlockCCOF) {
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId));
+        this.$router.push(
+          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId)
+        );
       } else if (currentCR?.unlockLicenseUpload) {
         this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, changeRequestId));
       } else if (this.unlockCCFRIList?.length > 0) {
@@ -497,18 +539,22 @@ export default {
       } else if (currentCR?.unlockDeclaration) {
         this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId));
       } else {
-        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId));
+        this.$router.push(
+          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId)
+        );
       }
     },
     mtfiActionRequiredRoute(changeRequestId) {
-      const currentCR = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
-      const mtfiChangeAction = currentCR?.changeActions?.find(el => el.changeType === 'PARENT_FEE_CHANGE');
+      const currentCR = this.changeRequestStore?.find((el) => el.changeRequestId === changeRequestId);
+      const mtfiChangeAction = currentCR?.changeActions?.find((el) => el.changeType === 'PARENT_FEE_CHANGE');
       const mtfiFacilities = mtfiChangeAction?.mtfiFacilities;
       const unlockCCFRIList = this.getUnlockCCFRIListForMTFI(mtfiFacilities);
       const unlockRFIList = this.getUnlockRFIListForMTFI(mtfiFacilities);
       // there is no NMF for MTFI change request
       if (unlockCCFRIList?.length > 0) {
-        this.$router.push(changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI));
+        this.$router.push(
+          changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI)
+        );
       } else if (unlockRFIList?.length > 0) {
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, unlockRFIList[0], CHANGE_TYPES.MTFI));
       } else {
@@ -518,44 +564,40 @@ export default {
     getUnlockCCFRIListForMTFI(mtfiFacilities) {
       let unlockList = [];
       mtfiFacilities?.forEach((facility) => {
-        if (facility.unlockCcfri)
-          unlockList.push(facility.ccfriApplicationId);
+        if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     getUnlockRFIListForMTFI(mtfiFacilities) {
       let unlockList = [];
       mtfiFacilities?.forEach((facility) => {
-        if (facility.unlockRfi)
-          unlockList.push(facility.ccfriApplicationId);
+        if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
-    updateButton(changeType, changeActionId = null,  changeRequestId = null){
+    updateButton(changeType, changeActionId = null, changeRequestId = null) {
       this.processing = true;
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       switch (changeType) {
-      case 'PDF_CHANGE':
-        this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
-        break;
-      case 'NEW_FACILITY':
-        this.newFacilityActionRequiredRoute(changeRequestId);
-        break;
-      case 'PARENT_FEE_CHANGE':
-        this.mtfiActionRequiredRoute(changeRequestId);
-        break;
-      default:
-        break;
+        case 'PDF_CHANGE':
+          this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
+          break;
+        case 'NEW_FACILITY':
+          this.newFacilityActionRequiredRoute(changeRequestId);
+          break;
+        case 'PARENT_FEE_CHANGE':
+          this.mtfiActionRequiredRoute(changeRequestId);
+          break;
+        default:
+          break;
       }
     },
-    async createNewChangeRequest(changeType){
-
+    async createNewChangeRequest(changeType) {
       let newReq;
-      try{
+      try {
         newReq = await this.createChangeRequest(changeType);
-      }
-      catch(error){
+      } catch (error) {
         console.log('unable to create a new Req');
         this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
       }
@@ -564,23 +606,34 @@ export default {
     goToChangeDialogue() {
       this.$router.push(PATHS.CHANGE_NOTIFICATION_DIALOGUE);
     },
-    async goToChangeForm(changeActionId = null,  changeRequestId = null){
-
+    async goToChangeForm(changeActionId = null, changeRequestId = null) {
       this.processing = true;
 
       //create the change action first, then push it
-      if (!changeActionId){
+      if (!changeActionId) {
         let newReq = await this.createNewChangeRequest('PDF_CHANGE');
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, newReq?.changeRequestId, newReq?.changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
-      }
-      else{
+        this.$router.push(
+          changeUrlGuid(
+            PATHS.CHANGE_NOTIFICATION_FORM,
+            newReq?.changeRequestId,
+            newReq?.changeActionId,
+            CHANGE_TYPES.CHANGE_NOTIFICATION
+          )
+        );
+      } else {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
-        this.$router.push(changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION));
+        this.$router.push(
+          changeUrlGuid(
+            PATHS.CHANGE_NOTIFICATION_FORM,
+            changeRequestId,
+            changeActionId,
+            CHANGE_TYPES.CHANGE_NOTIFICATION
+          )
+        );
       }
-
     },
-    async goToMTFI(){
+    async goToMTFI() {
       this.$router.push(PATHS.MTFI_INFO);
     },
 
@@ -592,14 +645,13 @@ export default {
       this.dialog = true;
     },
 
-    async cancel(){
+    async cancel() {
       this.processing = true;
       try {
         await this.cancelChangeRequest(this.cancelChangeRequestId);
         this.cancelChangeRequestId = undefined;
         this.setSuccessAlert('Success! Your change request has been cancelled.');
-      }
-      catch(error){
+      } catch (error) {
         this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');
       }
 
@@ -607,14 +659,14 @@ export default {
       this.dialog = false;
     },
     isViewButtonDisplayed(externalStatus) {
-      return ['Submitted','Approved','Cancelled'].includes(externalStatus) ;
+      return ['Submitted', 'Approved', 'Cancelled'].includes(externalStatus);
     },
     isContinueButtonDisplayed(externalStatus) {
       return ['In Progress'].includes(externalStatus);
     },
     isCancelButtonDisplayed(externalStatus) {
       // return (['Incomplete','Submitted','WITH_PROVIDER'].includes(internalStatus));
-      return (['In Progress'].includes(externalStatus));
+      return ['In Progress'].includes(externalStatus);
     },
     isUpdateButtonDisplayed(externalStatus) {
       return ['Action Required'].includes(externalStatus);
@@ -625,10 +677,14 @@ export default {
     // CCFRI-2489
     // All the MTFI will have to be in one of the end state statutes.
     // At least 1 Facility has CCFRI status to be Approved.
-    isMtfiEnabled(){
-      let foundCRNotInEndStateStatus = this.allChangeRequests.find(el => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus));
-      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(el => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el));
-      return (!foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI);
+    isMtfiEnabled() {
+      let foundCRNotInEndStateStatus = this.allChangeRequests.find(
+        (el) => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus)
+      );
+      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(
+        (el) => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el)
+      );
+      return !foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI;
     },
     buttonColor(isDisabled) {
       return isDisabled ? '#909090' : '#003366';
@@ -642,7 +698,7 @@ export default {
   beforeRouteLeave(_to, _from, next) {
     next();
   },
-  components: { SmallCard, NavButton }
+  components: { SmallCard, NavButton },
 };
 </script>
 <style scoped>

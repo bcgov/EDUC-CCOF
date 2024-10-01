@@ -69,10 +69,15 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia';
+import { useNavBarStore } from '../../../store/navBar.js';
+import { useApplicationStore } from '../../../store/application.js';
+import { useOrganizationStore } from '../../../store/ccof/organization.js';
+import { useFacilityStore } from '../../../store/ccof/facility.js';
+import { useReportChangesStore } from '../../../store/reportChanges.js';
 
-import { mapState, mapMutations, mapActions, mapGetters } from 'vuex';
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
-import { isChangeRequest } from '../../../utils/common.js';
+
 import alertMixin from '../../../mixins/alertMixin.js';
 
 export default {
@@ -90,11 +95,10 @@ export default {
   },
   mixins: [alertMixin],
   computed: {
-    ...mapState('navBar', ['navBarList','changeRequestId']),
-    ...mapState('application', ['applicationStatus', 'applicationId', 'programYearId', ]),
-    ...mapState('organization', ['organizationProviderType']),
-    ...mapGetters('navBar', ['previousPath', 'getChangeActionNewFacByFacilityId', 'isChangeRequest']),
-    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
+    ...mapState(useNavBarStore, ['navBarList','changeRequestId', 'previousPath', 'getChangeActionNewFacByFacilityId', 'isChangeRequest']),
+    ...mapState(useApplicationStore, ['applicationStatus', 'applicationId', 'programYearId', ]),
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
+    ...mapState(useReportChangesStore,['isCCOFUnlocked','changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
         return (this.changeRequestStatus !== 'INCOMPLETE');
@@ -103,9 +107,9 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('application', ['setCcofConfirmationEnabled']),
-    ...mapActions('facility', ['deleteFacility']),
-    ...mapActions('reportChanges', ['getChangeRequest']),
+    ...mapActions(useApplicationStore, ['setCcofConfirmationEnabled']),
+    ...mapActions(useFacilityStore, ['deleteFacility']),
+    ...mapActions(useReportChangesStore, ['getChangeRequest']),
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -131,7 +135,7 @@ export default {
         this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
       }
     },
-    confirmDeleteApplication(facilityId, changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
+    confirmDeleteApplication(facilityId, _changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
       this.deleteChangeRequestNewFacilityId = this.getChangeActionNewFacByFacilityId(facilityId)?.changeRequestNewFacilityId;

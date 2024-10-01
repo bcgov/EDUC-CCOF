@@ -356,9 +356,10 @@
   </v-row>
 </template>
 <script>
-import {mapState} from 'vuex';
+import { isChangeRequest } from '../../../utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '../../../utils/constants.js';
 import rules from '../../../utils/rules.js';
+import {mapState} from 'pinia';
 
 
 export default {

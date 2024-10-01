@@ -33,11 +33,11 @@ export default {
     };
   },
   mounted() {
-    this.$store.commit('auth/setJwtToken');
+    authStore.setJwtToken();
   },
   methods: {
     clearStorage() {
-      this.$store.commit('auth/setJwtToken');
+      authStore.setJwtToken();
     }
   }
 };

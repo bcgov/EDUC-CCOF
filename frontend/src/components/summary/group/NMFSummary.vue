@@ -83,9 +83,9 @@
 </template>
 <script>
 
-import {mapState} from 'vuex';
 import rules from '../../../utils/rules.js';
 import { PATHS, pcfUrlGuid, } from '../../../utils/constants.js';
+import {mapState} from 'pinia';
 
 export default {
   name: 'NMFSummary',
