@@ -1,27 +1,57 @@
 <template>
   <v-container>
     <div style="display: none">
-      <a id="logout_href" :href="routes.SESSION_EXPIRED" />
+      <a
+        id="logout_href"
+        :href="routes.SESSION_EXPIRED"
+      />
     </div>
-    <v-dialog v-model="dialog" persistent max-width="525px">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+    >
       <v-card>
         <v-container class="pt-0">
           <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="white--text">Session Time-out</v-card-title>
+            <v-col
+              cols="7"
+              class="py-0 pl-0"
+              style="background-color: #234075"
+            >
+              <v-card-title class="text-white">
+                Session Time-out
+              </v-card-title>
             </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075"> </v-col>
+            <v-col
+              cols="5"
+              class="d-flex justify-end"
+              style="background-color: #234075"
+            />
           </v-row>
           <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px"></v-col>
+            <v-col
+              cols="12"
+              style="background-color: #ffc72c; padding: 2px"
+            />
           </v-row>
           <v-row>
-            <v-col cols="12" style="text-align: center">
+            <v-col
+              cols="12"
+              style="text-align: center"
+            >
               <p class="pt-4">
                 Due to inactivity, you will be logged out of your current session in {{ logoutCounter }} seconds. Please
                 click on the "Stay logged in" button to continue with this session.
               </p>
-              <p><v-btn color="primary" @click="clicked()">Stay logged in</v-btn></p>
+              <p>
+                <v-btn
+                  color="primary"
+                  @click="clicked()"
+                >
+                  Stay logged in
+                </v-btn>
+              </p>
             </v-col>
           </v-row>
         </v-container>

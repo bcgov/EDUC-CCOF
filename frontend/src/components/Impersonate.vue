@@ -1,35 +1,44 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <div class="pa-10" :class="'text-h4'" v-text="`Welcome ${userInfo.displayName}`" />
+      <div
+        class="pa-10"
+        :class="'text-h4'"
+        v-text="`Welcome ${userInfo.displayName}`"
+      />
     </v-row>
     <v-row>
-      <v-form ref="form" v-model="isValidForm" @submit.prevent>
+      <v-form
+        ref="form"
+        v-model="isValidForm"
+        @submit.prevent
+      >
         <v-row>
           <v-card>
             <v-container>
               <v-row>
                 <v-col cols="8">
                   <v-text-field
-                    outlined
-                    required
-                    v-model="businessBCeId"
                     id="businessBCeId-field"
+                    v-model="businessBCeId"
+                    variant="outlined"
+                    required
                     :rules="rules.required"
                     label="Business BCeID"
-                    v-on:keydown.enter="setBCeID()"
+                    @keydown.enter="setBCeID()"
                   />
                 </v-col>
                 <v-col cols="2">
                   <v-btn
                     color="primary"
-                    outlined
-                    x-large
+                    variant="outlined"
+                    size="x-large"
                     :loading="processing"
-                    @click="setBCeID()"
                     :disabled="!businessBCeId"
-                    >Search</v-btn
+                    @click="setBCeID()"
                   >
+                    Search
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-container>

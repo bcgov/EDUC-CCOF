@@ -1,5 +1,8 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form
+    ref="form"
+    v-model="isValidForm"
+  >
     <v-container class="pa-0">
       <v-row no-gutters>
         <v-col class="col-12 mb-6">
@@ -16,17 +19,22 @@
             hide-default-footer
             :items-per-page="-1"
           >
-            <template v-slot:top>
+            <template #top>
               <v-col flex>
-                <v-toolbar flat color="white">
+                <v-toolbar
+                  flat
+                  color="white"
+                >
                   <div class="d-flex">
                     <v-btn
                       color="primary"
-                      class="ml-2 white--text v-skeleton-loader-small-button"
+                      class="ml-2 text-white v-skeleton-loader-small-button"
                       :disabled="isReadOnly"
                       @click="addNew"
                     >
-                      <v-icon dark>mdi-plus</v-icon>
+                      <v-icon dark>
+                        mdi-plus
+                      </v-icon>
                       Add
                     </v-btn>
                   </div>
@@ -34,58 +42,76 @@
               </v-col>
             </template>
 
-            <template v-slot:item.document="{ item }">
+            <template #item.document="{ item }">
               <div v-if="item?.annotationid">
                 <span> {{ item?.filename }} </span>
               </div>
               <v-file-input
                 v-else
+                :id="String(item.id)"
                 color="#003366"
                 :rules="[...fileRules, ...rules.required]"
-                @click:clear="deleteItem(item)"
                 prepend-icon="mdi-file-upload"
                 :clearable="false"
                 class="pt-0"
-                :id="String(item.id)"
                 :accept="fileAccept"
                 :disabled="isReadOnly"
                 placeholder="Select your file"
                 :error-messages="fileInputError"
+                required
+                @click:clear="deleteItem(item)"
                 @change="selectFile"
                 @click="uploadDocumentClicked($event)"
-                required
-              ></v-file-input>
+              />
             </template>
-            <template v-slot:item.notetext="{ item }">
+            <template #item.notetext="{ item }">
               <div v-if="item?.annotationid">
                 <span> {{ item?.notetext }} </span>
               </div>
               <v-text-field
                 v-else
+                v-model="item.notetext"
                 placeholder="Enter a description (Optional)"
-                dense
+                density="compact"
                 clearable
                 :rules="[rules.maxLength(255)]"
-                v-model="item.notetext"
                 @change="updateDescription(item)"
-              ></v-text-field>
+              />
             </template>
 
-            <template v-slot:item.actions="{ item }">
-              <v-icon small v-if="!isReadOnly" @click="deleteItem(item)"> mdi-delete </v-icon>
+            <template #item.actions="{ item }">
+              <v-icon
+                v-if="!isReadOnly"
+                size="small"
+                @click="deleteItem(item)"
+              >
+                mdi-delete
+              </v-icon>
             </template>
 
-            <template slot="no-data">
-              <div class="text-body-1">{{ this.noDataDefaultText }}</div>
+            <template #no-data>
+              <div class="text-body-1">
+                {{ noDataDefaultText }}
+              </div>
             </template>
           </v-data-table>
-          <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
-            <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-            <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
+          <v-card
+            v-if="isLoading"
+            class="pl-6 pr-6 pt-4"
+          >
+            <v-skeleton-loader
+              :loading="true"
+              type="button"
+            />
+            <v-skeleton-loader
+              max-height="375px"
+              :loading="true"
+              type="table-row-divider@3"
+            />
           </v-card>
           <v-row
-            v-if="this.changeType == 'NOTIFICATION_FORM' && !this.isFileUploaded"
-            class="px-3 pt-4 text-body-1 red--text"
+            v-if="changeType == 'NOTIFICATION_FORM' && !isFileUploaded"
+            class="px-3 pt-4 text-body-1 text-red"
           >
             Please upload the Change Notification Form.
           </v-row>
@@ -108,8 +134,8 @@ import { getFileNameWithMaxNameLength, humanFileSize } from '../../utils/file.js
 import { deepCloneObject, getFileExtension } from '../../utils/common.js';
 
 export default {
-  mixins: [alertMixin],
   components: {},
+  mixins: [alertMixin],
   props: {
     changeType: {
       type: String,

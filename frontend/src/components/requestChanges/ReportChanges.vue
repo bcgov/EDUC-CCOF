@@ -3,18 +3,33 @@
     <div class="row pt-4 justify-center text-center">
       <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
-    <br />
+    <br>
     <div class="row pt-4 justify-center">
       <!-- <span class="text-h5">What would you like to change?</span> -->
     </div>
 
-    <v-form ref="isValidForm" value="false" v-model="isValidForm">
+    <v-form
+      ref="isValidForm"
+      v-model="isValidForm"
+      model-value="false"
+    >
       <v-container>
-        <p class="text-h6 text-center">What changes do you want to make?</p>
+        <p class="text-h6 text-center">
+          What changes do you want to make?
+        </p>
         <v-row class="d-flex justify-start">
-          <SmallCard class="col-lg-6" :disable="false" v-if="this.organizationProviderType == 'GROUP'">
-            <template #content class="px-10">
-              <p class="text-h6 text-center">Add a New facility to an existing organization</p>
+          <SmallCard
+            v-if="organizationProviderType == 'GROUP'"
+            class="col-lg-6"
+            :disable="false"
+          >
+            <template
+              #content
+              class="px-10"
+            >
+              <p class="text-h6 text-center">
+                Add a New facility to an existing organization
+              </p>
               <p class="px-2 text-center">
                 This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
                 information ready.
@@ -23,60 +38,105 @@
                 You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
               </p>
             </template>
-            <template #button class="ma-0 pa-0">
+            <template
+              #button
+              class="ma-0 pa-0"
+            >
               <v-row justify="space-around">
-                <v-btn dark class="blueButton mb-10" @click="routeToFacilityAdd()" :loading="processing"
-                  >Add new facility</v-btn
+                <v-btn
+                  dark
+                  class="blueButton mb-10"
+                  :loading="processing"
+                  @click="routeToFacilityAdd()"
                 >
+                  Add new facility
+                </v-btn>
               </v-row>
             </template>
           </SmallCard>
 
-          <SmallCard class="col-lg-6" :disable="false">
-            <template #content class="px-10">
-              <p class="text-h6 text-center">Report changes to your Licence or service</p>
+          <SmallCard
+            class="col-lg-6"
+            :disable="false"
+          >
+            <template
+              #content
+              class="px-10"
+            >
+              <p class="text-h6 text-center">
+                Report changes to your Licence or service
+              </p>
               <p class="px-2 text-center">
                 Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
                 supporting documents ready.
               </p>
             </template>
-            <template #button class="ma-0 pa-0">
+            <template
+              #button
+              class="ma-0 pa-0"
+            >
               <v-row justify="space-around">
-                <v-btn dark class="blueButton mb-10" @click="goToChangeDialogue()" :loading="processing"
-                  >Upload a Change Notification Form</v-btn
+                <v-btn
+                  dark
+                  class="blueButton mb-10"
+                  :loading="processing"
+                  @click="goToChangeDialogue()"
                 >
+                  Upload a Change Notification Form
+                </v-btn>
               </v-row>
             </template>
           </SmallCard>
 
-          <SmallCard class="col-lg-6" :disable="!isMtfiEnabled()">
-            <template #content class="px-10">
-              <p class="text-h6 text-center">Mid-Term Fee Increase</p>
+          <SmallCard
+            class="col-lg-6"
+            :disable="!isMtfiEnabled()"
+          >
+            <template
+              #content
+              class="px-10"
+            >
+              <p class="text-h6 text-center">
+                Mid-Term Fee Increase
+              </p>
               <p class="px-2 text-center">
                 Request a parent fee increase for a facility after you have received approval for the CCFRI.
               </p>
-              <p class="px-2 text-center">You may need to provide details about your expenses.</p>
+              <p class="px-2 text-center">
+                You may need to provide details about your expenses.
+              </p>
             </template>
-            <template #button class="ma-0 pa-0">
+            <template
+              #button
+              class="ma-0 pa-0"
+            >
               <v-row justify="space-around">
                 <v-btn
                   dark
                   class="mb-10"
                   :color="buttonColor(!isMtfiEnabled())"
                   :disable="!isMtfiEnabled()"
-                  @click="goToMTFI()"
                   :loading="processing"
-                  >Update parent fees</v-btn
+                  @click="goToMTFI()"
                 >
+                  Update parent fees
+                </v-btn>
               </v-row>
             </template>
           </SmallCard>
         </v-row>
 
-        <v-row no-gutters id="change-request-history">
+        <v-row
+          id="change-request-history"
+          no-gutters
+        >
           <v-col class="col-lg-12 mt-10">
-            <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
-            <h2 v-else>Change History</h2>
+            <h2 v-if="viewOlderRequestActive">
+              Change History Archive
+            </h2>
+            <h2 v-else>
+              Change History
+            </h2>
           </v-col>
           <!-- <v-text-field
             v-if="!viewOlderRequestActive"
@@ -88,10 +148,14 @@
         </v-row>
         <v-row v-if="processing">
           <v-col>
-            <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph"></v-skeleton-loader>
+            <v-skeleton-loader
+              :loading="processing"
+              type="paragraph, text@3, text@3, paragraph"
+            />
           </v-col>
         </v-row>
         <v-data-table
+          v-else
           :headers="headers"
           :items="viewOlderRequestActive ? pastChangeRequests : currentChangeRequests"
           :height="maxChangeHistoryTableHeight"
@@ -103,57 +167,64 @@
           hide-default-footer
           :sort-by="['priority', 'submissionDate']"
           :sort-desc="[true, true]"
-          v-else
         >
-          <template v-slot:item.facilityNames="{ item }">
-            <v-tooltip top>
-              <template v-slot:activator="{ on }">
-                <div v-on="on" class="tableText" :style="maxfacilityNamesStringLength">{{ item.facilityNames }}</div>
+          <template #item.facilityNames="{ item }">
+            <v-tooltip location="top">
+              <template #activator="{ props }">
+                <div
+                  class="tableText"
+                  :style="maxfacilityNamesStringLength"
+                  v-bind="props"
+                >
+                  {{ item.facilityNames }}
+                </div>
               </template>
-              <div class="tableTooltip">{{ item.facilityNames }}</div>
+              <div class="tableTooltip">
+                {{ item.facilityNames }}
+              </div>
             </v-tooltip>
           </template>
-          <template v-slot:item.actions="{ item }">
+          <template #item.actions="{ item }">
             <v-btn
               v-if="isContinueButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
-              outlined
+              variant="outlined"
               :width="changeHistoryButtonWidth"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
             >
               Continue
             </v-btn>
             <v-btn
               v-if="isViewButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
-              outlined
+              variant="outlined"
               :width="changeHistoryButtonWidth"
+              @click="continueButton(item.changeType, item.changeActionId, item.changeRequestId, item.index)"
             >
               View
             </v-btn>
             <v-btn
               v-if="isUpdateButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton mr-3 my-2"
-              @click="updateButton(item.changeType, item.changeActionId, item.changeRequestId)"
-              outlined
+              variant="outlined"
               :width="changeHistoryButtonWidth"
+              @click="updateButton(item.changeType, item.changeActionId, item.changeRequestId)"
             >
               Update
             </v-btn>
             <v-btn
               v-if="isCancelButtonDisplayed(item.externalStatus)"
               class="blueOutlinedButton my-2"
+              variant="outlined"
+              :width="changeHistoryButtonWidth"
               @click="
                 confirmCancelChangeRequest(
                   item.changeRequestId,
                   item.changeTypeString,
                   item.externalStatus,
-                  item.submissionDateString
+                  item.submissionDateString,
                 )
               "
-              outlined
-              :width="changeHistoryButtonWidth"
             >
               Cancel
             </v-btn>
@@ -161,21 +232,48 @@
         </v-data-table>
 
         <v-btn @click="viewOlderRequestActive = !viewOlderRequestActive">
-          <p class="ma-0 pa-0" v-if="!viewOlderRequestActive">View Older</p>
-          <p class="ma-0 pa-0" v-else>View Current</p>
+          <p
+            v-if="!viewOlderRequestActive"
+            class="ma-0 pa-0"
+          >
+            View Older
+          </p>
+          <p
+            v-else
+            class="ma-0 pa-0"
+          >
+            View Current
+          </p>
         </v-btn>
 
-        <v-dialog v-model="dialog" persistent max-width="525px">
+        <v-dialog
+          v-model="dialog"
+          persistent
+          max-width="525px"
+        >
           <v-card>
             <v-container class="pt-0">
               <v-row>
-                <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                  <v-card-title class="white--text font-weight-bold">Cancel a change request</v-card-title>
+                <v-col
+                  cols="7"
+                  class="py-0 pl-0"
+                  style="background-color: #234075"
+                >
+                  <v-card-title class="text-white font-weight-bold">
+                    Cancel a change request
+                  </v-card-title>
                 </v-col>
-                <v-col cols="5" class="d-flex justify-end" style="background-color: #234075"> </v-col>
+                <v-col
+                  cols="5"
+                  class="d-flex justify-end"
+                  style="background-color: #234075"
+                />
               </v-row>
               <v-row>
-                <v-col cols="12" style="background-color: #ffc72c; padding: 2px"></v-col>
+                <v-col
+                  cols="12"
+                  style="background-color: #ffc72c; padding: 2px"
+                />
               </v-row>
               <v-row class="pa-6">
                 <p>Are you sure you want to cancel this change request?</p>
@@ -189,8 +287,23 @@
                 </p>
               </v-row>
               <v-row class="d-flex justify-right">
-                <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
-                <v-btn dark color="primary" :loading="processing" @click="cancel()">Continue</v-btn>
+                <v-btn
+                  dark
+                  color="secondary"
+                  :loading="processing"
+                  class="mr-10"
+                  @click="dialog = false"
+                >
+                  Cancel
+                </v-btn>
+                <v-btn
+                  dark
+                  color="primary"
+                  :loading="processing"
+                  @click="cancel()"
+                >
+                  Continue
+                </v-btn>
               </v-row>
             </v-container>
           </v-card>
@@ -199,15 +312,15 @@
     </v-form>
 
     <NavButton
-      :isNextDisplayed="false"
-      :isSaveDisplayed="false"
-      :isNextDisabled="true"
-      :isProcessing="processing"
+      :is-next-displayed="false"
+      :is-save-displayed="false"
+      :is-next-disabled="true"
+      :is-processing="processing"
       @previous="previous"
       @next="false"
-      @validateForm="validateForm()"
+      @validate-form="validateForm()"
       @save="save(true)"
-    ></NavButton>
+    />
   </v-container>
 </template>
 
@@ -309,7 +422,7 @@ export default {
           (el.programYearId == this.getPrevProgramYearId &&
             (el.externalStatus == 'In Progress' ||
               el.externalStatus == 'Submitted' ||
-              el.externalStatus == 'Action Required'))
+              el.externalStatus == 'Action Required')),
       );
     },
     pastChangeRequests() {
@@ -327,18 +440,18 @@ export default {
         return '--maxLength: 700px';
       }
       switch (this.$vuetify.breakpoint.name) {
-        case 'xl':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px';
-        case 'lg':
-          return '--maxLength: ' + Math.floor(this.$vuetify.breakpoint.width / 10) + 'px';
-        case 'md':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
-        case 'sm':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
-        case 'xs':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px';
-        default:
-          return '--maxLength: 100px';
+      case 'xl':
+        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px';
+      case 'lg':
+        return '--maxLength: ' + Math.floor(this.$vuetify.breakpoint.width / 10) + 'px';
+      case 'md':
+        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+      case 'sm':
+        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+      case 'xs':
+        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px';
+      default:
+        return '--maxLength: 100px';
       }
     },
     unlockCCFRIList() {
@@ -390,15 +503,15 @@ export default {
     },
     getChangeTypeString(changeType) {
       switch (changeType) {
-        case 'PDF_CHANGE':
-          return 'Report other changes';
-        case 'NEW_FACILITY':
-          return 'Add new facility(s)';
-        case 'PARENT_FEE_CHANGE':
-          return 'Mid-Term Fee Increase';
+      case 'PDF_CHANGE':
+        return 'Report other changes';
+      case 'NEW_FACILITY':
+        return 'Add new facility(s)';
+      case 'PARENT_FEE_CHANGE':
+        return 'Mid-Term Fee Increase';
 
-        default:
-          return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
+      default:
+        return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
       }
     },
     createFacilityNameString(changeActions) {
@@ -420,40 +533,40 @@ export default {
     },
     getExternalStatusString(status) {
       switch (status) {
-        case 1:
-          return 'In Progress';
-        case 2:
-          return 'Submitted';
-        case 3:
-          return 'Action Required';
-        case 4:
-          return 'Ineligible';
-        case 5:
-          return 'Approved';
-        case 6:
-          return 'Cancelled';
-        default:
-          return 'Unknown'; //should never happen!
+      case 1:
+        return 'In Progress';
+      case 2:
+        return 'Submitted';
+      case 3:
+        return 'Action Required';
+      case 4:
+        return 'Ineligible';
+      case 5:
+        return 'Approved';
+      case 6:
+        return 'Cancelled';
+      default:
+        return 'Unknown'; //should never happen!
       }
     },
     getInternalStatusString(status) {
       switch (status) {
-        case 1:
-          return 'Incomplete';
-        case 3:
-          return 'Submitted';
-        case 4:
-          return 'Processing';
-        case 5:
-          return 'WITH_PROVIDER';
-        case 6:
-          return 'Ineligible';
-        case 7:
-          return 'Approved';
-        case 8:
-          return 'Cancelled';
-        default:
-          return 'Unknown'; //should never happen!
+      case 1:
+        return 'Incomplete';
+      case 3:
+        return 'Submitted';
+      case 4:
+        return 'Processing';
+      case 5:
+        return 'WITH_PROVIDER';
+      case 6:
+        return 'Ineligible';
+      case 7:
+        return 'Approved';
+      case 8:
+        return 'Cancelled';
+      default:
+        return 'Unknown'; //should never happen!
       }
     },
     getSubmissionDateString(date) {
@@ -481,7 +594,7 @@ export default {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
         this.$router.push(
-          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId)
+          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId),
         );
       } else if (changeType == 'PARENT_FEE_CHANGE') {
         this.setChangeRequestId(changeRequestId);
@@ -495,8 +608,8 @@ export default {
               PATHS.MTFI_GROUP_FEE_VERIFICATION,
               changeRequestId,
               this.mtfiFacilities[0]?.ccfriApplicationId,
-              CHANGE_TYPES.MTFI
-            )
+              CHANGE_TYPES.MTFI,
+            ),
           ); //dont think this will work!
           //this.$router.push(changeUrl(PATHS.MTFI_INFO, changeRequestId, CHANGE_TYPES.MTFI));
         } else {
@@ -518,11 +631,11 @@ export default {
       const currentCR = this.changeRequestStore?.find((el) => el.changeRequestId === changeRequestId);
       // const unlockChangeRequest = this.changeRequestStore?.find(el=>el.changeRequestId===changeRequestId);
       const newFacilityChangeAction = currentCR.changeActions?.find(
-        (changeAction) => changeAction.changeType === 'NEW_FACILITY'
+        (changeAction) => changeAction.changeType === 'NEW_FACILITY',
       );
       if (currentCR?.unlockCCOF) {
         this.$router.push(
-          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId)
+          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId),
         );
       } else if (currentCR?.unlockLicenseUpload) {
         this.$router.push(changeUrl(PATHS.LICENSE_UPLOAD, changeRequestId));
@@ -540,7 +653,7 @@ export default {
         this.$router.push(changeUrl(PATHS.SUMMARY_DECLARATION, changeRequestId));
       } else {
         this.$router.push(
-          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId)
+          changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, newFacilityChangeAction?.facilities[0].facilityId),
         );
       }
     },
@@ -553,7 +666,7 @@ export default {
       // there is no NMF for MTFI change request
       if (unlockCCFRIList?.length > 0) {
         this.$router.push(
-          changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI)
+          changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, changeRequestId, unlockCCFRIList[0], CHANGE_TYPES.MTFI),
         );
       } else if (unlockRFIList?.length > 0) {
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, changeRequestId, unlockRFIList[0], CHANGE_TYPES.MTFI));
@@ -580,17 +693,17 @@ export default {
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       switch (changeType) {
-        case 'PDF_CHANGE':
-          this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
-          break;
-        case 'NEW_FACILITY':
-          this.newFacilityActionRequiredRoute(changeRequestId);
-          break;
-        case 'PARENT_FEE_CHANGE':
-          this.mtfiActionRequiredRoute(changeRequestId);
-          break;
-        default:
-          break;
+      case 'PDF_CHANGE':
+        this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
+        break;
+      case 'NEW_FACILITY':
+        this.newFacilityActionRequiredRoute(changeRequestId);
+        break;
+      case 'PARENT_FEE_CHANGE':
+        this.mtfiActionRequiredRoute(changeRequestId);
+        break;
+      default:
+        break;
       }
     },
     async createNewChangeRequest(changeType) {
@@ -617,8 +730,8 @@ export default {
             PATHS.CHANGE_NOTIFICATION_FORM,
             newReq?.changeRequestId,
             newReq?.changeActionId,
-            CHANGE_TYPES.CHANGE_NOTIFICATION
-          )
+            CHANGE_TYPES.CHANGE_NOTIFICATION,
+          ),
         );
       } else {
         this.setChangeRequestId(changeRequestId);
@@ -628,8 +741,8 @@ export default {
             PATHS.CHANGE_NOTIFICATION_FORM,
             changeRequestId,
             changeActionId,
-            CHANGE_TYPES.CHANGE_NOTIFICATION
-          )
+            CHANGE_TYPES.CHANGE_NOTIFICATION,
+          ),
         );
       }
     },
@@ -679,10 +792,10 @@ export default {
     // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled() {
       let foundCRNotInEndStateStatus = this.allChangeRequests.find(
-        (el) => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus)
+        (el) => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus),
       );
       let foundFacilityWithApprovedCCFRI = this.userProfileList.find(
-        (el) => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el)
+        (el) => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el),
       );
       return !foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI;
     },

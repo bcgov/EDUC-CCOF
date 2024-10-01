@@ -1,32 +1,43 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form
+    ref="form"
+    v-model="isValidForm"
+  >
     <v-container>
       <span>
         <v-row>
-          <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest">
+          <v-card
+            v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest"
+            width="100%"
+            class="mx-3 my-10"
+          >
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
                   <span style="float: left">
-                    <v-icon x-large class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                    <v-icon
+                      size="x-large"
+                      class="py-1 px-3 noticeAlertIcon"
+                    > mdi-alert-octagon </v-icon>
                   </span>
                   You have a change request in progress.
                 </v-card-title>
               </v-col>
             </v-row>
             <v-card-text>
-              We will complete the assessment of your Program Confirmation Form once your change has been processed.<br /><br />
-              <br />
+              We will complete the assessment of your Program Confirmation Form once your change has been processed.<br><br>
+              <br>
             </v-card-text>
           </v-card>
         </v-row>
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center pb-0"
-              ><h3>
-                Licence Upload<span v-if="isRenewal"> - {{ this.formattedProgramYear }} Program Confirmation Form</span>
-              </h3></v-card-title
-            >
+          <v-card
+            class="cc-top-level-card"
+            width="1200"
+          >
+            <v-card-title class="justify-center pb-0"><h3>
+              Licence Upload<span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
+            </h3></v-card-title>
             <v-row flex>
               <caption class="licence-upload-hint pb-5">
                 Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The
@@ -43,57 +54,76 @@
               hide-default-footer
               :items-per-page="-1"
             >
-              <template v-slot:header="{ props: { headers } }">
+              <template #header="{ props: { headers } }">
                 <thead>
                   <tr>
-                    <th v-bind:key="h.value" :id="h.value" v-for="h in headers" :class="h.class">
+                    <th
+                      v-for="h in headers"
+                      :id="h.value"
+                      :key="h.value"
+                      :class="h.class"
+                    >
                       <span>{{ h.text }}</span>
                     </th>
                   </tr>
                 </thead>
               </template>
-              <template v-slot:item.document="{ item }">
+              <template #item.document="{ item }">
                 <div v-if="item.document?.annotationid">
                   <span> {{ item.document?.filename }} </span>
-                  <v-btn v-if="!isLocked" icon @click="deleteFile(item)">
+                  <v-btn
+                    v-if="!isLocked"
+                    icon
+                    @click="deleteFile(item)"
+                  >
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </div>
                 <v-file-input
                   v-else
+                  :id="item.facilityId"
                   color="#003366"
                   :rules="[...fileRules, ...rules.required]"
                   prepend-icon="mdi-file-upload"
                   class="pt-0"
-                  @click:clear="deleteFile(item)"
-                  :id="item.facilityId"
                   :accept="fileAccept"
                   :disabled="isLocked"
                   placeholder="Select your file"
                   :error-messages="fileInputError"
+                  @click:clear="deleteFile(item)"
                   @change="selectFile"
                   @click="uploadLicenseClicked($event)"
-                ></v-file-input>
+                />
               </template>
             </v-data-table>
-            <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
-              <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-              <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
+            <v-card
+              v-if="isLoading"
+              class="pl-6 pr-6 pt-4"
+            >
+              <v-skeleton-loader
+                :loading="true"
+                type="button"
+              />
+              <v-skeleton-loader
+                max-height="375px"
+                :loading="true"
+                type="table-row-divider@3"
+              />
             </v-card>
           </v-card>
         </v-row>
       </span>
       <NavButton
-        :isNextDisplayed="true"
-        :isSaveDisplayed="true"
-        :isSaveDisabled="!isValidForm || isLocked"
-        :isNextDisabled="!isValidForm || nextButtonDisabled"
-        :isProcessing="isProcessing"
+        :is-next-displayed="true"
+        :is-save-displayed="true"
+        :is-save-disabled="!isValidForm || isLocked"
+        :is-next-disabled="!isValidForm || nextButtonDisabled"
+        :is-processing="isProcessing"
         @previous="previous"
         @next="next"
-        @validateForm="validateForm()"
+        @validate-form="validateForm()"
         @save="saveClicked()"
-      ></NavButton>
+      />
     </v-container>
   </v-form>
 </template>
@@ -160,11 +190,11 @@ export default {
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
         const uploadedLicenceCount = this.getUploadedLicenses.filter(
-          (uploadedDocsInServer) => uploadedDocsInServer.ccof_facility === facilityId
+          (uploadedDocsInServer) => uploadedDocsInServer.ccof_facility === facilityId,
         ).length;
         const deletedLicenceCount = this.licenseUploadData.filter(
           (element) =>
-            element.deletedDocument && element.deletedDocument.annotationid && element.facilityId === facilityId
+            element.deletedDocument && element.deletedDocument.annotationid && element.facilityId === facilityId,
         ).length;
         let fileMapLicencePerFacilityCount = 0;
         if (this.fileMap.size > 0 && this.fileMap.get(facilityId)) {
@@ -401,7 +431,7 @@ export default {
         await this.getLicenseFiles(appID); //get from appMap so correct application loaded when viewing a historical CR
         this.licenseUploadData = this.licenseUploadData.map((element) => {
           element['document'] = this.getUploadedLicenses.find(
-            (uploadedDocsInServer) => uploadedDocsInServer.ccof_facility === element.facilityId
+            (uploadedDocsInServer) => uploadedDocsInServer.ccof_facility === element.facilityId,
           );
           return element;
         });

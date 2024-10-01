@@ -1,20 +1,30 @@
 <template>
-  <v-hover v-slot:default="{ hover }">
-    <v-btn :id="id"
-           :title="title||text"
-           :class="[(hover && !disabled) ? secondary ? 'button-hover white--text':'button-hover':'']"
-           color="#003366"
-           :outlined="secondary"
-           :small="short"
-           :disabled="disabled"
-           :dark="!disabled"
-           :to="to"
-           :width="width"
-           :loading="loading"
-           v-bind="bind"
-           v-on="on"
+  <v-hover v-slot="{ hover }">
+    <v-btn
+      :id="id"
+      :title="title || text"
+      :class="[hover && !disabled ? (secondary ? 'button-hover white--text' : 'button-hover') : '']"
+      color="#003366"
+      :variant="secondary ? 'outlined' : undefined"
+      :size="short ? 'small' : undefined"
+      :disabled="disabled"
+      :dark="!disabled"
+      :to="to"
+      :width="width"
+      :loading="loading"
+      v-bind="bind"
+      v-on="on"
     >
-      <v-icon class="ml-n1 mr-1" v-if="icon" :nudge-down="4" :large="largeIcon" right dark>{{ icon }}</v-icon>
+      <v-icon
+        v-if="icon"
+        class="ml-n1 mr-1"
+        :nudge-down="4"
+        :size="largeIcon ? 'large' : undefined"
+        end
+        dark
+      >
+        {{ icon }}
+      </v-icon>
       <span class="ml-1">{{ text }}</span>
     </v-btn>
   </v-hover>
@@ -25,22 +35,22 @@ export default {
   name: 'PrimaryButton',
   props: {
     id: {
-      type: String
+      type: String,
     },
     text: {
-      type: String
+      type: String,
     },
     short: {
       type: Boolean,
-      default: false
+      default: false,
     },
     secondary: {
       type: Boolean,
-      default: false
+      default: false,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     to: {
       type: String,
@@ -49,25 +59,25 @@ export default {
       type: String,
     },
     loading: {
-      type: Boolean
+      type: Boolean,
     },
     icon: {
-      type: String
+      type: String,
     },
     bind: {
-      type: Object
+      type: Object,
     },
     on: {
-      type: Object
+      type: Object,
     },
     largeIcon: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    title:{
+    title: {
       type: String,
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -77,7 +87,7 @@ export default {
   text-transform: none;
 }
 .button-hover {
-  background-color: #38598A !important;
+  background-color: #38598a !important;
 }
 .theme--light.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background-color: #003366 !important;

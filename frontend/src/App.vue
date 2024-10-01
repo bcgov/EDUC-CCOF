@@ -2,9 +2,15 @@
   <v-app id="app">
     <MsieBanner v-if="isIE" />
     <Header />
-    <SnackBar></SnackBar>
-    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
-    <v-main fluid class="align-start">
+    <SnackBar />
+    <NavBar
+      v-if="pageTitle && isAuthenticated && showNavBar"
+      :title="pageTitle"
+    />
+    <v-main
+      fluid
+      class="align-start"
+    >
       <v-app-bar
         v-if="bannerColor !== ''"
         style="color: white"
@@ -15,11 +21,18 @@
         clipped-left
       >
         <div>
-          <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
+          <h3 class="envBanner">
+            {{ bannerEnvironment }} Environment
+          </h3>
         </div>
       </v-app-bar>
       <div>
-        <h3 class="subBanner" v-if="subtitleBanner != ''">{{ subtitleBanner }}</h3>
+        <h3
+          v-if="subtitleBanner != ''"
+          class="subBanner"
+        >
+          {{ subtitleBanner }}
+        </h3>
       </div>
       <ModalIdle v-if="isAuthenticated" />
       <router-view />
@@ -44,7 +57,7 @@ import SnackBar from './components/util/SnackBar.vue';
 import NavBar from './components/util/NavBar.vue';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     Header,
     Footer,
@@ -219,13 +232,15 @@ h1 {
 @font-face {
   font-family: 'BCSans';
   font-style: normal;
-  src: url('assets/font/BC-Sans/BCSans-Regular.woff2') format('woff2'),
+  src:
+    url('assets/font/BC-Sans/BCSans-Regular.woff2') format('woff2'),
     /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-Regular.woff') format('woff'); /* Modern Browsers */
 }
 @font-face {
   font-family: 'BCSans';
   font-style: italic;
-  src: url('assets/font/BC-Sans/BCSans-Italic.woff2') format('woff2'),
+  src:
+    url('assets/font/BC-Sans/BCSans-Italic.woff2') format('woff2'),
     /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-Italic.woff') format('woff'); /* Modern Browsers */
 }
 @font-face {
@@ -238,7 +253,8 @@ h1 {
   font-family: 'BCSans';
   font-style: italic;
   font-weight: 700;
-  src: url('assets/font/BC-Sans/BCSans-BoldItalic.woff2') format('woff2'),
+  src:
+    url('assets/font/BC-Sans/BCSans-BoldItalic.woff2') format('woff2'),
     /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
 }
 </style>

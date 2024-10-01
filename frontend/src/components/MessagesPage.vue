@@ -1,12 +1,34 @@
 <template>
-  <v-container id="messages" fluid class="pa-0 ma-0" height="100%">
-    <v-row class="ma-0" v-if="!allMessages">
-      <Spinner style="width: 100%"></Spinner>
+  <v-container
+    id="messages"
+    fluid
+    class="pa-0 ma-0"
+    height="100%"
+  >
+    <v-row
+      v-if="!allMessages"
+      class="ma-0"
+    >
+      <Spinner style="width: 100%" />
     </v-row>
-    <v-row fluid class="mx-4" v-else>
+    <v-row
+      v-else
+      fluid
+      class="mx-4"
+    >
       <v-row>
-        <v-col id="messages-summary" fluid class="pa-0" :cols="4">
-          <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0">
+        <v-col
+          id="messages-summary"
+          fluid
+          class="pa-0"
+          :cols="4"
+        >
+          <v-card
+            tile
+            style="border-right: 1px solid lightgrey"
+            :height="fitScreenHeight()"
+            class="pa-0 elevation-0"
+          >
             <v-data-table
               :headers="headers"
               :items="allMessages"
@@ -17,43 +39,72 @@
               :item-class="getMessageStyle"
               disable-pagination
               hide-default-footer
-              @click:row="rowClickHandler"
               item-key="messageId"
               single-select
+              @click:row="rowClickHandler"
             >
-              <template v-slot:item.isRead="{ item }">
-                <p v-if="item.isRead">Read</p>
-                <p v-else>Unread</p>
+              <template #item.isRead="{ item }">
+                <p v-if="item.isRead">
+                  Read
+                </p>
+                <p v-else>
+                  Unread
+                </p>
               </template>
             </v-data-table>
           </v-card>
         </v-col>
-        <v-col id="messages-content" fluid class="pa-0" :cols="8" v-if="this.message.sender">
-          <v-card class="pa-4 overflow-auto elevation-0" fluid tile :height="fitScreenHeight()">
+        <v-col
+          v-if="message.sender"
+          id="messages-content"
+          fluid
+          class="pa-0"
+          :cols="8"
+        >
+          <v-card
+            class="pa-4 overflow-auto elevation-0"
+            fluid
+            tile
+            :height="fitScreenHeight()"
+          >
             <v-card-title class="pa-0">
               <template>
                 <v-col :cols="8">
-                  {{ this.message.sender }}
+                  {{ message.sender }}
                 </v-col>
-                <v-col align="right" :cols="4">
-                  {{ this.message.dateReceived }}
+                <v-col
+                  align="right"
+                  :cols="4"
+                >
+                  {{ message.dateReceived }}
                 </v-col>
               </template>
               <template>
                 <v-col>
-                  <strong>{{ this.message.subject }}</strong>
+                  <strong>{{ message.subject }}</strong>
                 </v-col>
               </template>
             </v-card-title>
-            <v-divider></v-divider>
-            <v-card-text v-html="this.message.messageContent"> </v-card-text>
+            <v-divider />
+            <v-card-text v-html="message.messageContent" />
           </v-card>
         </v-col>
       </v-row>
     </v-row>
-    <v-divider></v-divider>
-    <v-row justify="center" class="pa-3">
-      <v-btn id="back-button" color="info" outlined v-bind="buttonSize" @click="goToHomePage()"> Back </v-btn>
+    <v-divider />
+    <v-row
+      justify="center"
+      class="pa-3"
+    >
+      <v-btn
+        id="back-button"
+        color="info"
+        variant="outlined"
+        v-bind="buttonSize"
+        @click="goToHomePage()"
+      >
+        Back
+      </v-btn>
     </v-row>
   </v-container>
 </template>
@@ -141,18 +192,18 @@ export default {
 
     fitScreenHeight() {
       switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-          return '67vh';
-        case 'sm':
-          return '82vh';
-        case 'md':
-          return '75vh';
-        case 'lg':
-          return '70vh';
-        case 'xl':
-          return '78vh';
-        default:
-          return '70vh';
+      case 'xs':
+        return '67vh';
+      case 'sm':
+        return '82vh';
+      case 'md':
+        return '75vh';
+      case 'lg':
+        return '70vh';
+      case 'xl':
+        return '78vh';
+      default:
+        return '70vh';
       }
     },
   },

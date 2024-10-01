@@ -1,17 +1,44 @@
 <template>
   <v-container>
     <v-row justify="space-around">
-      <v-card class="cc-top-level-card" width="1200">
+      <v-card
+        class="cc-top-level-card"
+        width="1200"
+      >
         <v-container>
           <v-row justify="center">
             You have successfully applied for CCOF for the following facilities:
           </v-row>
 
-          <v-row justify="center" style="padding-top: 2em;">
+          <v-row
+            justify="center"
+            style="padding-top: 2em"
+          >
             <ul style="list-style: none">
-              <li v-for="item in navBarList" :key="item.facilityId" style="">
-                <router-link :to="getRoutingPath(item.facilityId)"><span>{{ item.facilityName }}</span></router-link>
-                <v-btn v-if="!isLocked && navBarList.length > 1" variant="outlined" icon color="red" @click="confirmDeleteApplication(item.facilityId, item.changeRequestNewFacilityId, item.facilityName, item.ccfriApplicationId, item.eceweApplicationId, item.ccofBaseFundingId)">
+              <li
+                v-for="item in navBarList"
+                :key="item.facilityId"
+                style=""
+              >
+                <router-link :to="getRoutingPath(item.facilityId)">
+                  <span>{{ item.facilityName }}</span>
+                </router-link>
+                <v-btn
+                  v-if="!isLocked && navBarList.length > 1"
+                  variant="outlined"
+                  icon
+                  color="red"
+                  @click="
+                    confirmDeleteApplication(
+                      item.facilityId,
+                      item.changeRequestNewFacilityId,
+                      item.facilityName,
+                      item.ccfriApplicationId,
+                      item.eceweApplicationId,
+                      item.ccofBaseFundingId,
+                    )
+                  "
+                >
                   <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </li>
@@ -20,46 +47,113 @@
         </v-container>
       </v-card>
 
-      <v-card class="cc-top-level-card" width="1200">
+      <v-card
+        class="cc-top-level-card"
+        width="1200"
+      >
         <v-container>
           <v-row justify="center">
             Do you want to add another facility?
           </v-row>
 
           <v-row justify="center">
-            <v-btn color="primary" outlined x-large style="margin: 2em;" @click="addAnotherFacility()" :disabled="isLocked">Yes</v-btn>
-            <v-btn color="secondary" outlined x-large style="margin: 2em;" @click="next()" >No</v-btn>
+            <v-btn
+              color="primary"
+              variant="outlined"
+              size="x-large"
+              style="margin: 2em"
+              :disabled="isLocked"
+              @click="addAnotherFacility()"
+            >
+              Yes
+            </v-btn>
+            <v-btn
+              color="secondary"
+              variant="outlined"
+              size="x-large"
+              style="margin: 2em"
+              @click="next()"
+            >
+              No
+            </v-btn>
           </v-row>
         </v-container>
       </v-card>
     </v-row>
 
     <v-row justify="space-around">
-      <v-btn color="info" outlined required x-large @click="previous()">Back</v-btn>
+      <v-btn
+        color="info"
+        variant="outlined"
+        required
+        size="x-large"
+        @click="previous()"
+      >
+        Back
+      </v-btn>
     </v-row>
 
-    <v-dialog v-model="dialog" persistent max-width="525px">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+    >
       <v-card>
         <v-container class="pt-0">
           <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color:#234075;">
-              <v-card-title class="white--text">Delete Application</v-card-title>
+            <v-col
+              cols="7"
+              class="py-0 pl-0"
+              style="background-color: #234075"
+            >
+              <v-card-title class="text-white">
+                Delete Application
+              </v-card-title>
             </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color:#234075;">
+            <v-col
+              cols="5"
+              class="d-flex justify-end"
+              style="background-color: #234075"
+            />
+          </v-row>
+          <v-row>
+            <v-col
+              cols="12"
+              style="background-color: #ffc72c; padding: 2px"
+            />
+          </v-row>
+          <v-row>
+            <v-col
+              cols="12"
+              style="text-align: left"
+            >
+              <p class="pt-4">
+                Are you sure you want to delete application for facility {{ deleteFacilityName }}?
+              </p>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" style="background-color:#FFC72C;padding:2px;"></v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: left;">
-              <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center;">
-              <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">Cancel</v-btn>
-              <v-btn dark color="primary" :loading="processing" @click="deleteApplication()">Continue</v-btn>
+            <v-col
+              cols="12"
+              style="text-align: center"
+            >
+              <v-btn
+                dark
+                color="secondary"
+                :loading="processing"
+                class="mr-10"
+                @click="dialog = false"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                dark
+                color="primary"
+                :loading="processing"
+                @click="deleteApplication()"
+              >
+                Continue
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -81,6 +175,7 @@ import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../ut
 import alertMixin from '../../../mixins/alertMixin.js';
 
 export default {
+  mixins: [alertMixin],
   data() {
     return {
       dialog: false,
@@ -93,18 +188,23 @@ export default {
       deleteCcofBaseFundingId: undefined,
     };
   },
-  mixins: [alertMixin],
   computed: {
-    ...mapState(useNavBarStore, ['navBarList','changeRequestId', 'previousPath', 'getChangeActionNewFacByFacilityId', 'isChangeRequest']),
-    ...mapState(useApplicationStore, ['applicationStatus', 'applicationId', 'programYearId', ]),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'changeRequestId',
+      'previousPath',
+      'getChangeActionNewFacByFacilityId',
+      'isChangeRequest',
+    ]),
+    ...mapState(useApplicationStore, ['applicationStatus', 'applicationId', 'programYearId']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useReportChangesStore,['isCCOFUnlocked','changeRequestStatus']),
+    ...mapState(useReportChangesStore, ['isCCOFUnlocked', 'changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
-        return (this.changeRequestStatus !== 'INCOMPLETE');
+        return this.changeRequestStatus !== 'INCOMPLETE';
       }
-      return (this.applicationStatus === 'SUBMITTED');
-    }
+      return this.applicationStatus === 'SUBMITTED';
+    },
   },
   methods: {
     ...mapActions(useApplicationStore, ['setCcofConfirmationEnabled']),
@@ -114,10 +214,9 @@ export default {
       this.$router.push(this.previousPath);
     },
     getRoutingPath(facilityId) {
-      if(this.isChangeRequest){
+      if (this.isChangeRequest) {
         return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, facilityId);
-      }
-      else {
+      } else {
         return pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, facilityId);
       }
     },
@@ -135,10 +234,18 @@ export default {
         this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId));
       }
     },
-    confirmDeleteApplication(facilityId, _changeRequestNewFacilityId, facilityName, ccfriId, eceweId, ccofBaseFundingId) {
+    confirmDeleteApplication(
+      facilityId,
+      _changeRequestNewFacilityId,
+      facilityName,
+      ccfriId,
+      eceweId,
+      ccofBaseFundingId,
+    ) {
       this.deleteFacilityName = facilityName;
       this.deleteFacilityId = facilityId;
-      this.deleteChangeRequestNewFacilityId = this.getChangeActionNewFacByFacilityId(facilityId)?.changeRequestNewFacilityId;
+      this.deleteChangeRequestNewFacilityId =
+        this.getChangeActionNewFacByFacilityId(facilityId)?.changeRequestNewFacilityId;
       this.dialog = true;
       this.deleteCcfriId = ccfriId;
       this.deleteEceweId = eceweId;
@@ -147,23 +254,28 @@ export default {
     async deleteApplication() {
       this.processing = true;
       try {
-        await this.deleteFacility({ facilityId: this.deleteFacilityId, changeRequestNewFacilityId: this.deleteChangeRequestNewFacilityId, ccfriId: this.deleteCcfriId, eceweId: this.deleteEceweId, ccofBaseFundingId: this.deleteCcofBaseFundingId, applicationId: this.applicationId});
+        await this.deleteFacility({
+          facilityId: this.deleteFacilityId,
+          changeRequestNewFacilityId: this.deleteChangeRequestNewFacilityId,
+          ccfriId: this.deleteCcfriId,
+          eceweId: this.deleteEceweId,
+          ccofBaseFundingId: this.deleteCcofBaseFundingId,
+          applicationId: this.applicationId,
+        });
       } catch (error) {
         this.setFailureAlert('An error occurred while deleting facility. Please try again later.');
       } finally {
         this.processing = false;
         this.dialog = false;
       }
-    }
+    },
   },
   async mounted() {
     this.setCcofConfirmationEnabled(true);
     if (this.isChangeRequest) {
-      let index = this.navBarList.findIndex(facility => facility.changeRequestNewFacilityId);
-      if (index === -1)
-        await this.getChangeRequest(this.$route.params.changeRecGuid);
+      let index = this.navBarList.findIndex((facility) => facility.changeRequestNewFacilityId);
+      if (index === -1) await this.getChangeRequest(this.$route.params.changeRecGuid);
     }
   },
-
 };
 </script>

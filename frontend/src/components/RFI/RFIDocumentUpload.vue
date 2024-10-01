@@ -1,8 +1,13 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form
+    ref="form"
+    v-model="isValidForm"
+  >
     <div class="pa-0">
       <div class="pa-2 pa-md-4 ma-0">
-        <p class="text-h5 text--primary px-5 py-0 my-0">Documentation Required</p>
+        <p class="text-h5 text--primary px-5 py-0 my-0">
+          Documentation Required
+        </p>
       </div>
       <div class="px-md-12 px-7">
         <v-row class="px-6 text-body-1">
@@ -25,57 +30,74 @@
           :items-per-page="-1"
           no-data-text=""
         >
-          <template v-slot:top>
+          <template #top>
             <v-col flex>
-              <v-toolbar flat color="white">
+              <v-toolbar
+                flat
+                color="white"
+              >
                 <div class="d-flex">
-                  <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
-                    <v-icon dark>mdi-plus</v-icon>
+                  <v-btn
+                    class="my-5"
+                    dark
+                    color="#003366"
+                    :disabled="isLocked"
+                    @click="addNew"
+                  >
+                    <v-icon dark>
+                      mdi-plus
+                    </v-icon>
                     Add
                   </v-btn>
                 </div>
               </v-toolbar>
             </v-col>
           </template>
-          <template v-slot:item.document="{ item }">
+          <template #item.document="{ item }">
             <div v-if="item?.annotationid">
               <span> {{ item?.filename }} </span>
             </div>
             <v-file-input
               v-else
+              :id="String(item.id)"
               color="#003366"
               :rules="fileRules"
-              @click:clear="deleteItem(item)"
               prepend-icon="mdi-file-upload"
               :clearable="false"
               class="pt-0"
-              :id="String(item.id)"
               :accept="fileAccept"
               :disabled="false"
               placeholder="Select your file"
               :error-messages="fileInputError"
+              required
+              @click:clear="deleteItem(item)"
               @change="selectFile"
               @click="uploadDocumentClicked($event)"
-              required
-            ></v-file-input>
+            />
           </template>
-          <template v-slot:item.description="{ item }">
+          <template #item.description="{ item }">
             <div v-if="item?.annotationid">
               <span> {{ item?.description }} </span>
             </div>
             <v-text-field
               v-else
+              v-model="item.description"
               placeholder="Enter a description (Optional)"
-              dense
+              density="compact"
               clearable
               :rules="[rules.maxLength(255)]"
               max-length="255"
               @change="descriptionChanged(item)"
-              v-model="item.description"
-            ></v-text-field>
+            />
           </template>
-          <template v-slot:item.actions="{ item }">
-            <v-icon small v-if="!isLocked" @click="deleteItem(item)"> mdi-delete </v-icon>
+          <template #item.actions="{ item }">
+            <v-icon
+              v-if="!isLocked"
+              size="small"
+              @click="deleteItem(item)"
+            >
+              mdi-delete
+            </v-icon>
           </template>
         </v-data-table>
       </div>
@@ -95,8 +117,8 @@ import { deepCloneObject } from '../../utils/common.js';
 import { CHANGE_TYPES } from '../../utils/constants.js';
 
 export default {
-  mixins: [alertMixin],
   components: {},
+  mixins: [alertMixin],
   props: {
     currentFacility: {
       type: Object,

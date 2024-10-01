@@ -3,15 +3,26 @@
     <div class="row py-8 justify-center text-center">
       <span class="text-h4">Change Notification Form</span>
     </div>
-    <br />
-    <v-form ref="isValidForm" value="false" v-model="isValidForm">
+    <br>
+    <v-form
+      ref="isValidForm"
+      v-model="isValidForm"
+      model-value="false"
+    >
       <v-container>
         <v-row class="justify-space-around">
           <v-col class="col-lg-7">
             <v-row>
               <v-col class="col-lg-12">
-                <a href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428" target="_blank">
-                  <v-btn dark class="blueButton mb-10" x-large>
+                <a
+                  href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428"
+                  target="_blank"
+                >
+                  <v-btn
+                    dark
+                    class="blueButton mb-10"
+                    size="x-large"
+                  >
                     <strong>Download a Change Notification Form</strong>
                   </v-btn>
                 </a>
@@ -27,14 +38,14 @@
                   max-height="375px"
                   :loading="true"
                   type="image"
-                ></v-skeleton-loader>
+                />
                 <ChangeFileUpload
                   v-show="!isLoading"
                   ref="childRef"
-                  :changeType="changeTypeForm"
-                  noDataDefaultText="Upload Change Notification Form (Required)"
-                  @fileChange="updateChangeNotificationFormCompleteStatus($event)"
-                ></ChangeFileUpload>
+                  :change-type="changeTypeForm"
+                  no-data-default-text="Upload Change Notification Form (Required)"
+                  @file-change="updateChangeNotificationFormCompleteStatus($event)"
+                />
               </v-col>
             </v-row>
             <v-row class="mb-12">
@@ -47,27 +58,33 @@
                   max-height="375px"
                   :loading="true"
                   type="image"
-                ></v-skeleton-loader>
+                />
                 <ChangeFileUpload
                   v-show="!isLoading"
                   ref="childRef2"
-                  :changeType="changeTypeSupportingDoc"
-                  noDataDefaultText="Upload supporting documents"
-                  @fileChange="updateSupportingDocumentCompleteStatus($event)"
-                ></ChangeFileUpload>
+                  :change-type="changeTypeSupportingDoc"
+                  no-data-default-text="Upload supporting documents"
+                  @file-change="updateSupportingDocumentCompleteStatus($event)"
+                />
               </v-col>
             </v-row>
           </v-col>
           <v-col class="col-lg-4 col-sm-12 boarder pl-10">
-            <p class="text--primary font-weight-bold mb-10">Supporting Documents</p>
+            <p class="text--primary font-weight-bold mb-10">
+              Supporting Documents
+            </p>
             <p>The Change Notification Form will specify what supporting documents to upload.</p>
-            <p class="mt-10">These could include:</p>
+            <p class="mt-10">
+              These could include:
+            </p>
 
             <ul>
-              <li class="pb-0 font-italic">Community Care and Assisted Living Act Licence</li>
+              <li class="pb-0 font-italic">
+                Community Care and Assisted Living Act Licence
+              </li>
               <li>
                 Proof of name change document
-                <br />
+                <br>
                 (e.g. marriage certificate, resumption of surname certificate, BC Corporate Registry "Notice of Name
                 Change")
               </li>
@@ -78,13 +95,18 @@
                 href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes"
                 class="text-decoration-underline"
               >
-                visit the Child Care Operating Funding website</a
-              >
+                visit the Child Care Operating Funding website</a>
             </p>
             <p class="mt-10">
-              Toll Free: <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>
-              <br />
-              Local Phone: <a href="tel:+2503566501" class="text-decoration-underline">250 356-6501</a>
+              Toll Free: <a
+                href="tel:+18883386622"
+                class="text-decoration-underline"
+              >1 888 338-6622 (Option 2)</a>
+              <br>
+              Local Phone: <a
+                href="tel:+2503566501"
+                class="text-decoration-underline"
+              >250 356-6501</a>
             </p>
           </v-col>
         </v-row>
@@ -92,16 +114,16 @@
     </v-form>
 
     <NavButton
-      :isNextDisplayed="true"
-      :isSaveDisplayed="true"
-      :isSaveDisabled="isReadOnly"
-      :isNextDisabled="!isChangeNotificationFormComplete || !isSupportingDocumentComplete"
-      :isProcessing="isLoading"
+      :is-next-displayed="true"
+      :is-save-displayed="true"
+      :is-save-disabled="isReadOnly"
+      :is-next-disabled="!isChangeNotificationFormComplete || !isSupportingDocumentComplete"
+      :is-processing="isLoading"
       @previous="previous"
       @next="next"
-      @validateForm="validateForm"
+      @validate-form="validateForm"
       @save="save(true)"
-    ></NavButton>
+    />
   </v-container>
 </template>
 
@@ -123,6 +145,13 @@ import ChangeFileUpload from './ChangeFileUpload.vue';
 export default {
   name: 'ReportChange',
   mixins: [alertMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    this.isLoading = true;
+    if (!this.isReadOnly) {
+      await this.save(false);
+    }
+    next();
+  },
   data() {
     return {
       isLoading: true,
@@ -144,13 +173,6 @@ export default {
       this.updateChangeNotificationFormCompleteStatus();
     }
     this.isLoading = false;
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    this.isLoading = true;
-    if (!this.isReadOnly) {
-      await this.save(false);
-    }
-    next();
   },
   computed: {
     ...mapState(useNavBarStore, ['changeType', 'nextPath', 'previousPath']),
@@ -218,7 +240,7 @@ export default {
         this.$router.push(this.nextPath);
       } else {
         this.$router.push(
-          changeUrl(PATHS.SUMMARY_DECLARATION, this.$route.params?.changeRecGuid, CHANGE_TYPES.CHANGE_NOTIFICATION)
+          changeUrl(PATHS.SUMMARY_DECLARATION, this.$route.params?.changeRecGuid, CHANGE_TYPES.CHANGE_NOTIFICATION),
         );
       }
     },

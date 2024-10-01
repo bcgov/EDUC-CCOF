@@ -1,23 +1,38 @@
 <template>
-  <v-form ref="isValidForm" v-model="isValidForm">
+  <v-form
+    ref="isValidForm"
+    v-model="isValidForm"
+  >
     <v-container>
       <div class="row pt-4 justify-center">
-        <span class="text-h5"
-          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-        >
+        <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
       </div>
-      <br />
+      <br>
       <div class="row pt-4 justify-center">
         <span class="text-h5">Early Childhood Educator Wage Enhancement (ECE-WE)</span>
       </div>
-      <br />
-      <v-row class="pt-4 text-h5 justify-center" style="color: #003466">
-        {{ this.userInfo.organizationName }}
+      <br>
+      <v-row
+        class="pt-4 text-h5 justify-center"
+        style="color: #003466"
+      >
+        {{ userInfo.organizationName }}
       </v-row>
       <v-row class="mt-6 justify-center">
-        <v-alert class="col-11 mb-0" outlined prominent>
-          <span class="pr-1" style="float: left">
-            <v-icon x-large color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
+        <v-alert
+          class="col-11 mb-0"
+          variant="outlined"
+          prominent
+        >
+          <span
+            class="pr-1"
+            style="float: left"
+          >
+            <v-icon
+              size="x-large"
+              color="rgb(0 51 102)"
+              class="py-1 px-3"
+            > mdi-information </v-icon>
           </span>
           <span>
             <strong>Note:</strong> Please read and understand the full eligibility requirements in the
@@ -34,26 +49,53 @@
         </v-alert>
       </v-row>
       <v-row class="justify-center">
-        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+        <v-card
+          elevation="4"
+          class="py-2 px-5 mx-2 mt-10 rounded-lg col-11"
+        >
           <v-container>
             <v-row v-if="isLoading">
               <v-col>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="text@1"
+                />
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="actions"
+                />
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" class="justify-center">
+            <v-row
+              v-if="!isLoading"
+              class="justify-center"
+            >
               <v-col align-self="start">
-                <v-radio-group v-model="model.optInECEWE" :disabled="isReadOnly('optInECEWE')" :rules="rules.required">
-                  <template v-slot:label>
-                    <span class="radio-label" style="text-align: left"
-                      >For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any
-                      facility in your organization?</span
-                    >
+                <v-radio-group
+                  v-model="model.optInECEWE"
+                  :disabled="isReadOnly('optInECEWE')"
+                  :rules="rules.required"
+                >
+                  <template #label>
+                    <span
+                      class="radio-label"
+                      style="text-align: left"
+                    >For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any
+                      facility in your organization?</span>
                   </template>
                   <div class="flex-left pt-2">
-                    <v-radio class="pt-2 pr-8" label="Yes" :value="1"></v-radio>
-                    <v-radio class="pt-1" label="No" :value="0"></v-radio>
+                    <v-radio
+                      class="pt-2 pr-8"
+                      label="Yes"
+                      :value="1"
+                    />
+                    <v-radio
+                      class="pt-1"
+                      label="No"
+                      :value="0"
+                    />
                   </div>
                 </v-radio-group>
               </v-col>
@@ -62,30 +104,54 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="this.model.optInECEWE == 1 || isLoading" class="justify-center">
-        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+      <v-row
+        v-if="model.optInECEWE == 1 || isLoading"
+        class="justify-center"
+      >
+        <v-card
+          elevation="4"
+          class="py-2 px-5 mx-2 mt-10 rounded-lg col-11"
+        >
           <v-container>
             <v-row v-if="isLoading">
               <v-col>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="text@1"
+                />
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="actions"
+                />
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" class="justify-center">
+            <v-row
+              v-if="!isLoading"
+              class="justify-center"
+            >
               <v-col align-self="start">
                 <v-radio-group
                   v-model="model.belongsToUnion"
                   :disabled="isReadOnly('belongsToUnion')"
                   :rules="rules.required"
                 >
-                  <template v-slot:label>
-                    <span class="radio-label"
-                      >Do any of the ECE Employees at any facility in your organization belong to a union?</span
-                    >
+                  <template #label>
+                    <span class="radio-label">Do any of the ECE Employees at any facility in your organization belong to a union?</span>
                   </template>
                   <div class="flex-left">
-                    <v-radio class="pt-2 pr-8" label="Yes" :value="1"></v-radio>
-                    <v-radio class="pt-1" label="No" :value="0" @click="model.applicableSector = null"></v-radio>
+                    <v-radio
+                      class="pt-2 pr-8"
+                      label="Yes"
+                      :value="1"
+                    />
+                    <v-radio
+                      class="pt-1"
+                      label="No"
+                      :value="0"
+                      @click="model.applicableSector = null"
+                    />
                   </div>
                 </v-radio-group>
               </v-col>
@@ -95,26 +161,56 @@
       </v-row>
 
       <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
-        <v-row v-if="model.optInECEWE == 1 || isLoading" class="justify-center">
-          <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+        <v-row
+          v-if="model.optInECEWE == 1 || isLoading"
+          class="justify-center"
+        >
+          <v-card
+            elevation="4"
+            class="py-2 px-5 mx-2 mt-10 rounded-lg col-11"
+          >
             <v-container>
               <v-row v-if="isLoading">
                 <v-col>
-                  <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
-                  <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+                  <v-skeleton-loader
+                    v-if="isLoading"
+                    :loading="isLoading"
+                    type="text@1"
+                  />
+                  <v-skeleton-loader
+                    v-if="isLoading"
+                    :loading="isLoading"
+                    type="actions"
+                  />
                 </v-col>
               </v-row>
-              <v-row v-if="!isLoading" class="justify-left">
+              <v-row
+                v-if="!isLoading"
+                class="justify-left"
+              >
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.publicSector" :disabled="isReadOnly()" :rules="rules.required">
-                    <template v-slot:label>
+                  <v-radio-group
+                    v-model="model.publicSector"
+                    :disabled="isReadOnly()"
+                    :rules="rules.required"
+                  >
+                    <template #label>
                       <div class="radio-label text-left">
                         Are you a public sector employer, as defined in the <u><i>Public Sector Employers Act?</i></u>
                       </div>
                     </template>
                     <div class="flex-left">
-                      <v-radio class="pt-2 pr-8" label="Yes" :value="1"></v-radio>
-                      <v-radio class="pt-1" label="No" :value="0" @click="model.applicableSector = null"></v-radio>
+                      <v-radio
+                        class="pt-2 pr-8"
+                        label="Yes"
+                        :value="1"
+                      />
+                      <v-radio
+                        class="pt-1"
+                        label="No"
+                        :value="0"
+                        @click="model.applicableSector = null"
+                      />
                     </div>
                   </v-radio-group>
                 </v-col>
@@ -127,24 +223,44 @@
       <v-row
         v-if="
           (model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel != programYearTypes.HISTORICAL) ||
-          (model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) ||
-          isLoading
+            (model.belongsToUnion == 1 && model.optInECEWE == 1 && languageYearLabel == programYearTypes.HISTORICAL) ||
+            isLoading
         "
         class="justify-center"
       >
-        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+        <v-card
+          elevation="4"
+          class="py-2 px-5 mx-2 mt-10 rounded-lg col-11"
+        >
           <v-container>
             <v-row v-if="isLoading">
               <v-col>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="text@1"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="actions"></v-skeleton-loader>
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="text@1"
+                />
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="actions"
+                />
               </v-col>
             </v-row>
-            <v-row v-if="!isLoading" class="justify-left">
+            <v-row
+              v-if="!isLoading"
+              class="justify-left"
+            >
               <v-col align-self="start">
-                <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
-                  <template v-slot:label>
-                    <div class="radio-label text-left">Select the applicable sector:</div>
+                <v-radio-group
+                  v-model="model.applicableSector"
+                  :disabled="isReadOnly()"
+                  :rules="rules.required"
+                >
+                  <template #label>
+                    <div class="radio-label text-left">
+                      Select the applicable sector:
+                    </div>
                   </template>
                   <div class="flex-left">
                     <v-radio
@@ -152,13 +268,13 @@
                       label="Community Social Services Employers' Association (CSSEA) Member"
                       :value="100000000"
                       @click="model.confirmation = null"
-                    ></v-radio>
+                    />
                     <v-radio
                       class="pt-1"
                       label="Other Unionized Employer"
                       :value="100000001"
                       @click="model.confirmation = null"
-                    ></v-radio>
+                    />
                   </div>
                 </v-radio-group>
               </v-col>
@@ -170,11 +286,11 @@
                 model.belongsToUnion == 1 &&
                 model.optInECEWE == 1 &&
                 languageYearLabel != programYearTypes.HISTORICAL) ||
-              (model.applicableSector == 100000001 &&
-                model.belongsToUnion == 1 &&
-                model.optInECEWE == 1 &&
-                languageYearLabel == programYearTypes.HISTORICAL) ||
-              isLoading
+                (model.applicableSector == 100000001 &&
+                  model.belongsToUnion == 1 &&
+                  model.optInECEWE == 1 &&
+                  languageYearLabel == programYearTypes.HISTORICAL) ||
+                isLoading
             "
             class="mx-2 mb-4 justify-center"
           >
@@ -182,7 +298,11 @@
               <v-col class="py-0">
                 <v-card-title class="py-0 noticeInfo">
                   <span style="float: left">
-                    <v-icon x-large color="#D40D19" class="py-1 px-3 noticeInfoIcon"> mdi-information </v-icon>
+                    <v-icon
+                      size="x-large"
+                      color="#D40D19"
+                      class="py-1 px-3 noticeInfoIcon"
+                    > mdi-information </v-icon>
                   </span>
                   Please confirm
                 </v-card-title>
@@ -191,14 +311,13 @@
             <v-row v-if="!isLoading">
               <v-col class="pl-6 d-flex py-0">
                 <v-checkbox
-                  class="pa-0"
                   v-model="model.confirmation"
+                  class="pa-0"
                   :value="1"
                   label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
                   :disabled="isReadOnly()"
                   :rules="rules.required"
-                >
-                </v-checkbox>
+                />
               </v-col>
             </v-row>
           </v-card>
@@ -209,49 +328,79 @@
         v-if="(model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading"
         class="justify-center"
       >
-        <v-card elevation="4" class="py-2 px-5 mx-2 mt-10 rounded-lg col-11">
+        <v-card
+          elevation="4"
+          class="py-2 px-5 mx-2 mt-10 rounded-lg col-11"
+        >
           <v-container>
             <v-row v-if="isLoading">
               <v-col>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="card-heading"
+                />
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="list-item-avatar"
+                />
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="list-item-avatar"
+                />
+                <v-skeleton-loader
+                  v-if="isLoading"
+                  :loading="isLoading"
+                  type="list-item-avatar"
+                />
               </v-col>
             </v-row>
             <v-row v-if="!isLoading">
               <v-col align-self="start">
-                <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
-                  <template v-slot:label>
-                    <div class="radio-label text-left">Select your funding model:</div>
+                <v-radio-group
+                  v-model="model.fundingModel"
+                  :disabled="isReadOnly()"
+                  :rules="rules.required"
+                >
+                  <template #label>
+                    <div class="radio-label text-left">
+                      Select your funding model:
+                    </div>
                   </template>
                   <div class="flex-left">
                     <v-radio
                       :label="fundingModelTypeList[0].description"
                       :value="fundingModelTypeList[0].id"
                       class="pt-2 pr-8"
-                    >
-                    </v-radio>
+                    />
                     <v-radio
                       :label="fundingModelTypeList[1].description"
                       :value="fundingModelTypeList[1].id"
                       class="pt-1 pr-8"
-                    ></v-radio>
+                    />
                     <v-radio
                       :label="fundingModelTypeList[2].description"
                       :value="fundingModelTypeList[2].id"
                       class="pt-1 pr-8"
-                    ></v-radio>
+                    />
                   </div>
                 </v-radio-group>
               </v-col>
             </v-row>
-            <v-card v-if="model.fundingModel == fundingModelTypeList[0].id" width="100%">
+            <v-card
+              v-if="model.fundingModel == fundingModelTypeList[0].id"
+              width="100%"
+            >
               <v-row>
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeAlert">
                     <span style="float: left">
-                      <v-icon x-large class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                      <v-icon
+                        size="x-large"
+                        class="py-1 px-3 noticeAlertIcon"
+                      > mdi-alert-octagon </v-icon>
                     </span>
                     ECEs at these facilities are not eligible for ECE Wage Enhancement
                   </v-card-title>
@@ -262,12 +411,18 @@
               </v-row>
             </v-card>
             <div v-else-if="model.fundingModel == fundingModelTypeList[1].id">
-              <v-card width="100%" class="mb-4">
+              <v-card
+                width="100%"
+                class="mb-4"
+              >
                 <v-row>
                   <v-col class="py-0">
                     <v-card-title class="py-0 noticeWarning">
                       <span style="float: left">
-                        <v-icon x-large class="py-1 px-3 noticeWarningIcon"> mdi-alert </v-icon>
+                        <v-icon
+                          size="x-large"
+                          class="py-1 px-3 noticeWarningIcon"
+                        > mdi-alert </v-icon>
                       </span>
                       ECEs in provincially funded programs are not eligible
                     </v-card-title>
@@ -288,7 +443,11 @@
                 <v-col class="py-0">
                   <v-card-title class="py-0 noticeInfo">
                     <span style="float: left">
-                      <v-icon x-large color="#D40D19" class="py-1 px-3 noticeInfoIcon"> mdi-information </v-icon>
+                      <v-icon
+                        size="x-large"
+                        color="#D40D19"
+                        class="py-1 px-3 noticeInfoIcon"
+                      > mdi-information </v-icon>
                     </span>
                     Please confirm
                   </v-card-title>
@@ -297,14 +456,13 @@
               <v-row v-if="!isLoading">
                 <v-col class="pl-6 d-flex py-0">
                   <v-checkbox
-                    class="pa-0"
                     v-model="model.confirmation"
+                    class="pa-0"
                     :value="1"
                     label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
                     :disabled="isReadOnly()"
                     :rules="rules.required"
-                  >
-                  </v-checkbox>
+                  />
                 </v-col>
               </v-row>
             </v-card>
@@ -313,16 +471,16 @@
       </v-row>
       <NavButton
         class="mt-10"
-        :isNextDisplayed="true"
-        :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly()"
-        :isNextDisabled="!enableButtons"
-        :isProcessing="isProcessing"
+        :is-next-displayed="true"
+        :is-save-displayed="true"
+        :is-save-disabled="isReadOnly()"
+        :is-next-disabled="!enableButtons"
+        :is-processing="isProcessing"
         @previous="previous"
         @next="next"
-        @validateForm="validateForm()"
+        @validate-form="validateForm()"
         @save="saveECEWEApplication"
-      ></NavButton>
+      />
     </v-container>
   </v-form>
 </template>

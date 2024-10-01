@@ -1,13 +1,14 @@
 <template>
   <v-item-group
+    v-if="programYearList?.length > 1"
     v-model="activeIndex"
     class="text-center"
     mandatory
-    v-if="this.programYearList?.length > 1"
   >
     <v-btn
-      tile outlined
-      min-width='20px'
+      tile
+      variant="outlined"
+      min-width="20px"
       class="pa-0"
       :disabled="isPrevDisabled"
       @click="previous"
@@ -20,17 +21,19 @@
       v-slot="{ active }"
     >
       <v-btn
-        tile outlined
+        tile
+        variant="outlined"
         class="px-4 ma-0"
-        @click="selectProgramYear(programYear)"
         :class="active ? 'selected' : ''"
+        @click="selectProgramYear(programYear)"
       >
         {{ programYear.name }}
       </v-btn>
     </v-item>
     <v-btn
-      tile outlined
-      min-width='20px'
+      tile
+      variant="outlined"
+      min-width="20px"
       class="pa-0"
       :disabled="isNextDisabled"
       @click="next"
@@ -41,10 +44,8 @@
 </template>
 
 <script>
-
 import { mapState } from 'pinia';
 import { sortBy } from 'lodash';
-
 
 export default {
   name: 'FiscalYearSlider',
@@ -52,10 +53,12 @@ export default {
     return {
       selectedProgramYearIndex: undefined,
       activeIndex: undefined,
-    }
+    };
   },
   created() {
-    this.selectedProgramYearIndex = this.programYearList?.findIndex(item => item.programYearId === this.programYearId);
+    this.selectedProgramYearIndex = this.programYearList?.findIndex(
+      (item) => item.programYearId === this.programYearId,
+    );
     this.updateActiveIndex();
     if (this.selectedProgramYearIndex > -1)
       this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex]);
@@ -64,14 +67,18 @@ export default {
     ...mapState('application', ['applicationMap', 'programYearId']),
     programYearList() {
       let programYearList = [];
-      this.applicationMap.forEach(item => {
+      this.applicationMap.forEach((item) => {
         programYearList.push({
-          name: item.ccofProgramYearName.slice(0,-3),
+          name: item.ccofProgramYearName.slice(0, -3),
           programYearId: item.ccofProgramYearId,
           status: item.ccofProgramYearStatus,
         });
       });
-      programYearList = sortBy(programYearList,[function(o) { return o.name; }]);
+      programYearList = sortBy(programYearList, [
+        function (o) {
+          return o.name;
+        },
+      ]);
       return programYearList;
     },
     programYearSlidingWindow() {
@@ -90,10 +97,10 @@ export default {
       return this.programYearList;
     },
     isPrevDisabled() {
-      return (this.selectedProgramYearIndex < 1);
+      return this.selectedProgramYearIndex < 1;
     },
     isNextDisabled() {
-      return (this.selectedProgramYearIndex >= (this.programYearList?.length - 1));
+      return this.selectedProgramYearIndex >= this.programYearList?.length - 1;
     },
   },
   methods: {
@@ -117,8 +124,10 @@ export default {
       }
     },
     selectProgramYear(programYear) {
-      this.selectedProgramYearIndex = this.programYearList?.findIndex(item => item.programYearId === programYear?.programYearId);
-      this.$emit('selectProgramYear', programYear)
+      this.selectedProgramYearIndex = this.programYearList?.findIndex(
+        (item) => item.programYearId === programYear?.programYearId,
+      );
+      this.$emit('selectProgramYear', programYear);
       this.updateActiveIndex();
     },
     previous() {
@@ -129,13 +138,13 @@ export default {
       }
     },
     next() {
-      if (this.selectedProgramYearIndex < (this.programYearList?.length - 1)) {
+      if (this.selectedProgramYearIndex < this.programYearList?.length - 1) {
         this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex + 1]);
         this.selectedProgramYearIndex = this.selectedProgramYearIndex + 1;
         this.updateActiveIndex();
       }
     },
-  }
+  },
 };
 </script>
 

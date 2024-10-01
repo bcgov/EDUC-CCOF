@@ -1,26 +1,38 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center">
-      <span class="text-h5"
-        >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-      >
+      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
     </div>
-    <br />
+    <br>
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <br />
+    <br>
     <div class="row pt-4 justify-center">
       <span class="text-h5">Confirm CCFRI participation for each facility.</span>
     </div>
-    <v-btn class="mx-0 justify-end" @click="toggleAll()" dark color="#003366" :disabled="isReadOnly">
+    <v-btn
+      class="mx-0 justify-end"
+      dark
+      color="#003366"
+      :disabled="isReadOnly"
+      @click="toggleAll()"
+    >
       Opt in All Facilities
     </v-btn>
     <LargeButtonContainer>
-      <v-form ref="isValidForm" value="false" v-model="isValidForm">
+      <v-form
+        ref="isValidForm"
+        v-model="isValidForm"
+        model-value="false"
+      >
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
         <v-card
+          v-for="(
+            { facilityName, facilityId, licenseNumber, ccfriOptInStatus, facilityAccountNumber }, index
+          ) in navBarList"
+          :key="facilityId"
           elevation="4"
           class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
           min-width="500px"
@@ -29,15 +41,17 @@
           exact
           tile
           :ripple="false"
-          v-for="(
-            { facilityName, facilityId, licenseNumber, ccfriOptInStatus, facilityAccountNumber }, index
-          ) in navBarList"
-          :key="facilityId"
         >
           <v-card-text>
             <v-row>
-              <v-col cols="" class="col-12 col-md-7">
-                <p class="text--primary" v-if="facilityAccountNumber">
+              <v-col
+                cols=""
+                class="col-12 col-md-7"
+              >
+                <p
+                  v-if="facilityAccountNumber"
+                  class="text--primary"
+                >
                   <strong> Facility ID: {{ facilityAccountNumber }}</strong>
                 </p>
                 <p class="text--primary">
@@ -53,32 +67,50 @@
                       ccfriOptInStatus == 'IN'
                         ? 'IN'
                         : ccfriOptInStatus == '1'
-                        ? 'IN'
-                        : ccfriOptInStatus == '0'
-                        ? 'OUT'
-                        : 'NOT SELECTED'
+                          ? 'IN'
+                          : ccfriOptInStatus == '0'
+                            ? 'OUT'
+                            : 'NOT SELECTED'
                     }}
                   </p>
                 </strong>
               </v-col>
-              <v-col cols="" class="d-flex align-center col-12 col-md-5" v-if="!showOptStatus[index]">
+              <v-col
+                v-if="!showOptStatus[index]"
+                cols=""
+                class="d-flex align-center col-12 col-md-5"
+              >
                 <v-btn
                   class="my-10 mx-14 justify-end"
-                  @click="toggle(index)"
-                  :showOptStatus="showOptStatus[index]"
+                  :show-opt-status="showOptStatus[index]"
                   dark
                   color="#003366"
                   :rules="rules"
                   :disabled="isReadOnly"
+                  @click="toggle(index)"
                 >
                   UPDATE
                 </v-btn>
               </v-col>
-              <v-col v-else cols="" class="d-flex align-center col-12 col-md-5">
+              <v-col
+                v-else
+                cols=""
+                class="d-flex align-center col-12 col-md-5"
+              >
                 <v-row>
-                  <v-radio-group v-model="ccfriOptInOrOut[index]" class="mx-12" :rules="rules">
-                    <v-radio label="Opt In" value="1"></v-radio>
-                    <v-radio label="Opt Out" value="0"></v-radio>
+                  <v-radio-group
+                    v-model="ccfriOptInOrOut[index]"
+                    class="mx-12"
+                    :rules="rules"
+                  >
+                    <v-radio
+                      label="Opt In"
+                      value="1"
+                    />
+                    <v-radio
+                      label="Opt Out"
+                      value="0"
+                    />
                   </v-radio-group>
                 </v-row>
               </v-col>
@@ -89,16 +121,16 @@
     </LargeButtonContainer>
 
     <NavButton
-      :isNextDisplayed="true"
-      :isSaveDisplayed="true"
-      :isSaveDisabled="isReadOnly"
-      :isNextDisabled="!isPageComplete()"
-      :isProcessing="processing"
+      :is-next-displayed="true"
+      :is-save-displayed="true"
+      :is-save-disabled="isReadOnly"
+      :is-next-disabled="!isPageComplete()"
+      :is-processing="processing"
       @previous="previous"
       @next="next"
-      @validateForm="validateForm()"
+      @validate-form="validateForm()"
       @save="save(true)"
-    ></NavButton>
+    />
   </v-container>
 </template>
 
@@ -236,7 +268,7 @@ export default {
       //if application is a change request, go to add new fees
       else if (isChangeRequest(this)) {
         this.$router.push(
-          changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.$route.params.changeRecGuid, firstOptInFacility.ccfriApplicationId)
+          changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.$route.params.changeRecGuid, firstOptInFacility.ccfriApplicationId),
         );
       }
       //if application locked, send to add new fees
@@ -246,7 +278,7 @@ export default {
       //if CCFRI is being renewed, go to page that displays fees
       else if (this.isRenewal) {
         this.$router.push(
-          pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId)
+          pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, firstOptInFacility.ccfriApplicationId),
         );
       }
       // else go directly to addNewFees page

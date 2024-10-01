@@ -1,21 +1,32 @@
 <template>
   <v-container class="full-height m-16 pt-0">
-    <article id="login-banner" class="top-banner">
+    <article
+      id="login-banner"
+      class="top-banner"
+    >
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
       <v-row>
-        <v-col cols="12" align="center" class="pt-0">
+        <v-col
+          cols="12"
+          align="center"
+          class="pt-0"
+        >
           <v-img
             :src="require('../assets/images/login-header-img-resized.jpg')"
             max-height="300"
             max-width="1448"
             class="align-end"
           >
-            <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85)">
-              <span class="text-h4 white--text font-weight-bold" style="font-family: BCSans"
-                >My ChildCareBC Services</span
-              >
-              <br />
-              <span class="text-h6 white--text">Welcome</span>
+            <v-col
+              align="center"
+              style="background-color: rgb(28, 115, 158, 0.85)"
+            >
+              <span
+                class="text-h4 text-white font-weight-bold"
+                style="font-family: BCSans"
+              >My ChildCareBC Services</span>
+              <br>
+              <span class="text-h6 text-white">Welcome</span>
             </v-col>
           </v-img>
         </v-col>
@@ -27,12 +38,27 @@
 
       <!-- containerWidth1450 is a custom css class I wrote to make the container behave in the margins... It "should" just listen to the Vuetify margins, but it wasn't and I couldn't figure out why.-->
       <v-container class="containerWidth1450 pa-0">
-        <div v-for="item in systemMessages" :key="item.messageID">
+        <div
+          v-for="item in systemMessages"
+          :key="item.messageID"
+        >
           <v-card class="elevation-0">
             <v-col class="py-2">
-              <v-row class="py-0 noticeInfo" align="center">
-                <v-col :cols="12" align="center" md="1">
-                  <v-icon x-large class="py-1 noticeInfoIcon"> mdi-information </v-icon>
+              <v-row
+                class="py-0 noticeInfo"
+                align="center"
+              >
+                <v-col
+                  :cols="12"
+                  align="center"
+                  md="1"
+                >
+                  <v-icon
+                    size="x-large"
+                    class="py-1 noticeInfoIcon"
+                  >
+                    mdi-information
+                  </v-icon>
                 </v-col>
                 <v-col>
                   {{ item.message }}
@@ -54,41 +80,54 @@
         </p>
         <v-row>
           <v-col class="xs-12 lg-4 xl-2">
-            <v-divider></v-divider>
+            <v-divider />
             <!-- Add height="100%" to div directly below to have the buttons line up with each other on desktop.-->
-            <v-card flat class="d-flex flex-column">
+            <v-card
+              flat
+              class="d-flex flex-column"
+            >
               <v-card-title class="gov-header">
-                <h4 id="login_text">Log in to My ChildCareBC Services with your primary Business BCeID</h4>
+                <h4 id="login_text">
+                  Log in to My ChildCareBC Services with your primary Business BCeID
+                </h4>
               </v-card-title>
-              <v-card-text id="login_descriptor"> Enter your user ID and password to continue. </v-card-text>
-              <v-spacer></v-spacer>
+              <v-card-text id="login_descriptor">
+                Enter your user ID and password to continue.
+              </v-card-text>
+              <v-spacer />
               <v-card-actions class="mt-auto">
                 <v-row>
                   <v-btn
                     id="login-button"
-                    @click="clearStorage"
                     :href="authRoutes.LOGIN"
                     class="ma-5"
                     dark
                     color="#003366"
-                    >Log In<v-icon>mdi-login</v-icon></v-btn
+                    @click="clearStorage"
                   >
+                    Log In<v-icon>mdi-login</v-icon>
+                  </v-btn>
                 </v-row>
               </v-card-actions>
             </v-card>
           </v-col>
 
           <v-col class="xs-12 lg-6 xl-2">
-            <v-divider></v-divider>
-            <v-card flat class="d-flex flex-column">
+            <v-divider />
+            <v-card
+              flat
+              class="d-flex flex-column"
+            >
               <v-card-title class="gov-header">
-                <h4 id="login_text">Don't have a BCeID?</h4>
+                <h4 id="login_text">
+                  Don't have a BCeID?
+                </h4>
               </v-card-title>
               <v-card-text id="login_descriptor">
                 BCeID is a user ID and password. You can use it to log into many participating government services.
-                <br /><br />
+                <br><br>
                 If you have logged into other B.C. government services before, you may already have an account.
-                <br /><br />
+                <br><br>
                 You must register for a Business BCeID before you can log in - it only takes a few minutes.
               </v-card-text>
               <v-card-actions>
@@ -98,8 +137,9 @@
                     class="ma-5"
                     dark
                     color="#003366"
-                    >Register for a BCeID<v-icon>mdi-login</v-icon></v-btn
                   >
+                    Register for a BCeID<v-icon>mdi-login</v-icon>
+                  </v-btn>
                 </v-row>
               </v-card-actions>
             </v-card>
@@ -111,42 +151,56 @@
         <!-- CCFRI Est Card-->
         <v-row>
           <v-col class="xs-12 border-top">
-            <v-divider></v-divider>
-            <v-card flat class="d-flex flex-column">
+            <v-divider />
+            <v-card
+              flat
+              class="d-flex flex-column"
+            >
               <v-card-title class="gov-header">
-                <h4 id="login_text">CCFRI Estimator</h4>
+                <h4 id="login_text">
+                  CCFRI Estimator
+                </h4>
               </v-card-title>
-              <v-card-text id="login_descriptor" class="pb-0">
+              <v-card-text
+                id="login_descriptor"
+                class="pb-0"
+              >
                 <p>
                   The ministry has made enhancements to the
                   <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
                   to help estimate additional child care fee savings that started on December 1, 2022.
                 </p>
                 <p>
-                  Note: <br />
+                  Note: <br>
                   Child care providers with a CCFRI application in process, including open applications for a mid-term
                   fee increase, will not appear in the search results. Check back as search results are updated
                   regularly.
                 </p>
               </v-card-text>
-              <v-spacer></v-spacer>
+              <v-spacer />
               <v-card-actions>
                 <v-row>
-                  <v-btn id="login-button" @click="toEstimator" class="ma-5" dark color="#003366"
-                    >Go to Estimator</v-btn
+                  <v-btn
+                    id="login-button"
+                    class="ma-5"
+                    dark
+                    color="#003366"
+                    @click="toEstimator"
                   >
+                    Go to Estimator
+                  </v-btn>
                 </v-row>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
 
-        <v-divider></v-divider>
+        <v-divider />
       </v-container>
       <!--END CCFRI Est Card-->
 
       <!-- This is where the form will go-->
-      <v-row> </v-row>
+      <v-row />
     </article>
   </v-container>
 </template>

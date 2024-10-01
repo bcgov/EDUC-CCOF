@@ -1,5 +1,8 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form
+    ref="form"
+    v-model="isValidForm"
+  >
     <v-container>
       <v-row justify="center">
         <div
@@ -7,62 +10,102 @@
           v-text="
             `Child Care Operating Funding Program - ${getNextProgramYear.name.replace(
               /[^\d/]/g,
-              ''
+              '',
             )} Program Confirmation Form`
           "
         />
       </v-row>
 
       <div v-if="processing">
-        <v-skeleton-loader max-height="475px" :loading="processing" type="image, image"></v-skeleton-loader>
-        <br /><br />
-        <v-skeleton-loader max-height="475px" :loading="processing" type="image, image"></v-skeleton-loader>
+        <v-skeleton-loader
+          max-height="475px"
+          :loading="processing"
+          type="image, image"
+        />
+        <br><br>
+        <v-skeleton-loader
+          max-height="475px"
+          :loading="processing"
+          type="image, image"
+        />
       </div>
 
       <div v-else>
         <v-row>
-          <v-card width="100%" class="mx-3 my-10" v-if="isSomeChangeRequestActive()">
+          <v-card
+            v-if="isSomeChangeRequestActive()"
+            width="100%"
+            class="mx-3 my-10"
+          >
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
                   <span style="float: left">
-                    <v-icon x-large class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                    <v-icon
+                      size="x-large"
+                      class="py-1 px-3 noticeAlertIcon"
+                    > mdi-alert-octagon </v-icon>
                   </span>
                   You have a change request for the {{ currentYearLabel }} funding term still in progress.
                 </v-card-title>
               </v-col>
             </v-row>
             <v-card-text>
-              The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.<br /><br />
-              <br />
+              The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.<br><br>
+              <br>
 
-              <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing"
-                >View My Changes</v-btn
+              <v-btn
+                dark
+                class="blueButton mb-10"
+                :loading="processing"
+                @click="goToChangeRequestHistory()"
               >
+                View My Changes
+              </v-btn>
             </v-card-text>
           </v-card>
         </v-row>
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card justify-center" width="800">
+          <v-card
+            class="cc-top-level-card justify-center"
+            width="800"
+          >
             <v-card-text>
               Do your current licence and service details match the information found in Schedule A of your most recent
               Funding Agreement?
             </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="fundingGroup" :disabled="isSomeChangeRequestActive()">
-                  <v-radio label="Yes" value="true" />
-                  <v-radio label="No" value="false" />
+                <v-radio-group
+                  v-model="fundingGroup"
+                  inline
+                  :disabled="isSomeChangeRequestActive()"
+                >
+                  <v-radio
+                    label="Yes"
+                    value="true"
+                  />
+                  <v-radio
+                    label="No"
+                    value="false"
+                  />
                 </v-radio-group>
               </v-col>
             </v-row>
             <v-row>
-              <v-card width="100%" class="mx-3" v-if="fundingGroup == 'false'">
+              <v-card
+                v-if="fundingGroup == 'false'"
+                width="100%"
+                class="mx-3"
+              >
                 <v-row>
                   <v-col class="py-0">
                     <v-card-title class="py-1 noticeAlert">
                       <span style="float: left">
-                        <v-icon x-large class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                        <v-icon
+                          size="x-large"
+                          class="py-1 px-3 noticeAlertIcon"
+                        > mdi-alert-octagon </v-icon>
                       </span>
                       Do not continue.
                     </v-card-title>
@@ -71,39 +114,57 @@
                 <v-card-text>
                   If your current licence and service details do not match the information found in schedule A of your
                   most recent funding agreement then please submit a change request.
-                  <br /><br />
+                  <br><br>
 
                   Please submit a change request using the link below:
-                  <br />
-                  <br />
+                  <br>
+                  <br>
                   <router-link :to="goToChangeDashboard()">
-                    <span style="color: #3289ec; text-underline: black"
-                      ><u>Go to Report a Change. This will bring you to a different page.</u></span
-                    ></router-link
-                  >
+                    <span style="color: #3289ec; text-underline: black"><u>Go to Report a Change. This will bring you to a different page.</u></span>
+                  </router-link>
                 </v-card-text>
               </v-card>
             </v-row>
           </v-card>
         </v-row>
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card justify-center" width="800">
+          <v-card
+            class="cc-top-level-card justify-center"
+            width="800"
+          >
             <v-card-text> Has your banking information changed? </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-radio-group row v-model="bankingGroup" :disabled="isSomeChangeRequestActive()">
-                  <v-radio label="Yes" value="true" />
-                  <v-radio label="No" value="false" />
+                <v-radio-group
+                  v-model="bankingGroup"
+                  inline
+                  :disabled="isSomeChangeRequestActive()"
+                >
+                  <v-radio
+                    label="Yes"
+                    value="true"
+                  />
+                  <v-radio
+                    label="No"
+                    value="false"
+                  />
                 </v-radio-group>
               </v-col>
             </v-row>
             <v-row>
-              <v-card width="100%" class="mx-3" v-if="bankingGroup == 'true'">
+              <v-card
+                v-if="bankingGroup == 'true'"
+                width="100%"
+                class="mx-3"
+              >
                 <v-row>
                   <v-col class="py-0">
                     <v-card-title class="py-1 noticeAlert">
                       <span style="float: left">
-                        <v-icon x-large class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                        <v-icon
+                          size="x-large"
+                          class="py-1 px-3 noticeAlertIcon"
+                        > mdi-alert-octagon </v-icon>
                       </span>
                       Do not continue.
                     </v-card-title>
@@ -111,14 +172,13 @@
                 </v-row>
                 <v-card-text>
                   Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program
-                  Confirmation Form.<br /><br />
+                  Confirmation Form.<br><br>
                   Update your banking information:
-                  <br /><a
+                  <br><a
                     href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
                   >
-                    https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a
-                  >
-                  <br /><br />For any questions, call the program at 1-888-338-6622 (option 2)
+                    https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a>
+                  <br><br>For any questions, call the program at 1-888-338-6622 (option 2)
                 </v-card-text>
               </v-card>
             </v-row>
@@ -127,13 +187,13 @@
       </div>
 
       <NavButton
-        :isNextDisplayed="true"
-        :isNextDisabled="!(fundingGroup == 'true' && bankingGroup == 'false')"
-        :isProcessing="processing"
+        :is-next-displayed="true"
+        :is-next-disabled="!(fundingGroup == 'true' && bankingGroup == 'false')"
+        :is-processing="processing"
         @previous="back"
         @next="next"
-        @validateForm="validateForm"
-      ></NavButton>
+        @validate-form="validateForm"
+      />
     </v-container>
   </v-form>
 </template>

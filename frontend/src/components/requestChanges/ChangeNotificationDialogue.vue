@@ -7,22 +7,29 @@
       <v-row class="d-flex justify-center">
         <h2>Funding Agreement Change Notification</h2>
       </v-row>
-      <v-row class="d-flex justify-center text-h5" style="color: #003466">
-        {{ this.userInfo.organizationName }}
+      <v-row
+        class="d-flex justify-center text-h5"
+        style="color: #003466"
+      >
+        {{ userInfo.organizationName }}
       </v-row>
-      <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'"></GroupChangeDialogueContent>
-      <FamilyChangeDialogueContent v-else></FamilyChangeDialogueContent>
+      <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'" />
+      <FamilyChangeDialogueContent v-else />
       <v-row class="d-flex justify-center">
         <p>
           For more information about reporting changes,
           <a
             href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes "
-            >visit the Child Care Operating Funding Website</a
-          >.
+          >visit the Child Care Operating Funding Website</a>.
         </p>
       </v-row>
-      <NavButton :isProcessing="processing" :isNextDisplayed="true" class="mt-10" @previous="previous" @next="next">
-      </NavButton>
+      <NavButton
+        :is-processing="processing"
+        :is-next-displayed="true"
+        class="mt-10"
+        @previous="previous"
+        @next="next"
+      />
     </v-form>
   </v-container>
 </template>
@@ -83,8 +90,8 @@ export default {
             PATHS.CHANGE_NOTIFICATION_FORM,
             newReq?.changeRequestId,
             newReq?.changeActionId,
-            CHANGE_TYPES.CHANGE_NOTIFICATION
-          )
+            CHANGE_TYPES.CHANGE_NOTIFICATION,
+          ),
         );
       } else {
         this.setChangeRequestId(changeRequestId);
@@ -94,8 +101,8 @@ export default {
             PATHS.CHANGE_NOTIFICATION_FORM,
             changeRequestId,
             changeActionId,
-            CHANGE_TYPES.CHANGE_NOTIFICATION
-          )
+            CHANGE_TYPES.CHANGE_NOTIFICATION,
+          ),
         );
       }
     },

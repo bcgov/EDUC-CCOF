@@ -3,41 +3,61 @@
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Operating Funding Program - Request a Parent Fee Increase</span>
     </div>
-    <br />
+    <br>
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <br /><br />
+    <br><br>
     <FacilityHeader
-      :facilityAccountNumber="currentFacility?.facilityAccountNumber"
-      :facilityName="currentFacility.facilityName"
-      :licenseNumber="currentFacility?.licenseNumber"
-    ></FacilityHeader>
-    <br />
+      :facility-account-number="currentFacility?.facilityAccountNumber"
+      :facility-name="currentFacility.facilityName"
+      :license-number="currentFacility?.licenseNumber"
+    />
+    <br>
 
-    <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 justify-center">
+    <div
+      v-if="languageYearLabel != programYearTypes.HISTORICAL"
+      class="row pt-4 justify-center"
+    >
       <span class="text-h6">
         <strong>New for 2024/25:</strong> CCFRI regions align with the BCSSA's grouping of school districts into 6
         regional chapters. Use the
-        <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS" target="_blank">BCSSA region lookup</a> to
-        find your region.</span
-      >
-      <br /><br />
+        <a
+          href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"
+          target="_blank"
+        >BCSSA region lookup</a> to
+        find your region.</span>
+      <br><br>
     </div>
 
-    <br /><br />
+    <br><br>
     <div class="row pt-4 justify-center">
       <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
     </div>
-    <v-form ref="isValidForm" value="false" v-model="isValidForm">
+    <v-form
+      ref="isValidForm"
+      v-model="isValidForm"
+      model-value="false"
+    >
       <div v-if="loading">
-        <v-skeleton-loader max-height="475px" :loading="loading" type="image, image"></v-skeleton-loader>
-        <br /><br />
-        <v-skeleton-loader max-height="475px" :loading="loading" type="image, image"></v-skeleton-loader>
+        <v-skeleton-loader
+          max-height="475px"
+          :loading="loading"
+          type="image, image"
+        />
+        <br><br>
+        <v-skeleton-loader
+          max-height="475px"
+          :loading="loading"
+          type="image, image"
+        />
       </div>
 
       <div v-else-if="currentPcfCcfri.childCareTypes?.length > 0">
-        <div v-for="(item, index) in currentPcfCcfri.childCareTypes" :key="index">
+        <div
+          v-for="(item, index) in currentPcfCcfri.childCareTypes"
+          :key="index"
+        >
           <v-card
             elevation="6"
             class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
@@ -55,30 +75,57 @@
                 </p>
               </div>
               <div class="px-md-12 px-7">
-                <br />
+                <br>
 
-                <v-row class="d-flex" v-if="arePrevFeesCorrect()">
+                <v-row
+                  v-if="arePrevFeesCorrect()"
+                  class="d-flex"
+                >
                   <v-col cols="6">
                     <v-select
-                      label="Parent fee frequency: "
                       v-model="CCFRIFacilityModel.childCareTypes[index].feeFrequency"
+                      label="Parent fee frequency: "
                       :items="feeChoices"
                       class="cols-4 justify-space-around"
-                      outlined
-                      @change="clearFees(index)"
+                      variant="outlined"
                       :disabled="isReadOnly"
+                      @update:model-value="clearFees(index)"
                     >
-                      <option v-for="item in feeChoices" :key="item" :value="item">
+                      <option
+                        v-for="item in feeChoices"
+                        :key="item"
+                        :value="item"
+                      >
                         {{ item }}
                       </option>
                     </v-select>
                   </v-col>
 
-                  <v-col v-if="!isReadOnly" cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 60px">
-                    <v-tooltip top color="#003366">
-                      <template v-slot:activator="{ on, attrs }" style="color: #313131">
-                        <v-card v-on="on" style="background-color: #003366 !important" class="tooltip">
-                          <v-icon class="pt-1" small style="color: #ffffff !important">mdi-help</v-icon>
+                  <v-col
+                    v-if="!isReadOnly"
+                    cols="1"
+                    style="padding-bottom: 0px; padding-top: 16px; padding-left: 60px"
+                  >
+                    <v-tooltip
+                      location="top"
+                      color="#003366"
+                    >
+                      <template
+                        #activator="{ props, attrs }"
+                        style="color: #313131"
+                      >
+                        <v-card
+                          style="background-color: #003366 !important"
+                          class="tooltip"
+                          v-bind="props"
+                        >
+                          <v-icon
+                            class="pt-1"
+                            size="small"
+                            style="color: #ffffff !important"
+                          >
+                            mdi-help
+                          </v-icon>
                         </v-card>
                       </template>
                       <span
@@ -100,15 +147,21 @@
                     <v-btn
                       v-if="!isReadOnly"
                       class="blueButton mb-10"
-                      @click="copyFees(index)"
                       :disabled="!isButtonActive(index)"
-                      >Auto-fill approved parent fees</v-btn
+                      @click="copyFees(index)"
                     >
+                      Auto-fill approved parent fees
+                    </v-btn>
                   </v-col>
                   <v-col cols="2">
-                    <v-btn v-if="!isReadOnly" class="mb-10" @click="clearFees(index)" :disabled="!isButtonActive(index)"
-                      >Clear parent fees</v-btn
+                    <v-btn
+                      v-if="!isReadOnly"
+                      class="mb-10"
+                      :disabled="!isButtonActive(index)"
+                      @click="clearFees(index)"
                     >
+                      Clear parent fees
+                    </v-btn>
                   </v-col>
                 </v-row>
 
@@ -120,230 +173,251 @@
                   <div class="feeTitle">
                     <span>April:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeApr"
                       tabindex="-1"
                       class=""
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
                       type="number"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeApr"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
                       prefix="$"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class=" ">May:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeMay"
                       tabindex="-1"
                       class=""
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeMay"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeMay')"
                       label="May"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMay')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class="">June:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeJun"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeJun"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeJun')"
                       label="June"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class="">July:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeJul"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeJul"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeJul')"
                       label="July"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class=" ">Aug:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeAug"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeAug"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeAug')"
                       label="August"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class="">Sept:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeSep"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeSep"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeSep')"
                       label="September"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <!-- End Row One of Grid-->
 
-                  <div class="feeTitleInput" v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'">
+                  <div
+                    v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'"
+                    class="feeTitleInput"
+                  >
                     <span>New Parent Fees: </span>
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
+                      v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeApr"
                       class=""
                       type="number"
-                      @wheel="$event.target.blur()"
                       :disabled="isReadOnly"
-                      outlined
+                      variant="outlined"
                       :rules="feeRules"
-                      v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeApr"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMay"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJun"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJul"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeAug"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeSep"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <!-- End Row Two of Grid-->
                 </v-container>
-                <br />
-                <br />
+                <br>
+                <br>
 
                 <v-container class="ma-0 pa-0 gridContainer">
                   <div class="feeTitle">
@@ -353,227 +427,248 @@
                   <div class="feeTitle">
                     <span>Oct:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeOct"
                       tabindex="-1"
                       class=""
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
                       type="number"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeOct"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
                       prefix="$"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class=" ">Nov:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeNov"
                       tabindex="-1"
                       class=""
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeNov"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeMay')"
                       label="May"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMay')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class="">Dec:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeDec"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeDec"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeJun')"
                       label="June"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class="">Jan:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeJan"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeJan"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeJul')"
                       label="July"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class=" ">Feb:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeFeb"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeFeb"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeAug')"
                       label="August"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <div class="feeTitle">
                     <span class="">Mar:</span>
                     <v-text-field
+                      v-model.number="item.approvedFeeMar"
                       tabindex="-1"
                       type="number"
-                      dense
+                      density="compact"
                       flat
-                      solo
+                      variant="solo"
                       hide-details
                       readonly
-                      @wheel="$event.target.blur()"
                       :disabled="false"
                       :rules="feeRules"
-                      v-model.number="item.approvedFeeMar"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeSep')"
                       label="September"
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
                     />
-                    <v-divider class="border-opacity-100" vertical></v-divider>
+                    <v-divider
+                      class="border-opacity-100"
+                      vertical
+                    />
                   </div>
 
                   <!-- End Row One of Grid-->
 
-                  <div class="feeTitleInput" v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'">
+                  <div
+                    v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'"
+                    class="feeTitleInput"
+                  >
                     <span>New Parent Fees: </span>
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeOct"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeNov"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeDec"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJan"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <div class="inputBoxWrapper">
                     <v-text-field
                       v-if="isInputVisible(index)"
-                      type="number"
-                      @wheel="$event.target.blur()"
-                      :disabled="isReadOnly"
-                      outlined
-                      :rules="feeRules"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMar"
-                      @input="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                      type="number"
+                      :disabled="isReadOnly"
+                      variant="outlined"
+                      :rules="feeRules"
                       label=""
                       prefix="$"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
                   </div>
 
                   <!-- End Row Two of Grid-->
-                  <br />
+                  <br>
                 </v-container>
               </div>
             </v-card-text>
@@ -598,7 +693,7 @@
               </p>
             </div>
             <div class="px-md-12 px-7">
-              <br />
+              <br>
               <div>
                 <p>
                   Do you charge parent fees at this facility for any closures on business days? Indicate the facility
@@ -612,83 +707,119 @@
                 </p>
               </div>
               <v-radio-group
+                v-model="CCFRIFacilityModel.hasClosureFees"
                 required
                 :disabled="isReadOnly || previousClosureDates.dates.length > 0"
-                v-model="CCFRIFacilityModel.hasClosureFees"
                 :rules="rules"
               >
-                <br />
-                <v-radio label="Yes" :value="100000000"></v-radio>
-                <v-radio label="No" :value="100000001"></v-radio>
+                <br>
+                <v-radio
+                  label="Yes"
+                  :value="100000000"
+                />
+                <v-radio
+                  label="No"
+                  :value="100000001"
+                />
               </v-radio-group>
 
               <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
                 <!-- below will let user view, but not change closure dates from CCFRI application-->
                 <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
-                <v-row v-for="(obj, index) in previousClosureDates.dates" :key="index + 1000" color="black">
-                  <v-col color="#003366" class="col-md-1 col-12 mx-0">
-                    <v-icon :disabled="true" large color="blue darken-4"> mdi-close </v-icon>
+                <v-row
+                  v-for="(obj, index) in previousClosureDates.dates"
+                  :key="index + 1000"
+                  color="black"
+                >
+                  <v-col
+                    color="#003366"
+                    class="col-md-1 col-12 mx-0"
+                  >
+                    <v-icon
+                      :disabled="true"
+                      size="large"
+                      color="blue-darken-4"
+                    >
+                      mdi-close
+                    </v-icon>
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
                     <v-text-field
-                      :disabled="true"
-                      outlined
-                      :rules="rules"
                       v-model="obj.formattedStartDate"
+                      :disabled="true"
+                      variant="outlined"
+                      :rules="rules"
                       label="Start Date (YYYY-MM-DD)"
                       readonly
-                    >
-                    </v-text-field>
+                    />
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
                     <v-text-field
-                      :disabled="true"
-                      outlined
-                      required
                       v-model="obj.formattedEndDate"
+                      :disabled="true"
+                      variant="outlined"
+                      required
                       label="End Date (YYYY-MM-DD)"
                       readonly
-                    >
-                    </v-text-field>
+                    />
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
                     <v-text-field
-                      :disabled="true"
                       v-model="obj.closureReason"
+                      :disabled="true"
                       label="Closure Reason"
-                      outlined
+                      variant="outlined"
                       :rules="rules"
                       color="red"
-                    ></v-text-field>
+                    />
                   </v-col>
 
                   <v-col class="col-md-2 col-12 mt-n10">
                     <v-radio-group
-                      :disabled="true"
-                      row
                       v-model="obj.feesPaidWhileClosed"
+                      :disabled="true"
+                      inline
                       label="Did parents pay for this closure?"
                       :rules="dateRules"
                     >
-                      <v-radio label="Yes" :value="1"></v-radio>
-                      <v-radio label="No" :value="0"></v-radio>
+                      <v-radio
+                        label="Yes"
+                        :value="1"
+                      />
+                      <v-radio
+                        label="No"
+                        :value="0"
+                      />
                     </v-radio-group>
                   </v-col>
 
-                  <span class="white--text"> . </span>
+                  <span class="text-white"> . </span>
 
-                  <v-divider></v-divider>
+                  <v-divider />
                 </v-row>
                 <!-- end v for-->
-                <br /><br />
+                <br><br>
 
                 <!-- below will let user enter new dates-->
-                <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
-                  <v-col color="#003366" class="col-md-1 col-12 mx-0">
-                    <v-icon :disabled="isReadOnly" large color="blue darken-4" class="" @click="removeIndex(index)">
+                <v-row
+                  v-for="(obj, index) in CCFRIFacilityModel.dates"
+                  :key="index"
+                  color="#003366"
+                >
+                  <v-col
+                    color="#003366"
+                    class="col-md-1 col-12 mx-0"
+                  >
+                    <v-icon
+                      :disabled="isReadOnly"
+                      size="large"
+                      color="blue-darken-4"
+                      class=""
+                      @click="removeIndex(index)"
+                    >
                       mdi-close
                     </v-icon>
                   </v-col>
@@ -702,29 +833,27 @@
                       offset-y
                       min-width="auto"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ props }">
                         <v-text-field
-                          :disabled="isReadOnly"
-                          outlined
-                          :rules="rules"
                           v-model="obj.formattedStartDate"
+                          :disabled="isReadOnly"
+                          variant="outlined"
+                          :rules="rules"
                           label="Select Start Date (YYYY-MM-DD)"
                           readonly
-                          v-bind="attrs"
+
+                          v-bind="props"
                           @click="updateChosenDates()"
-                          v-on="on"
-                        >
-                        </v-text-field>
+                        />
                       </template>
                       <v-date-picker
+                        v-model="obj.formattedStartDate"
                         :min="fiscalStartAndEndDates.startDate"
                         :max="fiscalStartAndEndDates.endDate"
                         :allowed-dates="allowedDates"
                         clearable
-                        v-model="obj.formattedStartDate"
                         @input="obj.calendarMenu1 = false"
-                      >
-                      </v-date-picker>
+                      />
                     </v-menu>
                   </v-col>
 
@@ -737,67 +866,77 @@
                       offset-y
                       min-width="auto"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ props }">
                         <v-text-field
-                          :disabled="isReadOnly"
-                          outlined
-                          required
                           v-model="obj.formattedEndDate"
+                          :disabled="isReadOnly"
+                          variant="outlined"
+                          required
                           label="Select End Date (YYYY-MM-DD)"
                           readonly
                           :rules="rules"
+
+                          v-bind="props"
                           @click="updateChosenDates()"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
-                        </v-text-field>
+                        />
                       </template>
                       <v-date-picker
+                        v-model="obj.formattedEndDate"
                         clearable
                         :min="obj.formattedStartDate"
                         :max="fiscalStartAndEndDates.endDate"
-                        v-model="obj.formattedEndDate"
-                        @input="obj.calendarMenu2 = false"
                         :allowed-dates="allowedDates"
+                        @input="obj.calendarMenu2 = false"
                         @click:date="isDateLegal(obj)"
-                      >
-                      </v-date-picker>
+                      />
                     </v-menu>
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
                     <v-text-field
-                      :disabled="isReadOnly"
                       v-model="obj.closureReason"
+                      :disabled="isReadOnly"
                       label="Closure Reason"
-                      outlined
+                      variant="outlined"
                       clearable
                       :rules="rules"
                       color="red"
-                    ></v-text-field>
+                    />
                   </v-col>
 
                   <v-col class="col-md-2 col-12 mt-n10">
                     <v-radio-group
-                      :disabled="isReadOnly"
-                      row
                       v-model="obj.feesPaidWhileClosed"
+                      :disabled="isReadOnly"
+                      inline
                       label="Did parents pay for this closure?"
                       :rules="dateRules"
                     >
-                      <v-radio label="Yes" :value="1"></v-radio>
-                      <v-radio label="No" :value="0"></v-radio>
+                      <v-radio
+                        label="Yes"
+                        :value="1"
+                      />
+                      <v-radio
+                        label="No"
+                        :value="0"
+                      />
                     </v-radio-group>
                   </v-col>
 
-                  <span class="white--text"> . </span>
+                  <span class="text-white"> . </span>
                   <v-row v-if="obj.isIllegal">
-                    <v-card width="100%" class="mx-3 my-10">
+                    <v-card
+                      width="100%"
+                      class="mx-3 my-10"
+                    >
                       <v-row>
                         <v-col class="py-0">
                           <v-card-title class="py-1 noticeAlert">
                             <span style="float: left">
-                              <v-icon x-large class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                              <v-icon
+                                size="x-large"
+                                class="py-1 px-3 noticeAlertIcon"
+                              > mdi-alert-octagon </v-icon>
                             </span>
                             Invalid Dates
                           </v-card-title>
@@ -806,32 +945,38 @@
                       <v-card-text>
                         It appears that the closure start and end dates you've selected for this facility overlap with
                         dates you've previously selected.
-                        <br /><br />
+                        <br><br>
                         Closure Start Date: {{ obj.formattedStartDate }}
-                        <br />
-                        Closure End Date: {{ obj.formattedEndDate }} <br /><br />
+                        <br>
+                        Closure End Date: {{ obj.formattedEndDate }} <br><br>
 
                         Please review your existing facility closure dates to ensure consistency and avoid any potential
                         overlap of Facility closure dates.
-                        <br />
+                        <br>
                         Thank you for your attention
                       </v-card-text>
                     </v-card>
                   </v-row>
 
-                  <v-divider></v-divider>
+                  <v-divider />
                 </v-row>
                 <!-- end v for-->
-                <br /><br />
+                <br><br>
 
                 <v-container>
                   <v-row>
-                    <v-btn @click="addRow()" class="my-5" dark color="#003366" :disabled="isReadOnly"
-                      >ADD NEW CLOSURE</v-btn
+                    <v-btn
+                      class="my-5"
+                      dark
+                      color="#003366"
+                      :disabled="isReadOnly"
+                      @click="addRow()"
                     >
+                      ADD NEW CLOSURE
+                    </v-btn>
                   </v-row>
                 </v-container>
-                <br />
+                <br>
               </v-row>
             </div>
           </v-card-text>
@@ -848,11 +993,24 @@
           :ripple="false"
         >
           <v-card-text>
-            <p class="text-h6 text--primary">Are these fees listed above correct for this facility?</p>
-            <br />
-            <v-radio-group :rules="rules" row v-model="CCFRIFacilityModel.existingFeesCorrect" :disabled="isReadOnly">
-              <v-radio label="Yes" value="100000000"></v-radio>
-              <v-radio label="No" value="100000001"></v-radio>
+            <p class="text-h6 text--primary">
+              Are these fees listed above correct for this facility?
+            </p>
+            <br>
+            <v-radio-group
+              v-model="CCFRIFacilityModel.existingFeesCorrect"
+              :rules="rules"
+              inline
+              :disabled="isReadOnly"
+            >
+              <v-radio
+                label="Yes"
+                value="100000000"
+              />
+              <v-radio
+                label="No"
+                value="100000001"
+              />
             </v-radio-group>
           </v-card-text>
         </v-card>
@@ -864,28 +1022,53 @@
         </div>
       </div>
 
-      <v-dialog v-model="areFeesCorrect" persistent max-width="600px">
+      <v-dialog
+        v-model="areFeesCorrect"
+        persistent
+        max-width="600px"
+      >
         <v-card>
           <v-container class="pt-0">
             <v-row>
-              <v-col cols="10" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="white--text font-weight-bold"
-                  >Incorrect values shown for current fees</v-card-title
-                >
+              <v-col
+                cols="10"
+                class="py-0 pl-0"
+                style="background-color: #234075"
+              >
+                <v-card-title class="text-white font-weight-bold">
+                  Incorrect values shown for current fees
+                </v-card-title>
               </v-col>
-              <v-col cols="2" class="d-flex justify-end" style="background-color: #234075"> </v-col>
+              <v-col
+                cols="2"
+                class="d-flex justify-end"
+                style="background-color: #234075"
+              />
             </v-row>
             <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px"></v-col>
+              <v-col
+                cols="12"
+                style="background-color: #ffc72c; padding: 2px"
+              />
             </v-row>
             <v-row class="pa-6">
               <p>
                 If the parent fees shown do not match the current fees, call the Child Care Operating Fund Program at
-                <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>.
+                <a
+                  href="tel:+18883386622"
+                  class="text-decoration-underline"
+                >1 888 338-6622 (Option 2)</a>.
               </p>
             </v-row>
             <v-row class="d-flex justify-right">
-              <v-btn dark color="primary" :loading="processing" @click="cancel()">Close</v-btn>
+              <v-btn
+                dark
+                color="primary"
+                :loading="processing"
+                @click="cancel()"
+              >
+                Close
+              </v-btn>
             </v-row>
           </v-container>
         </v-card>
@@ -893,39 +1076,65 @@
     </v-form>
 
     <NavButton
-      :isNextDisplayed="true"
-      :isSaveDisplayed="true"
-      :isSaveDisabled="isReadOnly || loading || hasIllegalDates()"
-      :isNextDisabled="!isFormComplete() || hasIllegalDates()"
-      :isProcessing="processing"
+      :is-next-displayed="true"
+      :is-save-displayed="true"
+      :is-save-disabled="isReadOnly || loading || hasIllegalDates()"
+      :is-next-disabled="!isFormComplete() || hasIllegalDates()"
+      :is-processing="processing"
       @previous="previous"
       @next="next"
-      @validateForm="validateForm()"
+      @validate-form="validateForm()"
       @save="save(true)"
-    ></NavButton>
+    />
 
-    <v-dialog v-model="showRfiDialog" persistent max-width="700px">
+    <v-dialog
+      v-model="showRfiDialog"
+      persistent
+      max-width="700px"
+    >
       <v-card>
         <v-container class="pt-0">
           <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="white--text">Request for Information</v-card-title>
+            <v-col
+              cols="7"
+              class="py-0 pl-0"
+              style="background-color: #234075"
+            >
+              <v-card-title class="text-white">
+                Request for Information
+              </v-card-title>
             </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075"> </v-col>
+            <v-col
+              cols="5"
+              class="d-flex justify-end"
+              style="background-color: #234075"
+            />
           </v-row>
           <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px"></v-col>
+            <v-col
+              cols="12"
+              style="background-color: #ffc72c; padding: 2px"
+            />
           </v-row>
           <v-row>
-            <v-col cols="12" style="text-align: center">
+            <v-col
+              cols="12"
+              style="text-align: center"
+            >
               <p class="pt-4">
                 You have entered a parent fee above the {{ formattedProgramYear }} parent fee increase limit for the
-                following care categories:<br /><br />
-                <span v-for="item in rfi3percentCategories" :key="item">{{ item }}<br /></span>
+                following care categories:<br><br>
+                <span
+                  v-for="item in rfi3percentCategories"
+                  :key="item"
+                >{{ item }}<br></span>
               </p>
               <p>
                 Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in
-                the {{ formattedProgramYear }} <a :href="fundingUrl" target="_blank">Funding Guidelines</a>. You can
+                the {{ formattedProgramYear }} <a
+                  :href="fundingUrl"
+                  target="_blank"
+                >Funding Guidelines</a>. You can
                 continue to the Request for Information section or press back to update your fees.
               </p>
               <p class="pt-4">
@@ -933,8 +1142,21 @@
                 for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for
                 4 days or fewer per week.
               </p>
-              <v-btn dark color="secondary" class="mr-10" @click="closeDialog()">Back</v-btn>
-              <v-btn dark color="primary" @click="toRfi()">Continue</v-btn>
+              <v-btn
+                dark
+                color="secondary"
+                class="mr-10"
+                @click="closeDialog()"
+              >
+                Back
+              </v-btn>
+              <v-btn
+                dark
+                color="primary"
+                @click="toRfi()"
+              >
+                Continue
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -981,7 +1203,7 @@ function dateFunction(date1, date2) {
 let model = {};
 
 export default {
-  name: 'MTFI-Fees',
+  name: 'MTFIFees',
   components: { NavButton, FacilityHeader },
   mixins: [alertMixin, globalMixin],
   data() {
@@ -1084,7 +1306,7 @@ export default {
             programYearId: this.programYearId,
           });
           this.currentPcfCcfri.childCareTypes = this.currentPcfCcfri.childCareTypes.filter(
-            (el) => el.programYearId == this.programYearId
+            (el) => el.programYearId == this.programYearId,
           ); //filter so only current fiscal years appear
           this.currentPcfCcfri.ccfriApplicationId = this.$route.params.urlGuid;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
@@ -1097,7 +1319,7 @@ export default {
           for (const childCareType of this.currentPcfCcfri.childCareTypes) {
             let careCategory = this.CCFRIFacilityModel.childCareTypes.find(
               (el) =>
-                el.childCareCategoryId == childCareType.childCareCategoryId && el.programYearId == this.programYearId
+                el.childCareCategoryId == childCareType.childCareCategoryId && el.programYearId == this.programYearId,
             );
             //if this is the first time, the new CCFRI will not have any fees yet. Assign to 0 so they can be filled in and saved
             if (!careCategory.feeFrequency) {
@@ -1309,8 +1531,8 @@ export default {
             PATHS.CCFRI_RFI,
             this.$route.params.changeRecGuid,
             this.$route.params.urlGuid,
-            CHANGE_TYPES.MTFI
-          )
+            CHANGE_TYPES.MTFI,
+          ),
         );
       } catch (error) {
         console.log(error);
@@ -1338,8 +1560,8 @@ export default {
                 PATHS.CCFRI_RFI,
                 this.$route.params.changeRecGuid,
                 this.$route.params.urlGuid,
-                CHANGE_TYPES.MTFI
-              )
+                CHANGE_TYPES.MTFI,
+              ),
             );
           } else {
             this.showRfiDialog = true;

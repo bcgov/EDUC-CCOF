@@ -1,18 +1,27 @@
 <template>
-  <div @mouseover="pause = true" @mouseleave="pause = false">
+  <div
+    @mouseover="pause = true"
+    @mouseleave="pause = false"
+  >
     <v-snackbar
       id="mainSnackBar"
       v-model="showSnackBar"
       :timeout="timeout"
-      elevation="24"
-      top
+      class="elevation-24"
+      location="top"
       centered
       :color="colour"
       transition="slide-y-transition"
       class="snackbar"
-      >{{ alertNotificationText }}
-      <template v-slot:action="{ attrs }">
-        <v-btn text color="white" v-bind="attrs" @click="showSnackBar = false">
+    >
+      {{ alertNotificationText }}
+      <template #action="{ attrs }">
+        <v-btn
+          variant="text"
+          color="white"
+          v-bind="attrs"
+          @click="showSnackBar = false"
+        >
           {{ alertNotificationQueue.length > 0 ? 'Next (' + alertNotificationQueue.length + ')' : 'Close' }}
         </v-btn>
       </template>
@@ -68,18 +77,18 @@ export default {
         alertType = '';
       }
       switch (alertType.toLowerCase()) {
-        case ALERT_NOTIFICATION_TYPES.ERROR:
-          this.colour = ALERT_NOTIFICATION_TYPES.ERROR;
-          break;
-        case ALERT_NOTIFICATION_TYPES.WARN:
-          this.colour = ALERT_NOTIFICATION_TYPES.WARN;
-          break;
-        case ALERT_NOTIFICATION_TYPES.SUCCESS:
-          this.colour = ALERT_NOTIFICATION_TYPES.SUCCESS;
-          break;
-        case ALERT_NOTIFICATION_TYPES.INFO:
-        default:
-          this.colour = ALERT_NOTIFICATION_TYPES.INFO;
+      case ALERT_NOTIFICATION_TYPES.ERROR:
+        this.colour = ALERT_NOTIFICATION_TYPES.ERROR;
+        break;
+      case ALERT_NOTIFICATION_TYPES.WARN:
+        this.colour = ALERT_NOTIFICATION_TYPES.WARN;
+        break;
+      case ALERT_NOTIFICATION_TYPES.SUCCESS:
+        this.colour = ALERT_NOTIFICATION_TYPES.SUCCESS;
+        break;
+      case ALERT_NOTIFICATION_TYPES.INFO:
+      default:
+        this.colour = ALERT_NOTIFICATION_TYPES.INFO;
       }
     },
     setupSnackBar() {

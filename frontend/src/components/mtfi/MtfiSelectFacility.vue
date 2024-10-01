@@ -7,31 +7,56 @@
       <span class="text-h5 font-weight-bold">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
     <div class="row pt-4 justify-center">
-      <span class="text-h6 font-weight-bold blueText">{{ this.organizationName }}</span>
+      <span class="text-h6 font-weight-bold blueText">{{ organizationName }}</span>
     </div>
-    <v-row no-gutters class="justify-center align-center pt-12">
-      <v-tooltip top color="#003366">
-        <template v-slot:activator="{ on, attrs }">
-          <v-icon x-large v-bind="attrs" v-on="on" class="pr-5 noticeInfoIcon"> mdi-help-circle </v-icon>
+    <v-row
+      no-gutters
+      class="justify-center align-center pt-12"
+    >
+      <v-tooltip
+        location="top"
+        color="#003366"
+      >
+        <template #activator="{ props }">
+          <v-icon
+            size="x-large"
+            class="pr-5 noticeInfoIcon"
+            v-bind="props"
+          >
+            mdi-help-circle
+          </v-icon>
         </template>
         <span>You can request a Mid-term Fee Increase after the facility has been approved for the fiscal year.</span>
       </v-tooltip>
-      <div class="text-h5">Please select which facility you would like to update</div>
+      <div class="text-h5">
+        Please select which facility you would like to update
+      </div>
     </v-row>
-    <div v-if="loading" class="my-12">
-      <v-skeleton-loader max-height="475px" :loading="true" type="image, image, image"></v-skeleton-loader>
+    <div
+      v-if="loading"
+      class="my-12"
+    >
+      <v-skeleton-loader
+        max-height="475px"
+        :loading="true"
+        type="image, image, image"
+      />
     </div>
     <LargeButtonContainer v-else>
-      <v-form ref="isValidForm" value="false" v-model="isValidForm">
+      <v-form
+        ref="isValidForm"
+        v-model="isValidForm"
+        model-value="false"
+      >
         <v-card
-          elevation="4"
-          class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
-          min-width="500px"
-          :disabled="isFacilityDisabled(ccfriOptInStatus, ccfriStatus) || isReadOnly"
           v-for="(
             { facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus, ccfriStatus }, index
           ) in filteredUserProfileList"
           :key="index"
+          elevation="4"
+          class="py-2 px-5 mx-2 my-10 rounded-lg col-12"
+          min-width="500px"
+          :disabled="isFacilityDisabled(ccfriOptInStatus, ccfriStatus) || isReadOnly"
         >
           <v-card-text>
             <v-row>
@@ -46,13 +71,16 @@
                   <strong>Licence Number: {{ licenseNumber }}</strong>
                 </p>
               </v-col>
-              <v-col v-if="ccfriOptInStatus == 1" class="d-flex align-center justify-center">
+              <v-col
+                v-if="ccfriOptInStatus == 1"
+                class="d-flex align-center justify-center"
+              >
                 <v-checkbox
-                  style="transform: scale(1.5)"
                   v-model="checkbox[index]"
+                  style="transform: scale(1.5)"
                   :disabled="isReadOnly"
                   :loading="processing"
-                ></v-checkbox>
+                />
               </v-col>
             </v-row>
           </v-card-text>
@@ -61,16 +89,16 @@
     </LargeButtonContainer>
 
     <NavButton
-      :isNextDisplayed="true"
-      :isSaveDisplayed="true"
-      :isSaveDisabled="loading || isReadOnly"
-      :isNextDisabled="loading || isNextButtonDisabled"
-      :isProcessing="processing"
+      :is-next-displayed="true"
+      :is-save-displayed="true"
+      :is-save-disabled="loading || isReadOnly"
+      :is-next-disabled="loading || isNextButtonDisabled"
+      :is-processing="processing"
       @previous="previous"
       @next="next"
-      @validateForm="validateForm()"
+      @validate-form="validateForm()"
       @save="save(true)"
-    ></NavButton>
+    />
   </v-container>
 </template>
 
@@ -122,7 +150,7 @@ export default {
     // CCFRI-2584 - All facilties displayed in the PCF should be shown on the MTFI Select Facility page -> same logic as filterNavBar() in navBar.js
     filteredUserProfileList() {
       return this.userProfileList.filter(
-        (el) => el.facilityAccountNumber && (el.facilityStatus || this.isMtfiCreated(el))
+        (el) => el.facilityAccountNumber && (el.facilityStatus || this.isMtfiCreated(el)),
       );
     },
   },
@@ -162,8 +190,8 @@ export default {
           PATHS.MTFI_GROUP_FEE_VERIFICATION,
           this.$route.params.changeRecGuid,
           this.navBarList[0]?.ccfriApplicationId,
-          CHANGE_TYPES.MTFI
-        )
+          CHANGE_TYPES.MTFI,
+        ),
       );
     },
     validateForm() {
@@ -197,7 +225,7 @@ export default {
       let deleteMTFIFacilities = [];
       this.checkbox?.forEach((item, index) => {
         let mtfiFacility = this.mtfiFacilities?.find(
-          (item) => item.facilityId == this.filteredUserProfileList[index]?.facilityId
+          (item) => item.facilityId == this.filteredUserProfileList[index]?.facilityId,
         );
         if (!item && mtfiFacility && this.isMTFIExisted(mtfiFacility)) {
           this.removeChangeMap();

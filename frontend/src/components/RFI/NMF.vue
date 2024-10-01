@@ -1,28 +1,41 @@
 <template>
-  <v-form ref="isValidForm" v-model="isValidForm" :class="isLoading ? 'ccof-skeleton-loader' : ''">
+  <v-form
+    ref="isValidForm"
+    v-model="isValidForm"
+    :class="isLoading ? 'ccof-skeleton-loader' : ''"
+  >
     <v-container class="px-xl-12">
       <div class="text-center pt-4">
         <p class="text-h5">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </p>
-        <p class="text-h5 font-weight-bold">Parent Fees – Request for Information</p>
-        <br />
+        <p class="text-h5 font-weight-bold">
+          Parent Fees – Request for Information
+        </p>
+        <br>
         <FacilityHeader
-          :facilityAccountNumber="currentFacility?.facilityAccountNumber"
-          :facilityName="currentFacility.facilityName"
-          :licenseNumber="currentFacility?.licenseNumber"
-        ></FacilityHeader>
+          :facility-account-number="currentFacility?.facilityAccountNumber"
+          :facility-name="currentFacility.facilityName"
+          :license-number="currentFacility?.licenseNumber"
+        />
       </div>
 
       <div class="px-2 my-10">
         <p>
-          As outlined in the <a :href="fundingUrl" target="_blank">Funding Guidelines</a>
+          As outlined in the <a
+            :href="fundingUrl"
+            target="_blank"
+          >Funding Guidelines</a>
           , applications by New, New-to-CCFRI, and Modified Facilities will be assessed based on whether the facility’s
           parent fees are comparable to others in their region. To determine if this policy applies to your facility,
           please provide more information.
         </p>
       </div>
-      <v-card elevation="6" class="pa-0 my-10 rounded-lg col-12" min-height="230">
+      <v-card
+        elevation="6"
+        class="pa-0 my-10 rounded-lg col-12"
+        min-height="230"
+      >
         <v-card-text class="pa-0">
           <v-card class="pa-4 pa-md-4 ma-0 backG rounded-lg rounded-b-0 elevation-0">
             <span class="text-h5 px-2 px-md-8 font-weight-bold blueText">
@@ -34,9 +47,22 @@
               1. Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021 (e.g. New
               Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?
             </p>
-            <v-radio-group required row v-model="model.supportNeeds" label="" :disabled="isReadOnly" :rules="rules">
-              <v-radio label="Yes" value="Yes"></v-radio>
-              <v-radio label="No" value="No"></v-radio>
+            <v-radio-group
+              v-model="model.supportNeeds"
+              required
+              inline
+              label=""
+              :disabled="isReadOnly"
+              :rules="rules"
+            >
+              <v-radio
+                label="Yes"
+                value="Yes"
+              />
+              <v-radio
+                label="No"
+                value="No"
+              />
             </v-radio-group>
             <div v-if="model.supportNeeds === 'Yes'">
               <div class="text-h6 text--primary pt-2">
@@ -45,14 +71,14 @@
                   Project ID is, call Child Care Capital and Community Services at 1-888-338-6622 (Option 5).
                 </p>
                 <v-textarea
+                  v-model="model.supportNeedsComments"
                   required
-                  outlined
+                  variant="outlined"
                   name="input-7-4"
                   label="Type here"
-                  v-model="model.supportNeedsComments"
                   :disabled="isReadOnly"
                   :rules="rules"
-                ></v-textarea>
+                />
               </div>
             </div>
           </div>
@@ -63,27 +89,36 @@
               low-income families?
             </p>
             <v-radio-group
-              required
-              row
               v-model="model.lowIncomeFamilies"
+              required
+              inline
               label=""
               :disabled="isReadOnly"
               :rules="rules"
             >
-              <v-radio label="Yes" value="Yes"></v-radio>
-              <v-radio label="No" value="No"></v-radio>
+              <v-radio
+                label="Yes"
+                value="Yes"
+              />
+              <v-radio
+                label="No"
+                value="No"
+              />
             </v-radio-group>
-            <div class="text-h6 text--primary pt-2" v-if="model.lowIncomeFamilies === 'Yes'">
+            <div
+              v-if="model.lowIncomeFamilies === 'Yes'"
+              class="text-h6 text--primary pt-2"
+            >
               <p>Please describe the service(s) and associated expenses.</p>
               <v-textarea
+                v-model="model.lowIncomeFamiliesComments"
                 required
-                outlined
+                variant="outlined"
                 name="input-7-4"
                 label="Type here"
-                v-model="model.lowIncomeFamiliesComments"
                 :disabled="isReadOnly"
                 :rules="rules"
-              ></v-textarea>
+              />
             </div>
           </div>
           <div class="px-md-12 px-7 pb-10">
@@ -92,27 +127,36 @@
               who may not otherwise be able to access child care?
             </p>
             <v-radio-group
-              required
-              row
               v-model="model.remoteCommunities"
+              required
+              inline
               label=""
               :disabled="isReadOnly"
               :rules="rules"
             >
-              <v-radio label="Yes" value="Yes"></v-radio>
-              <v-radio label="No" value="No"></v-radio>
+              <v-radio
+                label="Yes"
+                value="Yes"
+              />
+              <v-radio
+                label="No"
+                value="No"
+              />
             </v-radio-group>
-            <div class="text-h6 text--primary pt-2" v-if="model.remoteCommunities === 'Yes'">
+            <div
+              v-if="model.remoteCommunities === 'Yes'"
+              class="text-h6 text--primary pt-2"
+            >
               <p>Please describe the service(s) and associated expenses.</p>
               <v-textarea
+                v-model="model.remoteCommunitiesComments"
                 required
-                outlined
+                variant="outlined"
                 name="input-7-4"
                 label="Type here"
-                v-model="model.remoteCommunitiesComments"
                 :disabled="isReadOnly"
                 :rules="rules"
-              ></v-textarea>
+              />
             </div>
           </div>
 
@@ -120,31 +164,34 @@
             <p class="text-h6 text--primary my-0">
               4. Please tell us anything else you’d like us to know about how your facility’s business case supports
               setting fees higher than the Affordability Benchmarks outlined in the 2023/24
-              <a :href="fundingUrl" target="_blank">Funding Guidelines</a>
+              <a
+                :href="fundingUrl"
+                target="_blank"
+              >Funding Guidelines</a>
             </p>
             <div class="pt-6">
               <v-textarea
-                outlined
+                v-model="model.otherComments"
+                variant="outlined"
                 name="input-7-4"
                 label="Type here"
-                v-model="model.otherComments"
                 :disabled="isReadOnly"
-              ></v-textarea>
+              />
             </div>
           </div>
         </v-card-text>
       </v-card>
       <NavButton
-        :isNextDisplayed="true"
-        :isSaveDisplayed="true"
-        :isSaveDisabled="isReadOnly"
-        :isNextDisabled="!isValidForm"
-        :isProcessing="isProcessing"
+        :is-next-displayed="true"
+        :is-save-displayed="true"
+        :is-save-disabled="isReadOnly"
+        :is-next-disabled="!isValidForm"
+        :is-processing="isProcessing"
         @previous="previous"
         @next="next"
-        @validateForm="validateForm()"
+        @validate-form="validateForm()"
         @save="save(true)"
-      ></NavButton>
+      />
     </v-container>
   </v-form>
 </template>
@@ -163,9 +210,13 @@ import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 let model = { x: [] };
 
 export default {
-  components: { NavButton, FacilityHeader },
   name: 'CcfriRequestMoreInfo',
+  components: { NavButton, FacilityHeader },
   mixins: [alertMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isReadOnly) await this.save(false);
+    next();
+  },
   data() {
     return {
       model,
@@ -174,10 +225,6 @@ export default {
       isProcessing: false,
       isValidForm: false,
     };
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    if (!this.isReadOnly) await this.save(false);
-    next();
   },
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),

@@ -1,16 +1,26 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form
+    ref="form"
+    v-model="isValidForm"
+  >
     <v-container>
       <v-row justify="space-around">
-        <v-card class="cc-top-level-card" width="1200">
+        <v-card
+          class="cc-top-level-card"
+          width="1200"
+        >
           <v-card-title class="justify-center">
-            <span class="text-h5"
-              >Child Care Operating Funding Program - {{ this.formattedProgramYear }} Program Confirmation Form</span
-            >
+            <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
           </v-card-title>
-          <h2 class="text-center">Supporting Document Upload</h2>
-          <v-row justify="center" class="text-h5 py-4" style="color: #003466">
-            {{ this.userInfo.organizationName }}
+          <h2 class="text-center">
+            Supporting Document Upload
+          </h2>
+          <v-row
+            justify="center"
+            class="text-h5 py-4"
+            style="color: #003466"
+          >
+            {{ userInfo.organizationName }}
           </v-row>
           <v-row class="px-6 text-body-1">
             Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE
@@ -29,17 +39,22 @@
             hide-default-footer
             :items-per-page="-1"
           >
-            <template v-slot:top>
+            <template #top>
               <v-col flex>
-                <v-toolbar flat color="white">
+                <v-toolbar
+                  flat
+                  color="white"
+                >
                   <div class="d-flex">
                     <v-btn
                       color="primary"
-                      class="ml-2 white--text v-skeleton-loader-small-button"
+                      class="ml-2 text-white v-skeleton-loader-small-button"
                       :disabled="isLocked"
                       @click="addNew"
                     >
-                      <v-icon dark>mdi-plus</v-icon>
+                      <v-icon dark>
+                        mdi-plus
+                      </v-icon>
                       Add
                     </v-btn>
                   </div>
@@ -47,7 +62,7 @@
               </v-col>
             </template>
 
-            <template v-slot:item.facilityName="{ item }">
+            <template #item.facilityName="{ item }">
               <v-col flex>
                 <div v-if="item?.annotationid">
                   <span> {{ item?.ccof_facility_name }} </span>
@@ -56,124 +71,216 @@
                   v-else
                   v-model="item.selectFacility"
                   :items="facilityNames"
-                  item-text="facilityName"
+                  item-title="facilityName"
                   placeholder="Select a facility"
                   return-object
                   class="drop-down-select"
                   required
                   :rules="selectRules"
-                ></v-select>
+                />
               </v-col>
             </template>
 
-            <template v-slot:item.document="{ item }">
+            <template #item.document="{ item }">
               <div v-if="item?.annotationid">
                 <span> {{ item?.filename }} </span>
               </div>
               <v-file-input
                 v-else
+                :id="String(item.id)"
                 color="#003366"
                 :rules="fileRules"
-                @click:clear="deleteItem(item)"
                 prepend-icon="mdi-file-upload"
                 :clearable="false"
                 class="pt-0"
-                :id="String(item.id)"
                 :accept="fileAccept"
                 :disabled="false"
                 placeholder="Select your file"
                 :error-messages="fileInputError"
+                required
+                @click:clear="deleteItem(item)"
                 @change="selectFile"
                 @click="uploadDocumentClicked($event)"
-                required
-              ></v-file-input>
+              />
             </template>
-            <template v-slot:item.description="{ item }">
+            <template #item.description="{ item }">
               <div v-if="item?.annotationid">
                 <span> {{ item?.description }} </span>
               </div>
               <v-text-field
                 v-else
+                v-model="item.description"
                 placeholder="Enter a description (Optional)"
-                dense
+                density="compact"
                 clearable
                 :rules="[rules.maxLength(255)]"
-                v-model="item.description"
                 @change="updateDescription(item)"
-              ></v-text-field>
+              />
             </template>
 
-            <template v-slot:item.actions="{ item }">
-              <v-icon small v-if="!isLocked" @click="deleteItem(item)"> mdi-delete </v-icon>
+            <template #item.actions="{ item }">
+              <v-icon
+                v-if="!isLocked"
+                size="small"
+                @click="deleteItem(item)"
+              >
+                mdi-delete
+              </v-icon>
             </template>
           </v-data-table>
-          <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
-            <v-skeleton-loader :loading="true" type="button"></v-skeleton-loader>
-            <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3"></v-skeleton-loader>
+          <v-card
+            v-if="isLoading"
+            class="pl-6 pr-6 pt-4"
+          >
+            <v-skeleton-loader
+              :loading="true"
+              type="button"
+            />
+            <v-skeleton-loader
+              max-height="375px"
+              :loading="true"
+              type="table-row-divider@3"
+            />
           </v-card>
         </v-card>
       </v-row>
       <v-row v-if="isChangeRequest">
-        <v-card class="mx-auto mb-4 rounded-lg cc-top-level-card" width="1200" v-if="isLoading">
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading"></v-skeleton-loader>
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar"></v-skeleton-loader>
+        <v-card
+          v-if="isLoading"
+          class="mx-auto mb-4 rounded-lg cc-top-level-card"
+          width="1200"
+        >
+          <v-skeleton-loader
+            v-if="isLoading"
+            :loading="isLoading"
+            type="card-heading"
+          />
+          <v-skeleton-loader
+            v-if="isLoading"
+            :loading="isLoading"
+            type="list-item-avatar"
+          />
+          <v-skeleton-loader
+            v-if="isLoading"
+            :loading="isLoading"
+            type="list-item-avatar"
+          />
         </v-card>
-        <v-card class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card" width="1200" v-else>
+        <v-card
+          v-else
+          class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card"
+          width="1200"
+        >
           <v-card-text class="pt-7 pa-0">
             <div class="px-md-12 px-7">
               <p class="text-h5 text--primary">
                 Would you like to report any other changes to your licence or service?
               </p>
-              <v-radio-group required v-model="otherChanges" :rules="rules.required" :disabled="isLocked">
-                <v-radio label="Yes" value="Yes" />
-                <v-radio label="No" value="No" @click="noReportChanges()" />
+              <v-radio-group
+                v-model="otherChanges"
+                required
+                :rules="rules.required"
+                :disabled="isLocked"
+              >
+                <v-radio
+                  label="Yes"
+                  value="Yes"
+                />
+                <v-radio
+                  label="No"
+                  value="No"
+                  @click="noReportChanges()"
+                />
               </v-radio-group>
             </div>
           </v-card-text>
         </v-card>
       </v-row>
-      <v-row v-if="otherChanges == 'Yes'" class="d-flex justify-center">
-        <GroupChangeDialogueContent style="max-width: 1200px" class="pb-4" />
+      <v-row
+        v-if="otherChanges == 'Yes'"
+        class="d-flex justify-center"
+      >
+        <GroupChangeDialogueContent
+          style="max-width: 1200px"
+          class="pb-4"
+        />
       </v-row>
       <NavButton
-        :isNextDisplayed="true"
-        :isSaveDisplayed="true"
-        :isSaveDisabled="!isSaveDisabled || isLocked"
-        :isNextDisabled="!isNextEnabled"
-        :isProcessing="isProcessing || isLoading"
+        :is-next-displayed="true"
+        :is-save-displayed="true"
+        :is-save-disabled="!isSaveDisabled || isLocked"
+        :is-next-disabled="!isNextEnabled"
+        :is-processing="isProcessing || isLoading"
         @previous="previous"
         @next="next"
-        @validateForm="validateForm()"
+        @validate-form="validateForm()"
         @save="save(true)"
-      ></NavButton>
+      />
     </v-container>
 
-    <v-dialog v-model="dialog" persistent max-width="525px">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+    >
       <v-card>
         <v-container class="pt-0">
           <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="white--text">Please confirm</v-card-title>
+            <v-col
+              cols="7"
+              class="py-0 pl-0"
+              style="background-color: #234075"
+            >
+              <v-card-title class="text-white">
+                Please confirm
+              </v-card-title>
             </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075"> </v-col>
+            <v-col
+              cols="5"
+              class="d-flex justify-end"
+              style="background-color: #234075"
+            />
           </v-row>
           <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px"></v-col>
+            <v-col
+              cols="12"
+              style="background-color: #ffc72c; padding: 2px"
+            />
           </v-row>
           <v-row>
-            <v-col cols="12" style="text-align: left">
+            <v-col
+              cols="12"
+              style="text-align: left"
+            >
               <p class="pt-4">
                 Are you sure you want to change your response? This will remove any documents uploaded to the Change
                 Notification Form section.
               </p>
-              <p class="pt-4">Select "Continue" to confirm.</p>
+              <p class="pt-4">
+                Select "Continue" to confirm.
+              </p>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" style="text-align: center">
-              <v-btn dark color="secondary" class="mr-10" @click="backSelected()">Back</v-btn>
-              <v-btn dark color="primary" @click="confirmNoSelected()">Continue</v-btn>
+            <v-col
+              cols="12"
+              style="text-align: center"
+            >
+              <v-btn
+                dark
+                color="secondary"
+                class="mr-10"
+                @click="backSelected()"
+              >
+                Back
+              </v-btn>
+              <v-btn
+                dark
+                color="primary"
+                @click="confirmNoSelected()"
+              >
+                Continue
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -200,8 +307,8 @@ import { PATHS, changeUrlGuid } from '../utils/constants.js';
 import GroupChangeDialogueContent from './requestChanges/GroupChangeDialogueContent.vue';
 
 export default {
-  mixins: [alertMixin],
   components: { NavButton, GroupChangeDialogueContent },
+  mixins: [alertMixin],
   props: {},
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
@@ -403,7 +510,7 @@ export default {
               changeNotificationId = results.changeActionId;
             }
             this.$router.push(
-              changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId)
+              changeUrlGuid(PATHS.CHANGE_NEW_FACILITY_OTHER, this.changeRequestId, changeNotificationId),
             );
           } else {
             let changeActionId = this.getChangeNotificationActionId;
@@ -513,7 +620,7 @@ export default {
       try {
         await this.getDocuments(this.applicationId);
         this.uploadedDocuments = this.uploadedDocuments.filter(
-          (document) => this.navBarList.findIndex((item) => item.facilityId == document.ccof_facility) > -1
+          (document) => this.navBarList.findIndex((item) => item.facilityId == document.ccof_facility) > -1,
         );
       } catch (e) {
         console.error(e);
