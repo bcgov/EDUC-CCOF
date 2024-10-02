@@ -32,9 +32,9 @@
           disable-pagination
           hide-default-footer
           :sort-by="['submissionDate']"
-          :sort-desc="[true]"
         >
-          <template #item.facilityNames="{ item }" />
+          <!-- FIXME: Trev: We're deconstructing the "item" into a blank template for who knows what reason
+               <template #item.facilityNames="{ item }" /> -->
           <template #item.PDF="{ item }">
             <router-link
               :to="getPDFPath(item.annotationId)"
@@ -68,7 +68,11 @@ import alertMixin from '../mixins/alertMixin.js';
 import NavButton from './util/NavButton.vue';
 
 export default {
+  components: { NavButton },
   mixins: [alertMixin],
+  beforeRouteLeave(_to, _from, next) {
+    next();
+  },
   data() {
     return {
       isValidForm: false,
@@ -113,6 +117,11 @@ export default {
       return this.headersGroup;
     },
   },
+  async mounted() {
+    this.processing = true;
+    await this.getPDFs(this.organizationId);
+    this.processing = false;
+  },
   methods: {
     ...mapActions('document', ['getPDFs']),
     previous() {
@@ -133,15 +142,6 @@ export default {
       this.$router.push(PATHS.ROOT.HOME);
     },
   },
-  async mounted() {
-    this.processing = true;
-    await this.getPDFs(this.organizationId);
-    this.processing = false;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    next();
-  },
-  components: { NavButton },
 };
 </script>
 <style scoped>

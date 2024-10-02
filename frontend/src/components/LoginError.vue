@@ -54,6 +54,8 @@
 <script>
 import { AuthRoutes } from '../utils/constants.js';
 
+import { useAuthStore } from '../store/auth.js';
+
 export default {
   name: 'LoginError',
 
@@ -63,10 +65,12 @@ export default {
     };
   },
   mounted() {
+    const authStore = useAuthStore();
     authStore.setJwtToken();
   },
   methods: {
     clearStorage() {
+      const authStore = useAuthStore();
       authStore.setJwtToken();
     },
   },

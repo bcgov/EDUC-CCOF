@@ -43,7 +43,7 @@
             <br>
 
             <v-btn
-              dark
+              theme="dark"
               class="blueButton mb-10"
               @click="goToChangeRequestHistory()"
             >
@@ -83,7 +83,7 @@
           <br>
           <br>
 
-          <!-- <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
+          <!-- <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
 
@@ -146,7 +146,6 @@
             <v-expansion-panels
               ref="v-expansion-panels"
               v-model="expand"
-              focusable
               multiple
               variant="accordion"
             >
@@ -602,6 +601,22 @@ export default {
     NavButton,
   },
   mixins: [alertMixin],
+  data() {
+    return {
+      model,
+      isValidForm: false,
+      isLoading: false,
+      isProcessing: false,
+      dialog: false,
+      landingPage: PATHS.ROOT.HOME,
+      summaryKey: 1,
+      summaryModelFacilities: [],
+      invalidSummaryForms: [],
+      payload: {},
+      printableVersion: false,
+      expand: [],
+    };
+  },
   computed: {
     ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
     ...mapState(useNavBarStore, [
@@ -723,21 +738,66 @@ export default {
       }
     },
   },
-  data() {
-    return {
-      model,
-      isValidForm: false,
-      isLoading: false,
-      isProcessing: false,
-      dialog: false,
-      landingPage: PATHS.ROOT.HOME,
-      summaryKey: 1,
-      summaryModelFacilities: [],
-      invalidSummaryForms: [],
-      payload: {},
-      printableVersion: false,
-      expand: [],
-    };
+  watch: {
+    isLoadingComplete: {
+      handler: function (val) {
+        if (val) {
+          setTimeout(() => {
+            console.log(this.$refs['v-expansion-panels']);
+            console.log(this.$refs['v-expansion-panels'].$children.length);
+            const keys = Object.keys(this.payload);
+            console.log('calling after 1 second');
+            //If this is a change request, we'll have 2 items in the payload.
+            if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
+              console.log('sending updates to server');
+              this.updateApplicationStatus(this.payload);
+              this.forceNavBarRefresh();
+            }
+          }, 1000);
+        }
+      },
+    },
+  },
+  async mounted() {
+    this.isProcessing = true;
+    if (this.$route.path.endsWith('printable')) {
+      this.printableVersion = true;
+    }
+    await this.getChangeRequestList();
+    await this.loadSummary(this.$route.params?.changeRecGuid);
+    await this.loadData();
+    const summaryDeclarationStore = useSummaryDeclarationStore();
+    this.model = summaryDeclarationStore.model ?? model;
+
+    // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
+    if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
+      // Establish the server time
+      const serverTime = new Date(this.userInfo.serverTime);
+
+      // Determine declaration b start date
+      let declarationBStart;
+      this.programYearList.list.find((item) => {
+        if (item.programYearId == this.programYearId) {
+          declarationBStart = new Date(item.declarationbStart);
+        }
+      });
+      // Determine:
+      //   - which user declaration text version (status a or b) will display
+      //   - which declaration status (a or b) will be saved on submit.
+      // saved as part of submission.
+      if (serverTime < declarationBStart) {
+        this.model.declarationAStatus = 1;
+        this.model.declarationBStatus = undefined;
+      } else {
+        this.model.declarationBStatus = 1;
+        this.model.declarationAStatus = undefined;
+      }
+    }
+    this.summaryKey = this.summaryKey + 1;
+    this.isProcessing = false;
+    if (this.printableVersion) {
+      this.expandAllPanels();
+    }
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, [
@@ -1005,68 +1065,6 @@ export default {
       }
       this.forceNavBarRefresh();
     },
-  },
-
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          setTimeout(() => {
-            console.log(this.$refs['v-expansion-panels']);
-            console.log(this.$refs['v-expansion-panels'].$children.length);
-            const keys = Object.keys(this.payload);
-            console.log('calling after 1 second');
-            //If this is a change request, we'll have 2 items in the payload.
-            if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
-              console.log('sending updates to server');
-              this.updateApplicationStatus(this.payload);
-              this.forceNavBarRefresh();
-            }
-          }, 1000);
-        }
-      },
-    },
-  },
-  async mounted() {
-    this.isProcessing = true;
-    if (this.$route.path.endsWith('printable')) {
-      this.printableVersion = true;
-    }
-    await this.getChangeRequestList();
-    await this.loadSummary(this.$route.params?.changeRecGuid);
-    await this.loadData();
-    const summaryDeclarationStore = useSummaryDeclarationStore();
-    this.model = summaryDeclarationStore.model ?? model;
-
-    // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
-    if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
-      // Establish the server time
-      const serverTime = new Date(this.userInfo.serverTime);
-
-      // Determine declaration b start date
-      let declarationBStart;
-      this.programYearList.list.find((item) => {
-        if (item.programYearId == this.programYearId) {
-          declarationBStart = new Date(item.declarationbStart);
-        }
-      });
-      // Determine:
-      //   - which user declaration text version (status a or b) will display
-      //   - which declaration status (a or b) will be saved on submit.
-      // saved as part of submission.
-      if (serverTime < declarationBStart) {
-        this.model.declarationAStatus = 1;
-        this.model.declarationBStatus = undefined;
-      } else {
-        this.model.declarationBStatus = 1;
-        this.model.declarationAStatus = undefined;
-      }
-    }
-    this.summaryKey = this.summaryKey + 1;
-    this.isProcessing = false;
-    if (this.printableVersion) {
-      this.expandAllPanels();
-    }
   },
 };
 </script>

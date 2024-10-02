@@ -44,8 +44,11 @@
 
 <script>
 import { AuthRoutes } from '../utils/constants.js';
+
+import { useAuthStore } from '../store/auth.js';
+
 export default {
-  name: 'Logout',
+  name: 'LogoutComponent',
 
   data() {
     return {
@@ -53,10 +56,12 @@ export default {
     };
   },
   mounted() {
+    const authStore = useAuthStore();
     authStore.setJwtToken();
   },
   methods: {
     clearStorage() {
+      const authStore = useAuthStore();
       authStore.setJwtToken();
       window.sessionStorage.clear();
     },

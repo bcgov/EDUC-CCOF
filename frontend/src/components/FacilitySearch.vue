@@ -74,7 +74,7 @@
                 max-width="650px"
                 @click:outside="dialog = false"
               >
-                <template #activator="{ on, attrs }">
+                <template #activator="{ props }">
                   <v-btn
                     style="
                       font-style: normal;
@@ -84,8 +84,8 @@
                       margin-left: 10px;
                     "
                     color="#0483AF"
-                    dark
-                    v-bind="attrs"
+                    theme="dark"
+                    v-bind="props"
                     @click="searchFacilities(searchCriteria)"
                   >
                     Search
@@ -218,7 +218,7 @@
                                     padding-right: 24px;
                                   "
                                   color="#0483AF"
-                                  dark
+                                  theme="dark"
                                 >
                                   Select
                                 </v-btn>
@@ -279,6 +279,7 @@ import axios from 'axios';
 export default {
   name: 'FacilitySearch',
   props: {},
+  emits: ["resetTypeOfCare", "selectedFacility"],
   data() {
     return {
       searchCriteria: '',

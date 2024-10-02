@@ -51,12 +51,15 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useAuthStore } from '../store/auth.js';
+import { useOrganizationStore } from '../store/ccof/organization.js';
+import { useEceweAppStore } from '../store/eceweApp.js';
 
 import { PATHS } from '../utils/constants.js';
 import rules from '../utils/rules.js';
 import alertMixin from '../mixins/alertMixin.js';
 
 export default {
+  name: "ImpersonateAccount",
   mixins: [alertMixin],
   data() {
     return {
@@ -72,6 +75,8 @@ export default {
   methods: {
     ...mapActions(useAuthStore, ['setIsUserInfoLoaded', 'setImpersonateId', 'getUserInfo']),
     async setBCeID() {
+      const organizationStore = useOrganizationStore();
+      const eceweAppStore = useEceweAppStore();
       this.processing = true;
       this.setIsUserInfoLoaded(false);
       organizationStore.setIsStarted(false);

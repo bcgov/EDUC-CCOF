@@ -52,7 +52,7 @@
                       :disabled="isLocked"
                       @click="addNew"
                     >
-                      <v-icon dark>
+                      <v-icon theme="dark">
                         mdi-plus
                       </v-icon>
                       Add
@@ -267,7 +267,7 @@
               style="text-align: center"
             >
               <v-btn
-                dark
+                theme="dark"
                 color="secondary"
                 class="mr-10"
                 @click="backSelected()"
@@ -275,7 +275,7 @@
                 Back
               </v-btn>
               <v-btn
-                dark
+                theme="dark"
                 color="primary"
                 @click="confirmNoSelected()"
               >
@@ -309,88 +309,13 @@ import GroupChangeDialogueContent from './requestChanges/GroupChangeDialogueCont
 export default {
   components: { NavButton, GroupChangeDialogueContent },
   mixins: [alertMixin],
-  props: {},
-  computed: {
-    ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
-    ...mapState(useNavBarStore, [
-      'canSubmit',
-      'navBarList',
-      'changeRequestId',
-      'nextPath',
-      'previousPath',
-      'isChangeRequest',
-    ]),
-    ...mapState(useApplicationStore, [
-      'isRenewal',
-      'unlockSupportingDocuments',
-      'applicationStatus',
-      'applicationId',
-      'formattedProgramYear',
-    ]),
-    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
-    ...mapState(useReportChangesStore, [
-      'loadedChangeRequest',
-      'isSupportingDocumentsUnlocked',
-      'changeRequestStatus',
-      'getChangeNotificationActionId',
-    ]),
-    isLocked() {
-      if (this.isChangeRequest) {
-        if (this.isSupportingDocumentsUnlocked || !this.changeRequestStatus) {
-          return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
-        return false;
-      }
-      if (this.unlockSupportingDocuments) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
-    },
-    isSaveDisabled() {
-      const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
-      return this.isValidForm && (newFilesAdded.length > 0 || this.uploadedDocuments?.deletedItems?.length > 0);
-    },
-    isNextEnabled() {
-      if (this.isChangeRequest) return this.isValidForm;
-      return this.isValidForm && this.canSubmit;
-    },
-  },
-
-  async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
-    this.fileRules = [
-      (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
-    ];
-    await this.mapFacilityData();
-    await this.createTable();
-    if (this.isChangeRequest) {
-      if (this.getChangeNotificationActionId) {
-        this.otherChanges = 'Yes';
-      } else {
-        this.otherChanges = 'No';
-      }
-    }
-  },
   async beforeRouteLeave(_to, _from, next) {
     if (!this.isLocked) {
       await this.save(false);
     }
     next();
   },
-
+  props: {},
   data() {
     return {
       dialog: false,
@@ -463,7 +388,79 @@ export default {
       selectRules: [(v) => !!v || 'This is required'],
     };
   },
+  computed: {
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
+    ...mapState(useNavBarStore, [
+      'canSubmit',
+      'navBarList',
+      'changeRequestId',
+      'nextPath',
+      'previousPath',
+      'isChangeRequest',
+    ]),
+    ...mapState(useApplicationStore, [
+      'isRenewal',
+      'unlockSupportingDocuments',
+      'applicationStatus',
+      'applicationId',
+      'formattedProgramYear',
+    ]),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+    ...mapState(useReportChangesStore, [
+      'loadedChangeRequest',
+      'isSupportingDocumentsUnlocked',
+      'changeRequestStatus',
+      'getChangeNotificationActionId',
+    ]),
+    isLocked() {
+      if (this.isChangeRequest) {
+        if (this.isSupportingDocumentsUnlocked || !this.changeRequestStatus) {
+          return false;
+        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
+          return true;
+        }
+        return false;
+      }
+      if (this.unlockSupportingDocuments) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
+    isSaveDisabled() {
+      const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
+      return this.isValidForm && (newFilesAdded.length > 0 || this.uploadedDocuments?.deletedItems?.length > 0);
+    },
+    isNextEnabled() {
+      if (this.isChangeRequest) return this.isValidForm;
+      return this.isValidForm && this.canSubmit;
+    },
+  },
+  async mounted() {
+    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
+    this.fileRules = [
+      (v) => !!v || 'This is required',
+      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
+      (value) =>
+        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
+      (value) =>
+        !value ||
+        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
+        `Accepted file types are ${this.fileFormats}.`,
+    ];
+    await this.mapFacilityData();
+    await this.createTable();
+    if (this.isChangeRequest) {
+      if (this.getChangeNotificationActionId) {
+        this.otherChanges = 'Yes';
+      } else {
+        this.otherChanges = 'No';
+      }
+    }
+  },
   methods: {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
     ...mapActions(useReportChangesStore, [

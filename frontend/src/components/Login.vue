@@ -101,7 +101,7 @@
                     id="login-button"
                     :href="authRoutes.LOGIN"
                     class="ma-5"
-                    dark
+                    theme="dark"
                     color="#003366"
                     @click="clearStorage"
                   >
@@ -135,7 +135,7 @@
                   <v-btn
                     href="https://www.bceid.ca/register/business/getting_started/getting_started.aspx"
                     class="ma-5"
-                    dark
+                    theme="dark"
                     color="#003366"
                   >
                     Register for a BCeID<v-icon>mdi-login</v-icon>
@@ -183,7 +183,7 @@
                   <v-btn
                     id="login-button"
                     class="ma-5"
-                    dark
+                    theme="dark"
                     color="#003366"
                     @click="toEstimator"
                   >
@@ -213,7 +213,7 @@ import { AuthRoutes, PATHS, ApiRoutes } from '../utils/constants.js';
 import ApiService from '../common/apiService.js';
 
 export default {
-  name: 'Login',
+  name: 'LoginComponent',
   components: {},
   data() {
     return {
@@ -222,11 +222,11 @@ export default {
       systemMessages: [],
     };
   },
-  async created() {
-    this.loadSystemMessages();
-  },
   computed: {
     ...mapState(useAuthStore, ['isAuthenticated']),
+  },
+  async created() {
+    this.loadSystemMessages();
   },
   methods: {
     clearStorage() {

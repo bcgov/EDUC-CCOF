@@ -7,12 +7,11 @@
       id="mainSnackBar"
       v-model="showSnackBar"
       :timeout="timeout"
-      class="elevation-24"
+      class="elevation-24 snackbar"
       location="top"
       centered
       :color="colour"
       transition="slide-y-transition"
-      class="snackbar"
     >
       {{ alertNotificationText }}
       <template #action="{ attrs }">

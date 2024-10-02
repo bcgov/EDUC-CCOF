@@ -1,6 +1,5 @@
 <template>
   <v-system-bar
-    app
     absolute
     color="rgb(0, 51, 102)"
     height="66rem"
@@ -44,7 +43,7 @@
             id="mail_box_button"
             color="#003366"
             rounded
-            dark
+            theme="dark"
             class="mr-5 elevation-0"
             @click="goToMessagePage()"
           >
@@ -52,7 +51,6 @@
               color="red"
               :content="unreadMessageCount"
               location="bottom right"
-              overlap
               offset-x="20"
               offset-y="20"
             >
@@ -68,14 +66,13 @@
 
           <v-menu
             name="user_options"
-            offset-y
           >
             <template #activator="{ props }">
               <v-chip
                 tabindex="0"
                 pill
                 color="#003366"
-                dark
+                theme="dark"
                 v-bind="props"
               >
                 <v-avatar
@@ -134,6 +131,7 @@ import { useMessageStore } from '../store/message.js';
 import { AuthRoutes, ApiRoutes, PATHS } from '../utils/constants';
 
 export default {
+  name: "HeaderComponent",
   data() {
     return {
       appTitle: import.meta.env.VUE_APP_TITLE,

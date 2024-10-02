@@ -37,13 +37,13 @@ export default {
       errorMessage: this.$route.query.message,
     };
   },
-  methods: {
-    ...mapActions('auth', ['loginErrorRedirect']),
-  },
   async created() {
     if (this.errorMessage === 'Unable_to_authenticate') {
       this.loginErrorRedirect();
     }
+  },
+  methods: {
+    ...mapActions('auth', ['loginErrorRedirect']),
   },
 };
 </script>

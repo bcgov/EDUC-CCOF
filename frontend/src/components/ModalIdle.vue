@@ -83,12 +83,22 @@ export default {
       dialog: false,
     };
   },
-  async mounted() {
-    await this.checkAndLogoutUserOnSessionExpiry();
-  },
   computed: {
     ...mapState(useAuthStore, ['isAuthenticated', 'jwtToken']),
     ...mapState(useAppStore, ['logoutCounter']),
+  },
+  watch: {
+    logoutCounter: {
+      handler(value) {
+        if (value <= 0) {
+          window.location = this.routes.SESSION_EXPIRED;
+        }
+      },
+      immediate: true, // This ensures the watcher is triggered upon creation
+    },
+  },
+  async mounted() {
+    await this.checkAndLogoutUserOnSessionExpiry();
   },
   methods: {
     ...mapActions(useAuthStore, ['getJwtToken']),
@@ -135,16 +145,6 @@ export default {
     showDialog() {
       this.startCounter();
       this.dialog = true;
-    },
-  },
-  watch: {
-    logoutCounter: {
-      handler(value) {
-        if (value <= 0) {
-          window.location = this.routes.SESSION_EXPIRED;
-        }
-      },
-      immediate: true, // This ensures the watcher is triggered upon creation
     },
   },
 };

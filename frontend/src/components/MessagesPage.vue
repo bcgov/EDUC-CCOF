@@ -36,7 +36,7 @@
               fluid
               :height="fitScreenHeight()"
               fixed-header
-              :item-class="getMessageStyle"
+              :row-props="getMessageStyle"
               disable-pagination
               hide-default-footer
               item-key="messageId"
@@ -68,25 +68,21 @@
             :height="fitScreenHeight()"
           >
             <v-card-title class="pa-0">
-              <template>
-                <v-col :cols="8">
-                  {{ message.sender }}
-                </v-col>
-                <v-col
-                  align="right"
-                  :cols="4"
-                >
-                  {{ message.dateReceived }}
-                </v-col>
-              </template>
-              <template>
-                <v-col>
-                  <strong>{{ message.subject }}</strong>
-                </v-col>
-              </template>
+              <v-col :cols="8">
+                {{ message.sender }}
+              </v-col>
+              <v-col
+                align="right"
+                :cols="4"
+              >
+                {{ message.dateReceived }}
+              </v-col>
+              <v-col>
+                <strong>{{ message.subject }}</strong>
+              </v-col>
             </v-card-title>
             <v-divider />
-            <v-card-text v-html="message.messageContent" />
+            <v-card-text>{{ message.messageContent }}</v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -119,7 +115,7 @@ import { PATHS } from '../utils/constants.js';
 
 export default {
   name: 'MessagesPage',
-
+  components: { Spinner },
   data() {
     return {
       PATHS: PATHS,
@@ -143,11 +139,6 @@ export default {
       },
     };
   },
-
-  created() {
-    this.getAllMessagesVuex();
-  },
-
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useMessageStore, ['allMessages']),
@@ -157,6 +148,9 @@ export default {
       ];
       return size ? { [size]: true } : {};
     },
+  },
+  created() {
+    this.getAllMessagesVuex();
   },
   methods: {
     ...mapActions(useMessageStore, ['updateMessage', 'getAllMessages']),
@@ -169,16 +163,13 @@ export default {
       row.select(true);
       this.updateMessage(item.messageId);
     },
-
     getMessageStyle(message) {
       if (message.isRead) return 'read';
       else return 'unread';
     },
-
     goToHomePage() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-
     async getAllMessagesVuex() {
       try {
         if (!this.allMessages) {
@@ -189,7 +180,6 @@ export default {
         console.info(error);
       }
     },
-
     fitScreenHeight() {
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -207,8 +197,6 @@ export default {
       }
     },
   },
-
-  components: { Spinner },
 };
 </script>
 

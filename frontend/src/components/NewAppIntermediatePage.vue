@@ -24,7 +24,7 @@
       <v-row class="justify-center">
         <v-col class="d-flex justify-center">
           <v-btn
-            dark
+            theme="dark"
             class="blueButton"
             @click="backToLanding()"
           >
@@ -33,7 +33,7 @@
         </v-col>
         <v-col class="d-flex justify-center">
           <v-btn
-            dark
+            theme="dark"
             class="blueButton"
             @click="newApplication()"
           >

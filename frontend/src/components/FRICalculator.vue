@@ -26,28 +26,26 @@
       <v-row justify="center">
         <v-col cols="12">
           <v-card elevation="0">
-            <template>
-              <v-alert
-                variant="outlined"
-                prominent
-                color="#ABADAE"
+            <v-alert
+              variant="outlined"
+              prominent
+              color="#ABADAE"
+            >
+              <span style="float: left">
+                <v-icon
+                  size="x-large"
+                  color="rgb(0 51 102)"
+                  class="py-1 px-3"
+                > mdi-information </v-icon>
+              </span>
+              <span
+                class="pa-1"
+                style="font-family: BCSans"
               >
-                <span style="float: left">
-                  <v-icon
-                    size="x-large"
-                    color="rgb(0 51 102)"
-                    class="py-1 px-3"
-                  > mdi-information </v-icon>
-                </span>
-                <span
-                  class="pa-1"
-                  style="font-family: BCSans"
-                >
-                  The estimation provided in this service is not a guarantee of payments. The estimation does not take
-                  into account all of your circumstances and should be used as a guide only.
-                </span>
-              </v-alert>
-            </template>
+                The estimation provided in this service is not a guarantee of payments. The estimation does not take
+                into account all of your circumstances and should be used as a guide only.
+              </span>
+            </v-alert>
           </v-card>
         </v-col>
       </v-row>
@@ -141,7 +139,7 @@
                   location="top"
                   color="#003466"
                 >
-                  <template #activator="{ props, attrs }">
+                  <template #activator="{ props }">
                     <v-card
                       class="bg-blue-darken-3"
                       style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center"
@@ -210,7 +208,7 @@
                     location="top"
                     color="#003466"
                   >
-                    <template #activator="{ props, attrs }">
+                    <template #activator="{ props }">
                       <v-card
                         class="bg-blue-darken-3"
                         style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center"
@@ -263,7 +261,7 @@
                     location="top"
                     color="#003466"
                   >
-                    <template #activator="{ props, attrs }">
+                    <template #activator="{ props }">
                       <v-card
                         class="bg-blue-darken-3"
                         style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center"
@@ -316,24 +314,20 @@
                         <v-toolbar-title>Monday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[0]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[0]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.title" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
 
@@ -346,24 +340,20 @@
                         <v-spacer />
                       </v-toolbar>
 
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[1]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[1]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.type" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
                     <v-spacer />
@@ -375,24 +365,20 @@
                         <v-spacer />
                       </v-toolbar>
 
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[2]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[2]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.type" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
                     <v-spacer />
@@ -403,24 +389,20 @@
                         <v-toolbar-title>Thursday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[3]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[3]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.type" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
                     <v-spacer />
@@ -431,24 +413,20 @@
                         <v-toolbar-title>Friday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[4]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[4]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.type" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
                     <v-spacer />
@@ -459,24 +437,20 @@
                         <v-toolbar-title>Saturday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[5]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[5]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.type" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
                     <v-spacer />
@@ -487,24 +461,20 @@
                         <v-toolbar-title>Sunday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list>
-                        <v-list-item-group
-                          v-model="child.selectedCareType[6]"
-                          active-class="blue--text"
+                      <v-list
+                        v-model:selected="child.selectedCareType[6]"
+                        active-class="blue--text"
+                      >
+                        <template
+                          v-for="(item, index) in careTypes"
+                          :key="item.type"
                         >
-                          <template v-for="(item, index) in careTypes">
-                            <v-list-item :key="item.type">
-                              <template #default="{ active }">
-                                <v-list-item-title v-text="item.type" />
-                              </template>
-                            </v-list-item>
-
-                            <v-divider
-                              v-if="index < careTypes.length - 1"
-                              :key="index"
-                            />
-                          </template>
-                        </v-list-item-group>
+                          <v-list-item :title="item.type" />
+                          <v-divider
+                            v-if="index < careTypes.length - 1"
+                            :key="index"
+                          />
+                        </template>
                       </v-list>
                     </v-card>
                     <v-spacer />
@@ -532,7 +502,7 @@
                     location="top"
                     color="#003466"
                   >
-                    <template #activator="{ props, attrs }">
+                    <template #activator="{ props }">
                       <v-card
                         class="bg-blue-darken-3"
                         style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center"
@@ -576,9 +546,7 @@
                   <div
                     style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px"
                   >
-                    <template>
-                      <span class="text-red"><strong> *</strong></span>
-                    </template>
+                    <span class="text-red"><strong> *</strong></span>
                     Approved full-time parent fee before fee reduction applied
                   </div>
                 </v-col>
@@ -590,7 +558,7 @@
                     location="top"
                     color="#003466"
                   >
-                    <template #activator="{ props, attrs }">
+                    <template #activator="{ props }">
                       <v-card
                         class="bg-blue-darken-3"
                         style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center"
@@ -664,7 +632,7 @@
                     location="top"
                     color="#003466"
                   >
-                    <template #activator="{ props, attrs }">
+                    <template #activator="{ props }">
                       <v-card
                         class="bg-blue-darken-3"
                         style="border-radius: 50%; height: 30px; width: 30px; min-width: 30px; text-align: center"
@@ -1186,7 +1154,7 @@ export default {
             if (this.children[i].partTimeFee) {
               monthlyParentFee = this.getFullTimeMonthlyParentFee(
                 this.children[i].partTimeFee,
-                this.children[i].parentFeeFrequency,
+                this.children[i].parentFeeFrequency
               );
             }
             actualParentFeePerChild = monthlyParentFee - reductionAmountPerChild;
@@ -1219,12 +1187,12 @@ export default {
             let rateReductionFloor = this.getReductionFloor(
               rateTableInfo.rateFloor,
               fullTimeNumberOfDays,
-              partTimeNumberOfDays,
+              partTimeNumberOfDays
             );
             let monthlyParentFee = this.getPartTimeMonthlyParentFee(
               this.children[i].partTimeFee,
               partTimeNumberOfDays + fullTimeNumberOfDays,
-              this.children[i].parentFeeFrequency,
+              this.children[i].parentFeeFrequency
             );
 
             //Make sure it's at least the Rate Floor amount
@@ -1255,7 +1223,7 @@ export default {
               // console.log('(monthlyParentFee - totalRateReduction) ' + (monthlyParentFee - totalRateReduction));
               let changeRateBy = Math.min(
                 totalRateReduction - rateReductionFloor,
-                partTimeFeeFloor - (monthlyParentFee - totalRateReduction),
+                partTimeFeeFloor - (monthlyParentFee - totalRateReduction)
               );
               // console.log('change rate by: ' + changeRateBy);
               reductionAmountPerChild = totalRateReduction - changeRateBy;

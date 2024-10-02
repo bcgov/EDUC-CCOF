@@ -60,7 +60,7 @@
                     id="login-button"
                     :href="authRoutes.LOGIN_IDIR"
                     class="ma-5"
-                    dark
+                    theme="dark"
                     color="#003366"
                     @click="clearStorage"
                   >
@@ -126,7 +126,7 @@
                   <v-btn
                     id="login-button"
                     class="ma-5"
-                    dark
+                    theme="dark"
                     color="#003366"
                     @click="toEstimator"
                   >
@@ -155,7 +155,7 @@ import { useAuthStore } from '../store/auth.js';
 import { AuthRoutes, PATHS } from '../utils/constants.js';
 
 export default {
-  name: 'Login',
+  name: 'MinistryLogin',
   components: {},
   data() {
     return {
@@ -168,6 +168,7 @@ export default {
   },
   methods: {
     clearStorage() {
+      const authStore = useAuthStore();
       authStore.setJwtToken();
     },
     toEstimator() {

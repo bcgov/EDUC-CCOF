@@ -80,8 +80,9 @@
                     :cols="12"
                     lg="11"
                     class="px-2 py-1"
-                    v-html="item.body"
-                  />
+                  >
+                    {{ item.body }}
+                  </v-col>
                 </v-row>
               </v-card>
             </v-container>
@@ -100,7 +101,7 @@
         <template #button>
           <div v-if="ccofStatus === CCOF_STATUS_NEW">
             <v-btn
-              dark
+              theme="dark"
               class="blueButton"
               @click="newApplicationIntermediatePage()"
             >
@@ -116,7 +117,7 @@
               Status: Incomplete
             </p>
             <v-btn
-              dark
+              theme="dark"
               class="blueButton"
               @click="continueApplication()"
             >
@@ -127,7 +128,7 @@
             </p>
             <v-btn
               v-if="isCancelPcfButtonEnabled"
-              dark
+              theme="dark"
               class="redButton"
               @click="openDialog()"
             >
@@ -142,7 +143,7 @@
                 :key="item.applicationId"
               >
                 <v-btn
-                  dark
+                  theme="dark"
                   class="blueButton my-2"
                   @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
                 >
@@ -165,7 +166,7 @@
               </p>
               <v-btn
                 v-if="applicationType === 'NEW'"
-                dark
+                theme="dark"
                 class="blueButton mt-4"
                 @click="viewApplication('NEW')"
               >
@@ -177,7 +178,7 @@
                     applicationStatus === 'SUBMITTED' &&
                     ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
                 "
-                dark
+                theme="dark"
                 class="blueButton"
                 @click="viewApplication('RENEW')"
               >
@@ -241,7 +242,7 @@
                 </p>
                 <v-btn
                   :loading="!isLoadingComplete"
-                  dark
+                  theme="dark"
                   color="secondary"
                   class="mr-10"
                   @click="closeDialog()"
@@ -250,7 +251,7 @@
                 </v-btn>
                 <v-btn
                   :loading="!isLoadingComplete"
-                  dark
+                  theme="dark"
                   color="primary"
                   @click="deletePcf()"
                 >
@@ -303,7 +304,7 @@
             <v-btn
               v-if="ccofRenewStatus === RENEW_STATUS_NEW"
               :color="buttonColor(!isRenewEnabled)"
-              dark
+              theme="dark"
               @click="renewApplication()"
             >
               Renew my Funding Agreement
@@ -311,7 +312,7 @@
             <v-btn
               v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE"
               :color="buttonColor(!isRenewEnabled)"
-              dark
+              theme="dark"
               @click="continueRenewal()"
             >
               Continue Renewal
@@ -319,7 +320,7 @@
             <v-btn
               v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED"
               :color="buttonColor(false)"
-              dark
+              theme="dark"
               @click="actionRequiredOrganizationRoute()"
             >
               Update your PCF
@@ -357,7 +358,7 @@
             >
               <v-btn
                 :color="buttonColor(false)"
-                dark
+                theme="dark"
                 @click="goToChangeRequestHistory()"
               >
                 Update change request
@@ -366,7 +367,7 @@
             <v-col class="col-12">
               <v-btn
                 :color="buttonColor(!isReportChangeButtonEnabled)"
-                dark
+                theme="dark"
                 @click="goToReportChange()"
               >
                 Report a change
@@ -393,7 +394,7 @@
           <v-btn
             href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
             :color="buttonColor(!isCCOFApproved)"
-            dark
+            theme="dark"
           >
             Submit a report
           </v-btn>
@@ -501,7 +502,7 @@
             >
               <v-btn
                 class="blueButton"
-                dark
+                theme="dark"
                 width="80%"
                 align="center"
                 @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
@@ -538,6 +539,7 @@ import { checkApplicationUnlocked } from '../utils/common.js';
 
 export default {
   name: 'LandingPage',
+  components: { SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
@@ -563,26 +565,6 @@ export default {
       isLoadingComplete: false,
       selectedProgramYear: undefined,
     };
-  },
-
-  async created() {
-    this.CCOF_STATUS_NEW = 'NEW';
-    this.CCOF_STATUS_COMPLETE = 'COMPLETE';
-    this.CCOF_STATUS_CONTINUE = 'CONTINUE';
-    this.CCOF_STATUS_APPROVED = 'APPROVED';
-    this.CCOF_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
-
-    this.RENEW_STATUS_NEW = 'NEW';
-    this.RENEW_STATUS_COMPLETE = 'COMPLETE';
-    this.RENEW_STATUS_CONTINUE = 'CONTINUE';
-    this.RENEW_STATUS_APPROVED = 'APPROVED';
-    this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
-
-    this.isLoadingComplete = false;
-    this.getAllMessagesVuex();
-    this.refreshNavBarList();
-    await this.getChangeRequestList();
-    this.isLoadingComplete = true;
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
@@ -809,6 +791,25 @@ export default {
         this.applicationStatus === 'DRAFT' && this.applicationType === 'NEW' && this.ccofApplicationStatus === 'NEW'
       );
     },
+  },
+  async created() {
+    this.CCOF_STATUS_NEW = 'NEW';
+    this.CCOF_STATUS_COMPLETE = 'COMPLETE';
+    this.CCOF_STATUS_CONTINUE = 'CONTINUE';
+    this.CCOF_STATUS_APPROVED = 'APPROVED';
+    this.CCOF_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
+
+    this.RENEW_STATUS_NEW = 'NEW';
+    this.RENEW_STATUS_COMPLETE = 'COMPLETE';
+    this.RENEW_STATUS_CONTINUE = 'CONTINUE';
+    this.RENEW_STATUS_APPROVED = 'APPROVED';
+    this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
+
+    this.isLoadingComplete = false;
+    this.getAllMessagesVuex();
+    this.refreshNavBarList();
+    await this.getChangeRequestList();
+    this.isLoadingComplete = true;
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsRenewal']),
@@ -1052,7 +1053,6 @@ export default {
       }
     },
   },
-  components: { SmallCard, MessagesToolbar, FiscalYearSlider },
 };
 </script>
 
