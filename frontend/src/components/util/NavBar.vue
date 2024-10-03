@@ -11,20 +11,14 @@
       :temporary="!$vuetify.breakpoint.mdAndUp"
     >
       <v-list>
-        <div
-          v-for="item in items"
-          :key="item.title"
-        >
+        <div v-for="item in items" :key="item.title">
           <v-list-item
             v-if="!item.items"
             :id="stripWhitespace(item.title + `MenuBtn`)"
             :key="item.navBarId"
             class="menuRow"
           >
-            <v-list-item-icon
-              v-if="item.icon"
-              class="my-3 ml-0 mr-2"
-            >
+            <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
             <router-link
@@ -34,16 +28,10 @@
               class="router"
             >
               <v-list-item-content class="py-0">
-                <v-list-item-title
-                  v-if="item.isActive"
-                  class="menuItem text-wrap"
-                >
+                <v-list-item-title v-if="item.isActive" class="menuItem text-wrap">
                   <strong>{{ item.title }}</strong>
                 </v-list-item-title>
-                <v-list-item-title
-                  v-else
-                  class="menuItem text-wrap"
-                >
+                <v-list-item-title v-else class="menuItem text-wrap">
                   {{ item.title }}
                 </v-list-item-title>
               </v-list-item-content>
@@ -60,17 +48,11 @@
             @click="setActive(item)"
           >
             <template #activator>
-              <v-list-item-icon
-                v-if="item.icon"
-                class="my-3 ml-0 mr-2"
-              >
+              <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content class="py-0">
-                <v-list-item-title
-                  class="menuItem text-wrap"
-                  v-text="item.title"
-                />
+                <v-list-item-title class="menuItem text-wrap">{{ item.title }}</v-list-item-title>
               </v-list-item-content>
             </template>
 
@@ -80,10 +62,7 @@
               :key="subItem.navBarId"
               class="subMenuRow pl-9"
             >
-              <v-list-item-icon
-                v-if="item.icon"
-                class="my-3 ml-0 mr-2"
-              >
+              <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
                 <v-icon>{{ subItem.icon }}</v-icon>
               </v-list-item-icon>
               <router-link
@@ -93,24 +72,17 @@
                 class="router"
               >
                 <v-list-item-content class="py-0">
-                  <v-list-item-title
-                    v-if="subItem.isActive"
-                    class="menuItem text-wrap"
-                  >
+                  <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap">
                     <strong>{{ subItem.title }}</strong>
                   </v-list-item-title>
                   <v-list-item-title
                     v-else
                     :class="subItem.isAccessible ? 'menuItem text-wrap' : 'menuItem text-wrap blue-grey--text'"
-                    v-text="subItem.title"
-                  />
-                  <v-list-item-subtitle
-                    v-if="subItem.subTitle"
-                    class="text-left"
                   >
-                    {{
-                      subItem.subTitle
-                    }}
+                    {{ subItem.title }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle v-if="subItem.subTitle" class="text-left">
+                    {{ subItem.subTitle }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </router-link>
@@ -131,19 +103,10 @@
       :class="{ 'pl-16': $vuetify.breakpoint.mdAndUp }"
       clipped-left
     >
-      <v-app-bar-nav-icon
-        id="menuBtn"
-        @click="drawer = true"
-      >
-        <v-icon v-if="!drawer">
-          $menu
-        </v-icon>
-        <v-icon v-else>
-          $close
-        </v-icon>
-        <p class="ma-0 pl-4 pr-2 hidden-sm-and-down">
-          Menu
-        </p>
+      <v-app-bar-nav-icon id="menuBtn" @click="drawer = true">
+        <v-icon v-if="!drawer"> $menu </v-icon>
+        <v-icon v-else> $close </v-icon>
+        <p class="ma-0 pl-4 pr-2 hidden-sm-and-down">Menu</p>
       </v-app-bar-nav-icon>
       <v-toolbar-title
         id="navTitle"
@@ -234,12 +197,12 @@ export default {
 
     navWidth() {
       switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-        return '50%';
-      case 'sm':
-        return '50%';
-      default:
-        return '15%';
+        case 'xs':
+          return '50%';
+        case 'sm':
+          return '50%';
+        default:
+          return '15%';
       }
     },
     ccofConfirmationEnabled() {

@@ -1,47 +1,39 @@
 <template>
-  <v-form
-    ref="isValidForm"
-    v-model="isValidForm"
-  >
+  <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
       <div class="row pt-4 justify-center">
-        <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
+        <span class="text-h5"
+          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
+        >
       </div>
-      <br>
+      <br />
       <div class="row pt-4 justify-center">
         <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
       </div>
-      <br><br>
+      <br /><br />
       <FacilityHeader
         :facility-account-number="currentFacility?.facilityAccountNumber"
         :facility-name="currentFacility.facilityName"
         :license-number="currentFacility?.licenseNumber"
       />
-      <br><br>
+      <br /><br />
       <p>
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
-        <br><br>
-        If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br><br>
-        <strong>Enter the fee before CCFRI is applied. </strong> <br><br>
+        <br /><br />
+        If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br /><br />
+        <strong>Enter the fee before CCFRI is applied. </strong> <br /><br />
         <span v-if="languageYearLabel != programYearTypes.HISTORICAL">
           <strong>New for 2024/25:</strong> CCFRI regions align with the BCSSA's grouping of school districts into 6
           regional chapters. Use the
-          <a
-            href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS"
-            target="_blank"
-          >BCSSA region lookup</a>
-          to find your region.</span>
-        <br><br>
+          <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS" target="_blank">BCSSA region lookup</a>
+          to find your region.</span
+        >
+        <br /><br />
         Note: Fee increases will be reviewed and additional information may be requested, which may result in increased
-        processing times. If approved, this fee will be posted on the Ministry website. <br><br>
+        processing times. If approved, this fee will be posted on the Ministry website. <br /><br />
       </p>
 
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image, image"
-      />
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
 
       <div v-else>
         <v-card
@@ -57,34 +49,18 @@
         >
           <v-card-text class="pt-7 pa-0">
             <div class="px-md-12 px-7">
-              <p class="text-h5 text--primary">
-                Are the previous year's fees correct for this facility?
-              </p>
-              <br>
+              <p class="text-h5 text--primary">Are the previous year's fees correct for this facility?</p>
+              <br />
 
-              <v-radio-group
-                v-model="prevFeesCorrect"
-                required
-                :disabled="true"
-                :rules="rules"
-              >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                />
-                <v-radio
-                  label="No"
-                  value="No"
-                />
+              <v-radio-group v-model="prevFeesCorrect" required :disabled="true" :rules="rules">
+                <v-radio label="Yes" value="Yes" />
+                <v-radio label="No" value="No" />
               </v-radio-group>
             </div>
           </v-card-text>
         </v-card>
 
-        <div
-          v-for="(item, index) in CCFRIFacilityModel.childCareTypes"
-          :key="index"
-        >
+        <div v-for="(item, index) in CCFRIFacilityModel.childCareTypes" :key="index">
           <v-card
             v-if="!item.deleteMe"
             elevation="6"
@@ -103,7 +79,7 @@
                 </p>
               </div>
               <div class="px-md-12 px-7">
-                <br>
+                <br />
                 <!-- <p class="text-h6 text--primary">
                     Are your parent fees
 
@@ -115,30 +91,27 @@
                   label="Parent fee frequency"
                   :disabled="isReadOnly"
                 >
-                  <v-radio
-                    label="Daily"
-                    value="Daily"
-                  />
-                  <v-radio
-                    label="Monthly"
-                    value="Monthly"
-                  />
+                  <v-radio label="Daily" value="Daily" />
+                  <v-radio label="Monthly" value="Monthly" />
                 </v-radio-group>
 
                 <v-container v-if="!item.feeFrequency" />
 
-                <v-container
-                  v-else
-                  class="ma-0 pa-0"
-                >
+                <v-container v-else class="ma-0 pa-0">
                   <v-row>
                     <v-col>
-                      <label>If you only offer care for <strong>4 days or fewer </strong> per week, select daily parent
-                        fee.</label><br>
-                      <label>Enter your
-                        <strong>highest {{ item.feeFrequency?.toLowerCase() }} parent fee before CCFRI is applied</strong>
+                      <label
+                        >If you only offer care for <strong>4 days or fewer </strong> per week, select daily parent
+                        fee.</label
+                      ><br />
+                      <label
+                        >Enter your
+                        <strong
+                          >highest {{ item.feeFrequency?.toLowerCase() }} parent fee before CCFRI is applied</strong
+                        >
                         in every month below. If there is a month where you do not charge a parent fee, enter
-                        zero.</label>
+                        zero.</label
+                      >
                     </v-col>
                   </v-row>
                   <v-row>
@@ -310,14 +283,9 @@
           </v-card>
         </div>
       </div>
-      <br>
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image, image"
-      >
-        <br><br>
+      <br />
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image">
+        <br /><br />
       </v-skeleton-loader>
       <v-card
         v-else
@@ -337,7 +305,7 @@
             </p>
           </div>
           <div class="px-md-12 px-7">
-            <br>
+            <br />
             <div>
               <p v-if="languageYearLabel == programYearTypes.HISTORICAL">
                 Do you charge parent fees at this facility for any closures on business days (other than designated
@@ -348,33 +316,15 @@
                 statutory holidays)? Only indicate the date of closures where parent fees are charged.
               </p>
             </div>
-            <v-radio-group
-              v-model="CCFRIFacilityModel.hasClosureFees"
-              required
-              :disabled="isReadOnly"
-              :rules="rules"
-            >
-              <br>
-              <v-radio
-                label="Yes"
-                :value="100000000"
-              />
-              <v-radio
-                label="No"
-                :value="100000001"
-              />
+            <v-radio-group v-model="CCFRIFacilityModel.hasClosureFees" required :disabled="isReadOnly" :rules="rules">
+              <br />
+              <v-radio label="Yes" :value="100000000" />
+              <v-radio label="No" :value="100000001" />
             </v-radio-group>
 
             <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
-              <v-row
-                v-for="(obj, index) in CCFRIFacilityModel.dates"
-                :key="index"
-                color="#003366"
-              >
-                <v-col
-                  color="#003366"
-                  class="col-md-1 col-12 mx-0"
-                >
+              <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
+                <v-col color="#003366" class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
                     size="large"
@@ -403,7 +353,6 @@
                         :rules="rules"
                         label="Select Start Date (YYYY-MM-DD)"
                         readonly
-
                         v-bind="props"
                         @click="updateChosenDates()"
                       />
@@ -437,7 +386,6 @@
                         label="Select End Date (YYYY-MM-DD)"
                         readonly
                         :rules="rules"
-
                         v-bind="props"
                         @click="updateChosenDates()"
                       />
@@ -474,31 +422,19 @@
                     label="Did parents pay for this closure?"
                     :rules="dateRules"
                   >
-                    <v-radio
-                      label="Yes"
-                      :value="1"
-                    />
-                    <v-radio
-                      label="No"
-                      :value="0"
-                    />
+                    <v-radio label="Yes" :value="1" />
+                    <v-radio label="No" :value="0" />
                   </v-radio-group>
                 </v-col>
 
                 <span class="text-white"> . </span>
                 <v-row v-if="obj.isIllegal">
-                  <v-card
-                    width="100%"
-                    class="mx-3 my-10"
-                  >
+                  <v-card width="100%" class="mx-3 my-10">
                     <v-row>
                       <v-col class="py-0">
                         <v-card-title class="py-1 noticeAlert">
                           <span style="float: left">
-                            <v-icon
-                              size="x-large"
-                              class="py-1 px-3 noticeAlertIcon"
-                            > mdi-alert-octagon </v-icon>
+                            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
                           </span>
                           Invalid Dates
                         </v-card-title>
@@ -507,14 +443,14 @@
                     <v-card-text>
                       It appears that the closure start and end dates you've selected for this facility overlap with
                       dates you've previously selected.
-                      <br><br>
+                      <br /><br />
                       Closure Start Date: {{ obj.formattedStartDate }}
-                      <br>
-                      Closure End Date: {{ obj.formattedEndDate }} <br><br>
+                      <br />
+                      Closure End Date: {{ obj.formattedEndDate }} <br /><br />
 
                       Please review your existing facility closure dates to ensure consistency and avoid any potential
                       overlap of Facility closure dates.
-                      <br>
+                      <br />
                       Thank you for your attention
                     </v-card-text>
                   </v-card>
@@ -525,33 +461,22 @@
                 <v-divider />
               </v-row>
               <!-- end v for-->
-              <br><br>
+              <br /><br />
 
               <v-container>
                 <v-row>
-                  <v-btn
-                    class="my-5"
-                    dark
-                    color="#003366"
-                    :disabled="isReadOnly"
-                    @click="addRow()"
-                  >
+                  <v-btn class="my-5" dark color="#003366" :disabled="isReadOnly" @click="addRow()">
                     ADD NEW CLOSURE
                   </v-btn>
                 </v-row>
               </v-container>
-              <br>
+              <br />
             </v-row>
           </div>
         </v-card-text>
       </v-card>
-      <br>
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image, image"
-      />
+      <br />
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
       <v-card
         v-else
         elevation="6"
@@ -570,7 +495,7 @@
             </p>
           </div>
           <div class="px-md-12 px-7">
-            <br>
+            <br />
             <v-textarea
               v-model="CCFRIFacilityModel.ccfriApplicationNotes"
               :disabled="isReadOnly"
@@ -594,54 +519,28 @@
         @save="save(true)"
       />
 
-      <v-dialog
-        v-model="showRfiDialog"
-        persistent
-        max-width="700px"
-      >
+      <v-dialog v-model="showRfiDialog" persistent max-width="700px">
         <v-card>
           <v-container class="pt-0">
             <v-row>
-              <v-col
-                cols="7"
-                class="py-0 pl-0"
-                style="background-color: #234075"
-              >
-                <v-card-title class="text-white">
-                  Request for Information
-                </v-card-title>
+              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+                <v-card-title class="text-white"> Request for Information </v-card-title>
               </v-col>
-              <v-col
-                cols="5"
-                class="d-flex justify-end"
-                style="background-color: #234075"
-              />
+              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                style="background-color: #ffc72c; padding: 2px"
-              />
+              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                style="text-align: center"
-              >
+              <v-col cols="12" style="text-align: center">
                 <p class="pt-4">
                   You have entered a parent fee above the {{ formattedProgramYear }} parent fee increase limit for the
-                  following care categories:<br><br>
-                  <span
-                    v-for="item in rfi3percentCategories"
-                    :key="item"
-                  >{{ item }}<br></span>
+                  following care categories:<br /><br />
+                  <span v-for="item in rfi3percentCategories" :key="item">{{ item }}<br /></span>
                 </p>
                 <p>
                   Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy
-                  in the {{ formattedProgramYear }} <a
-                    :href="fundingUrl"
-                    target="_blank"
-                  >Funding Guidelines</a>. You
+                  in the {{ formattedProgramYear }} <a :href="fundingUrl" target="_blank">Funding Guidelines</a>. You
                   can continue to the Request for Information section or press back to update your fees.
                 </p>
                 <p class="pt-4">
@@ -649,21 +548,8 @@
                   for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care
                   for 4 days or fewer per week.
                 </p>
-                <v-btn
-                  dark
-                  color="secondary"
-                  class="mr-10"
-                  @click="closeDialog()"
-                >
-                  Back
-                </v-btn>
-                <v-btn
-                  dark
-                  color="primary"
-                  @click="toRfi()"
-                >
-                  Continue
-                </v-btn>
+                <v-btn dark color="secondary" class="mr-10" @click="closeDialog()"> Back </v-btn>
+                <v-btn dark color="primary" @click="toRfi()"> Continue </v-btn>
               </v-col>
             </v-row>
           </v-container>

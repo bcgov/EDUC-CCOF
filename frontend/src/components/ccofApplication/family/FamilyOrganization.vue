@@ -1,15 +1,8 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-    :class="loading ? 'ccof-skeleton-loader' : ''"
-  >
+  <v-form ref="form" v-model="isValidForm" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <v-row justify="space-around">
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
               <v-col>
@@ -25,10 +18,7 @@
             </v-row>
 
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.incNumber"
                   :disabled="isLocked"
@@ -66,10 +56,7 @@
             </v-row>
 
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.city1"
                   :disabled="isLocked"
@@ -79,10 +66,7 @@
                   label="City/Town"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.postalCode1"
                   :disabled="isLocked"
@@ -118,10 +102,7 @@
               </v-row>
 
               <v-row>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.city2"
                     :disabled="isLocked"
@@ -130,10 +111,7 @@
                     label="City/Town"
                   />
                 </v-col>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.postalCode2"
                     :disabled="isLocked"
@@ -146,10 +124,7 @@
             </div>
             <v-divider />
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.yearBeganOperation"
                   :disabled="isLocked"
@@ -162,10 +137,7 @@
                   @update:model-value="convertBlankNumberToNull(model, 'yearBeganOperation')"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.email"
                   :disabled="isLocked"
@@ -179,10 +151,7 @@
             </v-row>
 
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.phone"
                   :disabled="isLocked"
@@ -192,10 +161,7 @@
                   label="Business Phone"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="businessId"
                   readonly
@@ -210,17 +176,9 @@
             <v-divider />
 
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-card-subtitle> Type of Organization </v-card-subtitle>
-                <v-radio-group
-                  v-model="model.organizationType"
-                  :disabled="isLocked"
-                  :rules="rules.required"
-                  label=""
-                >
+                <v-radio-group v-model="model.organizationType" :disabled="isLocked" :rules="rules.required" label="">
                   <v-radio
                     v-for="item in filteredOrganizationList"
                     :key="item.id"

@@ -3,26 +3,15 @@
     <div class="row py-8 justify-center text-center">
       <span class="text-h4">Change Notification Form</span>
     </div>
-    <br>
-    <v-form
-      ref="isValidForm"
-      v-model="isValidForm"
-      model-value="false"
-    >
+    <br />
+    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
       <v-container>
         <v-row class="justify-space-around">
           <v-col class="col-lg-7">
             <v-row>
               <v-col class="col-lg-12">
-                <a
-                  href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428"
-                  target="_blank"
-                >
-                  <v-btn
-                    dark
-                    class="blueButton mb-10"
-                    size="x-large"
-                  >
+                <a href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428" target="_blank">
+                  <v-btn dark class="blueButton mb-10" size="x-large">
                     <strong>Download a Change Notification Form</strong>
                   </v-btn>
                 </a>
@@ -33,12 +22,7 @@
                 <p class="text-h5 mb-1">
                   <strong>Upload the completed Change Notification Form below.</strong>
                 </p>
-                <v-skeleton-loader
-                  v-show="isLoading"
-                  max-height="375px"
-                  :loading="true"
-                  type="image"
-                />
+                <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image" />
                 <ChangeFileUpload
                   v-show="!isLoading"
                   ref="childRef"
@@ -53,12 +37,7 @@
                 <p class="text-h5 mb-1">
                   <strong>Upload supporting documents for your requested changes.</strong>
                 </p>
-                <v-skeleton-loader
-                  v-show="isLoading"
-                  max-height="375px"
-                  :loading="true"
-                  type="image"
-                />
+                <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image" />
                 <ChangeFileUpload
                   v-show="!isLoading"
                   ref="childRef2"
@@ -70,21 +49,15 @@
             </v-row>
           </v-col>
           <v-col class="col-lg-4 col-sm-12 boarder pl-10">
-            <p class="text--primary font-weight-bold mb-10">
-              Supporting Documents
-            </p>
+            <p class="text--primary font-weight-bold mb-10">Supporting Documents</p>
             <p>The Change Notification Form will specify what supporting documents to upload.</p>
-            <p class="mt-10">
-              These could include:
-            </p>
+            <p class="mt-10">These could include:</p>
 
             <ul>
-              <li class="pb-0 font-italic">
-                Community Care and Assisted Living Act Licence
-              </li>
+              <li class="pb-0 font-italic">Community Care and Assisted Living Act Licence</li>
               <li>
                 Proof of name change document
-                <br>
+                <br />
                 (e.g. marriage certificate, resumption of surname certificate, BC Corporate Registry "Notice of Name
                 Change")
               </li>
@@ -95,18 +68,13 @@
                 href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes"
                 class="text-decoration-underline"
               >
-                visit the Child Care Operating Funding website</a>
+                visit the Child Care Operating Funding website</a
+              >
             </p>
             <p class="mt-10">
-              Toll Free: <a
-                href="tel:+18883386622"
-                class="text-decoration-underline"
-              >1 888 338-6622 (Option 2)</a>
-              <br>
-              Local Phone: <a
-                href="tel:+2503566501"
-                class="text-decoration-underline"
-              >250 356-6501</a>
+              Toll Free: <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>
+              <br />
+              Local Phone: <a href="tel:+2503566501" class="text-decoration-underline">250 356-6501</a>
             </p>
           </v-col>
         </v-row>
@@ -144,6 +112,7 @@ import ChangeFileUpload from './ChangeFileUpload.vue';
 
 export default {
   name: 'ReportChange',
+  components: { NavButton, ChangeFileUpload },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     this.isLoading = true;
@@ -164,15 +133,6 @@ export default {
       isChangeNotificationFormComplete: false,
       isSupportingDocumentComplete: true,
     };
-  },
-  async mounted() {
-    if (this.$route.params?.urlGuid) {
-      this.isLoading = true;
-      await this.getChangeRequest(this.$route.params?.changeRecGuid);
-      await this.loadChangeRequestDocs(this.$route.params.urlGuid);
-      this.updateChangeNotificationFormCompleteStatus();
-    }
-    this.isLoading = false;
   },
   computed: {
     ...mapState(useNavBarStore, ['changeType', 'nextPath', 'previousPath']),
@@ -198,6 +158,15 @@ export default {
 
       return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
+  },
+  async mounted() {
+    if (this.$route.params?.urlGuid) {
+      this.isLoading = true;
+      await this.getChangeRequest(this.$route.params?.changeRecGuid);
+      await this.loadChangeRequestDocs(this.$route.params.urlGuid);
+      this.updateChangeNotificationFormCompleteStatus();
+    }
+    this.isLoading = false;
   },
   methods: {
     ...mapActions(useAppStore, ['setCcfriOptInComplete']),
@@ -262,7 +231,6 @@ export default {
       this.isSupportingDocumentComplete = newStatus;
     },
   },
-  components: { NavButton, ChangeFileUpload },
 };
 </script>
 <style scoped>

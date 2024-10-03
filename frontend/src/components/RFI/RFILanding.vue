@@ -1,32 +1,12 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-    model-value="false"
-  >
+  <v-form ref="form" v-model="isValidForm" model-value="false">
     <v-container v-if="loading">
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image, image"
-      />
-      <br>
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image, image"
-      />
-      <br>
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image , image"
-        class="pb-6"
-      >
-        <br><br>
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
+      <br />
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
+      <br />
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image , image" class="pb-6">
+        <br /><br />
       </v-skeleton-loader>
     </v-container>
     <v-container v-else>
@@ -34,10 +14,8 @@
         <p class="text-h5">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </p>
-        <p class="text-h5 font-weight-bold">
-          Parent Fee Increase – Request for Information
-        </p>
-        <br>
+        <p class="text-h5 font-weight-bold">Parent Fee Increase – Request for Information</p>
+        <br />
         <FacilityHeader
           :facility-account-number="currentFacility?.facilityAccountNumber"
           :facility-name="currentFacility.facilityName"
@@ -49,47 +27,31 @@
         <p>
           You have entered a parent fee above the {{ formattedProgramYear }} fee increase limit. Fee increases over the
           limit will be assessed under the Parent Fee Increase Exceptions policy. See the
-          <a
-            :href="fundingUrl"
-            target="_blank"
-          >Funding Guidelines</a> for more information.
+          <a :href="fundingUrl" target="_blank">Funding Guidelines</a> for more information.
         </p>
         <p>
           Complete this section to provide more information about your fee increase, or click “Back” to return to the
           previous page.
         </p>
       </div>
-      <v-card
-        elevation="6"
-        class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
-        rounded
-        tiled
-        exact
-        tile
-        :ripple="false"
-      >
+      <v-card elevation="6" class="px-0 py-0 mx-auto my-10 rounded-lg col-12" rounded tiled exact tile :ripple="false">
         <div class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
-            <p class="text-h5 text--primary px-5 py-0 my-0">
-              Exceptional Circumstances
-            </p>
+            <p class="text-h5 text--primary px-5 py-0 my-0">Exceptional Circumstances</p>
           </div>
-          <br>
+          <br />
           <p class="text-h6 text--primary px-md-10 px-7 py-0 my-0">
-            As outlined in the <a
-              :href="fundingUrl"
-              target="_blank"
-            >Funding Guidelines</a>, this exception applies to
+            As outlined in the <a :href="fundingUrl" target="_blank">Funding Guidelines</a>, this exception applies to
             sudden and unexpected expenses that:
           </p>
           <div class="px-md-14 px-7 text--primary">
-            <br>
+            <br />
             <ul>
               <li>are outside of the organization’s control and/or outside of the scope of regular cost increases;</li>
               <li>address an immediate health or safety concern or are needed for the facility to operate; and</li>
               <li>occur within six months of the requested fee increase.</li>
             </ul>
-            <br>
+            <br />
             <v-radio-group
               v-model="model.exceptionalCircumstances"
               class="radio-label"
@@ -99,16 +61,10 @@
               inline
               label="Is your fee increase due to an exceptional circumstance?"
             >
-              <v-radio
-                label="Yes"
-                :value="1"
-              />
-              <v-radio
-                label="No"
-                :value="0"
-              />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
-            <br>
+            <br />
             <div v-if="model.exceptionalCircumstances == 1">
               <v-radio-group
                 v-model.number="model.circumstanceOccurWithin6Month"
@@ -119,14 +75,8 @@
                 inline
                 label="Does the exceptional circumstance occur within 6 months of the fee increase?"
               >
-                <v-radio
-                  label="Yes"
-                  :value="1"
-                />
-                <v-radio
-                  label="No"
-                  :value="0"
-                />
+                <v-radio label="Yes" :value="1" />
+                <v-radio label="No" :value="0" />
               </v-radio-group>
             </div>
           </div>
@@ -135,27 +85,14 @@
         <div v-if="model.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Expense Information
-              </p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
             </div>
-            <v-banner
-              class="ma-4"
-              color="blue-lighten-4"
-              elevation="5"
-            >
-              <v-icon
-                size="large"
-                color="blue-darken-4"
-                class="mr-5"
+            <v-banner class="ma-4" color="blue-lighten-4" elevation="5">
+              <v-icon size="large" color="blue-darken-4" class="mr-5"> mdi-information </v-icon>
+              <strong
+                >Note: See the <a :href="fundingUrl" target="_blank">Funding Guidelines</a> for the list of eligible
+                expenses</strong
               >
-                mdi-information
-              </v-icon>
-              <strong>Note: See the <a
-                :href="fundingUrl"
-                target="_blank"
-              >Funding Guidelines</a> for the list of eligible
-                expenses</strong>
             </v-banner>
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
@@ -164,34 +101,23 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <h3 class="text-center">
-                    Expense Description
-                  </h3>
+                  <h3 class="text-center">Expense Description</h3>
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <h3 class="text-center">
-                    Date of expense
-                  </h3>
+                  <h3 class="text-center">Date of expense</h3>
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <h3 class="text-center">
-                    Payment frequency details
-                  </h3>
+                  <h3 class="text-center">Payment frequency details</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Expense amount
-                  </h3>
+                  <h3 class="text-center">Expense amount</h3>
                 </v-col>
               </v-row>
 
-              <v-row
-                v-for="(expense, index) in model.expenseList"
-                :key="index"
-              >
+              <v-row v-for="(expense, index) in model.expenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
@@ -231,7 +157,6 @@
                         variant="outlined"
                         label="Date of Expense (YYYY-MM-DD)"
                         readonly
-
                         v-bind="props"
                       />
                     </template>
@@ -286,8 +211,8 @@
                   Add Expense
                 </v-btn>
               </div>
-              <br>
-              <br>
+              <br />
+              <br />
               <label for="textArea"> Please describe the reason for each expense listed above. </label>
               <v-textarea
                 id="textArea"
@@ -311,11 +236,9 @@
           />
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Other Sources of Ministry Funding
-              </p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Other Sources of Ministry Funding</p>
             </div>
-            <br>
+            <br />
             <div class="px-md-12 px-7">
               <v-radio-group
                 v-model="model.q3"
@@ -327,14 +250,8 @@
                 label="Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
               for any of the expenses you listed?"
               >
-                <v-radio
-                  label="Yes"
-                  :value="1"
-                />
-                <v-radio
-                  label="No"
-                  :value="0"
-                />
+                <v-radio label="Yes" :value="1" />
+                <v-radio label="No" :value="0" />
               </v-radio-group>
 
               <div v-if="model.q3 === 1">
@@ -344,40 +261,27 @@
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
-                    <h3 class="text-center">
-                      Funding Program
-                    </h3>
+                    <h3 class="text-center">Funding Program</h3>
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
-                    <h3 class="text-center">
-                      Application Date
-                    </h3>
+                    <h3 class="text-center">Application Date</h3>
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
-                    <h3 class="text-center">
-                      Status of Application
-                    </h3>
+                    <h3 class="text-center">Status of Application</h3>
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
-                    <h3 class="text-center">
-                      Amount Received
-                    </h3>
+                    <h3 class="text-center">Amount Received</h3>
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
-                    <h3 class="text-center">
-                      Expense(s)
-                    </h3>
+                    <h3 class="text-center">Expense(s)</h3>
                   </v-col>
                 </v-row>
 
-                <v-row
-                  v-for="(fundInfo, index) in model.fundingList"
-                  :key="index"
-                >
+                <v-row v-for="(fundInfo, index) in model.fundingList" :key="index">
                   <v-col class="col-md-1 col-12 mx-0">
                     <v-icon
                       :disabled="isReadOnly"
@@ -418,15 +322,10 @@
                           variant="outlined"
                           label="Date (YYYY-MM-DD)"
                           readonly
-
                           v-bind="props"
                         />
                       </template>
-                      <v-date-picker
-                        v-model="fundInfo.date"
-                        clearable
-                        @input="fundingCalendar[index] = false"
-                      />
+                      <v-date-picker v-model="fundInfo.date" clearable @input="fundingCalendar[index] = false" />
                     </v-menu>
                   </v-col>
 
@@ -487,7 +386,7 @@
                     Add Funding
                   </v-btn>
                 </div>
-                <br>
+                <br />
               </div>
             </div>
           </div>
@@ -510,37 +409,26 @@
       >
         <div class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
-            <p class="text-h5 text--primary px-5 py-0 my-0">
-              Direct Care Staff Wages Increases
-            </p>
+            <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care Staff Wages Increases</p>
           </div>
 
-          <v-banner
-            two-line
-            class="ma-4"
-            color="blue-lighten-4"
-            elevation="5"
-          >
-            <v-icon
-              size="large"
-              color="blue-darken-4"
-              class="mr-5"
+          <v-banner two-line class="ma-4" color="blue-lighten-4" elevation="5">
+            <v-icon size="large" color="blue-darken-4" class="mr-5"> mdi-information </v-icon>
+            <strong
+              >Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you must apply for
+              ECE-WE before being approved for a fee increase under this policy.</strong
             >
-              mdi-information
-            </v-icon>
-            <strong>Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you must apply for
-              ECE-WE before being approved for a fee increase under this policy.</strong>
           </v-banner>
-          <br>
+          <br />
 
           <p class="text-h6 text--primary px-5 py-0 my-0">
             This exception applies to wage increases for Direct Care Staff employed at the facility on a full-time,
             part-time, or casual basis, providing direct care to children for 50% or more of their working time.
           </p>
 
-          <br>
+          <br />
           <div class="px-md-12 px-7">
-            <br>
+            <br />
             <v-radio-group
               v-model="model.feeIncreaseDueToWage"
               class="radio-label"
@@ -550,19 +438,13 @@
               inline
               label="Is your fee increase due to a wage increase for Direct Care Staff?"
             >
-              <v-radio
-                label="Yes"
-                :value="1"
-              />
-              <v-radio
-                label="No"
-                :value="0"
-              />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
 
             <div v-if="model.feeIncreaseDueToWage == 1">
               <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
-                <br>
+                <br />
                 <v-radio-group
                   v-model="model.increaseInWriting"
                   class="radio-label"
@@ -572,17 +454,11 @@
                   inline
                   label="Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?"
                 >
-                  <v-radio
-                    label="Yes"
-                    :value="1"
-                  />
-                  <v-radio
-                    label="No"
-                    :value="0"
-                  />
+                  <v-radio label="Yes" :value="1" />
+                  <v-radio label="No" :value="0" />
                 </v-radio-group>
               </div>
-              <br>
+              <br />
 
               <v-radio-group
                 v-model="model.isBargainingAgreement"
@@ -593,17 +469,11 @@
                 inline
                 label="Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?"
               >
-                <v-radio
-                  label="Yes"
-                  :value="1"
-                />
-                <v-radio
-                  label="No"
-                  :value="0"
-                />
+                <v-radio label="Yes" :value="1" />
+                <v-radio label="No" :value="0" />
               </v-radio-group>
 
-              <br>
+              <br />
 
               <v-radio-group
                 v-model="model.lossOfCareStaff"
@@ -614,17 +484,11 @@
                 inline
                 label="Has the facility lost or been unable to hire Direct Care Staff due to current wages?"
               >
-                <v-radio
-                  label="Yes"
-                  :value="1"
-                />
-                <v-radio
-                  label="No"
-                  :value="0"
-                />
+                <v-radio label="Yes" :value="1" />
+                <v-radio label="No" :value="0" />
               </v-radio-group>
 
-              <br>
+              <br />
 
               <v-radio-group
                 v-model="model.healthAndSafetyConcerns"
@@ -635,14 +499,8 @@
                 inline
                 label="Is this creating challenges in maintaining the staff-to-child ratios required under the facility licence?"
               >
-                <v-radio
-                  label="Yes"
-                  :value="1"
-                />
-                <v-radio
-                  label="No"
-                  :value="0"
-                />
+                <v-radio label="Yes" :value="1" />
+                <v-radio label="No" :value="0" />
               </v-radio-group>
             </div>
           </div>
@@ -651,26 +509,14 @@
         <div v-if="model.feeIncreaseDueToWage == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Direct Care Staff Wages Increases
-              </p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care Staff Wages Increases</p>
             </div>
-            <br>
+            <br />
 
-            <v-banner
-              two-line
-              class="ma-4"
-              color="blue-lighten-4"
-              elevation="5"
-            >
-              <v-icon
-                size="large"
-                color="blue-darken-4"
-                class="mr-5"
-              >
-                mdi-information
-              </v-icon>
-              <strong>Note: If two or more staff have the same information for every column, they can be included in one row.
+            <v-banner two-line class="ma-4" color="blue-lighten-4" elevation="5">
+              <v-icon size="large" color="blue-darken-4" class="mr-5"> mdi-information </v-icon>
+              <strong
+                >Note: If two or more staff have the same information for every column, they can be included in one row.
               </strong>
             </v-banner>
 
@@ -682,60 +528,39 @@
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Number of staff receiving wage increase
-                  </h3>
+                  <h3 class="text-center">Number of staff receiving wage increase</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Direct Care staff role
-                  </h3>
-                  <br>
-                  <p class="text-center">
-                    (e.g. Responsible Adult, ECE, ECEA, etc)
-                  </p>
+                  <h3 class="text-center">Direct Care staff role</h3>
+                  <br />
+                  <p class="text-center">(e.g. Responsible Adult, ECE, ECEA, etc)</p>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Wage before increase
-                  </h3>
-                  <br>
-                  <p class="text-center">
-                    (not including ECE-WE)
-                  </p>
+                  <h3 class="text-center">Wage before increase</h3>
+                  <br />
+                  <p class="text-center">(not including ECE-WE)</p>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Wage after increase
-                  </h3>
-                  <br>
-                  <p class="text-center">
-                    (not including ECE-WE)
-                  </p>
+                  <h3 class="text-center">Wage after increase</h3>
+                  <br />
+                  <p class="text-center">(not including ECE-WE)</p>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Average hours per week at this facility
-                  </h3>
+                  <h3 class="text-center">Average hours per week at this facility</h3>
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <h3 class="text-center">
-                    Date
-                  </h3>
+                  <h3 class="text-center">Date</h3>
                 </v-col>
               </v-row>
               <span class="text-white"> . </span>
               <v-divider />
 
-              <v-row
-                v-for="(obj, index) in model.wageList"
-                :key="index"
-              >
+              <v-row v-for="(obj, index) in model.wageList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
@@ -835,7 +660,6 @@
                         variant="outlined"
                         label="Date of Increase"
                         readonly
-
                         v-bind="props"
                       />
                     </template>
@@ -865,19 +689,17 @@
                   Add
                 </v-btn>
               </div>
-              <br>
+              <br />
             </div>
           </div>
 
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Please tell us more:
-              </p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Please tell us more:</p>
             </div>
-            <br>
+            <br />
             <div class="px-md-12 px-7">
-              <br>
+              <br />
               <label for="wage"> When did your facility's challenges with hiring and keeping staff begin? </label>
               <v-textarea
                 id="wage"
@@ -888,7 +710,7 @@
                 variant="outlined"
               />
 
-              <br>
+              <br />
               <label for="wage1"> How many Direct Care Staff have left your facility due to wages? </label>
               <v-textarea
                 id="wage1"
@@ -899,7 +721,7 @@
                 variant="outlined"
               />
 
-              <br>
+              <br />
               <label for="wage2"> What have you done to try to recruit staff? </label>
               <v-textarea
                 id="wage2"
@@ -910,7 +732,7 @@
                 variant="outlined"
               />
 
-              <br>
+              <br />
               <label for="wage3">Have you had to adjust your hours/days of operation? </label>
               <v-textarea
                 id="wage3"
@@ -921,7 +743,7 @@
                 variant="outlined"
               />
 
-              <br>
+              <br />
               <label for="wage4"> Is your facility unable to fill spaces due to insufficient staffing? </label>
               <v-textarea
                 id="wage4"
@@ -932,7 +754,7 @@
                 variant="outlined"
               />
 
-              <br>
+              <br />
               <label for="wage5"> Is there anything else you would like us to know about the wage increase(s)? </label>
               <v-textarea
                 id="wage5"
@@ -974,10 +796,10 @@
               Priority Service Expansion: Increase in Hours of Operation
             </p>
           </div>
-          <br>
+          <br />
 
           <div class="px-md-12 px-7">
-            <br>
+            <br />
             <v-radio-group
               v-model="model.feeIncreaseExtendedHours"
               class="radio-label"
@@ -988,69 +810,48 @@
               label="Is your fee increase due to expanding or extending the hours of child care service available for all
               enrolled children?"
             >
-              <v-radio
-                label="Yes"
-                :value="1"
-              />
-              <v-radio
-                label="No"
-                :value="0"
-              />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
-            <br>
+            <br />
           </div>
         </div>
 
         <div v-if="model.feeIncreaseExtendedHours == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Service Expansion Details
-              </p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Service Expansion Details</p>
             </div>
-            <br>
+            <br />
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
                 <v-col class="col-md-1 col-12 mx-0">
                   <!--here for spacing-->
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>
-                    Facility's previous hours of operation
-                  </h3>
-                  <br>
+                  <h3 class>Facility's previous hours of operation</h3>
+                  <br />
                   <p>(e.g. 9:00 am - 4:00 pm)</p>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>
-                    Facility's new hours of operation
-                  </h3>
-                  <br>
+                  <h3 class>Facility's new hours of operation</h3>
+                  <br />
                   <p>(e.g. 6:00 am - 5:00 pm)</p>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>
-                    Date of Change
-                  </h3>
+                  <h3 class>Date of Change</h3>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>
-                    Amount of Expense
-                  </h3>
+                  <h3 class>Amount of Expense</h3>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>
-                    Payment frequency
-                  </h3>
+                  <h3 class>Payment frequency</h3>
                 </v-col>
               </v-row>
               <span class="text-white"> . </span>
               <v-divider />
 
-              <v-row
-                v-for="(obj, index) in model.expansionList"
-                :key="index"
-              >
+              <v-row v-for="(obj, index) in model.expansionList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
@@ -1080,7 +881,6 @@
                         :disabled="isReadOnly"
                         label="From"
                         readonly
-
                         v-bind="props"
                       />
                     </template>
@@ -1108,14 +908,7 @@
                     min-width="290px"
                   >
                     <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.timeto"
-                        :disabled="isReadOnly"
-                        label="To"
-                        readonly
-
-                        v-bind="props"
-                      />
+                      <v-text-field v-model="obj.timeto" :disabled="isReadOnly" label="To" readonly v-bind="props" />
                     </template>
                     <v-time-picker
                       v-if="obj.menuto"
@@ -1146,7 +939,6 @@
                         :disabled="isReadOnly"
                         label="From"
                         readonly
-
                         v-bind="props"
                       />
                     </template>
@@ -1172,14 +964,7 @@
                     min-width="290px"
                   >
                     <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.newtimeto"
-                        :disabled="isReadOnly"
-                        label="To"
-                        readonly
-
-                        v-bind="props"
-                      />
+                      <v-text-field v-model="obj.newtimeto" :disabled="isReadOnly" label="To" readonly v-bind="props" />
                     </template>
                     <v-time-picker
                       v-if="obj.newmenuto"
@@ -1208,15 +993,10 @@
                         variant="outlined"
                         label="Date of Change (YYYY-MM-DD)"
                         readonly
-
                         v-bind="props"
                       />
                     </template>
-                    <v-date-picker
-                      v-model="obj.date"
-                      clearable
-                      @input="expansionCalendarMenu[index] = false"
-                    />
+                    <v-date-picker v-model="obj.date" clearable @input="expansionCalendarMenu[index] = false" />
                   </v-menu>
                 </v-col>
 
@@ -1248,7 +1028,7 @@
                   <!--here for spacing-->
                 </v-col>
 
-                <br><br>
+                <br /><br />
                 <v-row>
                   <span class="text-white" />
                   <v-divider />
@@ -1268,8 +1048,8 @@
                 </v-btn>
               </div>
 
-              <br>
-              <br>
+              <br />
+              <br />
               <label for="serviceExpense"> Describe each of your expenses above. (e.g. Wages, Utilities) </label>
               <v-textarea
                 id="serviceExpense"
@@ -1281,8 +1061,8 @@
                 placeholder="Describe here"
               />
 
-              <br>
-              <br>
+              <br />
+              <br />
               <label for="serviceExpense1">
                 Is there anything else about your change in hours of operation you would like us to know?
               </label>
@@ -1327,10 +1107,10 @@
               Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language
             </p>
           </div>
-          <br>
+          <br />
 
           <div class="px-md-12 px-7">
-            <br>
+            <br />
             <v-radio-group
               v-model="model.IndigenousConnection"
               class="radio-label"
@@ -1340,40 +1120,31 @@
               :rules="rules.required"
               inline
             >
-              <br>
-              <v-radio
-                label="Yes"
-                :value="1"
-              />
-              <v-radio
-                label="No"
-                :value="0"
-              />
+              <br />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
             <p>
               As outlined in the
-              <a
-                href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E"
-                target="_blank"
-              >Funding Guidelines</a>, this may include:
+              <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank"
+                >Funding Guidelines</a
+              >, this may include:
             </p>
             <ul>
               <li>participation of an Elder, culture/language teacher, and/or family in the child care program;</li>
               <li>children’s participation in community, language, and/or cultural events or activities; or</li>
               <li>language or culture resources for use in the child care program.</li>
             </ul>
-            <br>
+            <br />
           </div>
         </div>
 
         <div v-if="model.IndigenousConnection == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Expense Information
-              </p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
             </div>
-            <br>
+            <br />
 
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
@@ -1382,33 +1153,22 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <h3 class="text-center">
-                    Expense Description
-                  </h3>
+                  <h3 class="text-center">Expense Description</h3>
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <h3 class="text-center">
-                    Date of expense
-                  </h3>
+                  <h3 class="text-center">Date of expense</h3>
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <h3 class="text-center">
-                    Payment frequency details
-                  </h3>
+                  <h3 class="text-center">Payment frequency details</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
-                  <h3 class="text-center">
-                    Expense amount
-                  </h3>
+                  <h3 class="text-center">Expense amount</h3>
                 </v-col>
               </v-row>
-              <v-row
-                v-for="(indigExpense, index) in model.indigenousExpenseList"
-                :key="index"
-              >
+              <v-row v-for="(indigExpense, index) in model.indigenousExpenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
                     :disabled="isReadOnly"
@@ -1449,7 +1209,6 @@
                         variant="outlined"
                         label="Date of Expense (YYYY-MM-DD)"
                         readonly
-
                         v-bind="props"
                       />
                     </template>
@@ -1503,12 +1262,12 @@
                   Add Expense
                 </v-btn>
               </div>
-              <br>
+              <br />
 
               <p class="text-h6 text--primary py-5 my-0" />
 
               <div class="">
-                <br>
+                <br />
                 <label for="expense1">Is there anything else about your expenses you would like us to know?</label>
                 <v-textarea
                   id="expense1"
@@ -1549,14 +1308,12 @@
       >
         <div class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
-            <p class="text-h5 text--primary px-5 py-0 my-0">
-              Affordable Child Care for Underserved Populations
-            </p>
+            <p class="text-h5 text--primary px-5 py-0 my-0">Affordable Child Care for Underserved Populations</p>
           </div>
-          <br>
+          <br />
 
           <div class="px-md-12 px-7">
-            <br>
+            <br />
             <p>Fee increases may be considered under this exception if:</p>
             <ul>
               <li>
@@ -1567,7 +1324,7 @@
               <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
               <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
             </ul>
-            <br>
+            <br />
             <v-radio-group
               v-model="model.underservedPop"
               class="radio-label"
@@ -1577,23 +1334,19 @@
               inline
               label="Does this Facility meet all the above criteria?"
             >
-              <v-radio
-                label="Yes"
-                :value="1"
-              />
-              <v-radio
-                label="No"
-                :value="0"
-              />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
-            <br>
+            <br />
 
             <div v-if="model.underservedPop == 1">
-              <br>
+              <br />
               <div class="pa-0">
                 <div class="pa-2 pa-md-4 ma-0">
-                  <label for="underservedPop1">Please describe how the majority of children you provide care for represent an underserved
-                    population (e.g. indigenous children, low-income families?)</label>
+                  <label for="underservedPop1"
+                    >Please describe how the majority of children you provide care for represent an underserved
+                    population (e.g. indigenous children, low-income families?)</label
+                  >
                   <v-textarea
                     id="underservedPop1"
                     v-model="model.underservedChildCareTypes"
@@ -1604,9 +1357,11 @@
                     placeholder="Describe here"
                   />
 
-                  <br>
-                  <label for="underservedPop2">How will your fee increase contribute to the overall sustainability of the
-                    organization/facility?</label>
+                  <br />
+                  <label for="underservedPop2"
+                    >How will your fee increase contribute to the overall sustainability of the
+                    organization/facility?</label
+                  >
                   <v-textarea
                     id="underservedPop2"
                     v-model="model.orgsustainability"
@@ -1617,11 +1372,13 @@
                     placeholder="Describe here"
                   />
 
-                  <br>
-                  <label for="underservedPop3">Describe whether parents' out-of-pocket monthly cost for child care will be affected by this
+                  <br />
+                  <label for="underservedPop3"
+                    >Describe whether parents' out-of-pocket monthly cost for child care will be affected by this
                     increase (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other
                     applicable funding source). Will any families experience a cost increase, and if so, by how
-                    much?</label>
+                    much?</label
+                  >
                   <v-textarea
                     id="underservedPop3"
                     v-model="model.outOfPocketFees"
@@ -1763,7 +1520,6 @@ export default {
       wageCalendar: [],
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
       processing: false,
-      uploadedDocuments: [],
       rfiDocuments: {},
       rfiDocumentsEC: [],
       rfiDocumentsACCUP: [],
@@ -1947,7 +1703,7 @@ export default {
           this.setSuccessAlert('Success! Request for Information has been saved.');
           await this.refreshSupportingDocuments();
         }
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;
@@ -1963,10 +1719,9 @@ export default {
     },
     async refreshSupportingDocuments() {
       await this.getDocuments(this.applicationId);
-      this.uploadedDocuments = this.uploadedDocuments;
-      this.loadDOcsForRFIType(this.currentFacility.facilityId);
+      this.loadDocsForRFIType(this.currentFacility.facilityId);
     },
-    loadDOcsForRFIType(facilityId) {
+    loadDocsForRFIType(facilityId) {
       this.rfiDocumentsEC = [];
       this.rfiDocumentsDCSWI = [];
       this.rfiDocumentsPSE = [];
@@ -1997,21 +1752,21 @@ export default {
     },
     addNewRowToUploadedDocuments(item) {
       switch (item.documentType) {
-      case 'RFI-EC':
-        this.rfiDocumentsEC.unshift(item);
-        break;
-      case 'RFI-DCSWI':
-        this.rfiDocumentsDCSWI.unshift(item);
-        break;
-      case 'RFI-PSE':
-        this.rfiDocumentsPSE.unshift(item);
-        break;
-      case 'RFI-PSEIC':
-        this.rfiDocumentsPSEIC.unshift(item);
-        break;
-      case 'RFI-ACCUP':
-        this.rfiDocumentsACCUP.unshift(item);
-        break;
+        case 'RFI-EC':
+          this.rfiDocumentsEC.unshift(item);
+          break;
+        case 'RFI-DCSWI':
+          this.rfiDocumentsDCSWI.unshift(item);
+          break;
+        case 'RFI-PSE':
+          this.rfiDocumentsPSE.unshift(item);
+          break;
+        case 'RFI-PSEIC':
+          this.rfiDocumentsPSEIC.unshift(item);
+          break;
+        case 'RFI-ACCUP':
+          this.rfiDocumentsACCUP.unshift(item);
+          break;
       }
       this.uploadedDocuments.unshift(item);
     },
@@ -2039,21 +1794,21 @@ export default {
       this.uploadedDocuments.splice(index, 1);
 
       switch (item.documentType) {
-      case 'RFI-EC':
-        this.rfiDocumentsEC.splice(this.findRFIDocIndex(this.rfiDocumentsEC, item), 1);
-        break;
-      case 'RFI-DCSWI':
-        this.rfiDocumentsDCSWI.splice(this.findRFIDocIndex(this.rfiDocumentsDCSWI, item), 1);
-        break;
-      case 'RFI-PSE':
-        this.rfiDocumentsPSE.splice(this.findRFIDocIndex(this.rfiDocumentsPSE, item), 1);
-        break;
-      case 'RFI-PSEIC':
-        this.rfiDocumentsPSEIC.splice(this.findRFIDocIndex(this.rfiDocumentsPSEIC, item), 1);
-        break;
-      case 'RFI-ACCUP':
-        this.rfiDocumentsACCUP.splice(this.findRFIDocIndex(this.rfiDocumentsACCUP, item), 1);
-        break;
+        case 'RFI-EC':
+          this.rfiDocumentsEC.splice(this.findRFIDocIndex(this.rfiDocumentsEC, item), 1);
+          break;
+        case 'RFI-DCSWI':
+          this.rfiDocumentsDCSWI.splice(this.findRFIDocIndex(this.rfiDocumentsDCSWI, item), 1);
+          break;
+        case 'RFI-PSE':
+          this.rfiDocumentsPSE.splice(this.findRFIDocIndex(this.rfiDocumentsPSE, item), 1);
+          break;
+        case 'RFI-PSEIC':
+          this.rfiDocumentsPSEIC.splice(this.findRFIDocIndex(this.rfiDocumentsPSEIC, item), 1);
+          break;
+        case 'RFI-ACCUP':
+          this.rfiDocumentsACCUP.splice(this.findRFIDocIndex(this.rfiDocumentsACCUP, item), 1);
+          break;
       }
     },
     async processRFISupportingDocuments() {
@@ -2086,7 +1841,7 @@ export default {
       }
       try {
         await this.saveUploadedDocuments(payload);
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
     },

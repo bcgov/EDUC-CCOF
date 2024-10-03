@@ -1,25 +1,13 @@
 <template>
   <v-container>
     <v-row justify="space-around">
-      <v-card
-        class="cc-top-level-card"
-        width="1200"
-      >
+      <v-card class="cc-top-level-card" width="1200">
         <v-container>
-          <v-row justify="center">
-            You have successfully applied for CCOF for the following facilities:
-          </v-row>
+          <v-row justify="center"> You have successfully applied for CCOF for the following facilities: </v-row>
 
-          <v-row
-            justify="center"
-            style="padding-top: 2em"
-          >
+          <v-row justify="center" style="padding-top: 2em">
             <ul style="list-style: none">
-              <li
-                v-for="item in navBarList"
-                :key="item.facilityId"
-                style=""
-              >
+              <li v-for="item in navBarList" :key="item.facilityId" style="">
                 <router-link :to="getRoutingPath(item.facilityId)">
                   <span>{{ item.facilityName }}</span>
                 </router-link>
@@ -47,14 +35,9 @@
         </v-container>
       </v-card>
 
-      <v-card
-        class="cc-top-level-card"
-        width="1200"
-      >
+      <v-card class="cc-top-level-card" width="1200">
         <v-container>
-          <v-row justify="center">
-            Do you want to add another facility?
-          </v-row>
+          <v-row justify="center"> Do you want to add another facility? </v-row>
 
           <v-row justify="center">
             <v-btn
@@ -67,93 +50,37 @@
             >
               Yes
             </v-btn>
-            <v-btn
-              color="secondary"
-              variant="outlined"
-              size="x-large"
-              style="margin: 2em"
-              @click="next()"
-            >
-              No
-            </v-btn>
+            <v-btn color="secondary" variant="outlined" size="x-large" style="margin: 2em" @click="next()"> No </v-btn>
           </v-row>
         </v-container>
       </v-card>
     </v-row>
 
     <v-row justify="space-around">
-      <v-btn
-        color="info"
-        variant="outlined"
-        required
-        size="x-large"
-        @click="previous()"
-      >
-        Back
-      </v-btn>
+      <v-btn color="info" variant="outlined" required size="x-large" @click="previous()"> Back </v-btn>
     </v-row>
 
-    <v-dialog
-      v-model="dialog"
-      persistent
-      max-width="525px"
-    >
+    <v-dialog v-model="dialog" persistent max-width="525px">
       <v-card>
         <v-container class="pt-0">
           <v-row>
-            <v-col
-              cols="7"
-              class="py-0 pl-0"
-              style="background-color: #234075"
-            >
-              <v-card-title class="text-white">
-                Delete Application
-              </v-card-title>
+            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+              <v-card-title class="text-white"> Delete Application </v-card-title>
             </v-col>
-            <v-col
-              cols="5"
-              class="d-flex justify-end"
-              style="background-color: #234075"
-            />
+            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
           </v-row>
           <v-row>
-            <v-col
-              cols="12"
-              style="background-color: #ffc72c; padding: 2px"
-            />
+            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
           </v-row>
           <v-row>
-            <v-col
-              cols="12"
-              style="text-align: left"
-            >
-              <p class="pt-4">
-                Are you sure you want to delete application for facility {{ deleteFacilityName }}?
-              </p>
+            <v-col cols="12" style="text-align: left">
+              <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              cols="12"
-              style="text-align: center"
-            >
-              <v-btn
-                dark
-                color="secondary"
-                :loading="processing"
-                class="mr-10"
-                @click="dialog = false"
-              >
-                Cancel
-              </v-btn>
-              <v-btn
-                dark
-                color="primary"
-                :loading="processing"
-                @click="deleteApplication()"
-              >
-                Continue
-              </v-btn>
+            <v-col cols="12" style="text-align: center">
+              <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false"> Cancel </v-btn>
+              <v-btn dark color="primary" :loading="processing" @click="deleteApplication()"> Continue </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -205,6 +132,13 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED';
     },
+  },
+  async mounted() {
+    this.setCcofConfirmationEnabled(true);
+    if (this.isChangeRequest) {
+      let index = this.navBarList.findIndex((facility) => facility.changeRequestNewFacilityId);
+      if (index === -1) await this.getChangeRequest(this.$route.params.changeRecGuid);
+    }
   },
   methods: {
     ...mapActions(useApplicationStore, ['setCcofConfirmationEnabled']),
@@ -262,20 +196,13 @@ export default {
           ccofBaseFundingId: this.deleteCcofBaseFundingId,
           applicationId: this.applicationId,
         });
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while deleting facility. Please try again later.');
       } finally {
         this.processing = false;
         this.dialog = false;
       }
     },
-  },
-  async mounted() {
-    this.setCcofConfirmationEnabled(true);
-    if (this.isChangeRequest) {
-      let index = this.navBarList.findIndex((facility) => facility.changeRequestNewFacilityId);
-      if (index === -1) await this.getChangeRequest(this.$route.params.changeRecGuid);
-    }
   },
 };
 </script>

@@ -44,19 +44,19 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     isCCFRIComplete: (state) => {
       return state.summaryModel?.facilities?.length > 0
         ? state.summaryModel?.facilities.every(
-          (facility) =>
-            facility.ccfri?.ccof_formcomplete &&
+            (facility) =>
+              facility.ccfri?.ccof_formcomplete &&
               (facility.ccfri?.ccfriOptInStatus === 1 || facility.ccfri?.ccfriOptInStatus === 0) &&
               (facility.ccfri?.unlockRfi === 1 || facility.ccfri?.hasRfi ? facility.ccfri?.isRfiComplete : true) &&
-              (facility.ccfri?.unlockNmf === 1 || facility.ccfri?.hasNmf ? facility.ccfri?.isNmfComplete : true)
-        )
+              (facility.ccfri?.unlockNmf === 1 || facility.ccfri?.hasNmf ? facility.ccfri?.isNmfComplete : true),
+          )
         : false;
     },
     isECEWEComplete: (state) => {
       return state.summaryModel?.application?.isEceweComplete && state.summaryModel?.facilities?.length > 0
         ? state.summaryModel?.facilities.every(
-          (facility) => facility.ecewe?.optInOrOut === 1 || facility.ecewe?.optInOrOut === 0
-        )
+            (facility) => facility.ecewe?.optInOrOut === 1 || facility.ecewe?.optInOrOut === 0,
+          )
         : false;
     },
     isFacilityComplete: (state) => {
@@ -67,8 +67,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     areCheckBoxesComplete: (state, getters) => {
       let isComplete =
         state.summaryModel?.application?.isEceweComplete &&
-          state.summaryModel?.application?.isLicenseUploadComplete &&
-          getters.isCCFRIComplete;
+        state.summaryModel?.application?.isLicenseUploadComplete &&
+        getters.isCCFRIComplete;
       return isComplete;
     },
   },
@@ -164,7 +164,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           //PCF application submit
           let response = await ApiService.apiAxios.patch(
             ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + applicationStore.applicationId,
-            payload
+            payload,
           );
 
           applicationStore.setApplicationStatus('SUBMITTED');
@@ -230,7 +230,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           summaryModel['allDocuments'] = (
             await ApiService.apiAxios.get(
               ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD + '/' + payload.application.applicationId,
-              config
+              config,
             )
           ).data;
           console.info('allDocuments', summaryModel['allDocuments'].length);
@@ -245,7 +245,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
               await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)
             ).data;
             summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse);
-          } catch (categoryError) {
+          } catch {
             console.log('error, unable to get childcare category for provider: ', facility.facilityId);
           }
 
@@ -261,7 +261,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
             facility.ccfri.prevYear = getProgramYear(
               summaryModel.facilities[index].ccfri.currentYear.previousYearId,
-              programYearList
+              programYearList,
             );
 
             //jb
@@ -293,7 +293,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           if (summaryModel.allDocuments && summaryModel.allDocuments.length > 0) {
             const allDocuments = summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(
-              (document) => document.ccof_facility === facility.facilityId
+              (document) => document.ccof_facility === facility.facilityId,
             );
             this.summaryModel(summaryModel);
           }
@@ -353,19 +353,19 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         await Promise.all(
           changeRequestTypes.map(async (changeType) => {
             switch (changeType) {
-            case CHANGE_REQUEST_TYPES.NEW_FACILITY:
-              await this.loadChangeRequestSummaryForAddNewFacility(payload);
-              break;
-            case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
-              await this.loadChangeRequestSummaryForMtfi(payload);
-              break;
-            case CHANGE_REQUEST_TYPES.PDF_CHANGE:
-              await this.loadChangeRequestSummaryForChangeNotiForm(payload);
-              break;
-            default:
-              throw `Not found change request type - ${changeType}`;
+              case CHANGE_REQUEST_TYPES.NEW_FACILITY:
+                await this.loadChangeRequestSummaryForAddNewFacility(payload);
+                break;
+              case CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE:
+                await this.loadChangeRequestSummaryForMtfi(payload);
+                break;
+              case CHANGE_REQUEST_TYPES.PDF_CHANGE:
+                await this.loadChangeRequestSummaryForChangeNotiForm(payload);
+                break;
+              default:
+                throw `Not found change request type - ${changeType}`;
             }
-          })
+          }),
         );
         this.isLoadingComplete(true);
       } catch (error) {
@@ -391,7 +391,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         throw error;
       }
     },
-
     // Assumption: a change request can only have 1 MTFI change action
     async loadChangeRequestSummaryForMtfi(payload) {
       const navBarStore = useNavBarStore();
@@ -400,7 +399,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       try {
         let summaryModel = this.summaryModel;
         let mtfiChangeAction = payload.changeActions?.find(
-          (item) => item.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE
+          (item) => item.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE,
         );
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
 
@@ -410,7 +409,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         await Promise.all(
           summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
             let userProfileListFacility = navBarStore.userProfileList.find(
-              (item) => item.facilityId === mtfiFacility.facilityId
+              (item) => item.facilityId === mtfiFacility.facilityId,
             );
             if (userProfileListFacility) {
               mtfiFacility.facilityName = userProfileListFacility.facilityName;
@@ -424,7 +423,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.oldCcfriApplicationId}`)
               ).data;
               mtfiFacility.oldCcfri.childCareTypes = mtfiFacility.oldCcfri?.childCareTypes?.filter(
-                (item) => item.programYearId === applicationStore.programYearId
+                (item) => item.programYearId === applicationStore.programYearId,
               );
               mtfiFacility.oldCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
 
@@ -432,7 +431,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${mtfiFacility.ccfriApplicationId}`)
               ).data;
               mtfiFacility.newCcfri.childCareTypes = mtfiFacility.newCcfri?.childCareTypes?.filter(
-                (item) => item.programYearId === applicationStore.programYearId
+                (item) => item.programYearId === applicationStore.programYearId,
               );
               mtfiFacility.newCcfri?.childCareTypes?.sort((a, b) => a.orderNumber - b.orderNumber);
 
@@ -445,24 +444,23 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
               if (this.isMainLoading) this.isMainLoading(false);
             }
             this.summaryModel(summaryModel);
-          })
+          }),
         );
       } catch (error) {
         console.log(`Failed to load Summary for change request MTFI - ${error}`);
         throw error;
       }
     },
-
     // Assumption: a change request can only have 1 Change Notification Form change action
     async loadChangeRequestSummaryForChangeNotiForm(payload) {
       const reportChangesStore = useReportChangesStore();
       try {
         let summaryModel = this.summaryModel;
         let changeNotiChangeAction = payload.changeActions?.find(
-          (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE
+          (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE,
         );
         summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
-          changeNotiChangeAction?.changeActionId
+          changeNotiChangeAction?.changeActionId,
         );
         this.summaryModel(summaryModel);
         this.isMainLoading(false);

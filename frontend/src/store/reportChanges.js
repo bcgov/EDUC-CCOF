@@ -171,7 +171,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
           .get(payload.changeRequestId)
           ?.changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)
           .newFacilities.push(newFacilityObj);
-      } catch (error) {
+      } catch {
         // Pass.
       }
     },
@@ -254,21 +254,21 @@ export const useReportChangesStore = defineStore('reportChanges', {
 
           let changeAction;
           switch (navBarStore.changeType) {
-          case CHANGE_TYPES.NEW_FACILITY:
-            changeAction = response?.changeActions?.find(
-              (changeAction) => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY,
-            );
-            break;
-          case CHANGE_TYPES.CHANGE_NOTIFICATION:
-            changeAction = response?.changeActions?.find(
-              (changeAction) => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE,
-            );
-            break;
-          case CHANGE_TYPES.MTFI:
-            changeAction = response?.changeActions?.find(
-              (changeAction) => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE,
-            );
-            break;
+            case CHANGE_TYPES.NEW_FACILITY:
+              changeAction = response?.changeActions?.find(
+                (changeAction) => changeAction.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY,
+              );
+              break;
+            case CHANGE_TYPES.CHANGE_NOTIFICATION:
+              changeAction = response?.changeActions?.find(
+                (changeAction) => changeAction.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE,
+              );
+              break;
+            case CHANGE_TYPES.MTFI:
+              changeAction = response?.changeActions?.find(
+                (changeAction) => changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE,
+              );
+              break;
           }
           this.setChangeActionId(changeAction?.changeActionId);
 

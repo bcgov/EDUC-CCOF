@@ -3,114 +3,70 @@
     <div class="row pt-4 justify-center text-center">
       <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
       <!-- <span class="text-h5">What would you like to change?</span> -->
     </div>
 
-    <v-form
-      ref="isValidForm"
-      v-model="isValidForm"
-      model-value="false"
-    >
+    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
       <v-container>
-        <p class="text-h6 text-center">
-          What changes do you want to make?
-        </p>
+        <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row class="d-flex justify-start">
-          <SmallCard
-            v-if="organizationProviderType == 'GROUP'"
-            class="col-lg-6"
-            :disable="false"
-          >
-            <template
-              #content
-              class="px-10"
-            >
-              <p class="text-h6 text-center">
-                Add a New facility to an existing organization
-              </p>
-              <p class="px-2 text-center">
-                This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
-                information ready.
-              </p>
-              <p class="px-2 text-center">
-                You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
-              </p>
+          <SmallCard v-if="organizationProviderType == 'GROUP'" class="col-lg-6" :disable="false">
+            <template #content>
+              <div class="px-10">
+                <p class="text-h6 text-center">Add a New facility to an existing organization</p>
+                <p class="px-2 text-center">
+                  This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
+                  information ready.
+                </p>
+                <p class="px-2 text-center">
+                  You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
+                </p>
+              </div>
             </template>
-            <template
-              #button
-              class="ma-0 pa-0"
-            >
-              <v-row justify="space-around">
-                <v-btn
-                  dark
-                  class="blueButton mb-10"
-                  :loading="processing"
-                  @click="routeToFacilityAdd()"
-                >
+            <template #button>
+              <v-row justify="space-around" class="ma-0 pa-0">
+                <v-btn dark class="blueButton mb-10" :loading="processing" @click="routeToFacilityAdd()">
                   Add new facility
                 </v-btn>
               </v-row>
             </template>
           </SmallCard>
 
-          <SmallCard
-            class="col-lg-6"
-            :disable="false"
-          >
-            <template
-              #content
-              class="px-10"
-            >
-              <p class="text-h6 text-center">
-                Report changes to your Licence or service
-              </p>
-              <p class="px-2 text-center">
-                Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
-                supporting documents ready.
-              </p>
+          <SmallCard class="col-lg-6" :disable="false">
+            <template #content>
+              <div class="px-10">
+                <p class="text-h6 text-center">Report changes to your Licence or service</p>
+                <p class="px-2 text-center">
+                  Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
+                  supporting documents ready.
+                </p>
+              </div>
             </template>
-            <template
-              #button
-              class="ma-0 pa-0"
-            >
-              <v-row justify="space-around">
-                <v-btn
-                  dark
-                  class="blueButton mb-10"
-                  :loading="processing"
-                  @click="goToChangeDialogue()"
-                >
-                  Upload a Change Notification Form
-                </v-btn>
-              </v-row>
+            <template #button>
+              <div class="ma-0 pa-0">
+                <v-row justify="space-around">
+                  <v-btn dark class="blueButton mb-10" :loading="processing" @click="goToChangeDialogue()">
+                    Upload a Change Notification Form
+                  </v-btn>
+                </v-row>
+              </div>
             </template>
           </SmallCard>
 
-          <SmallCard
-            class="col-lg-6"
-            :disable="!isMtfiEnabled()"
-          >
-            <template
-              #content
-              class="px-10"
-            >
-              <p class="text-h6 text-center">
-                Mid-Term Fee Increase
-              </p>
-              <p class="px-2 text-center">
-                Request a parent fee increase for a facility after you have received approval for the CCFRI.
-              </p>
-              <p class="px-2 text-center">
-                You may need to provide details about your expenses.
-              </p>
+          <SmallCard class="col-lg-6" :disable="!isMtfiEnabled()">
+            <template #content>
+              <div class="px-10">
+                <p class="text-h6 text-center">Mid-Term Fee Increase</p>
+                <p class="px-2 text-center">
+                  Request a parent fee increase for a facility after you have received approval for the CCFRI.
+                </p>
+                <p class="px-2 text-center">You may need to provide details about your expenses.</p>
+              </div>
             </template>
-            <template
-              #button
-              class="ma-0 pa-0"
-            >
-              <v-row justify="space-around">
+            <template #button>
+              <v-row justify="space-around" class="ma-0 pa-0">
                 <v-btn
                   dark
                   class="mb-10"
@@ -126,17 +82,10 @@
           </SmallCard>
         </v-row>
 
-        <v-row
-          id="change-request-history"
-          no-gutters
-        >
+        <v-row id="change-request-history" no-gutters>
           <v-col class="col-lg-12 mt-10">
-            <h2 v-if="viewOlderRequestActive">
-              Change History Archive
-            </h2>
-            <h2 v-else>
-              Change History
-            </h2>
+            <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
+            <h2 v-else>Change History</h2>
           </v-col>
           <!-- <v-text-field
             v-if="!viewOlderRequestActive"
@@ -148,10 +97,7 @@
         </v-row>
         <v-row v-if="processing">
           <v-col>
-            <v-skeleton-loader
-              :loading="processing"
-              type="paragraph, text@3, text@3, paragraph"
-            />
+            <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph" />
           </v-col>
         </v-row>
         <v-data-table
@@ -171,11 +117,7 @@
           <template #item.facilityNames="{ item }">
             <v-tooltip location="top">
               <template #activator="{ props }">
-                <div
-                  class="tableText"
-                  :style="maxfacilityNamesStringLength"
-                  v-bind="props"
-                >
+                <div class="tableText" :style="maxfacilityNamesStringLength" v-bind="props">
                   {{ item.facilityNames }}
                 </div>
               </template>
@@ -232,48 +174,21 @@
         </v-data-table>
 
         <v-btn @click="viewOlderRequestActive = !viewOlderRequestActive">
-          <p
-            v-if="!viewOlderRequestActive"
-            class="ma-0 pa-0"
-          >
-            View Older
-          </p>
-          <p
-            v-else
-            class="ma-0 pa-0"
-          >
-            View Current
-          </p>
+          <p v-if="!viewOlderRequestActive" class="ma-0 pa-0">View Older</p>
+          <p v-else class="ma-0 pa-0">View Current</p>
         </v-btn>
 
-        <v-dialog
-          v-model="dialog"
-          persistent
-          max-width="525px"
-        >
+        <v-dialog v-model="dialog" persistent max-width="525px">
           <v-card>
             <v-container class="pt-0">
               <v-row>
-                <v-col
-                  cols="7"
-                  class="py-0 pl-0"
-                  style="background-color: #234075"
-                >
-                  <v-card-title class="text-white font-weight-bold">
-                    Cancel a change request
-                  </v-card-title>
+                <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+                  <v-card-title class="text-white font-weight-bold"> Cancel a change request </v-card-title>
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-end"
-                  style="background-color: #234075"
-                />
+                <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
               </v-row>
               <v-row>
-                <v-col
-                  cols="12"
-                  style="background-color: #ffc72c; padding: 2px"
-                />
+                <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
               </v-row>
               <v-row class="pa-6">
                 <p>Are you sure you want to cancel this change request?</p>
@@ -287,23 +202,10 @@
                 </p>
               </v-row>
               <v-row class="d-flex justify-right">
-                <v-btn
-                  dark
-                  color="secondary"
-                  :loading="processing"
-                  class="mr-10"
-                  @click="dialog = false"
-                >
+                <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">
                   Cancel
                 </v-btn>
-                <v-btn
-                  dark
-                  color="primary"
-                  :loading="processing"
-                  @click="cancel()"
-                >
-                  Continue
-                </v-btn>
+                <v-btn dark color="primary" :loading="processing" @click="cancel()"> Continue </v-btn>
               </v-row>
             </v-container>
           </v-card>
@@ -325,6 +227,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useAppStore } from '../../store/app.js';
 import { useApplicationStore } from '../../store/application.js';
@@ -340,7 +243,11 @@ import { isFacilityAvailable } from '../../utils/common.js';
 
 export default {
   name: 'ReportChange',
+  components: { SmallCard, NavButton },
   mixins: [alertMixin],
+  beforeRouteLeave(_to, _from, next) {
+    next();
+  },
   data() {
     return {
       viewOlderRequestActive: false,
@@ -440,18 +347,18 @@ export default {
         return '--maxLength: 700px';
       }
       switch (this.$vuetify.breakpoint.name) {
-      case 'xl':
-        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px';
-      case 'lg':
-        return '--maxLength: ' + Math.floor(this.$vuetify.breakpoint.width / 10) + 'px';
-      case 'md':
-        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
-      case 'sm':
-        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
-      case 'xs':
-        return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px';
-      default:
-        return '--maxLength: 100px';
+        case 'xl':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px';
+        case 'lg':
+          return '--maxLength: ' + Math.floor(this.$vuetify.breakpoint.width / 10) + 'px';
+        case 'md':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+        case 'sm':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+        case 'xs':
+          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px';
+        default:
+          return '--maxLength: 100px';
       }
     },
     unlockCCFRIList() {
@@ -475,6 +382,11 @@ export default {
       });
       return unlockList;
     },
+  },
+  async mounted() {
+    this.processing = true;
+    await this.getChangeRequestList();
+    this.processing = false;
   },
   methods: {
     ...mapActions(useReportChangesStore, [
@@ -503,15 +415,15 @@ export default {
     },
     getChangeTypeString(changeType) {
       switch (changeType) {
-      case 'PDF_CHANGE':
-        return 'Report other changes';
-      case 'NEW_FACILITY':
-        return 'Add new facility(s)';
-      case 'PARENT_FEE_CHANGE':
-        return 'Mid-Term Fee Increase';
+        case 'PDF_CHANGE':
+          return 'Report other changes';
+        case 'NEW_FACILITY':
+          return 'Add new facility(s)';
+        case 'PARENT_FEE_CHANGE':
+          return 'Mid-Term Fee Increase';
 
-      default:
-        return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
+        default:
+          return 'New Category'; //I put this there because past Report Other Change types were incorrectly mapped to New Category
       }
     },
     createFacilityNameString(changeActions) {
@@ -533,40 +445,40 @@ export default {
     },
     getExternalStatusString(status) {
       switch (status) {
-      case 1:
-        return 'In Progress';
-      case 2:
-        return 'Submitted';
-      case 3:
-        return 'Action Required';
-      case 4:
-        return 'Ineligible';
-      case 5:
-        return 'Approved';
-      case 6:
-        return 'Cancelled';
-      default:
-        return 'Unknown'; //should never happen!
+        case 1:
+          return 'In Progress';
+        case 2:
+          return 'Submitted';
+        case 3:
+          return 'Action Required';
+        case 4:
+          return 'Ineligible';
+        case 5:
+          return 'Approved';
+        case 6:
+          return 'Cancelled';
+        default:
+          return 'Unknown'; //should never happen!
       }
     },
     getInternalStatusString(status) {
       switch (status) {
-      case 1:
-        return 'Incomplete';
-      case 3:
-        return 'Submitted';
-      case 4:
-        return 'Processing';
-      case 5:
-        return 'WITH_PROVIDER';
-      case 6:
-        return 'Ineligible';
-      case 7:
-        return 'Approved';
-      case 8:
-        return 'Cancelled';
-      default:
-        return 'Unknown'; //should never happen!
+        case 1:
+          return 'Incomplete';
+        case 3:
+          return 'Submitted';
+        case 4:
+          return 'Processing';
+        case 5:
+          return 'WITH_PROVIDER';
+        case 6:
+          return 'Ineligible';
+        case 7:
+          return 'Approved';
+        case 8:
+          return 'Cancelled';
+        default:
+          return 'Unknown'; //should never happen!
       }
     },
     getSubmissionDateString(date) {
@@ -693,24 +605,24 @@ export default {
       this.setChangeRequestId(changeRequestId);
       this.setChangeActionId(changeActionId);
       switch (changeType) {
-      case 'PDF_CHANGE':
-        this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
-        break;
-      case 'NEW_FACILITY':
-        this.newFacilityActionRequiredRoute(changeRequestId);
-        break;
-      case 'PARENT_FEE_CHANGE':
-        this.mtfiActionRequiredRoute(changeRequestId);
-        break;
-      default:
-        break;
+        case 'PDF_CHANGE':
+          this.notificationFormActionRequiredRoute(changeActionId, changeRequestId);
+          break;
+        case 'NEW_FACILITY':
+          this.newFacilityActionRequiredRoute(changeRequestId);
+          break;
+        case 'PARENT_FEE_CHANGE':
+          this.mtfiActionRequiredRoute(changeRequestId);
+          break;
+        default:
+          break;
       }
     },
     async createNewChangeRequest(changeType) {
       let newReq;
       try {
         newReq = await this.createChangeRequest(changeType);
-      } catch (error) {
+      } catch {
         console.log('unable to create a new Req');
         this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
       }
@@ -764,7 +676,7 @@ export default {
         await this.cancelChangeRequest(this.cancelChangeRequestId);
         this.cancelChangeRequestId = undefined;
         this.setSuccessAlert('Success! Your change request has been cancelled.');
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while canceling a change request. Please try again later.');
       }
 
@@ -803,15 +715,6 @@ export default {
       return isDisabled ? '#909090' : '#003366';
     },
   },
-  async mounted() {
-    this.processing = true;
-    await this.getChangeRequestList();
-    this.processing = false;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    next();
-  },
-  components: { SmallCard, NavButton },
 };
 </script>
 <style scoped>

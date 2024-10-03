@@ -1,16 +1,6 @@
 <template>
-  <v-row
-    justify="space-around"
-    class="stickyNavButtons"
-  >
-    <v-btn
-      class="blueButton"
-      size="x-large"
-      :loading="isProcessing"
-      @click="previous()"
-    >
-      Back
-    </v-btn>
+  <v-row justify="space-around" class="stickyNavButtons">
+    <v-btn class="blueButton" size="x-large" :loading="isProcessing" @click="previous()"> Back </v-btn>
     <v-btn
       v-if="isNextDisplayed"
       :class="isNextDisabled ? 'disabledButton' : 'blueButton'"

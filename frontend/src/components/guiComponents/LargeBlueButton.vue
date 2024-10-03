@@ -1,8 +1,5 @@
 <template>
-  <v-btn
-    class="px-16 py-10 my-3 text-white bigButton"
-    size="x-large"
-  >
+  <v-btn class="px-16 py-10 my-3 text-white bigButton" size="x-large">
     <slot />
   </v-btn>
 </template>

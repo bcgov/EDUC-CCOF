@@ -1,27 +1,14 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="model.isFacilityComplete"
-    :class="loading ? 'ccof-skeleton-loader' : ''"
-  >
+  <v-form ref="form" v-model="model.isFacilityComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
-      <v-row
-        justify="center"
-        class="pt-4, pb-4"
-      >
+      <v-row justify="center" class="pt-4, pb-4">
         <span class="text-h5">Information to Determine Eligibility</span>
       </v-row>
       <v-row justify="space-around">
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-                md="12"
-              >
+              <v-col cols="12" md="12">
                 <v-text-field
                   v-model="model.facilityName"
                   :disabled="isLocked"
@@ -33,10 +20,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="model.licenseNumber"
                   :disabled="isLocked"
@@ -46,10 +30,7 @@
                   label="Facility Licence Number"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-menu
                   v-if="!isLocked"
                   v-model="model.calendarMenu"
@@ -67,14 +48,10 @@
                       required
                       :rules="rules.required"
                       label="Effective Date of Current Licence"
-
                       v-bind="props"
                     />
                   </template>
-                  <v-date-picker
-                    v-model="model.licenseEffectiveDate"
-                    @input="model.calendarMenu = false"
-                  />
+                  <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false" />
                 </v-menu>
 
                 <v-text-field
@@ -95,14 +72,8 @@
                   :rules="rules.required"
                   label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?"
                 >
-                  <v-radio
-                    label="No"
-                    value="no"
-                  />
-                  <v-radio
-                    label="Yes"
-                    value="yes"
-                  />
+                  <v-radio label="No" value="no" />
+                  <v-radio label="Yes" value="yes" />
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -143,6 +114,7 @@ import facilityMixin from '../../../mixins/facilityMixin.js';
 import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants.js';
 
 export default {
+  name: 'EligibilityComponent',
   mixins: [facilityMixin],
   data() {
     return {

@@ -1,25 +1,15 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-  >
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-card-title class="justify-center">
-            <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
+            <span class="text-h5"
+              >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
+            >
           </v-card-title>
-          <h2 class="text-center">
-            Supporting Document Upload
-          </h2>
-          <v-row
-            justify="center"
-            class="text-h5 py-4"
-            style="color: #003466"
-          >
+          <h2 class="text-center">Supporting Document Upload</h2>
+          <v-row justify="center" class="text-h5 py-4" style="color: #003466">
             {{ userInfo.organizationName }}
           </v-row>
           <v-row class="px-6 text-body-1">
@@ -41,10 +31,7 @@
           >
             <template #top>
               <v-col flex>
-                <v-toolbar
-                  flat
-                  color="white"
-                >
+                <v-toolbar flat color="white">
                   <div class="d-flex">
                     <v-btn
                       color="primary"
@@ -52,9 +39,7 @@
                       :disabled="isLocked"
                       @click="addNew"
                     >
-                      <v-icon theme="dark">
-                        mdi-plus
-                      </v-icon>
+                      <v-icon theme="dark"> mdi-plus </v-icon>
                       Add
                     </v-btn>
                   </div>
@@ -119,91 +104,37 @@
             </template>
 
             <template #item.actions="{ item }">
-              <v-icon
-                v-if="!isLocked"
-                size="small"
-                @click="deleteItem(item)"
-              >
-                mdi-delete
-              </v-icon>
+              <v-icon v-if="!isLocked" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
             </template>
           </v-data-table>
-          <v-card
-            v-if="isLoading"
-            class="pl-6 pr-6 pt-4"
-          >
-            <v-skeleton-loader
-              :loading="true"
-              type="button"
-            />
-            <v-skeleton-loader
-              max-height="375px"
-              :loading="true"
-              type="table-row-divider@3"
-            />
+          <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+            <v-skeleton-loader :loading="true" type="button" />
+            <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
           </v-card>
         </v-card>
       </v-row>
       <v-row v-if="isChangeRequest">
-        <v-card
-          v-if="isLoading"
-          class="mx-auto mb-4 rounded-lg cc-top-level-card"
-          width="1200"
-        >
-          <v-skeleton-loader
-            v-if="isLoading"
-            :loading="isLoading"
-            type="card-heading"
-          />
-          <v-skeleton-loader
-            v-if="isLoading"
-            :loading="isLoading"
-            type="list-item-avatar"
-          />
-          <v-skeleton-loader
-            v-if="isLoading"
-            :loading="isLoading"
-            type="list-item-avatar"
-          />
+        <v-card v-if="isLoading" class="mx-auto mb-4 rounded-lg cc-top-level-card" width="1200">
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading" />
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar" />
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar" />
         </v-card>
-        <v-card
-          v-else
-          class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card"
-          width="1200"
-        >
+        <v-card v-else class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card" width="1200">
           <v-card-text class="pt-7 pa-0">
             <div class="px-md-12 px-7">
               <p class="text-h5 text--primary">
                 Would you like to report any other changes to your licence or service?
               </p>
-              <v-radio-group
-                v-model="otherChanges"
-                required
-                :rules="rules.required"
-                :disabled="isLocked"
-              >
-                <v-radio
-                  label="Yes"
-                  value="Yes"
-                />
-                <v-radio
-                  label="No"
-                  value="No"
-                  @click="noReportChanges()"
-                />
+              <v-radio-group v-model="otherChanges" required :rules="rules.required" :disabled="isLocked">
+                <v-radio label="Yes" value="Yes" />
+                <v-radio label="No" value="No" @click="noReportChanges()" />
               </v-radio-group>
             </div>
           </v-card-text>
         </v-card>
       </v-row>
-      <v-row
-        v-if="otherChanges == 'Yes'"
-        class="d-flex justify-center"
-      >
-        <GroupChangeDialogueContent
-          style="max-width: 1200px"
-          class="pb-4"
-        />
+      <v-row v-if="otherChanges == 'Yes'" class="d-flex justify-center">
+        <GroupChangeDialogueContent style="max-width: 1200px" class="pb-4" />
       </v-row>
       <NavButton
         :is-next-displayed="true"
@@ -218,69 +149,31 @@
       />
     </v-container>
 
-    <v-dialog
-      v-model="dialog"
-      persistent
-      max-width="525px"
-    >
+    <v-dialog v-model="dialog" persistent max-width="525px">
       <v-card>
         <v-container class="pt-0">
           <v-row>
-            <v-col
-              cols="7"
-              class="py-0 pl-0"
-              style="background-color: #234075"
-            >
-              <v-card-title class="text-white">
-                Please confirm
-              </v-card-title>
+            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+              <v-card-title class="text-white"> Please confirm </v-card-title>
             </v-col>
-            <v-col
-              cols="5"
-              class="d-flex justify-end"
-              style="background-color: #234075"
-            />
+            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
           </v-row>
           <v-row>
-            <v-col
-              cols="12"
-              style="background-color: #ffc72c; padding: 2px"
-            />
+            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
           </v-row>
           <v-row>
-            <v-col
-              cols="12"
-              style="text-align: left"
-            >
+            <v-col cols="12" style="text-align: left">
               <p class="pt-4">
                 Are you sure you want to change your response? This will remove any documents uploaded to the Change
                 Notification Form section.
               </p>
-              <p class="pt-4">
-                Select "Continue" to confirm.
-              </p>
+              <p class="pt-4">Select "Continue" to confirm.</p>
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              cols="12"
-              style="text-align: center"
-            >
-              <v-btn
-                theme="dark"
-                color="secondary"
-                class="mr-10"
-                @click="backSelected()"
-              >
-                Back
-              </v-btn>
-              <v-btn
-                theme="dark"
-                color="primary"
-                @click="confirmNoSelected()"
-              >
-                Continue
-              </v-btn>
+            <v-col cols="12" style="text-align: center">
+              <v-btn theme="dark" color="secondary" class="mr-10" @click="backSelected()"> Back </v-btn>
+              <v-btn theme="dark" color="primary" @click="confirmNoSelected()"> Continue </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -522,7 +415,7 @@ export default {
           console.log('next path: ', this.nextPath);
           this.$router.push(this.nextPath);
         }
-      } catch (e) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.isProcessing = false;
@@ -548,7 +441,7 @@ export default {
           await this.createTable();
           this.setSuccessAlert('Changes Successfully Saved');
         }
-      } catch (e) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.isProcessing = false;
@@ -569,7 +462,7 @@ export default {
       }
       try {
         await this.saveUploadedDocuments(payload);
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
     },

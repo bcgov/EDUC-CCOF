@@ -1,27 +1,13 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="model.isCCOFComplete"
-    :class="loading ? 'ccof-skeleton-loader' : ''"
-  >
+  <v-form ref="form" v-model="model.isCCOFComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <v-row justify="space-around">
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
               <v-col>
-                <div
-                  v-show="loading"
-                  style="height: 175px"
-                >
-                  <v-skeleton-loader
-                    class="mx-auto"
-                    max-width="300"
-                    type="text@3"
-                  />
+                <div v-show="loading" style="height: 175px">
+                  <v-skeleton-loader class="mx-auto" max-width="300" type="text@3" />
                 </div>
 
                 <v-radio-group
@@ -32,34 +18,19 @@
                   :rules="rules.required"
                   label="Licence type"
                 >
-                  <v-radio
-                    label="Family child care"
-                    value="7"
-                  />
-                  <v-radio
-                    label="In-Home Multi-Age Child Care"
-                    value="6"
-                  />
-                  <v-radio
-                    label="Multi-Age Care"
-                    value="5"
-                  />
+                  <v-radio label="Family child care" value="7" />
+                  <v-radio label="In-Home Multi-Age Child Care" value="6" />
+                  <v-radio label="Multi-Age Care" value="5" />
                 </v-radio-group>
               </v-col>
             </v-row>
           </v-container>
         </v-card>
 
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model.number="model.maxDaysPerWeek"
                   :disabled="isLocked"
@@ -74,10 +45,7 @@
                   @update:model-value="convertBlankNumberToNull(model, 'maxDaysPerWeek')"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model.number="model.maxWeeksPerYear"
                   :disabled="isLocked"
@@ -103,14 +71,8 @@
                   inline
                   label="Are there months when ALL of the programs at this facility are closed for the entire month?"
                 >
-                  <v-radio
-                    label="Yes"
-                    value="yes"
-                  />
-                  <v-radio
-                    label="No"
-                    value="no"
-                  />
+                  <v-radio label="Yes" value="yes" />
+                  <v-radio label="No" value="no" />
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -123,99 +85,48 @@
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn1"
-                  :disabled="isLocked"
-                  label="Jan"
-                />
+                <v-checkbox v-model="model.closedIn1" :disabled="isLocked" label="Jan" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn2"
-                  :disabled="isLocked"
-                  label="Feb"
-                />
+                <v-checkbox v-model="model.closedIn2" :disabled="isLocked" label="Feb" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn3"
-                  :disabled="isLocked"
-                  label="Mar"
-                />
+                <v-checkbox v-model="model.closedIn3" :disabled="isLocked" label="Mar" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn4"
-                  :disabled="isLocked"
-                  label="Apr"
-                />
+                <v-checkbox v-model="model.closedIn4" :disabled="isLocked" label="Apr" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn5"
-                  :disabled="isLocked"
-                  label="May"
-                />
+                <v-checkbox v-model="model.closedIn5" :disabled="isLocked" label="May" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn6"
-                  :disabled="isLocked"
-                  label="Jun"
-                />
+                <v-checkbox v-model="model.closedIn6" :disabled="isLocked" label="Jun" />
               </v-col>
             </v-row>
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn7"
-                  :disabled="isLocked"
-                  label="Jul"
-                />
+                <v-checkbox v-model="model.closedIn7" :disabled="isLocked" label="Jul" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn8"
-                  :disabled="isLocked"
-                  label="Aug"
-                />
+                <v-checkbox v-model="model.closedIn8" :disabled="isLocked" label="Aug" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn9"
-                  :disabled="isLocked"
-                  label="Sep"
-                />
+                <v-checkbox v-model="model.closedIn9" :disabled="isLocked" label="Sep" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn10"
-                  :disabled="isLocked"
-                  label="Oct"
-                />
+                <v-checkbox v-model="model.closedIn10" :disabled="isLocked" label="Oct" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn11"
-                  :disabled="isLocked"
-                  label="Nov"
-                />
+                <v-checkbox v-model="model.closedIn11" :disabled="isLocked" label="Nov" />
               </v-col>
               <v-col>
-                <v-checkbox
-                  v-model="model.closedIn12"
-                  :disabled="isLocked"
-                  label="Dec"
-                />
+                <v-checkbox v-model="model.closedIn12" :disabled="isLocked" label="Dec" />
               </v-col>
             </v-row>
 
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-menu
                   v-if="!isLocked"
                   ref="menu1"
@@ -236,7 +147,6 @@
                       required
                       :rules="rules.required"
                       label="Facility hours of operation from"
-
                       v-bind="props"
                     />
                   </template>
@@ -262,10 +172,7 @@
                 />
               </v-col>
 
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-menu
                   v-if="!isLocked"
                   ref="menu2"
@@ -286,7 +193,6 @@
                       required
                       :rules="rules.required"
                       label="Facility hours of operation to"
-
                       v-bind="props"
                     />
                   </template>
@@ -314,16 +220,10 @@
           </v-container>
         </v-card>
 
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model.number="model.maxSpaces"
                   :disabled="isLocked"
@@ -339,10 +239,7 @@
                 />
                 <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model.number="model.maxLicensesCapacity"
                   :disabled="isLocked"
@@ -362,10 +259,7 @@
           </v-container>
         </v-card>
 
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
               <v-col>
@@ -377,14 +271,8 @@
                   inline
                   label="Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?"
                 >
-                  <v-radio
-                    label="Yes"
-                    value="yes"
-                  />
-                  <v-radio
-                    label="No"
-                    value="no"
-                  />
+                  <v-radio label="Yes" value="yes" />
+                  <v-radio label="No" value="no" />
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -450,20 +338,14 @@
             </v-row>
           </v-container>
         </v-card>
-        <v-card
-          class="cc-top-level-card"
-          width="1200"
-        >
+        <v-card class="cc-top-level-card" width="1200">
           <v-card-subtitle>
             Write the maximum <strong>number of spaces</strong> you offer extended hours of child care for each type of
             service
           </v-card-subtitle>
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
                   <v-text-field
@@ -514,10 +396,7 @@
                   />
                 </v-row>
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
                   <v-text-field

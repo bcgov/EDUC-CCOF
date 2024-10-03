@@ -18,8 +18,8 @@
 <script>
 export default {
   props: {
-    title: String,
-    subtitle: String,
+    title: { type: String, required: true },
+    subtitle: { type: String, required: true },
     disable: {
       default: false,
       type: Boolean,

@@ -14,11 +14,7 @@
       v-bind="bind"
       v-on="on"
     >
-      <v-icon
-        v-if="icon"
-        :class="[iconStyle, 'mr-1']"
-        start
-      >
+      <v-icon v-if="icon" :class="[iconStyle, 'mr-1']" start>
         {{ icon }}
       </v-icon>
       <strong>{{ text }}</strong>
@@ -32,9 +28,11 @@ export default {
   props: {
     id: {
       type: String,
+      default: '',
     },
     text: {
       type: String,
+      default: '',
     },
     short: {
       type: Boolean,
@@ -46,24 +44,31 @@ export default {
     },
     to: {
       type: String,
+      default: '',
     },
     width: {
       type: String,
+      default: '',
     },
     icon: {
       type: String,
+      default: '',
     },
     iconStyle: {
       type: String,
+      default: '',
     },
     minWidth: {
       type: String,
+      default: '',
     },
     bind: {
       type: Object,
+      default: () => ({}),
     },
     on: {
       type: Object,
+      default: () => ({}),
     },
   },
 };

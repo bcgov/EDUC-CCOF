@@ -1,43 +1,20 @@
 <template>
-  <v-row
-    no-gutters
-    class="d-flex flex-column"
-  >
-    <v-form
-      ref="ccfriSummaryForm"
-      v-model="isValidForm"
-    >
+  <v-row no-gutters class="d-flex flex-column">
+    <v-form ref="ccfriSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
         <h4 style="color: #003466">
           Child Care Fee Reduction Initiative (CCFRI)
-          <v-icon
-            v-if="isValidForm"
-            color="green"
-            size="large"
-          >
-            mdi-check-circle-outline
-          </v-icon>
-          <v-icon
-            v-if="!isValidForm"
-            color="#ff5252"
-            size="large"
-          >
-            mdi-alert-circle-outline
-          </v-icon>
-          <span
-            v-if="!isValidForm"
-            style="color: #ff5252"
-          >Your form is missing required information. Click here to view.
+          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
+          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" style="color: #ff5252"
+            >Your form is missing required information. Click here to view.
           </span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row v-if="!ccfri || ccfri?.ccfriOptInStatus === 0">
           <v-col cols="12">
-            <span
-              cols="12"
-              class="summary-label"
-            >CCFRI Opt-In/Opt-Out Status:</span>
+            <span cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
             <v-text-field
               cols="12"
               placeholder="Required"
@@ -54,33 +31,14 @@
             </v-text-field>
           </v-col>
         </v-row>
-        <v-row
-          v-else-if="ccfri.ccfriOptInStatus != 0"
-          no-gutters
-          class="d-flex flex-column"
-        >
-          <div
-            v-for="(ccType, index) in ccfriChildCareTypes"
-            :key="index"
-          >
+        <v-row v-else-if="ccfri.ccfriOptInStatus != 0" no-gutters class="d-flex flex-column">
+          <div v-for="(ccType, index) in ccfriChildCareTypes" :key="index">
             <v-row class="d-flex justify-start">
-              <v-col
-                cols="12"
-                lg="12"
-                class="pb-1 pt-1 ml-2"
-              >
-                <v-row
-                  no-gutters
-                  class="d-flex justify-start"
-                >
-                  <v-col
-                    cols="12"
-                    class="d-flex justify-start"
-                  >
-                    <span
-                      v-if="!!ccType.programYear && !!ccType.childCareCategory"
-                      class="summary-label pt-3"
-                    >Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}:
+              <v-col cols="12" lg="12" class="pb-1 pt-1 ml-2">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span v-if="!!ccType.programYear && !!ccType.childCareCategory" class="summary-label pt-3"
+                      >Parent Fees {{ ccType.programYear }}: {{ ccType.childCareCategory }}:
                     </span>
                     <v-text-field
                       v-else
@@ -107,14 +65,9 @@
                       :rules="rules.required"
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    class="d-flex justify-start"
-                  >
-                    <span
-                      v-if="!!ccType.feeFrequency"
-                      class="summary-label"
-                    >Your <b>highest {{ ccType.feeFrequency.toLowerCase() }} parent fee before CCFRI is applied</b> in
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span v-if="!!ccType.feeFrequency" class="summary-label"
+                      >Your <b>highest {{ ccType.feeFrequency.toLowerCase() }} parent fee before CCFRI is applied</b> in
                       every month below.
                     </span>
                     <v-text-field
@@ -130,10 +83,7 @@
                       :rules="rules.required"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Apr:</span>
                     <v-text-field
                       placeholder="Required"
@@ -148,10 +98,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">May:</span>
                     <v-text-field
                       placeholder="Required"
@@ -166,10 +113,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Jun:</span>
                     <v-text-field
                       placeholder="Required"
@@ -184,10 +128,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Jul:</span>
                     <v-text-field
                       placeholder="Required"
@@ -202,10 +143,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Aug:</span>
                     <v-text-field
                       placeholder="Required"
@@ -220,10 +158,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Sep:</span>
                     <v-text-field
                       placeholder="Required"
@@ -238,10 +173,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Oct:</span>
                     <v-text-field
                       placeholder="Required"
@@ -256,10 +188,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Nov:</span>
                     <v-text-field
                       placeholder="Required"
@@ -274,10 +203,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Dec:</span>
                     <v-text-field
                       placeholder="Required"
@@ -292,10 +218,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Jan:</span>
                     <v-text-field
                       placeholder="Required"
@@ -310,10 +233,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Feb:</span>
                     <v-text-field
                       placeholder="Required"
@@ -328,10 +248,7 @@
                       prefix="$"
                     />
                   </v-col>
-                  <v-col
-                    cols="2"
-                    class="d-flex justify-start"
-                  >
+                  <v-col cols="2" class="d-flex justify-start">
                     <span class="summary-label pt-3">Mar:</span>
                     <v-text-field
                       placeholder="Required"
@@ -351,21 +268,13 @@
             </v-row>
           </div>
           <v-row class="d-flex justify-start ml-0">
-            <v-col
-              cols="12"
-              lg="12"
-              class="pb-2 pt-2"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
-                  <span class="summary-label">Do you charge parent fees at this facility to any closures on business days (other than statutory
-                    holidays)</span>
+            <v-col cols="12" lg="12" class="pb-2 pt-2">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
+                  <span class="summary-label"
+                    >Do you charge parent fees at this facility to any closures on business days (other than statutory
+                    holidays)</span
+                  >
                   <v-text-field
                     placeholder="Required"
                     :model-value="getClosureFees(ccfri.hasClosureFees)"
@@ -392,16 +301,9 @@
                 <v-col class="col-md-3 col-12">
                   <span class="summary-label">Did parents pay for this closure?</span>
                 </v-col>
-                <v-row
-                  v-for="(obj, index) in ccfri.dates"
-                  :key="index"
-                >
+                <v-row v-for="(obj, index) in ccfri.dates" :key="index">
                   <v-col class="col-md-3 col-12">
-                    <v-menu
-                      v-model="obj.calendarMenu1"
-                      :nudge-right="40"
-                      min-width="auto"
-                    >
+                    <v-menu v-model="obj.calendarMenu1" :nudge-right="40" min-width="auto">
                       <template #activator="{ props }">
                         <v-text-field
                           v-model="obj.formattedStartDate"
@@ -412,7 +314,6 @@
                           hide-details
                           :rules="rules.required"
                           readonly
-
                           v-bind="props"
                         />
                       </template>
@@ -420,11 +321,7 @@
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
-                    <v-menu
-                      v-model="obj.calendarMenu2"
-                      :nudge-right="40"
-                      min-width="auto"
-                    >
+                    <v-menu v-model="obj.calendarMenu2" :nudge-right="40" min-width="auto">
                       <template #activator="{ props }">
                         <v-text-field
                           v-model="obj.formattedEndDate"
@@ -436,7 +333,6 @@
                           required
                           readonly
                           :rules="rules.required"
-
                           v-bind="props"
                         />
                       </template>
@@ -474,19 +370,9 @@
               <!-- end v if -->
             </v-col>
           </v-row>
-          <v-col
-            cols="12"
-            lg="12"
-            class="pb-2 pt-2"
-          >
-            <v-row
-              no-gutters
-              class="d-flex justify-start"
-            >
-              <span
-                cols="12"
-                class="summary-label"
-              >CCFRI Opt-In/Opt-Out Status:</span>
+          <v-col cols="12" lg="12" class="pb-2 pt-2">
+            <v-row no-gutters class="d-flex justify-start">
+              <span cols="12" class="summary-label">CCFRI Opt-In/Opt-Out Status:</span>
               <v-text-field
                 cols="6"
                 placeholder="Required"
@@ -500,15 +386,11 @@
               />
             </v-row>
           </v-col>
-          <v-col
-            cols="12"
-            class="pb-2 pt-2"
-          >
-            <v-row
-              no-gutters
-              class="d-flex justify-start"
-            >
-              <span class="summary-label">Is there any other information about this facility you would like us to know?</span>
+          <v-col cols="12" class="pb-2 pt-2">
+            <v-row no-gutters class="d-flex justify-start">
+              <span class="summary-label"
+                >Is there any other information about this facility you would like us to know?</span
+              >
               <v-textarea
                 label="--"
                 class="col-12 summary-value-small"
@@ -525,25 +407,14 @@
           </v-col>
         </v-row>
 
-        <v-row
-          v-if="!isValidForm"
-          class="d-flex justify-start"
-        >
-          <v-col
-            cols="6"
-            lg="4"
-            class="pb-0 pt-0 ml-2"
-          >
-            <v-row
-              no-gutters
-              class="d-flex justify-start"
-            >
-              <v-col
-                cols="12"
-                class="d-flex justify-start"
-              >
+        <v-row v-if="!isValidForm" class="d-flex justify-start">
+          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
                 <router-link :to="getRoutingPath()">
-                  <span style="color: #ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span>
+                  <span style="color: #ff5252; text-underline: black"
+                    ><u>To add this information, click here. This will bring you to a different page.</u></span
+                  >
                 </router-link>
               </v-col>
             </v-row>
@@ -567,20 +438,25 @@ export default {
     ccfri: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     facilityId: {
       type: String,
       required: false,
+      default: '',
     },
     changeRecGuid: {
       type: String,
       required: false,
+      default: '',
     },
     programYearId: {
       type: String,
       required: false,
+      default: '',
     },
   },
+  emits: ['isSummaryValid'],
   data() {
     return {
       PATHS,
@@ -591,15 +467,6 @@ export default {
         formId: this.ccfri?.ccfriId,
       },
     };
-  },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
   },
   computed: {
     ...mapState('application', ['isRenewal']),
@@ -675,6 +542,15 @@ export default {
       } else {
         return _.sortBy(this.ccfri?.childCareTypes, 'orderNumber');
       }
+    },
+  },
+  watch: {
+    isLoadingComplete: {
+      handler: function (val) {
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
+      },
     },
   },
   methods: {

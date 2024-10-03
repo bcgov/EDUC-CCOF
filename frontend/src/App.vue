@@ -1,16 +1,10 @@
 <template>
   <v-app id="app">
     <MsieBanner v-if="isIE" />
-    <Header />
+    <HeaderComponent />
     <SnackBar />
-    <NavBar
-      v-if="pageTitle && isAuthenticated && showNavBar"
-      :title="pageTitle"
-    />
-    <v-main
-      fluid
-      class="align-start"
-    >
+    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
+    <v-main fluid class="align-start">
       <v-app-bar
         v-if="bannerColor !== ''"
         style="color: white"
@@ -21,23 +15,18 @@
         clipped-left
       >
         <div>
-          <h3 class="envBanner">
-            {{ bannerEnvironment }} Environment
-          </h3>
+          <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
         </div>
       </v-app-bar>
       <div>
-        <h3
-          v-if="subtitleBanner != ''"
-          class="subBanner"
-        >
+        <h3 v-if="subtitleBanner != ''" class="subBanner">
           {{ subtitleBanner }}
         </h3>
       </div>
       <ModalIdle v-if="isAuthenticated" />
       <router-view />
     </v-main>
-    <Footer />
+    <FooterComponent />
   </v-app>
 </template>
 
@@ -49,8 +38,8 @@ import { useAuthStore } from './store/auth.js';
 
 import StaticConfig from './common/staticConfig.js';
 
-import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
+import HeaderComponent from './components/Header.vue';
+import FooterComponent from './components/Footer.vue';
 import ModalIdle from './components/ModalIdle.vue';
 import MsieBanner from './components/MsieBanner.vue';
 import SnackBar from './components/util/SnackBar.vue';
@@ -59,8 +48,8 @@ import NavBar from './components/util/NavBar.vue';
 export default {
   name: 'App',
   components: {
-    Header,
-    Footer,
+    HeaderComponent,
+    FooterComponent,
     ModalIdle,
     MsieBanner,
     SnackBar,
@@ -69,22 +58,18 @@ export default {
   metaInfo: {
     meta: StaticConfig.VUE_APP_META_DATA,
   },
-  computed: {
-    ...mapState(useAuthStore, ['isAuthenticated', 'loginError', 'isLoading']),
-    ...mapState(useAppStore, ['pageTitle', 'showNavBar', 'subtitleBanner']),
-    isIE() {
-      return /Trident\/|MSIE/.test(window.navigator.userAgent);
-    },
-  },
   data() {
     return {
       bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
       bannerColor: StaticConfig.BANNER_COLOR,
     };
   },
-  methods: {
-    ...mapActions(useAuthStore, ['getJwtToken', 'getUserInfo', 'logout', 'setLoading']),
-    ...mapActions(useAppStore, ['getLookupInfo']),
+  computed: {
+    ...mapState(useAuthStore, ['isAuthenticated', 'loginError', 'isLoading']),
+    ...mapState(useAppStore, ['pageTitle', 'showNavBar', 'subtitleBanner']),
+    isIE() {
+      return /Trident\/|MSIE/.test(window.navigator.userAgent);
+    },
   },
   async created() {
     this.setLoading(true);
@@ -100,6 +85,10 @@ export default {
         this.setLoading(false);
       });
     this.setLoading(false);
+  },
+  methods: {
+    ...mapActions(useAuthStore, ['getJwtToken', 'getUserInfo', 'logout', 'setLoading']),
+    ...mapActions(useAppStore, ['getLookupInfo']),
   },
 };
 </script>

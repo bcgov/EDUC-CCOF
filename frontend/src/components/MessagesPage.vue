@@ -1,34 +1,12 @@
 <template>
-  <v-container
-    id="messages"
-    fluid
-    class="pa-0 ma-0"
-    height="100%"
-  >
-    <v-row
-      v-if="!allMessages"
-      class="ma-0"
-    >
+  <v-container id="messages" fluid class="pa-0 ma-0" height="100%">
+    <v-row v-if="!allMessages" class="ma-0">
       <Spinner style="width: 100%" />
     </v-row>
-    <v-row
-      v-else
-      fluid
-      class="mx-4"
-    >
+    <v-row v-else fluid class="mx-4">
       <v-row>
-        <v-col
-          id="messages-summary"
-          fluid
-          class="pa-0"
-          :cols="4"
-        >
-          <v-card
-            tile
-            style="border-right: 1px solid lightgrey"
-            :height="fitScreenHeight()"
-            class="pa-0 elevation-0"
-          >
+        <v-col id="messages-summary" fluid class="pa-0" :cols="4">
+          <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0">
             <v-data-table
               :headers="headers"
               :items="allMessages"
@@ -44,37 +22,19 @@
               @click:row="rowClickHandler"
             >
               <template #item.isRead="{ item }">
-                <p v-if="item.isRead">
-                  Read
-                </p>
-                <p v-else>
-                  Unread
-                </p>
+                <p v-if="item.isRead">Read</p>
+                <p v-else>Unread</p>
               </template>
             </v-data-table>
           </v-card>
         </v-col>
-        <v-col
-          v-if="message.sender"
-          id="messages-content"
-          fluid
-          class="pa-0"
-          :cols="8"
-        >
-          <v-card
-            class="pa-4 overflow-auto elevation-0"
-            fluid
-            tile
-            :height="fitScreenHeight()"
-          >
+        <v-col v-if="message.sender" id="messages-content" fluid class="pa-0" :cols="8">
+          <v-card class="pa-4 overflow-auto elevation-0" fluid tile :height="fitScreenHeight()">
             <v-card-title class="pa-0">
               <v-col :cols="8">
                 {{ message.sender }}
               </v-col>
-              <v-col
-                align="right"
-                :cols="4"
-              >
+              <v-col align="right" :cols="4">
                 {{ message.dateReceived }}
               </v-col>
               <v-col>
@@ -88,19 +48,8 @@
       </v-row>
     </v-row>
     <v-divider />
-    <v-row
-      justify="center"
-      class="pa-3"
-    >
-      <v-btn
-        id="back-button"
-        color="info"
-        variant="outlined"
-        v-bind="buttonSize"
-        @click="goToHomePage()"
-      >
-        Back
-      </v-btn>
+    <v-row justify="center" class="pa-3">
+      <v-btn id="back-button" color="info" variant="outlined" v-bind="buttonSize" @click="goToHomePage()"> Back </v-btn>
     </v-row>
   </v-container>
 </template>
@@ -182,18 +131,18 @@ export default {
     },
     fitScreenHeight() {
       switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-        return '67vh';
-      case 'sm':
-        return '82vh';
-      case 'md':
-        return '75vh';
-      case 'lg':
-        return '70vh';
-      case 'xl':
-        return '78vh';
-      default:
-        return '70vh';
+        case 'xs':
+          return '67vh';
+        case 'sm':
+          return '82vh';
+        case 'md':
+          return '75vh';
+        case 'lg':
+          return '70vh';
+        case 'xl':
+          return '78vh';
+        default:
+          return '70vh';
       }
     },
   },

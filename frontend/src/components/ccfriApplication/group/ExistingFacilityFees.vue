@@ -5,30 +5,15 @@
         Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
       </span>
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <v-form
-      ref="isValidForm"
-      v-model="isValidForm"
-      model-value="false"
-    >
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image, image, image"
-      />
-      <br>
-      <v-skeleton-loader
-        v-if="loading"
-        max-height="475px"
-        :loading="loading"
-        type="image"
-        class="pb-6"
-      >
-        <br><br>
+    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image, image" />
+      <br />
+      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image" class="pb-6">
+        <br /><br />
       </v-skeleton-loader>
 
       <v-card
@@ -48,29 +33,19 @@
             :facility-name="currentFacility.facilityName"
             :license-number="currentFacility?.licenseNumber"
           />
-          <br>
+          <br />
           <!--get current year from CCOF year id -NOT first in array-->
           <p class="text-h6 text--primary text-center">
             Our records show this facility's parent fees for
             <strong> January {{ previousProgramYearLabel }} </strong> to
             <strong> March {{ previousProgramYearLabel }} </strong> are as follows:
           </p>
-          <br>
+          <br />
           <v-table v-if="feeList.length > 0">
             <thead>
               <tr>
-                <th
-                  scope="col"
-                  class="text-left"
-                >
-                  Date
-                </th>
-                <th
-                  v-for="(item, index) in feeList"
-                  :key="index"
-                  class="text-center"
-                  scope="col"
-                >
+                <th scope="col" class="text-left">Date</th>
+                <th v-for="(item, index) in feeList" :key="index" class="text-center" scope="col">
                   {{ item.childCareCategory }} - {{ item.feeFrequency }}
                 </th>
               </tr>
@@ -78,49 +53,25 @@
             <tbody>
               <tr>
                 <td>January {{ previousProgramYearLabel }}</td>
-                <td
-                  v-for="(item, index) in feeList"
-                  :key="index"
-                  class="text-center"
-                >
-                  ${{ item.approvedFeeJan }}
-                </td>
+                <td v-for="(item, index) in feeList" :key="index" class="text-center">${{ item.approvedFeeJan }}</td>
               </tr>
               <tr>
                 <td>February {{ previousProgramYearLabel }}</td>
-                <td
-                  v-for="(item, index) in feeList"
-                  :key="index"
-                  class="text-center"
-                >
-                  ${{ item.approvedFeeFeb }}
-                </td>
+                <td v-for="(item, index) in feeList" :key="index" class="text-center">${{ item.approvedFeeFeb }}</td>
               </tr>
               <tr>
                 <td>March {{ previousProgramYearLabel }}</td>
-                <td
-                  v-for="(item, index) in feeList"
-                  :key="index"
-                  class="text-center"
-                >
-                  ${{ item.approvedFeeMar }}
-                </td>
+                <td v-for="(item, index) in feeList" :key="index" class="text-center">${{ item.approvedFeeMar }}</td>
               </tr>
             </tbody>
           </v-table>
-          <h2
-            v-else
-            class="text-center"
-          >
+          <h2 v-else class="text-center">
             We have no fees on record for this facility. Click "Next" to enter your fees for the previous 24 months.
           </h2>
         </v-card-text>
       </v-card>
 
-      <div
-        v-if="loading"
-        :loading="loading"
-      />
+      <div v-if="loading" :loading="loading" />
       <div v-else-if="feeList.length == 0" />
       <v-card
         v-else
@@ -134,23 +85,11 @@
         :ripple="false"
       >
         <v-card-text>
-          <p class="text-h6 text--primary">
-            Are these fees listed above correct for this facility?
-          </p>
-          <br>
-          <v-radio-group
-            v-model="model.q1"
-            :rules="rules"
-            inline
-          >
-            <v-radio
-              label="Yes"
-              value="Yes"
-            />
-            <v-radio
-              label="No"
-              value="No"
-            />
+          <p class="text-h6 text--primary">Are these fees listed above correct for this facility?</p>
+          <br />
+          <v-radio-group v-model="model.q1" :rules="rules" inline>
+            <v-radio label="Yes" value="Yes" />
+            <v-radio label="No" value="No" />
           </v-radio-group>
         </v-card-text>
       </v-card>

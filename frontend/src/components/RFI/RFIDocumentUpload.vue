@@ -1,13 +1,8 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-  >
+  <v-form ref="form" v-model="isValidForm">
     <div class="pa-0">
       <div class="pa-2 pa-md-4 ma-0">
-        <p class="text-h5 text--primary px-5 py-0 my-0">
-          Documentation Required
-        </p>
+        <p class="text-h5 text--primary px-5 py-0 my-0">Documentation Required</p>
       </div>
       <div class="px-md-12 px-7">
         <v-row class="px-6 text-body-1">
@@ -32,21 +27,10 @@
         >
           <template #top>
             <v-col flex>
-              <v-toolbar
-                flat
-                color="white"
-              >
+              <v-toolbar flat color="white">
                 <div class="d-flex">
-                  <v-btn
-                    class="my-5"
-                    dark
-                    color="#003366"
-                    :disabled="isLocked"
-                    @click="addNew"
-                  >
-                    <v-icon dark>
-                      mdi-plus
-                    </v-icon>
+                  <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
+                    <v-icon dark> mdi-plus </v-icon>
                     Add
                   </v-btn>
                 </div>
@@ -91,13 +75,7 @@
             />
           </template>
           <template #item.actions="{ item }">
-            <v-icon
-              v-if="!isLocked"
-              size="small"
-              @click="deleteItem(item)"
-            >
-              mdi-delete
-            </v-icon>
+            <v-icon v-if="!isLocked" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
           </template>
         </v-data-table>
       </div>
@@ -133,50 +111,7 @@ export default {
       required: true,
     },
   },
-
-  computed: {
-    ...mapState(useApplicationStore, ['applicationStatus']),
-    ...mapState(useNavBarStore, ['changeRequestId', 'changeType', 'isChangeRequest']),
-    ...mapState(useReportChangesStore, ['changeRequestStatus']),
-    isLocked() {
-      if (this.currentFacility.unlockRfi) {
-        return false;
-      } else if (this.isChangeRequest) {
-        if (!this.changeRequestStatus) {
-          return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
-    },
-  },
-  watch: {
-    rFIDocuments: {
-      handler: function (val) {
-        this.uploadedRFITypeDocuments = val;
-      },
-    },
-  },
-
-  async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
-    this.fileRules = [
-      (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
-    ];
-    await this.createTable();
-  },
-
+  emits: ['addRFIDocument', 'addRFIDocumentDescription', 'deleteRFIDocument', 'addRFIRow'],
   data() {
     return {
       isLoading: false,
@@ -240,7 +175,47 @@ export default {
       selectRules: [(v) => !!v || 'This is required'],
     };
   },
+  computed: {
+    ...mapState(useApplicationStore, ['applicationStatus']),
+    ...mapState(useNavBarStore, ['changeRequestId', 'changeType', 'isChangeRequest']),
+    ...mapState(useReportChangesStore, ['changeRequestStatus']),
+    isLocked() {
+      if (this.currentFacility.unlockRfi) {
+        return false;
+      } else if (this.isChangeRequest) {
+        if (!this.changeRequestStatus) {
+          return false;
+        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
+          return true;
+        }
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
+  },
+  watch: {
+    rFIDocuments: {
+      handler: function (val) {
+        this.uploadedRFITypeDocuments = val;
+      },
+    },
+  },
+  async mounted() {
+    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
+    this.fileRules = [
+      (v) => !!v || 'This is required',
+      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
+      (value) =>
+        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
+      (value) =>
+        !value ||
+        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
+        `Accepted file types are ${this.fileFormats}.`,
+    ];
+    await this.createTable();
+  },
   methods: {
     async selectFile(file) {
       if (file) {

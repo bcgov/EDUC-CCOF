@@ -123,7 +123,7 @@ export default {
         if (showNotification) {
           this.setSuccessAlert('Success! Organization information has been saved.');
         }
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       this.processing = false;

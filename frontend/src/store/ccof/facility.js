@@ -11,7 +11,6 @@ import ApiService from '../../common/apiService.js';
 import { ApiRoutes } from '../../utils/constants.js';
 import { checkSession } from '../../utils/session.js';
 
-
 // FIXME: getModel getter was removed and will break all over. All it did was return state.model
 export const useFacilityStore = defineStore('facility', {
   state: () => ({

@@ -1,18 +1,8 @@
 <template>
-  <v-form
-    ref="searchForm"
-    @submit.prevent
-  >
+  <v-form ref="searchForm" @submit.prevent>
     <v-row justify="center">
-      <v-col
-        cols="12"
-        style="padding-top: 0px"
-        align="center"
-      >
-        <v-card
-          elevation="4"
-          max-width="1448"
-        >
+      <v-col cols="12" style="padding-top: 0px" align="center">
+        <v-card elevation="4" max-width="1448">
           <v-row>
             <v-col style="padding-top: 0%; padding-bottom: 0px">
               <v-card-title
@@ -31,10 +21,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              cols="10"
-              class="pt-5 text-left"
-            >
+            <v-col cols="10" class="pt-5 text-left">
               <div
                 color="#313131"
                 style="padding-left: 24px; font-style: normal; font-weight: 500; font-family: BCSans; font-size: 16px"
@@ -44,11 +31,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              cols="10"
-              sm="9"
-              class="py-0 pr-0"
-            >
+            <v-col cols="10" sm="9" class="py-0 pr-0">
               <v-text-field
                 ref="searchCriteria"
                 v-model="searchCriteria"
@@ -64,16 +47,8 @@
                 @keydown.enter="searchFacilities(searchCriteria)"
               />
             </v-col>
-            <v-col
-              class="pt-0 pl-0 text-left"
-              cols="3"
-            >
-              <v-dialog
-                v-model="dialog"
-                persistent
-                max-width="650px"
-                @click:outside="dialog = false"
-              >
+            <v-col class="pt-0 pl-0 text-left" cols="3">
+              <v-dialog v-model="dialog" persistent max-width="650px" @click:outside="dialog = false">
                 <template #activator="{ props }">
                   <v-btn
                     style="
@@ -94,11 +69,7 @@
                 <v-card>
                   <v-container style="padding-top: 0px">
                     <v-row>
-                      <v-col
-                        cols="6"
-                        class="d-flex pl-0"
-                        style="background-color: #7b2ee5"
-                      >
+                      <v-col cols="6" class="d-flex pl-0" style="background-color: #7b2ee5">
                         <v-card-title
                           style="
                             color: white;
@@ -114,28 +85,14 @@
                           Search Facilities
                         </v-card-title>
                       </v-col>
-                      <v-col
-                        cols="6"
-                        class="d-flex justify-end"
-                        style="background-color: #7b2ee5"
-                      >
+                      <v-col cols="6" class="d-flex justify-end" style="background-color: #7b2ee5">
                         <v-btn icon>
-                          <v-icon
-                            size="large"
-                            color="white"
-                            @click="dialog = false"
-                          >
-                            mdi-close
-                          </v-icon>
+                          <v-icon size="large" color="white" @click="dialog = false"> mdi-close </v-icon>
                         </v-btn>
                       </v-col>
                     </v-row>
                     <v-row>
-                      <v-col
-                        cols="12"
-                        class="d-flex pb-0"
-                        style="padding-left: 24px; padding-bottom: 0px"
-                      >
+                      <v-col cols="12" class="d-flex pb-0" style="padding-left: 24px; padding-bottom: 0px">
                         <v-text-field
                           ref="searchCriteriaOnDialogue"
                           v-model="searchCriteria"
@@ -165,22 +122,13 @@
                               padding-right: 6px;
                             "
                           >
-                            <v-icon
-                              style=""
-                              size="large"
-                              color="white"
-                            >
-                              mdi-magnify
-                            </v-icon>
+                            <v-icon style="" size="large" color="white"> mdi-magnify </v-icon>
                           </v-card>
                         </v-btn>
                       </v-col>
                     </v-row>
                     <v-row>
-                      <v-col
-                        cols="12"
-                        style="padding-top: 0px"
-                      >
+                      <v-col cols="12" style="padding-top: 0px">
                         <v-data-table
                           v-model="selectedFacility"
                           :headers="headers"
@@ -204,8 +152,10 @@
                                 <span style="font-weight: 600; color: #431782; font-size: 16px; font-family: BCSans">{{
                                   item.facilityName
                                 }}</span>
-                                <br>
-                                <span style="font-weight: 600; color: #000; font-size: 14px; font-family: BCSans">City: </span>{{ item.city }}
+                                <br />
+                                <span style="font-weight: 600; color: #000; font-size: 14px; font-family: BCSans"
+                                  >City: </span
+                                >{{ item.city }}
                               </td>
                               <td class="text-right">
                                 <v-btn
@@ -226,8 +176,10 @@
                             </tr>
                           </template>
                           <template #no-data>
-                            <span style="color: #0483af; font-weight: bold; font-size: large">No facilities were found matching your search criteria.<br>
-                              Try different keywords or check your spelling.</span><br><br>
+                            <span style="color: #0483af; font-weight: bold; font-size: large"
+                              >No facilities were found matching your search criteria.<br />
+                              Try different keywords or check your spelling.</span
+                            ><br /><br />
                           </template>
                           <template #body.append>
                             <tr v-show="!loading && searchResults.length == 50">
@@ -235,11 +187,7 @@
                                 <table>
                                   <!--//NOSONAR-->
                                   <tr>
-                                    <td
-                                      colspan="1"
-                                      with="10%"
-                                      style="vertical-align: top"
-                                    >
+                                    <td colspan="1" with="10%" style="vertical-align: top">
                                       <span style="color: #0fc3ed; font-weight: bold; font-size: x-large">*</span>
                                     </td>
                                     <td style="padding-top: 2px">
@@ -279,7 +227,7 @@ import axios from 'axios';
 export default {
   name: 'FacilitySearch',
   props: {},
-  emits: ["resetTypeOfCare", "selectedFacility"],
+  emits: ['resetTypeOfCare', 'selectedFacility'],
   data() {
     return {
       searchCriteria: '',

@@ -1,52 +1,23 @@
 <template>
-  <v-container
-    fluid
-    class="pa-12"
-  >
+  <v-container fluid class="pa-12">
     <MessagesToolbar />
 
-    <div
-      v-if="organizationAccountNumber || organizationName"
-      class="font-weight-bold pb-6 text-h5 text-center"
-    >
-      <p v-if="organizationAccountNumber">
-        Organization ID: {{ organizationAccountNumber }}
-      </p>
-      <p v-if="organizationName">
-        Organization Name: {{ organizationName }}
-      </p>
+    <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
+      <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
+      <p v-if="organizationName">Organization Name: {{ organizationName }}</p>
     </div>
 
-    <div class="pb-12 text-h4 text-center">
-      What would you like to do?
-    </div>
+    <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
-    <v-row
-      class=""
-      align="stretch"
-      justify="space-around"
-    >
+    <v-row class="" align="stretch" justify="space-around">
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>
-          <p
-            v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0"
-            class="text-h6"
-          >
+          <p v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0" class="text-h6">
             Child Care Operating Funding <strong>(CCOF)</strong>
           </p>
-          <p
-            v-else
-            class="text-h6"
-          >
-            Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:
-          </p>
+          <p v-else class="text-h6">Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
           <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
-            <v-container
-              v-for="item in ccofNewApplicationText"
-              :key="item.infoTitle"
-              class="pa-0"
-              fluid
-            >
+            <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
               <ul>
                 <li class="pa-0">
                   {{ item.title }}
@@ -59,89 +30,44 @@
                 border
                 style="border: 1px solid #5fbbeb"
               >
-                <v-row
-                  align="center"
-                  no-gutters
-                >
-                  <v-col
-                    :cols="12"
-                    lg="1"
-                    align="center"
-                  >
-                    <v-icon
-                      color="#003366"
-                      aria-hidden="false"
-                      size="40"
-                    >
-                      mdi-information
-                    </v-icon>
+                <v-row align="center" no-gutters>
+                  <v-col :cols="12" lg="1" align="center">
+                    <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
                   </v-col>
-                  <v-col
-                    :cols="12"
-                    lg="11"
-                    class="px-2 py-1"
-                  >
+                  <v-col :cols="12" lg="11" class="px-2 py-1">
                     {{ item.body }}
                   </v-col>
                 </v-row>
               </v-card>
             </v-container>
           </div>
-          <p
-            v-if="ccofStatus === CCOF_STATUS_NEW"
-            class="pt-2"
-          >
+          <p v-if="ccofStatus === CCOF_STATUS_NEW" class="pt-2">
             For more information, visit the government website:
             <a
               class="text-decoration-underline"
               href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-            >gov.bc.ca/childcareoperatingfunding</a>
+              >gov.bc.ca/childcareoperatingfunding</a
+            >
           </p>
         </template>
         <template #button>
           <div v-if="ccofStatus === CCOF_STATUS_NEW">
-            <v-btn
-              theme="dark"
-              class="blueButton"
-              @click="newApplicationIntermediatePage()"
-            >
-              Start Application
-            </v-btn>
-            <p class="mt-4">
-              Fiscal year runs April 1 to March 31
-            </p>
+            <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()"> Start Application </v-btn>
+            <p class="mt-4">Fiscal year runs April 1 to March 31</p>
           </div>
 
           <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
-            <p class="text-h5 blueText">
-              Status: Incomplete
-            </p>
-            <v-btn
-              theme="dark"
-              class="blueButton"
-              @click="continueApplication()"
-            >
-              Continue Application
-            </v-btn>
-            <p class="mt-4">
-              Fiscal year runs April 1 to March 31
-            </p>
-            <v-btn
-              v-if="isCancelPcfButtonEnabled"
-              theme="dark"
-              class="redButton"
-              @click="openDialog()"
-            >
+            <p class="text-h5 blueText">Status: Incomplete</p>
+            <v-btn theme="dark" class="blueButton" @click="continueApplication()"> Continue Application </v-btn>
+            <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+            <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
               Cancel Application
             </v-btn>
           </div>
 
           <div v-else>
             <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
-              <div
-                v-for="item in getActionRequiredApplicationsForCCOFCard"
-                :key="item.applicationId"
-              >
+              <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
                 <v-btn
                   theme="dark"
                   class="blueButton my-2"
@@ -152,18 +78,10 @@
               </div>
             </div>
             <div v-else>
-              <p
-                v-if="ccofApplicationStatus === 'ACTIVE'"
-                class="text-h5 blueText mb-0"
-              >
+              <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
                 Status of your funding agreement for the current fiscal year: Active
               </p>
-              <p
-                v-else
-                class="text-h5 blueText mb-0"
-              >
-                Status: Submitted
-              </p>
+              <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
               <v-btn
                 v-if="applicationType === 'NEW'"
                 theme="dark"
@@ -175,8 +93,8 @@
               <v-btn
                 v-else-if="
                   applicationType === 'RENEW' &&
-                    applicationStatus === 'SUBMITTED' &&
-                    ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
+                  applicationStatus === 'SUBMITTED' &&
+                  ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
                 "
                 theme="dark"
                 class="blueButton"
@@ -185,9 +103,7 @@
                 View Recent Application
               </v-btn>
             </div>
-            <p class="mt-4">
-              Fiscal year runs April 1 to March 31
-            </p>
+            <p class="mt-4">Fiscal year runs April 1 to March 31</p>
             <router-link
               v-if="isSubmissionHistoryDisplayed"
               class="text-decoration-underline"
@@ -199,47 +115,25 @@
         </template>
       </SmallCard>
 
-      <v-dialog
-        v-model="showDeleteDialog"
-        persistent
-        max-width="700px"
-      >
+      <v-dialog v-model="showDeleteDialog" persistent max-width="700px">
         <v-card>
           <v-container class="pt-0">
             <v-row>
-              <v-col
-                cols="7"
-                class="py-0 pl-0"
-                style="background-color: #234075"
-              >
-                <v-card-title class="text-white">
-                  Cancel Application Warning
-                </v-card-title>
+              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+                <v-card-title class="text-white"> Cancel Application Warning </v-card-title>
               </v-col>
-              <v-col
-                cols="5"
-                class="d-flex justify-end"
-                style="background-color: #234075"
-              />
+              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                style="background-color: #ffc72c; padding: 2px"
-              />
+              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                style="text-align: center"
-              >
+              <v-col cols="12" style="text-align: center">
                 <p>
                   If you cancel your application, any information you entered will be deleted. If you create a new
                   application, you will need to re-enter this information.
                 </p>
-                <p class="pt-4">
-                  Are you sure you want to cancel your application and delete your information?
-                </p>
+                <p class="pt-4">Are you sure you want to cancel your application and delete your information?</p>
                 <v-btn
                   :loading="!isLoadingComplete"
                   theme="dark"
@@ -249,12 +143,7 @@
                 >
                   Back
                 </v-btn>
-                <v-btn
-                  :loading="!isLoadingComplete"
-                  theme="dark"
-                  color="primary"
-                  @click="deletePcf()"
-                >
+                <v-btn :loading="!isLoadingComplete" theme="dark" color="primary" @click="deletePcf()">
                   Continue
                 </v-btn>
               </v-col>
@@ -270,9 +159,7 @@
       >
         <template #content>
           <!-- <p class="text-h6">Renew my Funding Agreement {{ renewalYearLabel }}</p> -->
-          <p class="text-h6">
-            Renew my Funding Agreement {{ getRenewYearLabel }}
-          </p>
+          <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
 
           <p>
             Current providers must renew their Funding Agreement every year. For more information, visit the government
@@ -283,7 +170,8 @@
               class="text-decoration-underline"
               style="pointer-events: all"
               href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-            >gov.bc.ca/childcareoperatingfunding</a>
+              >gov.bc.ca/childcareoperatingfunding</a
+            >
           </p>
           <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
           <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
@@ -294,10 +182,7 @@
         <template #button>
           <!-- wait for CR list to be loaded before starting a renewal- to not allow user to start renewal if there is active change request -->
           <div v-if="!isLoadingComplete">
-            <v-skeleton-loader
-              class="ma-0 pa-0"
-              type="chip"
-            />
+            <v-skeleton-loader class="ma-0 pa-0" type="chip" />
           </div>
           <div v-else>
             <!-- {{ isRenewEnabled }} -->
@@ -325,26 +210,14 @@
             >
               Update your PCF
             </v-btn>
-            <v-btn
-              v-else
-              :color="buttonColor(true)"
-              :disabled="true"
-            >
-              Renew my Funding Agreement
-            </v-btn>
+            <v-btn v-else :color="buttonColor(true)" :disabled="true"> Renew my Funding Agreement </v-btn>
           </div>
         </template>
       </SmallCard>
 
-      <SmallCard
-        :class="smallCardLayout('OTHERS')"
-        class="col-lg-2"
-        :disable="!isReportChangeButtonEnabled"
-      >
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isReportChangeButtonEnabled">
         <template #content>
-          <p class="text-h6">
-            Report changes to your licence or service
-          </p>
+          <p class="text-h6">Report changes to your licence or service</p>
           <p>
             You must notify the Child Care Operating Funding program within two business days of any change to your
             facility licence or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
@@ -352,24 +225,13 @@
         </template>
         <template #button>
           <v-row no-gutters>
-            <v-col
-              v-if="isLoadingComplete && isUpdateChangeRequestDisplayed"
-              class="col-12 mb-3"
-            >
-              <v-btn
-                :color="buttonColor(false)"
-                theme="dark"
-                @click="goToChangeRequestHistory()"
-              >
+            <v-col v-if="isLoadingComplete && isUpdateChangeRequestDisplayed" class="col-12 mb-3">
+              <v-btn :color="buttonColor(false)" theme="dark" @click="goToChangeRequestHistory()">
                 Update change request
               </v-btn>
             </v-col>
             <v-col class="col-12">
-              <v-btn
-                :color="buttonColor(!isReportChangeButtonEnabled)"
-                theme="dark"
-                @click="goToReportChange()"
-              >
+              <v-btn :color="buttonColor(!isReportChangeButtonEnabled)" theme="dark" @click="goToReportChange()">
                 Report a change
               </v-btn>
             </v-col>
@@ -377,14 +239,9 @@
         </template>
       </SmallCard>
 
-      <SmallCard
-        :class="smallCardLayout('OTHERS')"
-        :disable="!isCCOFApproved"
-      >
+      <SmallCard :class="smallCardLayout('OTHERS')" :disable="!isCCOFApproved">
         <template #content>
-          <p class="text-h6">
-            Submit Enrolment Reports or monthly ECE reports to receive funding
-          </p>
+          <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
           <p>
             If you are expecting a new licence or change to your licence or service details, contact the Child Care
             Operating Funding program before submitting your next enrolment report or monthly ECE report.
@@ -408,11 +265,7 @@
       :loading="!isLoadingComplete"
       type="paragraph, text@3, text@3, paragraph"
     />
-    <v-card
-      v-else-if="navBarList?.length > 0"
-      class="rounded-lg elevation-0 pa-4 mt-8"
-      border
-    >
+    <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
       <v-row no-gutters>
         <v-col class="col-12 col-md-6 ml-4 mb-4">
           <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
@@ -421,10 +274,7 @@
           </h2>
         </v-col>
       </v-row>
-      <v-row
-        no-gutters
-        justify="space-between"
-      >
+      <v-row no-gutters justify="space-between">
         <v-col class="col-12 col-lg-7 ml-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
@@ -441,65 +291,40 @@
         </v-col>
         <v-col class="col-12 col-lg-4">
           <v-row class="justify-right align-center mr-4">
-            <h3
-              v-if="applicationIds?.length > 1"
-              class="mr-4"
-            >
-              Select fiscal year:
-            </h3>
+            <h3 v-if="applicationIds?.length > 1" class="mr-4">Select fiscal year:</h3>
             <FiscalYearSlider @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
       </v-row>
-      <v-row
-        no-gutters
-        justify="space-around"
-      >
+      <v-row no-gutters justify="space-around">
         <v-col
           v-for="facility in filteredFacilityListForFacilityCards"
           :key="facility?.facilityId"
           class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
         >
-          <v-card
-            class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column"
-            min-height="230"
-          >
+          <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
             <v-card-text>
-              <p
-                v-if="facility?.facilityAccountNumber"
-                class="text-h5 text--primary text-center"
-              >
+              <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
                 Facility ID: {{ facility?.facilityAccountNumber }}
               </p>
-              <p
-                v-if="facility?.facilityName"
-                class="text-h5 text--primary text-center"
-              >
+              <p v-if="facility?.facilityName" class="text-h5 text--primary text-center">
                 Facility Name: {{ facility?.facilityName }}
               </p>
-              <p
-                v-if="facility?.licenseNumber"
-                class="text-h5 text--primary text-center"
-              >
+              <p v-if="facility?.licenseNumber" class="text-h5 text--primary text-center">
                 Licence Number: {{ facility?.licenseNumber }}
               </p>
-              <br>
+              <br />
               <p class="blueText">
                 Child Care Fee Reduction Initiative (CCFRI) Status:
                 <strong> {{ getCcfriStatusForFacilityCard(facility) }}</strong>
               </p>
-              <br>
+              <br />
               <p class="blueText">
                 Early Childhood Educator Wage Enhancement (ECE-WE) Status:
                 <strong> {{ getEceweStatusForFacilityCard(facility) }}</strong>
               </p>
             </v-card-text>
-            <v-row
-              v-if="isFacilityCardUnlock(facility?.ccfriApplicationId)"
-              justify="center"
-              no-gutters
-              class="mb-4"
-            >
+            <v-row v-if="isFacilityCardUnlock(facility?.ccfriApplicationId)" justify="center" no-gutters class="mb-4">
               <v-btn
                 class="blueButton"
                 theme="dark"
@@ -688,13 +513,13 @@ export default {
       }
       if (this.applicationType === 'NEW') {
         switch (this.applicationStatus) {
-        case 'DRAFT':
-          return this.CCOF_STATUS_CONTINUE;
-        case 'SUBMITTED':
-          if (this.isOrganizationUnlock) return this.CCOF_STATUS_ACTION_REQUIRED;
-          else return this.ccofApplicationStatus === 'ACTIVE' ? this.CCOF_STATUS_APPROVED : this.CCOF_STATUS_COMPLETE;
-        default:
-          return this.CCOF_STATUS_NEW;
+          case 'DRAFT':
+            return this.CCOF_STATUS_CONTINUE;
+          case 'SUBMITTED':
+            if (this.isOrganizationUnlock) return this.CCOF_STATUS_ACTION_REQUIRED;
+            else return this.ccofApplicationStatus === 'ACTIVE' ? this.CCOF_STATUS_APPROVED : this.CCOF_STATUS_COMPLETE;
+          default:
+            return this.CCOF_STATUS_NEW;
         }
       } else {
         return this.CCOF_STATUS_APPROVED;
@@ -953,12 +778,12 @@ export default {
     smallCardLayout(card) {
       if (this.ccofStatus === this.CCOF_STATUS_NEW) {
         switch (card) {
-        case 'CCOF':
-          return 'col-lg-5';
-        case 'RENEW':
-          return 'col-lg-3';
-        default:
-          return 'col-lg-2';
+          case 'CCOF':
+            return 'col-lg-5';
+          case 'RENEW':
+            return 'col-lg-3';
+          default:
+            return 'col-lg-2';
         }
       }
       return 'col-lg-3';

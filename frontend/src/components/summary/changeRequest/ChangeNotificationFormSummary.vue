@@ -1,30 +1,17 @@
 <template>
-  <v-row
-    no-gutters
-    class="d-flex flex-column"
-  >
+  <v-row no-gutters class="d-flex flex-column">
     <v-form ref="changeNotificationFormSummaryForm">
       <v-expansion-panel-title>
         <h4 class="blueText">
           Change Notification Form
-          <v-icon
-            v-if="isLoadingComplete && isChangeNotificationFormComplete"
-            color="green"
-            size="large"
-          >
+          <v-icon v-if="isLoadingComplete && isChangeNotificationFormComplete" color="green" size="large">
             mdi-check-circle-outline
           </v-icon>
-          <v-icon
-            v-if="isLoadingComplete && !isChangeNotificationFormComplete"
-            color="#ff5252"
-            size="large"
-          >
+          <v-icon v-if="isLoadingComplete && !isChangeNotificationFormComplete" color="#ff5252" size="large">
             mdi-alert-circle-outline
           </v-icon>
-          <span
-            v-if="isLoadingComplete && !isChangeNotificationFormComplete"
-            style="color: #ff5252"
-          >Your form is missing required information. Click here to view.
+          <span v-if="isLoadingComplete && !isChangeNotificationFormComplete" style="color: #ff5252"
+            >Your form is missing required information. Click here to view.
           </span>
         </h4>
       </v-expansion-panel-title>
@@ -33,45 +20,21 @@
           <h4>Change Notification Form Documents</h4>
           <div>
             <v-row no-gutters>
-              <v-col
-                :cols="6"
-                class="summary-label pr-8"
-              >
-                File name
-              </v-col>
-              <v-col
-                :cols="6"
-                class="summary-label"
-              >
-                Description (optional)
-              </v-col>
+              <v-col :cols="6" class="summary-label pr-8"> File name </v-col>
+              <v-col :cols="6" class="summary-label"> Description (optional) </v-col>
             </v-row>
-            <v-row
-              v-for="(item, index) in notificationFormDocuments"
-              v-if="isChangeNotificationFormComplete"
-              :key="index"
-              no-gutters
-            >
-              <v-col
-                :cols="6"
-                class="summary-value pr-8"
-              >
-                {{ item.filename }}
-              </v-col>
-              <v-col :cols="6">
-                {{ item.notetext }}
-              </v-col>
-            </v-row>
-            <v-row
-              v-if="!isChangeNotificationFormComplete"
-              no-gutters
-            >
-              <v-col
-                :cols="6"
-                class="summary-value-missing"
-              >
-                Required
-              </v-col>
+            <div v-if="isChangeNotificationFormComplete">
+              <v-row v-for="(item, index) in notificationFormDocuments" :key="index" no-gutters>
+                <v-col :cols="6" class="summary-value pr-8">
+                  {{ item.filename }}
+                </v-col>
+                <v-col :cols="6">
+                  {{ item.notetext }}
+                </v-col>
+              </v-row>
+            </div>
+            <v-row v-if="!isChangeNotificationFormComplete" no-gutters>
+              <v-col :cols="6" class="summary-value-missing"> Required </v-col>
             </v-row>
           </div>
         </div>
@@ -79,43 +42,20 @@
           <h4>Supporting Documents</h4>
           <div>
             <v-row no-gutters>
-              <v-col
-                :cols="6"
-                class="summary-label pr-8"
-              >
-                File name
-              </v-col>
-              <v-col
-                :cols="6"
-                class="summary-label"
-              >
-                Description (optional)
-              </v-col>
+              <v-col :cols="6" class="summary-label pr-8"> File name </v-col>
+              <v-col :cols="6" class="summary-label"> Description (optional) </v-col>
             </v-row>
-            <v-row
-              v-for="(item, index) in supportingDocuments"
-              :key="index"
-              no-gutters
-            >
-              <v-col
-                :cols="6"
-                class="summary-value pr-8"
-              >
+            <v-row v-for="(item, index) in supportingDocuments" :key="index" no-gutters>
+              <v-col :cols="6" class="summary-value pr-8">
                 {{ item.filename }}
               </v-col>
-              <v-col
-                :cols="6"
-                class="summary-value"
-              >
+              <v-col :cols="6" class="summary-value">
                 {{ item.notetext }}
               </v-col>
             </v-row>
           </div>
         </div>
-        <router-link
-          v-if="!isChangeNotificationFormComplete"
-          :to="getRoutingPath"
-        >
+        <router-link v-if="!isChangeNotificationFormComplete" :to="getRoutingPath">
           <span style="color: #ff5252">
             <u>To add this information, click here. This will bring you to a different page.</u>
           </span>
@@ -138,8 +78,10 @@ export default {
     changeNotificationFormDocuments: {
       type: Array,
       required: false,
+      default: () => [],
     },
   },
+  emits: ['isSummaryValid'],
   data() {
     return {
       PATHS,
@@ -147,15 +89,6 @@ export default {
         formName: 'ChangeNotificationFormSummary',
       },
     };
-  },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormComplete);
-        }
-      },
-    },
   },
   computed: {
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
@@ -183,9 +116,18 @@ export default {
       return this.changeNotificationFormDocuments?.filter((document) => document.subject == 'NOTIFICATION_FORM');
     },
   },
-  methods: {},
+  watch: {
+    isLoadingComplete: {
+      handler: function (val) {
+        if (val) {
+          this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormComplete);
+        }
+      },
+    },
+  },
 };
 </script>
+
 <style scoped>
 .summary-label {
   color: grey;

@@ -204,7 +204,7 @@ export default {
               : 'Success! Eligibility information has been saved.',
           );
         }
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       if (!this.$route.params.urlGuid && isSave) {

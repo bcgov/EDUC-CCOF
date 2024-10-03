@@ -1,43 +1,32 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-  >
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
       <span>
         <v-row>
-          <v-card
-            v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest"
-            width="100%"
-            class="mx-3 my-10"
-          >
+          <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" width="100%" class="mx-3 my-10">
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
                   <span style="float: left">
-                    <v-icon
-                      size="x-large"
-                      class="py-1 px-3 noticeAlertIcon"
-                    > mdi-alert-octagon </v-icon>
+                    <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
                   </span>
                   You have a change request in progress.
                 </v-card-title>
               </v-col>
             </v-row>
             <v-card-text>
-              We will complete the assessment of your Program Confirmation Form once your change has been processed.<br><br>
-              <br>
+              We will complete the assessment of your Program Confirmation Form once your change has been processed.<br /><br />
+              <br />
             </v-card-text>
           </v-card>
         </v-row>
         <v-row justify="space-around">
-          <v-card
-            class="cc-top-level-card"
-            width="1200"
-          >
-            <v-card-title class="justify-center pb-0"><h3>
-              Licence Upload<span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
-            </h3></v-card-title>
+          <v-card class="cc-top-level-card" width="1200">
+            <v-card-title class="justify-center pb-0"
+              ><h3>
+                Licence Upload<span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
+              </h3></v-card-title
+            >
             <v-row flex>
               <caption class="licence-upload-hint pb-5">
                 Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The
@@ -54,15 +43,10 @@
               hide-default-footer
               :items-per-page="-1"
             >
-              <template #header="{ props: { headers } }">
+              <template #header="{ props: { headerProps } }">
                 <thead>
                   <tr>
-                    <th
-                      v-for="h in headers"
-                      :id="h.value"
-                      :key="h.value"
-                      :class="h.class"
-                    >
+                    <th v-for="h in headerProps" :id="h.value" :key="h.value" :class="h.class">
                       <span>{{ h.text }}</span>
                     </th>
                   </tr>
@@ -71,11 +55,7 @@
               <template #item.document="{ item }">
                 <div v-if="item.document?.annotationid">
                   <span> {{ item.document?.filename }} </span>
-                  <v-btn
-                    v-if="!isLocked"
-                    icon
-                    @click="deleteFile(item)"
-                  >
+                  <v-btn v-if="!isLocked" icon @click="deleteFile(item)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </div>
@@ -96,19 +76,9 @@
                 />
               </template>
             </v-data-table>
-            <v-card
-              v-if="isLoading"
-              class="pl-6 pr-6 pt-4"
-            >
-              <v-skeleton-loader
-                :loading="true"
-                type="button"
-              />
-              <v-skeleton-loader
-                max-height="375px"
-                :loading="true"
-                type="table-row-divider@3"
-              />
+            <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+              <v-skeleton-loader :loading="true" type="button" />
+              <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
             </v-card>
           </v-card>
         </v-row>
@@ -144,7 +114,66 @@ import NavButton from '../../../components/util/NavButton.vue';
 export default {
   components: { NavButton },
   mixins: [alertMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isLocked) {
+      await this.save(false);
+    }
+    next();
+  },
   props: {},
+  data() {
+    return {
+      isLoading: false,
+      isProcessing: false,
+      licenseUploadData: [],
+      rules,
+      model: {},
+      tempFacilityId: null,
+      isValidForm: false,
+      currentrow: null,
+      headers: [
+        {
+          text: 'Facility Name',
+          align: 'start',
+          sortable: false,
+          value: 'facilityName',
+          class: 'table-header',
+        },
+        {
+          text: 'Facility Licence Number',
+          sortable: false,
+          value: 'licenseNumber',
+          class: 'table-header',
+        },
+        {
+          text: 'Upload Licence',
+          sortable: false,
+          value: 'document',
+          class: 'table-header',
+        },
+      ],
+      fileAccept: [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        '.pdf',
+        '.png',
+        '.jpg',
+        '.jpeg',
+        '.heic',
+        '.doc',
+        '.docx',
+        '.xls',
+        '.xlsx',
+      ],
+      fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
+      fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
+      fileInputError: [],
+      fileMap: new Map(), // this is not reactive
+      fileRules: [],
+      fileAdded: false,
+    };
+  },
   computed: {
     ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
     ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
@@ -207,7 +236,6 @@ export default {
       return false; // enable next button if at least 1 licence exists per facility
     },
   },
-
   async mounted() {
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
@@ -223,66 +251,6 @@ export default {
 
     await this.createTable();
   },
-  async beforeRouteLeave(_to, _from, next) {
-    if (!this.isLocked) {
-      await this.save(false);
-    }
-    next();
-  },
-  data() {
-    return {
-      isLoading: false,
-      isProcessing: false,
-      licenseUploadData: [],
-      rules,
-      model: {},
-      tempFacilityId: null,
-      isValidForm: false,
-      currentrow: null,
-      headers: [
-        {
-          text: 'Facility Name',
-          align: 'start',
-          sortable: false,
-          value: 'facilityName',
-          class: 'table-header',
-        },
-        {
-          text: 'Facility Licence Number',
-          sortable: false,
-          value: 'licenseNumber',
-          class: 'table-header',
-        },
-        {
-          text: 'Upload Licence',
-          sortable: false,
-          value: 'document',
-          class: 'table-header',
-        },
-      ],
-      fileAccept: [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        '.pdf',
-        '.png',
-        '.jpg',
-        '.jpeg',
-        '.heic',
-        '.doc',
-        '.docx',
-        '.xls',
-        '.xlsx',
-      ],
-      fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
-      fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
-      fileInputError: [],
-      fileMap: new Map(), // this is not reactive
-      fileRules: [],
-      fileAdded: false,
-    };
-  },
-
   methods: {
     ...mapActions(useLicenseUploadStore, ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
     ...mapActions(useApplicationStore, ['setIsLicenseUploadCompleteInMap', 'setIsLicenseUploadComplete']),

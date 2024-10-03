@@ -1,46 +1,19 @@
 <template>
-  <v-container
-    fluid
-    class="full-height"
-  >
+  <v-container fluid class="full-height">
     <!-- login article -->
-    <article
-      name="session-expired-banner"
-      class="top-banner"
-    >
-      <v-row
-        align="center"
-        justify="center"
-      >
-        <v-col
-          xs="10"
-          sm="10"
-          md="8"
-          lg="5"
-          xl="3"
-        >
+    <article name="session-expired-banner" class="top-banner">
+      <v-row align="center" justify="center">
+        <v-col xs="10" sm="10" md="8" lg="5" xl="3">
           <v-card class="session-expired-card">
             <v-card-title class="gov-header">
-              <h4 id="session-expired-text">
-                Log in Error
-              </h4>
+              <h4 id="session-expired-text">Log in Error</h4>
             </v-card-title>
             <v-card-text id="session-expired-descriptor">
-              <v-row style="margin: 0.5rem">
-                An error occurred while you were logging in
-              </v-row>
-              <a
-                id="login-button"
-                :href="authRoutes.LOGIN"
-                class="ma-1"
-                dark
-                color="#003366"
-                @click="clearStorage"
-              >Log In</a><span>again to continue.</span>
-              <v-row
-                class="small-font"
-                style="margin: 0.5rem"
-              >
+              <v-row style="margin: 0.5rem"> An error occurred while you were logging in </v-row>
+              <a id="login-button" :href="authRoutes.LOGIN" class="ma-1" dark color="#003366" @click="clearStorage"
+                >Log In</a
+              ><span>again to continue.</span>
+              <v-row class="small-font" style="margin: 0.5rem">
                 If the error continues, wait a few minutes before logging in again
               </v-row>
             </v-card-text>

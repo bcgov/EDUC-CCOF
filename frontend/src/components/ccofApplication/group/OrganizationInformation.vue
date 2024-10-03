@@ -1,33 +1,19 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-    :class="loading ? 'ccof-skeleton-loader' : ''"
-  >
+  <v-form ref="form" v-model="isValidForm" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <span>
         <v-row justify="space-around">
-          <v-card
-            class="cc-top-level-card"
-            width="1200"
-          >
+          <v-card class="cc-top-level-card" width="1200">
             <v-card-title class="justify-center pb-0">
               <h3>Organization Information</h3>
             </v-card-title>
             <v-row>
-              <v-card
-                v-if="isSomeChangeRequestActive() && isLocked"
-                width="100%"
-                class="mx-3 my-10"
-              >
+              <v-card v-if="isSomeChangeRequestActive() && isLocked" width="100%" class="mx-3 my-10">
                 <v-row>
                   <v-col class="py-0">
                     <v-card-title class="py-1 noticeAlert">
                       <span style="float: left">
-                        <v-icon
-                          size="x-large"
-                          class="py-1 px-3 noticeAlertIcon"
-                        > mdi-alert-octagon </v-icon>
+                        <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
                       </span>
                       You have a change request in progress.
                     </v-card-title>
@@ -35,8 +21,8 @@
                 </v-row>
                 <v-card-text>
                   We will complete the assessment of your Program Confirmation Form once your change has been
-                  processed.<br><br>
-                  <br>
+                  processed.<br /><br />
+                  <br />
                 </v-card-text>
               </v-card>
             </v-row>
@@ -82,10 +68,7 @@
               </v-row>
 
               <v-row>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.city1"
                     :disabled="isLocked"
@@ -95,10 +78,7 @@
                     label="City/Town"
                   />
                 </v-col>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.postalCode1"
                     :disabled="isLocked"
@@ -112,11 +92,12 @@
 
               <v-divider />
 
-              <v-card-subtitle><v-checkbox
-                v-model="model.isSameAsMailing"
-                :disabled="isLocked"
-                label="Organization Street Address same as Mailing Address"
-                @click="isSameAddressChecked()"
+              <v-card-subtitle
+                ><v-checkbox
+                  v-model="model.isSameAsMailing"
+                  :disabled="isLocked"
+                  label="Organization Street Address same as Mailing Address"
+                  @click="isSameAddressChecked()"
               /></v-card-subtitle>
               <div v-if="!model.isSameAsMailing">
                 <v-row>
@@ -132,10 +113,7 @@
                 </v-row>
 
                 <v-row>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
+                  <v-col cols="12" md="6">
                     <v-text-field
                       v-model="model.city2"
                       :disabled="isLocked"
@@ -144,10 +122,7 @@
                       label="City/Town"
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
+                  <v-col cols="12" md="6">
                     <v-text-field
                       v-model="model.postalCode2"
                       :disabled="isLocked"
@@ -163,10 +138,7 @@
 
               <v-card-subtitle> Contact Information </v-card-subtitle>
               <v-row>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.contactName"
                     :disabled="isLocked"
@@ -176,10 +148,7 @@
                     label="Organization Contact Name"
                   />
                 </v-col>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.position"
                     :disabled="isLocked"
@@ -192,10 +161,7 @@
               </v-row>
 
               <v-row>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.phone"
                     :disabled="isLocked"
@@ -205,10 +171,7 @@
                     label="Business Phone"
                   />
                 </v-col>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="businessId"
                     readonly
@@ -223,10 +186,7 @@
               <v-divider />
 
               <v-row>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="model.email"
                     :disabled="isLocked"
@@ -244,18 +204,8 @@
               <v-row>
                 <v-col>
                   <v-card-subtitle> Type of Organization </v-card-subtitle>
-                  <v-radio-group
-                    v-model="model.organizationType"
-                    :disabled="isLocked"
-                    :rules="rules.required"
-                    label=""
-                  >
-                    <v-radio
-                      v-for="item in organizationTypeList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    />
+                  <v-radio-group v-model="model.organizationType" :disabled="isLocked" :rules="rules.required" label="">
+                    <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
                   </v-radio-group>
                 </v-col>
               </v-row>

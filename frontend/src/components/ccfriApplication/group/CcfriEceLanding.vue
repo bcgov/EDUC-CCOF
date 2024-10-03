@@ -1,31 +1,23 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
+      <span class="text-h5"
+        >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
+      >
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <br>
+    <br />
     <div class="row pt-4 justify-center">
       <span class="text-h5">Confirm CCFRI participation for each facility.</span>
     </div>
-    <v-btn
-      class="mx-0 justify-end"
-      dark
-      color="#003366"
-      :disabled="isReadOnly"
-      @click="toggleAll()"
-    >
+    <v-btn class="mx-0 justify-end" dark color="#003366" :disabled="isReadOnly" @click="toggleAll()">
       Opt in All Facilities
     </v-btn>
     <LargeButtonContainer>
-      <v-form
-        ref="isValidForm"
-        v-model="isValidForm"
-        model-value="false"
-      >
+      <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
         <v-card
@@ -44,14 +36,8 @@
         >
           <v-card-text>
             <v-row>
-              <v-col
-                cols=""
-                class="col-12 col-md-7"
-              >
-                <p
-                  v-if="facilityAccountNumber"
-                  class="text--primary"
-                >
+              <v-col cols="" class="col-12 col-md-7">
+                <p v-if="facilityAccountNumber" class="text--primary">
                   <strong> Facility ID: {{ facilityAccountNumber }}</strong>
                 </p>
                 <p class="text--primary">
@@ -75,11 +61,7 @@
                   </p>
                 </strong>
               </v-col>
-              <v-col
-                v-if="!showOptStatus[index]"
-                cols=""
-                class="d-flex align-center col-12 col-md-5"
-              >
+              <v-col v-if="!showOptStatus[index]" cols="" class="d-flex align-center col-12 col-md-5">
                 <v-btn
                   class="my-10 mx-14 justify-end"
                   :show-opt-status="showOptStatus[index]"
@@ -92,25 +74,11 @@
                   UPDATE
                 </v-btn>
               </v-col>
-              <v-col
-                v-else
-                cols=""
-                class="d-flex align-center col-12 col-md-5"
-              >
+              <v-col v-else cols="" class="d-flex align-center col-12 col-md-5">
                 <v-row>
-                  <v-radio-group
-                    v-model="ccfriOptInOrOut[index]"
-                    class="mx-12"
-                    :rules="rules"
-                  >
-                    <v-radio
-                      label="Opt In"
-                      value="1"
-                    />
-                    <v-radio
-                      label="Opt Out"
-                      value="0"
-                    />
+                  <v-radio-group v-model="ccfriOptInOrOut[index]" class="mx-12" :rules="rules">
+                    <v-radio label="Opt In" value="1" />
+                    <v-radio label="Opt Out" value="0" />
                   </v-radio-group>
                 </v-row>
               </v-col>
@@ -140,6 +108,7 @@ import { useApplicationStore } from '../../../store/application.js';
 import { useAppStore } from '../../../store/app.js';
 import { useNavBarStore } from '../../../store/navBar.js';
 import { useReportChangesStore } from '../../../store/reportChanges.js';
+import { useCcfriAppStore } from '../../../store/ccfriApp.js';
 
 import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
@@ -154,7 +123,13 @@ let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'CcfriLandingPage',
+  components: { LargeButtonContainer, NavButton },
   mixins: [alertMixin],
+  beforeRouteLeave(_to, _from, next) {
+    const ccfriAppStore = useCcfriAppStore();
+    ccfriAppStore.model(this.model);
+    next();
+  },
   data() {
     return {
       isUnlocked: false,
@@ -217,6 +192,10 @@ export default {
         this.$set(this.ccfriOptInOrOut, index, undefined);
       }
     });
+  },
+  mounted() {
+    const ccfriAppStore = useCcfriAppStore();
+    this.model = ccfriAppStore.model ?? model;
   },
   methods: {
     ...mapActions(useNavBarStore, ['forceNavBarRefresh', 'refreshNavBarList']),
@@ -356,13 +335,5 @@ export default {
       this.processing = false;
     },
   },
-  mounted() {
-    this.model = ccfriAppStore.model ?? model;
-  },
-  beforeRouteLeave(_to, _from, next) {
-    ccfriAppStore.model(this.model);
-    next();
-  },
-  components: { LargeButtonContainer, NavButton },
 };
 </script>

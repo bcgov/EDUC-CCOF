@@ -15,14 +15,7 @@
       v-bind="bind"
       v-on="on"
     >
-      <v-icon
-        v-if="icon"
-        class="ml-n1 mr-1"
-        :nudge-down="4"
-        :size="largeIcon ? 'large' : undefined"
-        end
-        dark
-      >
+      <v-icon v-if="icon" class="ml-n1 mr-1" :nudge-down="4" :size="largeIcon ? 'large' : undefined" end dark>
         {{ icon }}
       </v-icon>
       <span class="ml-1">{{ text }}</span>
@@ -36,9 +29,11 @@ export default {
   props: {
     id: {
       type: String,
+      default: '',
     },
     text: {
       type: String,
+      default: '',
     },
     short: {
       type: Boolean,
@@ -54,21 +49,27 @@ export default {
     },
     to: {
       type: String,
+      default: '',
     },
     width: {
       type: String,
+      default: '',
     },
     loading: {
       type: Boolean,
+      default: false,
     },
     icon: {
       type: String,
+      default: '',
     },
     bind: {
       type: Object,
+      default: () => ({}),
     },
     on: {
       type: Object,
+      default: () => ({}),
     },
     largeIcon: {
       type: Boolean,
@@ -76,6 +77,7 @@ export default {
     },
     title: {
       type: String,
+      default: '',
     },
   },
 };

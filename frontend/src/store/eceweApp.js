@@ -165,8 +165,8 @@ export const useEceweAppStore = defineStore('eceweApp', {
         if (navBarStore.isChangeRequest) {
           console.log('this is a change req, build from newFacilities list');
 
-          let newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId)
-            .changeActions[0]?.newFacilities;
+          let newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
+            ?.newFacilities;
 
           facilityPayload = newFac?.map((facility) => ({
             eceweApplicationId: null,

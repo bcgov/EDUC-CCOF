@@ -1,8 +1,5 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="isValidForm"
-  >
+  <v-form ref="form" v-model="isValidForm">
     <v-container class="pa-0">
       <v-row no-gutters>
         <v-col class="col-12 mb-6">
@@ -21,10 +18,7 @@
           >
             <template #top>
               <v-col flex>
-                <v-toolbar
-                  flat
-                  color="white"
-                >
+                <v-toolbar flat color="white">
                   <div class="d-flex">
                     <v-btn
                       color="primary"
@@ -32,9 +26,7 @@
                       :disabled="isReadOnly"
                       @click="addNew"
                     >
-                      <v-icon dark>
-                        mdi-plus
-                      </v-icon>
+                      <v-icon dark> mdi-plus </v-icon>
                       Add
                     </v-btn>
                   </div>
@@ -80,13 +72,7 @@
             </template>
 
             <template #item.actions="{ item }">
-              <v-icon
-                v-if="!isReadOnly"
-                size="small"
-                @click="deleteItem(item)"
-              >
-                mdi-delete
-              </v-icon>
+              <v-icon v-if="!isReadOnly" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
             </template>
 
             <template #no-data>
@@ -95,24 +81,11 @@
               </div>
             </template>
           </v-data-table>
-          <v-card
-            v-if="isLoading"
-            class="pl-6 pr-6 pt-4"
-          >
-            <v-skeleton-loader
-              :loading="true"
-              type="button"
-            />
-            <v-skeleton-loader
-              max-height="375px"
-              :loading="true"
-              type="table-row-divider@3"
-            />
+          <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+            <v-skeleton-loader :loading="true" type="button" />
+            <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
           </v-card>
-          <v-row
-            v-if="changeType == 'NOTIFICATION_FORM' && !isFileUploaded"
-            class="px-3 pt-4 text-body-1 text-red"
-          >
+          <v-row v-if="changeType == 'NOTIFICATION_FORM' && !isFileUploaded" class="px-3 pt-4 text-body-1 text-red">
             Please upload the Change Notification Form.
           </v-row>
         </v-col>
@@ -136,6 +109,12 @@ import { deepCloneObject, getFileExtension } from '../../utils/common.js';
 export default {
   components: {},
   mixins: [alertMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isReadOnly) {
+      await this.save(false);
+    }
+    next();
+  },
   props: {
     changeType: {
       type: String,
@@ -144,8 +123,10 @@ export default {
     noDataDefaultText: {
       type: String,
       required: false,
+      default: '',
     },
   },
+  emits: ['fileChange'],
   data() {
     return {
       filteredDocs: [],
@@ -239,7 +220,6 @@ export default {
       return currentCR?.externalStatus !== 'INCOMPLETE';
     },
   },
-
   async mounted() {
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
@@ -253,12 +233,6 @@ export default {
         this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
         `Accepted file types are ${this.fileFormats}.`,
     ];
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    if (!this.isReadOnly) {
-      await this.save(false);
-    }
-    next();
   },
   methods: {
     ...mapActions(useReportChangesStore, [
@@ -288,7 +262,7 @@ export default {
           console.log('returning...');
           return;
         }
-      } catch (e) {
+      } catch {
         this.setFailureAlert('error in CHILD');
       } finally {
         this.isProcessing = false;
@@ -312,7 +286,7 @@ export default {
       }
       try {
         await this.saveUploadedDocuments(payload);
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
     },

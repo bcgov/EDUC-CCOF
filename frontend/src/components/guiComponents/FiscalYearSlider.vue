@@ -1,25 +1,9 @@
 <template>
-  <v-item-group
-    v-if="programYearList?.length > 1"
-    v-model="activeIndex"
-    class="text-center"
-    mandatory
-  >
-    <v-btn
-      tile
-      variant="outlined"
-      min-width="20px"
-      class="pa-0"
-      :disabled="isPrevDisabled"
-      @click="previous"
-    >
+  <v-item-group v-if="programYearList?.length > 1" v-model="activeIndex" class="text-center" mandatory>
+    <v-btn tile variant="outlined" min-width="20px" class="pa-0" :disabled="isPrevDisabled" @click="previous">
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
-    <v-item
-      v-for="(programYear, index) in programYearSlidingWindow"
-      :key="index"
-      v-slot="{ active }"
-    >
+    <v-item v-for="(programYear, index) in programYearSlidingWindow" :key="index" v-slot="{ active }">
       <v-btn
         tile
         variant="outlined"
@@ -30,14 +14,7 @@
         {{ programYear.name }}
       </v-btn>
     </v-item>
-    <v-btn
-      tile
-      variant="outlined"
-      min-width="20px"
-      class="pa-0"
-      :disabled="isNextDisabled"
-      @click="next"
-    >
+    <v-btn tile variant="outlined" min-width="20px" class="pa-0" :disabled="isNextDisabled" @click="next">
       <v-icon>mdi-chevron-right</v-icon>
     </v-btn>
   </v-item-group>
@@ -49,19 +26,12 @@ import { sortBy } from 'lodash';
 
 export default {
   name: 'FiscalYearSlider',
+  emits: ['selectProgramYear'],
   data() {
     return {
       selectedProgramYearIndex: undefined,
       activeIndex: undefined,
     };
-  },
-  created() {
-    this.selectedProgramYearIndex = this.programYearList?.findIndex(
-      (item) => item.programYearId === this.programYearId,
-    );
-    this.updateActiveIndex();
-    if (this.selectedProgramYearIndex > -1)
-      this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex]);
   },
   computed: {
     ...mapState('application', ['applicationMap', 'programYearId']),
@@ -86,12 +56,12 @@ export default {
         const firstIndex = 0;
         const lastIndex = this.programYearList?.length - 1;
         switch (this.selectedProgramYearIndex) {
-        case firstIndex:
-          return this.programYearList?.slice(0, 3);
-        case lastIndex:
-          return this.programYearList?.slice(-3);
-        default:
-          return this.programYearList?.slice(this.selectedProgramYearIndex - 1, this.selectedProgramYearIndex + 2);
+          case firstIndex:
+            return this.programYearList?.slice(0, 3);
+          case lastIndex:
+            return this.programYearList?.slice(-3);
+          default:
+            return this.programYearList?.slice(this.selectedProgramYearIndex - 1, this.selectedProgramYearIndex + 2);
         }
       }
       return this.programYearList;
@@ -103,21 +73,29 @@ export default {
       return this.selectedProgramYearIndex >= this.programYearList?.length - 1;
     },
   },
+  created() {
+    this.selectedProgramYearIndex = this.programYearList?.findIndex(
+      (item) => item.programYearId === this.programYearId,
+    );
+    this.updateActiveIndex();
+    if (this.selectedProgramYearIndex > -1)
+      this.$emit('selectProgramYear', this.programYearList[this.selectedProgramYearIndex]);
+  },
   methods: {
     updateActiveIndex() {
       const firstIndex = 0;
       const lastIndex = this.programYearList?.length - 1;
       if (this.programYearList?.length > 3) {
         switch (this.selectedProgramYearIndex) {
-        case firstIndex:
-          this.activeIndex = 0;
-          break;
-        case lastIndex:
-          this.activeIndex = 2;
-          break;
-        default:
-          this.activeIndex = 1;
-          break;
+          case firstIndex:
+            this.activeIndex = 0;
+            break;
+          case lastIndex:
+            this.activeIndex = 2;
+            break;
+          default:
+            this.activeIndex = 1;
+            break;
         }
       } else {
         this.activeIndex = this.selectedProgramYearIndex;

@@ -7,10 +7,7 @@
       <v-row class="d-flex justify-center">
         <h2>Funding Agreement Change Notification</h2>
       </v-row>
-      <v-row
-        class="d-flex justify-center text-h5"
-        style="color: #003466"
-      >
+      <v-row class="d-flex justify-center text-h5" style="color: #003466">
         {{ userInfo.organizationName }}
       </v-row>
       <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'" />
@@ -20,7 +17,8 @@
           For more information about reporting changes,
           <a
             href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes "
-          >visit the Child Care Operating Funding Website</a>.
+            >visit the Child Care Operating Funding Website</a
+          >.
         </p>
       </v-row>
       <NavButton
@@ -73,7 +71,7 @@ export default {
       let newReq;
       try {
         newReq = await this.createChangeRequest(changeType);
-      } catch (error) {
+      } catch {
         console.log('unable to create a new Req');
         this.setFailureAlert('An error occurred while creating a new change request. Please try again later.');
       }

@@ -2,37 +2,25 @@
   <v-form ref="form">
     <v-container>
       <div class="row pt-4 justify-center">
-        <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
+        <span class="text-h5"
+          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
+        >
       </div>
-      <br>
+      <br />
       <div class="row pt-4 justify-center">
         <span class="text-h5">Early Childhood Educator Wage Enhancement (ECE-WE)</span>
       </div>
-      <br>
-      <v-row
-        justify="center"
-        class="pt-4 text-h5"
-        style="color: #003466"
-      >
+      <br />
+      <v-row justify="center" class="pt-4 text-h5" style="color: #003466">
         {{ userInfo.organizationName }}
       </v-row>
       <v-row><v-col /></v-row>
-      <v-row justify="center">
-        Please select each facility you would like to opt-in to ECE-WE:
-      </v-row>
+      <v-row justify="center"> Please select each facility you would like to opt-in to ECE-WE: </v-row>
       <v-row><v-col /></v-row>
       <v-row justify="center">
-        <v-alert
-          class="col-11"
-          variant="outlined"
-          prominent
-        >
+        <v-alert class="col-11" variant="outlined" prominent>
           <span style="float: left">
-            <v-icon
-              size="x-large"
-              color="rgb(0 51 102)"
-              class="py-1 px-3"
-            > mdi-information </v-icon>
+            <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
           </span>
           <span>
             Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to
@@ -40,57 +28,31 @@
           </span>
         </v-alert>
       </v-row>
-      <br>
-      <v-btn
-        class="mx-0 justify-end"
-        dark
-        color="#003366"
-        :disabled="isReadOnly"
-        @click="toggleAll()"
-      >
+      <br />
+      <v-btn class="mx-0 justify-end" dark color="#003366" :disabled="isReadOnly" @click="toggleAll()">
         Opt in All Facilities
       </v-btn>
       <div v-if="!isLoading">
-        <div
-          v-for="(_facility, index) in uiFacilities"
-          :key="index"
-        >
-          <v-row
-            justify="center"
-            class="pa-4"
-          >
-            <v-card
-              elevation="4"
-              class="py-2 px-5 mx-2 rounded-lg col-9"
-              width="75%"
-            >
+        <div v-for="(_facility, index) in uiFacilities" :key="index">
+          <v-row justify="center" class="pa-4">
+            <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
               <v-row>
-                <v-col
-                  cols="12"
-                  class="d-flex"
-                >
-                  <span><strong> Facility ID: {{ navBarList[index].facilityAccountNumber }}</strong></span>
+                <v-col cols="12" class="d-flex">
+                  <span
+                    ><strong> Facility ID: {{ navBarList[index].facilityAccountNumber }}</strong></span
+                  >
                 </v-col>
               </v-row>
               <v-row>
-                <v-col
-                  cols="5"
-                  class="flex-column"
-                >
-                  <span><strong> Facility Name: {{ navBarList[index].facilityName }}</strong></span>
+                <v-col cols="5" class="flex-column">
+                  <span
+                    ><strong> Facility Name: {{ navBarList[index].facilityName }}</strong></span
+                  >
                 </v-col>
-                <v-col
-                  v-if="!uiFacilities[index].update"
-                  cols="4"
-                  class="flex-column text-center"
-                >
+                <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
                   <strong> Status: Opt-{{ uiFacilities[index].optInOrOut == 1 ? 'In' : 'Out' }} </strong>
                 </v-col>
-                <v-col
-                  v-else-if="uiFacilities[index].update"
-                  cols="3"
-                  class="d-flex justify-center align-center pt-0"
-                >
+                <v-col v-else-if="uiFacilities[index].update" cols="3" class="d-flex justify-center align-center pt-0">
                   <v-radio-group
                     v-model="uiFacilities[index].optInOrOut"
                     class="pt-0 my-0"
@@ -98,16 +60,8 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                   >
-                    <v-radio
-                      label="Opt-In"
-                      :value="1"
-                      @click="toggleRadio(index)"
-                    />
-                    <v-radio
-                      label="Opt-Out"
-                      :value="0"
-                      @click="toggleRadio(index)"
-                    />
+                    <v-radio label="Opt-In" :value="1" @click="toggleRadio(index)" />
+                    <v-radio label="Opt-Out" :value="0" @click="toggleRadio(index)" />
                   </v-radio-group>
                 </v-col>
                 <v-col cols="3">
@@ -134,73 +88,29 @@
         </div>
       </div>
       <div v-if="isLoading">
-        <div
-          v-for="index in 2"
-          :key="index"
-        >
-          <v-row
-            justify="center"
-            class="pa-4"
-          >
-            <v-card
-              elevation="4"
-              class="py-2 px-5 mx-2 rounded-lg col-9"
-              width="75%"
-            >
+        <div v-for="index in 2" :key="index">
+          <v-row justify="center" class="pa-4">
+            <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
               <v-row>
-                <v-col
-                  cols="12"
-                  class="d-flex pa-0"
-                >
-                  <v-skeleton-loader
-                    :loading="true"
-                    type="table-cell"
-                    class="pa-0"
-                  />
+                <v-col cols="12" class="d-flex pa-0">
+                  <v-skeleton-loader :loading="true" type="table-cell" class="pa-0" />
                 </v-col>
               </v-row>
               <v-row>
-                <v-col
-                  cols="5"
-                  class="flex-column pa-0"
-                >
-                  <v-skeleton-loader
-                    :loading="true"
-                    type="table-cell"
-                  />
+                <v-col cols="5" class="flex-column pa-0">
+                  <v-skeleton-loader :loading="true" type="table-cell" />
                 </v-col>
-                <v-col
-                  cols="4"
-                  class="d-flex justify-center align-center pt-0"
-                >
-                  <v-skeleton-loader
-                    :loading="true"
-                    type="table-cell"
-                  />
-                  <v-skeleton-loader
-                    :loading="true"
-                    type="table-cell"
-                  />
+                <v-col cols="4" class="d-flex justify-center align-center pt-0">
+                  <v-skeleton-loader :loading="true" type="table-cell" />
+                  <v-skeleton-loader :loading="true" type="table-cell" />
                 </v-col>
-                <v-col
-                  cols="3"
-                  class="pa-0"
-                >
-                  <v-skeleton-loader
-                    :loading="true"
-                    type="button"
-                  />
+                <v-col cols="3" class="pa-0">
+                  <v-skeleton-loader :loading="true" type="button" />
                 </v-col>
               </v-row>
               <v-row>
-                <v-col
-                  cols="12"
-                  class="pa-0"
-                >
-                  <v-skeleton-loader
-                    :loading="true"
-                    type="table-cell"
-                  />
+                <v-col cols="12" class="pa-0">
+                  <v-skeleton-loader :loading="true" type="table-cell" />
                 </v-col>
               </v-row>
             </v-card>
@@ -240,6 +150,10 @@ import rules from '../../utils/rules.js';
 export default {
   components: { NavButton },
   mixins: [alertMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    await this.saveFacilities(false);
+    next();
+  },
   data() {
     return {
       rules,
@@ -310,10 +224,6 @@ export default {
       this.setupUiFacilities();
       this.model = { ...this.eceweModel };
     }
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    await this.saveFacilities(false);
-    next();
   },
   methods: {
     ...mapActions(useEceweAppStore, [

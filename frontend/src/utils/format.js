@@ -13,7 +13,7 @@ export function formatDateTime(datetime, from = 'uuuuMMdd', to = 'uuuu/MM/dd', h
     try {
       const date = localDateTime.parse(datetime, fromFormatter);
       result = date.format(toFormatter);
-    } catch (err) {
+    } catch {
       console.info(`could not parse date ${datetime}: ${from} to ${to} as date provided is invalid`);
     }
   }

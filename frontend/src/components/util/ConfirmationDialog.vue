@@ -7,16 +7,8 @@
     @keydown.esc="cancel"
   >
     <v-card>
-      <slot
-        name="title"
-        :cancel="cancel"
-      >
-        <v-toolbar
-          :dark="options.dark"
-          :color="options.color"
-          :dense="options.dense"
-          flat
-        >
+      <slot name="title" :cancel="cancel">
+        <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
           <v-toolbar-title
             :class="{
               'white--text': options.dark,
@@ -28,40 +20,24 @@
             {{ title }}
           </v-toolbar-title>
           <v-spacer />
-          <v-btn
-            v-if="options.closeIcon"
-            id="closeBtn"
-            variant="text"
-            icon
-            @click.native="cancel"
-          >
-            <v-icon color="#38598A">
-              mdi-close
-            </v-icon>
+          <v-btn v-if="options.closeIcon" id="closeBtn" variant="text" icon @click="cancel">
+            <v-icon color="#38598A"> mdi-close </v-icon>
           </v-btn>
         </v-toolbar>
       </slot>
       <v-card-text :class="[options.messagePadding, { 'black--text': !options.dark }]">
         {{ message }}
         <slot name="message" />
-        <v-divider
-          v-if="options.divider"
-          class="mt-1"
-        />
+        <v-divider v-if="options.divider" class="mt-1" />
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer />
-        <PrimaryButton
-          id="rejectBtn"
-          secondary
-          :text="options.rejectText || 'Cancel'"
-          @click.native="cancel"
-        />
+        <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" @click="cancel" />
         <PrimaryButton
           id="resolveBtn"
           :text="options.resolveText || 'Yes'"
           :disabled="options.resolveDisabled"
-          @click.native="agree"
+          @click="agree"
         />
       </v-card-actions>
     </v-card>

@@ -9,45 +9,20 @@
     <div class="row pt-4 justify-center">
       <span class="text-h6 font-weight-bold blueText">{{ organizationName }}</span>
     </div>
-    <v-row
-      no-gutters
-      class="justify-center align-center pt-12"
-    >
-      <v-tooltip
-        location="top"
-        color="#003366"
-      >
+    <v-row no-gutters class="justify-center align-center pt-12">
+      <v-tooltip location="top" color="#003366">
         <template #activator="{ props }">
-          <v-icon
-            size="x-large"
-            class="pr-5 noticeInfoIcon"
-            v-bind="props"
-          >
-            mdi-help-circle
-          </v-icon>
+          <v-icon size="x-large" class="pr-5 noticeInfoIcon" v-bind="props"> mdi-help-circle </v-icon>
         </template>
         <span>You can request a Mid-term Fee Increase after the facility has been approved for the fiscal year.</span>
       </v-tooltip>
-      <div class="text-h5">
-        Please select which facility you would like to update
-      </div>
+      <div class="text-h5">Please select which facility you would like to update</div>
     </v-row>
-    <div
-      v-if="loading"
-      class="my-12"
-    >
-      <v-skeleton-loader
-        max-height="475px"
-        :loading="true"
-        type="image, image, image"
-      />
+    <div v-if="loading" class="my-12">
+      <v-skeleton-loader max-height="475px" :loading="true" type="image, image, image" />
     </div>
     <LargeButtonContainer v-else>
-      <v-form
-        ref="isValidForm"
-        v-model="isValidForm"
-        model-value="false"
-      >
+      <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
         <v-card
           v-for="(
             { facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus, ccfriStatus }, index
@@ -71,10 +46,7 @@
                   <strong>Licence Number: {{ licenseNumber }}</strong>
                 </p>
               </v-col>
-              <v-col
-                v-if="ccfriOptInStatus == 1"
-                class="d-flex align-center justify-center"
-              >
+              <v-col v-if="ccfriOptInStatus == 1" class="d-flex align-center justify-center">
                 <v-checkbox
                   v-model="checkbox[index]"
                   style="transform: scale(1.5)"
@@ -120,7 +92,14 @@ let model = { x: [], ccfriOptInOrOut, textInput };
 
 export default {
   name: 'MtfiSelectFacility',
+  components: { LargeButtonContainer, NavButton },
   mixins: [alertMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isReadOnly && !this.loading) {
+      await this.save(false);
+    }
+    next();
+  },
   data() {
     return {
       isUnlocked: false,
@@ -260,14 +239,6 @@ export default {
       }
     },
   },
-  mounted() {},
-  async beforeRouteLeave(_to, _from, next) {
-    if (!this.isReadOnly && !this.loading) {
-      await this.save(false);
-    }
-    next();
-  },
-  components: { LargeButtonContainer, NavButton },
 };
 </script>
 <style scoped>

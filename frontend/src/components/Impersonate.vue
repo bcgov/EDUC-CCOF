@@ -1,18 +1,10 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <div
-        class="pa-10"
-        :class="'text-h4'"
-        v-text="`Welcome ${userInfo.displayName}`"
-      />
+      <div class="pa-10" :class="'text-h4'" v-text="`Welcome ${userInfo.displayName}`" />
     </v-row>
     <v-row>
-      <v-form
-        ref="form"
-        v-model="isValidForm"
-        @submit.prevent
-      >
+      <v-form ref="form" v-model="isValidForm" @submit.prevent>
         <v-row>
           <v-card>
             <v-container>
@@ -59,7 +51,7 @@ import rules from '../utils/rules.js';
 import alertMixin from '../mixins/alertMixin.js';
 
 export default {
-  name: "ImpersonateAccount",
+  name: 'ImpersonateAccount',
   mixins: [alertMixin],
   data() {
     return {

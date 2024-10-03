@@ -13,7 +13,7 @@
         {{ title }}
       </p>
       <h2>{{ subtitle }}</h2>
-      <br><br>
+      <br /><br />
 
       <!-- this is another styling choice.... leaving this here in case we want to switch it back.
           <p class="text-h5 text--primary">
@@ -30,9 +30,9 @@
 <script>
 export default {
   props: {
-    title: String,
-    subtitle: String,
-    pText: String,
+    title: { type: String, required: true },
+    subtitle: { type: String, required: true },
+    pText: { type: String, required: true },
   },
 };
 </script>

@@ -1,25 +1,15 @@
 <template>
   <v-container>
-    <v-form
-      ref="isValidForm"
-      v-model="isValidForm"
-      model-value="false"
-    >
+    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
       <v-container>
-        <v-row
-          id="change-request-history"
-          no-gutters
-        >
+        <v-row id="change-request-history" no-gutters>
           <v-col class="col-lg-12 mt-10">
             <h2>Submission History</h2>
           </v-col>
         </v-row>
         <v-row v-if="processing">
           <v-col>
-            <v-skeleton-loader
-              :loading="processing"
-              type="paragraph, text@3, text@3, paragraph"
-            />
+            <v-skeleton-loader :loading="processing" type="paragraph, text@3, text@3, paragraph" />
           </v-col>
         </v-row>
         <v-data-table
@@ -36,10 +26,7 @@
           <!-- FIXME: Trev: We're deconstructing the "item" into a blank template for who knows what reason
                <template #item.facilityNames="{ item }" /> -->
           <template #item.PDF="{ item }">
-            <router-link
-              :to="getPDFPath(item.annotationId)"
-              target="_blank"
-            >
+            <router-link :to="getPDFPath(item.annotationId)" target="_blank">
               {{ item.fileName }}
             </router-link>
             (PDF, {{ item.fileSize }}Kb)

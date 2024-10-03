@@ -1,37 +1,26 @@
 <template>
   <v-container fluid>
-    <v-form
-      ref="form"
-      v-model="isValidForm"
-    >
+    <v-form ref="form" v-model="isValidForm">
       <v-row class="d-flex justify-center">
-        <span class="text-h4">Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span>
+        <span class="text-h4"
+          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
+        >
       </v-row>
       <v-row class="d-flex justify-center">
         <h2>Summary and Declaration</h2>
       </v-row>
-      <v-row
-        class="d-flex justify-center text-h5"
-        style="color: #003466"
-      >
+      <v-row class="d-flex justify-center text-h5" style="color: #003466">
         {{ userInfo.organizationName }}
       </v-row>
 
       <v-row>
         <!-- Do not allow PCF to be submitted if CR is active-->
-        <v-card
-          v-if="isSomeChangeRequestActive() && !isChangeRequest"
-          width="100%"
-          class="mx-3 my-10"
-        >
+        <v-card v-if="isSomeChangeRequestActive() && !isChangeRequest" width="100%" class="mx-3 my-10">
           <v-row>
             <v-col class="py-0">
               <v-card-title class="py-1 noticeAlert">
                 <span style="float: left">
-                  <v-icon
-                    size="x-large"
-                    class="py-1 px-3 noticeAlertIcon"
-                  > mdi-alert-octagon </v-icon>
+                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
                 </span>
                 You have a change request for the {{ getChangeRequestYear }} funding term still in progress.
               </v-card-title>
@@ -39,38 +28,23 @@
           </v-row>
           <v-card-text>
             The {{ formattedProgramYear }} Program Confirmation Form cannot be submitted until the change is
-            complete.<br><br>
-            <br>
+            complete.<br /><br />
+            <br />
 
-            <v-btn
-              theme="dark"
-              class="blueButton mb-10"
-              @click="goToChangeRequestHistory()"
-            >
-              View My Changes
-            </v-btn>
+            <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()"> View My Changes </v-btn>
           </v-card-text>
         </v-card>
       </v-row>
 
       <!-- Do not allow CR New Fac to be submitted if PCF is unlocked-->
-      <v-row
-        class=""
-        justify="center"
-      >
-        <v-card
-          v-if="isSomeApplicationUnlocked && isChangeRequest"
-          class="py-0 px-3 mx-0 mt-10 rounded-lg col-11"
-        >
+      <v-row class="" justify="center">
+        <v-card v-if="isSomeApplicationUnlocked && isChangeRequest" class="py-0 px-3 mx-0 mt-10 rounded-lg col-11">
           <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
                   <span style="float: left">
-                    <v-icon
-                      size="x-large"
-                      class="py-1 px-3 noticeAlertIcon"
-                    > mdi-alert-octagon </v-icon>
+                    <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
                   </span>
                   You have an unlocked PCF application still in progress.
                 </v-card-title>
@@ -78,40 +52,25 @@
             </v-row>
           </v-container>
 
-          <br>
+          <br />
           <p>You will be unable to submit a change request until the Program Confirmation Form is updated.</p>
-          <br>
-          <br>
+          <br />
+          <br />
 
           <!-- <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
 
-      <v-row
-        v-if="!isSomeChangeRequestActive()"
-        class="d-flex justify-center text-h5"
-        style="color: #003466"
-      >
+      <v-row v-if="!isSomeChangeRequestActive()" class="d-flex justify-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
-      <v-row
-        v-if="!isSummaryComplete && !isProcessing"
-        justify="center"
-      >
-        <v-card
-          class="py-0 px-3 mx-0 mt-10 rounded-lg col-11"
-          elevation="4"
-        >
+      <v-row v-if="!isSummaryComplete && !isProcessing" justify="center">
+        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-container class="pa-0 col-12">
             <v-row>
               <v-col class="pa-0">
                 <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <v-icon
-                    size="x-large"
-                    class="py-1 px-3 noticeAlertIcon"
-                  >
-                    mdi-alert-octagon
-                  </v-icon>
+                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
                   Incomplete Form
                 </v-card-title>
               </v-col>
@@ -129,26 +88,13 @@
       </v-row>
       <div>
         <v-row class="d-flex justify-center">
-          <v-card
-            class="py-0 px-3 mx-0 mt-10 rounded-lg col-11"
-            elevation="4"
-          >
+          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
             <v-row class="d-flex justify-start">
               <v-col class="pa-0">
-                <v-card-title
-                  class="rounded-t-lg pt-3 pb-3 card-title"
-                  style="color: #003466"
-                >
-                  Summary
-                </v-card-title>
+                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
               </v-col>
             </v-row>
-            <v-expansion-panels
-              ref="v-expansion-panels"
-              v-model="expand"
-              multiple
-              variant="accordion"
-            >
+            <v-expansion-panels ref="v-expansion-panels" v-model="expand" multiple variant="accordion">
               <v-row v-if="isMainLoading">
                 <v-col>
                   <v-skeleton-loader
@@ -158,11 +104,7 @@
                   />
                 </v-col>
               </v-row>
-              <v-row
-                v-else
-                no-gutters
-                class="d-flex flex-column pb-2 pt-2"
-              >
+              <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
                 <div v-if="!isRenewal">
                   <v-expansion-panel variant="accordion">
                     <OrganizationSummary
@@ -175,11 +117,7 @@
                   </v-expansion-panel>
                 </div>
 
-                <div
-                  v-for="(facility, index) in summaryModel?.facilities"
-                  :key="facility?.facilityId"
-                  class="special"
-                >
+                <div v-for="(facility, index) in summaryModel?.facilities" :key="facility?.facilityId" class="special">
                   <v-skeleton-loader
                     v-if="isSummaryLoading[index]"
                     :loading="isSummaryLoading[index]"
@@ -187,10 +125,7 @@
                   />
 
                   <div v-else>
-                    <v-expansion-panel
-                      v-if="facility?.facilityInfo"
-                      variant="accordion"
-                    >
+                    <v-expansion-panel v-if="facility?.facilityInfo" variant="accordion">
                       <FacilityInformationSummary
                         :facility-info="facility?.facilityInfo"
                         :funding="facility?.funding"
@@ -233,10 +168,7 @@
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
-                    <v-expansion-panel
-                      v-if="facility?.rfiApp"
-                      variant="accordion"
-                    >
+                    <v-expansion-panel v-if="facility?.rfiApp" variant="accordion">
                       <RFISummary
                         :rfi-app="facility?.rfiApp"
                         :ccfri-id="facility?.ccfri?.ccfriId"
@@ -246,10 +178,7 @@
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
-                    <v-expansion-panel
-                      v-if="facility?.nmfApp"
-                      variant="accordion"
-                    >
+                    <v-expansion-panel v-if="facility?.nmfApp" variant="accordion">
                       <NMFSummary
                         :nmf-app="facility?.nmfApp"
                         :ccfri-id="facility?.ccfri?.ccfriId"
@@ -278,10 +207,7 @@
                     </v-expansion-panel>
                   </div>
                 </div>
-                <div
-                  v-if="!isRenewal"
-                  class="mt-10"
-                >
+                <div v-if="!isRenewal" class="mt-10">
                   <v-expansion-panel variant="accordion">
                     <ECEWESummary
                       :ecewe="summaryModel.ecewe"
@@ -292,11 +218,7 @@
                     />
                   </v-expansion-panel>
                 </div>
-                <v-expansion-panel
-                  v-if="hasChangeNotificationFormDocuments"
-                  variant="accordion"
-                  class="mt-10"
-                >
+                <v-expansion-panel v-if="hasChangeNotificationFormDocuments" variant="accordion" class="mt-10">
                   <ChangeNotificationFormSummary
                     :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
                     @is-summary-valid="isFormComplete"
@@ -317,15 +239,10 @@
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
       <v-row justify="center">
-        <v-card
-          class="py-0 px-3 mx-0 mt-10 rounded-lg col-11"
-          elevation="4"
-        >
+        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
-              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title">
-                Declaration
-              </v-card-title>
+              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title"> Declaration </v-card-title>
             </v-col>
           </v-row>
           <v-row v-if="isProcessing">
@@ -401,10 +318,7 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol
-                  type="a"
-                  style="padding-top: 10px"
-                >
+                <ol type="a" style="padding-top: 10px">
                   <li>
                     I am the authorized representative and signing authority of the Provider as named in the CCOF
                     Agreement (the Provider);
@@ -432,9 +346,7 @@
                 </ol>
                 <v-row>
                   <v-col cols="1" />
-                  <v-col cols="1">
-                    i.
-                  </v-col>
+                  <v-col cols="1"> i. </v-col>
                   <v-col cols="10">
                     permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
                     (ECEs); and
@@ -442,9 +354,7 @@
                 </v-row>
                 <v-row>
                   <v-col cols="1" />
-                  <v-col cols="1">
-                    ii.
-                  </v-col>
+                  <v-col cols="1"> ii. </v-col>
                   <v-col cols="10">
                     able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
@@ -460,10 +370,7 @@
             </v-col>
           </v-row>
           <v-row v-if="!isProcessing">
-            <v-col
-              cols="12"
-              class="pl-6 pt-0 pb-0"
-            >
+            <v-col cols="12" class="pl-6 pt-0 pb-0">
               <v-checkbox
                 v-if="!isRenewal"
                 v-model="model.agreeConsentCertify"
@@ -505,48 +412,26 @@
         @previous="previous"
         @submit="submit"
       />
-      <v-dialog
-        v-model="dialog"
-        persistent
-        max-width="525px"
-      >
+      <v-dialog v-model="dialog" persistent max-width="525px">
         <v-card>
           <v-container class="pt-0">
             <v-row>
-              <v-col
-                cols="7"
-                class="py-0 pl-0"
-                style="background-color: #234075"
-              >
-                <v-card-title class="text-white">
-                  Submission Complete
-                </v-card-title>
+              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+                <v-card-title class="text-white"> Submission Complete </v-card-title>
               </v-col>
-              <v-col
-                cols="5"
-                class="d-flex justify-end"
-                style="background-color: #234075"
-              />
+              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                style="background-color: #ffc72c; padding: 2px"
-              />
+              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                style="text-align: center"
-              >
+              <v-col cols="12" style="text-align: center">
                 <p class="pt-4">
                   Your submission has been received. Please refer to your dashboard for updates on the progress of your
                   application. We will contact you if more information is required.
                 </p>
                 <p>
-                  <router-link :to="landingPage">
-                    Return to your dashboard
-                  </router-link>
+                  <router-link :to="landingPage"> Return to your dashboard </router-link>
                 </p>
               </v-col>
             </v-row>
@@ -963,104 +848,104 @@ export default {
           this.payload['applicationId'] = this.summaryModel?.application?.applicationId;
         }
         switch (formObj.formName) {
-        case 'FacilityInformationSummary':
-          if (this.getNavByFacilityId(formObj.formId)?.isFacilityComplete != isComplete) {
-            this.setNavBarFacilityComplete({ facilityId: formObj.formId, complete: isComplete });
-            if (!this.payload.facilities) {
-              this.payload['facilities'] = [];
+          case 'FacilityInformationSummary':
+            if (this.getNavByFacilityId(formObj.formId)?.isFacilityComplete != isComplete) {
+              this.setNavBarFacilityComplete({ facilityId: formObj.formId, complete: isComplete });
+              if (!this.payload.facilities) {
+                this.payload['facilities'] = [];
+              }
+              this.payload.facilities.push({ facilityId: formObj.formId, isFacilityComplete: isComplete });
             }
-            this.payload.facilities.push({ facilityId: formObj.formId, isFacilityComplete: isComplete });
-          }
-          break;
-        case 'CCOFSummary':
-          if (this.getNavByFundingId(formObj.formId)?.isCCOFComplete != isComplete) {
-            this.setNavBarFundingComplete({ fundingId: formObj.formId, complete: isComplete });
-            if (!this.payload.fundings) {
-              this.payload['fundings'] = [];
+            break;
+          case 'CCOFSummary':
+            if (this.getNavByFundingId(formObj.formId)?.isCCOFComplete != isComplete) {
+              this.setNavBarFundingComplete({ fundingId: formObj.formId, complete: isComplete });
+              if (!this.payload.fundings) {
+                this.payload['fundings'] = [];
+              }
+              this.payload.fundings.push({ basefundingId: formObj.formId, isCCOFComplete: isComplete });
             }
-            this.payload.fundings.push({ basefundingId: formObj.formId, isCCOFComplete: isComplete });
-          }
-          break;
-        case 'ECEWESummary':
-          if (this.isChangeRequest) {
-            if (this.isCREceweComplete != isComplete) {
-              this.setCRIsEceweComplete({ changeRequestId: this.changeRequestId, isComplete: isComplete });
-              this.payload['isEceweComplete'] = isComplete;
-            }
-          } else {
-            if (this.isEceweComplete != isComplete) {
-              this.setIsEceweComplete(isComplete);
-              this.payload['isEceweComplete'] = isComplete;
-            }
-          }
-          break;
-        case 'CCFRISummary':
-          if (this.getNavByCCFRIId(formObj.formId)?.isCCFRIComplete != isComplete) {
-            this.getNavByCCFRIId(formObj.formId).isCCFRIComplete = isComplete;
-            if (!this.payload.ccfris) {
-              this.payload['ccfris'] = [];
-            }
-            const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === formObj.formId);
-            if (findIndex > -1) {
-              const item = this.payload.ccfris[findIndex];
-              item['isCCFRIComplete'] = isComplete;
+            break;
+          case 'ECEWESummary':
+            if (this.isChangeRequest) {
+              if (this.isCREceweComplete != isComplete) {
+                this.setCRIsEceweComplete({ changeRequestId: this.changeRequestId, isComplete: isComplete });
+                this.payload['isEceweComplete'] = isComplete;
+              }
             } else {
-              this.payload.ccfris.push({ ccfriId: formObj.formId, isCCFRIComplete: isComplete });
+              if (this.isEceweComplete != isComplete) {
+                this.setIsEceweComplete(isComplete);
+                this.payload['isEceweComplete'] = isComplete;
+              }
             }
-          }
-          break;
-        case 'RFISummary':
-          if (this.getNavByFacilityId(formObj.formId)?.isRfiComplete != isComplete) {
-            this.getNavByFacilityId(formObj.formId).isRfiComplete = isComplete;
-            const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
-            if (!this.payload.ccfris) {
-              this.payload['ccfris'] = [];
+            break;
+          case 'CCFRISummary':
+            if (this.getNavByCCFRIId(formObj.formId)?.isCCFRIComplete != isComplete) {
+              this.getNavByCCFRIId(formObj.formId).isCCFRIComplete = isComplete;
+              if (!this.payload.ccfris) {
+                this.payload['ccfris'] = [];
+              }
+              const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === formObj.formId);
+              if (findIndex > -1) {
+                const item = this.payload.ccfris[findIndex];
+                item['isCCFRIComplete'] = isComplete;
+              } else {
+                this.payload.ccfris.push({ ccfriId: formObj.formId, isCCFRIComplete: isComplete });
+              }
             }
-            const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === ccfriId);
-            if (findIndex > -1) {
-              const item = this.payload.ccfris[findIndex];
-              item['isRfiComplete'] = isComplete;
+            break;
+          case 'RFISummary':
+            if (this.getNavByFacilityId(formObj.formId)?.isRfiComplete != isComplete) {
+              this.getNavByFacilityId(formObj.formId).isRfiComplete = isComplete;
+              const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
+              if (!this.payload.ccfris) {
+                this.payload['ccfris'] = [];
+              }
+              const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === ccfriId);
+              if (findIndex > -1) {
+                const item = this.payload.ccfris[findIndex];
+                item['isRfiComplete'] = isComplete;
+              } else {
+                this.payload.ccfris.push({ ccfriId: ccfriId, isRfiComplete: isComplete });
+              }
+            }
+            break;
+          case 'NMFSummary':
+            if (this.getNavByFacilityId(formObj.formId)?.isNmfComplete != isComplete) {
+              this.getNavByFacilityId(formObj.formId).isNmfComplete = isComplete;
+              const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
+              if (!this.payload.ccfris) {
+                this.payload['ccfris'] = [];
+              }
+              const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === ccfriId);
+              if (findIndex > -1) {
+                const item = this.payload.ccfris[findIndex];
+                item['isNmfComplete'] = isComplete;
+              } else {
+                this.payload.ccfris.push({ ccfriId: ccfriId, isNmfComplete: isComplete });
+              }
+            }
+            break;
+          case 'OrganizationSummary':
+            if (this.isOrganizationComplete != isComplete) {
+              this.setIsOrganizationComplete(isComplete);
+              this.payload['organizationId'] = formObj.formId;
+              this.payload['isOrganizationComplete'] = isComplete;
+            }
+            break;
+          case 'DocumentSummary':
+            if (this.isChangeRequest) {
+              if (this.isCRLicenseComplete != isComplete) {
+                this.setCRIsLicenseComplete({ changeRequestId: this.changeRequestId, isComplete: isComplete });
+                this.payload['isLicenseUploadComplete'] = isComplete;
+              }
             } else {
-              this.payload.ccfris.push({ ccfriId: ccfriId, isRfiComplete: isComplete });
+              if (this.isLicenseUploadComplete != isComplete) {
+                this.setIsLicenseUploadComplete(isComplete);
+                this.payload['isLicenseUploadComplete'] = isComplete;
+              }
             }
-          }
-          break;
-        case 'NMFSummary':
-          if (this.getNavByFacilityId(formObj.formId)?.isNmfComplete != isComplete) {
-            this.getNavByFacilityId(formObj.formId).isNmfComplete = isComplete;
-            const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
-            if (!this.payload.ccfris) {
-              this.payload['ccfris'] = [];
-            }
-            const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === ccfriId);
-            if (findIndex > -1) {
-              const item = this.payload.ccfris[findIndex];
-              item['isNmfComplete'] = isComplete;
-            } else {
-              this.payload.ccfris.push({ ccfriId: ccfriId, isNmfComplete: isComplete });
-            }
-          }
-          break;
-        case 'OrganizationSummary':
-          if (this.isOrganizationComplete != isComplete) {
-            this.setIsOrganizationComplete(isComplete);
-            this.payload['organizationId'] = formObj.formId;
-            this.payload['isOrganizationComplete'] = isComplete;
-          }
-          break;
-        case 'DocumentSummary':
-          if (this.isChangeRequest) {
-            if (this.isCRLicenseComplete != isComplete) {
-              this.setCRIsLicenseComplete({ changeRequestId: this.changeRequestId, isComplete: isComplete });
-              this.payload['isLicenseUploadComplete'] = isComplete;
-            }
-          } else {
-            if (this.isLicenseUploadComplete != isComplete) {
-              this.setIsLicenseUploadComplete(isComplete);
-              this.payload['isLicenseUploadComplete'] = isComplete;
-            }
-          }
-          break;
+            break;
         }
       }
       this.forceNavBarRefresh();

@@ -27,7 +27,7 @@ export function checkDigit(pen) {
         return index % 2 === 1;
       })
       .join(''),
-    10
+    10,
   );
   const B = 2 * A;
   let S2 = B.toString()
@@ -55,7 +55,7 @@ export function isValidPostalCode(code) {
   return !!(
     code &&
     code.match(
-      '^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] {0,1}[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]$'
+      '^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] {0,1}[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]$',
     )
   );
 }
@@ -71,7 +71,7 @@ export function isValidDob(dob, pattern = 'uuuu/MM/dd') {
     if (dateObject.isBefore(LocalDate.now())) {
       return true;
     }
-  } catch (err) {
+  } catch {
     //Do nothing
   }
   return false;
@@ -110,7 +110,7 @@ export function isDateAfter1900(dob, pattern = 'uuuu/MM/dd') {
     if (dateObject.isAfter(dateBefore1900)) {
       return true;
     }
-  } catch (err) {
+  } catch {
     //Do nothing
   }
   return false;
@@ -125,7 +125,7 @@ export function isPresentDateAndAfter1900(date, pattern = 'uuuu/MM/dd', includin
     if (dateObject.isBefore(maxDate) && dateObject.isAfter(dateBefore1900)) {
       return true;
     }
-  } catch (err) {
+  } catch {
     //Do nothing
   }
   return false;
@@ -186,7 +186,7 @@ export function getChanges(updatedModel, loadedModel) {
   }
   const changes = Object.entries(loadedModel).reduce(
     (ac, [k, v]) => (updatedModel[k] && updatedModel[k] !== v ? ((ac[k] = updatedModel[k]), ac) : ac),
-    {}
+    {},
   );
   if (isEmpty(changes)) {
     return null;

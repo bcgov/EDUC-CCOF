@@ -1,54 +1,22 @@
 <template>
-  <v-row
-    no-gutters
-    class="d-flex flex-column"
-  >
-    <v-form
-      ref="documentSummaryForm"
-      v-model="isValidForm"
-    >
+  <v-row no-gutters class="d-flex flex-column">
+    <v-form ref="documentSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
         <h4 style="color: #003466">
           Uploaded Documents
-          <v-icon
-            v-if="isValidForm"
-            color="green"
-            size="large"
+          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
+          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" style="color: #ff5252"
+            >Your form is missing required information. Click here to view.</span
           >
-            mdi-check-circle-outline
-          </v-icon>
-          <v-icon
-            v-if="!isValidForm"
-            color="#ff5252"
-            size="large"
-          >
-            mdi-alert-circle-outline
-          </v-icon>
-          <span
-            v-if="!isValidForm"
-            style="color: #ff5252"
-          >Your form is missing required information. Click here to view.</span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
-        <v-row
-          no-gutters
-          class="d-flex flex-column"
-        >
+        <v-row no-gutters class="d-flex flex-column">
           <v-row class="d-flex justify-start">
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-2"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-2">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3">Licence: </span>
                   <v-text-field
                     placeholder="Required"
@@ -64,26 +32,12 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col
-              v-if="supportingDocumentItems?.length > 0"
-              cols="6"
-              lg="4"
-              class="pb-0 pt-2"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+            <v-col v-if="supportingDocumentItems?.length > 0" cols="6" lg="4" class="pb-0 pt-2">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3">Supporting Documents:</span>
                 </v-col>
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="12" class="d-flex justify-start">
                   <v-data-table
                     :headers="headers"
                     :items="supportingDocumentItems"
@@ -96,25 +50,14 @@
             </v-col>
           </v-row>
         </v-row>
-        <v-row
-          v-if="!isValidForm"
-          class="d-flex justify-start"
-        >
-          <v-col
-            cols="6"
-            lg="4"
-            class="pb-0 pt-0"
-          >
-            <v-row
-              no-gutters
-              class="d-flex justify-start"
-            >
-              <v-col
-                cols="12"
-                class="d-flex justify-start"
-              >
+        <v-row v-if="!isValidForm" class="d-flex justify-start">
+          <v-col cols="6" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
                 <router-link :to="getLink()">
-                  <span style="color: #ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span>
+                  <span style="color: #ff5252; text-underline: black"
+                    ><u>To add this information, click here. This will bring you to a different page.</u></span
+                  >
                 </router-link>
               </v-col>
             </v-row>
@@ -134,10 +77,6 @@ import rules from '../../../utils/rules.js';
 
 export default {
   name: 'UploadedDocumentsSummary',
-  computed: {
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
-    ...mapState(useNavBarStore, ['isChangeRequest']),
-  },
   props: {
     documents: {
       type: Array,
@@ -146,7 +85,38 @@ export default {
     programYearId: {
       type: String,
       required: false,
+      default: '',
     },
+  },
+  emits: ['isSummaryValid'],
+  data() {
+    return {
+      PATHS,
+      rules,
+      isValidForm: true,
+      legal: null,
+      supportingDocumentItems: [],
+      headers: [
+        {
+          text: 'Document',
+          align: 'start',
+          sortable: false,
+          value: 'filename',
+        },
+        {
+          text: 'Description',
+          sortable: false,
+          value: 'description',
+        },
+      ],
+      formObj: {
+        formName: 'DocumentSummary',
+      },
+    };
+  },
+  computed: {
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
+    ...mapState(useNavBarStore, ['isChangeRequest']),
   },
   watch: {
     isLoadingComplete: {
@@ -173,31 +143,6 @@ export default {
     getSupportingDocuments() {
       this.supportingDocumentItems = this.documents.filter((doc) => doc.documentType !== 'Facility License');
     },
-  },
-  data() {
-    return {
-      PATHS,
-      rules,
-      isValidForm: true,
-      legal: null,
-      supportingDocumentItems: [],
-      headers: [
-        {
-          text: 'Document',
-          align: 'start',
-          sortable: false,
-          value: 'filename',
-        },
-        {
-          text: 'Description',
-          sortable: false,
-          value: 'description',
-        },
-      ],
-      formObj: {
-        formName: 'DocumentSummary',
-      },
-    };
   },
 };
 </script>

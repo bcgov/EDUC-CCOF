@@ -1,60 +1,27 @@
 <template>
-  <v-row
-    no-gutters
-    class="d-flex flex-column"
-  >
-    <v-form
-      ref="organizationSummaryForm"
-      v-model="isValidForm"
-    >
+  <v-row no-gutters class="d-flex flex-column">
+    <v-form ref="organizationSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
         <h4 style="color: #003466">
           Organization Information
-          <v-icon
-            v-if="isValidForm"
-            color="green"
-            size="large"
+          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
+          <v-icon v-if="!isValidForm && !isProcessing" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm && !isProcessing" style="color: #ff5252"
+            >Your form is missing required information. Click here to view</span
           >
-            mdi-check-circle-outline
-          </v-icon>
-          <v-icon
-            v-if="!isValidForm && !isProcessing"
-            color="#ff5252"
-            size="large"
-          >
-            mdi-alert-circle-outline
-          </v-icon>
-          <span
-            v-if="!isValidForm && !isProcessing"
-            style="color: #ff5252"
-          >Your form is missing required information. Click here to view</span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
-        <v-row
-          no-gutters
-          class="d-flex flex-column"
-        >
+        <v-row no-gutters class="d-flex flex-column">
           <v-row class="d-flex justify-start">
-            <v-col
-              cols="8"
-              lg="6"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3 pt-2"
-                >
-                  <span class="summary-label">Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span>
+            <v-col cols="8" lg="6" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3 pt-2">
+                  <span class="summary-label"
+                    >Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span
+                  >
                 </v-col>
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     :model-value="summaryModel?.organization?.legalName"
@@ -71,25 +38,12 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">Organization Mailing Address</span>
                 </v-col>
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     class="summary-value"
@@ -110,14 +64,8 @@
               lg="4"
               class="pb-0 pt-0"
             >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">Organization Contact Name</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -141,14 +89,8 @@
               lg="4"
               class="pb-0 pt-0"
             >
-              <v-row
-                no-gutters
-                class="d-flex justify-start flex-column"
-              >
-                <v-col
-                  cols="10"
-                  class="d-flex justify-start ml-3"
-                >
+              <v-row no-gutters class="d-flex justify-start flex-column">
+                <v-col cols="10" class="d-flex justify-start ml-3">
                   <span class="summary-label">Position</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -168,31 +110,15 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start ml-3"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="5" class="d-flex justify-start ml-3">
                   <span class="summary-label">City/Town</span>
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="5" class="d-flex justify-start">
                   <span class="summary-label">Postal Code</span>
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="5" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     class="summary-value"
@@ -205,10 +131,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="5" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     class="summary-value"
@@ -223,19 +146,9 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">Business phone</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -253,19 +166,9 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">E-mail Address of Signing Authority</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -285,19 +188,9 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label ml-3">Provider Type</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -315,19 +208,9 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label ml-3">Type of Organization</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -345,19 +228,9 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">Business BCeID</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -378,20 +251,14 @@
             <v-col
               v-if="
                 summaryModel?.organization?.organizationType == 100000000 ||
-                  summaryModel?.organization?.organizationType == 100000002
+                summaryModel?.organization?.organizationType == 100000002
               "
               cols="4"
               lg="3"
               class="pb-0 pt-0"
             >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">Incorporation Number</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -411,19 +278,9 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="12"
-                  class="d-flex justify-start ml-3"
-                >
+            <v-col cols="6" lg="4" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label">Organization Street Address</span>
                 </v-col>
                 <v-col class="d-flex justify-start">
@@ -439,26 +296,14 @@
                   />
                 </v-col>
               </v-row>
-              <v-row
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start ml-3"
-                >
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="5" class="d-flex justify-start ml-3">
                   <span class="summary-label">City/Town</span>
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="5" class="d-flex justify-start">
                   <span class="summary-label">Postal Code</span>
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="5" class="d-flex justify-start">
                   <v-text-field
                     class="summary-value"
                     :model-value="summaryModel?.organization?.city2"
@@ -470,10 +315,7 @@
                     readonly
                   />
                 </v-col>
-                <v-col
-                  cols="5"
-                  class="d-flex justify-start"
-                >
+                <v-col cols="5" class="d-flex justify-start">
                   <v-text-field
                     class="summary-value"
                     :model-value="summaryModel?.organization?.postalCode2"
@@ -489,25 +331,14 @@
             </v-col>
           </v-row>
         </v-row>
-        <v-row
-          v-if="!isValidForm"
-          class="d-flex justify-start"
-        >
-          <v-col
-            cols="6"
-            lg="4"
-            class="pb-0 pt-0"
-          >
-            <v-row
-              no-gutters
-              class="d-flex justify-start"
-            >
-              <v-col
-                cols="12"
-                class="d-flex justify-start"
-              >
+        <v-row v-if="!isValidForm" class="d-flex justify-start">
+          <v-col cols="6" lg="4" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
                 <router-link :to="getRoutingPath()">
-                  <span style="color: #ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span>
+                  <span style="color: #ff5252; text-underline: black"
+                    ><u>To add this information, click here. This will bring you to a different page.</u></span
+                  >
                 </router-link>
               </v-col>
             </v-row>
@@ -540,7 +371,21 @@ export default {
     programYearId: {
       type: String,
       required: false,
+      default: '',
     },
+  },
+  emits: ['isSummaryValid'],
+  data() {
+    return {
+      PATHS,
+      rules,
+      legalName: null,
+      isValidForm: true,
+      formObj: {
+        formName: 'OrganizationSummary',
+        formId: this.summaryModel?.application?.organizationId,
+      },
+    };
   },
   computed: {
     ...mapState('auth', ['userInfo']),
@@ -565,36 +410,24 @@ export default {
     },
     getOrgTypeString() {
       switch (this.summaryModel?.organization?.organizationType) {
-      case !this.summaryModel?.organization?.organizationType:
-        return '';
-      case 100000000:
-        return 'Non-Profit Society';
-      case 100000001:
-        return 'Public Institution(college/university)';
-      case 100000002:
-        return 'Registered Company';
-      case 100000003:
-        return 'Local Government';
-      case 100000004:
-        return 'First Nations Government';
-      case 100000005:
-        return 'Sole Proprietorship or Partnership';
-      default:
-        return '';
+        case !this.summaryModel?.organization?.organizationType:
+          return '';
+        case 100000000:
+          return 'Non-Profit Society';
+        case 100000001:
+          return 'Public Institution(college/university)';
+        case 100000002:
+          return 'Registered Company';
+        case 100000003:
+          return 'Local Government';
+        case 100000004:
+          return 'First Nations Government';
+        case 100000005:
+          return 'Sole Proprietorship or Partnership';
+        default:
+          return '';
       }
     },
-  },
-  data() {
-    return {
-      PATHS,
-      rules,
-      legalName: null,
-      isValidForm: true,
-      formObj: {
-        formName: 'OrganizationSummary',
-        formId: this.summaryModel?.application?.organizationId,
-      },
-    };
   },
 };
 </script>

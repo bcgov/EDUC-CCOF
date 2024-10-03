@@ -130,9 +130,9 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     },
     getPreviousApprovedFeesByFacilityId:
       (state) =>
-        ({ facilityId: facilityId, previousProgramYearId: programYearId }) => {
-          return state.previousFeeStore[`${facilityId}-${programYearId}`];
-        },
+      ({ facilityId: facilityId, previousProgramYearId: programYearId }) => {
+        return state.previousFeeStore[`${facilityId}-${programYearId}`];
+      },
   },
   actions: {
     // TODO: Refactor all setters as setThing.  You can just set the state directly with Pinia
