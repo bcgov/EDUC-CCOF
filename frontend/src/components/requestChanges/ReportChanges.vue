@@ -343,20 +343,20 @@ export default {
       return this.organizationProviderType == 'GROUP' ? this.headersGroup : this.headersFamily;
     },
     maxfacilityNamesStringLength() {
-      if (this.$vuetify.breakpoint.width > 3500) {
+      if (this.$vuetify.display.width > 3500) {
         return '--maxLength: 700px';
       }
-      switch (this.$vuetify.breakpoint.name) {
+      switch (this.$vuetify.display.name) {
         case 'xl':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 350) + 'px';
+          return '--maxLength: ' + (Math.floor(this.$vuetify.display.width / 10) + 350) + 'px';
         case 'lg':
-          return '--maxLength: ' + Math.floor(this.$vuetify.breakpoint.width / 10) + 'px';
+          return '--maxLength: ' + Math.floor(this.$vuetify.display.width / 10) + 'px';
         case 'md':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+          return '--maxLength: ' + (Math.floor(this.$vuetify.display.width / 10) + 300) + 'px';
         case 'sm':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 300) + 'px';
+          return '--maxLength: ' + (Math.floor(this.$vuetify.display.width / 10) + 300) + 'px';
         case 'xs':
-          return '--maxLength: ' + (Math.floor(this.$vuetify.breakpoint.width / 10) + 100) + 'px';
+          return '--maxLength: ' + (Math.floor(this.$vuetify.display.width / 10) + 100) + 'px';
         default:
           return '--maxLength: 100px';
       }

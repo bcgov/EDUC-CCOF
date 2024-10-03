@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-navigation-drawer v-model="drawer" :permanent="$vuetify.breakpoint.mdAndUp">
+    <v-navigation-drawer v-model="drawer" :permanent="$vuetify.display.mdAndUp">
       <v-list-item class="px-2">
         <v-list-item-title>CCOF Base Funding</v-list-item-title>
         <!-- <v-btn

@@ -7,8 +7,8 @@
       :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px`"
       width="200"
       height="calc(100vh - ${$vuetify.application.footer}px)"
-      :permanent="$vuetify.breakpoint.mdAndUp"
-      :temporary="!$vuetify.breakpoint.mdAndUp"
+      :permanent="$vuetify.display.mdAndUp"
+      :temporary="!$vuetify.display.mdAndUp"
     >
       <v-list>
         <div v-for="item in items" :key="item.title">
@@ -100,7 +100,7 @@
       color="#38598A"
       :dark="true"
       class="pl-4 pr-8 justify-start"
-      :class="{ 'pl-16': $vuetify.breakpoint.mdAndUp }"
+      :class="{ 'pl-16': $vuetify.display.mdAndUp }"
       clipped-left
     >
       <v-app-bar-nav-icon id="menuBtn" @click="drawer = true">
@@ -111,7 +111,7 @@
       <v-toolbar-title
         id="navTitle"
         class="nav-title"
-        :class="{ 'ml-4': $vuetify.breakpoint.mdAndUp, 'pl-1': $vuetify.breakpoint.smAndDown }"
+        :class="{ 'ml-4': $vuetify.display.mdAndUp, 'pl-1': $vuetify.display.sm }"
       >
         {{ title }}
       </v-toolbar-title>
@@ -196,7 +196,7 @@ export default {
     },
 
     navWidth() {
-      switch (this.$vuetify.breakpoint.name) {
+      switch (this.$vuetify.display.name) {
         case 'xs':
           return '50%';
         case 'sm':

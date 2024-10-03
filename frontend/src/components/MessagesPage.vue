@@ -92,9 +92,13 @@ export default {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useMessageStore, ['allMessages']),
     buttonSize() {
-      const size = { xs: 'large', sm: 'large', md: 'large', lg: 'x-large', xl: 'x-large' }[
-        this.$vuetify.breakpoint.name
-      ];
+      const size = {
+        xs: 'large',
+        sm: 'large',
+        md: 'large',
+        lg: 'x-large',
+        xl: 'x-large',
+      }[this.$vuetify.display.name];
       return size ? { [size]: true } : {};
     },
   },
@@ -130,7 +134,7 @@ export default {
       }
     },
     fitScreenHeight() {
-      switch (this.$vuetify.breakpoint.name) {
+      switch (this.$vuetify.display.name) {
         case 'xs':
           return '67vh';
         case 'sm':

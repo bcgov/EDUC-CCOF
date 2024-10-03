@@ -1,7 +1,7 @@
 <template>
   <v-system-bar absolute color="rgb(0, 51, 102)" height="66rem" class="sysBar">
     <!-- Navbar content -->
-    <v-container :class="{ sizingForIconXLScreen: $vuetify.breakpoint.xlOnly }">
+    <v-container :class="{ sizingForIconXLScreen: $vuetify.display.xl }">
       <v-row class="justify-space-between">
         <a tabindex="-1" href="/">
           <img tabindex="-1" src="../assets/images/bc-gov-logo.svg" class="logo" alt="B.C. Government Logo" />
@@ -9,7 +9,7 @@
         <v-row class="verticalLine">
           <v-row>
             <v-toolbar-title fill-height>
-              <h6 v-if="$vuetify.breakpoint.xsOnly">My ChildCareBC<br />Services</h6>
+              <h6 v-if="$vuetify.display.xs">My ChildCareBC<br />Services</h6>
               <h2 v-else class="mainTitle">My ChildCareBC Services</h2>
             </v-toolbar-title>
           </v-row>
