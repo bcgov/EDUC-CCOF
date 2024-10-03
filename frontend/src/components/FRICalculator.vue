@@ -3,7 +3,7 @@
     <v-form ref="form">
       <v-row justify="center">
         <v-col cols="12" class="pt-0" align="center">
-          <v-img :src="require('../assets/images/crayons-backdrop-darkend-v2.jpg')" max-height="300" max-width="1448">
+          <v-img :src="crayonsImage" max-height="300" max-width="1448">
             <span class="banner-title">
               <p class="banner-title-heading my-2" style="font-family: BCSans">
                 Child Care Fee Reduction Initiative Estimator
@@ -606,6 +606,8 @@
 <script>
 import { constants } from '../utils/constants.js';
 
+import crayonsImage from '../assets/images/crayons-backdrop-darkend-v2.jpg';
+
 export default {
   name: 'FRICalculator',
   //{PrimaryButton},
@@ -669,6 +671,7 @@ export default {
         (v) => v > 0 || 'Approved full-time parent fee before fee reduction applied must be greater than $0',
       ],
       rulesParentFeeFrequency: [(v) => !!v || 'Parent fee frequency is required'],
+      crayonsImage,
     };
   },
   computed: {},

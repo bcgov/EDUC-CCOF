@@ -5,7 +5,7 @@
       <v-row>
         <v-col cols="12" align="center" class="pt-0">
           <v-img
-            :src="require('../assets/images/login-header-img-resized.jpg')"
+            :src="headerImage"
             max-height="300"
             max-width="1448"
             class="align-end"
@@ -117,6 +117,8 @@ import { useAuthStore } from '../store/auth.js';
 
 import { AuthRoutes, PATHS } from '../utils/constants.js';
 
+import headerImage from '../assets/images/login-header-img-resized.jpg';
+
 export default {
   name: 'MinistryLogin',
   components: {},
@@ -124,6 +126,7 @@ export default {
     return {
       appTitle: import.meta.env.VUE_APP_TITLE,
       authRoutes: AuthRoutes,
+      headerImage
     };
   },
   computed: {

@@ -4,16 +4,11 @@
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
       <v-row>
         <v-col cols="12" align="center" class="pt-0">
-          <v-img
-            :src="require('../assets/images/login-header-img-resized.jpg')"
-            max-height="300"
-            max-width="1448"
-            class="align-end"
-          >
+          <v-img :src="headerImage" max-height="300" max-width="1448" class="align-end">
             <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85)">
-              <span class="text-h4 text-white font-weight-bold" style="font-family: BCSans"
-                >My ChildCareBC Services</span
-              >
+              <span class="text-h4 text-white font-weight-bold" style="font-family: BCSans">
+                My ChildCareBC Services
+              </span>
               <br />
               <span class="text-h6 text-white">Welcome</span>
             </v-col>
@@ -160,6 +155,8 @@ import { useAuthStore } from '../store/auth.js';
 import { AuthRoutes, PATHS, ApiRoutes } from '../utils/constants.js';
 import ApiService from '../common/apiService.js';
 
+import headerImage from '../assets/images/login-header-img-resized.jpg';
+
 export default {
   name: 'LoginComponent',
   components: {},
@@ -168,6 +165,7 @@ export default {
       appTitle: import.meta.env.VUE_APP_TITLE,
       authRoutes: AuthRoutes,
       systemMessages: [],
+      headerImage,
     };
   },
   computed: {

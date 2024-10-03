@@ -6,7 +6,7 @@
     <v-form ref="form">
       <v-row>
         <v-col cols="12" class="pt-0 pb-2" align="center">
-          <v-img :src="require('../assets/images/estimator_image.jpg')" max-height="300" max-width="1448" />
+          <v-img :src="estimatorImage" max-height="300" max-width="1448" />
         </v-col>
       </v-row>
       <v-row v-show="false" justify="center">
@@ -923,6 +923,8 @@ const CARE_TYPES = [{ type: 'No care' }, { type: '4 hours or less' }, { type: 'O
 
 const CARE_TYPES_PRESCHOOL = [{ type: 'No care' }, { type: '4 hours or less' }];
 
+import estimatorImage from '../assets/images/estimator_image.jpg';
+
 export default {
   components: { FacilitySearch },
   props: {},
@@ -977,6 +979,7 @@ export default {
       rulesCaresSchedule: [(v) => !!v || 'Care schedule is required'],
       rulesChildsAgeCategory: [(v) => !!v || "Child's age category is required"],
       rulesParentFeeFrequency: [(v) => !!v || 'Parent fee frequency is required'],
+      estimatorImage,
     };
   },
   computed: {
