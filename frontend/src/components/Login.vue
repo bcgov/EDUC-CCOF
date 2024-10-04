@@ -4,7 +4,7 @@
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
       <v-row>
         <v-col cols="12" align="center" class="pt-0">
-          <v-img :src="headerImage" max-height="300" max-width="1448" class="align-end">
+          <v-img :src="headerImage" max-height="300" max-width="1448" class="align-end" cover>
             <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85)">
               <span class="text-h4 text-white font-weight-bold" style="font-family: BCSans">
                 My ChildCareBC Services
