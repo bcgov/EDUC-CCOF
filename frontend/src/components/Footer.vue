@@ -1,6 +1,6 @@
 <template>
   <v-footer inset color="#003366" dark>
-    <v-layout justify-center row>
+    <v-row justify="center" align="center">
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/"> Home </v-btn>
       <v-btn id="footer-about" variant="text" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">
         About gov.bc.ca
@@ -12,7 +12,7 @@
       <v-btn id="footer-contact" variant="text" href="https://www2.gov.bc.ca/gov/content/home/contact-us">
         Contact Us
       </v-btn>
-    </v-layout>
+    </v-row>
   </v-footer>
 </template>
 
