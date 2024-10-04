@@ -1,5 +1,5 @@
 <template>
-  <v-system-bar absolute color="rgb(0, 51, 102)" height="66rem" class="sysBar">
+  <v-system-bar absolute color="rgb(0, 51, 102)" class="sysBar" :style="{ height: '66px', textAlign: 'left' }" >
     <!-- Navbar content -->
     <v-container :class="{ sizingForIconXLScreen: $vuetify.display.xl }">
       <v-row class="justify-space-between">

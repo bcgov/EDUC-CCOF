@@ -1721,7 +1721,7 @@ div.v-select__selection.v-select__selection--comma {
   font-size: 16px;
   text-align: left;
 }
-.v-toolbar__title {
+.v-toolbar-title {
   font-size: 14px !important;
   color: white;
   font-weight: 600;

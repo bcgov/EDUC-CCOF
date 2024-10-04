@@ -4,15 +4,17 @@
     <HeaderComponent />
     <SnackBar />
     <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
-    <v-main fluid class="align-start">
+    <v-main fluid style="--v-layout-top: 64px;" class="align-start">
+      <div class="v-main__wrap">
       <v-app-bar
         v-if="bannerColor !== ''"
-        style="color: white"
+        :style="{ height: '20px', color: 'white', position: 'relative', top: '0'}"
         :color="bannerColor"
         sticky
         dense
         height="20rem"
         clipped-left
+        class="px-4"
       >
         <div>
           <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
@@ -25,6 +27,7 @@
       </div>
       <ModalIdle v-if="isAuthenticated" />
       <router-view />
+      </div>
     </v-main>
     <FooterComponent />
   </v-app>
@@ -120,7 +123,7 @@ export default {
 h1 {
   font-size: 1.25rem;
 }
-.v-toolbar__title {
+.v-toolbar-title {
   font-size: 1rem;
 }
 
@@ -156,7 +159,7 @@ h1 {
   border-color: #eeaaad !important;
 }
 
-.row {
+.v-row {
   display: flex;
   flex-wrap: wrap;
   flex: 1 1 auto;
@@ -165,7 +168,7 @@ h1 {
 }
 
 @media screen and (max-width: 370px) {
-  .v-toolbar__title {
+  .v-toolbar-title {
     font-size: 0.9rem;
     line-height: 1;
     overflow: hidden;
@@ -183,7 +186,7 @@ h1 {
 }
 
 @media screen and (min-width: 371px) and (max-width: 600px) {
-  .v-toolbar__title {
+  .v-toolbar-title {
     font-size: 0.9rem;
     line-height: 1.5;
     overflow: hidden;
@@ -201,7 +204,7 @@ h1 {
 }
 
 @media screen and (min-width: 601px) and (max-width: 700px) {
-  .v-toolbar__title {
+  .v-toolbar-title {
     font-size: 1rem;
     line-height: 1.5;
     overflow: hidden;
