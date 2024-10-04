@@ -102,8 +102,8 @@ export default {
       return size ? { [size]: true } : {};
     },
   },
-  created() {
-    this.getAllMessagesVuex();
+  mounted() {
+    this.loadMessagesStore();
   },
   methods: {
     ...mapActions(useMessageStore, ['updateMessage', 'getAllMessages']),
@@ -123,7 +123,7 @@ export default {
     goToHomePage() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    async getAllMessagesVuex() {
+    async loadMessagesStore() {
       try {
         if (!this.allMessages) {
           const organizationId = this.userInfo.organizationId;

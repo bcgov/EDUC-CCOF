@@ -856,7 +856,7 @@ router.beforeEach((to, _from, next) => {
     authStore
       .getJwtToken()
       .then(() => {
-        if (!authStore.state.isAuthenticated) {
+        if (!authStore.isAuthenticated) {
           next('/token-expired');
         } else {
           authStore

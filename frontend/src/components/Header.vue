@@ -22,7 +22,7 @@
             rounded
             theme="dark"
             class="mr-5 elevation-0"
-            @click="goToMessagePage()"
+            :to="PATHS.ROOT.MESSAGES"
           >
             <v-badge color="red" :content="unreadMessageCount" location="bottom right" offset-x="20" offset-y="20">
               <v-icon aria-hidden="false" size="40" color="white"> mdi-email-outline </v-icon>
@@ -86,16 +86,6 @@ export default {
   methods: {
     hasSeveralMincodes() {
       return this.userInfo?.userMinCodes?.length > 1;
-    },
-    goToMessagePage() {
-      this.$router.push(PATHS.ROOT.MESSAGES).catch((err) => {
-        // Ignore the vuex err regarding  navigating to the page they are already on.
-        if (
-          err.name !== 'NavigationDuplicated' &&
-          !err.message.includes('Avoided redundant navigation to current location')
-        )
-          console.log(err);
-      });
     },
   },
 };

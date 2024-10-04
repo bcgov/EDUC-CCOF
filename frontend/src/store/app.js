@@ -88,25 +88,25 @@ export const useAppStore = defineStore('app', {
         this.setFundingModelTypeList(lookupInfo.data?.fundingModelType);
       }
     },
-    async startCounter({ state, commit }) {
+    async startCounter() {
       const d = new Date();
       const time = d.getTime() + 1000 * 120; //add 120 secons to current time
-      commit('setLogoutTime', time);
-      commit('setLogoutTimerEnabled', true);
-      let logoutCount = Math.floor((state.logoutTime - new Date().getTime()) / 1000);
-      commit('setLogoutCounter', logoutCount);
-      while (state.logoutCounter > 0 && state.logoutTimerEnabled) {
+      this.setLogoutTime(time);
+      this.setLogoutTimerEnabled(true);
+      let logoutCount = Math.floor((this.logoutTime - new Date().getTime()) / 1000);
+      this.setLogoutCounter(logoutCount);
+      while (this.logoutCounter > 0 && this.logoutTimerEnabled) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        if (state.logoutTimerEnabled) {
-          let logoutCount = Math.floor((state.logoutTime - new Date().getTime()) / 1000);
-          commit('setLogoutCounter', logoutCount);
+        if (this.logoutTimerEnabled) {
+          let logoutCount = Math.floor((this.logoutTime - new Date().getTime()) / 1000);
+          this.setLogoutCounter(logoutCount);
         }
       }
-      commit('setLogoutTimerEnabled', false);
+      this.setLogoutTimerEnabled(false);
     },
-    stopCounter({ commit }) {
-      commit('setLogoutCounter', 120);
-      commit('setLogoutTimerEnabled', false);
+    stopCounter() {
+      this.setLogoutCounter(120);
+      this.setLogoutTimerEnabled(false);
     },
   },
   getters: {

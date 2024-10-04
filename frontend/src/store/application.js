@@ -46,7 +46,6 @@ export const useApplicationStore = defineStore('application', {
     },
     setProgramYearLabel(value) {
       this.programYearLabel = value;
-      this.formattedProgramYear = value?.replace(/[^\d/]/g, '');
     },
     setIsRenewal(value) {
       this.isRenewal = value;
@@ -93,14 +92,14 @@ export const useApplicationStore = defineStore('application', {
         app.isLicenseUploadComplete = value;
       }
     },
-    addApplicationsToMap: (applicationList) => {
+    addApplicationsToMap(applicationList) {
       const map = new Map(this.applicationMap);
       applicationList?.forEach((el) => {
         map.set(el.ccofProgramYearId, el);
       });
       this.applicationMap = map;
     },
-    removeFacilityFromMap: (facilityId) => {
+    removeFacilityFromMap(facilityId) {
       let app = this.applicationMap?.get(this.programYearId);
       //it should almost always have an app.. this just solves for the case where it's a brand new PCF application, and they haven't refreshed yet
       if (app) {
@@ -119,7 +118,7 @@ export const useApplicationStore = defineStore('application', {
         console.log('loadApplicationFromStore found for guid : ', application);
         this.setApplicationId(application.applicationId);
         this.setApplicationStatus(application.applicationStatus);
-        this.setApplicatioanType(application.applicationType);
+        this.setApplicationType(application.applicationType);
         this.setCcofApplicationStatus(application.ccofApplicationStatus);
         this.setProgramYearId(application.ccofProgramYearId);
         this.setProgramYearLabel(application.ccofProgramYearName);

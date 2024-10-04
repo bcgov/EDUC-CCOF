@@ -5,49 +5,25 @@ import { ApiRoutes } from '../utils/constants.js';
 
 export const useMessageStore = defineStore('message', {
   state: () => ({
-    allMessages: null,
+    allMessages: [],
     unreadMessageCount: 0,
-    hasUnreadActionRequiredMessage: false,
     hasUnreadMessage: false,
     hasBroadcastingMessage: false,
   }),
   getters: {
-    unreadMessageCount: (state) => {
-      if (state.unreadMessageCount > 0) return state.unreadMessageCount;
-      else return '0';
-    },
-    hasUnreadMessage: (state) => {
-      return state.unreadMessageCount > 0;
-    },
     hasUnreadActionRequiredMessage: (state) => {
       let result = false;
-      if (this.hasUnreadMessage) {
+      if (state.hasUnreadMessage) {
         state.allMessages.forEach((message) => {
           if (message.subject.substring(0, 15).toLowerCase() == 'action required' && !message.isRead) result = true;
         });
       }
       return result;
     },
-    // TODO: The heck is this even a thing for?
-    hasBroadcastingMessage: () => {
-      return false;
-    },
   },
   actions: {
     setAllMessages(allMessages) {
       this.allMessages = allMessages;
-    },
-    setUnreadMessageCount(unreadMessageCount) {
-      this.unreadMessageCount = unreadMessageCount;
-    },
-    setHasUnreadMessage(hasUnreadMessage) {
-      this.hasUnreadMessage = hasUnreadMessage;
-    },
-    setHasUnreadActionRequiredMessage(hasUnreadActionRequiredMessage) {
-      this.hasUnreadActionRequiredMessage = hasUnreadActionRequiredMessage;
-    },
-    setHasBroadcastingMessage(hasBroadcastingMessage) {
-      this.hasBroadcastingMessage = hasBroadcastingMessage;
     },
     updateUnreadMessagesCount() {
       if (this.allMessages) {
@@ -66,6 +42,7 @@ export const useMessageStore = defineStore('message', {
       }
     },
     async getAllMessages(organizationId) {
+      console.log('WHEE messages');
       if (!localStorage.getItem('jwtToken')) {
         console.log('unable to get Messages data because you are not logged in');
         throw 'unable to get Messages data because you are not logged in';
@@ -73,14 +50,14 @@ export const useMessageStore = defineStore('message', {
       if (organizationId) {
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.MESSAGE + '/organization/' + organizationId);
-          this.setAllMessages(response.data);
+          this.allMessages = response.data;
           this.updateUnreadMessagesCount();
         } catch (error) {
           console.log(`Failed to get Organization messages - ${error}`);
           throw error;
         }
       } else {
-        this.setAllMessages([]);
+        this.allMessages = [];
       }
     },
     async updateMessage(messageId) {

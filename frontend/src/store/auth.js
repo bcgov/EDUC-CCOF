@@ -7,8 +7,8 @@ import { useOrganizationStore } from './ccof/organization.js';
 import ApiService from '../common/apiService.js';
 import AuthService from '../common/authService.js';
 
-function isFollowUpVisit({ jwtToken }) {
-  return !!jwtToken;
+function isFollowUpVisit(tokenObj) {
+  return !!tokenObj?.jwtToken;
 }
 
 function isExpiredToken(jwtToken) {
@@ -49,7 +49,7 @@ export const useAuthStore = defineStore('auth', {
       this.isUserInfoLoaded = isUserInfoLoaded;
     },
     setUserInfo(userInfo = null) {
-      this.getUserInfo = userInfo;
+      this.userInfo = userInfo;
     },
     setLoginError() {
       this.loginError = true;
@@ -130,7 +130,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async getInitialToken() {
       const response = await AuthService.getAuthToken();
-      console.log('TOKEN Received: ' + response);
+      console.log('TOKEN Received: ', response);
       if (response.jwtFrontend) {
         this.setJwtToken(response.jwtFrontend);
         ApiService.setAuthHeader(response.jwtFrontend);
@@ -144,7 +144,7 @@ export const useAuthStore = defineStore('auth', {
       if (isFollowUpVisit(this.jwtToken)) {
         await this.refreshToken(this.jwtToken);
       } else {
-        await this.getInitialToken(this);
+        await this.getInitialToken();
       }
     },
   },

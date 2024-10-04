@@ -50,6 +50,9 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
+import { useOrganizationStore } from '../store/ccof/organization.js';
+import { useDocumentStore } from '../store/document.js';
+
 import { PATHS, ApiRoutes } from '../utils/constants.js';
 import alertMixin from '../mixins/alertMixin.js';
 import NavButton from './util/NavButton.vue';
@@ -77,8 +80,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('organization', ['organizationId']),
-    ...mapState('document', ['pdfs']),
+    ...mapState(useOrganizationStore, ['organizationId']),
+    ...mapState(useDocumentStore, ['pdfs']),
     isReadOnly() {
       return false;
     },
@@ -110,14 +113,13 @@ export default {
     this.processing = false;
   },
   methods: {
-    ...mapActions('document', ['getPDFs']),
+    ...mapActions(useDocumentStore, ['getPDFs']),
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
     getPDFPath(annotationId) {
       return ApiRoutes.PDF + annotationId;
     },
-
     getSubmissionDateString(date) {
       if (date) {
         // date display format: YYYY/MM/DD
