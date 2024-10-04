@@ -6,7 +6,7 @@
     <v-form ref="form">
       <v-row>
         <v-col cols="12" class="pt-0 pb-2" align="center">
-          <v-img :src="estimatorImage" max-height="300" max-width="1448" />
+          <v-img :src="estimatorImage" max-height="300" max-width="1448" cover />
         </v-col>
       </v-row>
       <v-row v-show="false" justify="center">
