@@ -9,7 +9,7 @@
           <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0">
             <v-data-table
               :headers="headers"
-              :items="allMessages"
+              :items="messages"
               mobile-breakpoint="960"
               fluid
               :height="fitScreenHeight()"
@@ -101,12 +101,25 @@ export default {
       }[this.$vuetify.display.name];
       return size ? { [size]: true } : {};
     },
+    messages() {
+      return this.allMessages || [];
+    },
   },
-  mounted() {
-    this.loadMessagesStore();
+  created() {
+    const messageStore = useMessageStore();
+    const authStore = useAuthStore();
+
+    try {
+      if (messageStore.allMessages === null) {
+        const organizationId = authStore.userInfo.organizationId;
+        messageStore.getAllMessages(organizationId);
+      }
+    } catch (error) {
+      console.info(error);
+    }
   },
   methods: {
-    ...mapActions(useMessageStore, ['updateMessage', 'getAllMessages']),
+    ...mapActions(useMessageStore, ['updateMessage']),
     rowClickHandler(item, row) {
       this.message.subject = item.subject;
       this.message.dateReceived = item.dateReceived;
@@ -122,16 +135,6 @@ export default {
     },
     goToHomePage() {
       this.$router.push(PATHS.ROOT.HOME);
-    },
-    async loadMessagesStore() {
-      try {
-        if (!this.allMessages) {
-          const organizationId = this.userInfo.organizationId;
-          await this.getAllMessages(organizationId);
-        }
-      } catch (error) {
-        console.info(error);
-      }
     },
     fitScreenHeight() {
       switch (this.$vuetify.display.name) {

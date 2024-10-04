@@ -5,7 +5,7 @@ import { ApiRoutes } from '../utils/constants.js';
 
 export const useMessageStore = defineStore('message', {
   state: () => ({
-    allMessages: [],
+    allMessages: null,
     unreadMessageCount: 0,
     hasUnreadMessage: false,
     hasBroadcastingMessage: false,

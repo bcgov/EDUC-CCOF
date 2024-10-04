@@ -487,14 +487,6 @@ const router = createRouter({
       },
     },
     {
-      path: '/:catchAll(.*)',
-      name: 'notfound',
-      redirect: '/',
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
       path: '/token-expired',
       name: 'backend-session-expired',
       component: BackendSessionExpired,
@@ -837,6 +829,14 @@ const router = createRouter({
       meta: {
         pageTitle: 'submission-history',
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'notfound',
+      redirect: '/',
+      meta: {
         requiresAuth: true,
       },
     },
