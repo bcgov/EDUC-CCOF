@@ -300,12 +300,12 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Monday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Monday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[0]" active-class="purple--text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -318,7 +318,7 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Tuesday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Tuesday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[1]" active-class="purple--text">
@@ -335,13 +335,13 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Wednesday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Wednesday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
 
                       <v-list v-model:selected="child.selectedCareType[2]" active-class="purple--text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -353,12 +353,12 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Thursday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Thursday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[3]" active-class="purple--text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
 
@@ -371,12 +371,12 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Friday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Friday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[4]" active-class="purple--text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -387,12 +387,12 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Saturday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Saturday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[5]" active-class="purple--text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -404,12 +404,12 @@
                     <v-card min-width="154px" class="mb-1">
                       <v-toolbar color="#431782">
                         <v-spacer />
-                        <v-toolbar-title>Sunday</v-toolbar-title>
+                        <v-toolbar-title class="ms-0 d-flex justify-center">Sunday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[6]" active-class="purple--text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -1727,14 +1727,20 @@ div.v-select__selection.v-select__selection--comma {
   font-weight: 600;
   font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
-.v-list-item__title {
+.v-list-item-title {
   font-size: 14px !important;
 }
 .v-list-item__content {
   text-align: center !important;
 }
-.v-list-item__title {
+.v-list-item-title {
   text-align: left !important;
+}
+
+.v-toolbar-title__placeholder {
+  overflow: visible !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
 }
 
 .bounce-leave-active {
