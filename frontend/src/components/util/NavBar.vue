@@ -4,7 +4,6 @@
       v-model="drawer"
       app
       absolute
-      :style="`margin-top: ${$vuetify.application.top}px; margin-bottom: ${$vuetify.application.footer}px`"
       width="200"
       height="calc(100vh - ${$vuetify.application.footer}px)"
       :permanent="$vuetify.display.mdAndUp"
@@ -21,12 +20,7 @@
             <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
-            <router-link
-              :is="item.isAccessible ? 'router-link' : 'span'"
-              :to="item.link"
-              :target="_self"
-              class="router"
-            >
+            <router-link :is="item.isAccessible ? 'router-link' : 'span'" :to="item.link" class="router">
               <v-list-item-content class="py-0">
                 <v-list-item-title v-if="item.isActive" class="menuItem text-wrap">
                   <strong>{{ item.title }}</strong>
@@ -65,12 +59,7 @@
               <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
                 <v-icon>{{ subItem.icon }}</v-icon>
               </v-list-item-icon>
-              <router-link
-                :is="subItem.isAccessible ? 'router-link' : 'span'"
-                :to="subItem.link"
-                :target="subItem.newTab ? '_blank' : '_self'"
-                class="router"
-              >
+              <router-link :is="subItem.isAccessible ? 'router-link' : 'span'" :to="subItem.link" class="router">
                 <v-list-item-content class="py-0">
                   <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap">
                     <strong>{{ subItem.title }}</strong>
@@ -122,18 +111,18 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useAuthStore } from '../../store/auth.js';
-import { useCcfriAppStore } from '../../store/ccfriApp.js';
-import { useFacilityStore } from '../../store/ccof/facility.js';
-import { useFundingStore } from '../../store/ccof/funding.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useFundingStore } from '@/store/ccof/funding.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { NAV_BAR_GROUPS, CHANGE_TYPES } from '../../utils/constants.js';
-import StaticConfig from '../../common/staticConfig.js';
+import { NAV_BAR_GROUPS, CHANGE_TYPES } from '@/utils/constants.js';
+import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
 let navBarId = 0;

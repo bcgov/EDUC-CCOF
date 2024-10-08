@@ -1,88 +1,67 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
-    <v-container>
-      <span>
-        <v-row>
-          <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" width="100%" class="mx-3 my-10">
-            <v-row>
-              <v-col class="py-0">
-                <v-card-title class="py-1 noticeAlert">
-                  <span style="float: left">
-                    <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  </span>
-                  You have a change request in progress.
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-card-text>
-              We will complete the assessment of your Program Confirmation Form once your change has been processed.<br /><br />
-              <br />
-            </v-card-text>
-          </v-card>
-        </v-row>
-        <v-row justify="space-around">
-          <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center pb-0"
-              ><h3>
-                Licence Upload<span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
-              </h3></v-card-title
-            >
-            <v-row flex>
-              <caption class="licence-upload-hint pb-5">
-                Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The
-                maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx,
-                doc, xls, and xlsx.
-              </caption>
-            </v-row>
-            <v-data-table
-              v-if="!isLoading"
-              :headers="headers"
-              :items="licenseUploadData"
-              class="elevation-1"
-              hide-default-header
-              hide-default-footer
-              :items-per-page="-1"
-            >
-              <template #header="{ props: { headerProps } }">
-                <thead>
-                  <tr>
-                    <th v-for="h in headerProps" :id="h.value" :key="h.value" :class="h.class">
-                      <span>{{ h.text }}</span>
-                    </th>
-                  </tr>
-                </thead>
-              </template>
-              <template #item.document="{ item }">
-                <div v-if="item.document?.annotationid">
-                  <span> {{ item.document?.filename }} </span>
-                  <v-btn v-if="!isLocked" icon @click="deleteFile(item)">
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </div>
-                <v-file-input
-                  v-else
-                  :id="item.facilityId"
-                  color="#003366"
-                  :rules="[...fileRules, ...rules.required]"
-                  prepend-icon="mdi-file-upload"
-                  class="pt-0"
-                  :accept="fileAccept"
-                  :disabled="isLocked"
-                  placeholder="Select your file"
-                  :error-messages="fileInputError"
-                  @click:clear="deleteFile(item)"
-                  @change="selectFile"
-                  @click="uploadLicenseClicked($event)"
-                />
-              </template>
-            </v-data-table>
-            <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
-              <v-skeleton-loader :loading="true" type="button" />
-              <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
-            </v-card>
-          </v-card>
-        </v-row>
-      </span>
+  <v-container>
+    <v-form ref="form" v-model="isValidForm">
+      <div align="center">
+        <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
+          <v-card-title class="py-2 noticeAlert text-left">
+            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+            You have a change request in progress.
+          </v-card-title>
+          <v-card-text class="pa-4 text-left">
+            We will complete the assessment of your Program Confirmation Form once your change has been processed.
+          </v-card-text>
+        </v-card>
+      </div>
+      <v-card class="cc-top-level-card">
+        <v-card-title class="text-center text-wrap pb-0">
+          <h3>
+            Licence Upload
+            <span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
+          </h3>
+          <div class="licence-upload-hint pb-5 mx-10 text-center">
+            Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum
+            file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and
+            xlsx.
+          </div>
+        </v-card-title>
+        <v-data-table
+          v-if="!isLoading"
+          :headers="headers"
+          :items="licenseUploadData"
+          hide-default-footer
+          :items-per-page="-1"
+          class="pa-4"
+        >
+          <template #item.document="{ item }">
+            <div v-if="item.document?.annotationid">
+              <span> {{ item.document?.filename }} </span>
+              <v-btn v-if="!isLocked" icon @click="deleteFile(item)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </div>
+            <v-file-input
+              v-else
+              :id="item.facilityId"
+              color="#003366"
+              :rules="[...fileRules, ...rules.required]"
+              prepend-icon="mdi-file-upload"
+              class="pt-0"
+              :accept="fileAccept"
+              :disabled="isLocked"
+              placeholder="Select your file"
+              :error-messages="fileInputError"
+              @click:clear="deleteFile(item)"
+              @change="selectFile"
+              @click="uploadLicenseClicked($event)"
+            />
+          </template>
+        </v-data-table>
+        <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+          <v-skeleton-loader :loading="true" type="button" />
+          <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
+        </v-card>
+      </v-card>
+      {{ isValidForm }}
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
@@ -94,22 +73,24 @@
         @validate-form="validateForm()"
         @save="saveClicked()"
       />
-    </v-container>
-  </v-form>
+    </v-form>
+  </v-container>
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useFacilityStore } from '../../../store/ccof/facility.js';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useApplicationStore } from '../../../store/application.js';
-import { useLicenseUploadStore } from '../../../store/licenseUpload.js';
 
-import rules from '../../../utils/rules.js';
-import alertMixin from '../../../mixins/alertMixin.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '../../../utils/file.js';
-import { deepCloneObject, getFileExtension, isAnyChangeRequestActive } from '../../../utils/common.js';
-import NavButton from '../../../components/util/NavButton.vue';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useLicenseUploadStore } from '@/store/licenseUpload.js';
+
+import NavButton from '@/components/util/NavButton.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+import { deepCloneObject, getFileExtension, isAnyChangeRequestActive } from '@/utils/common.js';
+import rules from '@/utils/rules.js';
+import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
 
 export default {
   components: { NavButton },
@@ -129,27 +110,23 @@ export default {
       rules,
       model: {},
       tempFacilityId: null,
-      isValidForm: false,
+      isValidForm: true,
       currentrow: null,
       headers: [
         {
-          text: 'Facility Name',
-          align: 'start',
-          sortable: false,
+          title: 'Facility Name',
           value: 'facilityName',
-          class: 'table-header',
+          sortable: false,
         },
         {
-          text: 'Facility Licence Number',
-          sortable: false,
+          title: 'Facility Licence Number',
           value: 'licenseNumber',
-          class: 'table-header',
+          sortable: false,
         },
         {
-          text: 'Upload Licence',
-          sortable: false,
+          title: 'Upload Licence',
           value: 'document',
-          class: 'table-header',
+          sortable: false,
         },
       ],
       fileAccept: [
@@ -188,7 +165,7 @@ export default {
       'applicationMap',
       'programYearId',
     ]),
-    ...mapState(useLicenseUploadStore, ['getUploadedLicenses']),
+    ...mapState(useLicenseUploadStore, ['uploadedLicenses']),
     isLocked() {
       if (this.isChangeRequest) {
         if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {
@@ -218,7 +195,7 @@ export default {
 
       for (let navBarItem of facilityList) {
         const facilityId = navBarItem.facilityId;
-        const uploadedLicenceCount = this.getUploadedLicenses.filter(
+        const uploadedLicenceCount = this.uploadedLicenses?.filter(
           (uploadedDocsInServer) => uploadedDocsInServer.ccof_facility === facilityId,
         ).length;
         const deletedLicenceCount = this.licenseUploadData.filter(
@@ -240,7 +217,7 @@ export default {
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
+      (value) => !value || value?.name?.length < 255 || 'File name can be max 255 characters.',
       (value) =>
         !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
       (value) =>
@@ -362,7 +339,7 @@ export default {
     readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file);
         reader.onload = () => {
           const doc = {
             filename: getFileNameWithMaxNameLength(file.name),
@@ -398,7 +375,7 @@ export default {
         }
         await this.getLicenseFiles(appID); //get from appMap so correct application loaded when viewing a historical CR
         this.licenseUploadData = this.licenseUploadData.map((element) => {
-          element['document'] = this.getUploadedLicenses.find(
+          element['document'] = this.uploadedLicenses?.find(
             (uploadedDocsInServer) => uploadedDocsInServer.ccof_facility === element.facilityId,
           );
           return element;
@@ -415,9 +392,6 @@ export default {
 </script>
 
 <style scoped>
-.table-header {
-  background-color: #f2f2f2;
-}
 .licence-upload-hint {
   font-style: italic;
   color: grey;

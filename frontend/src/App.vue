@@ -3,30 +3,30 @@
     <MsieBanner v-if="isIE" />
     <HeaderComponent />
     <SnackBar />
-    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
-    <v-main fluid style="--v-layout-top: 64px;" class="align-start">
+    <v-main fluid style="--v-layout-top: 64px" class="align-start">
       <div class="v-main__wrap">
-      <v-app-bar
-        v-if="bannerColor !== ''"
-        :style="{ height: '20px', color: 'white', position: 'relative', top: '0'}"
-        :color="bannerColor"
-        sticky
-        dense
-        height="20rem"
-        clipped-left
-        class="px-4"
-      >
+        <v-app-bar
+          v-if="bannerColor !== ''"
+          :style="{ height: '20px', color: 'white', position: 'relative', top: '0' }"
+          :color="bannerColor"
+          sticky
+          dense
+          height="20rem"
+          clipped-left
+          class="px-4"
+        >
+          <div>
+            <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
+          </div>
+        </v-app-bar>
         <div>
-          <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
+          <h3 v-if="subtitleBanner != ''" class="subBanner">
+            {{ subtitleBanner }}
+          </h3>
         </div>
-      </v-app-bar>
-      <div>
-        <h3 v-if="subtitleBanner != ''" class="subBanner">
-          {{ subtitleBanner }}
-        </h3>
-      </div>
-      <ModalIdle v-if="isAuthenticated" />
-      <router-view />
+        <ModalIdle v-if="isAuthenticated" />
+        <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
+        <router-view />
       </div>
     </v-main>
     <FooterComponent />
@@ -36,17 +36,17 @@
 <script>
 import HttpStatus from 'http-status-codes';
 import { mapActions, mapState } from 'pinia';
-import { useAppStore } from './store/app.js';
-import { useAuthStore } from './store/auth.js';
+import { useAppStore } from '@/store/app.js';
+import { useAuthStore } from '@/store/auth.js';
 
-import StaticConfig from './common/staticConfig.js';
+import StaticConfig from '@/common/staticConfig.js';
 
-import HeaderComponent from './components/Header.vue';
-import FooterComponent from './components/Footer.vue';
-import ModalIdle from './components/ModalIdle.vue';
-import MsieBanner from './components/MsieBanner.vue';
-import SnackBar from './components/util/SnackBar.vue';
-import NavBar from './components/util/NavBar.vue';
+import HeaderComponent from '@/components/Header.vue';
+import FooterComponent from '@/components/Footer.vue';
+import ModalIdle from '@/components/ModalIdle.vue';
+import MsieBanner from '@/components/MsieBanner.vue';
+import SnackBar from '@/components/util/SnackBar.vue';
+import NavBar from '@/components/util/NavBar.vue';
 
 export default {
   name: 'App',
