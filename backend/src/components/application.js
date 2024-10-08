@@ -447,7 +447,8 @@ async function printPdf(req, numOfRetries = 0) {
       '--disable-software-rasterizer',
       '--disable-dev-shm-usage',
       '--disable-gpu',
-    ]
+    ],
+    userDataDir: '/tmp/chromium'
   }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
 
   const browserProcess = browser.process();
