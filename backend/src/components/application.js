@@ -448,7 +448,7 @@ async function printPdf(req, numOfRetries = 0) {
       '--disable-dev-shm-usage',
       '--disable-gpu',
     ],
-    userDataDir: '/tmp/chromium'
+    userDataDir: process.env.CHROME_DATA_DIR,
   }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
 
   const browserProcess = browser.process();
