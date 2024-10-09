@@ -1,15 +1,14 @@
-import { defineStore } from 'pinia';
 import { isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
-import { useAppStore } from '../app.js';
-import { useApplicationStore } from '../application.js';
-import { useAuthStore } from '../auth.js';
-import { useEceweAppStore } from '../eceweApp.js';
-import { useNavBarStore } from '../navBar.js';
-
-import ApiService from '../../common/apiService.js';
-import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '../../utils/constants.js';
-import { checkSession } from '../../utils/session.js';
+import ApiService from '@/common/apiService.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useEceweAppStore } from '@/store/eceweApp.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 export const useOrganizationStore = defineStore('organization', {
   state: () => ({

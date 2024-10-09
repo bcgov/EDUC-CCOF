@@ -17,6 +17,7 @@ const rules = {
       /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(v) ||
       'A valid postal code is required',
   ],
+  MMDDYYYY: (v) => (!!v && !isNaN(new Date(v))) || 'Invalid date format',
   YYYY: [(v) => (v > 1900 && v < 2100) || 'A valid year is required'],
   notRequired: [() => true],
   max(number) {

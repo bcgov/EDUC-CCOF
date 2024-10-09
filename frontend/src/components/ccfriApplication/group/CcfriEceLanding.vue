@@ -9,7 +9,6 @@
     </div>
 
     <v-btn
-      v-if="!isReadOnly"
       dark
       :color="isReadOnly ? '' : '#003366'"
       :disabled="isReadOnly"
@@ -63,7 +62,7 @@
                   </p>
                 </strong>
               </v-col>
-              <v-col v-if="!showOptStatus[index] && !isReadyOnly" cols="" class="d-flex align-center col-12 col-md-5">
+              <v-col v-if="!showOptStatus[index]" cols="" class="d-flex align-center col-12 col-md-5">
                 <v-btn
                   class="my-10 mx-14 justify-end"
                   :show-opt-status="showOptStatus[index]"
