@@ -12,7 +12,7 @@
     </v-btn>
     <v-btn
       v-if="isSaveDisplayed"
-      class="blueButton"
+      :class="isSaveDisabled ? 'disabledButton' : 'blueButton'"
       size="x-large"
       :loading="isProcessing"
       :disabled="isSaveDisabled"
@@ -22,7 +22,7 @@
     </v-btn>
     <v-btn
       v-if="isSubmitDisplayed"
-      class="blueButton"
+      :class="isSubmitDisabled ? 'disabledButton' : 'blueButton'"
       size="x-large"
       :loading="isProcessing"
       :disabled="isSubmitDisabled"

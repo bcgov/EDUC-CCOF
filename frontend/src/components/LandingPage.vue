@@ -289,9 +289,9 @@
             :bind="input"
           />
         </v-col>
-        <v-col class="col-12 col-lg-4">
+        <v-col v-if="applicationIds?.length > 1" class="col-12 col-lg-4">
           <v-row class="justify-right align-center mr-4">
-            <h3 v-if="applicationIds?.length > 1" class="mr-4">Select fiscal year:</h3>
+            <h3 class="mr-4">Select fiscal year:</h3>
             <FiscalYearSlider @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
@@ -347,20 +347,20 @@
 <script>
 import _ from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useAppStore } from '../store/app.js';
-import { useApplicationStore } from '../store/application.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
-import { useMessageStore } from '../store/message.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useMessageStore } from '@/store/message.js';
 
-import SmallCard from './guiComponents/SmallCard.vue';
-import MessagesToolbar from './guiComponents/MessagesToolbar.vue';
-import FiscalYearSlider from './guiComponents/FiscalYearSlider.vue';
-import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '../utils/constants.js';
-import alertMixin from '../mixins/alertMixin.js';
-import { checkApplicationUnlocked } from '../utils/common.js';
+import SmallCard from '@/components/guiComponents/SmallCard.vue';
+import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
+import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
+import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { checkApplicationUnlocked } from '@/utils/common.js';
 
 export default {
   name: 'LandingPage',

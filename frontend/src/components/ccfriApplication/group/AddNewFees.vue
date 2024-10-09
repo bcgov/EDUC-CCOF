@@ -560,11 +560,16 @@
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '../../../store/app.js';
-import { useApplicationStore } from '../../../store/application.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useCcfriAppStore } from '../../../store/ccfriApp.js';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
+import { isEqual, cloneDeep } from 'lodash';
+
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+
+import NavButton from '@/components/util/NavButton.vue';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
 import {
   PATHS,
@@ -575,13 +580,10 @@ import {
   CHANGE_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ApiRoutes,
-} from '../../../utils/constants.js';
-import alertMixin from '../../../mixins/alertMixin.js';
-import globalMixin from '../../../mixins/globalMixin.js';
-import { isEqual, cloneDeep } from 'lodash';
-import NavButton from '../../../components/util/NavButton.vue';
-import ApiService from '../../../common/apiService.js';
-import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
+} from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import globalMixin from '@/mixins/globalMixin.js';
+import ApiService from '@/common/apiService.js';
 
 function dateFunction(date1, date2) {
   const startDate = new Date(date1);
