@@ -19,6 +19,9 @@ const rules = {
   ],
   MMDDYYYY: (v) => (!!v && !isNaN(new Date(v))) || 'Invalid date format',
   YYYY: [(v) => (v > 1900 && v < 2100) || 'A valid year is required'],
+  validHourTo(hourFrom) {
+    return (v) => !v || v > hourFrom || 'Hours To must be after Hours From';
+  },
   notRequired: [() => true],
   max(number) {
     return (v) => !v || v <= number || 'Max exceeded';
