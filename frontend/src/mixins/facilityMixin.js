@@ -1,24 +1,17 @@
-import { mapActions, mapState } from 'pinia';
-import { useApplicationStore } from '../store/application.js';
-import { useAuthStore } from '../store/auth.js';
-import { useFacilityStore } from '../store/ccof/facility.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
-
-import {
-  PATHS,
-  ORGANIZATION_PROVIDER_TYPES,
-  changeUrlGuid,
-  changeUrl,
-  pcfUrlGuid,
-  pcfUrl,
-} from '../utils/constants.js';
-import { isChangeRequest } from '../utils/common.js';
-import rules from '../utils/rules.js';
-import alertMixin from './alertMixin.js';
 import { isEmpty } from 'lodash';
-import NavButton from '../components/util/NavButton.vue';
+import { mapActions, mapState } from 'pinia';
+
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { NavButton },

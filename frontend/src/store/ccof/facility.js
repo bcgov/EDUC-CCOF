@@ -1,15 +1,14 @@
-import { defineStore } from 'pinia';
 import { isEmpty, isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
-import { useApplicationStore } from '../application.js';
-import { useFundingStore } from './funding.js';
-import { useNavBarStore } from '../navBar.js';
-import { useReportChangesStore } from '../reportChanges.js';
-import { useOrganizationStore } from './organization.js';
-
-import ApiService from '../../common/apiService.js';
-import { ApiRoutes } from '../../utils/constants.js';
-import { checkSession } from '../../utils/session.js';
+import ApiService from '@/common/apiService.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useFundingStore } from '@/store/ccof/funding.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { ApiRoutes } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 // FIXME: getModel getter was removed and will break all over. All it did was return state.model
 export const useFacilityStore = defineStore('facility', {

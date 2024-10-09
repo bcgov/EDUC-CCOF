@@ -1,10 +1,10 @@
 <template>
-  <v-form ref="form" v-model="isValidForm" :class="loading ? 'ccof-skeleton-loader' : ''">
+  <v-form ref="form" v-model="isValidForm">
     <v-container>
-      <span>
+      <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center pb-0">
+            <v-card-title class="text-center pb-0">
               <h3>Organization Information</h3>
             </v-card-title>
             <v-row>
@@ -212,7 +212,7 @@
             </v-container>
           </v-card>
         </v-row>
-      </span>
+      </v-skeleton-loader>
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
@@ -230,15 +230,19 @@
 
 <script>
 import { mapState } from 'pinia';
-import { useAppStore } from '../../../store/app.js';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
+import { useAppStore } from '@/store/app.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import organizationMixin from '../../../mixins/organizationMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants.js';
-import { isAnyChangeRequestActive } from '../../../utils/common.js';
+import organizationMixin from '@/mixins/organizationMixin.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { isAnyChangeRequestActive } from '@/utils/common.js';
 
 export default {
   mixins: [organizationMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save(false);
+    next();
+  },
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,

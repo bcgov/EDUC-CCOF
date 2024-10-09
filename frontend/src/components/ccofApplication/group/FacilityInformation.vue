@@ -1,10 +1,10 @@
 <template>
-  <v-form ref="form" v-model="model.isFacilityComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
+  <v-form ref="form" v-model="model.isFacilityComplete">
     <v-container>
-      <span>
+      <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
         <v-row justify="space-around">
           <v-card class="cc-top-level-card" width="1200">
-            <v-card-title class="justify-center pb-0"><h3>Facility Information</h3></v-card-title>
+            <v-card-title class="text-center pb-0"><h3>Facility Information</h3></v-card-title>
             <v-container>
               <v-row>
                 <v-col>
@@ -123,35 +123,12 @@
                   />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-menu
-                    v-if="!isLocked"
-                    v-model="model.calendarMenu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="model.licenseEffectiveDate"
-                        readonly
-                        variant="outlined"
-                        required
-                        :rules="rules.notRequired"
-                        label="Effective Date of Current Licence"
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker v-model="model.licenseEffectiveDate" @input="model.calendarMenu = false" />
-                  </v-menu>
-
-                  <v-text-field
-                    v-if="isLocked"
+                  <AppDateInput
+                    id="licence-effective-date"
                     v-model="model.licenseEffectiveDate"
-                    disabled
-                    variant="outlined"
-                    required
+                    :rules="[...rules.required, rules.MMDDYYYY]"
+                    :disabled="isLocked"
+                    :hide-details="isLocked"
                     label="Effective Date of Current Licence"
                   />
                 </v-col>
@@ -187,7 +164,7 @@
             </v-container>
           </v-card>
         </v-row>
-      </span>
+      </v-skeleton-loader>
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
@@ -204,10 +181,13 @@
 </template>
 
 <script>
-import facilityMixin from '../../../mixins/facilityMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants.js';
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+
+import facilityMixin from '@/mixins/facilityMixin.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
 export default {
+  components: { AppDateInput },
   mixins: [facilityMixin],
   data() {
     return {

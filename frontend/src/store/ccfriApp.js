@@ -373,7 +373,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       }
     },
     async loadCCFRIFacility(ccfriId) {
-      // console.log(ccfriId);
       this.setCcfriId(ccfriId);
       let CCFRIFacilityModel = this.getCCFRIById(ccfriId);
 
