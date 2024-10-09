@@ -167,6 +167,10 @@ h1 {
   margin-bottom: auto !important;
 }
 
+.v-field-label {
+  white-space: normal;
+}
+
 @media screen and (max-width: 370px) {
   .v-toolbar-title {
     font-size: 0.9rem;
