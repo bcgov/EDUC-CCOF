@@ -447,7 +447,8 @@ async function printPdf(req, numOfRetries = 0) {
       '--disable-software-rasterizer',
       '--disable-dev-shm-usage',
       '--disable-gpu',
-    ]
+    ],
+    userDataDir: process.env.CHROME_DATA_DIR,
   }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
 
   const browserProcess = browser.process();
@@ -475,7 +476,7 @@ async function printPdf(req, numOfRetries = 0) {
     log.info('printPdf :: page loaded starting pdf creation');
     const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
     log.info('printPdf :: pdf buffer created starting compression');
-    const compressedPdfBuffer = await compress(pdfBuffer, {gsModulePath: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
+    const compressedPdfBuffer = await compress(pdfBuffer, {gsModule: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
     log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
 
     let payload;
