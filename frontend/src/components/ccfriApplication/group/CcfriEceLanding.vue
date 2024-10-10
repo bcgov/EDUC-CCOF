@@ -18,7 +18,7 @@
       Opt in All Facilities
     </v-btn>
     <LargeButtonContainer>
-      <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+      <v-form ref="form" v-model="isValidForm">
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
         <v-card
@@ -268,7 +268,7 @@ export default {
       }
     },
     validateForm() {
-      this.$refs.isValidForm?.validate();
+      this.$refs.form?.validate();
     },
     async save(withAlert) {
       this.processing = true;

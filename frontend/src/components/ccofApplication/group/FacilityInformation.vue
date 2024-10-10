@@ -189,6 +189,12 @@ import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 export default {
   components: { AppDateInput },
   mixins: [facilityMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isModelEmpty) {
+      await this.save(false);
+    }
+    next();
+  },
   data() {
     return {
       providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
