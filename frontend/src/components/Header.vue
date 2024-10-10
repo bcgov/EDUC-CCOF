@@ -24,7 +24,7 @@
             class="mr-5 elevation-0"
             :to="PATHS.ROOT.MESSAGES"
           >
-            <v-badge color="red" :content="unreadMessageCount" location="bottom right" offset-x="20" offset-y="20">
+            <v-badge color="red" :content="unreadMessageCount" location="bottom end" offset-x="5" offset-y="10">
               <v-icon aria-hidden="false" size="40" color="white"> mdi-email-outline </v-icon>
             </v-badge>
           </v-btn>
@@ -52,7 +52,8 @@
           </v-menu>
         </div>
         <div v-else-if="isAuthenticated && !dataReady">
-          <v-skeleton-loader type="chip" class="mt-7" />
+          <v-skeleton-loader type="chip" width="150"
+          class="bg-transparent mt-2" />
         </div>
       </v-row>
     </v-container>
