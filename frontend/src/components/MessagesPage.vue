@@ -39,8 +39,7 @@
               </v-col>
             </v-card-title>
             <v-divider />
-            <!-- eslint-disable-next-line vue/no-v-html -->
-            <v-card-text v-html="message.messageContent"></v-card-text>
+            <v-card-text>{{ message.messageContent }}</v-card-text>
           </v-card>
         </v-col>
       </v-row>
