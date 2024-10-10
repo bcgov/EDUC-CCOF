@@ -1,22 +1,18 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
-      <div class="row pt-4 justify-center">
-        <span class="text-h5"
-          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-        >
+      <div align="center">
+        <div class="text-h5">
+          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+        </div>
+        <div class="text-h5 my-6">Child Care Fee Reduction Initiative (CCFRI)</div>
       </div>
-      <br />
-      <div class="row pt-4 justify-center">
-        <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
-      </div>
-      <br /><br />
       <FacilityHeader
         :facility-account-number="currentFacility?.facilityAccountNumber"
         :facility-name="currentFacility.facilityName"
         :license-number="currentFacility?.licenseNumber"
+        class="mb-10"
       />
-      <br /><br />
       <p>
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
         <br /><br />

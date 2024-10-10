@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container align="center">
     <v-form ref="form" v-model="isValidForm">
       <div align="center">
         <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
@@ -12,18 +12,18 @@
           </v-card-text>
         </v-card>
       </div>
-      <v-card class="cc-top-level-card">
+      <v-card width="1200" class="cc-top-level-card">
         <v-card-title class="text-center text-wrap pb-0">
           <h3>
             Licence Upload
             <span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
           </h3>
-          <div class="licence-upload-hint pb-5 mx-10 text-center">
-            Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum
-            file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and
-            xlsx.
-          </div>
         </v-card-title>
+        <div class="licence-upload-hint pb-5 mx-10 text-center">
+          Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum
+          file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and
+          xlsx.
+        </div>
         <v-data-table
           v-if="!isLoading"
           :headers="headers"
@@ -34,10 +34,8 @@
         >
           <template #item.document="{ item }">
             <div v-if="item.document?.annotationid">
-              <span> {{ item.document?.filename }} </span>
-              <v-btn v-if="!isLocked" icon @click="deleteFile(item)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
+              <span class="mr-2"> {{ item.document?.filename }} </span>
+              <v-icon v-if="!isLocked" small @click="deleteFile(item)">mdi-delete</v-icon>
             </div>
             <v-file-input
               v-else
@@ -45,14 +43,13 @@
               color="#003366"
               :rules="[...fileRules, ...rules.required]"
               prepend-icon="mdi-file-upload"
-              class="pt-0"
+              class="pt-4"
               :accept="fileAccept"
               :disabled="isLocked"
               placeholder="Select your file"
               :error-messages="fileInputError"
               @click:clear="deleteFile(item)"
               @change="selectFile"
-              @click="uploadLicenseClicked($event)"
             />
           </template>
         </v-data-table>
@@ -61,7 +58,6 @@
           <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
         </v-card>
       </v-card>
-      {{ isValidForm }}
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
@@ -217,13 +213,25 @@ export default {
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
     this.fileRules = [
-      (value) => !value || value?.name?.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
+      (value) => {
+        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          value[0].size < maxSize ||
+          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
+        );
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+          `Accepted file types are ${this.fileFormats}.`
+        );
+      },
     ];
 
     await this.createTable();
@@ -324,7 +332,9 @@ export default {
         await this.deleteLicenseFiles(payload);
       }
     },
-    async selectFile(file) {
+    async selectFile(event) {
+      this.currentrow = event.target.id;
+      const file = event?.target?.files[0];
       if (file) {
         const doc = await this.readFile(file);
         const map = new Map();
@@ -357,9 +367,6 @@ export default {
           reject();
         };
       });
-    },
-    uploadLicenseClicked(event) {
-      this.currentrow = event.target.id;
     },
     handleFileReadErr() {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');

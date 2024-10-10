@@ -7,13 +7,12 @@
       <div class="v-main__wrap">
         <v-app-bar
           v-if="bannerColor !== ''"
-          :style="{ height: '20px', color: 'white', position: 'relative', top: '0' }"
           :color="bannerColor"
           sticky
           dense
           height="20rem"
           clipped-left
-          class="px-4"
+          class="px-4 appBar"
         >
           <div>
             <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
