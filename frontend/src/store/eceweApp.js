@@ -1,13 +1,12 @@
-import { defineStore } from 'pinia';
 import { isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
-import { useReportChangesStore } from './reportChanges.js';
-import { useNavBarStore } from './navBar.js';
-import ApiService from '../common/apiService.js';
-import { ApiRoutes, CHANGE_REQUEST_TYPES } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
-
-import { sortByFacilityId, isNullOrBlank } from '../utils/common.js';
+import ApiService from '@/common/apiService.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { isNullOrBlank, sortByFacilityId } from '@/utils/common.js';
+import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 export const useEceweAppStore = defineStore('eceweApp', {
   state: () => ({
@@ -198,9 +197,9 @@ export const useEceweAppStore = defineStore('eceweApp', {
             .changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
           console.log('newFac is: ', newFac);
           facilityPayload = newFac?.map((facility) => ({
-            eceweApplicationId: getEceweApplicationId(facility.facilityId),
+            eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
             facilityId: facility.facilityId,
-            optInOrOut: getOptInOrOut(facility.facilityId),
+            optInOrOut: this.getOptInOrOut(facility.facilityId),
             changeRequestId: navBarStore.changeRequestId ? navBarStore.changeRequestId : null,
             changeRequestNewFacilityId: facility.changeRequestNewFacilityId
               ? facility.changeRequestNewFacilityId
@@ -209,23 +208,23 @@ export const useEceweAppStore = defineStore('eceweApp', {
         } else {
           facilityPayload = navBarList.map((facility) => ({
             facilityId: facility.facilityId,
-            eceweApplicationId: getEceweApplicationId(facility.facilityId),
-            optInOrOut: getOptInOrOut(facility.facilityId),
+            eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
+            optInOrOut: this.getOptInOrOut(facility.facilityId),
           }));
         }
       }
       this.setFacilities(facilityPayload);
-      function getEceweApplicationId(facilityId) {
+    },
+    getEceweApplicationId(facilityId) {
+      const index = this.facilities?.map((facilty) => facilty.facilityId).indexOf(facilityId);
+      return index >= 0 ? this.facilities[index].eceweApplicationId : null;
+    },
+    getOptInOrOut(facilityId) {
+      if (this.eceweModel.fundingModel == this.fundingModelTypes[0].id) {
+        return 0;
+      } else {
         const index = this.facilities.map((facilty) => facilty.facilityId).indexOf(facilityId);
-        return index >= 0 ? this.facilities[index].eceweApplicationId : null;
-      }
-      function getOptInOrOut(facilityId) {
-        if (this.eceweModel.fundingModel == this.fundingModelTypes[0].id) {
-          return 0;
-        } else {
-          const index = this.facilities.map((facilty) => facilty.facilityId).indexOf(facilityId);
-          return index >= 0 ? this.facilities[index].optInOrOut : null;
-        }
+        return index >= 0 ? this.facilities[index].optInOrOut : null;
       }
     },
   },
