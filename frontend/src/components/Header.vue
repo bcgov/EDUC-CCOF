@@ -1,5 +1,5 @@
 <template>
-  <v-system-bar absolute color="rgb(0, 51, 102)" class="sysBar" :style="{ height: '66px', textAlign: 'left' }" >
+  <v-system-bar absolute color="rgb(0, 51, 102)" class="sysBar">
     <!-- Navbar content -->
     <v-container :class="{ sizingForIconXLScreen: $vuetify.display.xl }">
       <v-row class="justify-space-between">
@@ -113,6 +113,8 @@ a {
 .sysBar {
   border-bottom: 2px solid rgb(252, 186, 25) !important;
   z-index: 8;
+  height: 66px !important;
+  text-align: left;
 }
 .gov-header .v-btn,
 .v-btn--active.title:before,

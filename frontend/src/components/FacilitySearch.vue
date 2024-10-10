@@ -67,9 +67,9 @@
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-container style="padding-top: 0px">
+                  <v-container style="padding-top: 0px" class="px-3" >
                     <v-row>
-                      <v-col cols="6" class="d-flex pl-0" style="background-color: #7b2ee5">
+                      <v-col cols="6" class="d-flex pl-0 d-flex align-center" style="background-color: #7b2ee5">
                         <v-card-title
                           style="
                             color: white;
@@ -86,7 +86,7 @@
                         </v-card-title>
                       </v-col>
                       <v-col cols="6" class="d-flex justify-end" style="background-color: #7b2ee5">
-                        <v-btn icon>
+                        <v-btn icon variant="text">
                           <v-icon size="large" color="white" @click="dialog = false"> mdi-close </v-icon>
                         </v-btn>
                       </v-col>
@@ -111,6 +111,7 @@
                           style="margin-right: 18px"
                           :disabled="loading"
                           @click="searchFacilities(searchCriteria)"
+                          variant="text"
                         >
                           <v-card
                             color="#0483AF"
@@ -231,7 +232,7 @@ export default {
   data() {
     return {
       searchCriteria: '',
-      dialog: '',
+      dialog: false,
       selectedFacility: [],
       searchResults: [],
       facilityResult: [],
