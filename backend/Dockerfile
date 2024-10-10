@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0-alpine3.18
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:20.18.0-alpine3.20
 
 ENV NPM_CONFIG_CACHE /tmp/npm
 RUN mkdir -p /logs \

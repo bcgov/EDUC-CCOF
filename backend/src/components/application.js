@@ -504,10 +504,12 @@ async function printPdf(req, numOfRetries = 0) {
 
       await postChangeRequestSummaryDocument(payload);
     }
-
+    browser.close();
     return payload;
   } catch (e) {
     log.error(e);
+
+    if (browser.process() !== null) { await browser.close(); }
 
     if (numOfRetries >= 3) {
       log.info('printPdf :: maximum number of retries reached');
@@ -519,8 +521,6 @@ async function printPdf(req, numOfRetries = 0) {
       log.info(`printPdf :: retry count ${retryCount}`);
       await printPdf(req, retryCount);
     }
-  } finally {
-    await browser.close();
   }
 }
 
