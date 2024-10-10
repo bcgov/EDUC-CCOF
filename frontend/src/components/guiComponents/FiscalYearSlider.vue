@@ -3,12 +3,12 @@
     <v-btn tile variant="outlined" min-width="20px" class="pa-0" :disabled="isPrevDisabled" @click="previous">
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
-    <v-item v-for="(programYear, index) in programYearSlidingWindow" :key="index" v-slot="{ active }">
+    <v-item v-for="(programYear, index) in programYearSlidingWindow" :key="index" v-slot="{ isSelected }">
       <v-btn
         tile
         variant="outlined"
         class="px-4 ma-0"
-        :class="active ? 'selected' : ''"
+        :class="isSelected ? 'selected' : ''"
         @click="selectProgramYear(programYear)"
       >
         {{ programYear.name }}
@@ -24,6 +24,8 @@
 import { mapState } from 'pinia';
 import { sortBy } from 'lodash';
 
+import { useApplicationStore } from '@/store/application.js';
+
 export default {
   name: 'FiscalYearSlider',
   emits: ['selectProgramYear'],
@@ -34,7 +36,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['applicationMap', 'programYearId']),
+    ...mapState(useApplicationStore, ['applicationMap', 'programYearId']),
     programYearList() {
       let programYearList = [];
       this.applicationMap.forEach((item) => {

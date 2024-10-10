@@ -1,14 +1,13 @@
-import { defineStore } from 'pinia';
 import { isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
-import { useAppStore } from './app.js';
-import { useApplicationStore } from './application.js';
-import { useNavBarStore } from './navBar.js';
-
-import ApiService from '../common/apiService.js';
-import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
-import { deepCloneObject, sleep } from '../utils/common.js';
+import ApiService from '@/common/apiService.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { deepCloneObject, sleep } from '@/utils/common.js';
+import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, childCareTypes) {
   if (currentYearLanguageLabel != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
@@ -112,7 +111,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     isValidForm: undefined,
     loadedModel: {},
     CCFRIFacilityModel: {},
-    ccfriId: {},
+    ccfriId: undefined,
     ccfriStore: {},
     ccfriMedianStore: {},
     previousFeeStore: {},
@@ -142,31 +141,31 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     isValidForm(value) {
       this.isValidForm = value;
     },
-    setCCFRIFacilityModel: (CCFRIFacilityModel) => {
+    setCCFRIFacilityModel(CCFRIFacilityModel) {
       this.CCFRIFacilityModel = CCFRIFacilityModel;
     },
-    setLoadedModel: (loadedModel) => {
+    setLoadedModel(loadedModel) {
       this.loadedModel = loadedModel;
     },
-    setCcfriId: (ccfriId) => {
+    setCcfriId(ccfriId) {
       this.ccfriId = ccfriId;
     },
-    addCCFRIToStore: ({ ccfriId, CCFRIFacilityModel }) => {
+    addCCFRIToStore({ ccfriId, CCFRIFacilityModel }) {
       if (ccfriId) {
         this.ccfriStore[ccfriId] = CCFRIFacilityModel;
       }
     },
-    addPreviousApprovedParentFees: ({ facilityId, programYearId, parentFeeModel }) => {
+    addPreviousApprovedParentFees({ facilityId, programYearId, parentFeeModel }) {
       if (facilityId) {
         this.previousFeeStore[`${facilityId}-${programYearId}`] = parentFeeModel;
       }
     },
-    removeCCFRIFromStore: (ccfriId) => {
+    removeCCFRIFromStore(ccfriId) {
       if (ccfriId) {
         delete this.ccfriStore[ccfriId];
       }
     },
-    addCCFRIMedianToStore: ({ ccfriId, ccfriMedian }) => {
+    addCCFRIMedianToStore({ ccfriId, ccfriMedian }) {
       this.ccfriMedianStore[ccfriId] = ccfriMedian;
     },
     deleteChildCareTypes() {

@@ -1,22 +1,18 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
-      <div class="row pt-4 justify-center">
-        <span class="text-h5"
-          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-        >
+      <div align="center">
+        <div class="text-h5">
+          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+        </div>
+        <div class="text-h5 my-6">Child Care Fee Reduction Initiative (CCFRI)</div>
       </div>
-      <br />
-      <div class="row pt-4 justify-center">
-        <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
-      </div>
-      <br /><br />
       <FacilityHeader
         :facility-account-number="currentFacility?.facilityAccountNumber"
         :facility-name="currentFacility.facilityName"
         :license-number="currentFacility?.licenseNumber"
+        class="mb-10"
       />
-      <br /><br />
       <p>
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
         <br /><br />
@@ -560,11 +556,16 @@
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '../../../store/app.js';
-import { useApplicationStore } from '../../../store/application.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useCcfriAppStore } from '../../../store/ccfriApp.js';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
+import { isEqual, cloneDeep } from 'lodash';
+
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+
+import NavButton from '@/components/util/NavButton.vue';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
 import {
   PATHS,
@@ -575,13 +576,10 @@ import {
   CHANGE_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ApiRoutes,
-} from '../../../utils/constants.js';
-import alertMixin from '../../../mixins/alertMixin.js';
-import globalMixin from '../../../mixins/globalMixin.js';
-import { isEqual, cloneDeep } from 'lodash';
-import NavButton from '../../../components/util/NavButton.vue';
-import ApiService from '../../../common/apiService.js';
-import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
+} from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import globalMixin from '@/mixins/globalMixin.js';
+import ApiService from '@/common/apiService.js';
 
 function dateFunction(date1, date2) {
   const startDate = new Date(date1);

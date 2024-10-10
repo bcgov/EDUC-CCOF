@@ -1,15 +1,15 @@
 import { mapActions, mapState } from 'pinia';
-import { useAppStore } from '../store/app.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useFacilityStore } from '../store/ccof/facility.js';
-import { useAuthStore } from '../store/auth.js';
-import { useApplicationStore } from '../store/application.js';
-import { useNavBarStore } from '../store/navBar.js';
 
-import alertMixin from './alertMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '../utils/constants.js';
-import rules from '../utils/rules.js';
-import NavButton from '../components/util/NavButton.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { NavButton },
@@ -64,10 +64,6 @@ export default {
       // this.setIsOrganizationComplete(this.isValidForm);
       this.setIsStarted(true);
     }
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
-    next();
   },
   methods: {
     ...mapActions(useOrganizationStore, [

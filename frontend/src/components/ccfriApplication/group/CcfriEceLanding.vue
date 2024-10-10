@@ -1,23 +1,24 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5"
-        >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-      >
+    <div align="center">
+      <div class="text-h5">
+        Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+      </div>
+      <div class="text-h5 my-6">Child Care Fee Reduction Initiative (CCFRI)</div>
+      <div class="text-h5 my-6">Confirm CCFRI participation for each facility.</div>
     </div>
-    <br />
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
-    </div>
-    <br />
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Confirm CCFRI participation for each facility.</span>
-    </div>
-    <v-btn class="mx-0 justify-end" dark color="#003366" :disabled="isReadOnly" @click="toggleAll()">
+
+    <v-btn
+      dark
+      :color="isReadOnly ? '' : '#003366'"
+      :disabled="isReadOnly"
+      class="mx-0 justify-end"
+      @click="toggleAll()"
+    >
       Opt in All Facilities
     </v-btn>
     <LargeButtonContainer>
-      <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+      <v-form ref="form" v-model="isValidForm">
         <!-- <v-skeleton-loader max-height="475px" v-if="!facilityList" :loading="loading"  type="image, image, image"></v-skeleton-loader> -->
 
         <v-card
@@ -66,7 +67,7 @@
                   class="my-10 mx-14 justify-end"
                   :show-opt-status="showOptStatus[index]"
                   dark
-                  color="#003366"
+                  :color="isReadOnly ? '' : '#003366'"
                   :rules="rules"
                   :disabled="isReadOnly"
                   @click="toggle(index)"
@@ -104,18 +105,19 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useApplicationStore } from '../../../store/application.js';
-import { useAppStore } from '../../../store/app.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
-import { useCcfriAppStore } from '../../../store/ccfriApp.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAppStore } from '@/store/app.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
-import LargeButtonContainer from '../../guiComponents/LargeButtonContainer.vue';
-import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
-import ApiService from '../../../common/apiService.js';
-import alertMixin from '../../../mixins/alertMixin.js';
-import NavButton from '../../../components/util/NavButton.vue';
-import { isChangeRequest } from '../../../utils/common.js';
+import LargeButtonContainer from '@/components/guiComponents/LargeButtonContainer.vue';
+import NavButton from '@/components/util/NavButton.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+import ApiService from '@/common/apiService.js';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import { isChangeRequest } from '@/utils/common.js';
 
 let ccfriOptInOrOut = {};
 let textInput = '';
@@ -137,7 +139,7 @@ export default {
       model,
       //textInput,
       showOptStatus: '',
-      isValidForm: false,
+      isValidForm: true,
       processing: false,
       loading: false,
       ccfriOptInOrOut,
@@ -187,9 +189,9 @@ export default {
 
     this.navBarList.forEach((fac, index) => {
       if (fac.ccfriOptInStatus) {
-        this.$set(this.ccfriOptInOrOut, index, String(fac.ccfriOptInStatus));
+        this.ccfriOptInOrOut[index] = String(fac.ccfriOptInStatus);
       } else {
-        this.$set(this.ccfriOptInOrOut, index, undefined);
+        this.ccfriOptInOrOut[index] = undefined;
       }
     });
   },
@@ -200,12 +202,12 @@ export default {
   methods: {
     ...mapActions(useNavBarStore, ['forceNavBarRefresh', 'refreshNavBarList']),
     toggle(index) {
-      this.$set(this.showOptStatus, index, true);
+      this.showOptStatus[index] = true;
     },
     toggleAll() {
       this.navBarList.forEach((_fac, index) => {
         this.toggle(index);
-        this.$set(this.ccfriOptInOrOut, index, '1');
+        this.ccfriOptInOrOut[index] = '1';
       });
     },
     previous() {
@@ -266,7 +268,7 @@ export default {
       }
     },
     validateForm() {
-      this.$refs.isValidForm?.validate();
+      this.$refs.form?.validate();
     },
     async save(withAlert) {
       this.processing = true;
