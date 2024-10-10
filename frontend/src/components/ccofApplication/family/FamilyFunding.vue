@@ -2,16 +2,22 @@
   <v-form ref="form" v-model="model.isCCOFComplete" :class="loading ? 'ccof-skeleton-loader' : ''">
     <v-container>
       <v-row justify="space-around">
-
         <v-card class="cc-top-level-card" width="1200">
           <v-container>
             <v-row>
               <v-col>
-                <div v-show="loading" style="height: 175px;">
-                  <v-skeleton-loader class="mx-auto" max-width="300" type="text@3"/>
+                <div v-show="loading" style="height: 175px">
+                  <v-skeleton-loader class="mx-auto" max-width="300" type="text@3" />
                 </div>
 
-                <v-radio-group :disabled="isLocked" required :rules="rules.required"  v-model="model.familyLicenseType" label="Licence type" v-show="!loading">
+                <v-radio-group
+                  v-show="!loading"
+                  v-model="model.familyLicenseType"
+                  :disabled="isLocked"
+                  required
+                  :rules="rules.required"
+                  label="Licence type"
+                >
                   <v-radio label="Family child care" value="7" />
                   <v-radio label="In-Home Multi-Age Child Care" value="6" />
                   <v-radio label="Multi-Age Care" value="5" />
@@ -25,18 +31,46 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="7" outlined required :rules="[...rules.required, rules.min(0), rules.max(7),rules.wholeNumber]"
-                  v-model.number="model.maxDaysPerWeek" @input="convertBlankNumberToNull(model,'maxDaysPerWeek')" label="Maximum number of days per week you provide child care" />
+                <v-text-field
+                  v-model.number="model.maxDaysPerWeek"
+                  :disabled="isLocked"
+                  type="number"
+                  min="0"
+                  max="7"
+                  variant="outlined"
+                  required
+                  :rules="[...rules.required, rules.min(0), rules.max(7), rules.wholeNumber]"
+                  label="Maximum number of days per week you provide child care"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxDaysPerWeek')"
+                />
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="52" outlined required :rules="[...rules.required, rules.min(0), rules.max(52),rules.wholeNumber]"
-                  v-model.number="model.maxWeeksPerYear" @input="convertBlankNumberToNull(model,'maxWeeksPerYear')" label="Maximum number of weeks per year you provide child care" />
+                <v-text-field
+                  v-model.number="model.maxWeeksPerYear"
+                  :disabled="isLocked"
+                  type="number"
+                  min="0"
+                  max="52"
+                  variant="outlined"
+                  required
+                  :rules="[...rules.required, rules.min(0), rules.max(52), rules.wholeNumber]"
+                  label="Maximum number of weeks per year you provide child care"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxWeeksPerYear')"
+                />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col>
-                <v-radio-group :disabled="isLocked" :rules="rules.required" row v-model="model.hasClosedMonth" label="Are there months when ALL of the programs at this facility are closed for the entire month?">
+                <v-radio-group
+                  v-model="model.hasClosedMonth"
+                  :disabled="isLocked"
+                  :rules="rules.required"
+                  inline
+                  label="Are there months when ALL of the programs at this facility are closed for the entire month?"
+                >
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
@@ -51,67 +85,136 @@
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn1" label="Jan" />
+                <v-checkbox v-model="model.closedIn1" :disabled="isLocked" label="Jan" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn2" label="Feb" />
+                <v-checkbox v-model="model.closedIn2" :disabled="isLocked" label="Feb" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn3" label="Mar" />
+                <v-checkbox v-model="model.closedIn3" :disabled="isLocked" label="Mar" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn4" label="Apr" />
+                <v-checkbox v-model="model.closedIn4" :disabled="isLocked" label="Apr" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn5" label="May" />
+                <v-checkbox v-model="model.closedIn5" :disabled="isLocked" label="May" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn6" label="Jun" />
+                <v-checkbox v-model="model.closedIn6" :disabled="isLocked" label="Jun" />
               </v-col>
             </v-row>
 
             <v-row v-show="model.hasClosedMonth === 'yes'">
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn7" label="Jul" />
+                <v-checkbox v-model="model.closedIn7" :disabled="isLocked" label="Jul" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn8" label="Aug" />
+                <v-checkbox v-model="model.closedIn8" :disabled="isLocked" label="Aug" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn9" label="Sep" />
+                <v-checkbox v-model="model.closedIn9" :disabled="isLocked" label="Sep" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn10" label="Oct" />
+                <v-checkbox v-model="model.closedIn10" :disabled="isLocked" label="Oct" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn11" label="Nov" />
+                <v-checkbox v-model="model.closedIn11" :disabled="isLocked" label="Nov" />
               </v-col>
               <v-col>
-                <v-checkbox :disabled="isLocked" v-model="model.closedIn12" label="Dec" />
+                <v-checkbox v-model="model.closedIn12" :disabled="isLocked" label="Dec" />
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-menu v-if="!isLocked" ref="menu1" v-model="model.menu1" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursFrom" transition="scale-transition" offset-y max-width="290px" min-width="290px">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursFrom12hr" label="Facility hours of operation from" v-bind="attrs" v-on="on" />
+                <v-menu
+                  v-if="!isLocked"
+                  ref="menu1"
+                  v-model="model.menu1"
+                  v-model:return-value="model.hoursFrom"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  max-width="290px"
+                  min-width="290px"
+                >
+                  <template #activator="{ props }">
+                    <v-text-field
+                      v-model="model.hoursFrom12hr"
+                      readonly
+                      variant="outlined"
+                      required
+                      :rules="rules.required"
+                      label="Facility hours of operation from"
+                      v-bind="props"
+                    />
                   </template>
-                  <v-time-picker v-if="model.menu1" v-model="model.hoursFrom" full-width @click:minute="$refs.menu1.save(model.hoursFrom); model.hoursFrom12hr = formatTime(model.hoursFrom)" :allowed-minutes="allowedStep" />
+                  <v-time-picker
+                    v-if="model.menu1"
+                    v-model="model.hoursFrom"
+                    full-width
+                    :allowed-minutes="allowedStep"
+                    @click:minute="
+                      $refs.menu1.save(model.hoursFrom);
+                      model.hoursFrom12hr = formatTime(model.hoursFrom);
+                    "
+                  />
                 </v-menu>
 
-                <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursFrom12hr" label="Facility hours of operation from" />
+                <v-text-field
+                  v-if="isLocked"
+                  v-model="model.hoursFrom12hr"
+                  disabled
+                  variant="outlined"
+                  required
+                  label="Facility hours of operation from"
+                />
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-menu v-if="!isLocked" ref="menu2" v-model="model.menu2" :close-on-content-click="false" :nudge-right="40" :return-value.sync="model.hoursTo" transition="scale-transition" offset-y max-width="290px" min-width="290px">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field readonly outlined required :rules="rules.required" v-model="model.hoursTo12hr" label="Facility hours of operation to" v-bind="attrs" v-on="on" />
+                <v-menu
+                  v-if="!isLocked"
+                  ref="menu2"
+                  v-model="model.menu2"
+                  v-model:return-value="model.hoursTo"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  max-width="290px"
+                  min-width="290px"
+                >
+                  <template #activator="{ props }">
+                    <v-text-field
+                      v-model="model.hoursTo12hr"
+                      readonly
+                      variant="outlined"
+                      required
+                      :rules="rules.required"
+                      label="Facility hours of operation to"
+                      v-bind="props"
+                    />
                   </template>
-                  <v-time-picker v-if="model.menu2" v-model="model.hoursTo" full-width @click:minute="$refs.menu2.save(model.hoursTo); model.hoursTo12hr = formatTime(model.hoursTo)" :allowed-minutes="allowedStep" />
+                  <v-time-picker
+                    v-if="model.menu2"
+                    v-model="model.hoursTo"
+                    full-width
+                    :allowed-minutes="allowedStep"
+                    @click:minute="
+                      $refs.menu2.save(model.hoursTo);
+                      model.hoursTo12hr = formatTime(model.hoursTo);
+                    "
+                  />
                 </v-menu>
-                  <v-text-field v-if="isLocked" disabled outlined required v-model="model.hoursTo12hr" label="Facility hours of operation to" />
-
+                <v-text-field
+                  v-if="isLocked"
+                  v-model="model.hoursTo12hr"
+                  disabled
+                  variant="outlined"
+                  required
+                  label="Facility hours of operation to"
+                />
               </v-col>
             </v-row>
           </v-container>
@@ -121,13 +224,35 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" :max="model.maxLicensesCapacity" outlined required :rules="[...rules.required, rules.min(0), rules.wholeNumber, rules.max(model.maxLicensesCapacity)]"
-                  v-model.number="model.maxSpaces" @input="convertBlankNumberToNull(model,'maxSpaces')" label="Maximum number of child care spaces you offer" />
+                <v-text-field
+                  v-model.number="model.maxSpaces"
+                  :disabled="isLocked"
+                  type="number"
+                  min="0"
+                  :max="model.maxLicensesCapacity"
+                  variant="outlined"
+                  required
+                  :rules="[...rules.required, rules.min(0), rules.wholeNumber, rules.max(model.maxLicensesCapacity)]"
+                  label="Maximum number of child care spaces you offer"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxSpaces')"
+                />
                 <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" outlined required :rules="[...rules.required, rules.wholeNumber, rules.min(0)]"
-                  v-model.number="model.maxLicensesCapacity" @input="convertBlankNumberToNull(model,'maxLicensesCapacity')" @change="$refs.form?.validate()" label="Maximum licensed capacity" />
+                <v-text-field
+                  v-model.number="model.maxLicensesCapacity"
+                  :disabled="isLocked"
+                  type="number"
+                  min="0"
+                  variant="outlined"
+                  required
+                  :rules="[...rules.required, rules.wholeNumber, rules.min(0)]"
+                  label="Maximum licensed capacity"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxLicensesCapacity')"
+                  @change="$refs.form?.validate()"
+                />
                 <label>(as indicated on your Community care and assisted Living Act Licence)</label>
               </v-col>
             </v-row>
@@ -138,8 +263,15 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-radio-group required :rules="rules.required" :disabled="isLocked" row v-model="model.isExtendedHours" label="Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?">
-                  <v-radio  label="Yes" value="yes" />
+                <v-radio-group
+                  v-model="model.isExtendedHours"
+                  required
+                  :rules="rules.required"
+                  :disabled="isLocked"
+                  inline
+                  label="Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?"
+                >
+                  <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
                 </v-radio-group>
               </v-col>
@@ -147,97 +279,205 @@
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required,rules.wholeNumber] : []"
-                  v-model.number="model.maxCapacityExtended" @input="convertBlankNumberToNull(model,'maxCapacityExtended')" label="Maximum number of spaces you offer extended hours of child care?" />
+                <v-text-field
+                  v-model.number="model.maxCapacityExtended"
+                  :disabled="isLocked"
+                  type="number"
+                  variant="outlined"
+                  required
+                  :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.wholeNumber] : []"
+                  label="Maximum number of spaces you offer extended hours of child care?"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxCapacityExtended')"
+                />
               </v-col>
             </v-row>
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="7" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.min(0), rules.max(7),rules.wholeNumber] : []"
-                  v-model.number="model.maxDaysPerWeekExtended" @input="convertBlankNumberToNull(model,'maxDaysPerWeekExtended')" label="Maximum number of days per week you offer extended hours of child care?" />
+                <v-text-field
+                  v-model.number="model.maxDaysPerWeekExtended"
+                  :disabled="isLocked"
+                  type="number"
+                  min="0"
+                  max="7"
+                  variant="outlined"
+                  required
+                  :rules="
+                    model.isExtendedHours === 'yes'
+                      ? [...rules.required, rules.min(0), rules.max(7), rules.wholeNumber]
+                      : []
+                  "
+                  label="Maximum number of days per week you offer extended hours of child care?"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxDaysPerWeekExtended')"
+                />
               </v-col>
             </v-row>
 
             <v-row v-show="model.isExtendedHours === 'yes'">
               <v-col>
-                <v-text-field :disabled="isLocked" type="number" @wheel="$event.target.blur()" min="0" max="52" outlined required :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.min(0), rules.max(52),rules.wholeNumber] : []"
-                  v-model.number="model.maxWeeksPerYearExtended" @input="convertBlankNumberToNull(model,'maxWeeksPerYearExtended')" label="Maximum number of weeks per year you offer extended hours of child care?" />
+                <v-text-field
+                  v-model.number="model.maxWeeksPerYearExtended"
+                  :disabled="isLocked"
+                  type="number"
+                  min="0"
+                  max="52"
+                  variant="outlined"
+                  required
+                  :rules="
+                    model.isExtendedHours === 'yes'
+                      ? [...rules.required, rules.min(0), rules.max(52), rules.wholeNumber]
+                      : []
+                  "
+                  label="Maximum number of weeks per year you offer extended hours of child care?"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(model, 'maxWeeksPerYearExtended')"
+                />
               </v-col>
             </v-row>
-
           </v-container>
         </v-card>
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-subtitle>Write the maximum <strong>number of spaces</strong> you offer extended hours of child care
-            for
-            each type of service</v-card-subtitle>
+          <v-card-subtitle>
+            Write the maximum <strong>number of spaces</strong> you offer extended hours of child care for each type of
+            service
+          </v-card-subtitle>
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareUnder36Months4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrLess')" :rules=[...rules.notRequired,rules.wholeNumber] label="Family Child Care (under 36 months)" />
+                  <v-text-field
+                    v-model.number="model.extendedChildCareUnder36Months4OrLess"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Family Child Care (under 36 months)"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareUnder36Months4OrLess')"
+                  />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrLess')" :rules=[...rules.notRequired,rules.wholeNumber] label="Family Child Care (36 months to School Age)" />
+                  <v-text-field
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Family Child Care (36 months to School Age)"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCare36MonthsToSchoolAge4OrLess')"
+                  />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareSchoolAge4OrLess" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrLess')" :rules=[...rules.notRequired,rules.wholeNumber] label="Family Child Care (School Age / School Age Care on School Grounds)" />
+                  <v-text-field
+                    v-model.number="model.extendedChildCareSchoolAge4OrLess"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Family Child Care (School Age / School Age Care on School Grounds)"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareSchoolAge4OrLess')"
+                  />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.multiAgeCare4OrLess" @input="convertBlankNumberToNull(model,'multiAgeCare4OrLess')" :rules=[...rules.notRequired,rules.wholeNumber] label="Multi-Age Child Care" />
+                  <v-text-field
+                    v-model.number="model.multiAgeCare4OrLess"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Multi-Age Child Care"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'multiAgeCare4OrLess')"
+                  />
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareUnder36Months4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareUnder36Months4OrMore')" :rules=[...rules.notRequired,rules.wholeNumber] label="Family Child Care (under 36 months)" />
+                  <v-text-field
+                    v-model.number="model.extendedChildCareUnder36Months4OrMore"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Family Child Care (under 36 months)"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareUnder36Months4OrMore')"
+                  />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCare36MonthsToSchoolAge4OrMore')" :rules=[...rules.notRequired,rules.wholeNumber] label="Family Child Care (36 months to School Age)" />
+                  <v-text-field
+                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Family Child Care (36 months to School Age)"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCare36MonthsToSchoolAge4OrMore')"
+                  />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.extendedChildCareSchoolAge4OrMore" @input="convertBlankNumberToNull(model,'extendedChildCareSchoolAge4OrMore')" :rules=[...rules.notRequired,rules.wholeNumber] label="Family Child Care (School Age/ School Age Care on School Grounds)" />
+                  <v-text-field
+                    v-model.number="model.extendedChildCareSchoolAge4OrMore"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Family Child Care (School Age/ School Age Care on School Grounds)"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareSchoolAge4OrMore')"
+                  />
                 </v-row>
                 <v-row class="padded-row">
-                  <v-text-field :disabled="isLocked" outlined type="number" @wheel="$event.target.blur()"
-                    v-model.number="model.multiAgeCare4more" @input="convertBlankNumberToNull(model,'multiAgeCare4more')" :rules=[...rules.notRequired,rules.wholeNumber] label="Multi-Age Child Care" />
+                  <v-text-field
+                    v-model.number="model.multiAgeCare4more"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    type="number"
+                    :rules="[...rules.notRequired, rules.wholeNumber]"
+                    label="Multi-Age Child Care"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(model, 'multiAgeCare4more')"
+                  />
                 </v-row>
               </v-col>
             </v-row>
           </v-container>
         </v-card>
-
       </v-row>
 
-      <NavButton :isNextDisplayed="true" :isSaveDisplayed="true"
-        :isSaveDisabled="isLocked" :isNextDisabled="!model.isCCOFComplete" :isProcessing="processing"
-        @previous="previous" @next="next" @validateForm="validateForm()" @save="save(true)"></NavButton>
+      <NavButton
+        :is-next-displayed="true"
+        :is-save-displayed="true"
+        :is-save-disabled="isLocked"
+        :is-next-disabled="!model.isCCOFComplete"
+        :is-processing="processing"
+        @previous="previous"
+        @next="next"
+        @validate-form="validateForm()"
+        @save="save(true)"
+      />
     </v-container>
   </v-form>
 </template>
 
 <script>
-
-import fundMixing from '@/mixins/fundMixing';
-import globalMixin from '@/mixins/globalMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
+import fundMixing from '../../../mixins/fundMixing.js';
+import globalMixin from '../../../mixins/globalMixin.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '../../../utils/constants.js';
 
 export default {
   mixins: [fundMixing, globalMixin],
   data() {
     return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY
+      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
     };
-  }
+  },
 };
-
 </script>

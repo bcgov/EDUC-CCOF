@@ -1,10 +1,6 @@
 <template>
   <v-card>
-    <v-navigation-drawer
-      v-model="drawer"
-
-      :permanent="$vuetify.breakpoint.mdAndUp"
-    >
+    <v-navigation-drawer v-model="drawer" :permanent="$vuetify.display.mdAndUp">
       <v-list-item class="px-2">
         <v-list-item-title>CCOF Base Funding</v-list-item-title>
         <!-- <v-btn
@@ -14,22 +10,11 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn> -->
       </v-list-item>
-      <v-divider></v-divider>
-      <v-list dense>
-        <v-list-item
-          v-for="item in ccofItems"
-          :key="item.title"
-          link
-        >
-          <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+      <v-divider />
+      <v-list density="compact">
+        <v-list-item v-for="item in ccofItems" :key="item.title" :icon="item.icon" link>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
-
       </v-list>
       <v-list-item class="px-2">
         <v-list-item-title>CCFRI</v-list-item-title>
@@ -40,22 +25,11 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn> -->
       </v-list-item>
-      <v-divider></v-divider>
-      <v-list dense>
-        <v-list-item
-          v-for="item in ccfriItems"
-          :key="item.title"
-          link
-        >
-          <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+      <v-divider />
+      <v-list density="compact">
+        <v-list-item v-for="item in ccfriItems" :key="item.title" :icon="item.icon" link>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
-
       </v-list>
       <v-list-item class="px-2">
         <v-list-item-title>ECE-WE</v-list-item-title>
@@ -66,41 +40,22 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn> -->
       </v-list-item>
-      <v-divider></v-divider>
-      <v-list dense>
-        <v-list-item
-          v-for="item in eceweItems"
-          :key="item.title"
-          link
-        >
-          <v-list-item-icon class="pl-5">
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+      <v-divider />
+      <v-list density="compact">
+        <v-list-item v-for="item in eceweItems" :key="item.title" :icon="item.icon" link>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
-
       </v-list>
-
     </v-navigation-drawer>
-       <v-toolbar color="red" absolute right class="hidden-md-and-up" @click.stop="drawer = !drawer">
-
-                        <v-toolbar-side-icon
-                            
-                            @click.stop="drawer = !drawer"
-                        ></v-toolbar-side-icon>
-                    </v-toolbar>
-                    <p
-                        class="title grey--text text--lighten-1 font-weight-light text-xs-center py-5 my-5"
-                    >Content</p>
-
+    <v-toolbar color="red" absolute right class="hidden-md-and-up" @click.stop="drawer = !drawer">
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+    </v-toolbar>
+    <p class="text-h6 text-grey-lighten-1 font-weight-light text-center py-5 my-5">Content</p>
   </v-card>
 </template>
 <script>
-
-import { mapGetters} from 'vuex';
+import { mapState } from 'pinia';
+import { useAuthStore } from '../store/auth.js';
 
 export default {
   name: 'LandingPage',
@@ -111,16 +66,7 @@ export default {
       required: false,
     },
   },
-  computed: {
-    ...mapGetters('auth', ['userInfo']),
-    currentYearTwoDigit() {
-      return this.currentYear - 2000;
-    },
-    nextYearTwoDigit() {
-      return this.currentYear - 1999;
-    }
-  },
-  data(){
+  data() {
     return {
       navigationModel: [],
       drawer: true,
@@ -143,11 +89,19 @@ export default {
         { title: 'Information to determine funding amounts', icon: 'mdi-checkbox-blank-circle-outline' },
       ],
 
-      mini: false
+      mini: false,
     };
-  }
+  },
+  computed: {
+    ...mapState(useAuthStore, ['userInfo']),
+    currentYearTwoDigit() {
+      return this.currentYear - 2000;
+    },
+    nextYearTwoDigit() {
+      return this.currentYear - 1999;
+    },
+  },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

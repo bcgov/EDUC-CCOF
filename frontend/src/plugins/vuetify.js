@@ -1,15 +1,17 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@mdi/font/css/materialdesignicons.css';
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
+import { createVuetify } from 'vuetify';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import 'vuetify/styles'; // CSS Reset
 
-Vue.use(Vuetify);
-
-export default new Vuetify({
+export default new createVuetify({
   theme: {
     light: true,
-    dark: false 
+    dark: false,
   },
+  components,
+  directives,
   icons: {
     iconfont: 'fa',
     values: {
@@ -25,7 +27,7 @@ export default new Vuetify({
       error: 'fas fa-exclamation-triangle',
       lock: 'fas fa-lock',
       info2: 'fas fa-info-circle fa-10x',
-      question: 'fas fa-question-circle fa-10x'
-    }
-  }
+      question: 'fas fa-question-circle fa-10x',
+    },
+  },
 });

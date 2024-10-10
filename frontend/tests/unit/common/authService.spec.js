@@ -6,7 +6,6 @@ import { AuthRoutes } from '@/utils/constants.js';
 
 const mockAxios = new MockAdapter(axios);
 
-
 describe('authService.js', () => {
   const spy = jest.spyOn(ApiService.apiAxios, 'get');
 
@@ -16,7 +15,7 @@ describe('authService.js', () => {
 
   it('Call get token endpoint', async () => {
     mockAxios.onGet(AuthRoutes.TOKEN).reply(200, {
-      jwtFrontend: 'fakeToken'
+      jwtFrontend: 'fakeToken',
     });
     const res = await AuthService.getAuthToken();
     expect(res.jwtFrontend).toBe('fakeToken');
@@ -34,17 +33,17 @@ describe('authService.js', () => {
     mockAxios.onPost(AuthRoutes.REFRESH).reply(200, {
       jwtFrontend: 'token',
       error: true,
-      error_description: 'test error'
+      error_description: 'test error',
     });
-    try{
+    try {
       await AuthService.refreshAuthToken('testToken');
-    } catch(e) {
-      expect(e).toEqual({error: 'test_error'});
+    } catch (e) {
+      expect(e).toEqual({ error: 'test_error' });
     }
   });
 
   it('Expect getAuthToken to throw error', async () => {
-    mockAxios.onGet(AuthRoutes.TOKEN).reply(function() {
+    mockAxios.onGet(AuthRoutes.TOKEN).reply(function () {
       throw new Error('error');
     });
     expect(AuthService.getAuthToken()).rejects.toThrowError();
@@ -53,13 +52,13 @@ describe('authService.js', () => {
   it('Expect getAuthToken to throw error if not return 2xx', async () => {
     mockAxios.onGet(AuthRoutes.TOKEN).reply(400, {
       error: 'error',
-      error_description: 'test error'
+      error_description: 'test error',
     });
     expect(AuthService.getAuthToken()).rejects.toThrowError();
   });
 
   it('Expect getRefreshToken to throw error', async () => {
-    mockAxios.onPost(AuthRoutes.REFRESH).reply(function() {
+    mockAxios.onPost(AuthRoutes.REFRESH).reply(function () {
       throw new Error('error');
     });
     expect(AuthService.refreshAuthToken('testToken')).rejects.toThrowError();
@@ -68,7 +67,7 @@ describe('authService.js', () => {
   it('Expect getRefreshToken to throw error if not return 2xx ', async () => {
     mockAxios.onPost(AuthRoutes.REFRESH).reply(400, {
       error: 'error',
-      error_description: 'test error'
+      error_description: 'test error',
     });
     expect(AuthService.refreshAuthToken('testToken')).rejects.toThrowError();
   });

@@ -4,7 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 jest.mock('../../../src/common/staticConfig', () => {
   return {
-    VUE_APP_BCEID_REG_URL: 'https://bceid.ca/'
+    VUE_APP_BCEID_REG_URL: 'https://bceid.ca/',
   };
 });
 import Login from '../../../src/components/Login.vue';
@@ -15,21 +15,21 @@ describe('Login.vue', () => {
   let wrapper;
   let store;
   let router;
-  
+
   beforeEach(() => {
     Vue.use(VueRouter);
     Vue.use(Vuetify);
     Vue.use(Vuex);
-    
+
     router = new VueRouter();
     store = new Vuex.Store({
-      modules: { auth }
+      modules: { auth },
     });
 
     wrapper = shallowMount(Login, {
       Vue: Vue,
       store,
-      router
+      router,
     });
   });
 
@@ -41,4 +41,3 @@ describe('Login.vue', () => {
     wrapper.vm.clearStorage();
   });
 });
-

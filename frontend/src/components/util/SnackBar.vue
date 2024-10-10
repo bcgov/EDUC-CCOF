@@ -1,24 +1,18 @@
 <template>
-  <div
-    @mouseover="pause = true"
-    @mouseleave="pause = false">
-    <v-snackbar id="mainSnackBar"
+  <div @mouseover="pause = true" @mouseleave="pause = false">
+    <v-snackbar
+      id="mainSnackBar"
       v-model="showSnackBar"
       :timeout="timeout"
-      elevation="24"
-      top
+      class="elevation-24 snackbar"
+      location="top"
       centered
       :color="colour"
       transition="slide-y-transition"
-      class="snackbar"
-    >{{ alertNotificationText }}
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          text
-          color="white"
-          v-bind="attrs"
-          @click="showSnackBar = false"
-        >
+    >
+      {{ alertNotificationText }}
+      <template #action="{ attrs }">
+        <v-btn variant="text" color="white" v-bind="attrs" @click="showSnackBar = false">
           {{ alertNotificationQueue.length > 0 ? 'Next (' + alertNotificationQueue.length + ')' : 'Close' }}
         </v-btn>
       </template>
@@ -27,9 +21,10 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia';
+import { useAppStore } from '../../store/app.js';
 
-import {mapMutations, mapState} from 'vuex';
-import {ALERT_NOTIFICATION_TYPES} from '../../utils/constants/AlertNotificationTypes';
+import { ALERT_NOTIFICATION_TYPES } from '../../utils/constants/AlertNotificationTypes.js';
 
 export default {
   name: 'SnackBar',
@@ -38,54 +33,53 @@ export default {
       colour: '',
       polling: null,
       timeout: 5000,
-      pause: false
+      pause: false,
     };
   },
   computed: {
-    ...mapState('app', ['alertNotificationText', 'alertNotificationQueue', 'alertNotification']),
+    ...mapState(useAppStore, ['alertNotificationText', 'alertNotificationQueue', 'alertNotification']),
     hasNotificationsPending() {
       return this.alertNotificationQueue.length > 0;
     },
     showSnackBar: {
-      get(){
+      get() {
         return this.alertNotification;
       },
-      set(val){
+      set(val) {
         this.setAlertNotification(val);
-      }
-    }
+      },
+    },
   },
   watch: {
     showSnackBar() {
-      if(!this.showSnackBar && this.hasNotificationsPending) {
-        this.$nextTick(() => this.showSnackBar = true);
+      if (!this.showSnackBar && this.hasNotificationsPending) {
+        this.$nextTick(() => (this.showSnackBar = true));
       } else if (this.showSnackBar && this.hasNotificationsPending) {
         this.setupSnackBar();
-      }
-      else {
+      } else {
         this.teardownSnackBar();
       }
     },
   },
   methods: {
-    ...mapMutations('app', ['setAlertNotificationText', 'setAlertNotification']),
+    ...mapActions(useAppStore, ['setAlertNotificationText', 'setAlertNotification']),
     setAlertType(alertType) {
-      if(!alertType) {
+      if (!alertType) {
         alertType = '';
       }
-      switch(alertType.toLowerCase()) {
-      case(ALERT_NOTIFICATION_TYPES.ERROR):
-        this.colour = ALERT_NOTIFICATION_TYPES.ERROR;
-        break;
-      case(ALERT_NOTIFICATION_TYPES.WARN):
-        this.colour = ALERT_NOTIFICATION_TYPES.WARN;
-        break;
-      case(ALERT_NOTIFICATION_TYPES.SUCCESS):
-        this.colour = ALERT_NOTIFICATION_TYPES.SUCCESS;
-        break;
-      case(ALERT_NOTIFICATION_TYPES.INFO):
-      default:
-        this.colour = ALERT_NOTIFICATION_TYPES.INFO;
+      switch (alertType.toLowerCase()) {
+        case ALERT_NOTIFICATION_TYPES.ERROR:
+          this.colour = ALERT_NOTIFICATION_TYPES.ERROR;
+          break;
+        case ALERT_NOTIFICATION_TYPES.WARN:
+          this.colour = ALERT_NOTIFICATION_TYPES.WARN;
+          break;
+        case ALERT_NOTIFICATION_TYPES.SUCCESS:
+          this.colour = ALERT_NOTIFICATION_TYPES.SUCCESS;
+          break;
+        case ALERT_NOTIFICATION_TYPES.INFO:
+        default:
+          this.colour = ALERT_NOTIFICATION_TYPES.INFO;
       }
     },
     setupSnackBar() {
@@ -111,12 +105,12 @@ export default {
     },
     timeoutCounter() {
       this.polling = setInterval(() => {
-        if(this.pause) {
+        if (this.pause) {
           this.timeout += 1;
         }
       }, 1000);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -125,4 +119,3 @@ export default {
   padding: 0 !important;
 }
 </style>
-

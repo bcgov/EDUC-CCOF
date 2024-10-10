@@ -1,4 +1,4 @@
-import {isNullOrBlank} from '@/utils/common';
+import { isNullOrBlank } from '../utils/common.js';
 
 export default {
   methods: {
@@ -6,9 +6,8 @@ export default {
       object[key] = !isNullOrBlank(object[key]) ? object[key] : null;
     },
     getYesNoValue(value) {
-      if (isNullOrBlank(value))
-        return value;
+      if (isNullOrBlank(value)) return value;
       return value === 1 ? 'Yes' : 'No';
-    }
-  }
+    },
+  },
 };

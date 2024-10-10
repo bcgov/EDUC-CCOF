@@ -1,17 +1,18 @@
 <template>
   <div style="display: none">
-    <a id="logout_href" :href='routes.SESSION_EXPIRED'/>
+    <a id="logout_href" :href="routes.SESSION_EXPIRED" />
   </div>
 </template>
 
 <script>
+import { useAuthStore } from '../store/auth.js';
+import { AuthRoutes } from '../utils/constants.js';
 
-import {AuthRoutes} from '@/utils/constants';
 export default {
   name: 'BackendSessionExpired',
   data() {
     return {
-      routes: AuthRoutes
+      routes: AuthRoutes,
     };
   },
   mounted() {
@@ -19,12 +20,11 @@ export default {
   },
   methods: {
     logout() {
-      this.$store.commit('auth/setJwtToken');
-    }
-  }
+      const authStore = useAuthStore();
+      authStore.setJwtToken();
+    },
+  },
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

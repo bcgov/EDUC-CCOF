@@ -3,7 +3,7 @@ import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
 jest.mock('../../../src/common/staticConfig', () => {
   return {
-    VUE_APP_BCEID_REG_URL: 'https://bceid.ca/'
+    VUE_APP_BCEID_REG_URL: 'https://bceid.ca/',
   };
 });
 import App from '@/App.vue';
@@ -23,12 +23,12 @@ describe('App.vue', () => {
     Vue.use(VueRouter);
 
     store = new Vuex.Store({
-      modules: { auth }
+      modules: { auth },
     });
     vuet = new Vuetify({
       icons: {
         iconfont: 'md',
-      }
+      },
     });
 
     const router = new VueRouter();
@@ -36,7 +36,7 @@ describe('App.vue', () => {
       Vue,
       vuet,
       store,
-      router
+      router,
     });
   });
 

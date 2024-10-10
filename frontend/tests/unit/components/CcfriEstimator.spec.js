@@ -8,23 +8,28 @@ const csvWriter = require('csv-writer');
 import flushPromises from 'flush-promises';
 
 function addPartimeDays(days, child) {
-  for (let i = 0; i < days ; i++) {
+  for (let i = 0; i < days; i++) {
     child.selectedCareType.push(1);
   }
 }
 function addFulltimeDays(days, child) {
-  for (let i = 0; i < days ; i++) {
+  for (let i = 0; i < days; i++) {
     child.selectedCareType.push(2);
   }
 }
 
 function hasFailed(result) {
   if (result.parentFeeFrequency == 'Monthly') {
-    return (Math.abs(result.reductionAmt - result.expectedReduction) > 1) || (Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1);
+    return (
+      Math.abs(result.reductionAmt - result.expectedReduction) > 1 ||
+      Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1
+    );
   } else {
-    return (Math.abs(result.reductionAmt - result.expectedReduction) > 1) || (Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1);
+    return (
+      Math.abs(result.reductionAmt - result.expectedReduction) > 1 ||
+      Math.abs(result.parentFeeAmt - result.expectedParentFee) > 1
+    );
   }
-
 }
 
 async function loadFile(fileName) {
@@ -40,7 +45,7 @@ expect.extend({
     if (received.reductionAmt == received.expectedReduction && received.parentFeeAmt == received.expectedParentFee) {
       return {
         message: () => 'Pass',
-        pass: true
+        pass: true,
       };
     } else {
       return {
@@ -57,10 +62,10 @@ expect.extend({
               feeFrequency        [${received.parentFeeFrequency}]\n
               reductionAmt/Exp    [${received.reductionAmt}] / [${received.expectedReduction}]\n
               parentFeeAmt/Exp    [${received.parentFeeAmt}] / [${received.expectedParentFee}]`,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 describe('CcfriEstimator.js', () => {
@@ -68,10 +73,8 @@ describe('CcfriEstimator.js', () => {
     const localVue = createLocalVue();
     localVue.use(Vuetify);
     jest.spyOn(console, 'log').mockImplementation(() => {});
-
   });
-  afterEach(() => {
-  });
+  afterEach(() => {});
 
   let results = [];
   let counter = 0;
@@ -82,33 +85,33 @@ describe('CcfriEstimator.js', () => {
       render: () => {},
       methods: {
         validate: () => true,
-      }
+      },
     };
     const wrapper = shallowMount(CcfriEstimator, {
       stubs: {
         'v-form': formStub,
-      }
+      },
     });
 
     const CHILD_CATEGORY_MAP = {
-      '0-18':'0 - 18 Months',
+      '0-18': '0 - 18 Months',
       '18-36': '18 - 36 Months',
       '3-k': '3 Years to Kindergarten',
-      'Before and After Kinder':  'Before & After School (Kindergarten Only)',
+      'Before and After Kinder': 'Before & After School (Kindergarten Only)',
       'OOSC-G': 'Before & After School (Grade 1+)',
-      'Preschool': 'Preschool'
+      Preschool: 'Preschool',
     };
 
     const CARE_TYPE_MAP = {
-      'Group': 'Licensed Group',
-      'Family': 'Licensed Family'
+      Group: 'Licensed Group',
+      Family: 'Licensed Family',
     };
     // wrapper.vm.$refs.form.validate = true;
     // const lines = await loadFile('estimatorPreschool.csv');
     const lines = await loadFile('estimator-data-v2.csv');
     // const lines = await loadFile('testData.csv');
 
-    for (let i = 0 ; i < lines.length; i ++) {
+    for (let i = 0; i < lines.length; i++) {
       processOneLine(lines[i], 'Monthly', i);
       processOneLine(lines[i], 'Daily', i);
     }
@@ -141,13 +144,14 @@ describe('CcfriEstimator.js', () => {
       wrapper.vm.children[0].partTimeFee = frequency === 'Monthly' ? values[4] : values[5];
       const isPreschool = wrapper.vm.children[0].childAgeCategory == 'Preschool';
       let columnOffset = 6;
-      for (let fd = 0; fd <= 7; fd ++) {
+      for (let fd = 0; fd <= 7; fd++) {
         if (isPreschool && fd > 0) {
           continue;
         }
-        for (let hd = 0; (hd + fd) <= 7; hd ++) {
-          let correctCell = values[columnOffset ++];
-          if (fd === 0 && hd === 0) { // in the spreadsheet there is no fd=0, hd=-, so test the FT rate.
+        for (let hd = 0; hd + fd <= 7; hd++) {
+          let correctCell = values[columnOffset++];
+          if (fd === 0 && hd === 0) {
+            // in the spreadsheet there is no fd=0, hd=-, so test the FT rate.
             continue;
           }
           let correctValues = correctCell.split(' ');
@@ -163,23 +167,21 @@ describe('CcfriEstimator.js', () => {
             partTimeFee: wrapper.vm.children[0].partTimeFee,
             halfDays: hd,
             fullDays: fd,
-            days: (hd + fd),
+            days: hd + fd,
             reductionAmt: wrapper.vm.results[0].reductionAmountMonthly,
             reductionAmtDaily: wrapper.vm.results[0].reductionAmountDaily,
             expectedReduction: correctValues[0],
             parentFeeAmt: wrapper.vm.results[0].parentFeeMonthly,
             parentFeeAmtDaily: wrapper.vm.results[0].parentFeeDaily,
             expectedParentFee: correctValues[1],
-            column: (columnOffset -1),
+            column: columnOffset - 1,
             row: index + 5,
           };
           if (hasFailed(result)) {
-            result.result = 'FAIL',
-            results.push(result);
-            errors ++;
+            (result.result = 'FAIL'), results.push(result);
+            errors++;
           } else {
-            result.result = 'PASS',
-            results.push(result);
+            (result.result = 'PASS'), results.push(result);
           }
 
           // expect(result).toBeCorrect();
@@ -188,30 +190,29 @@ describe('CcfriEstimator.js', () => {
           // expect(wrapper.vm.results[0].actualParentFeePerChild, JSON.stringify(result)).toBe(correctValues[1]);
         }
       }
-
     }
     // results.forEach(i => console.log(JSON.stringify(i)));
     console.info(`Tested [${counter}] number of records with [${errors}] tests failing.`);
     const writer = csvWriter.createObjectCsvWriter({
       path: path.join(__dirname, '../../../results.csv'),
       header: [
-        { id: 'column', title: 'COLUMN'},
-        { id: 'row', title: 'ROW'},
-        { id: 'typeOfCare', title: 'TYPE_OF_CARE'},
-        { id: 'childAgeCategory', title: 'AGE_CATEGORY'},
-        { id: 'parentFeeFrequency', title: 'FREQUENCY'},
-        { id: 'approvedFee', title: 'APPROVED_FREE'},
-        { id: 'partTimeFee', title: 'PARENT_FEE'},
-        { id: 'halfDays', title: 'HD'},
-        { id: 'fullDays', title: 'FD'},
-        { id: 'reductionAmt', title: 'REDUCTION_AMT_MONTHLY'},
-        { id: 'reductionAmtDaily', title: 'REDUCTION_AMT_DAILY'},
-        { id: 'expectedReduction', title: 'EXP_REDUCTION_AMT'},
-        { id: 'parentFeeAmt', title: 'PARENT_FEE_MONTHLY'},
-        { id: 'parentFeeAmtDaily', title: 'PARENT_FEE_DAILY'},
-        { id: 'expectedParentFee', title: 'EXP_PARENT_FEE'},
-        { id: 'result', title: 'RESULT'},
-        { id: 'days', title: 'DAYS'},
+        { id: 'column', title: 'COLUMN' },
+        { id: 'row', title: 'ROW' },
+        { id: 'typeOfCare', title: 'TYPE_OF_CARE' },
+        { id: 'childAgeCategory', title: 'AGE_CATEGORY' },
+        { id: 'parentFeeFrequency', title: 'FREQUENCY' },
+        { id: 'approvedFee', title: 'APPROVED_FREE' },
+        { id: 'partTimeFee', title: 'PARENT_FEE' },
+        { id: 'halfDays', title: 'HD' },
+        { id: 'fullDays', title: 'FD' },
+        { id: 'reductionAmt', title: 'REDUCTION_AMT_MONTHLY' },
+        { id: 'reductionAmtDaily', title: 'REDUCTION_AMT_DAILY' },
+        { id: 'expectedReduction', title: 'EXP_REDUCTION_AMT' },
+        { id: 'parentFeeAmt', title: 'PARENT_FEE_MONTHLY' },
+        { id: 'parentFeeAmtDaily', title: 'PARENT_FEE_DAILY' },
+        { id: 'expectedParentFee', title: 'EXP_PARENT_FEE' },
+        { id: 'result', title: 'RESULT' },
+        { id: 'days', title: 'DAYS' },
       ],
     });
     writer.writeRecords(results).then(() => {
@@ -232,5 +233,4 @@ describe('CcfriEstimator.js', () => {
     // }
     await flushPromises();
   });
-
 });
