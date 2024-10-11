@@ -51,9 +51,7 @@
   </v-container>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
+<script>
 import { useAuthStore } from '../store/auth.js';
 import { useMessageStore } from '../store/message.js';
 import Spinner from './common/Spinner.vue';
@@ -61,92 +59,97 @@ import { PATHS } from '../utils/constants.js';
 import { useDisplay } from 'vuetify';
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
-const authStore = useAuthStore();
-const messageStore = useMessageStore();
-
-const { userInfo } = storeToRefs(authStore);
-const { allMessages } = storeToRefs(messageStore);
-
-const selectedId = ref(-1);
-const columns = [
-  { title: 'Read/Unread', align: 'start', key: 'isRead' },
-  { title: 'Subject', key: 'subject' },
-  { title: 'Fiscal Year', key: 'programYearValue' },
-  { title: 'Date Received', key: 'dateReceived' },
-];
-const message = ref({
-  sender: '',
-  subject: '',
-  programYearValue: '',
-  dateReceived: '',
-  messageContent: '',
-});
-
-const { name } = useDisplay();
-const displayName = computed(() => name.value);
-
-const messages = computed(() => allMessages.value || []);
-
-const buttonSize = computed(() => {
-  const sizeMap = {
-    xs: 'large',
-    sm: 'large',
-    md: 'large',
-    lg: 'x-large',
-    xl: 'x-large',
-  };
-  return sizeMap[displayName.value] || 'medium';
-});
-
-onMounted(() => {
-
-  try {
-    if (!messageStore.allMessages || messageStore.allMessages.length === 0) {
-      const organizationId = authStore.userInfo.organizationId;
-      messageStore.getAllMessages(organizationId);
+export default {
+  components: {
+    Spinner
+  },
+  data() {
+    return {
+      selectedId: -1,
+      columns: [
+        { title: 'Read/Unread', align: 'start', key: 'isRead' },
+        { title: 'Subject', key: 'subject' },
+        { title: 'Fiscal Year', key: 'programYearValue' },
+        { title: 'Date Received', key: 'dateReceived' },
+      ],
+      message: {
+        sender: '',
+        subject: '',
+        programYearValue: '',
+        dateReceived: '',
+        messageContent: '',
+      },
+      displayName: '',
+    };
+  },
+  computed: {
+    userInfo() {
+      return useAuthStore().userInfo;
+    },
+    allMessages() {
+      return useMessageStore().allMessages;
+    },
+    messages() {
+      return this.allMessages || [];
+    },
+    buttonSize() {
+      const sizeMap = {
+        xs: 'large',
+        sm: 'large',
+        md: 'large',
+        lg: 'x-large',
+        xl: 'x-large',
+      };
+      return sizeMap[this.displayName] || 'medium';
+    },
+  },
+  mounted() {
+    this.displayName = useDisplay().name.value;
+    try {
+      if (!useMessageStore().allMessages || useMessageStore().allMessages.length === 0) {
+        const organizationId = this.userInfo.organizationId;
+        useMessageStore().getAllMessages(organizationId);
+      }
+    } catch (error) {
+      console.error("Error in mounted hook:", error);
     }
-  } catch (error) {
-    console.error("Error in created hook:", error);
-  }
-});
+  },
+  methods: {
+    rowClickHandler(event, { item }) {
+      this.message = {
+        subject: item.subject || 'No subject',
+        dateReceived: item.dateReceived || 'Unknown date',
+        programYearValue: item.programYearValue || 'Unknown year',
+        messageContent: item.messageContent || 'No content available',
+        sender: 'From: My ChildcareBC Services',
+      };
 
-const rowClickHandler = (event, { item }) => {
-
-  message.value = {
-    subject: item.subject || 'No subject',
-    dateReceived: item.dateReceived || 'Unknown date',
-    programYearValue: item.programYearValue || 'Unknown year',
-    messageContent: item.messageContent || 'No content available',
-    sender: 'From: My ChildcareBC Services',
-  };
-
-  if (item.messageId) {
-    messageStore.updateMessage(item.messageId);
-  } else {
-    console.error('No messageId found in item');
-  }
-};
-
-const getMessageStyle = (message) => {
-  return message.isRead ? 'read' : 'unread';
-};
-
-const goToHomePage = () => {
-  router.push(PATHS.ROOT.HOME);
-};
-
-const fitScreenHeight = () => {
-  switch (displayName.value) {
-    case 'xs': return '67vh';
-    case 'sm': return '82vh';
-    case 'md': return '75vh';
-    case 'lg': return '70vh';
-    case 'xl': return '78vh';
-    default: return '70vh';
-  }
+      if (item.messageId) {
+        useMessageStore().updateMessage(item.messageId);
+      } else {
+        console.error('No messageId found in item');
+      }
+    },
+    getMessageStyle(message) {
+      return message.isRead ? 'read' : 'unread';
+    },
+    goToHomePage() {
+      this.$router.push(PATHS.ROOT.HOME);
+    },
+    fitScreenHeight() {
+      switch (this.displayName) {
+        case 'xs': return '67vh';
+        case 'sm': return '82vh';
+        case 'md': return '75vh';
+        case 'lg': return '70vh';
+        case 'xl': return '78vh';
+        default: return '70vh';
+      }
+    },
+  },
 };
 </script>
+
 
 <style scoped>
 :deep(html) {
