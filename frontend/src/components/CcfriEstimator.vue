@@ -1732,6 +1732,8 @@ div.v-select__selection.v-select__selection--comma {
 }
 .v-list-item__content {
   text-align: center !important;
+  display: flex;
+  align-items: center;
 }
 .v-list-item-title {
   text-align: left !important;
