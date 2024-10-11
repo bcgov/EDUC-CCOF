@@ -22,13 +22,13 @@ describe('Header.vue', () => {
     Vue.use(Vuex);
 
     store = new Vuex.Store({
-      modules: { auth }
+      modules: { auth },
     });
 
     wrapper = shallowMount(Header, {
       Vue: Vue,
       vuetify,
-      store
+      store,
     });
   });
 

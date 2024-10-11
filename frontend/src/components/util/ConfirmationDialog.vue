@@ -1,36 +1,54 @@
 <template>
-  <v-dialog v-model="dialog" :content-class="contentClass" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
+  <v-dialog
+    v-model="dialog"
+    :content-class="contentClass"
+    :max-width="options.width"
+    :style="{ zIndex: options.zIndex }"
+    @keydown.esc="cancel"
+  >
     <v-card>
       <slot name="title" :cancel="cancel">
         <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
-            <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle':  options.subtitle}">
-              {{ title }}
-            </v-toolbar-title>
-          <v-spacer/>
-          <v-btn id="closeBtn" v-if="options.closeIcon" text icon @click.native="cancel">
-            <v-icon color="#38598A">mdi-close</v-icon>
+          <v-toolbar-title
+            :class="{
+              'white--text': options.dark,
+              'align-self-end': options.closeIcon,
+              'font-weight-bold': options.titleBold,
+              'dialog-subtitle': options.subtitle,
+            }"
+          >
+            {{ title }}
+          </v-toolbar-title>
+          <v-spacer />
+          <v-btn v-if="options.closeIcon" id="closeBtn" variant="text" icon @click="cancel">
+            <v-icon color="#38598A"> mdi-close </v-icon>
           </v-btn>
         </v-toolbar>
       </slot>
       <v-card-text :class="[options.messagePadding, { 'black--text': !options.dark }]">
         {{ message }}
-        <slot name="message"></slot>
-        <v-divider v-if="options.divider" class="mt-1"/>              
+        <slot name="message" />
+        <v-divider v-if="options.divider" class="mt-1" />
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-spacer></v-spacer>
-        <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" @click.native="cancel"></PrimaryButton>
-        <PrimaryButton id="resolveBtn" :text="options.resolveText || 'Yes'" :disabled="options.resolveDisabled" @click.native="agree"></PrimaryButton>
+        <v-spacer />
+        <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" @click="cancel" />
+        <PrimaryButton
+          id="resolveBtn"
+          :text="options.resolveText || 'Yes'"
+          :disabled="options.resolveDisabled"
+          @click="agree"
+        />
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import PrimaryButton from './PrimaryButton';
+import PrimaryButton from './PrimaryButton.vue';
 export default {
   name: 'ConfirmationDialog',
-  components: {PrimaryButton},
+  components: { PrimaryButton },
   props: {
     contentClass: {
       type: String,
@@ -55,7 +73,7 @@ export default {
       subtitle: false,
       divider: false,
       resolveDisabled: false,
-    }
+    },
   }),
   methods: {
     open(title, message, options) {
@@ -75,13 +93,13 @@ export default {
     cancel() {
       this.resolve(false);
       this.dialog = false;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-  .dialog-subtitle {
-    font-size: 1rem;
-  }
+.dialog-subtitle {
+  font-size: 1rem;
+}
 </style>

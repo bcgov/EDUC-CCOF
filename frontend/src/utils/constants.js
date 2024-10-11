@@ -13,7 +13,7 @@ object = {
   REFRESH: authRoot + '/refresh',
   TOKEN: authRoot + '/token',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
-  ORGANIZATION: baseRoot + 'organization'
+  ORGANIZATION: baseRoot + 'organization',
 };
 //Authentication endpoints
 export const AuthRoutes = Object.freeze(object);
@@ -23,9 +23,9 @@ export const ApiRoutes = Object.freeze({
   LOOKUP: baseRoot + '/config/lookup',
   ORGANIZATION: baseRoot + '/organization',
   FACILITY: baseRoot + '/facility',
-  CCFRIFACILITY : baseRoot + '/facility/ccfri',
-  CCFRI_FEES : baseRoot + '/facility/fees',
-  CCFRI_DATES : baseRoot + '/facility/dates',
+  CCFRIFACILITY: baseRoot + '/facility/ccfri',
+  CCFRI_FEES: baseRoot + '/facility/fees',
+  CCFRI_DATES: baseRoot + '/facility/dates',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
@@ -39,7 +39,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
-  SUPPORTING_DOCUMENT_UPLOAD:baseRoot+'/supportingDocument',
+  SUPPORTING_DOCUMENT_UPLOAD: baseRoot + '/supportingDocument',
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
@@ -64,11 +64,10 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
 });
 
-
 export const CHANGE_TYPES = Object.freeze({
   NEW_FACILITY: 'nf',
   CHANGE_NOTIFICATION: 'pdf',
-  MTFI: 'mtfi'
+  MTFI: 'mtfi',
 });
 
 /*******************************************************
@@ -90,7 +89,7 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     CHANGE_INFO: '/change/information',
-    SUBMISSION_HISTORY: '/submission-history'
+    SUBMISSION_HISTORY: '/submission-history',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -122,7 +121,7 @@ export const PATHS = {
   LICENSE_UPLOAD: '/licenseUpload',
   SUPPORTING_DOCS: '/supporting-documents',
 
-  SUMMARY_DECLARATION:  '/summary-declaration',
+  SUMMARY_DECLARATION: '/summary-declaration',
 
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
@@ -134,7 +133,6 @@ export const PATHS = {
   MTFI_GROUP_SELECT_FACILITY: '/mtfi-select-facility',
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
-
 };
 
 //Some helper classes to build the URL consistently
@@ -150,7 +148,12 @@ export function changeUrl(suffix, changeRecGuid = ':changeRecGuid', changeType =
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}`;
 }
 
-export function changeUrlGuid(suffix, changeRecGuid = ':changeRecGuid', urlGuid = ':urlGuid', changeType = CHANGE_TYPES.NEW_FACILITY) {
+export function changeUrlGuid(
+  suffix,
+  changeRecGuid = ':changeRecGuid',
+  urlGuid = ':urlGuid',
+  changeType = CHANGE_TYPES.NEW_FACILITY,
+) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
@@ -176,11 +179,11 @@ export const CCFRI_Categories = [
   'Group 3 years to Kindergarten',
   'Family 3 years to Kindergarten',
   'Group Before & After School (Kindergarten only)',
-  'Family Before & After School (Kindergarten only)'
+  'Family Before & After School (Kindergarten only)',
 ];
 
 export const CHANGE_REQUEST_TYPES = {
-  LEGAL_ORG_NAME_CHANGE: 100000000 ,
+  LEGAL_ORG_NAME_CHANGE: 100000000,
   ORG_MAILING_ADDRESS: 100000001,
   FACILITY_ADDRESS: 100000002,
   FACILITY_NAME: 100000003,
@@ -203,12 +206,11 @@ export const CHANGE_REQUEST_EXTERNAL_STATUS = {
   ACTION_REQUIRED: 3,
   INELIGIBLE: 4,
   APPROVED: 5,
-  CANCELLED: 6
+  CANCELLED: 6,
 };
 
 export const PROGRAM_YEAR_LANGUAGE_TYPES = {
-  HISTORICAL: "HISTORICAL",
-  FY2024_25: "FY2024_25",
-  FY2025_26: "FY2025_26",
+  HISTORICAL: 'HISTORICAL',
+  FY2024_25: 'FY2024_25',
+  FY2025_26: 'FY2025_26',
 };
-

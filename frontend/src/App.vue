@@ -1,94 +1,105 @@
 <template>
   <v-app id="app">
-    <MsieBanner v-if="isIE"/>
-    <Header/>
-    <SnackBar></SnackBar>
-    <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle"/>
-    <v-main fluid class="align-start">
-    <v-app-bar v-if="bannerColor !== ''"
-               style="color:white;"
-               :color="bannerColor"
-               sticky
-               dense
-               height="20rem"
-               clipped-left
-    ><div><h3 class="envBanner">{{ bannerEnvironment }} Environment </h3></div></v-app-bar>
-    <div>
-      <h3 class="subBanner" v-if="subtitleBanner!=''">{{ subtitleBanner }}</h3>
-    </div>
-    <ModalIdle v-if="isAuthenticated"/>
-    <router-view/>
+    <MsieBanner v-if="isIE" />
+    <HeaderComponent />
+    <SnackBar />
+    <v-main fluid style="--v-layout-top: 64px" class="align-start">
+      <div class="v-main__wrap">
+        <v-app-bar
+          v-if="bannerColor !== ''"
+          :color="bannerColor"
+          sticky
+          dense
+          height="20rem"
+          clipped-left
+          class="px-4 appBar"
+        >
+          <div>
+            <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
+          </div>
+        </v-app-bar>
+        <div>
+          <h3 v-if="subtitleBanner != ''" class="subBanner">
+            {{ subtitleBanner }}
+          </h3>
+        </div>
+        <ModalIdle v-if="isAuthenticated" />
+        <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
+        <router-view />
+      </div>
     </v-main>
-    <Footer/>
+    <FooterComponent />
   </v-app>
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters,mapState } from 'vuex';
 import HttpStatus from 'http-status-codes';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ModalIdle from './components/ModalIdle';
-import MsieBanner from './components/MsieBanner';
-import StaticConfig from './common/staticConfig';
-import SnackBar from '@/components/util/SnackBar';
-import NavBar from '@/components/util/NavBar';
+import { mapActions, mapState } from 'pinia';
+import { useAppStore } from '@/store/app.js';
+import { useAuthStore } from '@/store/auth.js';
+
+import StaticConfig from '@/common/staticConfig.js';
+
+import HeaderComponent from '@/components/Header.vue';
+import FooterComponent from '@/components/Footer.vue';
+import ModalIdle from '@/components/ModalIdle.vue';
+import MsieBanner from '@/components/MsieBanner.vue';
+import SnackBar from '@/components/util/SnackBar.vue';
+import NavBar from '@/components/util/NavBar.vue';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    Header,
-    Footer,
+    HeaderComponent,
+    FooterComponent,
     ModalIdle,
     MsieBanner,
     SnackBar,
     NavBar,
   },
   metaInfo: {
-    meta: StaticConfig.VUE_APP_META_DATA
-  },
-  computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'loginError', 'isLoading']),
-    ...mapState('app', ['pageTitle', 'showNavBar','subtitleBanner']),
-    isIE() {
-      return /Trident\/|MSIE/.test(window.navigator.userAgent);
-    }
+    meta: StaticConfig.VUE_APP_META_DATA,
   },
   data() {
     return {
       bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
-      bannerColor: StaticConfig.BANNER_COLOR
+      bannerColor: StaticConfig.BANNER_COLOR,
     };
   },
-  methods: {
-    ...mapMutations('auth', ['setLoading']),
-    ...mapActions('auth', ['getJwtToken', 'getUserInfo', 'logout']),
-    ...mapActions('app', ['getLookupInfo']),
+  computed: {
+    ...mapState(useAuthStore, ['isAuthenticated', 'loginError', 'isLoading']),
+    ...mapState(useAppStore, ['pageTitle', 'showNavBar', 'subtitleBanner']),
+    isIE() {
+      return /Trident\/|MSIE/.test(window.navigator.userAgent);
+    },
   },
   async created() {
     this.setLoading(true);
-    this.getJwtToken().then(() =>
-      Promise.all([this.getLookupInfo()])
-    ).catch(e => {
-      if(! e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
-        this.logout();
-        this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
-      }
-    }).finally(() => {
-      this.setLoading(false);
-    });
+    this.getJwtToken()
+      .then(() => Promise.all([this.getLookupInfo()]))
+      .catch((e) => {
+        if (!e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
+          this.logout();
+          this.$router.replace({ name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
+        }
+      })
+      .finally(() => {
+        this.setLoading(false);
+      });
     this.setLoading(false);
-  }
+  },
+  methods: {
+    ...mapActions(useAuthStore, ['getJwtToken', 'getUserInfo', 'logout', 'setLoading']),
+    ...mapActions(useAppStore, ['getLookupInfo']),
+  },
 };
 </script>
 
 <style>
-
 /*Some BCSans fonts (i.e. g, y) get clipped in v-selects. This heightens the display to fix clipping. */
 .v-select__selection.v-select__selection--comma {
-  line-height:20px !important
+  line-height: 20px !important;
 }
-
 
 .envBanner {
   font-size: 0.8rem;
@@ -96,7 +107,7 @@ export default {
 .subBanner {
   font-size: 0.8rem;
   background-color: #fff9c4;
-  padding-left:2%;
+  padding-left: 2%;
 }
 
 .v-application {
@@ -105,22 +116,22 @@ export default {
 .v-card--flat {
   background-color: transparent !important;
 }
-.theme--light.application{
+.theme--light.application {
   background: #f1f1f1;
 }
 h1 {
   font-size: 1.25rem;
 }
-.v-toolbar__title{
+.v-toolbar-title {
   font-size: 1rem;
 }
 
 .v-btn {
-    text-transform: none !important;
+  text-transform: none !important;
 }
 
 .v-alert .v-icon {
-    padding-left: 0;
+  padding-left: 0;
 }
 
 .v-alert.bootstrap-success {
@@ -147,7 +158,7 @@ h1 {
   border-color: #eeaaad !important;
 }
 
-.row {
+.v-row {
   display: flex;
   flex-wrap: wrap;
   flex: 1 1 auto;
@@ -155,9 +166,12 @@ h1 {
   margin-bottom: auto !important;
 }
 
-@media screen and (max-width: 370px) {
+.v-field-label {
+  white-space: normal;
+}
 
-  .v-toolbar__title{
+@media screen and (max-width: 370px) {
+  .v-toolbar-title {
     font-size: 0.9rem;
     line-height: 1;
     overflow: hidden;
@@ -175,7 +189,7 @@ h1 {
 }
 
 @media screen and (min-width: 371px) and (max-width: 600px) {
-  .v-toolbar__title{
+  .v-toolbar-title {
     font-size: 0.9rem;
     line-height: 1.5;
     overflow: hidden;
@@ -193,7 +207,7 @@ h1 {
 }
 
 @media screen and (min-width: 601px) and (max-width: 700px) {
-  .v-toolbar__title{
+  .v-toolbar-title {
     font-size: 1rem;
     line-height: 1.5;
     overflow: hidden;
@@ -207,33 +221,35 @@ h1 {
 }
 
 .theme--light.v-btn.v-btn--disabled:not(.v-btn--text):not(.v-btn--outlined) {
-  background-color: rgba(0,0,0,.12)!important;
+  background-color: rgba(0, 0, 0, 0.12) !important;
 }
-
 
 @font-face {
   font-family: 'BCSans';
   font-style: normal;
-  src: url('assets/font/BC-Sans/BCSans-Regular.woff2') format('woff2'), /* Optimized for very modern browsers */
-       url('assets/font/BC-Sans/BCSans-Regular.woff') format('woff'); /* Modern Browsers */
+  src:
+    url('assets/font/BC-Sans/BCSans-Regular.woff2') format('woff2'),
+    /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-Regular.woff') format('woff'); /* Modern Browsers */
 }
 @font-face {
   font-family: 'BCSans';
   font-style: italic;
-  src: url('assets/font/BC-Sans/BCSans-Italic.woff2') format('woff2'), /* Optimized for very modern browsers */
-       url('assets/font/BC-Sans/BCSans-Italic.woff') format('woff'); /* Modern Browsers */
+  src:
+    url('assets/font/BC-Sans/BCSans-Italic.woff2') format('woff2'),
+    /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-Italic.woff') format('woff'); /* Modern Browsers */
 }
 @font-face {
   font-family: 'BCSans';
   font-weight: 700;
   src: url('assets/font/BC-Sans/BCSans-Bold.woff2') format('woff2') /* Optimized for very modern browsers */
-       url('assets/font/BC-Sans/BCSans-Bold.woff') format('woff'); /* Modern Browsers */
+    url('assets/font/BC-Sans/BCSans-Bold.woff') format('woff'); /* Modern Browsers */
 }
 @font-face {
   font-family: 'BCSans';
   font-style: italic;
   font-weight: 700;
-  src: url('assets/font/BC-Sans/BCSans-BoldItalic.woff2') format('woff2'), /* Optimized for very modern browsers */
-       url('assets/font/BC-Sans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
+  src:
+    url('assets/font/BC-Sans/BCSans-BoldItalic.woff2') format('woff2'),
+    /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
 }
 </style>

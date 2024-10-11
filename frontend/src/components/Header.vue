@@ -1,92 +1,85 @@
 <template>
-  <v-system-bar app absolute color="rgb(0, 51, 102)" height="66rem" class="sysBar">
+  <v-system-bar absolute color="rgb(0, 51, 102)" class="sysBar">
     <!-- Navbar content -->
-    <v-container
-    :class="{'sizingForIconXLScreen': $vuetify.breakpoint.xlOnly} "
-    >
-    <v-row class="justify-space-between">
-    <a tabindex="-1" href="/">
-      <img
-          tabindex="-1"
-          src="@/assets/images/bc-gov-logo.svg"
-          class="logo"
-          alt="B.C. Government Logo"
-      >
-    </a>
-    <v-row class="verticalLine">
-      <v-row>
-        <v-toolbar-title fill-height>
-          <h6 v-if="this.$vuetify.breakpoint.xsOnly">My ChildCareBC<br>Services</h6>
-          <h2 class="mainTitle" v-else>My ChildCareBC Services</h2>
-        </v-toolbar-title>
+    <v-container :class="{ sizingForIconXLScreen: $vuetify.display.xl }">
+      <v-row class="justify-space-between">
+        <a tabindex="-1" href="/">
+          <img tabindex="-1" src="../assets/images/bc-gov-logo.svg" class="logo" alt="B.C. Government Logo" />
+        </a>
+        <v-row class="verticalLine">
+          <v-row>
+            <v-toolbar-title fill-height>
+              <h6 v-if="$vuetify.display.xs">My ChildCareBC<br />Services</h6>
+              <h2 v-else class="mainTitle">My ChildCareBC Services</h2>
+            </v-toolbar-title>
+          </v-row>
+        </v-row>
+        <v-spacer />
+        <div v-if="isAuthenticated && dataReady" class="mt-6">
+          <v-btn
+            id="mail_box_button"
+            color="#003366"
+            rounded
+            theme="dark"
+            class="mr-5 elevation-0"
+            :to="PATHS.ROOT.MESSAGES"
+          >
+            <v-badge color="red" :content="unreadMessageCount" location="bottom end" offset-x="5" offset-y="10">
+              <v-icon aria-hidden="false" size="40" color="white"> mdi-email-outline </v-icon>
+            </v-badge>
+          </v-btn>
+
+          <v-menu name="user_options">
+            <template #activator="{ props }">
+              <v-chip tabindex="0" pill color="#003366" theme="dark" v-bind="props">
+                <v-avatar start color="info">
+                  {{ userInfo.displayName[0] }}
+                </v-avatar>
+                <span class="display-name">{{ userInfo.displayName }}</span>
+              </v-chip>
+            </template>
+            <v-list dark color="#003366">
+              <v-list-item id="home_button" style="min-height: 4vh" :to="authRoutes.DASHBOARD">
+                <v-list-item-title>Home</v-list-item-title>
+              </v-list-item>
+              <v-list-item v-if="isMinistryUser" id="impersonate_button" :to="PATHS.ROOT.IMPERSONATE">
+                <v-list-item-title>Impersonate</v-list-item-title>
+              </v-list-item>
+              <v-list-item id="logout_button" style="min-height: 4vh" :href="authRoutes.LOGOUT">
+                <v-list-item-title>Logout</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+        <div v-else-if="isAuthenticated && !dataReady">
+          <v-skeleton-loader type="chip" width="150"
+          class="bg-transparent mt-2" />
+        </div>
       </v-row>
-    </v-row>
-    <v-spacer></v-spacer>
-    <div v-if="isAuthenticated && dataReady" class="mt-6">
-      <v-btn
-        id="mail_box_button" @click="goToMessagePage()"
-        color="#003366" rounded dark class="mr-5 elevation-0"
-      >
-        <v-badge
-          color="red"
-          :content="unreadMessageCount"
-          bottom right
-          overlap offset-x="20" offset-y="20"
-        >
-          <v-icon aria-hidden="false" size="40" color='white'>
-              mdi-email-outline
-          </v-icon>
-        </v-badge>
-      </v-btn>
-
-      <v-menu name="user_options" offset-y>
-        <template v-slot:activator="{ on }">
-          <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
-            <v-avatar left color="info">
-              {{ userInfo.displayName[0] }}
-            </v-avatar>
-            <span class="display-name">{{ userInfo.displayName }}</span>
-          </v-chip>
-        </template>
-        <v-list dark color="#003366">
-          <v-list-item style="min-height: 4vh" id="home_button" :to='authRoutes.DASHBOARD'>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item>
-          <v-list-item v-if="isMinistryUser" id="impersonate_button" :to='PATHS.ROOT.IMPERSONATE'>
-            <v-list-item-title>Impersonate</v-list-item-title>
-          </v-list-item>
-          <v-list-item style="min-height: 4vh" id="logout_button" :href='authRoutes.LOGOUT'>
-            <v-list-item-title>Logout</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-    </div>
-    <div v-else-if="isAuthenticated && !dataReady">
-      <v-skeleton-loader type="chip" class="mt-7">
-      </v-skeleton-loader>
-    </div>
-  </v-row>
-  </v-container>
+    </v-container>
   </v-system-bar>
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex';
-import {AuthRoutes , ApiRoutes, PATHS} from '@/utils/constants';
+import { mapState } from 'pinia';
+import { useAuthStore } from '../store/auth.js';
+import { useMessageStore } from '../store/message.js';
+
+import { AuthRoutes, ApiRoutes, PATHS } from '../utils/constants';
 
 export default {
+  name: 'HeaderComponent',
   data() {
     return {
-      appTitle: process.env.VUE_APP_TITLE,
+      appTitle: import.meta.env.VUE_APP_TITLE,
       authRoutes: AuthRoutes,
       PATHS: PATHS,
-      apiRoutes: ApiRoutes
+      apiRoutes: ApiRoutes,
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo', 'isMinistryUser']),
-    ...mapGetters('message', ['unreadMessageCount']),
+    ...mapState(useAuthStore, ['isAuthenticated', 'userInfo', 'isMinistryUser']),
+    ...mapState(useMessageStore, ['unreadMessageCount']),
     dataReady: function () {
       return this.userInfo;
     },
@@ -95,22 +88,11 @@ export default {
     hasSeveralMincodes() {
       return this.userInfo?.userMinCodes?.length > 1;
     },
-    goToMessagePage() {
-      this.$router.push(PATHS.ROOT.MESSAGES).catch(err => {
-        // Ignore the vuex err regarding  navigating to the page they are already on.
-        if (
-          err.name !== 'NavigationDuplicated' &&
-          !err.message.includes('Avoided redundant navigation to current location')
-        )
-          console.log(err);
-      });
-    },
-
-  }
+  },
 };
 </script>
 <style>
-.gov-header .v-icon{
+.gov-header .v-icon {
   padding-left: 10px;
 }
 .sizingForIconXLScreen {
@@ -119,7 +101,7 @@ export default {
 a {
   text-decoration: none;
 }
-.logo{
+.logo {
   padding-right: 15px;
   padding-top: 4px;
   width: 205px;
@@ -132,6 +114,8 @@ a {
 .sysBar {
   border-bottom: 2px solid rgb(252, 186, 25) !important;
   z-index: 8;
+  height: 66px !important;
+  text-align: left;
 }
 .gov-header .v-btn,
 .v-btn--active.title:before,
@@ -142,35 +126,35 @@ a {
 }
 
 .verticalLine {
-  border-left: 1px solid #DFB433;
+  border-left: 1px solid #dfb433;
   height: 50px;
   margin-left: 12px;
   padding-left: 24px;
 }
 
-.v-input__slot{
-  padding-top: 10px
+.v-input__slot {
+  padding-top: 10px;
 }
-.top-down{
+.top-down {
   padding-top: 20px;
   height: 80%;
 }
 
-.justify-right{
+.justify-right {
   justify-content: flex-end;
   margin-right: 5px;
 }
 
-@media screen and (max-width: 801px){
+@media screen and (max-width: 801px) {
   .logo {
     width: 100px;
   }
 
   .mainTitle {
-    font-size: 1.0rem;
+    font-size: 1rem;
   }
 
-  .display-name{
+  .display-name {
     display: none;
   }
 }

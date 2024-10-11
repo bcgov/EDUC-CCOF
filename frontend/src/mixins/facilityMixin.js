@@ -1,31 +1,39 @@
-import { PATHS, ORGANIZATION_PROVIDER_TYPES, changeUrlGuid, changeUrl, pcfUrlGuid, pcfUrl } from '@/utils/constants';
-import { isChangeRequest } from '@/utils/common';
-import rules from '@/utils/rules';
-import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import {isEmpty} from 'lodash';
-import NavButton from '@/components/util/NavButton';
+import { isEmpty } from 'lodash';
+import { mapActions, mapState } from 'pinia';
+
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { NavButton },
   mixins: [alertMixin],
   computed: {
-    ...mapState('facility', ['facilityModel', 'facilityId']),
-    ...mapState('navBar', ['navBarList','changeRequestId']),
-    ...mapState('auth', ['userInfo']),
-    ...mapState('reportChanges', ['changeRequestMap', 'changeRequestId', 'changeActionId']),
-    ...mapState('application', ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
-    ...mapState('organization', ['organizationModel', 'organizationId']),
-    ...mapGetters('navBar', ['previousPath']),
-    ...mapGetters('reportChanges',['isCCOFUnlocked','changeRequestStatus']),
-    ...mapGetters('navBar', ['isChangeRequest']),
-
+    ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useReportChangesStore, [
+      'changeRequestMap',
+      'changeRequestId',
+      'changeActionId',
+      'isCCOFUnlocked',
+      'changeRequestStatus',
+    ]),
+    ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
+    ...mapState(useOrganizationStore, ['organizationModel', 'organizationId']),
     isLocked() {
       if (isChangeRequest(this)) {
-        if(this?.isCCOFUnlocked||!this.changeRequestStatus){
+        if (this?.isCCOFUnlocked || !this.changeRequestStatus) {
           return false;
-        }
-        else if(this.changeRequestStatus!=='INCOMPLETE'){
+        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
           return true;
         }
         return false;
@@ -33,10 +41,10 @@ export default {
       if (this.unlockBaseFunding) {
         return false;
       }
-      return (this.applicationStatus === 'SUBMITTED');
+      return this.applicationStatus === 'SUBMITTED';
     },
     isModelEmpty() {
-      return !(Object.values(this.model)?.some(item => item));
+      return !Object.values(this.model)?.some((item) => item);
     },
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -58,7 +66,7 @@ export default {
         this.loading = false;
       },
       immediate: true,
-      deep: true
+      deep: true,
     },
     facilityModel: {
       handler() {
@@ -66,8 +74,8 @@ export default {
         this.$refs.form?.resetValidation();
       },
       immediate: true,
-      deep: true
-    }
+      deep: true,
+    },
   },
   data() {
     return {
@@ -79,10 +87,15 @@ export default {
   },
 
   methods: {
-    ...mapActions('facility', ['loadFacility', 'saveFacility', 'newFacility']),
-    ...mapActions('organization', ['loadOrganization']),
-    ...mapMutations('facility', ['setFacilityModel', 'addFacilityToStore']),
-    ...mapMutations('navBar', ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
+    ...mapActions(useFacilityStore, [
+      'loadFacility',
+      'saveFacility',
+      'newFacility',
+      'setFacilityModel',
+      'addFacilityToStore',
+    ]),
+    ...mapActions(useOrganizationStore, ['loadOrganization']),
+    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
     isSameAddressChecked() {
       if (!this.model.isSameAsMailing) {
         this.model.address2 = '';
@@ -99,7 +112,10 @@ export default {
       if (!this.previousPath) {
         if (this.$route.name === 'Facility Information' && this.$route.params.urlGuid == null) {
           this.$router.push(pcfUrl(PATHS.CCOF_GROUP_CONFIRM, this.programYearId));
-        } else if (this.$route.name === 'existing-change-request-facility-information' && this.$route.params.urlGuid == null) {
+        } else if (
+          this.$route.name === 'existing-change-request-facility-information' &&
+          this.$route.params.urlGuid == null
+        ) {
           this.$router.push(changeUrl(PATHS.CCOF_GROUP_CONFIRM, this.changeRequestId));
         } else {
           this.$router.push(defaultPath);
@@ -110,16 +126,20 @@ export default {
     },
     async next() {
       // await this.save();
-      if (!this.$route.params.urlGuid) { //we won't have the funding guid until we save, so save first.
+      if (!this.$route.params.urlGuid) {
+        //we won't have the funding guid until we save, so save first.
         await this.save(false);
       }
 
       let baseFundingId;
-      if(this.isChangeRequest){
-        baseFundingId = this.changeRequestMap?.get(this.changeRequestId)?.changeActions?.find(ca => ca.changeActionId == this.changeActionId)?.newFacilities.find(fac => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
-      }
-      else {
-        baseFundingId = this.$store.getters['navBar/getNavByFacilityId'](this.facilityId).ccofBaseFundingId;
+      if (this.isChangeRequest) {
+        baseFundingId = this.changeRequestMap
+          ?.get(this.changeRequestId)
+          ?.changeActions?.find((ca) => ca.changeActionId == this.changeActionId)
+          ?.newFacilities.find((fac) => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
+      } else {
+        const navBarStore = useNavBarStore();
+        baseFundingId = navBarStore.getNavByFacilityId(this.facilityId).ccofBaseFundingId;
       }
 
       console.log('basefunding: ', baseFundingId);
@@ -127,7 +147,13 @@ export default {
         if (this.isChangeRequest) {
           this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, baseFundingId));
         } else {
-          this.$router.push(pcfUrlGuid(this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING, this.programYearId, baseFundingId));
+          this.$router.push(
+            pcfUrlGuid(
+              this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
+              this.programYearId,
+              baseFundingId,
+            ),
+          );
         }
       } else {
         console.log('error, should never get here');
@@ -148,7 +174,8 @@ export default {
         this.model.city2 = this.model.city1;
         this.model.postalCode2 = this.model.postalCode1;
       }
-      if (!this.isGroup()) {// For Family, we will need to set the postal code from organization.
+      if (!this.isGroup()) {
+        // For Family, we will need to set the postal code from organization.
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
         }
@@ -157,13 +184,20 @@ export default {
       this.setFacilityModel({ ...this.model });
       this.processing = true;
       try {
-        await this.saveFacility({ isChangeRequest: isChangeRequest(this), changeRequestId: this.$route.params.changeRecGuid });
+        await this.saveFacility({
+          isChangeRequest: isChangeRequest(this),
+          changeRequestId: this.$route.params.changeRecGuid,
+        });
         //this.refreshNavBarList();
         this.forceNavBarRefresh();
         if (isSave) {
-          this.setSuccessAlert(this.isGroup() ? 'Success! Facility information has been saved.' : 'Success! Eligibility information has been saved.');
+          this.setSuccessAlert(
+            this.isGroup()
+              ? 'Success! Facility information has been saved.'
+              : 'Success! Eligibility information has been saved.',
+          );
         }
-      } catch (error) {
+      } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
       if (!this.$route.params.urlGuid && isSave) {
@@ -176,6 +210,5 @@ export default {
       this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
       this.processing = false;
     },
-
-  }
+  },
 };
