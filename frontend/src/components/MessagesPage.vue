@@ -1,10 +1,10 @@
 <template>
   <v-container id="messages" fluid class="pa-0 ma-0" height="100%">
-    <v-row v-if="!allMessages || allMessages.length === 0" class="ma-0">
-      <Spinner style="width: 100%" />
+    <v-row v-if="loading" class="ma-0">
+      <Spinner style="width: 100%"></Spinner>
     </v-row>
-    <v-row v-else fluid class="mx-4">
-      <v-row>
+    <v-row fluid class="mx-4" v-else>
+      <v-row >
         <v-col id="messages-summary" fluid class="pa-0" :cols="4">
           <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0">
             <v-data-table
@@ -18,7 +18,12 @@
               hide-default-footer
               @click:row="rowClickHandler"
             >
-            <template v-slot:item.isRead="{ item }">
+            <template #no-data>
+              <v-alert :value="true" type="info">
+                No Data
+              </v-alert>
+            </template>
+            <template #item.isRead="{ item }">
               <p v-if="item.isRead">Read</p>
               <p v-else>Unread</p>
             </template>
@@ -27,19 +32,23 @@
         </v-col>
         <v-col v-if="message.sender" id="messages-content" fluid class="pa-0" :cols="8">
           <v-card class="pa-4 overflow-auto elevation-0" fluid tile :height="fitScreenHeight()">
-            <v-card-title class="pa-0 d-flex">
-              <v-col :cols="8">
+            <v-card-title class="pa-0">
+              <v-row>
+                <v-col :cols="8">
                 {{ message.sender }}
               </v-col>
               <v-col align="right" :cols="4">
                 {{ message.dateReceived }}
               </v-col>
-              <v-col>
-                <strong>{{ message.subject }}</strong>
-              </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <strong>{{ message.subject }}</strong>
+                </v-col>
+              </v-row>
             </v-card-title>
             <v-divider />
-            <v-card-text>{{ message.messageContent }}</v-card-text>
+            <v-card-text v-html="message.messageContent"></v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -54,12 +63,13 @@
 <script>
 import { useAuthStore } from '../store/auth.js';
 import { useMessageStore } from '../store/message.js';
+import { mapState, mapActions } from 'pinia';
 import Spinner from './common/Spinner.vue';
 import { PATHS } from '../utils/constants.js';
 import { useDisplay } from 'vuetify';
-import { useRouter } from 'vue-router';
 
 export default {
+  name: 'MessagesPage',
   components: {
     Spinner
   },
@@ -80,15 +90,12 @@ export default {
         messageContent: '',
       },
       displayName: '',
+      loading: false,
     };
   },
   computed: {
-    userInfo() {
-      return useAuthStore().userInfo;
-    },
-    allMessages() {
-      return useMessageStore().allMessages;
-    },
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useMessageStore, ['allMessages']),
     messages() {
       return this.allMessages || [];
     },
@@ -105,16 +112,25 @@ export default {
   },
   mounted() {
     this.displayName = useDisplay().name.value;
-    try {
-      if (!useMessageStore().allMessages || useMessageStore().allMessages.length === 0) {
-        const organizationId = this.userInfo.organizationId;
-        useMessageStore().getAllMessages(organizationId);
-      }
-    } catch (error) {
-      console.error("Error in mounted hook:", error);
-    }
+    this.loadMessages();
   },
   methods: {
+    ...mapActions(useMessageStore, ['updateMessage', 'getAllMessages']),
+
+    async loadMessages() {
+      try {
+        this.loading = true;
+        if (!this.allMessages || this.allMessages.length === 0) {
+          const organizationId = this.userInfo.organizationId;
+          await this.getAllMessages(organizationId);
+        }
+      } catch (error) {
+        console.error("Error in loadMessages:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
     rowClickHandler(event, { item }) {
       this.message = {
         subject: item.subject || 'No subject',
@@ -125,7 +141,7 @@ export default {
       };
 
       if (item.messageId) {
-        useMessageStore().updateMessage(item.messageId);
+        this.updateMessage(item.messageId);
       } else {
         console.error('No messageId found in item');
       }
