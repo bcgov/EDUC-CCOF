@@ -3,23 +3,23 @@
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center">
-            <span class="text-h5"
-              >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-            >
+          <v-card-title class="text-center">
+            <span class="text-h5">
+              Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+            </span>
           </v-card-title>
           <h2 class="text-center">Supporting Document Upload</h2>
-          <v-row justify="center" class="text-h5 py-4" style="color: #003466">
+          <div class="text-h5 text-center py-4" style="color: #003466">
             {{ userInfo.organizationName }}
-          </v-row>
-          <v-row class="px-6 text-body-1">
+          </div>
+          <div class="px-6 text-body-1">
             Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE
             funding assessment.
-          </v-row>
-          <v-row class="pa-6 pt-2 text-body-2">
+          </div>
+          <div class="pa-6 pt-2 text-body-2">
             The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx,
             doc, xls, and xlsx.
-          </v-row>
+          </div>
           <v-data-table
             v-if="!isLoading"
             :headers="headers"
@@ -85,7 +85,6 @@
                 required
                 @click:clear="deleteItem(item)"
                 @change="selectFile"
-                @click="uploadDocumentClicked($event)"
               />
             </template>
             <template #item.description="{ item }">
@@ -184,20 +183,21 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useFacilityStore } from '../store/ccof/facility.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useApplicationStore } from '../store/application.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
-import { useSupportingDocumentUploadStore } from '../store/supportingDocumentUpload.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
-import rules from '../utils/rules.js';
-import alertMixin from '../mixins/alertMixin.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '../utils/file.js';
-import { deepCloneObject, getFileExtension } from '../utils/common.js';
-import NavButton from './util/NavButton.vue';
-import { PATHS, changeUrlGuid } from '../utils/constants.js';
-import GroupChangeDialogueContent from './requestChanges/GroupChangeDialogueContent.vue';
+import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent.vue';
+import NavButton from '@/components/util/NavButton.vue';
+
+import rules from '@/utils/rules.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import { deepCloneObject, getFileExtension } from '@/utils/common.js';
+import { PATHS, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   components: { NavButton, GroupChangeDialogueContent },
@@ -336,14 +336,27 @@ export default {
 
     this.fileRules = [
       (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
+      (value) => {
+        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          value[0].size < maxSize ||
+          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
+        );
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+          `Accepted file types are ${this.fileFormats}.`
+        );
+      },
     ];
+
     await this.mapFacilityData();
     await this.createTable();
     if (this.isChangeRequest) {
@@ -471,7 +484,9 @@ export default {
         await this.deleteDocuments(this.uploadedDocuments.deletedItems);
       }
     },
-    async selectFile(file) {
+    async selectFile(event) {
+      this.currentrow = event.target.id;
+      const file = event?.target?.files[0];
       if (file) {
         const doc = await this.readFile(file);
         this.fileMap.set(this.currentrow, deepCloneObject(doc));
@@ -498,9 +513,6 @@ export default {
           reject();
         };
       });
-    },
-    uploadDocumentClicked(event) {
-      this.currentrow = event.target.id;
     },
     handleFileReadErr() {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
