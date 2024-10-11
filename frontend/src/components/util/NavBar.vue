@@ -2,108 +2,95 @@
   <div class="mb-1">
     <v-navigation-drawer
       v-model="drawer"
-      app
-      absolute
-      width="200"
-      height="calc(100vh - ${$vuetify.application.footer}px)"
-      :permanent="$vuetify.display.mdAndUp"
+      :location="$vuetify.display.mdAndUp ? 'left' : null"
       :temporary="!$vuetify.display.mdAndUp"
+      width="200"
+      class="mt-16"
     >
       <v-list>
-        <div v-for="item in items" :key="item.title">
+        <template v-for="item in items" :key="item.title">
           <v-list-item
             v-if="!item.items"
             :id="stripWhitespace(item.title + `MenuBtn`)"
-            :key="item.navBarId"
+            :value="item.navBarId"
+            :to="item.isAccessible ? item.link : undefined"
+            :disabled="!item.isAccessible"
             class="menuRow"
+            :style="{ '--v-list-item-prepend-max-width': '30px' }"
           >
-            <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-            <router-link :is="item.isAccessible ? 'router-link' : 'span'" :to="item.link" class="router">
-              <v-list-item-content class="py-0">
-                <v-list-item-title v-if="item.isActive" class="menuItem text-wrap">
-                  <strong>{{ item.title }}</strong>
-                </v-list-item-title>
-                <v-list-item-title v-else class="menuItem text-wrap">
-                  {{ item.title }}
-                </v-list-item-title>
-              </v-list-item-content>
-            </router-link>
+            <template v-slot:prepend>
+              <v-icon v-if="item.icon">{{ item.icon }}</v-icon>
+            </template>
+            <v-list-item-title
+              :class="['menuItem text-wrap', { 'font-weight-bold': item.isActive }]"
+            >
+              {{ item.title }}
+            </v-list-item-title>
           </v-list-item>
+
           <v-list-group
             v-else
             :id="stripWhitespace(item.title + `MenuBtn`)"
-            :key="item.title"
-            no-action
-            class="groupMenu"
-            append-icon=""
             :value="item.expanded"
             @click="setActive(item)"
+            class="groupMenu"
           >
-            <template #activator>
-              <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content class="py-0">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" :style="{ '--v-list-item-prepend-max-width': '30px' }">
+                <template v-slot:prepend>
+                  <v-icon v-if="item.icon">{{ item.icon }}</v-icon>
+                </template>
                 <v-list-item-title class="menuItem text-wrap">{{ item.title }}</v-list-item-title>
-              </v-list-item-content>
+              </v-list-item>
             </template>
 
             <v-list-item
               v-for="subItem in item.items"
-              :id="stripWhitespace(subItem.title) + `MenuBtn`"
               :key="subItem.navBarId"
-              class="subMenuRow pl-9"
+              :id="stripWhitespace(subItem.title) + `MenuBtn`"
+              :to="subItem.isAccessible ? subItem.link : undefined"
+              :disabled="!subItem.isAccessible"
+              class="subMenuRow pl-9 d-flex custom-item"
+              :style="{ '--v-list-item-prepend-max-width': '30px' }"
             >
-              <v-list-item-icon v-if="item.icon" class="my-3 ml-0 mr-2">
-                <v-icon>{{ subItem.icon }}</v-icon>
-              </v-list-item-icon>
-              <router-link :is="subItem.isAccessible ? 'router-link' : 'span'" :to="subItem.link" class="router">
-                <v-list-item-content class="py-0">
-                  <v-list-item-title v-if="subItem.isActive" class="menuItem text-wrap">
-                    <strong>{{ subItem.title }}</strong>
-                  </v-list-item-title>
-                  <v-list-item-title
-                    v-else
-                    :class="subItem.isAccessible ? 'menuItem text-wrap' : 'menuItem text-wrap blue-grey--text'"
-                  >
-                    {{ subItem.title }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle v-if="subItem.subTitle" class="text-left">
-                    {{ subItem.subTitle }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </router-link>
+              <template v-slot:prepend>
+                <v-icon v-if="subItem.icon">{{ subItem.icon }}</v-icon>
+              </template>
+              <v-list-item-title
+                :class="['menuItem text-wrap',
+                  { 'font-weight-bold': subItem.isActive },
+                  { 'blue-grey--text': !subItem.isAccessible }
+                ]"
+              >
+                {{ subItem.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="subItem.subTitle" class="text-left">
+                {{ subItem.subTitle }}
+              </v-list-item-subtitle>
             </v-list-item>
           </v-list-group>
-        </div>
+        </template>
       </v-list>
     </v-navigation-drawer>
+
     <v-app-bar
       v-if="hasAnyItems"
       id="navBar"
-      app
-      absolute
-      elevation="0"
+      :elevation="0"
       color="#38598A"
-      :dark="true"
       class="pl-4 pr-8 justify-start"
       :class="{ 'pl-16': $vuetify.display.mdAndUp }"
-      clipped-left
     >
-      <v-app-bar-nav-icon id="menuBtn" @click="drawer = true">
-        <v-icon v-if="!drawer"> $menu </v-icon>
-        <v-icon v-else> $close </v-icon>
-        <p class="ma-0 pl-4 pr-2 hidden-sm-and-down">Menu</p>
+      <v-app-bar-nav-icon id="menuBtn" @click="drawer = !drawer">
+        <v-icon>{{ drawer ? '$close' : '$menu' }}</v-icon>
       </v-app-bar-nav-icon>
-      <v-toolbar-title
+      <v-app-bar-title
         id="navTitle"
         class="nav-title"
         :class="{ 'ml-4': $vuetify.display.mdAndUp, 'pl-1': $vuetify.display.sm }"
       >
         {{ title }}
-      </v-toolbar-title>
+      </v-app-bar-title>
       <v-spacer />
     </v-app-bar>
   </div>
@@ -1059,5 +1046,11 @@ header /deep/ .v-toolbar__content {
   .nav-title {
     font-size: 1.1rem;
   }
+}
+.v-list-item :deep(.v-list-item__prepend) {
+  max-width: var(--v-list-item-prepend-max-width, auto) !important;
+}
+.v-list-group__items .v-list-item.custom-item {
+  padding-inline-start: 32px !important;
 }
 </style>

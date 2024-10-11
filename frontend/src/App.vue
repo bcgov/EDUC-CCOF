@@ -109,12 +109,7 @@ export default {
   background-color: #fff9c4;
   padding-left: 2%;
 }
-.appBar {
-  height: 20px !important;
-  color: white !important;
-  position: relative !important;
-  top: 0 !important;
-}
+
 .v-application {
   font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
@@ -169,6 +164,10 @@ h1 {
   flex: 1 1 auto;
   margin-top: auto !important;
   margin-bottom: auto !important;
+}
+
+.v-field-label {
+  white-space: normal;
 }
 
 @media screen and (max-width: 370px) {
