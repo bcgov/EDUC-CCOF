@@ -283,10 +283,10 @@
                 </ul>
                 <p style="padding-top: 10px">
                   Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Child Care BC
-                  Act. If you are convicted of an offence under section 9, a court may order you imprisoned for up to
-                  six months, fine you not more than $2,000.00, or order you to pay the government all or part of any
-                  amount received under the child care grant.
+                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
+                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
+                  all or part of any amount received under the child care grant.
                 </p>
               </div>
               <!-- show for new org after ministry unlocks -->
@@ -335,8 +335,8 @@
                     understand and acknowledge that providing false or misleading information either on the Form or
                     otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to
                     comply with the Funding Agreement could result in certain penalties or repayment obligations, or
-                    both, under any or all of the Child Care BC Act, any successor legislation, or the Funding
-                    Agreement;
+                    both, under any or all of the Early Learning and Child Care Act, any successor legislation, or the
+                    Funding Agreement;
                   </li>
                   <li>
                     If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the

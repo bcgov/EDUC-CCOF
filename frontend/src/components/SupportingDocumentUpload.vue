@@ -568,4 +568,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+:deep(.v-select__selection) {
+  padding-left: 12px;
+}
 </style>
