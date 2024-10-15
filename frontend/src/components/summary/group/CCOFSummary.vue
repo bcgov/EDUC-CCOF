@@ -760,12 +760,12 @@
   </v-row>
 </template>
 <script>
-import { isChangeRequest } from '../../../utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 import { mapActions, mapState } from 'pinia';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 
 export default {
   name: 'CCOFSummary',
