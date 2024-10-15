@@ -426,11 +426,13 @@
 </template>
 <script>
 import _ from 'lodash';
-import { isChangeRequest } from '../../../utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
-import { mapState } from 'pinia';
-import globalMixin from '../../../mixins/globalMixin.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
+import { mapActions, mapState } from 'pinia';
+import globalMixin from '@/mixins/globalMixin.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useApplicationStore } from '@/store/application.js';
 
 export default {
   mixins: [globalMixin],
@@ -469,8 +471,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('application', ['isRenewal']),
-    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+    ...mapState(useApplicationStore, ['isRenewal']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ccfriChildCareTypes() {
       //if the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
       //this checks for all licenses available for the facility, and displays what is missing to the user.
@@ -554,6 +556,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     getRoutingPath() {
       if (!this.ccfri && isChangeRequest(this)) {
         return changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid);
