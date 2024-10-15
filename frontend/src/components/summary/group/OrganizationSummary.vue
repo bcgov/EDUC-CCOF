@@ -349,7 +349,9 @@
   </v-row>
 </template>
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
+import { useAuthStore } from '../../../store/auth';
+import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration';
 import rules from '../../../utils/rules.js';
 import { PATHS, pcfUrl } from '../../../utils/constants.js';
 
@@ -388,8 +390,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('auth', ['userInfo']),
-    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
   },
   watch: {
     isLoadingComplete: {
@@ -401,6 +403,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useSummaryDeclarationStore, ['loadSummary', 'setIsMainLoading', 'setSummaryModel']),
     getRoutingPath() {
       if (this.summaryModel.application.organizationProviderType == 'FAMILY') {
         return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);

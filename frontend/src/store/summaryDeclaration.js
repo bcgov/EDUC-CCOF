@@ -32,7 +32,7 @@ function getProgramYear(selectedGuid, programYearList) {
 }
 
 export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
-  store: () => ({
+  state: () => ({
     isValidForm: undefined,
     model: {},
     summaryModel: {},
@@ -76,19 +76,19 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     model(value) {
       this.model = value;
     },
-    summaryModel(value) {
+    setSummaryModel(value) {
       this.summaryModel = value;
     },
-    isSummaryLoading(value) {
+    setIsSummaryLoading(value) {
       this.isSummaryLoading = value;
     },
-    isMainLoading(value) {
+    setIsMainLoading(value) {
       this.isMainLoading = value;
     },
     isValidForm(value) {
       this.isValidForm = value;
     },
-    isLoadingComplete(value) {
+    setIsLoadingComplete(value) {
       this.isLoadingComplete = value;
     },
     async loadDeclaration() {
@@ -188,7 +188,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         appID = applicationStore.applicationId;
       }
       try {
-        this.isMainLoading(true);
+        this.setIsMainLoading(true);
         //get application ID from the appMap so the page doesn't break when viewing historical CR records.
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + appID)).data;
         let summaryModel = {
@@ -202,23 +202,23 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           return navBarStore.navBarList?.findIndex((item) => item.facilityId === fac.facilityId) > -1;
         });
 
-        this.summaryModel(summaryModel);
-        this.isMainLoading(false);
+        this.setSummaryModel(summaryModel);
+        this.setIsMainLoading(false);
 
         let isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
 
-        this.isSummaryLoading(isSummaryLoading);
+        this.setIsSummaryLoading(isSummaryLoading);
 
         //new app only?
         if (!applicationStore.isRenewal && payload.application?.organizationId) {
           summaryModel.organization = (
             await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)
           ).data;
-          this.summaryModel(summaryModel);
+          this.setSummaryModel(summaryModel);
           summaryModel.ecewe = (
             await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)
           ).data;
-          this.summaryModel(summaryModel);
+          this.setSummaryModel(summaryModel);
         }
         //new app only (i think this if block could be part of the one above?)
         if (payload.application?.organizationId) {
@@ -238,7 +238,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
-          this.summaryModel(summaryModel);
+          this.setSummaryModel(summaryModel);
           let facilityLicenseResponse = undefined;
           try {
             facilityLicenseResponse = (
@@ -275,35 +275,35 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
               summaryModel.facilities[index].rfiApp = (
                 await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')
               ).data;
-            this.summaryModel(summaryModel);
+            this.setSummaryModel(summaryModel);
             if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
               summaryModel.facilities[index].nmfApp = (
                 await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')
               ).data;
             //summaryModel.faciliities[index].isNMFLoading=false
-            this.summaryModel(summaryModel);
+            this.setSummaryModel(summaryModel);
           }
 
           //jb changed below to work with renewel apps
           summaryModel.facilities[index].facilityInfo = (
             await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)
           ).data;
-          this.summaryModel(summaryModel);
+          this.setSummaryModel(summaryModel);
 
           if (summaryModel.allDocuments && summaryModel.allDocuments.length > 0) {
             const allDocuments = summaryModel.allDocuments;
             summaryModel.facilities[index].documents = allDocuments.filter(
               (document) => document.ccof_facility === facility.facilityId,
             );
-            this.summaryModel(summaryModel);
+            this.setSummaryModel(summaryModel);
           }
 
           isSummaryLoading.splice(index, 1, false);
-          this.isSummaryLoading(isSummaryLoading);
+          this.setIsSummaryLoading(isSummaryLoading);
         } // end FOR loop. FIXME: make loop brief enough to read in one view
 
         summaryModel.allDocuments = null;
-        if (!changeRecGuid) this.isLoadingComplete(true);
+        if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
@@ -321,8 +321,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryDeclaration(changeRequestId) {
       checkSession();
       try {
-        this.isLoadingComplete(false);
-        if (!this.summaryModel) this.isMainLoading(true);
+        this.setIsLoadingComplete(false);
+        if (!this.summaryModel) this.setIsMainLoading(true);
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
         let changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
@@ -349,7 +349,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           changeActions: payload?.changeActions,
           changeRequestTypes: changeRequestTypes,
         };
-        this.summaryModel(summaryModel);
+        this.setSummaryModel(summaryModel);
         await Promise.all(
           changeRequestTypes.map(async (changeType) => {
             switch (changeType) {
@@ -367,7 +367,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             }
           }),
         );
-        this.isLoadingComplete(true);
+        this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
         throw error;
@@ -385,7 +385,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           confirmation: payload?.confirmation,
         };
         summaryModel.ecewe = changeRequestECEWE;
-        this.summaryModel(summaryModel);
+        this.setSummaryModel(summaryModel);
       } catch (error) {
         console.log(`Failed to load Summary for change request Add New Facility - ${error}`);
         throw error;
@@ -404,7 +404,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
 
         let isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
-        this.isSummaryLoading(isSummaryLoading);
+        this.setIsSummaryLoading(isSummaryLoading);
 
         await Promise.all(
           summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
@@ -440,10 +440,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                   await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)
                 ).data;
               isSummaryLoading.splice(index, 1, false);
-              this.isSummaryLoading(isSummaryLoading);
-              if (this.isMainLoading) this.isMainLoading(false);
+              this.setIsSummaryLoading(isSummaryLoading);
+              if (this.isMainLoading) this.setIsMainLoading(false);
             }
-            this.summaryModel(summaryModel);
+            this.setSummaryModel(summaryModel);
           }),
         );
       } catch (error) {
@@ -462,8 +462,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
           changeNotiChangeAction?.changeActionId,
         );
-        this.summaryModel(summaryModel);
-        this.isMainLoading(false);
+        this.setSummaryModel(summaryModel);
+        this.setIsMainLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request Change Notification Form - ${error}`);
         throw error;
