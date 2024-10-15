@@ -488,7 +488,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      model,
+      model: {},
       isValidForm: false,
       isLoading: false,
       isProcessing: false,
@@ -629,7 +629,6 @@ export default {
         if (val) {
           setTimeout(() => {
             console.log(this.$refs['v-expansion-panels']);
-            console.log(this.$refs['v-expansion-panels'].$children.length);
             const keys = Object.keys(this.payload);
             console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.
@@ -660,7 +659,7 @@ export default {
       const serverTime = new Date(this.userInfo.serverTime);
 
       // Determine declaration b start date
-      let declarationBStart;
+      let declarationBStart = null;
       this.programYearList.list.find((item) => {
         if (item.programYearId == this.programYearId) {
           declarationBStart = new Date(item.declarationbStart);
