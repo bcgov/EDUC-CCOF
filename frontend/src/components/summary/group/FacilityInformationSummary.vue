@@ -4,16 +4,18 @@
       <v-system-bar color="grey" dark />
       <v-row no-gutters class="d-flex flex-column">
         <v-row class="d-flex justify-start">
-          <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
+          <v-col cols="12" lg="6" class="pb-1 pt-1 ml-5">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">Facility Name</span>
               </v-col>
               <v-col class="d-flex justify-start">
-                <v-text-field
+                <v-textarea
                   placeholder="Required"
                   :model-value="facilityInfo.facilityName"
                   class="summary-value"
+                  auto-grow
+                  rows="2"
                   density="compact"
                   flat
                   variant="solo"
@@ -24,7 +26,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
+          <v-col cols="4" lg="2" class="pb-1 pt-1 ml-5">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">Facility ID</span>
@@ -44,7 +46,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
+          <v-col cols="4" lg="2" class="pb-1 pt-1 ml-5">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">Licence Number</span>
@@ -64,7 +66,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
+          <v-col cols="3" lg="6" class="pb-1 pt-1 ml-5">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">Licence Categories</span>
@@ -85,7 +87,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
+          <v-col cols="3" lg="2" class="pb-1 pt-1 ml-5">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">CCFRI</span>
@@ -105,7 +107,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6" lg="3" class="pb-1 pt-1 ml-5">
+          <v-col cols="3" lg="2" class="pb-1 pt-1 ml-5">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start ml-3">
                 <span class="summary-label">ECE-WE</span>
@@ -148,7 +150,7 @@
       <v-expansion-panel-text eager class="exp-style">
         <v-row no-gutters class="d-flex flex-column">
           <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
+            <v-col cols="12" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start ml-3">
                   <span class="summary-label"
@@ -156,10 +158,12 @@
                   >
                 </v-col>
                 <v-col class="d-flex justify-start">
-                  <v-text-field
+                  <v-textarea
                     placeholder="Required"
                     :model-value="facilityInfo.facilityName"
                     class="summary-value"
+                    auto-grow
+                    rows="2"
                     density="compact"
                     flat
                     variant="solo"
