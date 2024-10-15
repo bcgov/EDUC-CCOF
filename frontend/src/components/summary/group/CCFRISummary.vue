@@ -426,13 +426,13 @@
 </template>
 <script>
 import _ from 'lodash';
-import { isChangeRequest } from '../../../utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 import { mapActions, mapState } from 'pinia';
-import globalMixin from '../../../mixins/globalMixin.js';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useApplicationStore } from '../../../store/application.js';
+import globalMixin from '@/mixins/globalMixin.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useApplicationStore } from '@/store/application.js';
 
 export default {
   mixins: [globalMixin],

@@ -350,10 +350,10 @@
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAuthStore } from '../../../store/auth';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration';
-import rules from '../../../utils/rules.js';
-import { PATHS, pcfUrl } from '../../../utils/constants.js';
+import { useAuthStore } from '@/store/auth';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
+import rules from '@/utils/rules.js';
+import { PATHS, pcfUrl } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationSummary',
