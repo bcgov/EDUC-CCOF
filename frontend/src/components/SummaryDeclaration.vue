@@ -64,28 +64,16 @@
       <v-row v-if="!isSomeChangeRequestActive()" class="d-flex justify-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
-      <v-row v-if="!isSummaryComplete && !isProcessing" justify="center">
-        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0 col-12">
-            <v-row>
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  Incomplete Form
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col class="pb-0 pr-3 justify-center">
-                <div>
-                  <p>You will not be able to submit your application until it is complete.</p>
-                  <p>Incomplete sections are marked with a red exclamation point.</p>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-row>
+      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4">
+        <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          Incomplete Form
+        </v-card-title>
+        <div class="pa-4">
+          <p>You will not be able to submit your application until it is complete.</p>
+          <p>Incomplete sections are marked with a red exclamation point.</p>
+        </div>
+      </v-card>
       <div>
         <v-row class="d-flex justify-center">
           <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -238,7 +226,7 @@
       >
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
-      <v-row justify="center">
+      <v-row justify="center" class="ma-8 pb-12">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -254,7 +242,7 @@
               />
             </v-col>
           </v-row>
-          <v-row v-if="!isProcessing">
+          <v-row v-if="!isProcessing" class="px-8">
             <v-col class="pb-0">
               <div v-show="!isRenewal && !organizationAccountNumber && !isChangeRequest">
                 <p>
@@ -443,28 +431,28 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useAppStore } from '../store/app.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '../store/summaryDeclaration.js';
-import { useApplicationStore } from '../store/application.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '../utils/constants.js';
-import alertMixin from '../mixins/alertMixin.js';
-import NavButton from './util/NavButton.vue';
-import FacilityInformationSummary from './summary/group/FacilityInformationSummary.vue';
-import CCOFSummary from './summary/group/CCOFSummary.vue';
-import ECEWESummary from './summary/group/ECEWESummary.vue';
-import CCFRISummary from './summary/group/CCFRISummary.vue';
-import RFISummary from './summary/group/RFISummary.vue';
-import NMFSummary from './summary/group/NMFSummary.vue';
-import OrganizationSummary from './summary/group/OrganizationSummary.vue';
-import UploadedDocumentsSummary from './summary/group/UploadedDocumentsSummary.vue';
-import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
-import ChangeNotificationFormSummary from './summary/changeRequest/ChangeNotificationFormSummary.vue';
-import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '../utils/common.js';
+import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
+import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
+import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
+import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
+import RFISummary from '@/components/summary/group/RFISummary.vue';
+import NMFSummary from '@/components/summary/group/NMFSummary.vue';
+import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
+import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
+import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
 
 let model = {
   agreeConsentCertify: undefined,
