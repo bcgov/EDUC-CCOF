@@ -804,7 +804,7 @@ export default {
   },
   computed: {
     ...mapState(useNavBarStore, ['navBarList']),
-    ...mapState(useSummaryDeclarationStore, ['summaryModel, isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     schoolPropertyLabel() {
       const arr = [];
       if (this.funding?.beforeSchool) {

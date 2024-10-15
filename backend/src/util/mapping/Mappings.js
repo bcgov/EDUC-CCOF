@@ -3,9 +3,11 @@ const OrganizationMappings = [
   { back: 'name', front: 'legalName' },
   { back: 'address1_name', front: 'address1' }, //Address
   { back: 'address1_city', front: 'city1' },
+  { back: 'address1_stateorprovince', front: 'province1' },
   { back: 'address1_postalcode', front: 'postalCode1' },
   { back: 'address2_name', front: 'address2' }, //Mailing Address
   { back: 'address2_city', front: 'city2' },
+  { back: 'address2_stateorprovince', front: 'province2' },
   { back: 'address2_postalcode', front: 'postalCode2' },
   { back: 'address1_primarycontactname', front: 'contactName' },
   { back: 'ccof_position', front: 'position' },
@@ -28,6 +30,7 @@ const FacilityMappings = [
   { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'address1_line1', front: 'facilityAddress' },
   { back: 'address1_city', front: 'city' },
+  { back: 'address1_stateorprovince', front: 'province' },
   { back: 'address1_postalcode', front: 'postalCode' },
   { back: 'ccof_position', front: 'position' },
   { back: 'emailaddress1', front: 'email' },

@@ -12,344 +12,277 @@
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
-        <v-row no-gutters class="d-flex flex-column">
-          <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3 pt-2">
-                  <span class="summary-label"
-                    >Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)</span
-                  >
-                </v-col>
-                <v-col cols="12" class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    :model-value="summaryModel?.organization?.legalName"
-                    class=""
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+        <div>
+          <v-row no-gutters>
+            <v-col cols="12">
+              <div class="summary-label">
+                Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)
+              </div>
+              <v-text-field
+                placeholder="Required"
+                :model-value="summaryModel?.organization?.legalName"
+                class=""
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
           </v-row>
-          <v-row class="d-flex justify-start">
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Organization Mailing Address</span>
-                </v-col>
-                <v-col cols="12" class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.address1"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+          <v-row no-gutters>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Organization Mailing Address</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.address1"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
-            <v-col
-              v-if="summaryModel.application.organizationProviderType == 'GROUP'"
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Organization Contact Name</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class=""
-                    :model-value="summaryModel?.organization?.contactName"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+            <v-col v-if="summaryModel.application.organizationProviderType == 'GROUP'" cols="12" md="4">
+              <div class="summary-label">Organization Contact Name</div>
+              <v-text-field
+                placeholder="Required"
+                :model-value="summaryModel?.organization?.contactName"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
-            <v-col
-              v-if="summaryModel.application.organizationProviderType == 'GROUP'"
-              cols="6"
-              lg="4"
-              class="pb-0 pt-0"
-            >
-              <v-row no-gutters class="d-flex justify-start flex-column">
-                <v-col cols="10" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Position</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.position"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+            <v-col v-if="summaryModel.application.organizationProviderType == 'GROUP'" cols="12" md="4">
+              <div class="summary-label">Position</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.position"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
           </v-row>
-          <v-row class="d-flex justify-start">
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="5" class="d-flex justify-start ml-3">
-                  <span class="summary-label">City/Town</span>
-                </v-col>
-                <v-col cols="5" class="d-flex justify-start">
-                  <span class="summary-label">Postal Code</span>
-                </v-col>
-                <v-col cols="5" class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.city1"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-                <v-col cols="5" class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.postalCode1"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+          <v-row no-gutters>
+            <v-col cols="12" md="4">
+              <div class="summary-label">City/Town</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.city1"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Business phone</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.phone"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Province</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.province1"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">E-mail Address of Signing Authority</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.email"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Postal Code</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.postalCode1"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
           </v-row>
-          <v-row class="d-flex justify-start">
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label ml-3">Provider Type</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.application?.organizationProviderType"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+          <v-row no-gutters>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Business phone</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.phone"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label ml-3">Type of Organization</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getOrgTypeString()"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+            <v-col cols="12" md="4">
+              <div class="summary-label">E-mail Address of Signing Authority</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.email"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Business BCeID</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="userInfo.userName"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Provider Type</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.application?.organizationProviderType"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Type of Organization</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getOrgTypeString()"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Business BCeID</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="userInfo.userName"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
             <v-col
               v-if="
                 summaryModel?.organization?.organizationType == 100000000 ||
                 summaryModel?.organization?.organizationType == 100000002
               "
-              cols="4"
-              lg="3"
-              class="pb-0 pt-0"
+              cols="12"
+              md="4"
             >
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Incorporation Number</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.incNumber"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
+              <div class="summary-label">Incorporation Number</div>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.incNumber"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
             </v-col>
           </v-row>
-          <v-row class="d-flex justify-start">
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start ml-3">
-                  <span class="summary-label">Organization Street Address</span>
-                </v-col>
-                <v-col class="d-flex justify-start">
-                  <v-text-field
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.address2"
-                    :rules="rules.required"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                  />
-                </v-col>
-              </v-row>
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="5" class="d-flex justify-start ml-3">
-                  <span class="summary-label">City/Town</span>
-                </v-col>
-                <v-col cols="5" class="d-flex justify-start">
-                  <span class="summary-label">Postal Code</span>
-                </v-col>
-                <v-col cols="5" class="d-flex justify-start">
-                  <v-text-field
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.city2"
-                    :rules="rules.required"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                  />
-                </v-col>
-                <v-col cols="5" class="d-flex justify-start">
-                  <v-text-field
-                    class="summary-value"
-                    :model-value="summaryModel?.organization?.postalCode2"
-                    :rules="rules.required"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                  />
-                </v-col>
-              </v-row>
+          <v-row>
+            <v-col cols="12">
+              <div class="summary-label">Organization Street Address</div>
+              <v-text-field
+                class="summary-value"
+                :model-value="summaryModel?.organization?.address2"
+                :rules="rules.required"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+              />
             </v-col>
           </v-row>
-        </v-row>
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getRoutingPath()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+          <v-row no-gutters>
+            <v-col cols="12" md="4">
+              <div class="summary-label">City/Town</div>
+              <v-text-field
+                class="summary-value"
+                :model-value="summaryModel?.organization?.city2"
+                :rules="rules.required"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Province</div>
+              <v-text-field
+                class="summary-value"
+                :model-value="summaryModel?.organization?.province2"
+                :rules="rules.required"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <div class="summary-label">Postal Code</div>
+              <v-text-field
+                class="summary-value"
+                :model-value="summaryModel?.organization?.postalCode2"
+                :rules="rules.required"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+              />
+            </v-col>
+          </v-row>
+        </div>
+        <div v-if="!isValidForm">
+          <router-link :to="getRoutingPath()">
+            <span style="color: #ff5252; text-underline: black">
+              <u>To add this information, click here. This will bring you to a different page.</u>
+            </span>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
 </template>
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import rules from '@/utils/rules.js';
@@ -394,16 +327,15 @@ export default {
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        if (!this.isProcessing && this.isLoadingComplete) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
     },
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['loadSummary', 'setIsMainLoading', 'setSummaryModel']),
     getRoutingPath() {
       if (this.summaryModel.application.organizationProviderType == 'FAMILY') {
         return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
@@ -451,13 +383,9 @@ export default {
   opacity: 1 !important;
 }
 
->>> .summary-value .v-label {
-  color: #ff5252;
-  opacity: 1;
-}
-
->>> ::placeholder {
+:deep(::placeholder) {
   color: red !important;
+  opacity: 1 !important;
 }
 
 .summary-label-smaller {
@@ -475,5 +403,9 @@ export default {
   color: black;
   font-size: small;
   font-weight: bold;
+}
+
+:deep(.v-field__input) {
+  padding-left: 0px;
 }
 </style>

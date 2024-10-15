@@ -214,3 +214,58 @@ export const PROGRAM_YEAR_LANGUAGE_TYPES = {
   FY2024_25: 'FY2024_25',
   FY2025_26: 'FY2025_26',
 };
+
+export const PROVINCES = Object.freeze([
+  {
+    title: 'AB',
+    value: 'AB',
+  },
+  {
+    title: 'BC',
+    value: 'BC',
+  },
+  {
+    title: 'MB',
+    value: 'MB',
+  },
+  {
+    title: 'NB',
+    value: 'NB',
+  },
+  {
+    title: 'NL',
+    value: 'NL',
+  },
+  {
+    title: 'NT',
+    value: 'NT',
+  },
+  {
+    title: 'NS',
+    value: 'NS',
+  },
+  {
+    title: 'NU',
+    value: 'NU',
+  },
+  {
+    title: 'ON',
+    value: 'ON',
+  },
+  {
+    title: 'PE',
+    value: 'PE',
+  },
+  {
+    title: 'QC',
+    value: 'QC',
+  },
+  {
+    title: 'SK',
+    value: 'SK',
+  },
+  {
+    title: 'YT',
+    value: 'YT',
+  },
+]);

@@ -10,7 +10,15 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { isChangeRequest } from '@/utils/common.js';
-import { ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import {
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
+  PROVINCES,
+  changeUrl,
+  changeUrlGuid,
+  pcfUrl,
+  pcfUrlGuid,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -71,6 +79,7 @@ export default {
     facilityModel: {
       handler() {
         this.model = { ...this.facilityModel };
+        this.model.province = this.model.province ?? PROVINCES.find((province) => province.value === 'BC')?.value;
         this.$refs.form?.resetValidation();
       },
       immediate: true,

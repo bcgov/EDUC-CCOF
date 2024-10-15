@@ -232,13 +232,13 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useApplicationStore } from '../../../store/application.js';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useAppStore } from '../../../store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useAppStore } from '@/store/app.js';
 
-import { isChangeRequest } from '../../../utils/common.js';
-import { PATHS, pcfUrl, changeUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrl, changeUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   props: {
@@ -292,9 +292,9 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val && !this.facilityInformationExists()) {
+    isValidForm: {
+      handler() {
+        if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists()) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },

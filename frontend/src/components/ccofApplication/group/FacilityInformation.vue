@@ -43,7 +43,7 @@
               </v-row>
 
               <v-row>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     v-model="model.city"
                     :disabled="isLocked"
@@ -53,7 +53,10 @@
                     label="City/Town"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field v-model="model.province" variant="outlined" :disabled="true" label="Province" />
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     v-model="model.postalCode"
                     :disabled="isLocked"

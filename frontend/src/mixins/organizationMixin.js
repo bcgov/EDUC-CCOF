@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { ORGANIZATION_PROVIDER_TYPES, PROVINCES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -55,6 +55,8 @@ export default {
       try {
         await this.loadOrganization(this.organizationId);
         this.model = { ...this.organizationModel };
+        this.model.province1 = this.model.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
+        this.model.province2 = this.model.province2 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
       } catch (error) {
         console.log('Error loading organization.', error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');

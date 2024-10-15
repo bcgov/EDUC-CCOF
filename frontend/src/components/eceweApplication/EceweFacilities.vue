@@ -35,16 +35,12 @@
                 <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
                   <v-row>
                     <v-col cols="12" class="d-flex">
-                      <span
-                        ><strong> Facility ID: {{ navBarList[index].facilityAccountNumber }}</strong></span
-                      >
+                      <strong>Facility ID: {{ navBarList[index].facilityAccountNumber }}</strong>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="5" class="flex-column">
-                      <span
-                        ><strong> Facility Name: {{ navBarList[index].facilityName }}</strong></span
-                      >
+                      <strong>Facility Name: {{ navBarList[index].facilityName }}</strong>
                     </v-col>
                     <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
                       <strong> Status: Opt-{{ uiFacilities[index].optInOrOut == 1 ? 'In' : 'Out' }} </strong>
@@ -60,9 +56,10 @@
                         inline
                         :disabled="isReadOnly"
                         :rules="rules.required"
+                        @update:modelValue="toggleRadio(index)"
                       >
-                        <v-radio label="Opt-In" :value="1" @click="toggleRadio(index)" />
-                        <v-radio label="Opt-Out" :value="0" @click="toggleRadio(index)" />
+                        <v-radio label="Opt-In" :value="1" />
+                        <v-radio label="Opt-Out" :value="0" />
                       </v-radio-group>
                     </v-col>
                     <v-col cols="3">
@@ -211,7 +208,7 @@ export default {
       this.setFacilities([...this.facilities]);
     },
     toggleRadio(index) {
-      this.uiFacilities[index].update = this.uiFacilities[index].update == true ? false : true;
+      this.uiFacilities[index].update = !this.uiFacilities[index].update;
     },
     toggleAll() {
       this.uiFacilities.forEach((_fac, index) => {
