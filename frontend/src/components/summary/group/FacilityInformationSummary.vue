@@ -603,12 +603,12 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useApplicationStore } from '../../../store/application.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { isChangeRequest } from '../../../utils/common.js';
-import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   props: {

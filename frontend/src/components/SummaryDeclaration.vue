@@ -443,28 +443,28 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useAppStore } from '../store/app.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '../store/summaryDeclaration.js';
-import { useApplicationStore } from '../store/application.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '../utils/constants.js';
-import alertMixin from '../mixins/alertMixin.js';
-import NavButton from './util/NavButton.vue';
-import FacilityInformationSummary from './summary/group/FacilityInformationSummary.vue';
-import CCOFSummary from './summary/group/CCOFSummary.vue';
-import ECEWESummary from './summary/group/ECEWESummary.vue';
-import CCFRISummary from './summary/group/CCFRISummary.vue';
-import RFISummary from './summary/group/RFISummary.vue';
-import NMFSummary from './summary/group/NMFSummary.vue';
-import OrganizationSummary from './summary/group/OrganizationSummary.vue';
-import UploadedDocumentsSummary from './summary/group/UploadedDocumentsSummary.vue';
-import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
-import ChangeNotificationFormSummary from './summary/changeRequest/ChangeNotificationFormSummary.vue';
-import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '../utils/common.js';
+import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
+import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
+import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
+import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
+import RFISummary from '@/components/summary/group/RFISummary.vue';
+import NMFSummary from '@/components/summary/group/NMFSummary.vue';
+import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
+import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
+import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
 
 let model = {
   agreeConsentCertify: undefined,
