@@ -52,7 +52,7 @@
               </v-row>
               <v-divider />
 
-              <v-card-subtitle> Organization Mailing Address </v-card-subtitle>
+              <v-card-subtitle class="my-2">Organization Mailing Address</v-card-subtitle>
 
               <v-row>
                 <v-col>
@@ -66,24 +66,32 @@
                   />
                 </v-col>
               </v-row>
-
               <v-row>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     v-model="model.city1"
                     :disabled="isLocked"
                     variant="outlined"
-                    required
                     :rules="rules.required"
                     label="City/Town"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="4">
+                  <v-select
+                    v-model="model.province1"
+                    :items="PROVINCES"
+                    item-value="value"
+                    :rules="rules.required"
+                    :disabled="isLocked"
+                    label="Province"
+                    variant="outlined"
+                  />
+                </v-col>
+                <v-col cols="12" md="4">
                   <v-text-field
                     v-model="model.postalCode1"
                     :disabled="isLocked"
                     variant="outlined"
-                    required
                     :rules="[...rules.required, ...rules.postalCode]"
                     label="Postal Code"
                   />
@@ -113,7 +121,7 @@
                 </v-row>
 
                 <v-row>
-                  <v-col cols="12" md="6">
+                  <v-col cols="12" sm="6" md="4">
                     <v-text-field
                       v-model="model.city2"
                       :disabled="isLocked"
@@ -122,7 +130,18 @@
                       label="City/Town"
                     />
                   </v-col>
-                  <v-col cols="12" md="6">
+                  <v-col cols="12" sm="6" md="4">
+                    <v-select
+                      v-model="model.province2"
+                      :items="PROVINCES"
+                      item-value="value"
+                      :rules="rules.required"
+                      :disabled="isLocked"
+                      label="Province"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
                     <v-text-field
                       v-model="model.postalCode2"
                       :disabled="isLocked"
@@ -136,7 +155,7 @@
 
               <v-divider />
 
-              <v-card-subtitle> Contact Information </v-card-subtitle>
+              <v-card-subtitle class="my-2">Contact Information</v-card-subtitle>
               <v-row>
                 <v-col cols="12" md="6">
                   <v-text-field
@@ -201,14 +220,12 @@
 
               <v-divider />
 
-              <v-row>
-                <v-col>
-                  <v-card-subtitle> Type of Organization </v-card-subtitle>
-                  <v-radio-group v-model="model.organizationType" :disabled="isLocked" :rules="rules.required" label="">
-                    <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
-                  </v-radio-group>
-                </v-col>
-              </v-row>
+              <div>
+                <v-card-subtitle class="my-2">Type of Organization</v-card-subtitle>
+                <v-radio-group v-model="model.organizationType" :disabled="isLocked" :rules="rules.required" label="">
+                  <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
+                </v-radio-group>
+              </div>
             </v-container>
           </v-card>
         </v-row>
@@ -234,7 +251,7 @@ import { useAppStore } from '@/store/app.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import organizationMixin from '@/mixins/organizationMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { ORGANIZATION_PROVIDER_TYPES, PROVINCES } from '@/utils/constants.js';
 import { isAnyChangeRequestActive } from '@/utils/common.js';
 
 export default {
@@ -251,6 +268,10 @@ export default {
   computed: {
     ...mapState(useAppStore, ['renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
+  },
+  created() {
+    this.PROVINCES = PROVINCES;
+    this.model.province = this.model.province ?? PROVINCES.BC;
   },
   methods: {
     isSomeChangeRequestActive() {

@@ -86,7 +86,7 @@ function mapCCFRIObjectForFront(data) {
 async function getFacility(req, res) {
   try {
     //,_ccof_change_request_value
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus'; //+ getMappingString(FacilityMappings);
+    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus'; //+ getMappingString(FacilityMappings);
     log.info('operation: ', operation);
     let facility = await getOperation(operation);
 
