@@ -15,9 +15,9 @@ export default {
     return {
       bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
       bannerColor: StaticConfig.BANNER_COLOR,
-    }
+    };
   },
-}
+};
 </script>
 <style scoped>
 .env-bar {
