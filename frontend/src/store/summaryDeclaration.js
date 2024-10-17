@@ -6,8 +6,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { ApiRoutes } from '@/utils/constants.js';
-import { CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
