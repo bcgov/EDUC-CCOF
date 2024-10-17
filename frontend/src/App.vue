@@ -78,6 +78,12 @@ export default {
 </script>
 
 <style>
+.appBar {
+  height: 20px !important;
+  color: white !important;
+  position: relative !important;
+  top: 0 !important;
+}
 /*Some BCSans fonts (i.e. g, y) get clipped in v-selects. This heightens the display to fix clipping. */
 .v-select__selection.v-select__selection--comma {
   line-height: 20px !important;
