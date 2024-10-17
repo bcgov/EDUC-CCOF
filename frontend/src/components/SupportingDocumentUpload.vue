@@ -2,8 +2,8 @@
   <v-form ref="form" v-model="isValidForm">
     <v-container>
       <v-row justify="space-around">
-        <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="text-center">
+        <v-card class="cc-top-level-card mx-12" width="100%">
+          <v-card-title class="text-center text-wrap">
             <span class="text-h5">
               Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
             </span>
@@ -96,12 +96,12 @@
         </v-card>
       </v-row>
       <v-row v-if="isChangeRequest">
-        <v-card v-if="isLoading" class="mx-auto mb-4 rounded-lg cc-top-level-card" width="1200">
+        <v-card v-if="isLoading" class="mx-auto mb-4 rounded-lg cc-top-level-card mx-12" width="100%">
           <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading" />
           <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar" />
           <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar" />
         </v-card>
-        <v-card v-else class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card" width="1200">
+        <v-card v-else class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card mx-12" width="100%">
           <v-card-text class="pt-7 pa-0">
             <div class="px-md-12 px-7">
               <p class="text-h5 text--primary">

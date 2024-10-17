@@ -26,10 +26,7 @@ export default {
     },
   },
   created() {
-    console.log('AppDateInput');
-    console.log(this.modelValue);
     this.updatedDate = this.modelValue ? new Date(this.modelValue)?.toISOString()?.split('T')[0] : null;
-    console.log(this.updatedDate);
   },
 };
 </script>

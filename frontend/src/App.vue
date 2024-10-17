@@ -1,32 +1,18 @@
 <template>
   <v-app id="app">
-    <MsieBanner v-if="isIE" />
-    <HeaderComponent />
-    <SnackBar />
-    <v-main fluid style="--v-layout-top: 64px" class="align-start">
-      <div class="v-main__wrap">
-        <v-app-bar
-          v-if="bannerColor !== ''"
-          :color="bannerColor"
-          sticky
-          dense
-          height="20rem"
-          clipped-left
-          class="px-4 appBar"
-        >
-          <div>
-            <h3 class="envBanner">{{ bannerEnvironment }} Environment</h3>
-          </div>
-        </v-app-bar>
-        <div>
-          <h3 v-if="subtitleBanner != ''" class="subBanner">
-            {{ subtitleBanner }}
-          </h3>
-        </div>
-        <ModalIdle v-if="isAuthenticated" />
-        <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
-        <router-view />
-      </div>
+    <div>
+      <MsieBanner v-if="isIE" />
+      <HeaderComponent />
+      <SnackBar />
+      <TheEnvBar />
+    </div>
+    <v-main>
+      <h3 v-if="subtitleBanner" class="subBanner">
+        {{ subtitleBanner }}
+      </h3>
+      <ModalIdle v-if="isAuthenticated" />
+      <NavBar v-if="pageTitle && isAuthenticated && showNavBar" :title="pageTitle" />
+      <router-view />
     </v-main>
     <FooterComponent />
   </v-app>
@@ -46,6 +32,7 @@ import ModalIdle from '@/components/ModalIdle.vue';
 import MsieBanner from '@/components/MsieBanner.vue';
 import SnackBar from '@/components/util/SnackBar.vue';
 import NavBar from '@/components/util/NavBar.vue';
+import TheEnvBar from '@/components/TheEnvBar.vue';
 
 export default {
   name: 'App',
@@ -56,15 +43,10 @@ export default {
     MsieBanner,
     SnackBar,
     NavBar,
+    TheEnvBar,
   },
   metaInfo: {
     meta: StaticConfig.VUE_APP_META_DATA,
-  },
-  data() {
-    return {
-      bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
-      bannerColor: StaticConfig.BANNER_COLOR,
-    };
   },
   computed: {
     ...mapState(useAuthStore, ['isAuthenticated', 'loginError', 'isLoading']),
@@ -96,12 +78,6 @@ export default {
 </script>
 
 <style>
-.appBar {
-  height: 20px !important;
-  color: white !important;
-  position: relative !important;
-  top: 0 !important;
-}
 /*Some BCSans fonts (i.e. g, y) get clipped in v-selects. This heightens the display to fix clipping. */
 .v-select__selection.v-select__selection--comma {
   line-height: 20px !important;

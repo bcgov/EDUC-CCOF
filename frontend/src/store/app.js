@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { useApplicationStore } from './application.js';
 
-import ApiService from '../common/apiService.js';
-import { PROGRAM_YEAR_LANGUAGE_TYPES } from '../utils/constants.js';
+import ApiService from '@/common/apiService.js';
+import { useApplicationStore } from '@/store/application.js';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -36,7 +36,7 @@ export const useAppStore = defineStore('app', {
     setPageTitle(pageTitle) {
       this.pageTitle = pageTitle;
     },
-    setSubtitleBanner(state, subtitleBanner) {
+    setSubtitleBanner(subtitleBanner) {
       this.subtitleBanner = subtitleBanner;
     },
     setAlertNotificationText(alertNotificationText) {
