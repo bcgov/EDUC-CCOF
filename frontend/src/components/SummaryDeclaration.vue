@@ -1,18 +1,13 @@
 <template>
   <v-container fluid>
     <v-form ref="form" v-model="isValidForm">
-      <v-row class="d-flex justify-center">
-        <span class="text-h4"
-          >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-        >
-      </v-row>
-      <v-row class="d-flex justify-center">
+      <div class="text-center">
+        <div class="text-h4">
+          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+        </div>
         <h2>Summary and Declaration</h2>
-      </v-row>
-      <v-row class="d-flex justify-center text-h5" style="color: #003466">
-        {{ userInfo.organizationName }}
-      </v-row>
-
+        <div class="text-h5" style="color: #003466">{{ userInfo.organizationName }}</div>
+      </div>
       <v-row>
         <!-- Do not allow PCF to be submitted if CR is active-->
         <v-card v-if="isSomeChangeRequestActive() && !isChangeRequest" width="100%" class="mx-3 my-10">
@@ -61,10 +56,10 @@
         </v-card>
       </v-row>
 
-      <v-row v-if="!isSomeChangeRequestActive()" class="d-flex justify-center text-h5" style="color: #003466">
+      <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
-      </v-row>
-      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4">
+      </div>
+      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-8 mt-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -75,147 +70,145 @@
         </div>
       </v-card>
       <div>
-        <v-row class="d-flex justify-center">
-          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-            <v-row class="d-flex justify-start">
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
+        <v-card class="py-0 px-3 mx-12 mt-4 rounded-lg" elevation="4">
+          <v-row class="d-flex justify-start">
+            <v-col class="pa-0">
+              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
+            </v-col>
+          </v-row>
+          <v-expansion-panels ref="v-expansion-panels" v-model="expand" multiple variant="accordion">
+            <v-row v-if="isMainLoading">
+              <v-col>
+                <v-skeleton-loader
+                  v-if="isMainLoading"
+                  :loading="isMainLoading"
+                  type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+                />
               </v-col>
             </v-row>
-            <v-expansion-panels ref="v-expansion-panels" v-model="expand" multiple variant="accordion">
-              <v-row v-if="isMainLoading">
-                <v-col>
-                  <v-skeleton-loader
-                    v-if="isMainLoading"
-                    :loading="isMainLoading"
-                    type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+            <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
+              <div v-if="!isRenewal">
+                <v-expansion-panel variant="accordion">
+                  <OrganizationSummary
+                    :program-year="formattedProgramYear"
+                    :summary-model="summaryModel"
+                    :is-processing="isProcessing"
+                    :program-year-id="summaryModel?.application?.programYearId"
+                    @is-summary-valid="isFormComplete"
                   />
-                </v-col>
-              </v-row>
-              <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
-                <div v-if="!isRenewal">
-                  <v-expansion-panel variant="accordion">
-                    <OrganizationSummary
-                      :program-year="formattedProgramYear"
-                      :summary-model="summaryModel"
-                      :is-processing="isProcessing"
+                </v-expansion-panel>
+              </div>
+
+              <div v-for="(facility, index) in summaryModel?.facilities" :key="facility?.facilityId" class="special">
+                <v-skeleton-loader
+                  v-if="isSummaryLoading[index]"
+                  :loading="isSummaryLoading[index]"
+                  type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+                />
+
+                <div v-else>
+                  <v-expansion-panel v-if="facility?.facilityInfo" variant="accordion">
+                    <FacilityInformationSummary
+                      :facility-info="facility?.facilityInfo"
+                      :funding="facility?.funding"
+                      :facility-id="facility.facilityId"
+                      :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
+                      :ecewe-status="facility?.ecewe?.optInOrOut"
+                      :license-categories="facility?.licenseCategories"
+                      :provider-type="summaryModel?.application?.organizationProviderType"
+                      :change-rec-guid="facility?.changeRequestId"
                       :program-year-id="summaryModel?.application?.programYearId"
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
-                </div>
-
-                <div v-for="(facility, index) in summaryModel?.facilities" :key="facility?.facilityId" class="special">
-                  <v-skeleton-loader
-                    v-if="isSummaryLoading[index]"
-                    :loading="isSummaryLoading[index]"
-                    type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-                  />
-
-                  <div v-else>
-                    <v-expansion-panel v-if="facility?.facilityInfo" variant="accordion">
-                      <FacilityInformationSummary
-                        :facility-info="facility?.facilityInfo"
-                        :funding="facility?.funding"
+                  <v-expansion-panel variant="accordion">
+                    <div v-if="!facility.funding || isRenewal" />
+                    <div v-else>
+                      <CCOFSummaryFamily
+                        v-if="summaryModel?.application?.organizationProviderType == 'FAMILY'"
+                        :funding="facility.funding"
                         :facility-id="facility.facilityId"
-                        :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-                        :ecewe-status="facility?.ecewe?.optInOrOut"
-                        :license-categories="facility?.licenseCategories"
-                        :provider-type="summaryModel?.application?.organizationProviderType"
-                        :change-rec-guid="facility?.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
                       />
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <div v-if="!facility.funding || isRenewal" />
-                      <div v-else>
-                        <CCOFSummaryFamily
-                          v-if="summaryModel?.application?.organizationProviderType == 'FAMILY'"
-                          :funding="facility.funding"
-                          :facility-id="facility.facilityId"
-                          :program-year-id="summaryModel?.application?.programYearId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                        <CCOFSummary
-                          v-else
-                          :funding="facility.funding"
-                          :facility-id="facility.facilityId"
-                          :change-rec-guid="facility.changeRequestId"
-                          :program-year-id="summaryModel?.application?.programYearId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </div>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <CCFRISummary
-                        :ccfri="facility?.ccfri"
+                      <CCOFSummary
+                        v-else
+                        :funding="facility.funding"
                         :facility-id="facility.facilityId"
-                        :change-rec-guid="facility?.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
-                    <v-expansion-panel v-if="facility?.rfiApp" variant="accordion">
-                      <RFISummary
-                        :rfi-app="facility?.rfiApp"
-                        :ccfri-id="facility?.ccfri?.ccfriId"
-                        :facility-id="facility.facilityId"
-                        :change-rec-guid="facility?.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
-                    <v-expansion-panel v-if="facility?.nmfApp" variant="accordion">
-                      <NMFSummary
-                        :nmf-app="facility?.nmfApp"
-                        :ccfri-id="facility?.ccfri?.ccfriId"
-                        :facility-id="facility.facilityId"
-                        :change-rec-guid="facility?.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <ECEWESummary
-                        :ecewe="{}"
-                        :ecewe-facility="facility.ecewe"
-                        :is-processing="isProcessing"
                         :change-rec-guid="facility.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
                       />
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <UploadedDocumentsSummary
-                        :documents="facility.documents"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
-                  </div>
-                </div>
-                <div v-if="!isRenewal" class="mt-10">
+                    </div>
+                  </v-expansion-panel>
+                  <v-expansion-panel variant="accordion">
+                    <CCFRISummary
+                      :ccfri="facility?.ccfri"
+                      :facility-id="facility.facilityId"
+                      :change-rec-guid="facility?.changeRequestId"
+                      :program-year-id="summaryModel?.application?.programYearId"
+                      @is-summary-valid="isFormComplete"
+                    />
+                  </v-expansion-panel>
+                  <v-expansion-panel v-if="facility?.rfiApp" variant="accordion">
+                    <RFISummary
+                      :rfi-app="facility?.rfiApp"
+                      :ccfri-id="facility?.ccfri?.ccfriId"
+                      :facility-id="facility.facilityId"
+                      :change-rec-guid="facility?.changeRequestId"
+                      :program-year-id="summaryModel?.application?.programYearId"
+                      @is-summary-valid="isFormComplete"
+                    />
+                  </v-expansion-panel>
+                  <v-expansion-panel v-if="facility?.nmfApp" variant="accordion">
+                    <NMFSummary
+                      :nmf-app="facility?.nmfApp"
+                      :ccfri-id="facility?.ccfri?.ccfriId"
+                      :facility-id="facility.facilityId"
+                      :change-rec-guid="facility?.changeRequestId"
+                      :program-year-id="summaryModel?.application?.programYearId"
+                      @is-summary-valid="isFormComplete"
+                    />
+                  </v-expansion-panel>
                   <v-expansion-panel variant="accordion">
                     <ECEWESummary
-                      :ecewe="summaryModel.ecewe"
-                      :ecewe-facility="null"
+                      :ecewe="{}"
+                      :ecewe-facility="facility.ecewe"
                       :is-processing="isProcessing"
+                      :change-rec-guid="facility.changeRequestId"
+                      :program-year-id="summaryModel?.application?.programYearId"
+                      @is-summary-valid="isFormComplete"
+                    />
+                  </v-expansion-panel>
+                  <v-expansion-panel variant="accordion">
+                    <UploadedDocumentsSummary
+                      :documents="facility.documents"
                       :program-year-id="summaryModel?.application?.programYearId"
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
                 </div>
-                <v-expansion-panel v-if="hasChangeNotificationFormDocuments" variant="accordion" class="mt-10">
-                  <ChangeNotificationFormSummary
-                    :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
+              </div>
+              <div v-if="!isRenewal" class="mt-10">
+                <v-expansion-panel variant="accordion">
+                  <ECEWESummary
+                    :ecewe="summaryModel.ecewe"
+                    :ecewe-facility="null"
+                    :is-processing="isProcessing"
+                    :program-year-id="summaryModel?.application?.programYearId"
                     @is-summary-valid="isFormComplete"
                   />
                 </v-expansion-panel>
-              </v-row>
-            </v-expansion-panels>
-          </v-card>
-        </v-row>
+              </div>
+              <v-expansion-panel v-if="hasChangeNotificationFormDocuments" variant="accordion" class="mt-10">
+                <ChangeNotificationFormSummary
+                  :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
+                  @is-summary-valid="isFormComplete"
+                />
+              </v-expansion-panel>
+            </v-row>
+          </v-expansion-panels>
+        </v-card>
       </div>
       <!---Declaration Start--->
       <v-row
@@ -675,10 +668,11 @@ export default {
     ...mapActions(useSummaryDeclarationStore, [
       'loadDeclaration',
       'loadChangeRequestDeclaration',
-      'updateDeclaration',
-      'loadSummary',
-      'updateApplicationStatus',
       'loadChangeRequestSummaryDeclaration',
+      'loadSummary',
+      'setModel',
+      'updateApplicationStatus',
+      'updateDeclaration',
     ]),
     ...mapActions(useApplicationStore, ['setIsEceweComplete', 'setIsLicenseUploadComplete']),
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh']),
@@ -723,8 +717,7 @@ export default {
     async submit() {
       this.isProcessing = true;
       try {
-        const summaryDeclarationStore = useSummaryDeclarationStore();
-        summaryDeclarationStore.model(this.model);
+        this.setModel(this.model);
         if (this.isChangeRequest) {
           // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
@@ -946,8 +939,9 @@ li {
   padding-bottom: 12px;
 }
 
->>> ::placeholder {
+:deep(::placeholder) {
   color: red !important;
+  opacity: 1 !important;
 }
 
 * .card-title {

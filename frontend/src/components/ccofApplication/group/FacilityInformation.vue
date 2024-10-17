@@ -3,7 +3,7 @@
     <v-container>
       <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card" width="1200">
+          <v-card class="cc-top-level-card mx-12" width="100%">
             <v-card-title class="text-center pb-0"><h3>Facility Information</h3></v-card-title>
             <v-container>
               <v-row>

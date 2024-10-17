@@ -1,5 +1,5 @@
 <template>
-  <v-footer inset color="#003366" dark>
+  <v-footer absolute color="#003366" dark>
     <v-row justify="center" align="center">
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/"> Home </v-btn>
       <v-btn id="footer-about" variant="text" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">
@@ -22,18 +22,13 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .v-footer {
   border-top: 2px solid rgb(252, 186, 25) !important;
   min-width: 100%;
+  flex-grow: 0;
 }
-/*
-  .footer {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-  }
-  */
+
 .v-btn--active.footer:before,
 .v-btn.footer:focus:before,
 .v-btn.footer:hover:before {

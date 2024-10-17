@@ -73,7 +73,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
   },
   actions: {
-    model(value) {
+    setModel(value) {
       this.model = value;
     },
     setSummaryModel(value) {
