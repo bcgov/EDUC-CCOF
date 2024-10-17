@@ -1,18 +1,17 @@
 name: 1 DEV - Deploy Backend
 
 env:
-  # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
+  # EDIT your repository secrets to log into your OpenShift cluster and set up the context.
   # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
   # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  # EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
-  SPLUNK_TOKEN:
-    ${{ secrets.SPLUNK_TOKEN }}
+  SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
-    # 🖊️ EDIT to change the image registry settings.
+  # EDIT to change the image registry setting
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
@@ -23,7 +22,7 @@ env:
 
   APP_NAME: "ccof"
   REPO_NAME: "educ-ccof"
-  #grabs the branch name from github dynamically
+  # grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
   IMAGE_NAME: "backend"
   APP_ENVIRONMENT: "dev"
@@ -175,11 +174,19 @@ jobs:
 
           # Process update-configmap
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh \
-              | bash /dev/stdin \
-                     dev \
-                     ${{ env.APP_NAME }} \
-                     ${{ env.NAMESPACE }} \
-                     ${{ env.SPLUNK_TOKEN }}
+            | bash /dev/stdin \
+              ${{ env.APPLICATION_ENVIRONMENT }} \
+              ${{ env.APP_NAME }} \
+              ${{ env.NAMESPACE }} \
+              ${{ env.COMMON_NAMESPACE }} \
+              ${{ secrets.SOAM_CLIENT_ID }} \
+              ${{ secrets.SOAM_CLIENT_ID_IDIR }} \
+              ${{ secrets.SOAM_CLIENT_SECRET }} \
+              ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
+              ${{ env.SPLUNK_TOKEN }} \
+              ${{ secrets.UI_PRIVATE_KEY }} \
+              ${{ secrets.UI_PUBLIC_KEY }} \
+              ${{ secrets.REDIS_PASSWORD }}
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
