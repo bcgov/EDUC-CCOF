@@ -64,28 +64,16 @@
       <v-row v-if="!isSomeChangeRequestActive()" class="d-flex justify-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </v-row>
-      <v-row v-if="!isSummaryComplete && !isProcessing" justify="center">
-        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0 col-12">
-            <v-row>
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  Incomplete Form
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col class="pb-0 pr-3 justify-center">
-                <div>
-                  <p>You will not be able to submit your application until it is complete.</p>
-                  <p>Incomplete sections are marked with a red exclamation point.</p>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-row>
+      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4">
+        <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          Incomplete Form
+        </v-card-title>
+        <div class="pa-4">
+          <p>You will not be able to submit your application until it is complete.</p>
+          <p>Incomplete sections are marked with a red exclamation point.</p>
+        </div>
+      </v-card>
       <div>
         <v-row class="d-flex justify-center">
           <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
@@ -238,7 +226,7 @@
       >
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
-      <v-row justify="center">
+      <v-row justify="center" class="ma-8 pb-12">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -254,7 +242,7 @@
               />
             </v-col>
           </v-row>
-          <v-row v-if="!isProcessing">
+          <v-row v-if="!isProcessing" class="px-8">
             <v-col class="pb-0">
               <div v-show="!isRenewal && !organizationAccountNumber && !isChangeRequest">
                 <p>
@@ -283,10 +271,10 @@
                 </ul>
                 <p style="padding-top: 10px">
                   Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Child Care BC
-                  Act. If you are convicted of an offence under section 9, a court may order you imprisoned for up to
-                  six months, fine you not more than $2,000.00, or order you to pay the government all or part of any
-                  amount received under the child care grant.
+                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
+                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
+                  all or part of any amount received under the child care grant.
                 </p>
               </div>
               <!-- show for new org after ministry unlocks -->
@@ -335,8 +323,8 @@
                     understand and acknowledge that providing false or misleading information either on the Form or
                     otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to
                     comply with the Funding Agreement could result in certain penalties or repayment obligations, or
-                    both, under any or all of the Child Care BC Act, any successor legislation, or the Funding
-                    Agreement;
+                    both, under any or all of the Early Learning and Child Care Act, any successor legislation, or the
+                    Funding Agreement;
                   </li>
                   <li>
                     If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the
@@ -443,28 +431,28 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useAppStore } from '../store/app.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '../store/summaryDeclaration.js';
-import { useApplicationStore } from '../store/application.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '../utils/constants.js';
-import alertMixin from '../mixins/alertMixin.js';
-import NavButton from './util/NavButton.vue';
-import FacilityInformationSummary from './summary/group/FacilityInformationSummary.vue';
-import CCOFSummary from './summary/group/CCOFSummary.vue';
-import ECEWESummary from './summary/group/ECEWESummary.vue';
-import CCFRISummary from './summary/group/CCFRISummary.vue';
-import RFISummary from './summary/group/RFISummary.vue';
-import NMFSummary from './summary/group/NMFSummary.vue';
-import OrganizationSummary from './summary/group/OrganizationSummary.vue';
-import UploadedDocumentsSummary from './summary/group/UploadedDocumentsSummary.vue';
-import CCOFSummaryFamily from './summary/group/CCOFSummaryFamily.vue';
-import ChangeNotificationFormSummary from './summary/changeRequest/ChangeNotificationFormSummary.vue';
-import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '../utils/common.js';
+import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
+import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
+import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
+import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
+import RFISummary from '@/components/summary/group/RFISummary.vue';
+import NMFSummary from '@/components/summary/group/NMFSummary.vue';
+import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
+import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
+import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
 
 let model = {
   agreeConsentCertify: undefined,
@@ -488,7 +476,7 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      model,
+      model: {},
       isValidForm: false,
       isLoading: false,
       isProcessing: false,
@@ -629,7 +617,6 @@ export default {
         if (val) {
           setTimeout(() => {
             console.log(this.$refs['v-expansion-panels']);
-            console.log(this.$refs['v-expansion-panels'].$children.length);
             const keys = Object.keys(this.payload);
             console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.
@@ -660,7 +647,7 @@ export default {
       const serverTime = new Date(this.userInfo.serverTime);
 
       // Determine declaration b start date
-      let declarationBStart;
+      let declarationBStart = null;
       this.programYearList.list.find((item) => {
         if (item.programYearId == this.programYearId) {
           declarationBStart = new Date(item.declarationbStart);

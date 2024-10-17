@@ -56,22 +56,31 @@
             </v-row>
 
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6" md="4">
                 <v-text-field
                   v-model="model.city1"
                   :disabled="isLocked"
                   variant="outlined"
-                  required
                   :rules="rules.required"
                   label="City/Town"
                 />
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                  v-model="model.province1"
+                  :items="PROVINCES"
+                  item-value="value"
+                  :rules="rules.required"
+                  :disabled="isLocked"
+                  label="Province"
+                  variant="outlined"
+                />
+              </v-col>
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-model="model.postalCode1"
                   :disabled="isLocked"
                   variant="outlined"
-                  required
                   :rules="[...rules.required, ...rules.postalCode]"
                   label="Postal Code"
                 />
@@ -102,7 +111,7 @@
               </v-row>
 
               <v-row>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     v-model="model.city2"
                     :disabled="isLocked"
@@ -111,7 +120,18 @@
                     label="City/Town"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="4">
+                  <v-select
+                    v-model="model.province2"
+                    :items="PROVINCES"
+                    item-value="value"
+                    :rules="rules.required"
+                    :disabled="isLocked"
+                    label="Province"
+                    variant="outlined"
+                  />
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     v-model="model.postalCode2"
                     :disabled="isLocked"

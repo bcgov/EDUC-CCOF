@@ -746,7 +746,7 @@
           <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getRoutingPath()">
+                <router-link v-if="summaryModel?.application" :to="getRoutingPath()">
                   <span style="color: #ff5252; text-underline: black"
                     ><u>To add this information, click here. This will bring you to a different page.</u></span
                   >
@@ -760,10 +760,12 @@
   </v-row>
 </template>
 <script>
-import { isChangeRequest } from '../../../utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
-import { mapState } from 'pinia';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
+import { mapActions, mapState } from 'pinia';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 
 export default {
   name: 'CCOFSummary',
@@ -801,8 +803,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState(useNavBarStore, ['navBarList']),
+    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     schoolPropertyLabel() {
       const arr = [];
       if (this.funding?.beforeSchool) {
@@ -830,6 +832,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     calculateTotal() {
       let total = 0;
       total =

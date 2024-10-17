@@ -3,67 +3,55 @@
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
-          <v-card-title class="justify-center">
-            <span class="text-h5"
-              >Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form</span
-            >
+          <v-card-title class="text-center">
+            <span class="text-h5">
+              Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+            </span>
           </v-card-title>
           <h2 class="text-center">Supporting Document Upload</h2>
-          <v-row justify="center" class="text-h5 py-4" style="color: #003466">
+          <div class="text-h5 text-center py-4" style="color: #003466">
             {{ userInfo.organizationName }}
-          </v-row>
-          <v-row class="px-6 text-body-1">
+          </div>
+          <div class="px-6 text-body-1">
             Provide any additional documents you would like the program to review as part of your CCOF, CCFRI, or ECE-WE
             funding assessment.
-          </v-row>
-          <v-row class="pa-6 pt-2 text-body-2">
+          </div>
+          <div class="pa-6 pt-2 text-body-2">
             The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx,
             doc, xls, and xlsx.
-          </v-row>
+          </div>
           <v-data-table
             v-if="!isLoading"
             :headers="headers"
-            :items="uploadedDocuments"
+            :items="uploadedSupportingDocuments"
             class="elevation-1"
             hide-default-header
             hide-default-footer
             :items-per-page="-1"
           >
             <template #top>
-              <v-col flex>
-                <v-toolbar flat color="white">
-                  <div class="d-flex">
-                    <v-btn
-                      color="primary"
-                      class="ml-2 text-white v-skeleton-loader-small-button"
-                      :disabled="isLocked"
-                      @click="addNew"
-                    >
-                      <v-icon theme="dark"> mdi-plus </v-icon>
-                      Add
-                    </v-btn>
-                  </div>
-                </v-toolbar>
-              </v-col>
+              <div class="ma-4 d-flex">
+                <v-btn color="primary" class="ml-2" :disabled="isLocked" @click="addNew">
+                  <v-icon>mdi-plus</v-icon>
+                  Add
+                </v-btn>
+              </div>
             </template>
 
             <template #item.facilityName="{ item }">
-              <v-col flex>
-                <div v-if="item?.annotationid">
-                  <span> {{ item?.ccof_facility_name }} </span>
-                </div>
-                <v-select
-                  v-else
-                  v-model="item.selectFacility"
-                  :items="facilityNames"
-                  item-title="facilityName"
-                  placeholder="Select a facility"
-                  return-object
-                  class="drop-down-select"
-                  required
-                  :rules="selectRules"
-                />
-              </v-col>
+              <div v-if="item?.annotationid">
+                <span> {{ item?.ccof_facility_name }} </span>
+              </div>
+              <v-select
+                v-else
+                v-model="item.selectFacility"
+                :items="facilityNames"
+                item-title="facilityName"
+                placeholder="Select a facility"
+                return-object
+                class="drop-down-select"
+                :rules="selectRules"
+              />
             </template>
 
             <template #item.document="{ item }">
@@ -73,19 +61,13 @@
               <v-file-input
                 v-else
                 :id="String(item.id)"
-                color="#003366"
                 :rules="fileRules"
                 prepend-icon="mdi-file-upload"
                 :clearable="false"
-                class="pt-0"
                 :accept="fileAccept"
-                :disabled="false"
                 placeholder="Select your file"
-                :error-messages="fileInputError"
-                required
                 @click:clear="deleteItem(item)"
                 @change="selectFile"
-                @click="uploadDocumentClicked($event)"
               />
             </template>
             <template #item.description="{ item }">
@@ -184,20 +166,21 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useFacilityStore } from '../store/ccof/facility.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useApplicationStore } from '../store/application.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
-import { useSupportingDocumentUploadStore } from '../store/supportingDocumentUpload.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
-import rules from '../utils/rules.js';
-import alertMixin from '../mixins/alertMixin.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '../utils/file.js';
-import { deepCloneObject, getFileExtension } from '../utils/common.js';
-import NavButton from './util/NavButton.vue';
-import { PATHS, changeUrlGuid } from '../utils/constants.js';
-import GroupChangeDialogueContent from './requestChanges/GroupChangeDialogueContent.vue';
+import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent.vue';
+import NavButton from '@/components/util/NavButton.vue';
+
+import rules from '@/utils/rules.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import { deepCloneObject, getFileExtension } from '@/utils/common.js';
+import { PATHS, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   components: { NavButton, GroupChangeDialogueContent },
@@ -218,37 +201,33 @@ export default {
       facilityNames: [],
       model: {},
       tempFacilityId: null,
-      isValidForm: false,
+      isValidForm: true,
       currentrow: null,
       otherChanges: null,
       headers: [
         {
-          text: 'Facility Name',
-          align: 'left',
-          sortable: false,
+          title: 'Facility Name',
           value: 'facilityName',
-          class: 'table-header',
+          width: '35%',
+          sortable: false,
         },
         {
-          text: 'Document',
-          align: 'left',
-          sortable: false,
+          title: 'Document',
           value: 'document',
-          class: 'table-header',
+          width: '25%',
+          sortable: false,
         },
         {
-          text: 'Description',
-          align: 'left',
-          sortable: false,
+          title: 'Description',
           value: 'description',
-          class: 'table-header',
+          width: '35%',
+          sortable: false,
         },
         {
-          text: 'Actions',
-          align: 'left',
+          title: 'Actions',
           sortable: false,
+          width: '5%',
           value: 'actions',
-          class: 'table-header',
         },
       ],
       fileAccept: [
@@ -267,10 +246,9 @@ export default {
       ],
       fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
       fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
-      fileInputError: [],
       fileMap: new Map(),
       fileRules: [],
-      uploadedDocuments: [],
+      uploadedSupportingDocuments: [],
       editedIndex: -1,
       editedItem: {
         selectFacility: '',
@@ -323,8 +301,10 @@ export default {
       return false;
     },
     isSaveDisabled() {
-      const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
-      return this.isValidForm && (newFilesAdded.length > 0 || this.uploadedDocuments?.deletedItems?.length > 0);
+      const newFilesAdded = this.uploadedSupportingDocuments.filter((el) => !!el.id);
+      return (
+        this.isValidForm && (newFilesAdded.length > 0 || this.uploadedSupportingDocuments?.deletedItems?.length > 0)
+      );
     },
     isNextEnabled() {
       if (this.isChangeRequest) return this.isValidForm;
@@ -336,14 +316,27 @@ export default {
 
     this.fileRules = [
       (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
+      (value) => {
+        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          value[0].size < maxSize ||
+          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
+        );
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+          `Accepted file types are ${this.fileFormats}.`
+        );
+      },
     ];
+
     await this.mapFacilityData();
     await this.createTable();
     if (this.isChangeRequest) {
@@ -431,7 +424,7 @@ export default {
       this.isProcessing = true;
       try {
         await this.processDocumentFileDelete();
-        const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
+        const newFilesAdded = this.uploadedSupportingDocuments.filter((el) => !!el.id);
         if (newFilesAdded.length > 0) {
           await this.processDocumentFilesSave(newFilesAdded);
           this.fileMap?.clear();
@@ -467,11 +460,13 @@ export default {
       }
     },
     async processDocumentFileDelete() {
-      if (this.uploadedDocuments?.deletedItems?.length > 0) {
-        await this.deleteDocuments(this.uploadedDocuments.deletedItems);
+      if (this.uploadedSupportingDocuments?.deletedItems?.length > 0) {
+        await this.deleteDocuments(this.uploadedSupportingDocuments.deletedItems);
       }
     },
-    async selectFile(file) {
+    async selectFile(event) {
+      this.currentrow = event.target.id;
+      const file = event?.target?.files[0];
       if (file) {
         const doc = await this.readFile(file);
         this.fileMap.set(this.currentrow, deepCloneObject(doc));
@@ -480,7 +475,7 @@ export default {
     readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file);
         reader.onload = () => {
           const doc = {
             filename: getFileNameWithMaxNameLength(file.name),
@@ -499,9 +494,6 @@ export default {
         };
       });
     },
-    uploadDocumentClicked(event) {
-      this.currentrow = event.target.id;
-    },
     handleFileReadErr() {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
@@ -509,7 +501,7 @@ export default {
       this.isLoading = true;
       try {
         await this.getDocuments(this.applicationId);
-        this.uploadedDocuments = this.uploadedDocuments.filter(
+        this.uploadedSupportingDocuments = this.uploadedDocuments.filter(
           (document) => this.navBarList.findIndex((item) => item.facilityId == document.ccof_facility) > -1,
         );
       } catch (e) {
@@ -520,35 +512,35 @@ export default {
       }
     },
     editItem(item) {
-      this.editedIndex = this.uploadedDocuments.indexOf(item);
+      this.editedIndex = this.uploadedSupportingDocuments.indexOf(item);
       this.editedItem = Object.assign({}, item);
     },
 
     deleteItem(item) {
-      const index = this.uploadedDocuments.indexOf(item);
+      const index = this.uploadedSupportingDocuments.indexOf(item);
       if (item.annotationid) {
-        let deletedItems = this.uploadedDocuments['deletedItems'];
+        let deletedItems = this.uploadedSupportingDocuments['deletedItems'];
         if (deletedItems?.length > 0) {
           deletedItems.push(item.annotationid);
-          this.uploadedDocuments['deletedItems'] = deletedItems;
+          this.uploadedSupportingDocuments['deletedItems'] = deletedItems;
         } else {
           deletedItems = [];
           deletedItems.push(item.annotationid);
-          this.uploadedDocuments['deletedItems'] = deletedItems;
+          this.uploadedSupportingDocuments['deletedItems'] = deletedItems;
         }
       }
-      this.uploadedDocuments.splice(index, 1);
+      this.uploadedSupportingDocuments.splice(index, 1);
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
       addObj.id = Math.random() * 10;
-      //addObj.id = this.uploadedDocuments.length + 1;
-      this.uploadedDocuments.unshift(addObj);
+      //addObj.id = this.uploadedSupportingDocuments.length + 1;
+      this.uploadedSupportingDocuments.unshift(addObj);
       this.editItem(addObj);
     },
     updateDescription(item) {
-      const index = this.uploadedDocuments.indexOf(item);
-      this.uploadedDocuments[index].description = item.description;
+      const index = this.uploadedSupportingDocuments.indexOf(item);
+      this.uploadedSupportingDocuments[index].description = item.description;
     },
     async mapFacilityData() {
       for (let facilityInfo of this.navBarList) {
@@ -571,5 +563,12 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+:deep(.v-field__input) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:deep(.v-select__selection) {
+  padding-left: 12px;
 }
 </style>
