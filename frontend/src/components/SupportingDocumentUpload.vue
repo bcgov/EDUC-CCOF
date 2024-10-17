@@ -116,7 +116,7 @@
         </v-card>
       </v-row>
       <v-row v-if="otherChanges == 'Yes'" class="d-flex justify-center">
-        <GroupChangeDialogueContent style="max-width: 100%px" class="pb-4" />
+        <GroupChangeDialogueContent style="max-width: 1200px" class="pb-4" />
       </v-row>
       <NavButton
         :is-next-displayed="true"
