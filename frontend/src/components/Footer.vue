@@ -1,5 +1,5 @@
 <template>
-  <v-footer absolute color="#003366" dark>
+  <v-footer id="app-footer" absolute color="#003366" dark>
     <v-row justify="center" align="center">
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/"> Home </v-btn>
       <v-btn id="footer-about" variant="text" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">
@@ -33,5 +33,9 @@ export default {
 .v-btn.footer:focus:before,
 .v-btn.footer:hover:before {
   background: none;
+}
+
+@media print {
+  #app-footer { display: none; }
 }
 </style>

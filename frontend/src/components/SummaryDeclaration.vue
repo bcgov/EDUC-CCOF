@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-form ref="form" v-model="isValidForm">
+    <v-form :id="printableVersion ? 'printed-form' : ''" ref="form" v-model="isValidForm">
       <div class="text-center">
         <div class="text-h4">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
@@ -219,7 +219,7 @@
       >
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
-      <v-row justify="center" class="ma-8 pb-12">
+      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-8'">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -935,6 +935,11 @@ export default {
 </script>
 
 <style>
+#printed-form .v-card {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 li {
   padding-bottom: 12px;
 }
