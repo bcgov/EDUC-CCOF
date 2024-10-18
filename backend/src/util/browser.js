@@ -20,8 +20,8 @@ async function getBrowserContext() {
     // make sure they are boolean and not string
     log.info('Puppeteer :: getBrowserContext launching new browser process');
     browser = await puppeteer.launch({
-      headless: false, // setting this to 'new' will crash on openshift
-      devtools: true,
+      headless: true, // setting this to 'new' will crash on openshift
+      devtools: false,
       dumpio: true,
       args: [
         '--no-sandbox',
