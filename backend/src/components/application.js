@@ -1,5 +1,6 @@
-/* eslint-disable quotes */
 'use strict';
+
+const { compress } = require('compress-pdf');
 const {
   getOperation,
   postOperation,
@@ -39,8 +40,7 @@ const {
 } = require('../util/mapping/Mappings');
 const {getCCFRIClosureDates} = require('./facility');
 const {mapFundingObjectForFront} = require('./funding');
-const puppeteer = require('puppeteer');
-const {compress} = require('compress-pdf');
+const { getBrowserContext, closeBrowser } = require('../util/browser');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -431,6 +431,32 @@ async function submitApplication(req, res) {
   }
 }
 
+async function postPdf(req, buffer) {
+  let payload;
+  if (req.params.applicationId) {
+    payload = {
+      ccof_applicationid: req.params.applicationId,
+      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+      filesize: buffer.byteLength,
+      subject: 'APPLICATION SUMMARY',
+      documentbody: buffer.toString('base64')
+    };
+
+    await postApplicationSummaryDocument(payload);
+  } else {
+    payload = {
+      ccof_change_requestid: req.params.changeRequestId,
+      filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
+      filesize: buffer.byteLength,
+      subject: 'CHANGE REQUEST SUMMARY',
+      documentbody: buffer.toString('base64')
+    };
+
+    await postChangeRequestSummaryDocument(payload);
+  }
+  return payload;
+}
+
 async function printPdf(req, numOfRetries = 0) {
   let url = `${req.headers.referer}/printable`;
 
@@ -439,29 +465,14 @@ async function printPdf(req, numOfRetries = 0) {
   log.info('printPdf :: applicationId is', req.params.applicationId);
   log.verbose('printPdf :: url path is', url);
 
-  const browser = await puppeteer.launch({
-    headless: true, //setting this to 'new' will crash on openshift
-    dumpio: true,
-    args: [
-      '--no-sandbox',
-      '--disable-software-rasterizer',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-    ],
-    userDataDir: process.env.CHROME_DATA_DIR,
-  }); //to debug locally add {headless: false, devtools: true} in options <-make sure they are boolean and not string
-
-  const browserProcess = browser.process();
-  browserProcess
-    .on('exit', code => log.info(`printPdf :: browser process exited, status: ${code}`));
-  browserProcess
-    .on('close', code => log.info(`printPdf :: browser process closed, status: ${code}`));
+  const browserContext = await getBrowserContext();
 
   try {
-    log.info('printPdf :: starting new page');
-    const page = await browser.newPage();
+    log.info('printPdf :: starting new browser page');
+    const page = await browserContext.newPage();
 
-    page.setDefaultTimeout(300000); //set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
+    // set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
+    page.setDefaultTimeout(300000);
     await page.setRequestInterception(true);
 
     page.on('request', (request) => {
@@ -471,50 +482,36 @@ async function printPdf(req, numOfRetries = 0) {
     });
 
     log.info('printPdf :: starting page load');
-    await page.goto(url, {waitUntil: 'networkidle0'});
-    await page.waitForSelector('#signatureTextField', {visible: true});
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('#signatureTextField', { visible: true });
+
     log.info('printPdf :: page loaded starting pdf creation');
-    const pdfBuffer = await page.pdf({displayHeaderFooter: false, printBackground: true, timeout: 300000, width: 1280});
+    const pdfBuffer = await page.pdf({
+      displayHeaderFooter: false,
+      printBackground: true,
+      timeout: 300000,
+      width: 1280
+    });
+
     log.info('printPdf :: pdf buffer created starting compression');
-    const compressedPdfBuffer = await compress(pdfBuffer, {gsModule: process.env.GHOSTSCRIPT_PATH}); //this is set in dockerfile to fix ghostscript error on deploy
+    const compressedPdfBuffer = await compress(pdfBuffer, {
+      gsModule: process.env.GHOSTSCRIPT_PATH // this is set in dockerfile to fix ghostscript error on deploy
+    }
+    );
     log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
 
-    let payload;
-    //if the body contains an application ID, the summary dec is for PCF. Else, it should be a change request.
-    //if we want to, we could explicitly check the body for a change request id?
-    if(req.params.applicationId){
-      payload = {
-        ccof_applicationid: req.params.applicationId,
-        filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-        filesize: compressedPdfBuffer.byteLength,
-        subject: 'APPLICATION SUMMARY',
-        documentbody: compressedPdfBuffer.toString('base64')
-      };
+    const payload = await postPdf(req, compressedPdfBuffer);
+    await browserContext.close();
+    closeBrowser();
 
-      await postApplicationSummaryDocument(payload);
-    }
-    else {
-      payload = {
-        ccof_change_requestid: req.params.changeRequestId,
-        filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-        filesize: compressedPdfBuffer.byteLength,
-        subject: 'CHANGE REQUEST SUMMARY',
-        documentbody: compressedPdfBuffer.toString('base64')
-      };
-
-      await postChangeRequestSummaryDocument(payload);
-    }
-    browser.close();
     return payload;
   } catch (e) {
     log.error(e);
-
-    if (browser.process() !== null) { await browser.close(); }
+    await browserContext?.close();
 
     if (numOfRetries >= 3) {
       log.info('printPdf :: maximum number of retries reached');
       log.error(`printPdf :: unable to save pdf for application id ${req.params.applicationId}`);
-
     } else {
       let retryCount = numOfRetries + 1;
       log.info('printPdf :: failed retrying');
