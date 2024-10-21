@@ -47,11 +47,9 @@ async function getBrowserContext() {
 
 /**
  * Gracefully close the browser and all of its pages/contexts.
- *
- * @param {boolean} force - Force close the browser when contexts/pages are open.
  */
-async function closeBrowser(force = true) {
-  if (force === true || browser.pages().length === 0) {
+async function closeBrowser() {
+  if (browser.pages().length === 0) {
     await browser.close();
   } else {
     log.warn('Puppeteer :: closeBrowser was called with pages open');
