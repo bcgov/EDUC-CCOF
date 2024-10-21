@@ -40,7 +40,7 @@ async function getBrowserContext() {
 
     return browser.createBrowserContext();
   } catch (e) {
-    log.error("Puppeteer :: Browser process could not be retrieved", e);
+    log.error('Puppeteer :: Browser process could not be retrieved', e);
     return null;
   }
 }
