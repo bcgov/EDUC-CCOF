@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar v-if="bannerColor" :color="bannerColor" height="20" class="env-bar">
+  <v-app-bar id="app-env-bar" v-if="bannerColor" :color="bannerColor" height="20" class="env-bar">
     <div>
       <h3 class="env-text">{{ bannerEnvironment }} Environment</h3>
     </div>
@@ -27,5 +27,9 @@ export default {
 .env-text {
   color: #ffffff;
   font-size: 0.8rem;
+}
+
+@media print {
+  #app-env-bar { display: none; }
 }
 </style>

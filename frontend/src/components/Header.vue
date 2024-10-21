@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="#003366" class="px-5 px-md-10 app-header" height="64">
+  <v-app-bar id="app-header" color="#003366" class="px-5 px-md-10" height="64">
     <!-- Navbar content -->
     <v-container :class="{ sizingForIconXLScreen: $vuetify.display.xl }">
       <v-row class="justify-space-between">
@@ -110,7 +110,7 @@ a {
   color: #fff;
   text-decoration: none;
 }
-.app-header {
+#app-header {
   border-bottom: 2px solid rgb(252, 186, 25) !important;
   z-index: 1002;
 }
@@ -154,5 +154,9 @@ a {
   .display-name {
     display: none;
   }
+}
+
+@media print {
+  #app-header { display: none; }
 }
 </style>
