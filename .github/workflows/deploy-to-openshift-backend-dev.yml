@@ -78,7 +78,7 @@ jobs:
                 core.error(`Secret "${name}" is not set`);
                 return true;
               }
-              core.info(`✔️ Secret "${name}" is set`);
+              core.info(`Secret "${name}" is set`);
               return false;
             });
 
@@ -90,7 +90,7 @@ jobs:
                 "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
             }
             else {
-              core.info(`✅ All the required secrets are set`);
+              core.info(`All the required secrets are set`);
             }
 
       - name: Check out repository with branch [${{ env.BRANCH }}]
@@ -184,8 +184,6 @@ jobs:
               ${{ secrets.SOAM_CLIENT_SECRET }} \
               ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
               ${{ env.SPLUNK_TOKEN }} \
-              ${{ secrets.UI_PRIVATE_KEY }} \
-              ${{ secrets.UI_PUBLIC_KEY }} \
               ${{ secrets.REDIS_PASSWORD }}
 
           # Start rollout (if necessary) and follow it

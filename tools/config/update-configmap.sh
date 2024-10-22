@@ -9,9 +9,7 @@ readonly SOAM_CLIENT_ID_IDIR=$6
 readonly SOAM_CLIENT_SECRET=$7
 readonly SOAM_CLIENT_SECRET_IDIR=$7
 readonly SPLUNK_TOKEN=$8
-readonly UI_PRIVATE_KEY=$9
-readonly UI_PUBLIC_KEY=${10}
-readonly REDIS_PASSWORD=${11}
+readonly REDIS_PASSWORD=$9
 readonly SOAM_KC_REALM_ID="standard"
 readonly D365_API_ENDPOINT="http://$D365_API_PREFIX-$ENV_VAL:5091"
 readonly TIMEZONE="America/Vancouver"
@@ -61,6 +59,17 @@ PUBKEY
 readonly FORMATTED_SOAM_PUBLIC_KEY
 echo "$FORMATTED_SOAM_PUBLIC_KEY"
 
+echo Generating private and public keys
+ssh-keygen -b 4096 -t rsa -f tempPenBackendkey -m pem -q -N ""
+UI_PRIVATE_KEY_VAL="$(cat tempPenBackendkey)"
+UI_PUBLIC_KEY_VAL="$(ssh-keygen -f tempPenBackendkey -e -m pem)"
+readonly UI_PRIVATE_KEY_VAL
+readonly UI_PUBLIC_KEY_VAL
+
+echo Removing key files
+rm tempPenBackendkey
+rm tempPenBackendkey.pub
+
 echo Creating config map "$APP_NAME-backend-config-map"
 oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   "$APP_NAME-backend-$ENV_VAL-config-map" \
@@ -85,8 +94,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="SOAM_CLIENT_SECRET_IDIR=$SOAM_CLIENT_SECRET_IDIR" \
   --from-literal="SOAM_PUBLIC_KEY=$FORMATTED_SOAM_PUBLIC_KEY" \
   --from-literal="SOAM_URL=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/logout" \
-  --from-literal="UI_PRIVATE_KEY=$UI_PRIVATE_KEY" \
-  --from-literal="UI_PUBLIC_KEY=$UI_PUBLIC_KEY" \
+  --from-literal="UI_PRIVATE_KEY=$UI_PRIVATE_KEY_VAL" \
+  --from-literal="UI_PUBLIC_KEY=$UI_PUBLIC_KEY_VAL" \
   --from-literal="CLAMAV_PORT=3310" \
   --from-literal="ISSUER=EDUC_CCOF" \
   --dry-run -o yaml | oc apply -f -
