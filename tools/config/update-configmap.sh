@@ -10,6 +10,7 @@ readonly SOAM_CLIENT_SECRET=$7
 readonly SOAM_CLIENT_SECRET_IDIR=$8
 readonly SPLUNK_TOKEN=$9
 readonly REDIS_PASSWORD=${10}
+readonly D365_API_PREFIX=${11}
 readonly SOAM_KC_REALM_ID="standard"
 readonly D365_API_ENDPOINT="http://$D365_API_PREFIX-$ENV_VAL:5091"
 readonly TIMEZONE="America/Vancouver"

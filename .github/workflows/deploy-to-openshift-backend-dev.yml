@@ -180,7 +180,8 @@ jobs:
               ${{ secrets.SOAM_CLIENT_SECRET }} \
               ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
               ${{ secrets.SPLUNK_TOKEN }} \
-              ${{ secrets.REDIS_PASSWORD }}
+              ${{ secrets.REDIS_PASSWORD }} \
+              ${{ secrets.D365_API_PREFIX }}
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
