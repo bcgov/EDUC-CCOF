@@ -39,7 +39,7 @@
         <p class="pt-4">
           <strong>NOTE:</strong> The information collected through My ChildCareBC Services is collected under the
           authority of the <i>Freedom of Information and Protection of Privacy Act</i> (FOIPPA) and the
-          <i>Early Learning and Child Care Act</i> (SBC 2001, c. 4) and will be used for the purpose of administering
+          <i>Early Learning and Child Care Act</i> and will be used for the purpose of administering
           the Child Care Operating Funding Program, which includes the Child Care Fee Reduction Initiative and the Early
           Childhood Educator (ECE) Wage Enhancement for successfully enrolled applicants. Personal information is
           protected from unauthorized use and disclosure in accordance with FOIPPA. Any questions or concerns about the

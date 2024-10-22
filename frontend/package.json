@@ -57,7 +57,7 @@
     "eslint-plugin-vue": "^9.28.0",
     "flush-promises": "^1.0.2",
     "lodash": "^4.17.21",
-    "vite": "^4.4.9"
+    "vite": "^5.4.6"
   },
   "browserslist": [
     "> 1%",

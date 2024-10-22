@@ -4,26 +4,22 @@
       v-model="drawer"
       :location="$vuetify.display.mdAndUp ? 'left' : null"
       :temporary="!$vuetify.display.mdAndUp"
-      width="200"
-      class="mt-16"
     >
-      <v-list>
+      <v-list :opened="expandedNavBarItems">
         <template v-for="item in items" :key="item.title">
           <v-list-item
             v-if="!item.items"
             :id="stripWhitespace(item.title + `MenuBtn`)"
             :value="item.navBarId"
-            :to="item.isAccessible ? item.link : undefined"
             :disabled="!item.isAccessible"
             class="menuRow"
             :style="{ '--v-list-item-prepend-max-width': '30px' }"
+            @click="goTo(item)"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <v-icon v-if="item.icon">{{ item.icon }}</v-icon>
             </template>
-            <v-list-item-title
-              :class="['menuItem text-wrap', { 'font-weight-bold': item.isActive }]"
-            >
+            <v-list-item-title :class="['menuItem text-wrap', { 'font-weight-bold': item.isActive }]">
               {{ item.title }}
             </v-list-item-title>
           </v-list-item>
@@ -31,13 +27,13 @@
           <v-list-group
             v-else
             :id="stripWhitespace(item.title + `MenuBtn`)"
-            :value="item.expanded"
-            @click="setActive(item)"
+            :value="item.title"
             class="groupMenu"
+            @click="setActive(item)"
           >
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-list-item v-bind="props" :style="{ '--v-list-item-prepend-max-width': '30px' }">
-                <template v-slot:prepend>
+                <template #prepend>
                   <v-icon v-if="item.icon">{{ item.icon }}</v-icon>
                 </template>
                 <v-list-item-title class="menuItem text-wrap">{{ item.title }}</v-list-item-title>
@@ -46,27 +42,30 @@
 
             <v-list-item
               v-for="subItem in item.items"
-              :key="subItem.navBarId"
               :id="stripWhitespace(subItem.title) + `MenuBtn`"
-              :to="subItem.isAccessible ? subItem.link : undefined"
+              :key="subItem.navBarId"
               :disabled="!subItem.isAccessible"
               class="subMenuRow pl-9 d-flex custom-item"
               :style="{ '--v-list-item-prepend-max-width': '30px' }"
+              @click="goTo(subItem)"
             >
-              <template v-slot:prepend>
+              <template #prepend>
                 <v-icon v-if="subItem.icon">{{ subItem.icon }}</v-icon>
               </template>
-              <v-list-item-title
-                :class="['menuItem text-wrap',
-                  { 'font-weight-bold': subItem.isActive },
-                  { 'blue-grey--text': !subItem.isAccessible }
-                ]"
-              >
-                {{ subItem.title }}
+              <v-list-item-title class="text-wrap">
+                <div
+                  :class="[
+                    'menuItem',
+                    { 'font-weight-bold': subItem.isActive },
+                    { 'blue-grey--text': !subItem.isAccessible },
+                  ]"
+                >
+                  {{ subItem.title }}
+                </div>
+                <div>
+                  {{ subItem.subTitle }}
+                </div>
               </v-list-item-title>
-              <v-list-item-subtitle v-if="subItem.subTitle" class="text-left">
-                {{ subItem.subTitle }}
-              </v-list-item-subtitle>
             </v-list-item>
           </v-list-group>
         </template>
@@ -183,6 +182,10 @@ export default {
     },
     ccofConfirmationEnabled() {
       return this.isLicenseUploadComplete != null;
+    },
+
+    expandedNavBarItems() {
+      return this.items?.filter((item) => item.expanded)?.map((item) => item.title);
     },
   },
   watch: {
@@ -991,6 +994,11 @@ export default {
         return fac.ccfriOptInStatus == 0 || fac.isCCFRIComplete;
       });
     },
+    goTo(page) {
+      if (page?.isAccessible) {
+        this.$router.push(page.link);
+      }
+    },
   },
 };
 </script>
@@ -1004,39 +1012,9 @@ export default {
 .menuItem {
   color: #003366;
 }
-/* .v-list-item {
-    height: 35px;
-    min-height: 35px;
-  } */
-
-/* .menuRow, .groupMenu {
-    border-bottom: 2px solid #d2d2d2;
-  } */
-/* .router:hover .v-list-item__content, /deep/.v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
-    text-decoration: underline #003366;
-  } */
-/* .subMenuRow {
-    border-top: 2px solid #d2d2d2;
-    border-left: 4px solid #FCBA19;
-    background-color: white;
-  } */
-.menuRow /deep/ i {
+.menuRow {
   color: #003366;
 }
-/deep/ .active {
-  border-left: 4px solid #fcba19;
-  background-color: white;
-}
-header /deep/ .v-toolbar__content {
-  padding-left: 0 !important;
-}
-/deep/ .v-list-group__header:before {
-  background-color: #e9ebef;
-  height: 10px;
-}
-/* .v-list-item {
-    min-height: 24px!important;
-  } */
 
 .nav-title {
   font-size: 1.4rem;

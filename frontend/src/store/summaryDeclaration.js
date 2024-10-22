@@ -1,15 +1,13 @@
 import { defineStore } from 'pinia';
 
-import { useAppStore } from './app.js';
-import { useApplicationStore } from './application.js';
-import { useAuthStore } from './auth.js';
-import { useNavBarStore } from './navBar.js';
-import { useReportChangesStore } from './reportChanges.js';
-
-import ApiService from '../common/apiService.js';
-import { ApiRoutes } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
-import { CHANGE_REQUEST_TYPES } from '../utils/constants.js';
+import ApiService from '@/common/apiService.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
   const appStore = useAppStore();
@@ -73,7 +71,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
   },
   actions: {
-    model(value) {
+    setModel(value) {
       this.model = value;
     },
     setSummaryModel(value) {
@@ -102,7 +100,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           payload.agreeConsentCertify = null;
           payload.orgContactName = null;
         }
-        this.model(payload);
+        this.setModel(payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
         throw error;
@@ -117,7 +115,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           payload.agreeConsentCertify = null;
           payload.orgContactName = null;
         }
-        this.model(payload);
+        this.setModel(payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
         throw error;
@@ -149,7 +147,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
           this.model.externalStatus = 'SUBMITTED';
-          this.model(this.model);
+          this.setModel(this.model);
           reportChangesStore.updateExternalStatusInChangeRequestStore({
             changeRequestId: changeRequestId,
             newStatus: 2,
@@ -341,7 +339,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           declarationAStatus: payload?.declarationAStatus,
           declarationBStatus: payload?.declarationBStatus,
         };
-        this.model(declarationModel);
+        this.setModel(declarationModel);
 
         // Load Summary model
         let summaryModel = {

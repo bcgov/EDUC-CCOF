@@ -1,5 +1,5 @@
 <template>
-  <v-system-bar absolute color="rgb(0, 51, 102)" class="sysBar">
+  <v-app-bar id="app-header" color="#003366" class="px-5 px-md-10" height="64">
     <!-- Navbar content -->
     <v-container :class="{ sizingForIconXLScreen: $vuetify.display.xl }">
       <v-row class="justify-space-between">
@@ -52,12 +52,11 @@
           </v-menu>
         </div>
         <div v-else-if="isAuthenticated && !dataReady">
-          <v-skeleton-loader type="chip" width="150"
-          class="bg-transparent mt-2" />
+          <v-skeleton-loader type="chip" width="150" class="bg-transparent mt-2" />
         </div>
       </v-row>
     </v-container>
-  </v-system-bar>
+  </v-app-bar>
 </template>
 
 <script>
@@ -111,11 +110,9 @@ a {
   color: #fff;
   text-decoration: none;
 }
-.sysBar {
+#app-header {
   border-bottom: 2px solid rgb(252, 186, 25) !important;
-  z-index: 8;
-  height: 66px !important;
-  text-align: left;
+  z-index: 1002;
 }
 .gov-header .v-btn,
 .v-btn--active.title:before,
@@ -157,5 +154,9 @@ a {
   .display-name {
     display: none;
   }
+}
+
+@media print {
+  #app-header { display: none; }
 }
 </style>
