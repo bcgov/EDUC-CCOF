@@ -147,7 +147,7 @@ if [ "$ENV_VAL" != 'qa' ]; then
 "
 
     echo Creating config map "$APP_NAME-flb-sc-config-map"
-    oc create -n "$OPENSHIFT_NAMESPACE-$NAMESPACE_SUFFIX" \
+    oc create -n "$OPENSHIFT_NAMESPACE" \
        configmap "$APP_NAME-flb-sc-config-map" \
        --from-literal=fluent-bit.conf="$FLB_CONFIG" \
        --from-literal=parsers.conf="$PARSER_CONFIG" \
