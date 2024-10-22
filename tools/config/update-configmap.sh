@@ -26,6 +26,14 @@ elif [ "$ENV_VAL" = "prod" ]; then
 fi
 readonly NAMESPACE_SUFFIX
 
+SITE_MINDER_LOGOUT_URL=""
+if [ "$ENV_VAL" != "prod" ]
+then
+  SITE_MINDER_LOGOUT_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+else
+  SITE_MINDER_LOGOUT_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+fi
+readonly SITE_MINDER_LOGOUT_URL
 
 SOAM_KC="loginproxy.gov.bc.ca"
 SERVER_FRONTEND='mychildcareservices.gov.bc.ca'
