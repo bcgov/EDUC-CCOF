@@ -9,8 +9,6 @@ env:
   # EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
-  SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
-
   # EDIT to change the image registry setting
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -183,7 +181,7 @@ jobs:
               ${{ secrets.SOAM_CLIENT_ID_IDIR }} \
               ${{ secrets.SOAM_CLIENT_SECRET }} \
               ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
-              ${{ env.SPLUNK_TOKEN }} \
+              ${{ secrets.SPLUNK_TOKEN }} \
               ${{ secrets.REDIS_PASSWORD }}
 
           # Start rollout (if necessary) and follow it
