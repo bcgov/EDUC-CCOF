@@ -29,7 +29,7 @@
     <div class="row pt-4 justify-center">
       <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
     </div>
-    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+    <v-form ref="isValidForm" v-model="isValidForm">
       <div v-if="loading">
         <v-skeleton-loader max-height="475px" :loading="loading" type="image, image" />
         <br /><br />
@@ -57,7 +57,7 @@
               <div class="px-md-12 px-7">
                 <br />
 
-                <v-row v-if="arePrevFeesCorrect()" class="d-flex">
+                <v-row class="d-flex">
                   <v-col cols="6">
                     <v-select
                       v-model="CCFRIFacilityModel.childCareTypes[index].feeFrequency"
@@ -77,7 +77,7 @@
                   <v-col v-if="!isReadOnly" cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 60px">
                     <v-tooltip location="top" color="#003366">
                       <template #activator="{ props }">
-                        k<v-card
+                        <v-card
                           style="background-color: #003366 !important; color: #313131"
                           class="tooltip"
                           v-bind="props"
@@ -121,7 +121,7 @@
 
                 <v-container class="ma-0 pa-0 gridContainer">
                   <div class="feeTitle">
-                    <span>Current Fees: </span>
+                    <span>Approved Parent Fees: </span>
                   </div>
 
                   <div class="feeTitle">
@@ -252,7 +252,7 @@
 
                   <!-- End Row One of Grid-->
 
-                  <div v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'" class="feeTitleInput">
+                  <div class="feeTitleInput">
                     <span>New Parent Fees: </span>
                   </div>
 
@@ -354,7 +354,7 @@
 
                 <v-container class="ma-0 pa-0 gridContainer">
                   <div class="feeTitle">
-                    <span>Current Fees: </span>
+                    <span>Approved Parent Fees: </span>
                   </div>
 
                   <div class="feeTitle">
@@ -485,7 +485,7 @@
 
                   <!-- End Row One of Grid-->
 
-                  <div v-if="CCFRIFacilityModel.existingFeesCorrect == '100000000'" class="feeTitleInput">
+                  <div class="feeTitleInput">
                     <span>New Parent Fees: </span>
                   </div>
 
@@ -588,7 +588,6 @@
         </div>
 
         <v-card
-          v-if="arePrevFeesCorrect()"
           elevation="6"
           class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
           min-height="230"
@@ -633,11 +632,11 @@
                 <!-- below will let user view, but not change closure dates from CCFRI application-->
                 <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
                 <v-row v-for="(obj, index) in previousClosureDates.dates" :key="index + 1000" color="black">
-                  <v-col color="#003366" class="col-md-1 col-12 mx-0">
+                  <v-col color="#003366" cols="12" md="1" class="mx-0">
                     <v-icon :disabled="true" size="large" color="blue-darken-4"> mdi-close </v-icon>
                   </v-col>
 
-                  <v-col class="col-md-3 col-12">
+                  <v-col cols="12" md="3">
                     <v-text-field
                       v-model="obj.formattedStartDate"
                       :disabled="true"
@@ -648,7 +647,7 @@
                     />
                   </v-col>
 
-                  <v-col class="col-md-3 col-12">
+                  <v-col cols="12" md="3">
                     <v-text-field
                       v-model="obj.formattedEndDate"
                       :disabled="true"
@@ -659,7 +658,7 @@
                     />
                   </v-col>
 
-                  <v-col class="col-md-3 col-12">
+                  <v-col cols="12" md="3">
                     <v-text-field
                       v-model="obj.closureReason"
                       :disabled="true"
@@ -670,7 +669,7 @@
                     />
                   </v-col>
 
-                  <v-col class="col-md-2 col-12 mt-n10">
+                  <v-col cols="12" md="2" class="mt-n10">
                     <v-radio-group
                       v-model="obj.feesPaidWhileClosed"
                       :disabled="true"
@@ -682,8 +681,6 @@
                       <v-radio label="No" :value="0" />
                     </v-radio-group>
                   </v-col>
-
-                  <span class="text-white"> . </span>
 
                   <v-divider />
                 </v-row>
@@ -841,31 +838,6 @@
             </div>
           </v-card-text>
         </v-card>
-
-        <v-card
-          elevation="6"
-          class="pa-4 mx-auto my-10 rounded-lg col-12"
-          min-height="230"
-          rounded
-          tiled
-          exact
-          tile
-          :ripple="false"
-        >
-          <v-card-text>
-            <p class="text-h6 text--primary">Are these fees listed above correct for this facility?</p>
-            <br />
-            <v-radio-group
-              v-model="CCFRIFacilityModel.existingFeesCorrect"
-              :rules="rules"
-              inline
-              :disabled="isReadOnly"
-            >
-              <v-radio label="Yes" value="100000000" />
-              <v-radio label="No" value="100000001" />
-            </v-radio-group>
-          </v-card-text>
-        </v-card>
       </div>
       <div v-else>
         <div class="row pt-4 justify-center pb-3">
@@ -873,33 +845,6 @@
           <span class="text-h6">Please go back to 'Select Facility' and remove this Facility from your selection.</span>
         </div>
       </div>
-
-      <v-dialog v-model="areFeesCorrect" persistent max-width="600px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="10" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white font-weight-bold">
-                  Incorrect values shown for current fees
-                </v-card-title>
-              </v-col>
-              <v-col cols="2" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row class="pa-6">
-              <p>
-                If the parent fees shown do not match the current fees, call the Child Care Operating Fund Program at
-                <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>.
-              </p>
-            </v-row>
-            <v-row class="d-flex justify-right">
-              <v-btn dark color="primary" :loading="processing" @click="cancel()"> Close </v-btn>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
     </v-form>
 
     <NavButton
@@ -1062,9 +1007,6 @@ export default {
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
-    areFeesCorrect() {
-      return this.CCFRIFacilityModel.existingFeesCorrect == '100000001' ? true : false;
-    },
     getCurrentFacility() {
       return this.getNavByCCFRIId(this.$route.params.urlGuid);
     },
@@ -1133,10 +1075,8 @@ export default {
             }
             arr.push(careCategory);
           }
-          //convert the number to a string so the radio buttons work properly
-          if (this.CCFRIFacilityModel.existingFeesCorrect) {
-            this.CCFRIFacilityModel.existingFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect.toString();
-          }
+          //ccfri-3655remove fees correct question - assume fees always correct
+          this.CCFRIFacilityModel.existingFeesCorrect = '100000000';
 
           this.CCFRIFacilityModel.childCareTypes = arr;
 
@@ -1144,7 +1084,6 @@ export default {
           //rules surronding overlapping dates still apply.
           if (this.previousClosureDates?.dates?.length > 0) {
             this.CCFRIFacilityModel.hasClosureFees = 100000000;
-            //this.chosenDates = [...this.CCFRIFacilityModel.dates , ...this.previousClosureDates.dates];
           }
 
           this.updateChosenDates();
@@ -1216,7 +1155,6 @@ export default {
     },
     cancel() {
       this.dialog = false;
-      this.CCFRIFacilityModel.existingFeesCorrect = null;
     },
     closeDialog() {
       this.showRfiDialog = false;
@@ -1264,15 +1202,8 @@ export default {
     hasModelChanged() {
       return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
-    arePrevFeesCorrect() {
-      return !(
-        !this.CCFRIFacilityModel.existingFeesCorrect || this.CCFRIFacilityModel.existingFeesCorrect == '100000001'
-      );
-    },
     isInputVisible(index) {
-      if (!this.arePrevFeesCorrect()) {
-        return false;
-      } else if (!this.CCFRIFacilityModel.childCareTypes[index].feeFrequency) {
+      if (!this.CCFRIFacilityModel.childCareTypes[index].feeFrequency) {
         return false;
       }
       return true;
@@ -1285,14 +1216,17 @@ export default {
     },
     isFormComplete() {
       //allow the user to submit if they had PCF closure fees, but no additional closure fees on the MTFI
+      console.log(this.isValidForm);
       if (
         this.CCFRIFacilityModel.hasClosureFees == 100000000 &&
         this.isValidForm &&
         this.CCFRIFacilityModel.dates.length === 0 &&
         this.previousClosureDates.dates.length > 0
       ) {
+        console.log('111');
         return true;
       } else if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0) {
+        console.log(this.CCFRIFacilityModel);
         return false;
       }
       return this.isValidForm; //false makes button clickable, true disables button
@@ -1336,8 +1270,11 @@ export default {
         this.$router.push(this.nextPath);
         console.log('I shoudlnt save im read only ');
       } else {
+        console.log('going next');
+        console.log(this.currentPcfCcfri);
         this.currentPcfCcfri.existingFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect;
-        ccfriAppStore.model(this.model);
+        //console.log(this.model);
+        //ccfriAppStore.model(this.model);
 
         //always check for RFI regardless of new or renewal state
         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
