@@ -177,6 +177,9 @@ jobs:
              -p MAX_MEM=${{ env.MAX_MEM }} \
              -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
              -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
+             -p BANNER_COLOR=${{ vars.BANNER_COLOR }} \
+             -p BANNER_ENVIRONMENT=${{ vars.BANNER_ENVIRONMENT }} \
+             -p VUE_APP_BCEID_REG_URL=${{ secrets.VUE_APP_BCEID_REG_URL }} \
               | oc apply -f -
 
           # Start rollout (if necessary) and follow it

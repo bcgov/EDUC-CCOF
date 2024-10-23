@@ -150,10 +150,11 @@
     data:
       config.js: |
         const config = {
-          BANNER_ENVIRONMENT: '${BANNER_ENVIRONMENT}',
+          VUE_APP_META_DATA: [ { name: 'robots', content: 'noindex,nofollow' } ],
           BANNER_COLOR: '${BANNER_COLOR}',
-          TDAD_CONTACT_EMAIL: '${TDAD_CONTACT_EMAIL}',
-          IRREGULAR_EXPENSE_FORM_URL: '${IRREGULAR_EXPENSE_FORM_URL}'
+          BANNER_ENVIRONMENT: '${BANNER_ENVIRONMENT}',
+          VUE_APP_BCEID_REG_URL: '${VUE_APP_BCEID_REG_URL}',
+          DECB_VALIDATION_BYPASS: true,
         };
       snowplow.js: |-
         // <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->
@@ -222,6 +223,15 @@
     required: true
   - name: PRIVATE_KEY
     description: The private key
+    required: true
+  - name: BANNER_ENVIRONMENT
+    description: Environment label for the portal banner
+    required: true
+  - name: BANNER_COLOR
+    description: The color for the environment label in the portal
+    required: true
+  - name: VUE_APP_BCEID_REG_URL
+    description: The bceid registration URL
     required: true
   - name: APP_ENVIRONMENT
     description: The environment being created ('dev', 'qa', 'uat', 'prod')
