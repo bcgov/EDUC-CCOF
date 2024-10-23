@@ -79,7 +79,7 @@ jobs:
             });
 
             if (missingSecrets.length > 0) {
-              core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
+              core.setFailed(`At least one required secret is not set in the repository. \n` +
                 "You can add it using:\n" +
                 "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
                 "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
