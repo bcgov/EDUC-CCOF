@@ -40,7 +40,7 @@ SERVER_FRONTEND='https://mychildcareservices.gov.bc.ca'
 if [ "$ENV_VAL" != "prod" ]
 then
   SOAM_KC="$NAMESPACE_SUFFIX.loginproxy.gov.bc.ca"
-  SERVER_FRONTEND="https://$ENV_VAL.$SERVER_FRONTEND"
+  SERVER_FRONTEND="https://$ENV_VAL.mychildcareservices.gov.bc.ca"
 fi
 readonly SOAM_KC
 readonly SERVER_FRONTEND
