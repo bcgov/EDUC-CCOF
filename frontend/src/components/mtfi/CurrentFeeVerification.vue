@@ -121,11 +121,11 @@
 
                 <v-container class="ma-0 pa-0 gridContainer">
                   <div class="feeTitle">
-                    <span>Approved Parent Fees: </span>
+                    <span class="font-16">Approved Parent Fees: </span>
                   </div>
 
                   <div class="feeTitle">
-                    <span>April:</span>
+                    <span class="font-16">April:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeApr"
                       tabindex="-1"
@@ -141,11 +141,10 @@
                       prefix="$"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class=" ">May:</span>
+                    <span class="font-16">May:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeMay"
                       tabindex="-1"
@@ -158,16 +157,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="May"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMay')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class="">June:</span>
+                    <span class="font-16">June:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeJun"
                       tabindex="-1"
@@ -179,16 +176,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="June"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class="">July:</span>
+                    <span class="font-16">July:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeJul"
                       tabindex="-1"
@@ -200,16 +195,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="July"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class=" ">Aug:</span>
+                    <span class="font-16">Aug:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeAug"
                       tabindex="-1"
@@ -221,16 +214,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="August"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class="">Sept:</span>
+                    <span class="font-16">Sept:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeSep"
                       tabindex="-1"
@@ -242,18 +233,16 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="September"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <!-- End Row One of Grid-->
 
                   <div class="feeTitleInput">
-                    <span>New Parent Fees: </span>
+                    <span class="font-16">New Parent Fees: </span>
                   </div>
 
                   <div class="inputBoxWrapper">
@@ -265,7 +254,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -280,7 +268,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -295,7 +282,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -310,7 +296,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -325,7 +310,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -340,7 +324,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -354,11 +337,11 @@
 
                 <v-container class="ma-0 pa-0 gridContainer">
                   <div class="feeTitle">
-                    <span>Approved Parent Fees: </span>
+                    <span class="font-16">Approved Parent Fees: </span>
                   </div>
 
                   <div class="feeTitle">
-                    <span>Oct:</span>
+                    <span class="font-16">Oct:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeOct"
                       tabindex="-1"
@@ -374,11 +357,10 @@
                       prefix="$"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class=" ">Nov:</span>
+                    <span class="font-16">Nov:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeNov"
                       tabindex="-1"
@@ -391,16 +373,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="May"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMay')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class="">Dec:</span>
+                    <span class="font-16">Dec:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeDec"
                       tabindex="-1"
@@ -412,16 +392,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="June"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class="">Jan:</span>
+                    <span class="font-16">Jan:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeJan"
                       tabindex="-1"
@@ -433,16 +411,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="July"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class=" ">Feb:</span>
+                    <span class="font-16">Feb:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeFeb"
                       tabindex="-1"
@@ -454,16 +430,14 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="August"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <div class="feeTitle">
-                    <span class="">Mar:</span>
+                    <span class="font-16">Mar:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeMar"
                       tabindex="-1"
@@ -475,18 +449,16 @@
                       readonly
                       :disabled="false"
                       :rules="feeRules"
-                      label="September"
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
                     />
-                    <v-divider class="border-opacity-100" vertical />
                   </div>
 
                   <!-- End Row One of Grid-->
 
                   <div class="feeTitleInput">
-                    <span>New Parent Fees: </span>
+                    <span class="font-16">New Parent Fees: </span>
                   </div>
 
                   <div class="inputBoxWrapper">
@@ -497,7 +469,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -512,7 +483,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -527,7 +497,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -542,7 +511,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -557,7 +525,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -572,7 +539,6 @@
                       :disabled="isReadOnly"
                       variant="outlined"
                       :rules="feeRules"
-                      label=""
                       prefix="$"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -586,259 +552,8 @@
             </v-card-text>
           </v-card>
         </div>
-
-        <v-card
-          elevation="6"
-          class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
-          min-height="230"
-          rounded
-          tiled
-          exact
-          tile
-          :ripple="false"
-        >
-          <v-card-text class="pa-0">
-            <div class="pa-2 pa-md-4 ma-0 backG">
-              <p class="text-h5 text--primary px-5 py-0 my-0">
-                Do you charge parent fees at this facility for any closures on business days?
-              </p>
-            </div>
-            <div class="px-md-12 px-7">
-              <br />
-              <div>
-                <p>
-                  Do you charge parent fees at this facility for any closures on business days? Indicate the facility
-                  closures on business days within the current fiscal year other than
-                  <a
-                    href="https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays"
-                  >
-                    British Columbia Statutory Holidays.
-                  </a>
-                  Only indicate the date of closures where parent fees are charged.
-                </p>
-              </div>
-              <v-radio-group
-                v-model="CCFRIFacilityModel.hasClosureFees"
-                required
-                :disabled="isReadOnly || previousClosureDates.dates.length > 0"
-                :rules="rules"
-              >
-                <br />
-                <v-radio label="Yes" :value="100000000" />
-                <v-radio label="No" :value="100000001" />
-              </v-radio-group>
-
-              <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
-                <!-- below will let user view, but not change closure dates from CCFRI application-->
-                <!-- index is i + 1000 to avoid collisions with the keys being used in CCFRIFacilityModel.dates-->
-                <v-row v-for="(obj, index) in previousClosureDates.dates" :key="index + 1000" color="black">
-                  <v-col color="#003366" cols="12" md="1" class="mx-0">
-                    <v-icon :disabled="true" size="large" color="blue-darken-4"> mdi-close </v-icon>
-                  </v-col>
-
-                  <v-col cols="12" md="3">
-                    <v-text-field
-                      v-model="obj.formattedStartDate"
-                      :disabled="true"
-                      variant="outlined"
-                      :rules="rules"
-                      label="Start Date (YYYY-MM-DD)"
-                      readonly
-                    />
-                  </v-col>
-
-                  <v-col cols="12" md="3">
-                    <v-text-field
-                      v-model="obj.formattedEndDate"
-                      :disabled="true"
-                      variant="outlined"
-                      required
-                      label="End Date (YYYY-MM-DD)"
-                      readonly
-                    />
-                  </v-col>
-
-                  <v-col cols="12" md="3">
-                    <v-text-field
-                      v-model="obj.closureReason"
-                      :disabled="true"
-                      label="Closure Reason"
-                      variant="outlined"
-                      :rules="rules"
-                      color="red"
-                    />
-                  </v-col>
-
-                  <v-col cols="12" md="2" class="mt-n10">
-                    <v-radio-group
-                      v-model="obj.feesPaidWhileClosed"
-                      :disabled="true"
-                      inline
-                      label="Did parents pay for this closure?"
-                      :rules="dateRules"
-                    >
-                      <v-radio label="Yes" :value="1" />
-                      <v-radio label="No" :value="0" />
-                    </v-radio-group>
-                  </v-col>
-
-                  <v-divider />
-                </v-row>
-                <!-- end v for-->
-                <br /><br />
-
-                <!-- below will let user enter new dates-->
-                <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
-                  <v-col color="#003366" class="col-md-1 col-12 mx-0">
-                    <v-icon
-                      :disabled="isReadOnly"
-                      size="large"
-                      color="blue-darken-4"
-                      class=""
-                      @click="removeIndex(index)"
-                    >
-                      mdi-close
-                    </v-icon>
-                  </v-col>
-
-                  <v-col class="col-md-3 col-12">
-                    <v-menu
-                      v-model="obj.calendarMenu1"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ props }">
-                        <v-text-field
-                          v-model="obj.formattedStartDate"
-                          :disabled="isReadOnly"
-                          variant="outlined"
-                          :rules="rules"
-                          label="Select Start Date (YYYY-MM-DD)"
-                          readonly
-                          v-bind="props"
-                          @click="updateChosenDates()"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="obj.formattedStartDate"
-                        :min="fiscalStartAndEndDates.startDate"
-                        :max="fiscalStartAndEndDates.endDate"
-                        :allowed-dates="allowedDates"
-                        clearable
-                        @input="obj.calendarMenu1 = false"
-                      />
-                    </v-menu>
-                  </v-col>
-
-                  <v-col class="col-md-3 col-12">
-                    <v-menu
-                      v-model="obj.calendarMenu2"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ props }">
-                        <v-text-field
-                          v-model="obj.formattedEndDate"
-                          :disabled="isReadOnly"
-                          variant="outlined"
-                          required
-                          label="Select End Date (YYYY-MM-DD)"
-                          readonly
-                          :rules="rules"
-                          v-bind="props"
-                          @click="updateChosenDates()"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="obj.formattedEndDate"
-                        clearable
-                        :min="obj.formattedStartDate"
-                        :max="fiscalStartAndEndDates.endDate"
-                        :allowed-dates="allowedDates"
-                        @input="obj.calendarMenu2 = false"
-                        @click:date="isDateLegal(obj)"
-                      />
-                    </v-menu>
-                  </v-col>
-
-                  <v-col class="col-md-3 col-12">
-                    <v-text-field
-                      v-model="obj.closureReason"
-                      :disabled="isReadOnly"
-                      label="Closure Reason"
-                      variant="outlined"
-                      clearable
-                      :rules="rules"
-                      color="red"
-                    />
-                  </v-col>
-
-                  <v-col class="col-md-2 col-12 mt-n10">
-                    <v-radio-group
-                      v-model="obj.feesPaidWhileClosed"
-                      :disabled="isReadOnly"
-                      inline
-                      label="Did parents pay for this closure?"
-                      :rules="dateRules"
-                    >
-                      <v-radio label="Yes" :value="1" />
-                      <v-radio label="No" :value="0" />
-                    </v-radio-group>
-                  </v-col>
-
-                  <span class="text-white"> . </span>
-                  <v-row v-if="obj.isIllegal">
-                    <v-card width="100%" class="mx-3 my-10">
-                      <v-row>
-                        <v-col class="py-0">
-                          <v-card-title class="py-1 noticeAlert">
-                            <span style="float: left">
-                              <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                            </span>
-                            Invalid Dates
-                          </v-card-title>
-                        </v-col>
-                      </v-row>
-                      <v-card-text>
-                        It appears that the closure start and end dates you've selected for this facility overlap with
-                        dates you've previously selected.
-                        <br /><br />
-                        Closure Start Date: {{ obj.formattedStartDate }}
-                        <br />
-                        Closure End Date: {{ obj.formattedEndDate }} <br /><br />
-
-                        Please review your existing facility closure dates to ensure consistency and avoid any potential
-                        overlap of Facility closure dates.
-                        <br />
-                        Thank you for your attention
-                      </v-card-text>
-                    </v-card>
-                  </v-row>
-
-                  <v-divider />
-                </v-row>
-                <!-- end v for-->
-                <br /><br />
-
-                <v-container>
-                  <v-row>
-                    <v-btn class="my-5" dark color="#003366" :disabled="isReadOnly" @click="addRow()">
-                      ADD NEW CLOSURE
-                    </v-btn>
-                  </v-row>
-                </v-container>
-                <br />
-              </v-row>
-            </div>
-          </v-card-text>
-        </v-card>
       </div>
+
       <div v-else>
         <div class="row pt-4 justify-center pb-3">
           <span class="text-h6">No Approved Parent fees have been found for this facility.</span>
@@ -850,8 +565,8 @@
     <NavButton
       :is-next-displayed="true"
       :is-save-displayed="true"
-      :is-save-disabled="isReadOnly || loading || hasIllegalDates()"
-      :is-next-disabled="!isFormComplete() || hasIllegalDates()"
+      :is-save-disabled="isReadOnly || loading"
+      :is-next-disabled="!isValidForm"
       :is-processing="processing"
       @previous="previous"
       @next="next"
@@ -916,23 +631,6 @@ import { isEqual } from 'lodash';
 import ApiService from '../../common/apiService.js';
 import FacilityHeader from '../guiComponents/FacilityHeader.vue';
 
-function dateFunction(date1, date2) {
-  const startDate = new Date(date1);
-  const endDate = new Date(date2);
-
-  let dates = [];
-
-  let currentDate = new Date(startDate.getTime());
-
-  while (currentDate <= endDate) {
-    console.log();
-    dates.push(currentDate.toISOString().substring(0, 10));
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return dates;
-}
-
 let model = {};
 
 export default {
@@ -952,7 +650,6 @@ export default {
       currentPcfCcfri: undefined,
       isUnlocked: false,
       model,
-      //isReadOnly: false,
       isValidForm: false,
       processing: false,
       loading: false,
@@ -962,15 +659,6 @@ export default {
         (v) => v <= 9999 || 'Max fee is $9999.00',
         (v) => v >= 0 || 'Input a positve number',
       ],
-      dateRules: [(v) => typeof v === 'number' || 'Required.'],
-      dateObj: {
-        datePicker1: undefined,
-        datePicker2: undefined,
-        closureReason: '',
-        feesPaidWhileClosed: undefined,
-      },
-      closureFees: 'No',
-      chosenDates: [],
     };
   },
   computed: {
@@ -979,7 +667,6 @@ export default {
       'ccfriChildCareTypes',
       'loadedModel',
       'ccfriId',
-      'previousClosureDates',
       'getCCFRIById',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
@@ -1033,7 +720,6 @@ export default {
           this.currentFacility = this.applicationMap
             .get(this.programYearId)
             ?.facilityList.find((el) => el.facilityId == fac.facilityId); //facility from applicationMAP so we can grab the old PCF ccfriID no matter what year we are on.
-          await this.getClosureDates(this.currentFacility.ccfriApplicationId);
           this.currentPcfCcfri = await this.getPreviousApprovedFees({
             facilityId: this.currentFacility.facilityId,
             programYearId: this.programYearId,
@@ -1080,14 +766,6 @@ export default {
 
           this.CCFRIFacilityModel.childCareTypes = arr;
 
-          //if this facility has closure fees on their PCF- make sure they are visible and included on the MTFI
-          //rules surronding overlapping dates still apply.
-          if (this.previousClosureDates?.dates?.length > 0) {
-            this.CCFRIFacilityModel.hasClosureFees = 100000000;
-          }
-
-          this.updateChosenDates();
-
           this.loading = false;
         } catch (error) {
           console.log(error);
@@ -1108,51 +786,13 @@ export default {
       'decorateWithCareTypes',
       'getCcfriOver3percent',
       'loadCCFisCCRIMedian',
-      'getClosureDates',
       'setLoadedModel',
       'setCCFRIFacilityModel',
+      'setModel',
     ]),
     ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
     ...mapActions(useNavBarStore, ['setNavBarCCFRIComplete', 'setNavBarValue']),
-    addRow() {
-      this.updateChosenDates();
-      this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
-    },
-    removeIndex(index) {
-      this.CCFRIFacilityModel.dates.splice(index, 1);
-      this.updateChosenDates();
-    },
-    allowedDates(val) {
-      return !this.chosenDates.includes(val);
-    },
-    updateChosenDates() {
-      this.chosenDates = [];
-      this.CCFRIFacilityModel.dates.forEach((dateObj) => {
-        this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
-      });
 
-      if (this.previousClosureDates?.dates?.length > 0) {
-        this.previousClosureDates.dates.forEach((dateObj) => {
-          this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
-        });
-      }
-
-      console.log('chosen dates look like: ');
-      console.log(this.chosenDates);
-    },
-    isDateLegal(obj) {
-      let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
-      obj.isIllegal = false;
-
-      dates.forEach((date) => {
-        if (this.chosenDates.includes(date)) {
-          obj.isIllegal = true;
-        }
-      });
-    },
-    hasIllegalDates() {
-      return this.CCFRIFacilityModel?.dates?.some((el) => el.isIllegal);
-    },
     cancel() {
       this.dialog = false;
     },
@@ -1214,23 +854,7 @@ export default {
         this.currentPcfCcfri.childCareTypes[index].feeFrequency
       );
     },
-    isFormComplete() {
-      //allow the user to submit if they had PCF closure fees, but no additional closure fees on the MTFI
-      console.log(this.isValidForm);
-      if (
-        this.CCFRIFacilityModel.hasClosureFees == 100000000 &&
-        this.isValidForm &&
-        this.CCFRIFacilityModel.dates.length === 0 &&
-        this.previousClosureDates.dates.length > 0
-      ) {
-        console.log('111');
-        return true;
-      } else if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0) {
-        console.log(this.CCFRIFacilityModel);
-        return false;
-      }
-      return this.isValidForm; //false makes button clickable, true disables button
-    },
+
     getMtfiFacility(facilityId) {
       let mtfiFacility;
       const changeRequest = this.changeRequestMap?.get(this.$route.params.changeRecGuid);
@@ -1265,16 +889,11 @@ export default {
       }
     },
     async next() {
-      const ccfriAppStore = useCcfriAppStore();
       if (this.isReadOnly && !this.loading) {
         this.$router.push(this.nextPath);
-        console.log('I shoudlnt save im read only ');
       } else {
-        console.log('going next');
-        console.log(this.currentPcfCcfri);
         this.currentPcfCcfri.existingFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect;
-        //console.log(this.model);
-        //ccfriAppStore.model(this.model);
+        this.setModel({ ...this.currentPcfCcfri });
 
         //always check for RFI regardless of new or renewal state
         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
@@ -1301,7 +920,6 @@ export default {
             this.getMtfiFacility(this.currentFacility.facilityId).hasRfi = false; //update it in the change request as well
             // Use nextTick to ensure the DOM is updated before continuing
             await this.$nextTick();
-            console.log('deleting RFI');
             await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
           }
           await this.save(false);
@@ -1319,17 +937,16 @@ export default {
     validateForm() {},
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
-      this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete() });
+      this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isValidForm });
       try {
         if (this.hasModelChanged()) {
           this.processing = true;
           this.setLoadedModel(deepCloneObject(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          console.log('SAVING!', this.getNavByCCFRIId(this.$route.params.urlGuid));
           await this.saveCcfri({
-            isFormComplete: this.isFormComplete(),
+            isFormComplete: this.isValidForm,
             hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
           });
-          this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete() });
+          this.setNavBarCCFRIComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isValidForm });
           this.processing = false;
         }
         if (showMessage) {
@@ -1347,6 +964,10 @@ export default {
 <style scoped>
 .blueBorder {
   border-top: 55px solid grey !important;
+}
+
+.font-16 {
+  font-size: 16px;
 }
 
 .backG {

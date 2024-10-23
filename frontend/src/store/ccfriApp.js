@@ -29,12 +29,10 @@ function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, 
 }
 
 function isLocked(applicationStatus, navBarList, facilityId) {
-  //console.log(facilityId, 'faccccc');
   let currentFac = navBarList.find((element) => {
     return element.facilityId == facilityId;
   });
 
-  //console.log('currentFAC in store', currentFac);
   //if submitted, lock er up. If unlock CCFRI - unlock
   if (currentFac.unlockCcfri) {
     return false;
@@ -47,7 +45,6 @@ function getProgramYear(selectedGuid, programYearList) {
   const programYear = programYearList.find(({ programYearId }) => programYearId == selectedGuid);
 
   if (!programYear) {
-    //console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
     throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ';
   }
 
@@ -135,7 +132,8 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
   },
   actions: {
     // TODO: Refactor all setters as setThing.  You can just set the state directly with Pinia
-    model(value) {
+    //jb-mtfi- I am not sure this is any different than ccfriFacilityModel?
+    setModel(value) {
       this.model = value;
     },
     isValidForm(value) {
@@ -256,7 +254,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     getPreviousCareType(currentRFI, careType, previousProgramYearId) {
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
-      // console.log('CURRENTRFI', currentRFI);
       // Lookup previous years approved parent fees for most RFI scenarios
       if (currentRFI.existingFeesCorrect == 100000000 && applicationStore.isRenewal) {
         let previousRFI = this.getPreviousApprovedFeesByFacilityId({
@@ -296,7 +293,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
-      //console.log('getCcfriOver3percent.currentRFI: ', this.CCFRIFacilityModel);
       const threePercentMedian = this.getCCFRIMedianById(currentCcfri ? currentCcfri.ccfriApplicationId : this.ccfriId);
       console.log(threePercentMedian);
       this.CCFRIFacilityModel.childCareTypes
@@ -348,7 +344,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
             console.log('NO median found, sleeping...');
             //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
             await sleep(10 * 1000);
-            //console.log("I should have slept for 10 seconds");
             response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${this.ccfriId}/median`);
             if (response?.data) {
               this.addCCFRIMedianToStore({ ccfriId: this.ccfriId, ccfriMedian: response.data });
@@ -423,6 +418,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         }
       }
     },
+    //removed from MTFI - do we need this?
     async getClosureDates(ccfriId) {
       try {
         const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
@@ -452,8 +448,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         });
 
         console.log(prevCcfriApp, 'in upper try');
-
-        //('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
         response.data.forEach((item) => {

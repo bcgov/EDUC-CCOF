@@ -121,9 +121,6 @@ export const useNavBarStore = defineStore('navBar', {
         return null;
       }
       if (state.changeType === 'mtfi') {
-        console.log('calling by nav');
-        console.log(state, ' is the state in getNav');
-
         return state.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
         return state.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
@@ -139,26 +136,16 @@ export const useNavBarStore = defineStore('navBar', {
     },
     //find the change action details details(the data element below change Action)
     getChangeActionDetails: (state) => (detailsProperty, detailsKey, detailsId) => {
-      console.log(state);
-      console.log(detailsProperty);
-      console.log(detailsKey);
-      console.log(detailsId);
       let item = null;
-      console.log(state);
       let change = state.changeRequestMap.get(state.changeRequestId);
       if (change?.changeActions && change.changeActions.length > 0) {
         let details = change.changeActions[0][detailsProperty];
         item = details?.find((el) => el[detailsKey] == detailsId);
       }
-      console.log('item in fn', item);
       return item;
     },
   },
   actions: {
-    someFunction() {
-      console.log('called from actions');
-    },
-
     setNavBarItems(value) {
       this.navBarItems = value;
     },
