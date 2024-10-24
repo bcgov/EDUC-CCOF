@@ -140,21 +140,21 @@ export default {
       currentrow: null,
       headers: [
         {
-          text: 'Document',
+          title: 'Document',
           align: 'left',
           sortable: false,
           value: 'document',
           class: 'table-header',
         },
         {
-          text: 'Description',
+          title: 'Description',
           align: 'left',
           sortable: false,
           value: 'notetext',
           class: 'table-header',
         },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'left',
           sortable: false,
           value: 'actions',

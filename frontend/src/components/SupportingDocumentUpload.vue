@@ -1,7 +1,7 @@
 <template>
   <v-form ref="form" v-model="isValidForm">
     <v-container>
-      <v-row justify="space-around">
+      <div>
         <v-card class="cc-top-level-card mx-12" width="100%">
           <v-card-title class="text-center text-wrap">
             <span class="text-h5">
@@ -94,27 +94,24 @@
             <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
           </v-card>
         </v-card>
-      </v-row>
-      <v-row v-if="isChangeRequest">
-        <v-card v-if="isLoading" class="mx-auto mb-4 rounded-lg cc-top-level-card mx-12" width="100%">
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="card-heading" />
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar" />
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="list-item-avatar" />
-        </v-card>
-        <v-card v-else class="px-0 py-0 mx-auto mb-4 rounded-lg cc-top-level-card mx-12" width="100%">
-          <v-card-text class="pt-7 pa-0">
-            <div class="px-md-12 px-7">
-              <p class="text-h5 text--primary">
-                Would you like to report any other changes to your licence or service?
-              </p>
-              <v-radio-group v-model="otherChanges" required :rules="rules.required" :disabled="isLocked">
-                <v-radio label="Yes" value="Yes" />
-                <v-radio label="No" value="No" @click="noReportChanges()" />
-              </v-radio-group>
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-row>
+      </div>
+      <div v-if="isChangeRequest" class="mx-12">
+        <v-skeleton-loader :loading="isLoading" type="table-tbody">
+          <v-card class="mb-8 rounded-lg cc-top-level-card" width="100%">
+            <v-card-text class="pt-7 pa-0">
+              <div class="px-md-12 px-7">
+                <p class="text-h5 text--primary">
+                  Would you like to report any other changes to your licence or service?
+                </p>
+                <v-radio-group v-model="otherChanges" required :rules="rules.required" :disabled="isLocked">
+                  <v-radio label="Yes" value="Yes" />
+                  <v-radio label="No" value="No" @click="noReportChanges()" />
+                </v-radio-group>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-skeleton-loader>
+      </div>
       <v-row v-if="otherChanges == 'Yes'" class="d-flex justify-center">
         <GroupChangeDialogueContent style="max-width: 1200px" class="pb-4" />
       </v-row>

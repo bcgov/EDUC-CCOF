@@ -219,7 +219,7 @@
       >
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
-      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-8'">
+      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-12'">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -423,6 +423,7 @@
   </v-container>
 </template>
 <script>
+import { cloneDeep, isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -446,11 +447,6 @@ import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumen
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
-
-let model = {
-  agreeConsentCertify: undefined,
-  orgContactName: undefined,
-};
 
 export default {
   components: {
@@ -495,7 +491,13 @@ export default {
     ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['canSubmit', 'navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isSummaryLoading', 'isMainLoading', 'isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, [
+      'declarationModel',
+      'summaryModel',
+      'isSummaryLoading',
+      'isMainLoading',
+      'isLoadingComplete',
+    ]),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
       'isRenewal',
@@ -631,8 +633,9 @@ export default {
     await this.getChangeRequestList();
     await this.loadSummary(this.$route.params?.changeRecGuid);
     await this.loadData();
-    const summaryDeclarationStore = useSummaryDeclarationStore();
-    this.model = summaryDeclarationStore.model ?? model;
+    if (!isEmpty(this.declarationModel)) {
+      this.model = cloneDeep(this.declarationModel);
+    }
 
     // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
     if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
@@ -670,7 +673,7 @@ export default {
       'loadChangeRequestDeclaration',
       'loadChangeRequestSummaryDeclaration',
       'loadSummary',
-      'setModel',
+      'setDeclarationModel',
       'updateApplicationStatus',
       'updateDeclaration',
     ]),
@@ -717,7 +720,7 @@ export default {
     async submit() {
       this.isProcessing = true;
       try {
-        this.setModel(this.model);
+        this.setDeclarationModel(this.model);
         if (this.isChangeRequest) {
           // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });

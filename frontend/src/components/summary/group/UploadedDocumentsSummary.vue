@@ -98,13 +98,13 @@ export default {
       supportingDocumentItems: [],
       headers: [
         {
-          text: 'Document',
+          title: 'Document',
           align: 'start',
           sortable: false,
           value: 'filename',
         },
         {
-          text: 'Description',
+          title: 'Description',
           sortable: false,
           value: 'description',
         },

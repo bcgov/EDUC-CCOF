@@ -79,7 +79,7 @@ export default {
       const selectedOrgType = this.organizationTypeList.find((obj) => obj.id === organizationTypeId)?.name;
       if (!incorporationNumber) {
         if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
-          return ['This field is required'];
+          return rules.required;
         }
       }
       return [];
@@ -89,6 +89,7 @@ export default {
         this.model.address2 = '';
         this.model.city2 = '';
         this.model.postalCode2 = '';
+        this.model.province2 = PROVINCES.find((province) => province.value === 'BC')?.value;
       }
     },
     isGroup() {
@@ -111,6 +112,7 @@ export default {
         this.model.address2 = this.model.address1;
         this.model.city2 = this.model.city1;
         this.model.postalCode2 = this.model.postalCode1;
+        this.model.province2 = this.model.province1;
       }
       this.processing = true;
       this.setIsStarted(true);
