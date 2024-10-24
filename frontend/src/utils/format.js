@@ -53,6 +53,6 @@ export function formatTime24to12(time24h) {
   const minutes = time24h?.split(':')[1];
   const ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
+  hours = hours || 12; // the hour '0' should be '12'
   return `${hours}:${minutes} ${ampm}`;
 }

@@ -301,8 +301,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         } // end FOR loop. FIXME: make loop brief enough to read in one view
 
         summaryModel.allDocuments = null;
-        console.log('LOADDDDING');
-        console.log(summaryModel);
         if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
