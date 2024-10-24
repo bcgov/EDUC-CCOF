@@ -182,6 +182,7 @@ export default {
         this.model.address2 = this.model.address1;
         this.model.city2 = this.model.city1;
         this.model.postalCode2 = this.model.postalCode1;
+        this.model.province2 = this.model.province1;
       }
       if (!this.isGroup()) {
         // For Family, we will need to set the postal code from organization.
@@ -189,6 +190,7 @@ export default {
           await this.loadOrganization(this.organizationId);
         }
         this.model.postalCode = this.organizationModel.postalCode1;
+        this.model.province = this.organizationModel.province1;
       }
       this.setFacilityModel({ ...this.model });
       this.processing = true;

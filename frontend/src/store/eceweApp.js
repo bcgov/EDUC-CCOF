@@ -78,6 +78,8 @@ export const useEceweAppStore = defineStore('eceweApp', {
           publicSector: loadedChangeRequest.publicSector,
           facilities: this.eceweModel?.facilities,
         };
+        console.log('================== loadECEWEModelFromChangeRequest ====================== ');
+        console.log(eceweModel);
         this.setEceweModel(eceweModel);
         this.setLoadedModel(eceweModel);
       }
