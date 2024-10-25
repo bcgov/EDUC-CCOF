@@ -49,6 +49,11 @@ async function getBrowserContext() {
  * Gracefully close the browser and all of its pages/contexts.
  */
 async function closeBrowser() {
+  if (browser === null) {
+    log.warn('Puppeteer :: closeBrowser called with null browser');
+    return;
+  }
+
   const pages = await browser.pages();
   if (pages.length === 1) {
     await browser.close();
