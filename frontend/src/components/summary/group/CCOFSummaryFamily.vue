@@ -240,7 +240,7 @@
                   <span class="summary-label pt-3">From:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="formatTime24to12(funding?.hoursFrom12hr)"
+                    :model-value="formatTime24to12(funding?.hoursFrom)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -254,7 +254,7 @@
                   <span class="summary-label pt-3">To:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="formatTime24to12(funding?.hoursTo12hr)"
+                    :model-value="formatTime24to12(funding?.hoursTo)"
                     class="summary-value"
                     density="compact"
                     flat

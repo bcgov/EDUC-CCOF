@@ -40,7 +40,7 @@
               <v-row>
                 <v-col cols="12" md="6">
                   <AppTimeInput
-                    v-model="model.hoursFrom12hr"
+                    v-model="model.hoursFrom"
                     :rules="rules.required"
                     :disabled="isLocked"
                     :hide-details="isLocked"
@@ -49,8 +49,8 @@
                 </v-col>
                 <v-col cols="12" md="6">
                   <AppTimeInput
-                    v-model="model.hoursTo12hr"
-                    :rules="[...rules.required, rules.validHourTo(model.hoursFrom12hr)]"
+                    v-model="model.hoursTo"
+                    :rules="[...rules.required, rules.validHourTo(model.hoursFrom)]"
                     :disabled="isLocked"
                     :hide-details="isLocked"
                     label="Facility hours of operation to"

@@ -218,7 +218,7 @@
                   <span class="summary-label pt-3">From:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="formatTime24to12(funding?.hoursFrom12hr)"
+                    :model-value="formatTime24to12(funding?.hoursFrom)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -232,7 +232,7 @@
                   <span class="summary-label pt-3">To:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="formatTime24to12(funding?.hoursTo12hr)"
+                    :model-value="formatTime24to12(funding?.hoursTo)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -875,13 +875,13 @@ export default {
   font-size: medium;
   color: black;
 }
->>> .summary-value .v-label {
-  color: #ff5252;
-  opacity: 1;
+:deep(.summary-value .v-label) {
+  color: red !important;
+  opacity: 1 !important;
 }
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
 }
 .summary-label-smaller {
   color: grey;

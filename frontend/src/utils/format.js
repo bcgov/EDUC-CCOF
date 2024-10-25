@@ -52,7 +52,6 @@ export function formatTime24to12(time24h) {
   let hours = Number(time24h?.split(':')[0]);
   const minutes = time24h?.split(':')[1];
   const ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours || 12; // the hour '0' should be '12'
-  return `${hours}:${minutes} ${ampm}`;
+  const hours12hFormat = hours % 12 || 12;
+  return `${hours12hFormat}:${minutes} ${ampm}`;
 }
