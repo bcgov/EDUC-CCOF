@@ -44,6 +44,7 @@
             <v-file-input
               v-else
               :id="String(item.id)"
+              @update:model-value="selectFile"
               color="#003366"
               :rules="fileRules"
               prepend-icon="mdi-file-upload"
@@ -55,7 +56,6 @@
               :error-messages="fileInputError"
               required
               @click:clear="deleteItem(item)"
-              @change="selectFile"
               @click="uploadDocumentClicked($event)"
             />
           </template>
@@ -206,7 +206,7 @@ export default {
 
     this.fileRules = [
       (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
+      (value) => !value || value.name?.length < 255 || 'File name can be max 255 characters.',
       (value) =>
         !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
       (value) =>
@@ -220,15 +220,13 @@ export default {
     async selectFile(file) {
       if (file) {
         const doc = await this.readFile(file);
-        if (this.isValidForm) {
-          const clonedDoc = deepCloneObject(doc);
-          const obj = {
-            id: this.currentrow,
-            documentType: this.rFIType,
-            ...clonedDoc,
-          };
-          this.$emit('addRFIDocument', obj);
-        }
+        const clonedDoc = deepCloneObject(doc);
+        const obj = {
+          id: this.currentrow,
+          documentType: this.rFIType,
+          ...clonedDoc,
+        };
+        this.$emit('addRFIDocument', obj);
       }
     },
     descriptionChanged(item) {
@@ -241,30 +239,42 @@ export default {
       }
     },
     readFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsBinaryString(file);
-        reader.onload = () => {
-          const doc = {
-            filename:
-              this.changeType == CHANGE_TYPES.MTFI
-                ? getFileNameWithMaxNameLength(`MTFI_${file.name}`)
-                : getFileNameWithMaxNameLength(file.name),
-            filesize: file.size,
-            documentbody: window.btoa(reader.result),
+      try {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsArrayBuffer(file); // Use readAsArrayBuffer instead
+
+          reader.onload = () => {
+            const arrayBuffer = reader.result;
+            const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+            const base64String = window.btoa(binaryString); // Convert to Base64
+
+            const doc = {
+              filename:
+                this.changeType == CHANGE_TYPES.MTFI
+                  ? getFileNameWithMaxNameLength(`MTFI_${file.name}`)
+                  : getFileNameWithMaxNameLength(file.name),
+              filesize: file.size,
+              documentbody: base64String,
+            };
+            resolve(doc);
           };
-          resolve(doc);
-        };
-        reader.onabort = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-        reader.onerror = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-      });
+
+          reader.onabort = () => {
+            this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
+            reject();
+          };
+
+          reader.onerror = () => {
+            this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
+            reject();
+          };
+        });
+      } catch (error) {
+        console.log('file error: ', error);
+      }
     },
+
     uploadDocumentClicked(event) {
       this.currentrow = event.target.id;
     },
@@ -291,7 +301,7 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.rFIType + (this.uploadedRFITypeDocuments.length + 1);
+      addObj.id = this.rFIType + (this.uploadedRFITypeDocuments?.length + 1);
       addObj.documentType = this.rFIType;
       this.editItem(addObj);
       this.$emit('addRFIRow', addObj);

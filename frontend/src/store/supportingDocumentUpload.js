@@ -13,6 +13,7 @@ export const useSupportingDocumentUploadStore = defineStore('supportingDocumentU
     },
     async saveUploadedDocuments(payload) {
       console.log('save uploaded documents called');
+      console.log('da payload', payload);
       try {
         let response = await ApiService.apiAxios.post(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, payload);
         console.log('save uploaded documents called');
@@ -24,8 +25,10 @@ export const useSupportingDocumentUploadStore = defineStore('supportingDocumentU
     },
     async getDocuments(applicationId) {
       try {
+        console.log('cALLLING FOR DOCS');
         this.setUploadedDocuments([]);
         let response = await ApiService.apiAxios.get(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD + '/' + applicationId);
+        console.log(response.data);
         this.setUploadedDocuments(response.data);
         console.log('get documents called');
       } catch (error) {

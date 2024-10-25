@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia';
 import { isEmpty, isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
 import ApiService from '../common/apiService.js';
+import { deepCloneObject } from '../utils/common.js';
 import { ApiRoutes } from '../utils/constants.js';
 import { checkSession } from '../utils/session.js';
-import { deepCloneObject } from '../utils/common.js';
 
 export const useRfiAppStore = defineStore('rfiApp', {
   store: () => ({
@@ -20,6 +20,9 @@ export const useRfiAppStore = defineStore('rfiApp', {
   }),
   getters: {
     getByCcfriId: (state) => (ccfriId) => {
+      if (!state.rfiStore) state.rfiStore = {};
+      console.log(ccfriId);
+      console.log(state.rfiStore);
       return state.rfiStore[ccfriId];
     },
   },
@@ -31,6 +34,7 @@ export const useRfiAppStore = defineStore('rfiApp', {
       this.loadedModel = value;
     },
     addRfiToStore({ ccfriId, model }) {
+      console.log('adding RFI to store');
       if (ccfriId) {
         this.rfiStore[ccfriId] = model;
       }
@@ -38,10 +42,12 @@ export const useRfiAppStore = defineStore('rfiApp', {
     async loadRfi(ccfriId) {
       console.log('loading RFI for: ', ccfriId);
       let rfiModel = this.getByCcfriId(ccfriId);
+      console.log('did find RFI model?', rfiModel);
       if (rfiModel) {
         this.setRfiModel(rfiModel);
         this.setLoadedModel(deepCloneObject(rfiModel));
       } else {
+        console.log('hitting dynamics NOW');
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + ccfriId + '/rfi');

@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm" model-value="false">
+  <v-form ref="form" v-model="isValidForm">
     <v-container v-if="loading">
       <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
       <br />
@@ -65,7 +65,7 @@
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <br />
-            <div v-if="model.exceptionalCircumstances == 1">
+            <div v-if="model?.exceptionalCircumstances == 1">
               <v-radio-group
                 v-model.number="model.circumstanceOccurWithin6Month"
                 class="radio-label"
@@ -82,7 +82,7 @@
           </div>
         </div>
 
-        <div v-if="model.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1">
+        <div v-if="model?.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
@@ -117,6 +117,7 @@
                 </v-col>
               </v-row>
 
+              {{ model.expenseList }}
               <v-row v-for="(expense, index) in model.expenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
@@ -442,7 +443,7 @@
               <v-radio label="No" :value="0" />
             </v-radio-group>
 
-            <div v-if="model.feeIncreaseDueToWage == 1">
+            <div v-if="model?.feeIncreaseDueToWage == 1">
               <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
                 <br />
                 <v-radio-group
@@ -1394,7 +1395,7 @@
                 :current-facility="currentFacility"
                 :r-f-i-type="'RFI-ACCUP'"
                 :r-f-i-documents="rfiDocumentsACCUP"
-                @add-r-f-i-document="addRFISupportingDocument"
+                @addRFIDocument="addRFISupportingDocument"
                 @add-r-f-i-row="addNewRowToUploadedDocuments"
                 @delete-r-f-i-document="deleteRFISupportingDocument"
                 @add-r-f-i-document-description="addRFISupportingDocumentDescription"
@@ -1452,6 +1453,7 @@ export default {
   components: { FacilityHeader, RFIDocumentUpload, NavButton },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
+    console.log('route leave called');
     const rfiAppStore = useRfiAppStore();
     rfiAppStore.setRfiModel(this.model);
     await this.save(false);
@@ -1528,6 +1530,7 @@ export default {
       rfiDocumentsPSEIC: [],
     };
   },
+
   computed: {
     ...mapState(useAppStore, ['getFundingUrl', 'getLanguageYearLabel', 'programYearList']),
     ...mapState(useApplicationStore, ['formattedProgramYear', 'applicationStatus', 'applicationId', 'programYearId']),
@@ -1573,27 +1576,27 @@ export default {
     isFormComplete() {
       let done = true;
       if (
-        this.model.exceptionalCircumstances == 1 &&
+        this.model?.exceptionalCircumstances == 1 &&
         this.model.circumstanceOccurWithin6Month == 1 &&
         this.model.expenseList.length == 0
       ) {
         done = false;
       }
       if (
-        this.model.q3 === 1 &&
+        this.model?.q3 === 1 &&
         this.model.exceptionalCircumstances == 1 &&
         this.model.circumstanceOccurWithin6Month == 1 &&
         this.model.fundingList.length == 0
       ) {
         done = false;
       }
-      if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {
+      if (this.model?.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {
         done = false;
       }
-      if (this.model.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0) {
+      if (this.model?.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0) {
         done = false;
       }
-      if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0) {
+      if (this.model?.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0) {
         done = false;
       }
       // this.currentFacility.isRfiComplete = this.isValidForm && done;
@@ -1605,11 +1608,14 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
+          //const useRfiAppStore = useRfiAppStore();
           window.scrollTo(0, 0);
           let ccfriId = this.$route.params.urlGuid;
           console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
           await this.loadRfi(ccfriId);
           await this.refreshSupportingDocuments();
+          this.model = deepCloneObject(this.rfiModel);
+          this.$refs.form?.resetValidation();
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while retrieving data.');
@@ -1620,31 +1626,35 @@ export default {
       immediate: true,
       deep: true,
     },
-    rfiModel: {
-      handler() {
-        this.model = deepCloneObject(this.rfiModel);
-        // if(this.model.expansionList){
-        //   this.expansionList = deepCloneObject(this.rfiModel.expansionList);
-        // }
-        // if(this.model.wageList){
-        //   this.wageList = deepCloneObject(this.rfiModel.wageList);
-        // }
-        // if(this.model.IndigenousExpenseList){
-        //   this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
-        // }
-        // if(this.model.fundingList){
-        //   this.fundingList = deepCloneObject(this.rfiModel.fundingList);
-        // }
-        // if(this.model.expenseList){
-        //   this.expenseList = deepCloneObject(this.rfiModel.expenseList);
-        // }
+    // rfiModel: {
+    //   handler() {
+    //     this.model = deepCloneObject(this.rfiModel);
+    //     // if(this.model.expansionList){
+    //     //   this.expansionList = deepCloneObject(this.rfiModel.expansionList);
+    //     // }
+    //     // if(this.model.wageList){
+    //     //   this.wageList = deepCloneObject(this.rfiModel.wageList);
+    //     // }
+    //     // if(this.model.IndigenousExpenseList){
+    //     //   this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
+    //     // }
+    //     // if(this.model.fundingList){
+    //     //   this.fundingList = deepCloneObject(this.rfiModel.fundingList);
+    //     // }
+    //     // if(this.model.expenseList){
+    //     //   this.expenseList = deepCloneObject(this.rfiModel.expenseList);
+    //     // }
 
-        this.$refs.form?.resetValidation();
-      },
-      immediate: true,
-      deep: true,
-    },
+    //     this.$refs.form?.resetValidation();
+    //   },
+    //   immediate: true,
+    //   deep: true,
+    // },
   },
+  // created() {
+  //   const useRfiAppStore = useRfiAppStore();
+  //   //rfiStore.initializeStore(); // Call the action to initialize the store
+  // },
   methods: {
     ...mapActions(useRfiAppStore, ['loadRfi', 'saveRfi', 'setRfiModel']),
     ...mapActions(useNavBarStore, ['setNavBarRFIComplete']),
@@ -1695,6 +1705,7 @@ export default {
       this.setNavBarRFIComplete({ ccfriId: ccfriId, complete: this.isFormComplete });
       try {
         let friApplicationGuid = await this.saveRfi({ ccfriId: ccfriId, isRfiComplete: this.isFormComplete });
+        console.log('fri?? ', friApplicationGuid);
         if (friApplicationGuid) {
           this.model.rfiId = friApplicationGuid;
         }
@@ -1742,6 +1753,8 @@ export default {
       const foundItemIndex = this.uploadedDocuments.findIndex((el) => el.id === item.id);
       if (foundItemIndex > -1) {
         this.uploadedDocuments[foundItemIndex] = item;
+      } else {
+        this.uploadedDocuments.push(item);
       }
     },
     addRFISupportingDocumentDescription(item) {
@@ -1751,6 +1764,7 @@ export default {
       }
     },
     addNewRowToUploadedDocuments(item) {
+      console.log('item in new row', item);
       switch (item.documentType) {
         case 'RFI-EC':
           this.rfiDocumentsEC.unshift(item);
@@ -1812,8 +1826,9 @@ export default {
       }
     },
     async processRFISupportingDocuments() {
+      console.log(this.uploadedDocuments);
       await this.processDocumentFileDelete();
-      const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
+      const newFilesAdded = this.uploadedDocuments.filter((el) => !el.annotationid);
       if (newFilesAdded.length > 0) {
         await this.processDocumentFilesSave(newFilesAdded);
       }
@@ -1824,6 +1839,7 @@ export default {
       }
     },
     async processDocumentFilesSave(newFilesAdded) {
+      console.log('saving docs!', newFilesAdded);
       const payload = [];
       for (const file of newFilesAdded) {
         if (file.documentbody) {

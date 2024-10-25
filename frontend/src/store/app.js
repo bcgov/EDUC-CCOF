@@ -110,19 +110,20 @@ export const useAppStore = defineStore('app', {
     },
   },
   getters: {
-    currentYearLabel(state) {
+    //jb oct 24 - changed so state is no longer passed in as a param - this shouldn't break other things
+    currentYearLabel: (state) => {
       return state.programYearList?.current?.name;
     },
-    renewalYearLabel(state) {
+    renewalYearLabel: (state) => {
       return state.programYearList?.renewal?.name?.replace(/[^\d/]/g, '');
     },
-    getLogoutCounter(state) {
+    getLogoutCounter: (state) => {
       return state.logoutCounter < 0 ? 0 : this.logoutCounter;
     },
-    getFundingUrl(state, programYearId) {
+    getFundingUrl: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;
     },
-    getLanguageYearLabel(state) {
+    getLanguageYearLabel: (state) => {
       const applicationStore = useApplicationStore();
       const orderNumber = state?.programYearList.list.find(
         (el) => el.programYearId == applicationStore?.programYearId,
