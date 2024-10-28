@@ -329,7 +329,6 @@ export const useNavBarStore = defineStore('navBar', {
       await this.loadChangeRequest(changeRequestId);
     },
     async setUrlDetails(to) {
-      console.log('to url is: ', to);
       this.setCurrentUrl(to.fullPath);
       const applicationStore = useApplicationStore();
 

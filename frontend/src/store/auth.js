@@ -87,7 +87,6 @@ export const useAuthStore = defineStore('auth', {
           userInfoRes = await ApiService.getUserImpersonateInfo(this.impersonateId);
         } else {
           userInfoRes = await ApiService.getUserInfo();
-          console.log(userInfoRes.data);
         }
         this.setUserInfo(userInfoRes.data);
 
@@ -104,8 +103,6 @@ export const useAuthStore = defineStore('auth', {
             latestApplication?.ccofApplicationStatus,
           ]);
         }
-        console.log('getUserInfo --------------------------- ');
-        console.log(userInfoRes.data);
         organizationStore.setOrganizationId(userInfoRes.data.organizationId);
         organizationStore.setOrganizationName(userInfoRes.data?.organizationName);
         organizationStore.setOrganizationAccountNumber(userInfoRes.data?.organizationAccountNumber);
@@ -129,7 +126,6 @@ export const useAuthStore = defineStore('auth', {
     },
     async getInitialToken() {
       const response = await AuthService.getAuthToken();
-      console.log('TOKEN Received: ', response);
       if (response.jwtFrontend) {
         this.setJwtToken(response.jwtFrontend);
         ApiService.setAuthHeader(response.jwtFrontend);

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <v-container fluid class="pa-12">
     <MessagesToolbar />
@@ -12,31 +13,26 @@
     <v-row class="" align="stretch" justify="space-around">
       <SmallCard :class="smallCardLayout('CCOF')">
         <template #content>
-          <p v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0" class="text-h6">
-            Child Care Operating Funding <strong>(CCOF)</strong>
-          </p>
-          <p v-else class="text-h6">Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
+          <div class="pb-2 text-h6">
+            <p v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0">
+              Child Care Operating Funding <strong>(CCOF)</strong>
+            </p>
+            <p v-else>Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
+          </div>
           <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
             <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
-              <ul class="pl-5">
+              <ul class="pl-6">
                 <li class="pa-0">
                   {{ item.title }}
                 </li>
               </ul>
-              <v-card
-                v-if="ccofStatus === CCOF_STATUS_NEW"
-                color="#B3E5FF"
-                class="mt-1 pa-1 py-2"
-                border
-                style="border: 1px solid #5fbbeb"
-              >
+              <v-card v-if="ccofStatus === CCOF_STATUS_NEW" color="#B3E5FF" class="mt-1 pa-1 py-2 mb-4" border="md">
                 <v-row align="center" no-gutters>
                   <v-col :cols="12" md="3" lg="2" xl="1" align="center">
                     <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
                   </v-col>
                   <v-col :cols="12" md="9" lg="10" xl="11" class="px-2 py-1">
                     <div v-html="item.body" />
-                    <!-- {{ item.body }} -->
                   </v-col>
                 </v-row>
               </v-card>
@@ -479,11 +475,9 @@ export default {
       let isEnabled =
         this.userInfo.serverTime > this.getNextProgramYear?.intakeStart &&
         this.userInfo.serverTime < this.getNextProgramYear?.intakeEnd;
-      console.log('isWithinRenewDate: ', isEnabled);
       return isEnabled;
     },
     isRenewEnabled() {
-      console.log('can renew?: ', this.isWithinRenewDate);
       //renew disabled because current NEW application is in progress
       if (this.applicationType === 'NEW' && this.applicationStatus === 'DRAFT') {
         return false;
