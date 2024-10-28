@@ -240,7 +240,7 @@
                   <span class="summary-label pt-3">From:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hoursFrom12hr"
+                    :model-value="formatTime24to12(funding?.hoursFrom)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -254,7 +254,7 @@
                   <span class="summary-label pt-3">To:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hoursTo12hr"
+                    :model-value="formatTime24to12(funding?.hoursTo)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -554,9 +554,13 @@
   </v-row>
 </template>
 <script>
-import { PATHS, pcfUrlGuid, pcfUrl } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
 import { mapState } from 'pinia';
+
+import { useNavBarStore } from '@/store/navBar.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants.js';
+import { formatTime24to12 } from '@/utils/format';
+import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
@@ -588,8 +592,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('summaryDeclaration', ['summaryModel', 'isLoadingComplete']),
-    ...mapState('navBar', ['navBarList']),
+    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
+    ...mapState(useNavBarStore, ['navBarList']),
   },
   watch: {
     isLoadingComplete: {
@@ -599,6 +603,9 @@ export default {
         }
       },
     },
+  },
+  created() {
+    this.formatTime24to12 = formatTime24to12;
   },
   methods: {
     calculateTotal() {
@@ -641,13 +648,13 @@ export default {
   font-size: medium;
   color: black;
 }
->>> .summary-value .v-label {
-  color: #ff5252;
-  opacity: 1;
+:deep(.summary-value .v-label) {
+  color: red;
+  opacity: 1 !important;
 }
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
 }
 .summary-label-smaller {
   color: grey;

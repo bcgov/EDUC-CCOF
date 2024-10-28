@@ -70,11 +70,11 @@ export default {
       loading: false,
       rules: [(v) => !!v || 'Required.'],
       headersGroup: [
-        { text: 'Application/Change Request ID', value: 'appId', class: 'tableHeader' },
-        { text: 'Type', value: 'type', class: 'tableHeader' },
-        { text: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
-        { text: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
-        { text: 'PDF', value: 'PDF', class: 'tableHeader' },
+        { title: 'Application/Change Request ID', value: 'appId', class: 'tableHeader' },
+        { title: 'Type', value: 'type', class: 'tableHeader' },
+        { title: 'Fiscal Year', value: 'fiscalYear', class: 'tableHeader' },
+        { title: 'Submission Date', value: 'submissionDateString', class: 'tableHeader' },
+        { title: 'PDF', value: 'PDF', class: 'tableHeader' },
       ],
       changeHistoryButtonWidth: '88px',
     };

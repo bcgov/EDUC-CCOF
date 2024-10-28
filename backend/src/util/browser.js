@@ -38,7 +38,7 @@ async function getBrowserContext() {
     browserProcess
       .on('close', code => log.info(`Puppeteer :: browser process closed, status: ${code}`));
 
-    return browser.createBrowserContext();
+    return await browser.createBrowserContext();
   } catch (e) {
     log.error('Puppeteer :: Browser process could not be retrieved', e);
     return null;
@@ -49,7 +49,13 @@ async function getBrowserContext() {
  * Gracefully close the browser and all of its pages/contexts.
  */
 async function closeBrowser() {
-  if (browser.pages().length === 0) {
+  if (browser === null) {
+    log.warn('Puppeteer :: closeBrowser called with null browser');
+    return;
+  }
+
+  const pages = await browser.pages();
+  if (pages.length === 1) {
     await browser.close();
   } else {
     log.warn('Puppeteer :: closeBrowser was called with pages open');

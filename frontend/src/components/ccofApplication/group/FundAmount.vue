@@ -40,7 +40,7 @@
               <v-row>
                 <v-col cols="12" md="6">
                   <AppTimeInput
-                    v-model="model.hoursFrom12hr"
+                    v-model="model.hoursFrom"
                     :rules="rules.required"
                     :disabled="isLocked"
                     :hide-details="isLocked"
@@ -49,8 +49,8 @@
                 </v-col>
                 <v-col cols="12" md="6">
                   <AppTimeInput
-                    v-model="model.hoursTo12hr"
-                    :rules="[...rules.required, rules.validHourTo(model.hoursFrom12hr)]"
+                    v-model="model.hoursTo"
+                    :rules="[...rules.required, rules.validHourTo(model.hoursFrom)]"
                     :disabled="isLocked"
                     :hide-details="isLocked"
                     label="Facility hours of operation to"
@@ -436,7 +436,7 @@
             <v-container>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-card-subtitle class="pb-4"><strong>4 hours or less</strong> extended child care</v-card-subtitle>
+                  <v-card-subtitle><strong>4 hours or less</strong> extended child care</v-card-subtitle>
                   <v-row class="padded-row">
                     <v-text-field
                       v-model.number="model.extendedChildCareUnder36Months4OrLess"
@@ -489,7 +489,7 @@
                   </v-row>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-card-subtitle class="pb-4"><strong>More than 4</strong> extended child care</v-card-subtitle>
+                  <v-card-subtitle><strong>More than 4</strong> extended child care</v-card-subtitle>
                   <v-row class="padded-row">
                     <v-text-field
                       v-model.number="model.extendedChildCareUnder36Months4OrMore"
@@ -584,8 +584,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .padded-row {
   margin: 10px 0;
+  padding-top: 10px;
 }
 </style>

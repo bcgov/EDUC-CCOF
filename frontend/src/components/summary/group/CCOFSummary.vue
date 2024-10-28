@@ -218,7 +218,7 @@
                   <span class="summary-label pt-3">From:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hoursFrom12hr"
+                    :model-value="formatTime24to12(funding?.hoursFrom)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -232,7 +232,7 @@
                   <span class="summary-label pt-3">To:</span>
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hoursTo12hr"
+                    :model-value="formatTime24to12(funding?.hoursTo)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -760,12 +760,15 @@
   </v-row>
 </template>
 <script>
-import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
 import { mapActions, mapState } from 'pinia';
+
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
+
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
+import { formatTime24to12 } from '@/utils/format';
+import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
@@ -831,6 +834,9 @@ export default {
       },
     },
   },
+  created() {
+    this.formatTime24to12 = formatTime24to12;
+  },
   methods: {
     ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     calculateTotal() {
@@ -869,13 +875,13 @@ export default {
   font-size: medium;
   color: black;
 }
->>> .summary-value .v-label {
-  color: #ff5252;
-  opacity: 1;
+:deep(.summary-value .v-label) {
+  color: red !important;
+  opacity: 1 !important;
 }
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
 }
 .summary-label-smaller {
   color: grey;
