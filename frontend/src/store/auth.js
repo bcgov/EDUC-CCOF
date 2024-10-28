@@ -87,7 +87,6 @@ export const useAuthStore = defineStore('auth', {
           userInfoRes = await ApiService.getUserImpersonateInfo(this.impersonateId);
         } else {
           userInfoRes = await ApiService.getUserInfo();
-          console.log('dataaaaa');
           console.log(userInfoRes.data);
         }
         this.setUserInfo(userInfoRes.data);

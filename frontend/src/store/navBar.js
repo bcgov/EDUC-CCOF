@@ -183,7 +183,6 @@ export const useNavBarStore = defineStore('navBar', {
       this.navBarList = [];
     },
     forceNavBarRefresh() {
-      console.log('nav refersh?');
       this.refreshNavBar = this.refreshNavBar + 1;
     },
     setUserProfileList(value) {

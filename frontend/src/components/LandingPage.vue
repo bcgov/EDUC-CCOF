@@ -18,7 +18,7 @@
           <p v-else class="text-h6">Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
           <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
             <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
-              <ul>
+              <ul class="pl-5">
                 <li class="pa-0">
                   {{ item.title }}
                 </li>
@@ -31,11 +31,12 @@
                 style="border: 1px solid #5fbbeb"
               >
                 <v-row align="center" no-gutters>
-                  <v-col :cols="12" lg="1" align="center">
+                  <v-col :cols="12" md="3" lg="2" xl="1" align="center">
                     <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
                   </v-col>
-                  <v-col :cols="12" lg="11" class="px-2 py-1">
-                    {{ item.body }}
+                  <v-col :cols="12" md="9" lg="10" xl="11" class="px-2 py-1">
+                    <div v-html="item.body" />
+                    <!-- {{ item.body }} -->
                   </v-col>
                 </v-row>
               </v-card>
@@ -154,11 +155,9 @@
 
       <SmallCard
         :class="smallCardLayout('RENEW')"
-        :title="`Renew my funding agreement for ${renewalYearLabel}`"
         :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)"
       >
         <template #content>
-          <!-- <p class="text-h6">Renew my Funding Agreement {{ renewalYearLabel }}</p> -->
           <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
 
           <p>
