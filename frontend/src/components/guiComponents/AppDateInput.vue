@@ -31,10 +31,19 @@ export default {
 };
 </script>
 
-<style>
-input[type='date']::-webkit-datetime-edit-year-field:focus,
-input[type='date']::-webkit-datetime-edit-month-field:focus,
-input[type='date']::-webkit-datetime-edit-day-field:focus {
+<style scoped>
+:deep(input[type='date']::-webkit-datetime-edit-year-field:focus),
+:deep(input[type='date']::-webkit-datetime-edit-month-field:focus),
+:deep(input[type='date']::-webkit-datetime-edit-day-field:focus) {
   background-color: #3367d1;
+}
+
+:deep(input[type='date']::-webkit-calendar-picker-indicator) {
+  position: absolute;
+}
+
+:deep(input::-webkit-datetime-edit) {
+  position: relative;
+  left: 30%;
 }
 </style>
