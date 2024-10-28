@@ -117,7 +117,6 @@
                 </v-col>
               </v-row>
 
-              {{ model.expenseList }}
               <v-row v-for="(expense, index) in model.expenseList" :key="index">
                 <v-col class="col-md-1 col-12 mx-0">
                   <v-icon
@@ -825,9 +824,7 @@
             <br />
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
-                <v-col class="col-md-1 col-12 mx-0">
-                  <!--here for spacing-->
-                </v-col>
+                <div class="mt-md-6 mx-md-6"></div>
                 <v-col class="col-md-2 col-12">
                   <h3 class>Facility's previous hours of operation</h3>
                   <br />
@@ -852,128 +849,32 @@
               <v-divider />
 
               <v-row v-for="(obj, index) in model.expansionList" :key="index">
-                <v-col class="col-md-1 col-12 mx-0">
-                  <v-icon
-                    :disabled="isReadOnly"
-                    size="large"
-                    color="blue-darken-4"
-                    class="mt-md-4"
-                    @click="removeObjFromList(index, model.expansionList)"
-                  >
-                    mdi-close
-                  </v-icon>
-                </v-col>
+                <v-icon
+                  :disabled="isReadOnly"
+                  size="large"
+                  color="blue-darken-4"
+                  class="mt-md-6 mx-md-6"
+                  @click="removeObjFromList(index, model.expansionList)"
+                >
+                  mdi-close
+                </v-icon>
+
                 <v-col class="col-md-1 col-12 ml-md-n8">
-                  <v-menu
-                    ref="menufrom"
-                    v-model="obj.menufrom"
-                    v-model:return-value="timefrom"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.timefrom"
-                        :disabled="isReadOnly"
-                        label="From"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.menufrom"
-                      v-model="obj.timefrom"
-                      :disabled="isReadOnly"
-                      full-width
-                      @click:minute="$refs.menufrom[index].save(timefrom)"
-                    />
-                  </v-menu>
+                  <AppTimeInput v-model="obj.timefrom" :disabled="isReadOnly" full-width max-width="200px" />
+                </v-col>
+
+                <!-- we need logic to prevent choosing a time before -->
+
+                <v-col class="col-md-1 col-12">
+                  <AppTimeInput v-model="obj.timeto" :disabled="isReadOnly" full-width max-width="200px" />
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <v-menu
-                    ref="menuto"
-                    v-model="obj.menuto"
-                    v-model:return-value="timeto"
-                    :disabled="isReadOnly"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field v-model="obj.timeto" :disabled="isReadOnly" label="To" readonly v-bind="props" />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.menuto"
-                      v-model="obj.timeto"
-                      :disabled="isReadOnly"
-                      :min="obj.timefrom"
-                      full-width
-                      @click:minute="$refs.menuto[index].save(timeto)"
-                    />
-                  </v-menu>
+                  <AppTimeInput v-model="obj.newtimefrom" :disabled="isReadOnly" full-width max-width="200px" />
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <v-menu
-                    ref="newmenufrom"
-                    v-model="obj.newmenufrom"
-                    v-model:return-value="newtimefrom"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.newtimefrom"
-                        :disabled="isReadOnly"
-                        label="From"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.newmenufrom"
-                      v-model="obj.newtimefrom"
-                      full-width
-                      @click:minute="$refs.newmenufrom[index].save(newtimefrom)"
-                    />
-                  </v-menu>
-                </v-col>
-
-                <v-col class="col-md-1 col-12">
-                  <v-menu
-                    ref="newmenuto"
-                    v-model="obj.newmenuto"
-                    v-model:return-value="newtimeto"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field v-model="obj.newtimeto" :disabled="isReadOnly" label="To" readonly v-bind="props" />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.newmenuto"
-                      v-model="obj.newtimeto"
-                      :min="obj.newtimefrom"
-                      full-width
-                      @click:minute="$refs.newmenuto[index].save(newtimeto)"
-                    />
-                  </v-menu>
+                  <AppTimeInput v-model="obj.newtimeto" :disabled="isReadOnly" full-width max-width="200px" />
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
@@ -1023,16 +924,6 @@
                     :rules="rules.required"
                   />
                 </v-col>
-
-                <v-col class="col-md-1 col-12 mx-0">
-                  <!--here for spacing-->
-                </v-col>
-
-                <br /><br />
-                <v-row>
-                  <span class="text-white" />
-                  <v-divider />
-                </v-row>
               </v-row>
               <!-- end v for-->
 
@@ -1420,7 +1311,8 @@ import { useApplicationStore } from '../../store/application.js';
 import { useNavBarStore } from '../../store/navBar.js';
 import { useReportChangesStore } from '../../store/reportChanges.js';
 import { useSupportingDocumentUploadStore } from '../../store/supportingDocumentUpload.js';
-import { VTimePicker } from 'vuetify/labs/VTimePicker';
+//import { VTimePicker } from 'vuetify/labs/VTimePicker';
+import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 
 import alertMixin from '../../mixins/alertMixin.js';
 import globalMixin from '../../mixins/globalMixin.js';
@@ -1444,7 +1336,7 @@ let model = {
 
 export default {
   name: 'CcfriRequestMoreInfo',
-  components: { FacilityHeader, RFIDocumentUpload, NavButton, VTimePicker },
+  components: { FacilityHeader, RFIDocumentUpload, NavButton, AppTimeInput },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     const rfiAppStore = useRfiAppStore();
