@@ -206,13 +206,25 @@ export default {
 
     this.fileRules = [
       (v) => !!v || 'This is required',
-      (value) => !value || value.name?.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
+      (value) => {
+        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          value[0].size < maxSize ||
+          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
+        );
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+          `Accepted file types are ${this.fileFormats}.`
+        );
+      },
     ];
     await this.createTable();
   },

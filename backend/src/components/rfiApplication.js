@@ -68,7 +68,6 @@ async function getRFIMedian(req, res) {
     } else if (rfiMedian?.length > 1) {
       log.error("Expected 1 set of RFI Medians got more: ", rfiMedian);
     }
-    log.verbose("Median data: ", minify(medians));
     return res.status(HttpStatus.OK).json(medians);
   } catch (e) {
     log.error("An error occurred while getting getRFIMedian", e);
@@ -94,7 +93,6 @@ async function deleteRfiApplication(req, res) {
     //there should only every be one RFI application per ccfri app.
     //if array empty - don't try to delete anything.
     if (response?.value?.length > 0) {
-      log.info(response.value[0]);
       await deleteOperationWithObjectId(
         "ccof_rfipfis",
         response.value[0].ccof_rfipfiid
@@ -114,8 +112,7 @@ async function getRFIApplication(req, res) {
   let query = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi,ccof_rfipfi_ccof_rfipfi_IndegenousService`;
   try {
     const response = await getOperation(query);
-    console.log("response: ", minify(response.value));
-    console.log("response length: ", response.value.length);
+
     if (response.value.length > 0) {
       let rfiApplication = new MappableObjectForFront(
         response.value[0],
@@ -183,15 +180,10 @@ async function updateRFIApplication(req, res) {
       req.body,
       RFIApplicationMappings
     ).toJSON();
-    //log.info('RFI APPLICATION FULL IS: ', req.body);
     const rfipfiid = req.params.rfipfiid;
     delete friApplication._ccof_applicationccfri_value;
     delete friApplication.ccof_rfipfiid;
     delete friApplication.ccof_name;
-
-    // friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map(el=> new MappableObjectForBack(el,ServiceExpansionDetailsMappings).data);
-    // friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map(el=> new MappableObjectForBack(el,DCSWageIncreaseMappings).data);
-    // friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.IndigenousExpenseList?.map(el=> new MappableObjectForBack(el,IndigenousCommunityExpenseInformationMappings).data);
 
     let friApplicationResponse = await patchOperationWithObjectId(
       "ccof_rfipfis",
@@ -221,9 +213,8 @@ async function updateRFIApplication(req, res) {
       const fundingListPayload = req.body.fundingList?.map(
         (el) => new MappableObjectForBack(el, OtherFundingProgramMappings).data
       );
-      log.verbose("funding payload", minify(fundingListPayload));
+
       fundingListPayload?.forEach(async (payload) => {
-        log.info(payload.ccof_applicationdate);
         // payload.ccof_applicationdate = formatTimeForBack(payload.ccof_applicationdate);
         payload[
           "ccof_RFIParentFeeIncrease@odata.bind"
@@ -243,10 +234,8 @@ async function updateRFIApplication(req, res) {
       const wageListPayload = req.body.wageList?.map(
         (el) => new MappableObjectForBack(el, DCSWageIncreaseMappings).data
       );
-      log.verbose("wageList payload", minify(wageListPayload));
+
       wageListPayload?.forEach(async (payload) => {
-        log.info("DATE DATE DATE");
-        log.info(payload.ccof_wageincreasedate);
         //payload.ccof_wageincreasedate = formatTimeForBack(payload.ccof_wageincreasedate);
         payload[
           "ccof_RFIParentFeeIncrease@odata.bind"
@@ -268,7 +257,7 @@ async function updateRFIApplication(req, res) {
         (el) =>
           new MappableObjectForBack(el, ServiceExpansionDetailsMappings).data
       );
-      log.verbose("expansionList payload", minify(expansionListPayload));
+
       expansionListPayload?.forEach(async (payload) => {
         // payload.ccof_dateofchange = formatTimeForBack(
         //   payload.ccof_dateofchange
@@ -290,12 +279,12 @@ async function updateRFIApplication(req, res) {
       const expenseListPayload = req.body.expenseList?.map(
         (el) => new MappableObjectForBack(el, ExpenseInformationMappings).data
       );
-      log.verbose("expenseListPayload payload", minify(expenseListPayload));
+
       expenseListPayload?.forEach(async (payload) => {
         // payload.ccof_dateofexpense = formatTimeForBack(
         //   payload.ccof_dateofexpense
         // );
-        log.info(payload);
+
         payload["ccof_rfipfi@odata.bind"] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation("ccof_rfipfiexpenseinfos", payload);
         await sleep(100);
@@ -305,7 +294,6 @@ async function updateRFIApplication(req, res) {
     //rfipfiid, entityName, selectorName, filterName) {
     //update indigenous Expense details
     if (req.body.indigenousExpenseList) {
-      log.info("full list is:", req.body.indigenousExpenseList);
       await deleteChildTable(
         rfipfiid,
         "ccof_rfipfiserviceexpansionindigenouscommunities",
@@ -397,7 +385,7 @@ async function createRFIApplication(req, res) {
     friApplication[
       "ccof_ApplicationCCFRI@odata.bind"
     ] = `/ccof_applicationccfris(${req.params.ccfriId})`;
-    log.info("createRFIApplication payload:", friApplication);
+
     const friApplicationGuid = await postOperation(
       "ccof_rfipfis",
       friApplication

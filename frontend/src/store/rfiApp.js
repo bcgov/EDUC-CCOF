@@ -21,8 +21,6 @@ export const useRfiAppStore = defineStore('rfiApp', {
   getters: {
     getByCcfriId: (state) => (ccfriId) => {
       if (!state.rfiStore) state.rfiStore = {};
-      console.log(ccfriId);
-      console.log(state.rfiStore);
       return state.rfiStore[ccfriId];
     },
   },
@@ -34,24 +32,19 @@ export const useRfiAppStore = defineStore('rfiApp', {
       this.loadedModel = value;
     },
     addRfiToStore({ ccfriId, model }) {
-      console.log('adding RFI to store');
       if (ccfriId) {
         this.rfiStore[ccfriId] = model;
       }
     },
     async loadRfi(ccfriId) {
-      console.log('loading RFI for: ', ccfriId);
       let rfiModel = this.getByCcfriId(ccfriId);
-      console.log('did find RFI model?', rfiModel);
       if (rfiModel) {
         this.setRfiModel(rfiModel);
         this.setLoadedModel(deepCloneObject(rfiModel));
       } else {
-        console.log('hitting dynamics NOW');
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + ccfriId + '/rfi');
-          console.info(response);
           if (!isEmpty(response.data)) {
             this.addRfiToStore({ ccfriId: ccfriId, model: response.data });
             this.setRfiModel(response.data);
@@ -78,7 +71,6 @@ export const useRfiAppStore = defineStore('rfiApp', {
       checkSession();
 
       if (isEqual({ ...this.rfiModel }, { ...this.loadedModel })) {
-        console.info('no model changes');
         return;
       }
 

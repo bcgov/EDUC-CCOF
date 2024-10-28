@@ -222,7 +222,6 @@
                 :rules="rules.required"
                 placeholder="Describe Here"
                 variant="outlined"
-                name="input-7-4"
               />
             </div>
           </div>
@@ -1058,7 +1057,6 @@
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 variant="outlined"
-                name="input-7-4"
                 placeholder="Describe here"
               />
 
@@ -1073,7 +1071,6 @@
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 variant="outlined"
-                name="input-7-4"
                 placeholder="Describe here"
               />
             </div>
@@ -1276,7 +1273,6 @@
                   :disabled="isReadOnly"
                   :rules="rules.required"
                   variant="outlined"
-                  name="input-7-4"
                   placeholder="Describe here"
                 />
               </div>
@@ -1354,7 +1350,6 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                     variant="outlined"
-                    name="input-7-4"
                     placeholder="Describe here"
                   />
 
@@ -1369,7 +1364,6 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                     variant="outlined"
-                    name="input-7-4"
                     placeholder="Describe here"
                   />
 
@@ -1386,7 +1380,6 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                     variant="outlined"
-                    name="input-7-4"
                     placeholder="Describe here"
                   />
                 </div>
@@ -1427,6 +1420,7 @@ import { useApplicationStore } from '../../store/application.js';
 import { useNavBarStore } from '../../store/navBar.js';
 import { useReportChangesStore } from '../../store/reportChanges.js';
 import { useSupportingDocumentUploadStore } from '../../store/supportingDocumentUpload.js';
+import { VTimePicker } from 'vuetify/labs/VTimePicker';
 
 import alertMixin from '../../mixins/alertMixin.js';
 import globalMixin from '../../mixins/globalMixin.js';
@@ -1450,10 +1444,9 @@ let model = {
 
 export default {
   name: 'CcfriRequestMoreInfo',
-  components: { FacilityHeader, RFIDocumentUpload, NavButton },
+  components: { FacilityHeader, RFIDocumentUpload, NavButton, VTimePicker },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
-    console.log('route leave called');
     const rfiAppStore = useRfiAppStore();
     rfiAppStore.setRfiModel(this.model);
     await this.save(false);
@@ -1576,31 +1569,29 @@ export default {
     isFormComplete() {
       let done = true;
       if (
-        this.model?.exceptionalCircumstances == 1 &&
+        this.model.exceptionalCircumstances == 1 &&
         this.model.circumstanceOccurWithin6Month == 1 &&
         this.model.expenseList.length == 0
       ) {
         done = false;
       }
       if (
-        this.model?.q3 === 1 &&
+        this.model.q3 === 1 &&
         this.model.exceptionalCircumstances == 1 &&
         this.model.circumstanceOccurWithin6Month == 1 &&
         this.model.fundingList.length == 0
       ) {
         done = false;
       }
-      if (this.model?.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {
+      if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {
         done = false;
       }
-      if (this.model?.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0) {
+      if (this.model.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0) {
         done = false;
       }
-      if (this.model?.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0) {
+      if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0) {
         done = false;
       }
-      // this.currentFacility.isRfiComplete = this.isValidForm && done;
-      //this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm && done; //false makes button clickable, true disables button
     },
   },
@@ -1608,10 +1599,8 @@ export default {
     '$route.params.urlGuid': {
       async handler() {
         try {
-          //const useRfiAppStore = useRfiAppStore();
           window.scrollTo(0, 0);
           let ccfriId = this.$route.params.urlGuid;
-          console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
           await this.loadRfi(ccfriId);
           await this.refreshSupportingDocuments();
           this.model = deepCloneObject(this.rfiModel);
@@ -1626,35 +1615,8 @@ export default {
       immediate: true,
       deep: true,
     },
-    // rfiModel: {
-    //   handler() {
-    //     this.model = deepCloneObject(this.rfiModel);
-    //     // if(this.model.expansionList){
-    //     //   this.expansionList = deepCloneObject(this.rfiModel.expansionList);
-    //     // }
-    //     // if(this.model.wageList){
-    //     //   this.wageList = deepCloneObject(this.rfiModel.wageList);
-    //     // }
-    //     // if(this.model.IndigenousExpenseList){
-    //     //   this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
-    //     // }
-    //     // if(this.model.fundingList){
-    //     //   this.fundingList = deepCloneObject(this.rfiModel.fundingList);
-    //     // }
-    //     // if(this.model.expenseList){
-    //     //   this.expenseList = deepCloneObject(this.rfiModel.expenseList);
-    //     // }
-
-    //     this.$refs.form?.resetValidation();
-    //   },
-    //   immediate: true,
-    //   deep: true,
-    // },
   },
-  // created() {
-  //   const useRfiAppStore = useRfiAppStore();
-  //   //rfiStore.initializeStore(); // Call the action to initialize the store
-  // },
+
   methods: {
     ...mapActions(useRfiAppStore, ['loadRfi', 'saveRfi', 'setRfiModel']),
     ...mapActions(useNavBarStore, ['setNavBarRFIComplete']),
@@ -1690,7 +1652,6 @@ export default {
       }
       for (let i = this.model.wageList.length - 1; i >= 0; i--) {
         if (isEqual(this.model.wageList[i], this.wageObj)) {
-          console.log('blank found');
           this.model.wageList.splice(i, 1);
         }
       }
@@ -1705,7 +1666,6 @@ export default {
       this.setNavBarRFIComplete({ ccfriId: ccfriId, complete: this.isFormComplete });
       try {
         let friApplicationGuid = await this.saveRfi({ ccfriId: ccfriId, isRfiComplete: this.isFormComplete });
-        console.log('fri?? ', friApplicationGuid);
         if (friApplicationGuid) {
           this.model.rfiId = friApplicationGuid;
         }
@@ -1764,7 +1724,6 @@ export default {
       }
     },
     addNewRowToUploadedDocuments(item) {
-      console.log('item in new row', item);
       switch (item.documentType) {
         case 'RFI-EC':
           this.rfiDocumentsEC.unshift(item);
@@ -1826,7 +1785,6 @@ export default {
       }
     },
     async processRFISupportingDocuments() {
-      console.log(this.uploadedDocuments);
       await this.processDocumentFileDelete();
       const newFilesAdded = this.uploadedDocuments.filter((el) => !el.annotationid);
       if (newFilesAdded.length > 0) {
@@ -1839,7 +1797,6 @@ export default {
       }
     },
     async processDocumentFilesSave(newFilesAdded) {
-      console.log('saving docs!', newFilesAdded);
       const payload = [];
       for (const file of newFilesAdded) {
         if (file.documentbody) {
