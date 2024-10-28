@@ -1,18 +1,15 @@
 name: 1 DEV - Deploy Backend
 
 env:
-  # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
+  # EDIT your repository secrets to log into your OpenShift cluster and set up the context.
   # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
   # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  # EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
-  SPLUNK_TOKEN:
-    ${{ secrets.SPLUNK_TOKEN }}
-
-    # 🖊️ EDIT to change the image registry settings.
+  # EDIT to change the image registry setting
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
@@ -23,14 +20,12 @@ env:
 
   APP_NAME: "ccof"
   REPO_NAME: "educ-ccof"
-  #grabs the branch name from github dynamically
+  # grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
   IMAGE_NAME: "backend"
   APP_ENVIRONMENT: "dev"
   APP_FOLDER: "backend"
-  NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
   NAMESPACE_TOOLS: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
-  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
   TAG: "latest"
 
   MIN_REPLICAS: "1"
@@ -79,19 +74,19 @@ jobs:
                 core.error(`Secret "${name}" is not set`);
                 return true;
               }
-              core.info(`✔️ Secret "${name}" is set`);
+              core.info(`Secret "${name}" is set`);
               return false;
             });
 
             if (missingSecrets.length > 0) {
-              core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
+              core.setFailed(`At least one required secret is not set in the repository. \n` +
                 "You can add it using:\n" +
                 "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
                 "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
                 "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
             }
             else {
-              core.info(`✅ All the required secrets are set`);
+              core.info(`All the required secrets are set`);
             }
 
       - name: Check out repository with branch [${{ env.BRANCH }}]
@@ -175,11 +170,18 @@ jobs:
 
           # Process update-configmap
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh \
-              | bash /dev/stdin \
-                     dev \
-                     ${{ env.APP_NAME }} \
-                     ${{ env.NAMESPACE }} \
-                     ${{ env.SPLUNK_TOKEN }}
+            | bash /dev/stdin \
+              ${{ env.APP_ENVIRONMENT }} \
+              ${{ env.APP_NAME }} \
+              ${{ secrets.CCOF_NAMESPACE_NO_ENV }} \
+              ${{ secrets.COMMON_NAMESPACE_NO_ENV }} \
+              ${{ secrets.SOAM_CLIENT_ID }} \
+              ${{ secrets.SOAM_CLIENT_ID_IDIR }} \
+              ${{ secrets.SOAM_CLIENT_SECRET }} \
+              ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
+              ${{ secrets.SPLUNK_TOKEN }} \
+              ${{ secrets.REDIS_PASSWORD }} \
+              ${{ secrets.D365_API_PREFIX }}
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \

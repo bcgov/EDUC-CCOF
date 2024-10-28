@@ -32,7 +32,7 @@ function getProgramYear(selectedGuid, programYearList) {
 export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
   state: () => ({
     isValidForm: undefined,
-    model: {},
+    declarationModel: {},
     summaryModel: {},
     isSummaryLoading: [],
     isMainLoading: true,
@@ -71,8 +71,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
   },
   actions: {
-    setModel(value) {
-      this.model = value;
+    setDeclarationModel(value) {
+      this.declarationModel = value;
     },
     setSummaryModel(value) {
       this.summaryModel = value;
@@ -100,7 +100,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           payload.agreeConsentCertify = null;
           payload.orgContactName = null;
         }
-        this.setModel(payload);
+        this.setDeclarationModel(payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
         throw error;
@@ -115,7 +115,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           payload.agreeConsentCertify = null;
           payload.orgContactName = null;
         }
-        this.setModel(payload);
+        this.setDeclarationModel(payload);
       } catch (error) {
         console.log(`Failed to get Declaration - ${error}`);
         throw error;
@@ -128,10 +128,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       const reportChangesStore = useReportChangesStore();
 
       let payload = {
-        agreeConsentCertify: this.model.agreeConsentCertify,
-        orgContactName: this.model.orgContactName,
-        declarationAStatus: this.model?.declarationAStatus,
-        declarationBStatus: this.model?.declarationBStatus,
+        agreeConsentCertify: this.declarationModel?.agreeConsentCertify,
+        orgContactName: this.declarationModel?.orgContactName,
+        declarationAStatus: this.declarationModel?.declarationAStatus,
+        declarationBStatus: this.declarationModel?.declarationBStatus,
         summaryDeclarationApplicationName: this.summaryModel?.application?.name,
       };
       try {
@@ -141,13 +141,13 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         if (changeRequestId) {
           //technically submit should be disabled until both these are filled in, so maybe don't need this?
-          if (this.model.agreeConsentCertify && this.model.orgContactName) {
+          if (this.declarationModel?.agreeConsentCertify && this.declarationModel?.orgContactName) {
             payload.externalStatus = 2;
           }
 
           let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
-          this.model.externalStatus = 'SUBMITTED';
-          this.setModel(this.model);
+          this.declarationModel.externalStatus = 'SUBMITTED';
+          this.setDeclarationModel(this.declarationModel);
           reportChangesStore.updateExternalStatusInChangeRequestStore({
             changeRequestId: changeRequestId,
             newStatus: 2,
@@ -339,7 +339,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           declarationAStatus: payload?.declarationAStatus,
           declarationBStatus: payload?.declarationBStatus,
         };
-        this.setModel(declarationModel);
+        this.setDeclarationModel(declarationModel);
 
         // Load Summary model
         let summaryModel = {
@@ -378,6 +378,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         let changeRequestECEWE = {
           optInECEWE: payload?.optInECEWE,
           belongsToUnion: payload?.belongsToUnion,
+          publicSector: payload?.publicSector,
           applicableSector: payload?.applicableSector,
           fundingModel: payload?.fundingModel,
           confirmation: payload?.confirmation,

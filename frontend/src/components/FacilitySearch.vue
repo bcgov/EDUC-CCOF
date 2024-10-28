@@ -67,7 +67,7 @@
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-container style="padding-top: 0px" class="px-3" >
+                  <v-container style="padding-top: 0px" class="px-3">
                     <v-row>
                       <v-col cols="6" class="d-flex pl-0 d-flex align-center" style="background-color: #7b2ee5">
                         <v-card-title
@@ -239,7 +239,7 @@ export default {
       loading: false,
       headers: [
         {
-          text: '',
+          title: '',
           align: 'start',
           sortable: false,
           value: 'name',

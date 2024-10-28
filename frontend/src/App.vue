@@ -234,4 +234,11 @@ h1 {
     url('assets/font/BC-Sans/BCSans-BoldItalic.woff2') format('woff2'),
     /* Optimized for very modern browsers */ url('assets/font/BC-Sans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
 }
+
+@media print {
+  .v-main {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
 </style>

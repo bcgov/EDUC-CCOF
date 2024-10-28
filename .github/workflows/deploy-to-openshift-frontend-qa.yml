@@ -1,17 +1,17 @@
 name: 2 QA - Deploy Frontend
 
 env:
-  # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
+  # EDIT your repository secrets to log into your OpenShift cluster and set up the context.
   # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
   # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  # EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
 
   # SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
-    # 🖊️ EDIT to change the image registry settings.
+  # EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
@@ -78,19 +78,19 @@ jobs:
               core.error(`Secret "${name}" is not set`);
               return true;
             }
-            core.info(`✔️ Secret "${name}" is set`);
+            core.info(`Secret "${name}" is set`);
             return false;
           });
 
           if (missingSecrets.length > 0) {
-            core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
+            core.setFailed(`At least one required secret is not set in the repository. \n` +
               "You can add it using:\n" +
               "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
               "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
               "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
           }
           else {
-            core.info(`✅ All the required secrets are set`);
+            core.info(`All the required secrets are set`);
           }
 
     - name: Check out repository
@@ -119,24 +119,27 @@ jobs:
 
         # Process and apply deployment template
         oc process \
-           -f tools/openshift/frontend.dc.yaml \
-           -p APP_NAME=${{ env.APP_NAME }} \
-           -p REPO_NAME=${{ env.REPO_NAME }} \
-           -p BRANCH=${{ env.BRANCH }} \
-           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-           -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
-           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
-           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
-           -p MIN_CPU=${{ env.MIN_CPU }} \
-           -p MAX_CPU=${{ env.MAX_CPU }} \
-           -p MIN_MEM=${{ env.MIN_MEM }} \
-           -p MAX_MEM=${{ env.MAX_MEM }} \
-           -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
-           -p CA_CERT="${{ env.CA_CERT }}" \
-           -p CERTIFICATE="${{ env.CERTIFICATE }}" \
-           -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
-           -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
-            | oc apply -f -
+          -f tools/openshift/frontend.dc.yaml \
+          -p APP_NAME=${{ env.APP_NAME }} \
+          -p REPO_NAME=${{ env.REPO_NAME }} \
+          -p BRANCH=${{ env.BRANCH }} \
+          -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+          -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
+          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+          -p MIN_CPU=${{ env.MIN_CPU }} \
+          -p MAX_CPU=${{ env.MAX_CPU }} \
+          -p MIN_MEM=${{ env.MIN_MEM }} \
+          -p MAX_MEM=${{ env.MAX_MEM }} \
+          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+          -p CA_CERT="${{ env.CA_CERT }}" \
+          -p CERTIFICATE="${{ env.CERTIFICATE }}" \
+          -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
+          -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
+          -p BANNER_COLOR=${{ vars.BANNER_COLOR }} \
+          -p BANNER_ENVIRONMENT=${{ vars.BANNER_ENVIRONMENT }} \
+          -p VUE_APP_BCEID_REG_URL='${{ secrets.VUE_APP_BCEID_REG_URL }}' \
+          | oc apply -f -
 
         # Start rollout (if necessary) and follow it
         oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \

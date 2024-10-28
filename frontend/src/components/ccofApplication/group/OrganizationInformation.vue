@@ -222,7 +222,12 @@
 
               <div>
                 <v-card-subtitle class="my-2">Type of Organization</v-card-subtitle>
-                <v-radio-group v-model="model.organizationType" :disabled="isLocked" :rules="rules.required" label="">
+                <v-radio-group
+                  v-model="model.organizationType"
+                  :disabled="isLocked"
+                  :rules="rules.required"
+                  @update:model-value="$refs.form?.validate"
+                >
                   <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
                 </v-radio-group>
               </div>
@@ -271,7 +276,8 @@ export default {
   },
   created() {
     this.PROVINCES = PROVINCES;
-    this.model.province = this.model.province ?? PROVINCES.BC;
+    this.model.province1 = this.model.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
+    this.model.province2 = this.model.province2 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
   },
   methods: {
     isSomeChangeRequestActive() {
