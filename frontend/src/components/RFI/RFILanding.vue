@@ -1388,7 +1388,7 @@
                 :current-facility="currentFacility"
                 :r-f-i-type="'RFI-ACCUP'"
                 :r-f-i-documents="rfiDocumentsACCUP"
-                @addRFIDocument="addRFISupportingDocument"
+                @add-r-f-i-document="addRFISupportingDocument"
                 @add-r-f-i-row="addNewRowToUploadedDocuments"
                 @delete-r-f-i-document="deleteRFISupportingDocument"
                 @add-r-f-i-document-description="addRFISupportingDocumentDescription"
