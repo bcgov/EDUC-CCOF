@@ -42,7 +42,6 @@ export const useMessageStore = defineStore('message', {
       }
     },
     async getAllMessages(organizationId) {
-      console.log('WHEE messages');
       if (!localStorage.getItem('jwtToken')) {
         console.log('unable to get Messages data because you are not logged in');
         throw 'unable to get Messages data because you are not logged in';
