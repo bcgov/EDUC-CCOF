@@ -11,75 +11,78 @@
     <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
       <v-container>
         <p class="text-h6 text-center">What changes do you want to make?</p>
-        <v-row class="d-flex justify-start">
-          <SmallCard v-if="organizationProviderType == 'GROUP'" class="col-lg-6" :disable="false">
-            <template #content>
-              <div class="px-10">
-                <p class="text-h6 text-center">Add a New facility to an existing organization</p>
-                <p class="px-2 text-center">
-                  This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
-                  information ready.
-                </p>
-                <p class="px-2 text-center">
-                  You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
-                </p>
-              </div>
-            </template>
-            <template #button>
-              <v-row justify="space-around" class="ma-0 pa-0">
-                <v-btn dark class="blueButton mb-10" :loading="processing" @click="routeToFacilityAdd()">
-                  Add new facility
-                </v-btn>
-              </v-row>
-            </template>
-          </SmallCard>
-
-          <SmallCard class="col-lg-6" :disable="false">
-            <template #content>
-              <div class="px-10">
-                <p class="text-h6 text-center">Report changes to your Licence or service</p>
-                <p class="px-2 text-center">
-                  Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
-                  supporting documents ready.
-                </p>
-              </div>
-            </template>
-            <template #button>
-              <div class="ma-0 pa-0">
+        <v-row>
+          <v-col cols="12" md="6" xl="4">
+            <SmallCard v-if="organizationProviderType == 'GROUP'">
+              <template #content>
+                <div class="px-10">
+                  <p class="text-h6 text-center">Add a New facility to an existing organization</p>
+                  <p class="px-2 text-center">
+                    This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
+                    information ready.
+                  </p>
+                  <p class="px-2 text-center">
+                    You need to attach an <strong>updated</strong
+                    ><i> Community Care And Assisted Living Act</i> licence.
+                  </p>
+                </div>
+              </template>
+              <template #button>
+                <v-row no-gutters justify="space-around">
+                  <v-btn dark class="blueButton mb-10" :loading="processing" @click="routeToFacilityAdd()">
+                    Add new facility
+                  </v-btn>
+                </v-row>
+              </template>
+            </SmallCard>
+          </v-col>
+          <v-col cols="12" md="6" xl="4">
+            <SmallCard>
+              <template #content>
+                <div class="px-10">
+                  <p class="text-h6 text-center">Report changes to your Licence or service</p>
+                  <p class="px-2 text-center">
+                    Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
+                    supporting documents ready.
+                  </p>
+                </div>
+              </template>
+              <template #button>
                 <v-row justify="space-around">
                   <v-btn dark class="blueButton mb-10" :loading="processing" @click="goToChangeDialogue()">
                     Upload a Change Notification Form
                   </v-btn>
                 </v-row>
-              </div>
-            </template>
-          </SmallCard>
-
-          <SmallCard class="col-lg-6" :disable="!isMtfiEnabled()">
-            <template #content>
-              <div class="px-10">
-                <p class="text-h6 text-center">Mid-Term Fee Increase</p>
-                <p class="px-2 text-center">
-                  Request a parent fee increase for a facility after you have received approval for the CCFRI.
-                </p>
-                <p class="px-2 text-center">You may need to provide details about your expenses.</p>
-              </div>
-            </template>
-            <template #button>
-              <v-row justify="space-around" class="ma-0 pa-0">
-                <v-btn
-                  dark
-                  class="mb-10"
-                  :color="buttonColor(!isMtfiEnabled())"
-                  :disable="!isMtfiEnabled()"
-                  :loading="processing"
-                  @click="goToMTFI()"
-                >
-                  Update parent fees
-                </v-btn>
-              </v-row>
-            </template>
-          </SmallCard>
+              </template>
+            </SmallCard>
+          </v-col>
+          <v-col cols="12" md="6" xl="4">
+            <SmallCard :disable="!isMtfiEnabled()">
+              <template #content>
+                <div class="px-10">
+                  <p class="text-h6 text-center">Mid-Term Fee Increase</p>
+                  <p class="px-2 text-center">
+                    Request a parent fee increase for a facility after you have received approval for the CCFRI.
+                  </p>
+                  <p class="px-2 text-center">You may need to provide details about your expenses.</p>
+                </div>
+              </template>
+              <template #button>
+                <v-row no-gutters justify="space-around">
+                  <v-btn
+                    dark
+                    class="mb-10"
+                    :class="buttonColor(!isMtfiEnabled())"
+                    :disable="!isMtfiEnabled()"
+                    :loading="processing"
+                    @click="goToMTFI()"
+                  >
+                    Update parent fees
+                  </v-btn>
+                </v-row>
+              </template>
+            </SmallCard>
+          </v-col>
         </v-row>
 
         <v-row id="change-request-history" no-gutters>
@@ -712,7 +715,7 @@ export default {
       return !foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI;
     },
     buttonColor(isDisabled) {
-      return isDisabled ? '#909090' : '#003366';
+      return isDisabled ? 'disabledButton' : 'blueButton';
     },
   },
 };
