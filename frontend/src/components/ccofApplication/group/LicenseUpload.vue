@@ -287,7 +287,6 @@ export default {
         await this.processLicenseFileDelete();
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
-          this.fileMap.clear(); // clear the map.
         }
         if (this.isChangeRequest) {
           this.setCRIsLicenseComplete({ changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled });
@@ -304,6 +303,7 @@ export default {
         console.error(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
+        this.fileMap.clear(); // clear the map.
         this.isProcessing = false;
       }
     },
