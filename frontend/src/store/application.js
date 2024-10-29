@@ -109,13 +109,11 @@ export const useApplicationStore = defineStore('application', {
       }
     },
     async loadApplicationFromStore(programYearId) {
-      console.log('loadApplicationFromStore called with programYearId: ', programYearId);
       const application = this.applicationMap.get(programYearId);
       const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
 
       if (application) {
-        console.log('loadApplicationFromStore found for guid : ', application);
         this.setApplicationId(application.applicationId);
         this.setApplicationStatus(application.applicationStatus);
         this.setApplicationType(application.applicationType);
@@ -138,7 +136,6 @@ export const useApplicationStore = defineStore('application', {
     },
     async deletePcfApplication({ state }) {
       //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-      console.log(state?.applicationId);
       await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
     },
   },
@@ -159,7 +156,6 @@ export const useApplicationStore = defineStore('application', {
     },
     latestProgramYearId: (state) => {
       const appStore = useAppStore();
-      console.log(appStore.programYearList.list);
       let currentGuid;
       let futureGuid;
       let lastGuid;

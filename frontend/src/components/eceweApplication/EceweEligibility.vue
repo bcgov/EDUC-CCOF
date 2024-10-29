@@ -18,7 +18,7 @@
           <strong>Note:</strong> Please read and understand the full eligibility requirements in the
           <u>
             <a
-              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/wage-enhancement"
+              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/wage-enhancement"
               target="_blank"
             >
               ECE-WE Funding Guidelines

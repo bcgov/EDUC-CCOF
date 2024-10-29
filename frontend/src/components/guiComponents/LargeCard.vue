@@ -31,7 +31,7 @@
 export default {
   props: {
     title: { type: String, required: true },
-    subtitle: { type: String, required: true },
+    subtitle: { type: String, default: '' },
     pText: { type: String, required: true },
   },
 };
