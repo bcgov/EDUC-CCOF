@@ -181,7 +181,6 @@ export const useNavBarStore = defineStore('navBar', {
       this.navBarList = [];
     },
     forceNavBarRefresh() {
-      console.log('nav refersh?');
       this.refreshNavBar = this.refreshNavBar + 1;
     },
     setUserProfileList(value) {
@@ -328,7 +327,6 @@ export const useNavBarStore = defineStore('navBar', {
       await this.loadChangeRequest(changeRequestId);
     },
     async setUrlDetails(to) {
-      console.log('to url is: ', to);
       this.setCurrentUrl(to.fullPath);
       const applicationStore = useApplicationStore();
 

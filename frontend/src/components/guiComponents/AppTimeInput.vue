@@ -33,11 +33,20 @@ export default {
 };
 </script>
 
-<style>
-input[type='time']::-webkit-datetime-edit-hour-field:focus,
-input[type='time']::-webkit-datetime-edit-minute-field:focus,
-input[type='time']::-webkit-datetime-edit-second-field:focus,
-input[type='time']::-webkit-datetime-edit-ampm-field:focus {
+<style scoped>
+:deep(input[type='time']::-webkit-datetime-edit-hour-field:focus),
+:deep(input[type='time']::-webkit-datetime-edit-minute-field:focus),
+:deep(input[type='time']::-webkit-datetime-edit-second-field:focus),
+:deep(input[type='time']::-webkit-datetime-edit-ampm-field:focus) {
   background-color: #3367d1;
+}
+
+:deep(input[type='time']::-webkit-calendar-picker-indicator) {
+  position: absolute;
+}
+
+:deep(input::-webkit-datetime-edit) {
+  position: relative;
+  left: 50%;
 }
 </style>
