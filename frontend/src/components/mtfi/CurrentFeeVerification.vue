@@ -648,7 +648,6 @@ export default {
       dialog: false,
       currentFacility: undefined,
       currentPcfCcfri: undefined,
-      isUnlocked: false,
       model,
       isValidForm: false,
       processing: false,
@@ -711,7 +710,6 @@ export default {
     },
   },
   watch: {
-    //get facilityID from here and then set it !
     '$route.params.urlGuid': {
       async handler() {
         try {
@@ -897,7 +895,6 @@ export default {
 
         //always check for RFI regardless of new or renewal state
         this.rfi3percentCategories = await this.getCcfriOver3percent(this.currentPcfCcfri);
-        console.log('rfi3percentCategories length ', this.rfi3percentCategories.length);
         if (this.rfi3percentCategories.length > 0) {
           if (this.getCurrentFacility.hasRfi) {
             //already has RFI. just go to the next page

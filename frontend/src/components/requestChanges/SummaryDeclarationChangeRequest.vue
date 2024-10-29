@@ -12,25 +12,23 @@
       </v-row>
 
       <v-row v-if="!isSummaryComplete && !isProcessing" class="justify-center">
-        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0 col-12">
-            <v-row>
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  Incomplete Form
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col class="pb-0 pr-3 justify-center">
-                <div>
-                  <p>You will not be able to submit your application until it is complete.</p>
-                  <p>Incomplete sections are marked with a red exclamation point.</p>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-card width="80%" class="my-10 justify-center" elevation="4">
+          <v-row>
+            <v-col class="pa-0">
+              <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
+                <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                Incomplete Form
+              </v-card-title>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="py-6 px-10 justify-center">
+              <div>
+                <p>You will not be able to submit your application until it is complete.</p>
+                <p>Incomplete sections are marked with a red exclamation point.</p>
+              </div>
+            </v-col>
+          </v-row>
         </v-card>
       </v-row>
 
@@ -57,94 +55,95 @@
         </v-card>
       </v-row>
       <div>
-        <!-- <v-row class="d-flex justify-center"> -->
         <v-card class="py-0 px-3 mx-12 mt-4 rounded-lg" elevation="4">
           <v-row class="d-flex justify-start">
             <v-col class="pa-0">
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-expansion-panels
-            class="mt-6 rounded facility-info"
-            ref="v-expansion-panels"
-            v-model="expand"
-            focusable
-            multiple
-            variant="accordion"
-          >
-            <v-row v-if="isMainLoading">
-              <v-col>
-                <v-skeleton-loader
-                  v-if="isMainLoading"
-                  :loading="isMainLoading"
-                  type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-                />
-              </v-col>
-            </v-row>
-            <v-row v-else no-gutters class="d-flex flex-column mb-2">
-              <!-- Change Notification Form Summary -->
-              <v-expansion-panel v-if="hasChangeRequestType('PDF_CHANGE')" variant="accordion" class="mb-8 mt-8">
-                <ChangeNotificationFormSummary
-                  :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
-                  @is-summary-valid="isFormComplete"
-                />
-              </v-expansion-panel>
-
-              <!-- MTFI Summary -->
-              <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
-                <div v-for="(facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
-                  <v-skeleton-loader
-                    v-if="isSummaryLoading[index]"
-                    :loading="isSummaryLoading[index]"
-                    type="paragraph, text@3, paragraph, text@3, paragraph"
+          <v-row v-if="isMainLoading">
+            <v-col>
+              <v-skeleton-loader
+                v-if="isMainLoading"
+                :loading="isMainLoading"
+                type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+              />
+            </v-col>
+          </v-row>
+          <div v-else>
+            <v-expansion-panels
+              ref="v-expansion-panels"
+              v-model="expand"
+              class="mt-6 rounded facility-info"
+              focusable
+              multiple
+              variant="accordion"
+              :loading="isMainLoading"
+            >
+              <v-row no-gutters class="d-flex flex-column mb-2">
+                <!-- Change Notification Form Summary -->
+                <v-expansion-panel v-if="hasChangeRequestType('PDF_CHANGE')" variant="accordion" class="mb-8 mt-8">
+                  <ChangeNotificationFormSummary
+                    :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
+                    @is-summary-valid="isFormComplete"
                   />
-                  <div v-else>
-                    <v-expansion-panel variant="accordion">
-                      <v-row no-gutters class="d-flex pl-6 py-5">
-                        <v-col class="col-6 col-lg-4">
-                          <p class="summary-label">Facility Name</p>
-                          <p label="--" class="summary-value">
-                            {{ facility.facilityName ? facility.facilityName : '--' }}
-                          </p>
-                        </v-col>
-                        <v-col class="col-6 col-lg-3">
-                          <p class="summary-label">Facility ID</p>
-                          <p label="--" class="summary-value">
-                            {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
-                          </p>
-                        </v-col>
-                        <v-col class="col-6 col-lg-3">
-                          <p class="summary-label">Licence Number</p>
-                          <p label="--" class="summary-value">
-                            {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
-                          </p>
-                        </v-col>
-                      </v-row>
-                    </v-expansion-panel>
-                    <v-expansion-panel variant="accordion">
-                      <MTFISummary
-                        v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
-                        :old-ccfri="facility?.oldCcfri"
-                        :new-ccfri="facility?.newCcfri"
-                        :facility-id="facility.facilityId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
-                    <v-expansion-panel v-if="facility?.hasRfi && !isSummaryLoading[index]" variant="accordion">
-                      <RFISummary
-                        :rfi-app="facility?.rfiApp"
-                        :ccfri-id="facility?.ccfriApplicationId"
-                        :facility-id="facility.facilityId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
+                </v-expansion-panel>
+
+                <!-- MTFI Summary -->
+                <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
+                  <div v-for="(facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
+                    <v-skeleton-loader
+                      v-if="isSummaryLoading[index]"
+                      :loading="isSummaryLoading[index]"
+                      type="paragraph, text@3, paragraph, text@3, paragraph"
+                    />
+                    <div v-else>
+                      <v-expansion-panel variant="accordion">
+                        <v-row no-gutters class="d-flex pl-6 py-5">
+                          <v-col class="col-6 col-lg-4">
+                            <p class="summary-label">Facility Name</p>
+                            <p label="--" class="summary-value">
+                              {{ facility.facilityName ? facility.facilityName : '--' }}
+                            </p>
+                          </v-col>
+                          <v-col class="col-6 col-lg-3">
+                            <p class="summary-label">Facility ID</p>
+                            <p label="--" class="summary-value">
+                              {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
+                            </p>
+                          </v-col>
+                          <v-col class="col-6 col-lg-3">
+                            <p class="summary-label">Licence Number</p>
+                            <p label="--" class="summary-value">
+                              {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
+                            </p>
+                          </v-col>
+                        </v-row>
+                      </v-expansion-panel>
+                      <v-expansion-panel variant="accordion">
+                        <MTFISummary
+                          v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
+                          :old-ccfri="facility?.oldCcfri"
+                          :new-ccfri="facility?.newCcfri"
+                          :facility-id="facility.facilityId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                      </v-expansion-panel>
+                      <v-expansion-panel v-if="facility?.hasRfi && !isSummaryLoading[index]" variant="accordion">
+                        <RFISummary
+                          :rfi-app="facility?.rfiApp"
+                          :ccfri-id="facility?.ccfriApplicationId"
+                          :facility-id="facility.facilityId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                      </v-expansion-panel>
+                    </div>
                   </div>
-                </div>
+                </v-row>
               </v-row>
-            </v-row>
-          </v-expansion-panels>
+            </v-expansion-panels>
+          </div>
         </v-card>
-        <!-- </v-row> -->
       </div>
 
       <!---Declaration Start--->
@@ -389,7 +388,6 @@ export default {
       isProcessing: false,
       dialog: false,
       landingPage: PATHS.ROOT.HOME,
-      summaryKey: 1,
       invalidSummaryForms: [],
       payload: {},
       printableVersion: false,
@@ -429,7 +427,6 @@ export default {
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
-      console.log(isAnyApplicationUnlocked(applicationList));
       return isAnyApplicationUnlocked(applicationList);
     },
     numberOfPanelsToExpand() {
@@ -465,13 +462,8 @@ export default {
     },
   },
   async created() {
-    //const summaryDeclarationStore = useSummaryDeclarationStore();
-    //summaryDeclarationStore.isMainLoading(true);
-    console.log('calling the load');
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
-
     this.model = deepCloneObject(this.declarationModel);
-    console.log('model', this.model);
     // Determine:
     //   - which user declaration text version (status a or b) will display
     //   - which declaration status (a or b) will be saved on submit.
@@ -511,10 +503,7 @@ export default {
     async submit() {
       this.isProcessing = true;
       try {
-        //const summaryDeclarationStore = useSummaryDeclarationStore();
-        //summaryDeclarationStore.model(this.model);
         this.setDeclarationModel(this.model);
-        // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         this.dialog = true;
       } catch (error) {
@@ -543,13 +532,11 @@ export default {
       if (this.printableVersion) {
         this.expandAllPanels();
       }
-      // this.updateNavBarStatus(formObj, isComplete);
     },
     hasChangeRequestType(changeType) {
       switch (changeType) {
         case 'MTFI':
-          return true;
-        //return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+          return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
         case 'PDF_CHANGE':
           return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
         default:

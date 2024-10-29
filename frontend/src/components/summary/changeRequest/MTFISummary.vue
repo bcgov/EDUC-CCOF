@@ -469,6 +469,7 @@ import { mapState } from 'pinia';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants.js';
 import rules from '../../../utils/rules.js';
 import { deepCloneObject } from '../../../utils/common.js';
+import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
 
 export default {
   props: {
@@ -502,7 +503,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     getRoutingPath() {
       return changeUrlGuid(
         PATHS.MTFI_GROUP_FEE_VERIFICATION,
@@ -515,19 +516,19 @@ export default {
       return this.newModel?.childCareTypes?.length === this.oldCcfri?.childCareTypes?.length;
     },
   },
+  watch: {
+    isLoadingComplete: {
+      handler: function (val) {
+        if (val) {
+          if (!this.isNewCcfriValid) this.isValidForm = false;
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
+      },
+    },
+  },
   created() {
     this.newModel = deepCloneObject(this.newCcfri);
   },
-  // watch: {
-  //   isLoadingComplete: {
-  //     handler: function (val) {
-  //       if (val) {
-  //         if (!this.isNewCcfriValid) this.isValidForm = false;
-  //         this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-  //       }
-  //     },
-  //   },
-  // },
 };
 </script>
 

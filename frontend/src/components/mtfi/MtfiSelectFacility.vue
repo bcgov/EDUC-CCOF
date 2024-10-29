@@ -22,7 +22,7 @@
       <v-skeleton-loader max-height="475px" :loading="true" type="image, image, image" />
     </div>
     <LargeButtonContainer v-else>
-      <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+      <v-form ref="isValidForm" v-model="isValidForm">
         <v-card
           v-for="(
             { facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus, ccfriStatus }, index
@@ -102,17 +102,12 @@ export default {
   },
   data() {
     return {
-      isUnlocked: false,
-      originalFacilityList: [],
       model,
-      //textInput,
-      showOptStatus: '',
       isValidForm: false,
       processing: false,
       loading: true,
       ccfriOptInOrOut,
       checkbox: [],
-      rules: [(v) => !!v || 'Required.'],
     };
   },
   computed: {
@@ -191,8 +186,6 @@ export default {
             applicationID: this.applicationId,
             changeActionId: this.changeActionId,
             optInResponse: 1,
-            // 'ccfriApplicationId': facility.ccfriApplicationId,
-            // 'ccfriFacilityId': facility.ccfriFacilityId,
             programYearId: this.programYearId,
             organizationId: this.organizationId,
           });
