@@ -29,10 +29,10 @@
                 </ul>
                 <v-card v-if="ccofStatus === CCOF_STATUS_NEW" color="#B3E5FF" class="mt-1 pa-1 py-2 mb-4" border="md">
                   <v-row align="center" no-gutters>
-                    <v-col :cols="12" md="3" lg="2" xl="1" align="center">
+                    <v-col cols="2" sm="1" align="center">
                       <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
                     </v-col>
-                    <v-col :cols="12" md="9" lg="10" xl="11" class="px-2 py-1">
+                    <v-col cols="10" sm="11" class="px-0 px-sm-2 py-1">
                       <div v-html="item.body" />
                     </v-col>
                   </v-row>
