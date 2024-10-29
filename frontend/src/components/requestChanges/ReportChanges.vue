@@ -13,65 +13,71 @@
         <p class="text-h6 text-center">What changes do you want to make?</p>
 
         <v-row class="d-flex justify-start align-stretch">
-          <SmallCard
-            v-if="organizationProviderType == 'GROUP'"
-            class="col-lg-6 col-md-6 card-equal-height d-flex flex-column"
-          >
-            <template #content>
-              <p class="text-h6">Add a New facility to an existing organization</p>
-              <br />
-              <p>
-                This will lead you through the CCOF application process. Please have your facility, CCFRI, and ECE-WE
-                information ready.
-              </p>
-              <p>
-                You need to attach an <strong>updated</strong> <i>Community Care And Assisted Living Act</i> licence.
-              </p>
-            </template>
-            <template #button>
-              <v-row no-gutters class="mt-auto">
-                <v-col class="col-12">
-                  <v-btn dark :loading="processing" @click="routeToFacilityAdd()"> Add new facility </v-btn>
-                </v-col>
-              </v-row>
-            </template>
-          </SmallCard>
+          <v-col cols="12" lg="4">
+            <SmallCard
+              v-if="organizationProviderType == 'GROUP'"
+              class="col-lg-6 col-md-6 card-equal-height d-flex flex-column"
+            >
+              <template #content>
+                <p class="text-h6">Add a New facility to an existing organization</p>
+                <br />
+                <p>
+                  This will lead you through the CCOF application process. Please have your facility, CCFRI, and ECE-WE
+                  information ready.
+                </p>
+                <p>
+                  You need to attach an <strong>updated</strong> <i>Community Care And Assisted Living Act</i> licence.
+                </p>
+              </template>
+              <template #button>
+                <v-row no-gutters class="mt-auto">
+                  <v-col class="col-12">
+                    <v-btn dark :loading="processing" @click="routeToFacilityAdd()"> Add new facility </v-btn>
+                  </v-col>
+                </v-row>
+              </template>
+            </SmallCard>
+          </v-col>
 
-          <SmallCard class="col-lg-4 col-md-6 card-equal-height d-flex flex-column">
-            <template #content>
-              <p class="text-h6">Report changes to your Licence or service</p>
-              <br />
-              <p>
-                Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
-                supporting documents ready.
-              </p>
-            </template>
-            <template #button>
-              <v-row no-gutters class="mt-auto">
-                <v-col class="col-12">
-                  <v-btn dark :loading="processing" @click="goToChangeDialogue()">
-                    Upload a Change Notification Form</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </template>
-          </SmallCard>
+          <v-col cols="12" lg="4">
+            <SmallCard class="col-lg-4 col-md-6 card-equal-height d-flex flex-column">
+              <template #content>
+                <p class="text-h6">Report changes to your Licence or service</p>
+                <br />
+                <p>
+                  Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
+                  supporting documents ready.
+                </p>
+              </template>
+              <template #button>
+                <v-row no-gutters class="mt-auto">
+                  <v-col class="col-12">
+                    <v-btn dark :loading="processing" @click="goToChangeDialogue()">
+                      Upload a Change Notification Form</v-btn
+                    >
+                  </v-col>
+                </v-row>
+              </template>
+            </SmallCard>
+          </v-col>
 
-          <SmallCard class="col-lg-6 col-md-6 card-equal-height d-flex flex-column" :disable="!isMtfiEnabled()">
-            <template #content>
-              <p class="text-h6">Mid-Term Fee Increase</p>
-              <br />
-              <p>Request a parent fee increase for a facility after you have received approval for the CCFRI.</p>
-              <p>You may need to provide details about your expenses.</p>
-            </template>
-            <template #button>
-              <v-row no-gutters class="mt-auto">
-                <v-col class="col-12">
-                  <v-btn dark :loading="processing" @click="goToMTFI()"> Update parent fees</v-btn>
-                </v-col>
-              </v-row>
-            </template>
-          </SmallCard>
+          <v-col cols="12" lg="4">
+            <SmallCard class="col-lg-6 col-md-6 card-equal-height d-flex flex-column" :disable="!isMtfiEnabled()">
+              <template #content>
+                <p class="text-h6">Mid-Term Fee Increase</p>
+                <br />
+                <p>Request a parent fee increase for a facility after you have received approval for the CCFRI.</p>
+                <p>You may need to provide details about your expenses.</p>
+              </template>
+              <template #button>
+                <v-row no-gutters class="mt-auto">
+                  <v-col class="col-12">
+                    <v-btn dark :loading="processing" @click="goToMTFI()"> Update parent fees</v-btn>
+                  </v-col>
+                </v-row>
+              </template>
+            </SmallCard>
+          </v-col>
         </v-row>
 
         <v-row id="change-request-history" no-gutters>

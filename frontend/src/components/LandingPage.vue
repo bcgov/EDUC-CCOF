@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <v-container fluid class="pa-12">
     <MessagesToolbar />
@@ -9,259 +10,215 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
-    <v-row class="" align="stretch" justify="space-around">
-      <SmallCard :class="smallCardLayout('CCOF')" class="col-lg-2 col-md-6">
-        <template #content>
-          <p v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0" class="text-h6">
-            Child Care Operating Funding <strong>(CCOF)</strong>
-          </p>
-          <p v-else class="text-h6">Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
-          <br />
-          <br />
-          <br />
-          <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
-            <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
-              <ul>
-                <li class="pa-0">
-                  {{ item.title }}
-                </li>
-              </ul>
-              <v-card
-                v-if="ccofStatus === CCOF_STATUS_NEW"
-                color="#B3E5FF"
-                class="pa-1 py-2"
-                border
-                style="border: 1px solid #5fbbeb"
+    <v-row>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 5 : 3">
+        <SmallCard>
+          <template #content>
+            <div class="pb-2 text-h6">
+              <p v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0">
+                Child Care Operating Funding <strong>(CCOF)</strong>
+              </p>
+              <p v-else>Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
+            </div>
+            <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
+              <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
+                <ul class="pl-6">
+                  <li class="pa-0">
+                    {{ item.title }}
+                  </li>
+                </ul>
+                <v-card v-if="ccofStatus === CCOF_STATUS_NEW" color="#B3E5FF" class="mt-1 pa-1 py-2 mb-4" border="md">
+                  <v-row align="center" no-gutters>
+                    <v-col :cols="12" md="3" lg="2" xl="1" align="center">
+                      <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
+                    </v-col>
+                    <v-col :cols="12" md="9" lg="10" xl="11" class="px-2 py-1">
+                      <div v-html="item.body" />
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-container>
+            </div>
+            <p v-if="ccofStatus === CCOF_STATUS_NEW" class="pt-2">
+              For more information, visit the government website:
+              <a
+                class="text-decoration-underline"
+                href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
+                >gov.bc.ca/childcareoperatingfunding</a
               >
-                <v-row align="center" no-gutters>
-                  <v-col :cols="12" lg="1" align="center">
-                    <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
-                  </v-col>
-                  <v-col :cols="12" lg="11" class="px-2 py-1">
-                    {{ item.body }}
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-container>
-          </div>
-          <p v-if="ccofStatus === CCOF_STATUS_NEW" class="pt-2">
-            For more information, visit the government website:
-            <a
-              class="text-decoration-underline"
-              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-              >gov.bc.ca/childcareoperatingfunding</a
-            >
-          </p>
+            </p>
+          </template>
+          <template #button>
+            <div v-if="ccofStatus === CCOF_STATUS_NEW">
+              <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()">
+                Start Application
+              </v-btn>
+              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+            </div>
 
-          <div v-if="ccofStatus === CCOF_STATUS_NEW">
-            <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()"> Start Application </v-btn>
-            <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-          </div>
+            <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
+              <p class="text-h5 blueText">Status: Incomplete</p>
+              <v-btn theme="dark" class="blueButton" @click="continueApplication()"> Continue Application </v-btn>
+              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+              <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
+                Cancel Application
+              </v-btn>
+            </div>
 
-          <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
-            <p class="text-h5 blueText">Status: Incomplete</p>
-            <v-btn theme="dark" class="blueButton" @click="continueApplication()"> Continue Application </v-btn>
-            <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-            <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
-              Cancel Application
-            </v-btn>
-          </div>
-
-          <div v-else>
-            <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
-              <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
+            <div v-else>
+              <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
+                <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
+                  <v-btn
+                    theme="dark"
+                    class="blueButton my-2"
+                    @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
+                  >
+                    Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
+                  </v-btn>
+                </div>
+              </div>
+              <div v-else>
+                <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
+                  Status of your funding agreement for the current fiscal year: Active
+                </p>
+                <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
                 <v-btn
+                  v-if="applicationType === 'NEW'"
                   theme="dark"
-                  class="blueButton my-2"
-                  @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
+                  class="blueButton mt-4"
+                  @click="viewApplication('NEW')"
                 >
-                  Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
+                  View Recent Application
+                </v-btn>
+                <v-btn
+                  v-else-if="
+                    applicationType === 'RENEW' &&
+                    applicationStatus === 'SUBMITTED' &&
+                    ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
+                  "
+                  theme="dark"
+                  class="blueButton"
+                  @click="viewApplication('RENEW')"
+                >
+                  View Recent Application
                 </v-btn>
               </div>
-            </div>
-            <div class="mt-4 mt-xl-8" v-else>
-              <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
-                Status of your funding agreement for the current fiscal year: Active
-              </p>
-              <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
-              <v-btn
-                v-if="applicationType === 'NEW'"
-                theme="dark"
-                class="blueButton mt-6"
-                @click="viewApplication('NEW')"
+              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+              <router-link
+                v-if="isSubmissionHistoryDisplayed"
+                class="text-decoration-underline"
+                :to="PATHS.ROOT.SUBMISSION_HISTORY"
               >
-                View Recent Application
+                View submission history
+              </router-link>
+            </div>
+          </template>
+        </SmallCard>
+      </v-col>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 3">
+        <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)">
+          <template #content>
+            <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
+
+            <p>
+              Current providers must renew their Funding Agreement every year. For more information, visit the
+              government website:
+            </p>
+            <p>
+              <a
+                class="text-decoration-underline"
+                style="pointer-events: all"
+                href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
+                >gov.bc.ca/childcareoperatingfunding</a
+              >
+            </p>
+            <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
+            <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
+              <!-- <p class="text-h6 blueText">Status of the PCF: Submitted</p> -->
+              <span>We will contact you if we require further information.</span>
+            </div>
+          </template>
+          <template #button>
+            <!-- wait for CR list to be loaded before starting a renewal- to not allow user to start renewal if there is active change request -->
+            <div v-if="!isLoadingComplete">
+              <v-skeleton-loader class="ma-0 pa-0" type="chip" />
+            </div>
+            <div v-else>
+              <!-- {{ isRenewEnabled }} -->
+              <v-btn
+                v-if="ccofRenewStatus === RENEW_STATUS_NEW"
+                :class="buttonColor(!isRenewEnabled)"
+                theme="dark"
+                @click="renewApplication()"
+              >
+                Renew my Funding Agreement
               </v-btn>
               <v-btn
-                v-else-if="
-                  applicationType === 'RENEW' &&
-                  applicationStatus === 'SUBMITTED' &&
-                  ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
-                "
+                v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE"
+                :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
-                class="blueButton"
-                @click="viewApplication('RENEW')"
+                @click="continueRenewal()"
               >
-                View Recent Application
+                Continue Renewal
               </v-btn>
+              <v-btn
+                v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED"
+                :class="buttonColor(false)"
+                theme="dark"
+                @click="actionRequiredOrganizationRoute()"
+              >
+                Update your PCF
+              </v-btn>
+              <v-btn v-else :class="buttonColor(true)" :disabled="true"> Renew my Funding Agreement </v-btn>
             </div>
-            <p class="mt-2">Fiscal year runs April 1 to March 31</p>
-            <router-link
-              v-if="isSubmissionHistoryDisplayed"
-              class="text-decoration-underline"
-              :to="PATHS.ROOT.SUBMISSION_HISTORY"
-            >
-              View submission history
-            </router-link>
-          </div>
-        </template>
-
-        <template #button></template>
-      </SmallCard>
-
-      <v-dialog v-model="showDeleteDialog" persistent max-width="700px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Cancel Application Warning </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p>
-                  If you cancel your application, any information you entered will be deleted. If you create a new
-                  application, you will need to re-enter this information.
-                </p>
-                <p class="pt-4">Are you sure you want to cancel your application and delete your information?</p>
-                <v-btn
-                  :loading="!isLoadingComplete"
-                  theme="dark"
-                  color="secondary"
-                  class="mr-10"
-                  @click="closeDialog()"
-                >
-                  Back
+          </template>
+        </SmallCard>
+      </v-col>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+        <SmallCard :disable="!isReportChangeButtonEnabled">
+          <template #content>
+            <p class="text-h6">Report changes to your licence or service</p>
+            <p>
+              You must notify the Child Care Operating Funding program within two business days of any change to your
+              facility licence or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
+            </p>
+          </template>
+          <template #button>
+            <v-row no-gutters>
+              <v-col v-if="isLoadingComplete && isUpdateChangeRequestDisplayed" class="col-12 mb-3">
+                <v-btn :class="buttonColor(false)" theme="dark" @click="goToChangeRequestHistory()">
+                  Update change request
                 </v-btn>
-                <v-btn :loading="!isLoadingComplete" theme="dark" color="primary" @click="deletePcf()">
-                  Continue
+              </v-col>
+              <v-col class="col-12">
+                <v-btn :class="buttonColor(!isReportChangeButtonEnabled)" theme="dark" @click="goToReportChange()">
+                  Report a change
                 </v-btn>
               </v-col>
             </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
-
-      <SmallCard
-        class="col-lg-2 col-md-6"
-        :class="smallCardLayout('RENEW')"
-        :title="`Renew my funding agreement for ${renewalYearLabel}`"
-        :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)"
-      >
-        <template #content>
-          <!-- <p class="text-h6">Renew my Funding Agreement {{ renewalYearLabel }}</p> -->
-          <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
-
-          <p>
-            Current providers must renew their Funding Agreement every year. For more information, visit the government
-            website:
-          </p>
-          <p>
-            <a
-              class="text-decoration-underline"
-              style="pointer-events: all"
-              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-              >gov.bc.ca/childcareoperatingfunding</a
-            >
-          </p>
-          <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
-          <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
-            <!-- <p class="text-h6 blueText">Status of the PCF: Submitted</p> -->
-            <span>We will contact you if we require further information.</span>
-          </div>
-        </template>
-        <template #button>
-          <!-- wait for CR list to be loaded before starting a renewal- to not allow user to start renewal if there is active change request -->
-          <div v-if="!isLoadingComplete">
-            <v-skeleton-loader class="ma-0 pa-0" type="chip" />
-          </div>
-          <div v-else>
-            <!-- {{ isRenewEnabled }} -->
+          </template>
+        </SmallCard>
+      </v-col>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+        <SmallCard :disable="!isCCOFApproved">
+          <template #content>
+            <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
+            <p>
+              If you are expecting a new licence or change to your licence or service details, contact the Child Care
+              Operating Funding program before submitting your next enrolment report or monthly ECE report.
+            </p>
+          </template>
+          <template #button>
             <v-btn
-              v-if="ccofRenewStatus === RENEW_STATUS_NEW"
-              :color="buttonColor(!isRenewEnabled)"
+              href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
+              :class="buttonColor(!isCCOFApproved)"
               theme="dark"
-              @click="renewApplication()"
             >
-              Renew my Funding Agreement
+              Submit a report
             </v-btn>
-            <v-btn
-              v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE"
-              :color="buttonColor(!isRenewEnabled)"
-              theme="dark"
-              @click="continueRenewal()"
-            >
-              Continue Renewal
-            </v-btn>
-            <v-btn
-              v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED"
-              :color="buttonColor(false)"
-              theme="dark"
-              @click="actionRequiredOrganizationRoute()"
-            >
-              Update your PCF
-            </v-btn>
-            <v-btn v-else :color="buttonColor(true)" :disabled="true"> Renew my Funding Agreement </v-btn>
-          </div>
-        </template>
-      </SmallCard>
-
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2 col-md-6" :disable="!isReportChangeButtonEnabled">
-        <template #content>
-          <p class="text-h6">Report changes to your licence or service</p>
-          <p>
-            You must notify the Child Care Operating Funding program within two business days of any change to your
-            facility licence or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
-          </p>
-        </template>
-        <template #button>
-          <v-row no-gutters>
-            <v-col v-if="isLoadingComplete && isUpdateChangeRequestDisplayed" class="col-12 mb-3">
-              <v-btn :color="buttonColor(false)" theme="dark" @click="goToChangeRequestHistory()">
-                Update change request
-              </v-btn>
-            </v-col>
-            <v-col class="col-12">
-              <v-btn :color="buttonColor(!isReportChangeButtonEnabled)" theme="dark" @click="goToReportChange()">
-                Report a change
-              </v-btn>
-            </v-col>
-          </v-row>
-        </template>
-      </SmallCard>
-
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2 col-md-6" :disable="!isCCOFApproved">
-        <template #content>
-          <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
-          <p>
-            If you are expecting a new licence or change to your licence or service details, contact the Child Care
-            Operating Funding program before submitting your next enrolment report or monthly ECE report.
-          </p>
-        </template>
-        <template #button>
-          <v-btn
-            href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
-            :color="buttonColor(!isCCOFApproved)"
-            theme="dark"
-          >
-            Submit a report
-          </v-btn>
-        </template>
-      </SmallCard>
+          </template>
+        </SmallCard>
+      </v-col>
     </v-row>
 
     <v-skeleton-loader
@@ -344,6 +301,34 @@
         </v-col>
       </v-row>
     </v-card>
+    <v-dialog v-model="showDeleteDialog" persistent max-width="700px">
+      <v-card>
+        <v-container class="pt-0">
+          <v-row>
+            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+              <v-card-title class="text-white"> Cancel Application Warning </v-card-title>
+            </v-col>
+            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
+          </v-row>
+          <v-row>
+            <v-col cols="12" style="text-align: center">
+              <p>
+                If you cancel your application, any information you entered will be deleted. If you create a new
+                application, you will need to re-enter this information.
+              </p>
+              <p class="pt-4">Are you sure you want to cancel your application and delete your information?</p>
+              <v-btn :loading="!isLoadingComplete" theme="dark" color="secondary" class="mr-10" @click="closeDialog()">
+                Back
+              </v-btn>
+              <v-btn :loading="!isLoadingComplete" theme="dark" color="primary" @click="deletePcf()"> Continue </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
     <p class="text-center mt-4 font-weight-bold">
       Note: For assistance completing your Program Confirmation Form, contact the program at 1-888-338-6622 (Option 2).
     </p>
@@ -485,11 +470,9 @@ export default {
       let isEnabled =
         this.userInfo.serverTime > this.getNextProgramYear?.intakeStart &&
         this.userInfo.serverTime < this.getNextProgramYear?.intakeEnd;
-      console.log('isWithinRenewDate: ', isEnabled);
       return isEnabled;
     },
     isRenewEnabled() {
-      console.log('can renew?: ', this.isWithinRenewDate);
       //renew disabled because current NEW application is in progress
       if (this.applicationType === 'NEW' && this.applicationStatus === 'DRAFT') {
         return false;
@@ -620,6 +603,9 @@ export default {
       return (
         this.applicationStatus === 'DRAFT' && this.applicationType === 'NEW' && this.ccofApplicationStatus === 'NEW'
       );
+    },
+    isCCOFStatusNew() {
+      return this.ccofStatus === this.CCOF_STATUS_NEW;
     },
   },
   async created() {
@@ -778,20 +764,7 @@ export default {
       else if (this.isRFIUnlock(ccfriApplicationId, application)) this.goToRFI(ccfriApplicationId, programYearId);
     },
     buttonColor(isDisabled) {
-      return isDisabled ? '#909090' : '#003366';
-    },
-    smallCardLayout(card) {
-      if (this.ccofStatus === this.CCOF_STATUS_NEW) {
-        switch (card) {
-          case 'CCOF':
-            return 'col-lg-5';
-          case 'RENEW':
-            return 'col-lg-3';
-          default:
-            return 'col-lg-2';
-        }
-      }
-      return 'col-lg-3';
+      return isDisabled ? 'disabledButton' : 'blueButton';
     },
     isFacilityCardUnlock(ccfriApplicationId) {
       const programYearId = this.selectedProgramYear?.programYearId
