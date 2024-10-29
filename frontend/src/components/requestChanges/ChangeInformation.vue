@@ -27,10 +27,10 @@
             <span><b>Additional funding cannot be paid in the month that:</b></span>
           </v-card-title>
           <v-card-text class="pt-4">
-            <ul>
-              <li>the Funding Agreement starts</li>
-              <li>the Funding Agreement has already been modified</li>
-              <li>you submitted an enrolment report and received payment</li>
+            <ul class="ml-4">
+              <li>The Funding Agreement starts</li>
+              <li>The Funding Agreement has already been modified</li>
+              <li>You submitted an enrolment report and received payment</li>
             </ul>
           </v-card-text>
         </v-card>

@@ -10,12 +10,15 @@
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
     <v-row class="" align="stretch" justify="space-around">
-      <SmallCard :class="smallCardLayout('CCOF')">
+      <SmallCard :class="smallCardLayout('CCOF')" class="col-lg-2 col-md-6">
         <template #content>
           <p v-if="isCCOFApproved && getActionRequiredApplicationsForCCOFCard?.length === 0" class="text-h6">
             Child Care Operating Funding <strong>(CCOF)</strong>
           </p>
           <p v-else class="text-h6">Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
+          <br />
+          <br />
+          <br />
           <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
             <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
               <ul>
@@ -26,7 +29,7 @@
               <v-card
                 v-if="ccofStatus === CCOF_STATUS_NEW"
                 color="#B3E5FF"
-                class="mt-1 pa-1 py-2"
+                class="pa-1 py-2"
                 border
                 style="border: 1px solid #5fbbeb"
               >
@@ -49,8 +52,7 @@
               >gov.bc.ca/childcareoperatingfunding</a
             >
           </p>
-        </template>
-        <template #button>
+
           <div v-if="ccofStatus === CCOF_STATUS_NEW">
             <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()"> Start Application </v-btn>
             <p class="mt-4">Fiscal year runs April 1 to March 31</p>
@@ -77,7 +79,7 @@
                 </v-btn>
               </div>
             </div>
-            <div v-else>
+            <div class="mt-4 mt-xl-8" v-else>
               <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
                 Status of your funding agreement for the current fiscal year: Active
               </p>
@@ -85,7 +87,7 @@
               <v-btn
                 v-if="applicationType === 'NEW'"
                 theme="dark"
-                class="blueButton mt-4"
+                class="blueButton mt-6"
                 @click="viewApplication('NEW')"
               >
                 View Recent Application
@@ -103,7 +105,7 @@
                 View Recent Application
               </v-btn>
             </div>
-            <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+            <p class="mt-2">Fiscal year runs April 1 to March 31</p>
             <router-link
               v-if="isSubmissionHistoryDisplayed"
               class="text-decoration-underline"
@@ -113,6 +115,8 @@
             </router-link>
           </div>
         </template>
+
+        <template #button></template>
       </SmallCard>
 
       <v-dialog v-model="showDeleteDialog" persistent max-width="700px">
@@ -153,6 +157,7 @@
       </v-dialog>
 
       <SmallCard
+        class="col-lg-2 col-md-6"
         :class="smallCardLayout('RENEW')"
         :title="`Renew my funding agreement for ${renewalYearLabel}`"
         :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)"
@@ -215,7 +220,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2" :disable="!isReportChangeButtonEnabled">
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2 col-md-6" :disable="!isReportChangeButtonEnabled">
         <template #content>
           <p class="text-h6">Report changes to your licence or service</p>
           <p>
@@ -239,7 +244,7 @@
         </template>
       </SmallCard>
 
-      <SmallCard :class="smallCardLayout('OTHERS')" :disable="!isCCOFApproved">
+      <SmallCard :class="smallCardLayout('OTHERS')" class="col-lg-2 col-md-6" :disable="!isCCOFApproved">
         <template #content>
           <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
           <p>

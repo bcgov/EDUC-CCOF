@@ -11,72 +11,64 @@
     <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
       <v-container>
         <p class="text-h6 text-center">What changes do you want to make?</p>
-        <v-row class="d-flex justify-start">
-          <SmallCard v-if="organizationProviderType == 'GROUP'" class="col-lg-6" :disable="false">
+
+        <v-row class="d-flex justify-start align-stretch">
+          <SmallCard
+            v-if="organizationProviderType == 'GROUP'"
+            class="col-lg-6 col-md-6 card-equal-height d-flex flex-column"
+          >
             <template #content>
-              <div class="px-10">
-                <p class="text-h6 text-center">Add a New facility to an existing organization</p>
-                <p class="px-2 text-center">
-                  This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
-                  information ready.
-                </p>
-                <p class="px-2 text-center">
-                  You need to attach an <strong>updated</strong><i> Community Care And Assisted Living Act</i> licence.
-                </p>
-              </div>
+              <p class="text-h6">Add a New facility to an existing organization</p>
+              <br />
+              <p>
+                This will lead you through the CCOF application process. Please have your facility, CCFRI, and ECE-WE
+                information ready.
+              </p>
+              <p>
+                You need to attach an <strong>updated</strong> <i>Community Care And Assisted Living Act</i> licence.
+              </p>
             </template>
             <template #button>
-              <v-row justify="space-around" class="ma-0 pa-0">
-                <v-btn dark class="blueButton mb-10" :loading="processing" @click="routeToFacilityAdd()">
-                  Add new facility
-                </v-btn>
+              <v-row no-gutters class="mt-auto">
+                <v-col class="col-12">
+                  <v-btn dark :loading="processing" @click="routeToFacilityAdd()"> Add new facility </v-btn>
+                </v-col>
               </v-row>
             </template>
           </SmallCard>
 
-          <SmallCard class="col-lg-6" :disable="false">
+          <SmallCard class="col-lg-4 col-md-6 card-equal-height d-flex flex-column">
             <template #content>
-              <div class="px-10">
-                <p class="text-h6 text-center">Report changes to your Licence or service</p>
-                <p class="px-2 text-center">
-                  Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
-                  supporting documents ready.
-                </p>
-              </div>
+              <p class="text-h6">Report changes to your Licence or service</p>
+              <br />
+              <p>
+                Please have your <i>Community Care And Assisted Living Act</i> licence (if required) and other
+                supporting documents ready.
+              </p>
             </template>
             <template #button>
-              <div class="ma-0 pa-0">
-                <v-row justify="space-around">
-                  <v-btn dark class="blueButton mb-10" :loading="processing" @click="goToChangeDialogue()">
-                    Upload a Change Notification Form
-                  </v-btn>
-                </v-row>
-              </div>
+              <v-row no-gutters class="mt-auto">
+                <v-col class="col-12">
+                  <v-btn dark :loading="processing" @click="goToChangeDialogue()">
+                    Upload a Change Notification Form</v-btn
+                  >
+                </v-col>
+              </v-row>
             </template>
           </SmallCard>
 
-          <SmallCard class="col-lg-6" :disable="!isMtfiEnabled()">
+          <SmallCard class="col-lg-6 col-md-6 card-equal-height d-flex flex-column" :disable="!isMtfiEnabled()">
             <template #content>
-              <div class="px-10">
-                <p class="text-h6 text-center">Mid-Term Fee Increase</p>
-                <p class="px-2 text-center">
-                  Request a parent fee increase for a facility after you have received approval for the CCFRI.
-                </p>
-                <p class="px-2 text-center">You may need to provide details about your expenses.</p>
-              </div>
+              <p class="text-h6">Mid-Term Fee Increase</p>
+              <br />
+              <p>Request a parent fee increase for a facility after you have received approval for the CCFRI.</p>
+              <p>You may need to provide details about your expenses.</p>
             </template>
             <template #button>
-              <v-row justify="space-around" class="ma-0 pa-0">
-                <v-btn
-                  dark
-                  class="mb-10"
-                  :color="buttonColor(!isMtfiEnabled())"
-                  :disable="!isMtfiEnabled()"
-                  :loading="processing"
-                  @click="goToMTFI()"
-                >
-                  Update parent fees
-                </v-btn>
+              <v-row no-gutters class="mt-auto">
+                <v-col class="col-12">
+                  <v-btn dark :loading="processing" @click="goToMTFI()"> Update parent fees</v-btn>
+                </v-col>
               </v-row>
             </template>
           </SmallCard>
@@ -87,13 +79,6 @@
             <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
             <h2 v-else>Change History</h2>
           </v-col>
-          <!-- <v-text-field
-            v-if="!viewOlderRequestActive"
-            v-model="search"
-            label="Search by facility name">
-          </v-text-field>
-        NOT SURE IF THIS IS ACTUALLY WHAT THE REQUIREMENTS WANT
-        -->
         </v-row>
         <v-row v-if="processing">
           <v-col>
@@ -741,5 +726,16 @@ export default {
   overflow: hidden; /* make sure it hides the content that overflows */
   white-space: nowrap; /* don't break the line */
   text-overflow: ellipsis; /* give the beautiful '...' effect */
+}
+
+.card-equal-height {
+  /* Set a min-height to ensure consistency */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-text-height {
+  height: 220px;
 }
 </style>

@@ -57,91 +57,98 @@
         </v-card>
       </v-row>
       <div>
-        <v-row class="d-flex justify-center">
-          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-            <v-row class="d-flex justify-start">
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
+        <!-- <v-row class="d-flex justify-center"> -->
+        <v-card class="py-0 px-3 mx-12 mt-4 rounded-lg" elevation="4">
+          <v-row class="d-flex justify-start">
+            <v-col class="pa-0">
+              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
+            </v-col>
+          </v-row>
+          <v-expansion-panels
+            class="mt-6 rounded facility-info"
+            ref="v-expansion-panels"
+            v-model="expand"
+            focusable
+            multiple
+            variant="accordion"
+          >
+            <v-row v-if="isMainLoading">
+              <v-col>
+                <v-skeleton-loader
+                  v-if="isMainLoading"
+                  :loading="isMainLoading"
+                  type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+                />
               </v-col>
             </v-row>
-            <v-expansion-panels ref="v-expansion-panels" v-model="expand" focusable multiple variant="accordion">
-              <v-row v-if="isMainLoading">
-                <v-col>
-                  <v-skeleton-loader
-                    v-if="isMainLoading"
-                    :loading="isMainLoading"
-                    type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-                  />
-                </v-col>
-              </v-row>
-              <v-row v-else no-gutters class="d-flex flex-column mb-2">
-                <!-- Change Notification Form Summary -->
-                <v-expansion-panel v-if="hasChangeRequestType('PDF_CHANGE')" variant="accordion" class="mb-8 mt-8">
-                  <ChangeNotificationFormSummary
-                    :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
-                    @is-summary-valid="isFormComplete"
-                  />
-                </v-expansion-panel>
+            <v-row v-else no-gutters class="d-flex flex-column mb-2">
+              <!-- Change Notification Form Summary -->
+              <v-expansion-panel v-if="hasChangeRequestType('PDF_CHANGE')" variant="accordion" class="mb-8 mt-8">
+                <ChangeNotificationFormSummary
+                  :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
+                  @is-summary-valid="isFormComplete"
+                />
+              </v-expansion-panel>
 
-                <!-- MTFI Summary -->
-                <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
-                  <div v-for="(facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
-                    <v-skeleton-loader
-                      v-if="isSummaryLoading[index]"
-                      :loading="isSummaryLoading[index]"
-                      type="paragraph, text@3, paragraph, text@3, paragraph"
-                    />
-                    <div v-else>
-                      <v-expansion-panel variant="accordion">
-                        <v-row no-gutters class="d-flex pl-6 pt-5">
-                          <v-col class="col-6 col-lg-4">
-                            <p class="summary-label">Facility Name</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.facilityName ? facility.facilityName : '--' }}
-                            </p>
-                          </v-col>
-                          <v-col class="col-6 col-lg-3">
-                            <p class="summary-label">Facility ID</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
-                            </p>
-                          </v-col>
-                          <v-col class="col-6 col-lg-3">
-                            <p class="summary-label">Licence Number</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
-                            </p>
-                          </v-col>
-                        </v-row>
-                      </v-expansion-panel>
-                      <v-expansion-panel variant="accordion">
-                        <MTFISummary
-                          v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
-                          :old-ccfri="facility?.oldCcfri"
-                          :new-ccfri="facility?.newCcfri"
-                          :facility-id="facility.facilityId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </v-expansion-panel>
-                      <v-expansion-panel v-if="facility?.hasRfi && !isSummaryLoading[index]" variant="accordion">
-                        <RFISummary
-                          :rfi-app="facility?.rfiApp"
-                          :ccfri-id="facility?.ccfriApplicationId"
-                          :facility-id="facility.facilityId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </v-expansion-panel>
-                    </div>
+              <!-- MTFI Summary -->
+              <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
+                <div v-for="(facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
+                  <v-skeleton-loader
+                    v-if="isSummaryLoading[index]"
+                    :loading="isSummaryLoading[index]"
+                    type="paragraph, text@3, paragraph, text@3, paragraph"
+                  />
+                  <div v-else>
+                    <v-expansion-panel variant="accordion">
+                      <v-row no-gutters class="d-flex pl-6 py-5">
+                        <v-col class="col-6 col-lg-4">
+                          <p class="summary-label">Facility Name</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.facilityName ? facility.facilityName : '--' }}
+                          </p>
+                        </v-col>
+                        <v-col class="col-6 col-lg-3">
+                          <p class="summary-label">Facility ID</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
+                          </p>
+                        </v-col>
+                        <v-col class="col-6 col-lg-3">
+                          <p class="summary-label">Licence Number</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
+                          </p>
+                        </v-col>
+                      </v-row>
+                    </v-expansion-panel>
+                    <v-expansion-panel variant="accordion">
+                      <MTFISummary
+                        v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
+                        :old-ccfri="facility?.oldCcfri"
+                        :new-ccfri="facility?.newCcfri"
+                        :facility-id="facility.facilityId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel v-if="facility?.hasRfi && !isSummaryLoading[index]" variant="accordion">
+                      <RFISummary
+                        :rfi-app="facility?.rfiApp"
+                        :ccfri-id="facility?.ccfriApplicationId"
+                        :facility-id="facility.facilityId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
                   </div>
-                </v-row>
+                </div>
               </v-row>
-            </v-expansion-panels>
-          </v-card>
-        </v-row>
+            </v-row>
+          </v-expansion-panels>
+        </v-card>
+        <!-- </v-row> -->
       </div>
 
       <!---Declaration Start--->
-      <v-row justify="center">
+      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-12'">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -158,7 +165,7 @@
             </v-col>
           </v-row>
           <v-row v-if="!isProcessing">
-            <v-col class="pb-0">
+            <v-col class="pb-0 px-8">
               <div v-show="!isRenewal && !organizationAccountNumber">
                 <p>
                   I hereby confirm that the information I have provided in this application is complete and accurate. I
@@ -366,7 +373,7 @@ import NavButton from '../../components/util/NavButton.vue';
 import MTFISummary from '../../components/summary/changeRequest/MTFISummary.vue';
 import RFISummary from '../../components/summary/group/RFISummary.vue';
 import ChangeNotificationFormSummary from '../../components/summary/changeRequest/ChangeNotificationFormSummary.vue';
-import { isAnyApplicationUnlocked } from '../../utils/common.js';
+import { deepCloneObject, isAnyApplicationUnlocked } from '../../utils/common.js';
 
 export default {
   components: {
@@ -387,6 +394,7 @@ export default {
       payload: {},
       printableVersion: false,
       expand: [],
+      model: {},
     };
   },
   computed: {
@@ -401,7 +409,7 @@ export default {
       'isMainLoading',
       'isLoadingComplete',
       'summaryModel',
-      'model',
+      'declarationModel',
     ]),
     languageYearLabel() {
       return this.getLanguageYearLabel;
@@ -456,10 +464,14 @@ export default {
       return '';
     },
   },
-  async beforeMount() {
-    const summaryDeclarationStore = useSummaryDeclarationStore();
-    summaryDeclarationStore.isMainLoading(true);
+  async created() {
+    //const summaryDeclarationStore = useSummaryDeclarationStore();
+    //summaryDeclarationStore.isMainLoading(true);
+    console.log('calling the load');
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
+
+    this.model = deepCloneObject(this.declarationModel);
+    console.log('model', this.model);
     // Determine:
     //   - which user declaration text version (status a or b) will display
     //   - which declaration status (a or b) will be saved on submit.
@@ -478,7 +490,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['updateDeclaration', 'loadChangeRequestSummaryDeclaration']),
+    ...mapActions(useSummaryDeclarationStore, [
+      'updateDeclaration',
+      'loadChangeRequestSummaryDeclaration',
+      'setDeclarationModel',
+    ]),
     expandAllPanels() {
       for (let i = 0; i < this.numberOfPanelsToExpand; i++) {
         this.expand.push(i);
@@ -495,8 +511,9 @@ export default {
     async submit() {
       this.isProcessing = true;
       try {
-        const summaryDeclarationStore = useSummaryDeclarationStore();
-        summaryDeclarationStore.model(this.model);
+        //const summaryDeclarationStore = useSummaryDeclarationStore();
+        //summaryDeclarationStore.model(this.model);
+        this.setDeclarationModel(this.model);
         // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         this.dialog = true;
@@ -531,7 +548,8 @@ export default {
     hasChangeRequestType(changeType) {
       switch (changeType) {
         case 'MTFI':
-          return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
+          return true;
+        //return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE);
         case 'PDF_CHANGE':
           return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
         default:
@@ -562,5 +580,9 @@ li {
 .summary-value {
   font-size: medium;
   color: black;
+}
+
+.facility-info {
+  border-top: 5px solid grey !important;
 }
 </style>

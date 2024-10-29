@@ -72,6 +72,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
   },
   actions: {
     setDeclarationModel(value) {
+      console.log('setting');
+      console.log(value);
       this.declarationModel = value;
     },
     setSummaryModel(value) {
@@ -109,7 +111,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestDeclaration(changeRequestId) {
       checkSession();
       try {
+        console.log('loading the dec');
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
+        console.log(payload);
         //clear the old decleration data out so provider can sign again for Dec B
         if (payload.unlockDeclaration) {
           payload.agreeConsentCertify = null;
@@ -320,8 +324,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       checkSession();
       try {
         this.setIsLoadingComplete(false);
-        if (!this.summaryModel) this.setIsMainLoading(true);
+        //if (!this.summaryModel) this.setIsMainLoading(true);
+        console.log('I AM LOADING');
         let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+        console.log(payload);
         let changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
           if (!changeRequestTypes.includes(item.changeType)) {
@@ -340,6 +346,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           declarationBStatus: payload?.declarationBStatus,
         };
         this.setDeclarationModel(declarationModel);
+
+        console.log('what is summary model', this.declarationModel);
 
         // Load Summary model
         let summaryModel = {

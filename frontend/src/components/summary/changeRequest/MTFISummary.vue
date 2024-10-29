@@ -1,5 +1,5 @@
 <template>
-  <v-row no-gutters class="d-flex flex-column">
+  <v-row no-gutters class="d-flex flex-column ma-0 pa-0">
     <v-form ref="mtfiSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
         <h4 class="blueText">
@@ -13,7 +13,7 @@
           </span>
         </h4>
       </v-expansion-panel-title>
-      <v-expansion-panel-text eager>
+      <v-expansion-panel-text eager class="rounded">
         <div v-if="isNewCcfriValid">
           <div v-for="(item, index) in oldCcfri?.childCareTypes" :key="index">
             <div class="ma-0 pa-0">
@@ -24,10 +24,10 @@
                 </p>
               </div>
               <v-row no-gutters>
-                <v-row v-if="item.feeFrequency != newCcfri?.childCareTypes[index].feeFrequency" no-gutters>
+                <v-row v-if="item.feeFrequency != newModel?.childCareTypes[index].feeFrequency" no-gutters>
                   <v-col class="col-12 col-lg-4 pb-3"> Current parent fee frequency: {{ item.feeFrequency }} </v-col>
                   <v-col class="col-12 col-lg-4 pb-3">
-                    New parent fee frequency: {{ newCcfri?.childCareTypes[index].feeFrequency }}
+                    New parent fee frequency: {{ newModel?.childCareTypes[index].feeFrequency }}
                   </v-col>
                 </v-row>
                 <div v-else>
@@ -41,229 +41,201 @@
                     <span>Current parent fees: </span>
                   </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeApr"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="April"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Apr {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Apr
+                    <v-text-field
+                      v-model.number="item.approvedFeeApr"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeMay"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="May"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> May {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    May
+                    <v-text-field
+                      v-model.number="item.approvedFeeMay"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeJun"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="June"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Jun {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Jun
+                    <v-text-field
+                      v-model.number="item.approvedFeeJun"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeJul"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="July"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Jul {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    July
+                    <v-text-field
+                      v-model.number="item.approvedFeeJul"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeAug"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="August"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Aug {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Aug
+                    <v-text-field
+                      v-model.number="item.approvedFeeAug"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeSep"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="September"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Sep {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
-
-                  <!-- End Row One of Grid-->
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Sep
+                    <v-text-field
+                      v-model.number="item.approvedFeeSep"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
                   <div class="feeTitle summary-label">
                     <span>New parent fees: </span>
                   </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeApr"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Apr
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeApr"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeMay"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    May
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeMay"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeJun"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Jun
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeJun"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeJul"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    July
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeJul"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeAug"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Aug
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeAug"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeSep"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
-
-                  <!-- End Row Two of Grid-->
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Sep
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeSep"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
                 </v-container>
                 <br />
                 <br />
@@ -273,229 +245,201 @@
                     <span>Current parent fees: </span>
                   </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeOct"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="October"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Oct {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Oct
+                    <v-text-field
+                      v-model.number="item.approvedFeeOct"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeNov"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="November"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Nov {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Nov
+                    <v-text-field
+                      v-model.number="item.approvedFeeNov"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeDec"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="December"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Dec {{ item.programYear?.substring(0, 4) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Dec
+                    <v-text-field
+                      v-model.number="item.approvedFeeDec"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeJan"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="January"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Jan 20{{ item.programYear?.slice(-5, -3) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Jen
+                    <v-text-field
+                      v-model.number="item.approvedFeeJan"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeFeb"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="February"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Feb 20{{ item.programYear?.slice(-5, -3) }} </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Feb
+                    <v-text-field
+                      v-model.number="item.approvedFeeFeb"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-8">
-                      <v-text-field
-                        v-model.number="item.approvedFeeMar"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        label="March"
-                        prefix="$"
-                      />
-                    </v-col>
-                    <v-col class="col-4"> Mar 20{{ item.programYear?.slice(-5, -3) }} </v-col>
-                  </v-row>
-
-                  <!-- End Row One of Grid-->
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Mar
+                    <v-text-field
+                      v-model.number="item.approvedFeeMar"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      prefix="$"
+                    />
+                  </div>
 
                   <div class="feeTitle summary-label">
                     <span>New parent fees: </span>
                   </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeOct"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Oct
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeOct"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeNov"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Nov
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeNov"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeDec"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Dec
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeDec"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeJan"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Jan
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeJan"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeFeb"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    Feb
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeFeb"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <v-row no-gutters class="feeTitle summary-label justify-start ma-0">
-                    <v-col class="col-12">
-                      <v-text-field
-                        v-model.number="newCcfri.childCareTypes[index].approvedFeeMar"
-                        type="number"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        :rules="rules.required"
-                        placeholder="Required"
-                        label=""
-                        prefix="$"
-                        class="summary-value"
-                      />
-                    </v-col>
-                  </v-row>
+                  <div no-gutters class="feeTitle summary-label justify-start ma-0">
+                    March
+                    <v-text-field
+                      v-model.number="newModel.childCareTypes[index].approvedFeeMar"
+                      type="number"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                      placeholder="Required"
+                      label=""
+                      prefix="$"
+                      class="summary-value"
+                    />
+                  </div>
 
-                  <!-- End Row Two of Grid-->
                   <br />
                 </v-container>
               </div>
@@ -524,6 +468,7 @@
 import { mapState } from 'pinia';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants.js';
 import rules from '../../../utils/rules.js';
+import { deepCloneObject } from '../../../utils/common.js';
 
 export default {
   props: {
@@ -553,6 +498,7 @@ export default {
         formName: 'MTFISummary',
         formId: this.facilityId,
       },
+      newModel: {},
     };
   },
   computed: {
@@ -566,19 +512,22 @@ export default {
       );
     },
     isNewCcfriValid() {
-      return this.newCcfri?.childCareTypes?.length === this.oldCcfri?.childCareTypes?.length;
+      return this.newModel?.childCareTypes?.length === this.oldCcfri?.childCareTypes?.length;
     },
   },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          if (!this.isNewCcfriValid) this.isValidForm = false;
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
+  created() {
+    this.newModel = deepCloneObject(this.newCcfri);
   },
+  // watch: {
+  //   isLoadingComplete: {
+  //     handler: function (val) {
+  //       if (val) {
+  //         if (!this.isNewCcfriValid) this.isValidForm = false;
+  //         this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+  //       }
+  //     },
+  //   },
+  // },
 };
 </script>
 
@@ -623,7 +572,6 @@ export default {
   justify-items: end;
   justify-content: end;
   padding: 0px 16px 0px 8px;
-  border-right: solid 1px rgba(0, 0, 0, 0.5) !important;
 }
 
 .blueText {
