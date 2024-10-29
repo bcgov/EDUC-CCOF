@@ -738,15 +738,4 @@ export default {
   white-space: nowrap; /* don't break the line */
   text-overflow: ellipsis; /* give the beautiful '...' effect */
 }
-
-.card-equal-height {
-  /* Set a min-height to ensure consistency */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-text-height {
-  height: 220px;
-}
 </style>

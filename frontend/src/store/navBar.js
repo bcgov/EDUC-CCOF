@@ -353,14 +353,13 @@ export const useNavBarStore = defineStore('navBar', {
     //only called mtfi
     //maybe better for group facilities
     decorateNavBar(facilityKey) {
-      const navBarList = this.navBarList.map((nav) => {
+      this.navBarList.map((nav) => {
         const facility = this.userProfileList.find((el) => el.facilityId === nav[facilityKey]);
         if (facility) {
           nav.facilityName = facility.facilityName;
           nav.facilityId = facility.facilityId;
         }
       });
-      //this.navBarList = navBarList;
     },
     filterNavBar() {
       if (this.changeType === 'nf') {
