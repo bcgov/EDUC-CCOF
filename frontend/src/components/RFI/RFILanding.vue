@@ -289,7 +289,7 @@
                       v-model="fundInfo.date"
                       :disabled="isReadOnly"
                       :hide-details="isReadOnly"
-                      label="Date(YYYY-MM-DD)"
+                      label="Date"
                       clearable
                     />
                   </v-col>
@@ -613,7 +613,7 @@
                     v-model="obj.wageDate"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date(YYYY-MM-DD)"
+                    label="Date"
                     clearable
                   />
                 </v-col>
@@ -849,7 +849,7 @@
                     v-model="obj.date"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date(YYYY-MM-DD)"
+                    label="Date"
                     clearable
                   />
                 </v-col>
@@ -1041,7 +1041,7 @@
                     v-model="indigExpense.date"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date(YYYY-MM-DD)"
+                    label="Date"
                     clearable
                   />
                 </v-col>
