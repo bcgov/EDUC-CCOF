@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h5">Child Care Operating Funding Program - Request a Parent Fee Increase</span>
     </div>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h5 font-weight-bold">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h6 font-weight-bold blueText">{{ organizationName }}</span>
     </div>
     <v-row no-gutters class="justify-center align-center pt-12">

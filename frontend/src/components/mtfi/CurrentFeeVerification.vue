@@ -1,10 +1,10 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h5">Child Care Operating Funding Program - Request a Parent Fee Increase</span>
     </div>
     <br />
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
     <br /><br />
@@ -15,7 +15,7 @@
     />
     <br />
 
-    <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 justify-center">
+    <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 text-center">
       <span class="text-h6">
         <strong>New for 2024/25:</strong> CCFRI regions align with the BCSSA's grouping of school districts into 6
         regional chapters. Use the
@@ -26,7 +26,7 @@
     </div>
 
     <br /><br />
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4">
       <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
     </div>
     <v-form ref="isValidForm" v-model="isValidForm">
@@ -74,12 +74,12 @@
                     </v-select>
                   </v-col>
 
-                  <v-col v-if="!isReadOnly" cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 60px">
+                  <v-col v-if="!isReadOnly" cols="1" class="pb-0 pt-4 pl-16">
                     <v-tooltip location="top" color="#003366">
                       <template #activator="{ props }">
                         <v-card
                           style="background-color: #003366 !important; color: #313131"
-                          class="tooltip"
+                          class="tooltip ml-xl-6"
                           v-bind="props"
                         >
                           <v-icon class="pt-1" size="small" style="color: #ffffff !important"> mdi-help </v-icon>
@@ -125,7 +125,7 @@
                   </div>
 
                   <div class="feeTitle">
-                    <span class="font-16">April:</span>
+                    <span class="font-16">Apr:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeApr"
                       tabindex="-1"
@@ -164,7 +164,7 @@
                   </div>
 
                   <div class="feeTitle">
-                    <span class="font-16">June:</span>
+                    <span class="font-16">Jun:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeJun"
                       tabindex="-1"
@@ -183,7 +183,7 @@
                   </div>
 
                   <div class="feeTitle">
-                    <span class="font-16">July:</span>
+                    <span class="font-16">Jul:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeJul"
                       tabindex="-1"
@@ -221,7 +221,7 @@
                   </div>
 
                   <div class="feeTitle">
-                    <span class="font-16">Sept:</span>
+                    <span class="font-16">Sep:</span>
                     <v-text-field
                       v-model.number="item.approvedFeeSep"
                       tabindex="-1"
