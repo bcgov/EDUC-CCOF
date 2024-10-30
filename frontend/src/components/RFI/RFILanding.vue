@@ -141,32 +141,13 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="calendarMenu[index]"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="expense.date"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Expense (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="expense.date"
-                      :disabled="isReadOnly"
-                      clearable
-                      @input="calendarMenu[index] = false"
-                    />
-                  </v-menu>
+                  <AppDateInput
+                    v-model="expense.date"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date of Expense (YYYY-MM-DD)"
+                    clearable
+                  />
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
@@ -201,7 +182,6 @@
 
               <div class="form-group">
                 <v-btn
-                  id=""
                   :disabled="isReadOnly"
                   class="my-5"
                   dark
@@ -305,27 +285,13 @@
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
-                    <v-menu
-                      v-model="fundingCalendar[index]"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ props }">
-                        <v-text-field
-                          v-model="fundInfo.date"
-                          :disabled="isReadOnly"
-                          :rules="rules.required"
-                          variant="outlined"
-                          label="Date (YYYY-MM-DD)"
-                          readonly
-                          v-bind="props"
-                        />
-                      </template>
-                      <v-date-picker v-model="fundInfo.date" clearable @input="fundingCalendar[index] = false" />
-                    </v-menu>
+                    <AppDateInput
+                      v-model="fundInfo.date"
+                      :disabled="isReadOnly"
+                      :hide-details="isReadOnly"
+                      label="Date(YYYY-MM-DD)"
+                      clearable
+                    />
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
@@ -643,32 +609,13 @@
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <v-menu
-                    v-model="wageCalendar[index]"
-                    :close-on-content-click="false"
-                    :nudge-left="180"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.wageDate"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Increase"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="obj.wageDate"
-                      :disabled="isReadOnly"
-                      clearable
-                      @input="wageCalendar[index] = false"
-                    />
-                  </v-menu>
+                  <AppDateInput
+                    v-model="obj.wageDate"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date(YYYY-MM-DD)"
+                    clearable
+                  />
                 </v-col>
 
                 <span class="text-white"> . </span>
@@ -685,7 +632,7 @@
                   color="#003366"
                   @click="addObjToList(wageObj, model.wageList)"
                 >
-                  Add
+                  Add Wage
                 </v-btn>
               </div>
               <br />
@@ -860,45 +807,51 @@
                 </v-icon>
 
                 <v-col class="col-md-1 col-12 ml-md-n8">
-                  <AppTimeInput v-model="obj.timefrom" :disabled="isReadOnly" full-width max-width="200px" />
-                </v-col>
+                  <AppTimeInput
+                    v-model="obj.timefrom"
+                    :disabled="isReadOnly"
+                    full-width
+                    max-width="200px"
+                    label="open"
+                  />
 
-                <!-- we need logic to prevent choosing a time before -->
+                  <!-- we need logic to prevent choosing a time before -->
+
+                  <AppTimeInput
+                    v-model="obj.timeto"
+                    :disabled="isReadOnly"
+                    full-width
+                    max-width="200px"
+                    label="close"
+                  />
+                </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <AppTimeInput v-model="obj.timeto" :disabled="isReadOnly" full-width max-width="200px" />
+                  <AppTimeInput
+                    v-model="obj.newtimefrom"
+                    :disabled="isReadOnly"
+                    full-width
+                    max-width="200px"
+                    label="open"
+                  />
+
+                  <AppTimeInput
+                    v-model="obj.newtimeto"
+                    :disabled="isReadOnly"
+                    full-width
+                    max-width="200px"
+                    label="close"
+                  />
                 </v-col>
 
-                <v-col class="col-md-1 col-12">
-                  <AppTimeInput v-model="obj.newtimefrom" :disabled="isReadOnly" full-width max-width="200px" />
-                </v-col>
-
-                <v-col class="col-md-1 col-12">
-                  <AppTimeInput v-model="obj.newtimeto" :disabled="isReadOnly" full-width max-width="200px" />
-                </v-col>
-
-                <v-col class="col-md-2 col-12">
-                  <v-menu
-                    v-model="expansionCalendarMenu[index]"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.date"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Change (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker v-model="obj.date" clearable @input="expansionCalendarMenu[index] = false" />
-                  </v-menu>
+                <v-col class="col-md-2 col-xl-1 col-12">
+                  <AppDateInput
+                    v-model="obj.date"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date(YYYY-MM-DD)"
+                    clearable
+                  />
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
@@ -924,6 +877,8 @@
                     :rules="rules.required"
                   />
                 </v-col>
+
+                <v-divider></v-divider>
               </v-row>
               <!-- end v for-->
 
@@ -1082,32 +1037,13 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="indigenousCalendarMenu[index]"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="indigExpense.date"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Expense (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="indigExpense.date"
-                      :disabled="isReadOnly"
-                      clearable
-                      @input="indigenousCalendarMenu[index] = false"
-                    />
-                  </v-menu>
+                  <AppDateInput
+                    v-model="indigExpense.date"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date(YYYY-MM-DD)"
+                    clearable
+                  />
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
@@ -1311,8 +1247,8 @@ import { useApplicationStore } from '../../store/application.js';
 import { useNavBarStore } from '../../store/navBar.js';
 import { useReportChangesStore } from '../../store/reportChanges.js';
 import { useSupportingDocumentUploadStore } from '../../store/supportingDocumentUpload.js';
-//import { VTimePicker } from 'vuetify/labs/VTimePicker';
 import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
+import AppDateInput from '../guiComponents/AppDateInput.vue';
 
 import alertMixin from '../../mixins/alertMixin.js';
 import globalMixin from '../../mixins/globalMixin.js';
@@ -1336,7 +1272,7 @@ let model = {
 
 export default {
   name: 'CcfriRequestMoreInfo',
-  components: { FacilityHeader, RFIDocumentUpload, NavButton, AppTimeInput },
+  components: { FacilityHeader, RFIDocumentUpload, NavButton, AppTimeInput, AppDateInput },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     const rfiAppStore = useRfiAppStore();

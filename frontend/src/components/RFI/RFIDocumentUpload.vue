@@ -27,14 +27,12 @@
         >
           <template #top>
             <v-col flex>
-              <v-toolbar flat color="white">
-                <div class="d-flex">
-                  <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
-                    <v-icon dark> mdi-plus </v-icon>
-                    Add
-                  </v-btn>
-                </div>
-              </v-toolbar>
+              <div class="d-flex">
+                <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
+                  <v-icon dark> mdi-plus </v-icon>
+                  Add
+                </v-btn>
+              </div>
             </v-col>
           </template>
           <template #item.document="{ item }">
