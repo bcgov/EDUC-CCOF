@@ -194,7 +194,6 @@ export default {
   watch: {
     navRefresh: {
       handler() {
-        console.log('BuildNavBar called - trigged by navRefresh - computed value');
         this.buildNavBar();
       },
       immediate: true,
@@ -202,7 +201,6 @@ export default {
     },
     refreshNavBar: {
       handler() {
-        console.log('BuildNavBar called - trigged by navBarRefresh - forced refresh');
         this.buildNavBar();
       },
       immediate: true,
@@ -212,7 +210,6 @@ export default {
   methods: {
     ...mapActions(useNavBarStore, ['setNavBarItems', 'setCanSubmit']),
     setActive(item) {
-      this.items[1].expanded = false;
       let index = this.items.findIndex((obj) => obj.title === item.title);
       if (item.active) {
         this.items[index].active = false;
@@ -818,7 +815,6 @@ export default {
     },
     getAddNewFacilityCCOFNavigation() {
       let items = [];
-      console.log('changeRecGuid::::::::', this.$route.params.changeRecGuid);
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item) => {
           items.push(
