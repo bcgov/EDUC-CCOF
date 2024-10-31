@@ -603,14 +603,14 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useCcfriAppStore } from '../../store/ccfriApp.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useAppStore } from '../../store/app.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useAppStore } from '@/store/app.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants.js';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import NavButton from '@/components/util/NavButton.vue';

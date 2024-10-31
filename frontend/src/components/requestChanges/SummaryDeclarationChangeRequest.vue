@@ -352,13 +352,13 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useAuthStore } from '../../store/auth.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useSummaryDeclarationStore } from '../../store/summaryDeclaration.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 import {
   PATHS,
@@ -366,13 +366,13 @@ import {
   CHANGE_TYPES,
   changeUrlGuid,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-} from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import NavButton from '../../components/util/NavButton.vue';
-import MTFISummary from '../../components/summary/changeRequest/MTFISummary.vue';
-import RFISummary from '../../components/summary/group/RFISummary.vue';
-import ChangeNotificationFormSummary from '../../components/summary/changeRequest/ChangeNotificationFormSummary.vue';
-import { deepCloneObject, isAnyApplicationUnlocked } from '../../utils/common.js';
+} from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import MTFISummary from '@/components/summary/changeRequest/MTFISummary.vue';
+import RFISummary from '@/components/summary/group/RFISummary.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
 
 export default {
   components: {
