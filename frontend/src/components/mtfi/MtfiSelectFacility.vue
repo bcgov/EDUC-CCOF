@@ -76,15 +76,15 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import NavButton from '../../components/util/NavButton.vue';
+import LargeButtonContainer from '@/components/guiComponents/LargeButtonContainer.vue';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
 
 let ccfriOptInOrOut = {};
 let textInput = '';

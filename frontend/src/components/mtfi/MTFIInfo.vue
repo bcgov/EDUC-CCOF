@@ -49,10 +49,10 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import {
   PATHS,

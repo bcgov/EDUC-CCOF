@@ -466,10 +466,10 @@
 
 <script>
 import { mapState } from 'pinia';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
-import { deepCloneObject } from '../../../utils/common.js';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 export default {
   props: {
