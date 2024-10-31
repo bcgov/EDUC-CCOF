@@ -37,10 +37,14 @@ readonly SITE_MINDER_LOGOUT_URL
 
 SOAM_KC="loginproxy.gov.bc.ca"
 SERVER_FRONTEND='https://mychildcareservices.gov.bc.ca'
-if [ "$ENV_VAL" != "prod" ]
-then
+if [ "$ENV_VAL" != "prod" ]; then
   SOAM_KC="$NAMESPACE_SUFFIX.loginproxy.gov.bc.ca"
-  SERVER_FRONTEND="https://$ENV_VAL.mychildcareservices.gov.bc.ca"
+
+  if [ "$ENV_VAL" = "uat" ]; then
+    SERVER_FRONTEND="https://test.mychildcareservices.gov.bc.ca"
+  else
+    SERVER_FRONTEND="https://$ENV_VAL.mychildcareservices.gov.bc.ca"
+  fi
 fi
 readonly SOAM_KC
 readonly SERVER_FRONTEND

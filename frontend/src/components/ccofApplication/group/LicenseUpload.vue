@@ -1,5 +1,5 @@
 <template>
-  <v-container align="center">
+  <v-container class="px-xl-12">
     <v-form ref="form" v-model="isValidForm">
       <div align="center">
         <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
@@ -12,7 +12,7 @@
           </v-card-text>
         </v-card>
       </div>
-      <v-card width="1200" class="cc-top-level-card">
+      <v-card class="cc-top-level-card">
         <v-card-title class="text-center text-wrap pb-0">
           <h3>
             Licence Upload
@@ -30,6 +30,8 @@
           :items="licenseUploadData"
           hide-default-footer
           :items-per-page="-1"
+          :mobile="null"
+          mobile-breakpoint="md"
           class="pa-4"
         >
           <template #item.document="{ item }">
@@ -112,17 +114,26 @@ export default {
         {
           title: 'Facility Name',
           value: 'facilityName',
+          sortable: true,
+          width: '30%',
+        },
+        {
+          title: 'Facility ID',
+          value: 'facilityAccountNumber',
           sortable: false,
+          width: '20%',
         },
         {
           title: 'Facility Licence Number',
           value: 'licenseNumber',
           sortable: false,
+          width: '20%',
         },
         {
           title: 'Upload Licence',
           value: 'document',
           sortable: false,
+          width: '30%',
         },
       ],
       fileAccept: [
@@ -276,7 +287,6 @@ export default {
         await this.processLicenseFileDelete();
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
-          this.fileMap.clear(); // clear the map.
         }
         if (this.isChangeRequest) {
           this.setCRIsLicenseComplete({ changeRequestId: this.changeRequestId, isComplete: !this.nextButtonDisabled });
@@ -293,6 +303,7 @@ export default {
         console.error(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
+        this.fileMap.clear(); // clear the map.
         this.isProcessing = false;
       }
     },

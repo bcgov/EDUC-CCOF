@@ -29,12 +29,10 @@ function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, 
 }
 
 function isLocked(applicationStatus, navBarList, facilityId) {
-  //console.log(facilityId, 'faccccc');
   let currentFac = navBarList.find((element) => {
     return element.facilityId == facilityId;
   });
 
-  //console.log('currentFAC in store', currentFac);
   //if submitted, lock er up. If unlock CCFRI - unlock
   if (currentFac.unlockCcfri) {
     return false;
@@ -47,7 +45,6 @@ function getProgramYear(selectedGuid, programYearList) {
   const programYear = programYearList.find(({ programYearId }) => programYearId == selectedGuid);
 
   if (!programYear) {
-    //console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
     throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ';
   }
 
@@ -115,7 +112,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     ccfriStore: {},
     ccfriMedianStore: {},
     previousFeeStore: {},
-    previousClosureDates: {}, //used for MTFI
   }),
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -135,7 +131,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
   },
   actions: {
     // TODO: Refactor all setters as setThing.  You can just set the state directly with Pinia
-    model(value) {
+    setModel(value) {
       this.model = value;
     },
     isValidForm(value) {
@@ -256,7 +252,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     getPreviousCareType(currentRFI, careType, previousProgramYearId) {
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
-      // console.log('CURRENTRFI', currentRFI);
       // Lookup previous years approved parent fees for most RFI scenarios
       if (currentRFI.existingFeesCorrect == 100000000 && applicationStore.isRenewal) {
         let previousRFI = this.getPreviousApprovedFeesByFacilityId({
@@ -296,7 +291,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
-      //console.log('getCcfriOver3percent.currentRFI: ', this.CCFRIFacilityModel);
       const threePercentMedian = this.getCCFRIMedianById(currentCcfri ? currentCcfri.ccfriApplicationId : this.ccfriId);
       console.log(threePercentMedian);
       this.CCFRIFacilityModel.childCareTypes
@@ -345,15 +339,11 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           if (response?.data) {
             this.addCCFRIMedianToStore({ ccfriId: this.ccfriId, ccfriMedian: response.data });
           } else {
-            console.log('NO median found, sleeping...');
             //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
             await sleep(10 * 1000);
-            //console.log("I should have slept for 10 seconds");
             response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${this.ccfriId}/median`);
             if (response?.data) {
               this.addCCFRIMedianToStore({ ccfriId: this.ccfriId, ccfriMedian: response.data });
-            } else {
-              console.log(`CCFRI median from backend is blank for CCFRI: ${this.ccfriId}`);
             }
           }
         } catch (e) {
@@ -404,7 +394,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       } else {
         try {
           const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
-          console.log('feeee response', response);
           //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
           replaceChildCareLabel(
             appStore.getLanguageYearLabel,
@@ -423,16 +412,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         }
       }
     },
-    async getClosureDates(ccfriId) {
-      try {
-        const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
-        this.previousClosureDates = response.data;
-        return response.data;
-      } catch (e) {
-        console.log(`Failed to get existing Facility with error - ${e}`);
-        throw e;
-      }
-    },
+
     async decorateWithCareTypes(facilityId) {
       const appStore = useAppStore();
       const applicationStore = useApplicationStore();
@@ -442,7 +422,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
       try {
         let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`);
-        console.log('resp', response);
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
@@ -450,10 +429,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           facilityId: facilityId,
           programYearId: prevProgramYear.programYearId,
         });
-
-        console.log(prevCcfriApp, 'in upper try');
-
-        //('currProgramYear', currProgramYear);
 
         //Always show the current year fee cards
         response.data.forEach((item) => {
@@ -483,7 +458,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
             (!prevCcfriApp &&
               !isLocked(applicationStore.applicationStatus, navBarStore.navBarList, this.loadedModel.facilityId)))
         ) {
-          console.log('show all the cards');
           response.data.forEach((item) => {
             let found = this.CCFRIFacilityModel.childCareTypes.find((searchItem) => {
               return (
@@ -509,7 +483,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
         if (applicationStore.isRenewal && this.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp) {
-          console.log('prevCCFRI IS:', prevCcfriApp);
           response.data.forEach((item) => {
             //check to see if childcarecat exists in last years CCFRI app.
             let pastChildCareTypefound = prevCcfriApp.childCareTypes.find((prevChildCareCat) => {
@@ -530,7 +503,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
             //if child care type in last years CCFRI fees not found, but license  add a card for that child care cat previous years fees
             //this ensures we get 24 months of fees for a child care type that is new to the facility.
             if (!pastChildCareTypefound && !foundChildCareCat) {
-              console.log('NOT FOUND!');
               careTypes.push({
                 programYear: prevProgramYear.name,
                 programYearId: prevProgramYear.programYearId,
@@ -542,7 +514,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
             //not an else because (!pastChildCareTypefound && foundChildCareCat) is a possible event
             else if (pastChildCareTypefound && foundChildCareCat) {
-              console.log('adding delete flag for: ', foundChildCareCat);
               //past child care type with fees found AND our users choice marked prev fees as correct... delete the card
               foundChildCareCat.deleteMe = true;
             }
@@ -559,7 +530,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
           //Mark the child care type, and call the delete API with the parentFeeGUID
           if (!found) {
-            console.log('no license for child care type', childCareCat);
             childCareCat.deleteMe = true;
           }
         });
@@ -568,7 +538,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
         //IF not historical year - find Kindergarten & Out of school care in child cat lookup
         //then check if they are in the CCFRI fac model. If so - rename them
-        console.log(appStore.getLanguageYearLabel);
         //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
         replaceChildCareLabel(
           appStore.getLanguageYearLabel,

@@ -12,25 +12,23 @@
       </v-row>
 
       <v-row v-if="!isSummaryComplete && !isProcessing" class="justify-center">
-        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-container class="pa-0 col-12">
-            <v-row>
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  Incomplete Form
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col class="pb-0 pr-3 justify-center">
-                <div>
-                  <p>You will not be able to submit your application until it is complete.</p>
-                  <p>Incomplete sections are marked with a red exclamation point.</p>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-card width="80%" class="my-10 justify-center" elevation="4">
+          <v-row>
+            <v-col class="pa-0">
+              <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
+                <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                Incomplete Form
+              </v-card-title>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="py-6 px-10 justify-center">
+              <div>
+                <p>You will not be able to submit your application until it is complete.</p>
+                <p>Incomplete sections are marked with a red exclamation point.</p>
+              </div>
+            </v-col>
+          </v-row>
         </v-card>
       </v-row>
 
@@ -57,24 +55,32 @@
         </v-card>
       </v-row>
       <div>
-        <v-row class="d-flex justify-center">
-          <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-            <v-row class="d-flex justify-start">
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
-              </v-col>
-            </v-row>
-            <v-expansion-panels ref="v-expansion-panels" v-model="expand" focusable multiple variant="accordion">
-              <v-row v-if="isMainLoading">
-                <v-col>
-                  <v-skeleton-loader
-                    v-if="isMainLoading"
-                    :loading="isMainLoading"
-                    type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-                  />
-                </v-col>
-              </v-row>
-              <v-row v-else no-gutters class="d-flex flex-column mb-2">
+        <v-card class="py-0 px-3 mx-12 mt-4 rounded-lg" elevation="4">
+          <v-row class="d-flex justify-start">
+            <v-col class="pa-0">
+              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
+            </v-col>
+          </v-row>
+          <v-row v-if="isMainLoading">
+            <v-col>
+              <v-skeleton-loader
+                v-if="isMainLoading"
+                :loading="isMainLoading"
+                type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+              />
+            </v-col>
+          </v-row>
+          <div v-else>
+            <v-expansion-panels
+              ref="v-expansion-panels"
+              v-model="expand"
+              class="mt-6 rounded facility-info"
+              focusable
+              multiple
+              variant="accordion"
+              :loading="isMainLoading"
+            >
+              <v-row no-gutters class="d-flex flex-column mb-2">
                 <!-- Change Notification Form Summary -->
                 <v-expansion-panel v-if="hasChangeRequestType('PDF_CHANGE')" variant="accordion" class="mb-8 mt-8">
                   <ChangeNotificationFormSummary
@@ -93,7 +99,7 @@
                     />
                     <div v-else>
                       <v-expansion-panel variant="accordion">
-                        <v-row no-gutters class="d-flex pl-6 pt-5">
+                        <v-row no-gutters class="d-flex pl-6 py-5">
                           <v-col class="col-6 col-lg-4">
                             <p class="summary-label">Facility Name</p>
                             <p label="--" class="summary-value">
@@ -136,12 +142,12 @@
                 </v-row>
               </v-row>
             </v-expansion-panels>
-          </v-card>
-        </v-row>
+          </div>
+        </v-card>
       </div>
 
       <!---Declaration Start--->
-      <v-row justify="center">
+      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-12'">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -158,7 +164,7 @@
             </v-col>
           </v-row>
           <v-row v-if="!isProcessing">
-            <v-col class="pb-0">
+            <v-col class="pb-0 px-8">
               <div v-show="!isRenewal && !organizationAccountNumber">
                 <p>
                   I hereby confirm that the information I have provided in this application is complete and accurate. I
@@ -346,13 +352,13 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useAuthStore } from '../../store/auth.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useSummaryDeclarationStore } from '../../store/summaryDeclaration.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 import {
   PATHS,
@@ -360,13 +366,13 @@ import {
   CHANGE_TYPES,
   changeUrlGuid,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-} from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import NavButton from '../../components/util/NavButton.vue';
-import MTFISummary from '../../components/summary/changeRequest/MTFISummary.vue';
-import RFISummary from '../../components/summary/group/RFISummary.vue';
-import ChangeNotificationFormSummary from '../../components/summary/changeRequest/ChangeNotificationFormSummary.vue';
-import { isAnyApplicationUnlocked } from '../../utils/common.js';
+} from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import MTFISummary from '@/components/summary/changeRequest/MTFISummary.vue';
+import RFISummary from '@/components/summary/group/RFISummary.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
 
 export default {
   components: {
@@ -382,11 +388,11 @@ export default {
       isProcessing: false,
       dialog: false,
       landingPage: PATHS.ROOT.HOME,
-      summaryKey: 1,
       invalidSummaryForms: [],
       payload: {},
       printableVersion: false,
       expand: [],
+      model: {},
     };
   },
   computed: {
@@ -401,7 +407,7 @@ export default {
       'isMainLoading',
       'isLoadingComplete',
       'summaryModel',
-      'model',
+      'declarationModel',
     ]),
     languageYearLabel() {
       return this.getLanguageYearLabel;
@@ -421,7 +427,6 @@ export default {
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
-      console.log(isAnyApplicationUnlocked(applicationList));
       return isAnyApplicationUnlocked(applicationList);
     },
     numberOfPanelsToExpand() {
@@ -456,10 +461,9 @@ export default {
       return '';
     },
   },
-  async beforeMount() {
-    const summaryDeclarationStore = useSummaryDeclarationStore();
-    summaryDeclarationStore.isMainLoading(true);
+  async created() {
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
+    this.model = deepCloneObject(this.declarationModel);
     // Determine:
     //   - which user declaration text version (status a or b) will display
     //   - which declaration status (a or b) will be saved on submit.
@@ -478,7 +482,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['updateDeclaration', 'loadChangeRequestSummaryDeclaration']),
+    ...mapActions(useSummaryDeclarationStore, [
+      'updateDeclaration',
+      'loadChangeRequestSummaryDeclaration',
+      'setDeclarationModel',
+    ]),
     expandAllPanels() {
       for (let i = 0; i < this.numberOfPanelsToExpand; i++) {
         this.expand.push(i);
@@ -495,9 +503,7 @@ export default {
     async submit() {
       this.isProcessing = true;
       try {
-        const summaryDeclarationStore = useSummaryDeclarationStore();
-        summaryDeclarationStore.model(this.model);
-        // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: this.relockPayload});
+        this.setDeclarationModel(this.model);
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         this.dialog = true;
       } catch (error) {
@@ -526,7 +532,6 @@ export default {
       if (this.printableVersion) {
         this.expandAllPanels();
       }
-      // this.updateNavBarStatus(formObj, isComplete);
     },
     hasChangeRequestType(changeType) {
       switch (changeType) {
@@ -562,5 +567,9 @@ li {
 .summary-value {
   font-size: medium;
   color: black;
+}
+
+.facility-info {
+  border-top: 5px solid grey !important;
 }
 </style>
