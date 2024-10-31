@@ -1,10 +1,10 @@
 import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
-import ApiService from '../common/apiService.js';
-import { deepCloneObject } from '../utils/common.js';
-import { ApiRoutes } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
+import ApiService from '@/common/apiService.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { ApiRoutes } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 export const useRfiAppStore = defineStore('rfiApp', {
   store: () => ({

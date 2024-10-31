@@ -12,8 +12,8 @@
       <v-container>
         <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row>
-          <v-col cols="12" md="6" xl="4">
-            <SmallCard v-if="organizationProviderType == 'GROUP'">
+          <v-col v-if="organizationProviderType == 'GROUP'" cols="12" md="6" xl="4">
+            <SmallCard>
               <template #content>
                 <div class="px-10">
                   <p class="text-h6 text-center">Add a New facility to an existing organization</p>

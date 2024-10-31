@@ -82,15 +82,15 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { getFileExtension, getFileNameWithMaxNameLength, humanFileSize } from '../../utils/file.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import rules from '../../utils/rules.js';
-import { deepCloneObject } from '../../utils/common.js';
-import { CHANGE_TYPES } from '../../utils/constants.js';
+import { getFileExtension, getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import rules from '@/utils/rules.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { CHANGE_TYPES } from '@/utils/constants.js';
 
 export default {
   components: {},
@@ -113,7 +113,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isProcessing: false,
       rules,
       isValidForm: false,
       currentrow: null,

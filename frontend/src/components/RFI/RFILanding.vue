@@ -1246,24 +1246,24 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useRfiAppStore } from '../../store/rfiApp.js';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useSupportingDocumentUploadStore } from '../../store/supportingDocumentUpload.js';
+import { useRfiAppStore } from '@/store/rfiApp.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
-import AppDateInput from '../guiComponents/AppDateInput.vue';
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 
-import alertMixin from '../../mixins/alertMixin.js';
-import globalMixin from '../../mixins/globalMixin.js';
-import { deepCloneObject } from '../../utils/common.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import globalMixin from '@/mixins/globalMixin.js';
+import { deepCloneObject } from '@/utils/common.js';
 import { isEqual } from 'lodash';
-import rules from '../../utils/rules.js';
-import RFIDocumentUpload from '../../components/RFI/RFIDocumentUpload.vue';
-import NavButton from '../../components/util/NavButton.vue';
-import { PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants.js';
-import FacilityHeader from '../guiComponents/FacilityHeader.vue';
+import rules from '@/utils/rules.js';
+import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
 let model = {
   expansionList: [],
@@ -1339,11 +1339,6 @@ export default {
       newmenuto: false,
       model,
       input: '',
-      calendarMenu: [],
-      expansionCalendarMenu: [],
-      indigenousCalendarMenu: [],
-      fundingCalendar: [],
-      wageCalendar: [],
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
       processing: false,
       rfiDocuments: {},
@@ -1370,7 +1365,6 @@ export default {
     ...mapState(useRfiAppStore, ['rfiModel', 'loadedModel']),
     ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     currentFacility() {
-      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     fundingUrl() {
