@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 
-import { useAppStore } from '@/app.js';
-import { useApplicationStore } from '@/application.js';
-import { useReportChangesStore } from '@/reportChanges.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 import { filterFacilityListForPCF } from '@/utils/common.js';
 import { CHANGE_REQUEST_TYPES, PATHS } from '@/utils/constants.js';
 
