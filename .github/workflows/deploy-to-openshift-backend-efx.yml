@@ -1,4 +1,4 @@
-name: 5 PROD - Deploy Frontend
+name: 4 EFX - Deploy Backend
 
 env:
   # EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -7,9 +7,9 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-prod
+  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-efx
 
-  # SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
+  SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
   # EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -24,33 +24,28 @@ env:
   REPO_NAME: "educ-ccof"
   #grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
-  IMAGE_NAME: "frontend"
-  APP_ENVIRONMENT: "prod"
+  IMAGE_NAME: "backend"
+  APP_ENVIRONMENT: "efx"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
-
-
-  MIN_REPLICAS: "3"
-  MAX_REPLICAS: "5"
+  MIN_REPLICAS: "2"
+  MAX_REPLICAS: "3"
   MIN_CPU: "50m"
-  MAX_CPU: "100m"
+  MAX_CPU: "250m"
   MIN_MEM: "200Mi"
-  MAX_MEM: "250Mi"
+  MAX_MEM: "700Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
-  CA_CERT: ${{ secrets.CA_CERT }}
-  CERTIFICATE: ${{ secrets.CERTIFICATE }}
-  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
 on:
   workflow_dispatch:
 
 jobs:
   openshift-ci-cd:
-    name: Deploy  Frontend to PROD
+    name: Deploy Backend to EFX
     runs-on: ubuntu-24.04
-    environment: prod
+    environment: efx
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -117,40 +112,54 @@ jobs:
         oc project ${{ env.OPENSHIFT_NAMESPACE }}
         # Cancel any rollouts in progress
         oc rollout cancel dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
-        || true && echo "No rollout in progress"
+            || true && echo "No rollout in progress"
 
-        # Create tag for PROD env from DEV env image
+        # Create tag for TEST env from DEV env image
         oc tag \
            ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} \
-           ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
+           ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
 
         # Process and apply deployment template
         oc process \
-          -f tools/openshift/frontend.dc.yaml \
-          -p APP_NAME=${{ env.APP_NAME }} \
-          -p REPO_NAME=${{ env.REPO_NAME }} \
-          -p BRANCH=${{ env.BRANCH }} \
-          -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-          -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
-          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
-          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
-          -p MIN_CPU=${{ env.MIN_CPU }} \
-          -p MAX_CPU=${{ env.MAX_CPU }} \
-          -p MIN_MEM=${{ env.MIN_MEM }} \
-          -p MAX_MEM=${{ env.MAX_MEM }} \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
-          -p CA_CERT="${{ env.CA_CERT }}" \
-          -p CERTIFICATE="${{ env.CERTIFICATE }}" \
-          -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
-          -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
-          -p BANNER_COLOR='' \
-          -p BANNER_ENVIRONMENT='' \
-          -p VUE_APP_BCEID_REG_URL='' \
-          | oc apply -f -
+           -f tools/openshift/backend.dc.yaml \
+           -p APP_NAME=${{ env.APP_NAME }} \
+           -p REPO_NAME=${{ env.REPO_NAME }} \
+           -p BRANCH=${{ env.BRANCH }} \
+           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+           -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
+           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+           -p MIN_CPU=${{ env.MIN_CPU }} \
+           -p MAX_CPU=${{ env.MAX_CPU }} \
+           -p MIN_MEM=${{ env.MIN_MEM }} \
+           -p MAX_MEM=${{ env.MAX_MEM }} \
+           -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+           -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
+            | oc apply -f -
+
+        # Process update-configmap
+        curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh \
+          | bash /dev/stdin \
+            ${{ env.APP_ENVIRONMENT }} \
+            ${{ env.APP_NAME }} \
+            ${{ secrets.CCOF_NAMESPACE_NO_ENV }} \
+            ${{ secrets.COMMON_NAMESPACE_NO_ENV }} \
+            ${{ secrets.SOAM_CLIENT_ID }} \
+            ${{ secrets.SOAM_CLIENT_ID_IDIR }} \
+            ${{ secrets.SOAM_CLIENT_SECRET }} \
+            ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
+            ${{ secrets.SPLUNK_TOKEN }} \
+            ${{ secrets.REDIS_PASSWORD }} \
+            ${{ secrets.D365_API_PREFIX }}
 
         # Start rollout (if necessary) and follow it
-        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+        oc rollout latest dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}} 2> /dev/null \
             || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
         oc rollout status dc/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
+
+    - name: ZAP Scan
+      uses: zaproxy/action-full-scan@v0.8.0
+      with:
+        target: 'https://${{ env.HOST_ROUTE }}/api'
