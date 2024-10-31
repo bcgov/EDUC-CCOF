@@ -84,7 +84,7 @@
                   </div>
 
                   <div no-gutters class="feeTitle summary-label justify-start ma-0">
-                    July
+                    Jul
                     <v-text-field
                       v-model.number="item.approvedFeeJul"
                       type="number"
@@ -288,7 +288,7 @@
                   </div>
 
                   <div no-gutters class="feeTitle summary-label justify-start ma-0">
-                    Jen
+                    Jan
                     <v-text-field
                       v-model.number="item.approvedFeeJan"
                       type="number"
