@@ -247,7 +247,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeApr"
                       class=""
                       type="number"
@@ -262,7 +261,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMay"
                       type="number"
                       :disabled="isReadOnly"
@@ -276,7 +274,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJun"
                       type="number"
                       :disabled="isReadOnly"
@@ -290,7 +287,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJul"
                       type="number"
                       :disabled="isReadOnly"
@@ -304,7 +300,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeAug"
                       type="number"
                       :disabled="isReadOnly"
@@ -318,7 +313,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeSep"
                       type="number"
                       :disabled="isReadOnly"
@@ -463,7 +457,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeOct"
                       type="number"
                       :disabled="isReadOnly"
@@ -477,7 +470,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeNov"
                       type="number"
                       :disabled="isReadOnly"
@@ -491,7 +483,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeDec"
                       type="number"
                       :disabled="isReadOnly"
@@ -505,7 +496,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeJan"
                       type="number"
                       :disabled="isReadOnly"
@@ -519,7 +509,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeFeb"
                       type="number"
                       :disabled="isReadOnly"
@@ -533,7 +522,6 @@
 
                   <div class="inputBoxWrapper">
                     <v-text-field
-                      v-if="isInputVisible(index)"
                       v-model.number="CCFRIFacilityModel.childCareTypes[index].approvedFeeMar"
                       type="number"
                       :disabled="isReadOnly"
@@ -627,7 +615,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import { deepCloneObject } from '@/utils/common.js';
-import { isEqual, isEmpty } from 'lodash';
+import { isEqual } from 'lodash';
 import ApiService from '@/common/apiService.js';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
@@ -840,12 +828,7 @@ export default {
     hasModelChanged() {
       return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
-    isInputVisible(index) {
-      if (!this.CCFRIFacilityModel.childCareTypes[index].feeFrequency) {
-        return false;
-      }
-      return true;
-    },
+
     isButtonActive(index) {
       return (
         this.CCFRIFacilityModel.childCareTypes[index].feeFrequency ==
