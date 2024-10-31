@@ -143,6 +143,7 @@
                 <v-col class="col-md-3 col-12">
                   <AppDateInput
                     v-model="expense.date"
+                    :rules="rules.required"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
                     label="Date of Expense (YYYY-MM-DD)"
@@ -287,6 +288,7 @@
                   <v-col class="col-md-2 col-12">
                     <AppDateInput
                       v-model="fundInfo.date"
+                      :rules="rules.required"
                       :disabled="isReadOnly"
                       :hide-details="isReadOnly"
                       label="Date"
@@ -611,6 +613,7 @@
                 <v-col class="col-md-1 col-12">
                   <AppDateInput
                     v-model="obj.wageDate"
+                    :rules="rules.required"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
                     label="Date"
@@ -850,6 +853,7 @@
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
                     label="Date"
+                    :rules="rules.required"
                     clearable
                   />
                 </v-col>
@@ -1039,6 +1043,7 @@
                 <v-col class="col-md-3 col-12">
                   <AppDateInput
                     v-model="indigExpense.date"
+                    :rules="rules.required"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
                     label="Date"
@@ -1265,10 +1270,8 @@ let model = {
   wageList: [],
   fundingList: [],
   expenseList: [],
-  indigenousExpenseList: [], //this one does not exist in dynamics yet
+  indigenousExpenseList: [],
 };
-
-// let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
   name: 'CcfriRequestMoreInfo',
