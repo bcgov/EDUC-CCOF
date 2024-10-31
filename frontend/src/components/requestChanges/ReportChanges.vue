@@ -8,7 +8,7 @@
       <!-- <span class="text-h5">What would you like to change?</span> -->
     </div>
 
-    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+    <v-form ref="isValidForm" v-model="isValidForm">
       <v-container>
         <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row>
@@ -90,13 +90,6 @@
             <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
             <h2 v-else>Change History</h2>
           </v-col>
-          <!-- <v-text-field
-            v-if="!viewOlderRequestActive"
-            v-model="search"
-            label="Search by facility name">
-          </v-text-field>
-        NOT SURE IF THIS IS ACTUALLY WHAT THE REQUIREMENTS WANT
-        -->
         </v-row>
         <v-row v-if="processing">
           <v-col>
@@ -232,17 +225,17 @@
 <script>
 import _ from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useNavBarStore } from '../../store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
-import { PATHS, CHANGE_TYPES, changeUrlGuid, changeUrl } from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import SmallCard from '../guiComponents/SmallCard.vue';
-import NavButton from '../util/NavButton.vue';
-import { isFacilityAvailable } from '../../utils/common.js';
+import { PATHS, CHANGE_TYPES, changeUrlGuid, changeUrl } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import SmallCard from '@/components/guiComponents/SmallCard.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import { isFacilityAvailable } from '@/utils/common.js';
 
 export default {
   name: 'ReportChange',

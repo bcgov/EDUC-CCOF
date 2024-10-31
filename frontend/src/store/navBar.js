@@ -1,11 +1,10 @@
 import { defineStore } from 'pinia';
 
-import { useReportChangesStore } from './reportChanges.js';
-import { useApplicationStore } from './application.js';
-import { useAppStore } from './app.js';
-
-import { PATHS, CHANGE_REQUEST_TYPES } from '../utils/constants.js';
-import { filterFacilityListForPCF } from '../utils/common.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { filterFacilityListForPCF } from '@/utils/common.js';
+import { CHANGE_REQUEST_TYPES, PATHS } from '@/utils/constants.js';
 
 function getActiveIndex(items) {
   let foundIndex = -1;
@@ -34,17 +33,6 @@ function getNavBarAtPositionIndex(items, index) {
     }
   }
   return foundItem;
-}
-
-//find the change action details details(the data element below change Action)
-function getChangeActionDetails(state, detailsProperty, detailsKey, detailsId) {
-  let item = null;
-  let change = state.changeRequestMap.get(state.changeRequestId);
-  if (change?.changeActions && change.changeActions.length > 0) {
-    let details = change.changeActions[0][detailsProperty];
-    item = details?.find((el) => el[detailsKey] == detailsId);
-  }
-  return item;
 }
 
 function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
@@ -133,7 +121,7 @@ export const useNavBarStore = defineStore('navBar', {
         return null;
       }
       if (state.changeType === 'mtfi') {
-        return getChangeActionDetails(state, 'mtfi', 'ccfriApplicationId', ccfriId);
+        return state.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
         return state.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
       }
@@ -145,6 +133,16 @@ export const useNavBarStore = defineStore('navBar', {
         .get(state.changeRequestId)
         ?.changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)
         .newFacilities?.find((el) => el.facilityId == facilityId);
+    },
+    //find the change action details details(the data element below change Action)
+    getChangeActionDetails: (state) => (detailsProperty, detailsKey, detailsId) => {
+      let item = null;
+      let change = state.changeRequestMap.get(state.changeRequestId);
+      if (change?.changeActions && change.changeActions.length > 0) {
+        let details = change.changeActions[0][detailsProperty];
+        item = details?.find((el) => el[detailsKey] == detailsId);
+      }
+      return item;
     },
   },
   actions: {
@@ -200,7 +198,7 @@ export const useNavBarStore = defineStore('navBar', {
       console.log('set navBar called with value: ' + property + ' , ' + value);
       let userProfileItem;
       if (this.changeType === 'mtfi') {
-        userProfileItem = getChangeActionDetails('mtfi', 'ccfriFacilityId', facilityId);
+        userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriFacilityId', facilityId);
       } else {
         userProfileItem = this.userProfileList.find((item) => item.facilityId == facilityId);
       }
@@ -229,7 +227,7 @@ export const useNavBarStore = defineStore('navBar', {
     setNavBarCCFRIComplete({ ccfriId, complete }) {
       let userProfileItem;
       if (this.changeType === 'mtfi') {
-        userProfileItem = getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
+        userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
         userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
       }
@@ -250,7 +248,7 @@ export const useNavBarStore = defineStore('navBar', {
     setNavBarRFIComplete({ ccfriId, complete }) {
       let userProfileItem;
       if (this.changeType === 'mtfi') {
-        userProfileItem = getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
+        userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
         userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
       }
@@ -352,15 +350,15 @@ export const useNavBarStore = defineStore('navBar', {
         this.clearNavBarList();
       }
     },
+
     decorateNavBar(facilityKey) {
-      const navBarList = this.navBarList.map((nav) => {
+      this.navBarList.map((nav) => {
         const facility = this.userProfileList.find((el) => el.facilityId === nav[facilityKey]);
         if (facility) {
           nav.facilityName = facility.facilityName;
           nav.facilityId = facility.facilityId;
         }
       });
-      this.navBarList = navBarList;
     },
     filterNavBar() {
       if (this.changeType === 'nf') {
