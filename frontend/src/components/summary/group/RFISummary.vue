@@ -419,10 +419,10 @@
             <v-row no-gutters class="d-flex">
               <v-col
                 v-for="(field, key) in {
-                  timefrom: 'Facility\'s old hours - From',
-                  timeto: 'Facility\'s old- To',
-                  newtimefrom: 'Facility\'s new hours - From',
-                  newtimeto: 'Facility\'s new hours - To',
+                  timefrom: 'Previous Hours From',
+                  timeto: 'Previous Hours To',
+                  newtimefrom: 'New Hours From',
+                  newtimeto: 'New Hours To',
                   date: 'Date of Change',
                   expense: 'Amount of Expense',
                   frequency: 'Payment frequency',
@@ -452,7 +452,11 @@
                   :key="key + index"
                   :placeholder="item[key] ? '' : 'Required'"
                   class="summary-value"
-                  :model-value="item[key]"
+                  :model-value="
+                    ['timefrom', 'timeto', 'newtimefrom', 'newtimeto'].includes(key)
+                      ? formatTime24to12(item[key])
+                      : item[key]
+                  "
                   density="compact"
                   flat
                   variant="solo"
@@ -602,62 +606,64 @@
           </v-col>
         </v-row>
 
-        <span class="summary-label">
-          Please describe how the majority of children you provide care for represent an underserved population (e.g.,
-          indigenous children, low-income families).
-        </span>
-        <v-row no-gutters class="d-flex">
-          <v-textarea
-            placeholder="Required"
-            class="mt-1 ml-0 summary-value mb-6"
-            :model-value="rfiApp?.underservedChildCareTypes"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            no-resize
-            rows="3"
-            :rules="rules.required"
-          />
-        </v-row>
+        <div v-if="rfiApp?.underservedPop === 0">
+          <span class="summary-label">
+            Please describe how the majority of children you provide care for represent an underserved population (e.g.,
+            indigenous children, low-income families).
+          </span>
+          <v-row no-gutters class="d-flex">
+            <v-textarea
+              placeholder="Required"
+              class="mt-1 ml-0 summary-value mb-6"
+              :model-value="rfiApp?.underservedChildCareTypes"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              rows="3"
+              :rules="rules.required"
+            />
+          </v-row>
 
-        <span class="summary-label pt-3">
-          How will your fee increase contribute to the overall sustainability of the organization/facility?
-        </span>
-        <v-row no-gutters class="d-flex">
-          <v-textarea
-            placeholder="Required"
-            class="mt-1 ml-0 summary-value mb-6"
-            :model-value="rfiApp?.orgsustainability"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            no-resize
-            rows="3"
-            :rules="rules.required"
-          />
-        </v-row>
+          <span class="summary-label pt-3">
+            How will your fee increase contribute to the overall sustainability of the organization/facility?
+          </span>
+          <v-row no-gutters class="d-flex">
+            <v-textarea
+              placeholder="Required"
+              class="mt-1 ml-0 summary-value mb-6"
+              :model-value="rfiApp?.orgsustainability"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              rows="3"
+              :rules="rules.required"
+            />
+          </v-row>
 
-        <span class="summary-label pt-3">
-          Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after
-          applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding
-          source). Will any families experience a cost increase, and if so, by how much?
-        </span>
-        <v-row no-gutters class="d-flex">
-          <v-textarea
-            placeholder="Required"
-            class="mt-1 ml-0 summary-value mb-6"
-            :model-value="rfiApp?.outOfPocketFees"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            no-resize
-            rows="3"
-            :rules="rules.required"
-          />
-        </v-row>
+          <span class="summary-label pt-3">
+            Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after
+            applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding
+            source). Will any families experience a cost increase, and if so, by how much?
+          </span>
+          <v-row no-gutters class="d-flex">
+            <v-textarea
+              placeholder="Required"
+              class="mt-1 ml-0 summary-value mb-6"
+              :model-value="rfiApp?.outOfPocketFees"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              rows="3"
+              :rules="rules.required"
+            />
+          </v-row>
+        </div>
 
         <v-row v-if="!isValidForm" class="d-flex justify-start">
           <v-col cols="6" lg="4" class="pb-0 pt-0">
@@ -678,18 +684,12 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useAppStore } from '../../../store/app.js';
-
-import {
-  PATHS,
-  CHANGE_TYPES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  changeUrlGuid,
-  pcfUrlGuid,
-} from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { formatTime24to12 } from '@/utils/format';
+import { PATHS, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, changeUrlGuid, pcfUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   name: 'RFISummary',
@@ -744,6 +744,9 @@ export default {
         }
       },
     },
+  },
+  created() {
+    this.formatTime24to12 = formatTime24to12;
   },
   methods: {
     getLink() {
