@@ -419,10 +419,10 @@
             <v-row no-gutters class="d-flex">
               <v-col
                 v-for="(field, key) in {
-                  timefrom: 'Facility\'s old opening hours',
-                  timeto: 'Facility\'s old closing hours',
-                  newtimefrom: 'Facility\'s new opening hours',
-                  newtimeto: 'Facility\'s new closing hours',
+                  timefrom: 'Facility\'s old hours - From',
+                  timeto: 'Facility\'s old- To',
+                  newtimefrom: 'Facility\'s new hours - From',
+                  newtimeto: 'Facility\'s new hours - To',
                   date: 'Date of Change',
                   expense: 'Amount of Expense',
                   frequency: 'Payment frequency',
@@ -774,9 +774,9 @@ export default {
   color: black;
 }
 
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
 }
 
 .summary-label-smaller {

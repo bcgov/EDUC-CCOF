@@ -146,7 +146,7 @@
                     :rules="rules.required"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date of Expense (YYYY-MM-DD)"
+                    label="Date of Expense "
                     clearable
                   />
                 </v-col>
@@ -815,18 +815,12 @@
                     :disabled="isReadOnly"
                     full-width
                     max-width="200px"
-                    label="open"
+                    label="From"
                   />
 
                   <!-- we need logic to prevent choosing a time before -->
 
-                  <AppTimeInput
-                    v-model="obj.timeto"
-                    :disabled="isReadOnly"
-                    full-width
-                    max-width="200px"
-                    label="close"
-                  />
+                  <AppTimeInput v-model="obj.timeto" :disabled="isReadOnly" full-width max-width="200px" label="To" />
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
@@ -835,7 +829,7 @@
                     :disabled="isReadOnly"
                     full-width
                     max-width="200px"
-                    label="open"
+                    label="From"
                   />
 
                   <AppTimeInput
@@ -843,7 +837,7 @@
                     :disabled="isReadOnly"
                     full-width
                     max-width="200px"
-                    label="close"
+                    label="To"
                   />
                 </v-col>
 
