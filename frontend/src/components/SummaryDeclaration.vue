@@ -76,7 +76,7 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-expansion-panels ref="v-expansion-panels" v-model="expand" multiple variant="accordion">
+          <v-expansion-panels v-model="expand" multiple variant="accordion">
             <v-row v-if="isMainLoading">
               <v-col>
                 <v-skeleton-loader
@@ -88,7 +88,7 @@
             </v-row>
             <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
               <div v-if="!isRenewal">
-                <v-expansion-panel variant="accordion">
+                <v-expansion-panel variant="accordion" value="organization-summary">
                   <OrganizationSummary
                     :program-year="formattedProgramYear"
                     :summary-model="summaryModel"
@@ -107,7 +107,7 @@
                 />
 
                 <div v-else>
-                  <v-expansion-panel v-if="facility?.facilityInfo" variant="accordion">
+                  <v-expansion-panel v-if="facility?.facilityInfo" variant="accordion" value="facility-information">
                     <FacilityInformationSummary
                       :facility-info="facility?.facilityInfo"
                       :funding="facility?.funding"
@@ -121,7 +121,7 @@
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
-                  <v-expansion-panel variant="accordion">
+                  <v-expansion-panel variant="accordion" value="ccof-summary">
                     <div v-if="!facility.funding || isRenewal" />
                     <div v-else>
                       <CCOFSummaryFamily
@@ -141,7 +141,7 @@
                       />
                     </div>
                   </v-expansion-panel>
-                  <v-expansion-panel variant="accordion">
+                  <v-expansion-panel variant="accordion" value="ccfri-summary">
                     <CCFRISummary
                       :ccfri="facility?.ccfri"
                       :facility-id="facility.facilityId"
@@ -150,7 +150,7 @@
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
-                  <v-expansion-panel v-if="facility?.rfiApp" variant="accordion">
+                  <v-expansion-panel v-if="facility?.rfiApp" variant="accordion" value="rfi-summary">
                     <RFISummary
                       :rfi-app="facility?.rfiApp"
                       :ccfri-id="facility?.ccfri?.ccfriId"
@@ -160,7 +160,7 @@
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
-                  <v-expansion-panel v-if="facility?.nmfApp" variant="accordion">
+                  <v-expansion-panel v-if="facility?.nmfApp" variant="accordion" value="nmf-summary">
                     <NMFSummary
                       :nmf-app="facility?.nmfApp"
                       :ccfri-id="facility?.ccfri?.ccfriId"
@@ -170,7 +170,7 @@
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
-                  <v-expansion-panel variant="accordion">
+                  <v-expansion-panel variant="accordion" value="ecewe-summary-a">
                     <ECEWESummary
                       :ecewe="{}"
                       :ecewe-facility="facility.ecewe"
@@ -180,7 +180,7 @@
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
-                  <v-expansion-panel variant="accordion">
+                  <v-expansion-panel variant="accordion" value="uploaded-documents-summary">
                     <UploadedDocumentsSummary
                       :documents="facility.documents"
                       :program-year-id="summaryModel?.application?.programYearId"
@@ -190,7 +190,7 @@
                 </div>
               </div>
               <div v-if="!isRenewal" class="mt-10">
-                <v-expansion-panel variant="accordion">
+                <v-expansion-panel variant="accordion" value="ecewe-summary-b">
                   <ECEWESummary
                     :ecewe="summaryModel.ecewe"
                     :ecewe-facility="null"
@@ -588,9 +588,6 @@ export default {
         return facility.facilityInfo.facilityAccountNumber;
       });
     },
-    numberOfPanelsToExpand() {
-      return this.$refs['v-expansion-panels']?.$children.length;
-    },
     hasChangeNotificationFormDocuments() {
       return this.summaryModel?.changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PDF_CHANGE);
     },
@@ -611,7 +608,6 @@ export default {
       handler: function (val) {
         if (val) {
           setTimeout(() => {
-            console.log(this.$refs['v-expansion-panels']);
             const keys = Object.keys(this.payload);
             console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.
@@ -817,9 +813,17 @@ export default {
       this.updateNavBarStatus(formObj, isComplete);
     },
     expandAllPanels() {
-      for (let i = 0; i < this.numberOfPanelsToExpand; i++) {
-        this.expand.push(i);
-      }
+      this.expand = [
+        'organization-summary',
+        'facility-information',
+        'ccof-summary',
+        'ccfri-summary',
+        'rfi-summary',
+        'nmf-summary',
+        'ecewe-summary-a',
+        'ecewe-summary-b',
+        'uploaded-documents-summary',
+      ];
     },
     updateNavBarStatus(formObj, isComplete) {
       if (formObj && !this.isReadOnly) {
