@@ -55,12 +55,7 @@
               <v-col class="col-12 py-0">
                 <v-row no-gutters class="d-flex">
                   <v-col
-                    v-for="header in [
-                      'Expense Description',
-                      'Date of Expense',
-                      'Payment Frequency Details',
-                      'Expense Amount',
-                    ]"
+                    v-for="header in ['Expense Description', 'Date', 'Payment Frequency Details', 'Expense Amount']"
                     :key="header"
                     class="d-flex justify-start col-3 pa-0 pr-2"
                   >
@@ -509,7 +504,7 @@
                   <v-col
                     v-for="(label, key) in {
                       description: 'Expense Description',
-                      date: 'Date of Expense',
+                      date: 'Date',
                       frequency: 'Payment Frequency Details',
                       expense: 'Expense Amount',
                     }"

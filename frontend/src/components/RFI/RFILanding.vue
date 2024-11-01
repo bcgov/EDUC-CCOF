@@ -146,7 +146,7 @@
                     :rules="rules.required"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date of Expense "
+                    label="Date"
                     clearable
                   />
                 </v-col>
