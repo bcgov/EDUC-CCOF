@@ -126,24 +126,23 @@
         <v-row>
           <v-col v-if="rfiApp?.exceptionalCircumstances && rfiApp?.circumstanceOccurWithin6Month" class="py-0">
             <span class="summary-label-bold">Other Sources of Ministry Funding</span>
-
+            <br />
+            <span class="summary-label pt-3">
+              Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants)
+              for any of the expenses you listed?
+            </span>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="getValueString(rfiApp?.q3)"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              required
+              :rules="rules.required"
+            />
             <v-row no-gutters>
-              <span class="summary-label pt-3">
-                Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants)
-                for any of the expenses you listed?
-              </span>
-              <v-text-field
-                placeholder="Required"
-                class="summary-value"
-                :model-value="getValueString(rfiApp?.q3)"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                required
-                :rules="rules.required"
-              />
-
               <v-row v-if="rfiApp?.q3" no-gutters class="d-flex">
                 <v-col
                   v-for="(field, key) in {
