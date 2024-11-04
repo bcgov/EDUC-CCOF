@@ -72,7 +72,6 @@
           </v-row>
           <div v-else>
             <v-expansion-panels
-              ref="v-expansion-panels"
               v-model="expand"
               class="mt-6 rounded facility-info"
               focusable
@@ -437,9 +436,6 @@ export default {
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
       return isAnyApplicationUnlocked(applicationList);
-    },
-    numberOfPanelsToExpand() {
-      return this.$refs['v-expansion-panels']?.$children.length;
     },
     isSummaryComplete() {
       if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0) return false;
