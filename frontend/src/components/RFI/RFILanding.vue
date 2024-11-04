@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm" model-value="false">
+  <v-form ref="form" v-model="isValidForm">
     <v-container v-if="loading">
       <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
       <br />
@@ -65,7 +65,7 @@
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <br />
-            <div v-if="model.exceptionalCircumstances == 1">
+            <div v-if="model?.exceptionalCircumstances == 1">
               <v-radio-group
                 v-model.number="model.circumstanceOccurWithin6Month"
                 class="radio-label"
@@ -82,7 +82,7 @@
           </div>
         </div>
 
-        <div v-if="model.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1">
+        <div v-if="model?.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
@@ -141,32 +141,14 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="calendarMenu[index]"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="expense.date"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Expense (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="expense.date"
-                      :disabled="isReadOnly"
-                      clearable
-                      @input="calendarMenu[index] = false"
-                    />
-                  </v-menu>
+                  <AppDateInput
+                    v-model="expense.date"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    clearable
+                  />
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
@@ -201,7 +183,6 @@
 
               <div class="form-group">
                 <v-btn
-                  id=""
                   :disabled="isReadOnly"
                   class="my-5"
                   dark
@@ -221,7 +202,6 @@
                 :rules="rules.required"
                 placeholder="Describe Here"
                 variant="outlined"
-                name="input-7-4"
               />
             </div>
           </div>
@@ -306,27 +286,14 @@
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
-                    <v-menu
-                      v-model="fundingCalendar[index]"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ props }">
-                        <v-text-field
-                          v-model="fundInfo.date"
-                          :disabled="isReadOnly"
-                          :rules="rules.required"
-                          variant="outlined"
-                          label="Date (YYYY-MM-DD)"
-                          readonly
-                          v-bind="props"
-                        />
-                      </template>
-                      <v-date-picker v-model="fundInfo.date" clearable @input="fundingCalendar[index] = false" />
-                    </v-menu>
+                    <AppDateInput
+                      v-model="fundInfo.date"
+                      :rules="rules.required"
+                      :disabled="isReadOnly"
+                      :hide-details="isReadOnly"
+                      label="Date"
+                      clearable
+                    />
                   </v-col>
 
                   <v-col class="col-md-2 col-12">
@@ -442,7 +409,7 @@
               <v-radio label="No" :value="0" />
             </v-radio-group>
 
-            <div v-if="model.feeIncreaseDueToWage == 1">
+            <div v-if="model?.feeIncreaseDueToWage == 1">
               <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
                 <br />
                 <v-radio-group
@@ -644,32 +611,14 @@
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <v-menu
-                    v-model="wageCalendar[index]"
-                    :close-on-content-click="false"
-                    :nudge-left="180"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.wageDate"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Increase"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="obj.wageDate"
-                      :disabled="isReadOnly"
-                      clearable
-                      @input="wageCalendar[index] = false"
-                    />
-                  </v-menu>
+                  <AppDateInput
+                    v-model="obj.wageDate"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    clearable
+                  />
                 </v-col>
 
                 <span class="text-white"> . </span>
@@ -686,7 +635,7 @@
                   color="#003366"
                   @click="addObjToList(wageObj, model.wageList)"
                 >
-                  Add
+                  Add Wage
                 </v-btn>
               </div>
               <br />
@@ -825,9 +774,7 @@
             <br />
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
-                <v-col class="col-md-1 col-12 mx-0">
-                  <!--here for spacing-->
-                </v-col>
+                <div class="mt-md-6 mx-md-6"></div>
                 <v-col class="col-md-2 col-12">
                   <h3 class>Facility's previous hours of operation</h3>
                   <br />
@@ -852,152 +799,57 @@
               <v-divider />
 
               <v-row v-for="(obj, index) in model.expansionList" :key="index">
-                <v-col class="col-md-1 col-12 mx-0">
-                  <v-icon
-                    :disabled="isReadOnly"
-                    size="large"
-                    color="blue-darken-4"
-                    class="mt-md-4"
-                    @click="removeObjFromList(index, model.expansionList)"
-                  >
-                    mdi-close
-                  </v-icon>
-                </v-col>
+                <v-icon
+                  :disabled="isReadOnly"
+                  size="large"
+                  color="blue-darken-4"
+                  class="mt-md-6 mx-md-6"
+                  @click="removeObjFromList(index, model.expansionList)"
+                >
+                  mdi-close
+                </v-icon>
+
                 <v-col class="col-md-1 col-12 ml-md-n8">
-                  <v-menu
-                    ref="menufrom"
-                    v-model="obj.menufrom"
-                    v-model:return-value="timefrom"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.timefrom"
-                        :disabled="isReadOnly"
-                        label="From"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.menufrom"
-                      v-model="obj.timefrom"
-                      :disabled="isReadOnly"
-                      full-width
-                      @click:minute="$refs.menufrom[index].save(timefrom)"
-                    />
-                  </v-menu>
-                </v-col>
-
-                <v-col class="col-md-1 col-12">
-                  <v-menu
-                    ref="menuto"
-                    v-model="obj.menuto"
-                    v-model:return-value="timeto"
+                  <AppTimeInput
+                    v-model="obj.timefrom"
                     :disabled="isReadOnly"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field v-model="obj.timeto" :disabled="isReadOnly" label="To" readonly v-bind="props" />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.menuto"
-                      v-model="obj.timeto"
-                      :disabled="isReadOnly"
-                      :min="obj.timefrom"
-                      full-width
-                      @click:minute="$refs.menuto[index].save(timeto)"
-                    />
-                  </v-menu>
+                    full-width
+                    max-width="200px"
+                    label="From"
+                  />
+
+                  <!-- we need logic to prevent choosing a time before -->
+
+                  <AppTimeInput v-model="obj.timeto" :disabled="isReadOnly" full-width max-width="200px" label="To" />
                 </v-col>
 
                 <v-col class="col-md-1 col-12">
-                  <v-menu
-                    ref="newmenufrom"
-                    v-model="obj.newmenufrom"
-                    v-model:return-value="newtimefrom"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.newtimefrom"
-                        :disabled="isReadOnly"
-                        label="From"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.newmenufrom"
-                      v-model="obj.newtimefrom"
-                      full-width
-                      @click:minute="$refs.newmenufrom[index].save(newtimefrom)"
-                    />
-                  </v-menu>
+                  <AppTimeInput
+                    v-model="obj.newtimefrom"
+                    :disabled="isReadOnly"
+                    full-width
+                    max-width="200px"
+                    label="From"
+                  />
+
+                  <AppTimeInput
+                    v-model="obj.newtimeto"
+                    :disabled="isReadOnly"
+                    full-width
+                    max-width="200px"
+                    label="To"
+                  />
                 </v-col>
 
-                <v-col class="col-md-1 col-12">
-                  <v-menu
-                    ref="newmenuto"
-                    v-model="obj.newmenuto"
-                    v-model:return-value="newtimeto"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field v-model="obj.newtimeto" :disabled="isReadOnly" label="To" readonly v-bind="props" />
-                    </template>
-                    <v-time-picker
-                      v-if="obj.newmenuto"
-                      v-model="obj.newtimeto"
-                      :min="obj.newtimefrom"
-                      full-width
-                      @click:minute="$refs.newmenuto[index].save(newtimeto)"
-                    />
-                  </v-menu>
-                </v-col>
-
-                <v-col class="col-md-2 col-12">
-                  <v-menu
-                    v-model="expansionCalendarMenu[index]"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.date"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Change (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker v-model="obj.date" clearable @input="expansionCalendarMenu[index] = false" />
-                  </v-menu>
+                <v-col class="col-md-2 col-xl-1 col-12">
+                  <AppDateInput
+                    v-model="obj.date"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    :rules="rules.required"
+                    clearable
+                  />
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
@@ -1024,15 +876,7 @@
                   />
                 </v-col>
 
-                <v-col class="col-md-1 col-12 mx-0">
-                  <!--here for spacing-->
-                </v-col>
-
-                <br /><br />
-                <v-row>
-                  <span class="text-white" />
-                  <v-divider />
-                </v-row>
+                <v-divider></v-divider>
               </v-row>
               <!-- end v for-->
 
@@ -1057,7 +901,6 @@
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 variant="outlined"
-                name="input-7-4"
                 placeholder="Describe here"
               />
 
@@ -1072,7 +915,6 @@
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 variant="outlined"
-                name="input-7-4"
                 placeholder="Describe here"
               />
             </div>
@@ -1193,32 +1035,14 @@
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="indigenousCalendarMenu[index]"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="indigExpense.date"
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        variant="outlined"
-                        label="Date of Expense (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="indigExpense.date"
-                      :disabled="isReadOnly"
-                      clearable
-                      @input="indigenousCalendarMenu[index] = false"
-                    />
-                  </v-menu>
+                  <AppDateInput
+                    v-model="indigExpense.date"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    clearable
+                  />
                 </v-col>
 
                 <v-col class="col-md-3 col-12">
@@ -1275,7 +1099,6 @@
                   :disabled="isReadOnly"
                   :rules="rules.required"
                   variant="outlined"
-                  name="input-7-4"
                   placeholder="Describe here"
                 />
               </div>
@@ -1353,7 +1176,6 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                     variant="outlined"
-                    name="input-7-4"
                     placeholder="Describe here"
                   />
 
@@ -1368,7 +1190,6 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                     variant="outlined"
-                    name="input-7-4"
                     placeholder="Describe here"
                   />
 
@@ -1385,7 +1206,6 @@
                     :disabled="isReadOnly"
                     :rules="rules.required"
                     variant="outlined"
-                    name="input-7-4"
                     placeholder="Describe here"
                   />
                 </div>
@@ -1420,36 +1240,36 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useRfiAppStore } from '../../store/rfiApp.js';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useSupportingDocumentUploadStore } from '../../store/supportingDocumentUpload.js';
+import { useRfiAppStore } from '@/store/rfiApp.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 
-import alertMixin from '../../mixins/alertMixin.js';
-import globalMixin from '../../mixins/globalMixin.js';
-import { deepCloneObject } from '../../utils/common.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import globalMixin from '@/mixins/globalMixin.js';
+import { deepCloneObject } from '@/utils/common.js';
 import { isEqual } from 'lodash';
-import rules from '../../utils/rules.js';
-import RFIDocumentUpload from '../../components/RFI/RFIDocumentUpload.vue';
-import NavButton from '../../components/util/NavButton.vue';
-import { PROGRAM_YEAR_LANGUAGE_TYPES } from '../../utils/constants.js';
-import FacilityHeader from '../guiComponents/FacilityHeader.vue';
+import rules from '@/utils/rules.js';
+import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
 let model = {
   expansionList: [],
   wageList: [],
   fundingList: [],
   expenseList: [],
-  indigenousExpenseList: [], //this one does not exist in dynamics yet
+  indigenousExpenseList: [],
 };
-
-// let model = {x: [], q1, q2, q3, datePicker, expenseList, fundingList, IndigenousExpenseList, expansionList,model.wageList};
 
 export default {
   name: 'CcfriRequestMoreInfo',
-  components: { FacilityHeader, RFIDocumentUpload, NavButton },
+  components: { FacilityHeader, RFIDocumentUpload, NavButton, AppTimeInput, AppDateInput },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     const rfiAppStore = useRfiAppStore();
@@ -1513,11 +1333,6 @@ export default {
       newmenuto: false,
       model,
       input: '',
-      calendarMenu: [],
-      expansionCalendarMenu: [],
-      indigenousCalendarMenu: [],
-      fundingCalendar: [],
-      wageCalendar: [],
       items: ['One-time', 'Daily', 'Weekly', 'Monthly'],
       processing: false,
       rfiDocuments: {},
@@ -1528,6 +1343,7 @@ export default {
       rfiDocumentsPSEIC: [],
     };
   },
+
   computed: {
     ...mapState(useAppStore, ['getFundingUrl', 'getLanguageYearLabel', 'programYearList']),
     ...mapState(useApplicationStore, ['formattedProgramYear', 'applicationStatus', 'applicationId', 'programYearId']),
@@ -1543,7 +1359,6 @@ export default {
     ...mapState(useRfiAppStore, ['rfiModel', 'loadedModel']),
     ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     currentFacility() {
-      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     fundingUrl() {
@@ -1596,8 +1411,6 @@ export default {
       if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0) {
         done = false;
       }
-      // this.currentFacility.isRfiComplete = this.isValidForm && done;
-      //this.currentFacility.isCCFRIComplete = this.isValidForm;
       return this.isValidForm && done; //false makes button clickable, true disables button
     },
   },
@@ -1607,9 +1420,10 @@ export default {
         try {
           window.scrollTo(0, 0);
           let ccfriId = this.$route.params.urlGuid;
-          console.log('rfi ccfriGUID is: ', this.$route.params.urlGuid);
           await this.loadRfi(ccfriId);
           await this.refreshSupportingDocuments();
+          this.model = deepCloneObject(this.rfiModel);
+          this.$refs.form?.resetValidation();
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while retrieving data.');
@@ -1620,31 +1434,8 @@ export default {
       immediate: true,
       deep: true,
     },
-    rfiModel: {
-      handler() {
-        this.model = deepCloneObject(this.rfiModel);
-        // if(this.model.expansionList){
-        //   this.expansionList = deepCloneObject(this.rfiModel.expansionList);
-        // }
-        // if(this.model.wageList){
-        //   this.wageList = deepCloneObject(this.rfiModel.wageList);
-        // }
-        // if(this.model.IndigenousExpenseList){
-        //   this.IndigenousExpenseList = deepCloneObject(this.rfiModel.IndigenousExpenseList);
-        // }
-        // if(this.model.fundingList){
-        //   this.fundingList = deepCloneObject(this.rfiModel.fundingList);
-        // }
-        // if(this.model.expenseList){
-        //   this.expenseList = deepCloneObject(this.rfiModel.expenseList);
-        // }
-
-        this.$refs.form?.resetValidation();
-      },
-      immediate: true,
-      deep: true,
-    },
   },
+
   methods: {
     ...mapActions(useRfiAppStore, ['loadRfi', 'saveRfi', 'setRfiModel']),
     ...mapActions(useNavBarStore, ['setNavBarRFIComplete']),
@@ -1680,7 +1471,6 @@ export default {
       }
       for (let i = this.model.wageList.length - 1; i >= 0; i--) {
         if (isEqual(this.model.wageList[i], this.wageObj)) {
-          console.log('blank found');
           this.model.wageList.splice(i, 1);
         }
       }
@@ -1742,6 +1532,8 @@ export default {
       const foundItemIndex = this.uploadedDocuments.findIndex((el) => el.id === item.id);
       if (foundItemIndex > -1) {
         this.uploadedDocuments[foundItemIndex] = item;
+      } else {
+        this.uploadedDocuments.push(item);
       }
     },
     addRFISupportingDocumentDescription(item) {
@@ -1813,7 +1605,7 @@ export default {
     },
     async processRFISupportingDocuments() {
       await this.processDocumentFileDelete();
-      const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
+      const newFilesAdded = this.uploadedDocuments.filter((el) => !el.annotationid);
       if (newFilesAdded.length > 0) {
         await this.processDocumentFilesSave(newFilesAdded);
       }

@@ -12,8 +12,8 @@
       <v-container>
         <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row>
-          <v-col cols="12" md="6" xl="4">
-            <SmallCard v-if="organizationProviderType == 'GROUP'">
+          <v-col v-if="organizationProviderType === 'GROUP'" cols="12" md="6" xl="4">
+            <SmallCard>
               <template #content>
                 <div class="px-10">
                   <p class="text-h6 text-center">Add a New facility to an existing organization</p>
@@ -316,16 +316,16 @@ export default {
       return allChangeRequests;
     },
     getPrevProgramYearId() {
-      return this.programYearList.list.find(({ programYearId }) => programYearId == this.programYearId).previousYearId;
+      return this.programYearList.list.find(({ programYearId }) => programYearId === this.programYearId).previousYearId;
     },
     currentChangeRequests() {
       return this.allChangeRequests.filter(
         (el) =>
-          el.programYearId == this.programYearId ||
-          (el.programYearId == this.getPrevProgramYearId &&
-            (el.externalStatus == 'In Progress' ||
-              el.externalStatus == 'Submitted' ||
-              el.externalStatus == 'Action Required')),
+          el.programYearId === this.programYearId ||
+          (el.programYearId === this.getPrevProgramYearId &&
+            (el.externalStatus === 'In Progress' ||
+              el.externalStatus === 'Submitted' ||
+              el.externalStatus === 'Action Required')),
       );
     },
     pastChangeRequests() {
@@ -336,7 +336,7 @@ export default {
       return this.allChangeRequests?.length > 8 ? 53 * 9 : undefined;
     },
     headers() {
-      return this.organizationProviderType == 'GROUP' ? this.headersGroup : this.headersFamily;
+      return this.organizationProviderType === 'GROUP' ? this.headersGroup : this.headersFamily;
     },
     maxfacilityNamesStringLength() {
       if (this.$vuetify.display.width > 3500) {
@@ -406,7 +406,7 @@ export default {
     //   return currentFutureYears?.includes(programYearId);
     // },
     getProgramYearString(programYearId) {
-      let label = this.programYearList?.list?.find((programYear) => programYear.programYearId == programYearId)?.name;
+      let label = this.programYearList?.list?.find((programYear) => programYear.programYearId === programYearId)?.name;
       return label?.replace(/[^\d/]/g, '');
     },
     getChangeTypeString(changeType) {
@@ -426,14 +426,14 @@ export default {
       //TODO - add more logic to grab facility name from relevent change request. IE: MTFI
 
       //did it this way so if there are many change Actions, it checks all of them to see if there is a new facility. Maybe change in the future
-      if (!changeActions.find((el) => el.changeType == 'NEW_FACILITY')) {
+      if (!changeActions.find((el) => el.changeType === 'NEW_FACILITY')) {
         return '- - - -';
       }
 
       let str = '';
 
       //change in backend, only returns 1 at a time rn
-      let action = changeActions.find((el) => el.changeType == 'NEW_FACILITY');
+      let action = changeActions.find((el) => el.changeType === 'NEW_FACILITY');
       if (action?.facilities) {
         action.facilities.forEach((fac) => (str = str + `${fac.facilityName}, `));
       }
@@ -485,7 +485,7 @@ export default {
       return '- - - -';
     },
     getChangeRequestStyle(changeRequest) {
-      return changeRequest.externalStatus == 'Action Required' ? 'redText' : '';
+      return changeRequest.externalStatus === 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -496,19 +496,19 @@ export default {
     async continueButton(changeType, changeActionId = null, changeRequestId = null, index) {
       this.processing = true;
       let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
-      if (changeType == 'PDF_CHANGE') {
+      if (changeType === 'PDF_CHANGE') {
         this.goToChangeForm(changeActionId, changeRequestId);
-      } else if (changeType == 'NEW_FACILITY') {
+      } else if (changeType === 'NEW_FACILITY') {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
         this.$router.push(
           changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId),
         );
-      } else if (changeType == 'PARENT_FEE_CHANGE') {
+      } else if (changeType === 'PARENT_FEE_CHANGE') {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
 
-        if (this.organizationProviderType == 'FAMILY') {
+        if (this.organizationProviderType === 'FAMILY') {
           // i need to load the new CCFRI id here then
           await this.getChangeRequest(changeRequestId);
           this.$router.push(
@@ -700,10 +700,10 @@ export default {
     // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled() {
       let foundCRNotInEndStateStatus = this.allChangeRequests.find(
-        (el) => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus),
+        (el) => el.changeType === 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus),
       );
       let foundFacilityWithApprovedCCFRI = this.userProfileList.find(
-        (el) => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el),
+        (el) => el.ccfriStatus === 'APPROVED' && isFacilityAvailable(el),
       );
       return !foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI;
     },

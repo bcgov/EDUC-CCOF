@@ -359,7 +359,6 @@ export default {
     },
     noReportChanges() {
       let changeNotificationId = this.getChangeNotificationActionId;
-      console.log('change action id: ', changeNotificationId);
       if (changeNotificationId) {
         this.dialog = true;
       }
@@ -382,7 +381,7 @@ export default {
                 changeRequestId: this.changeRequestId,
                 type: 'documents',
               });
-              console.log('change action id: ', results.changeActionId);
+
               this.addChangeNotificationId({
                 changeRequestId: this.changeRequestId,
                 changeNotificationActionId: results.changeActionId,
@@ -402,7 +401,6 @@ export default {
             this.$router.push(this.nextPath);
           }
         } else {
-          console.log('next path: ', this.nextPath);
           this.$router.push(this.nextPath);
         }
       } catch {
@@ -498,9 +496,12 @@ export default {
       this.isLoading = true;
       try {
         await this.getDocuments(this.applicationId);
-        this.uploadedSupportingDocuments = this.uploadedDocuments.filter(
-          (document) => this.navBarList.findIndex((item) => item.facilityId == document.ccof_facility) > -1,
-        );
+        this.uploadedSupportingDocuments = this.uploadedDocuments.filter((document) => {
+          return (
+            this.navBarList.findIndex((item) => item.facilityId == document.ccof_facility) > -1 &&
+            !document?.documentType.slice(0, 3) === 'RFI'
+          );
+        });
       } catch (e) {
         console.error(e);
       } finally {

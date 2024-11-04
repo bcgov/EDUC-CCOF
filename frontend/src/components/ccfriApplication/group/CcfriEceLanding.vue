@@ -109,7 +109,6 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
 import LargeButtonContainer from '@/components/guiComponents/LargeButtonContainer.vue';
 import NavButton from '@/components/util/NavButton.vue';
@@ -128,8 +127,6 @@ export default {
   components: { LargeButtonContainer, NavButton },
   mixins: [alertMixin],
   beforeRouteLeave(_to, _from, next) {
-    const ccfriAppStore = useCcfriAppStore();
-    ccfriAppStore.model(this.model);
     next();
   },
   data() {
@@ -165,15 +162,11 @@ export default {
     ]),
     ...mapState(useReportChangesStore, ['changeRequestMap', 'changeRequestStatus']),
     isReadOnly() {
-      //console.log('read only called');
       if (this.unlockedFacilities) {
         return false;
       }
       if (this.isChangeRequest) {
-        // console.log('is change req');
-        // console.log(this.changeRequestStatus);
         if (!this.changeRequestStatus) {
-          //console.log('no status');
           return false;
         }
         return this.changeRequestStatus != 'INCOMPLETE';
@@ -194,10 +187,6 @@ export default {
         this.ccfriOptInOrOut[index] = undefined;
       }
     });
-  },
-  mounted() {
-    const ccfriAppStore = useCcfriAppStore();
-    this.model = ccfriAppStore.model ?? model;
   },
   methods: {
     ...mapActions(useNavBarStore, ['forceNavBarRefresh', 'refreshNavBarList']),
@@ -300,14 +289,12 @@ export default {
               : undefined,
           });
         }
-      } //end for loop
-      //Refresh the filtered list
+      }
+
       this.refreshNavBarList();
       if (payload.length > 0) {
         try {
           const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-
-          console.log(response.data);
           response.data.forEach((item) => {
             if (item.ccfriApplicationId) {
               this.userProfileList.find((facility) => {
