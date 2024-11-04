@@ -27,14 +27,12 @@
         >
           <template #top>
             <v-col flex>
-              <v-toolbar flat color="white">
-                <div class="d-flex">
-                  <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
-                    <v-icon dark> mdi-plus </v-icon>
-                    Add
-                  </v-btn>
-                </div>
-              </v-toolbar>
+              <div class="d-flex">
+                <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
+                  <v-icon dark> mdi-plus </v-icon>
+                  Add
+                </v-btn>
+              </div>
             </v-col>
           </template>
           <template #item.document="{ item }">
@@ -44,6 +42,7 @@
             <v-file-input
               v-else
               :id="String(item.id)"
+              @update:model-value="selectFile"
               color="#003366"
               :rules="fileRules"
               prepend-icon="mdi-file-upload"
@@ -55,7 +54,6 @@
               :error-messages="fileInputError"
               required
               @click:clear="deleteItem(item)"
-              @change="selectFile"
               @click="uploadDocumentClicked($event)"
             />
           </template>
@@ -84,15 +82,15 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { getFileExtension, getFileNameWithMaxNameLength, humanFileSize } from '../../utils/file.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import rules from '../../utils/rules.js';
-import { deepCloneObject } from '../../utils/common.js';
-import { CHANGE_TYPES } from '../../utils/constants.js';
+import { getFileExtension, getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import rules from '@/utils/rules.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { CHANGE_TYPES } from '@/utils/constants.js';
 
 export default {
   components: {},
@@ -115,7 +113,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isProcessing: false,
       rules,
       isValidForm: false,
       currentrow: null,
@@ -206,13 +203,25 @@ export default {
 
     this.fileRules = [
       (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
+      (value) => {
+        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          value[0].size < maxSize ||
+          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
+        );
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+          `Accepted file types are ${this.fileFormats}.`
+        );
+      },
     ];
     await this.createTable();
   },
@@ -220,15 +229,13 @@ export default {
     async selectFile(file) {
       if (file) {
         const doc = await this.readFile(file);
-        if (this.isValidForm) {
-          const clonedDoc = deepCloneObject(doc);
-          const obj = {
-            id: this.currentrow,
-            documentType: this.rFIType,
-            ...clonedDoc,
-          };
-          this.$emit('addRFIDocument', obj);
-        }
+        const clonedDoc = deepCloneObject(doc);
+        const obj = {
+          id: this.currentrow,
+          documentType: this.rFIType,
+          ...clonedDoc,
+        };
+        this.$emit('addRFIDocument', obj);
       }
     },
     descriptionChanged(item) {
@@ -241,30 +248,42 @@ export default {
       }
     },
     readFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsBinaryString(file);
-        reader.onload = () => {
-          const doc = {
-            filename:
-              this.changeType == CHANGE_TYPES.MTFI
-                ? getFileNameWithMaxNameLength(`MTFI_${file.name}`)
-                : getFileNameWithMaxNameLength(file.name),
-            filesize: file.size,
-            documentbody: window.btoa(reader.result),
+      try {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsArrayBuffer(file); // Use readAsArrayBuffer instead
+
+          reader.onload = () => {
+            const arrayBuffer = reader.result;
+            const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+            const base64String = window.btoa(binaryString); // Convert to Base64
+
+            const doc = {
+              filename:
+                this.changeType == CHANGE_TYPES.MTFI
+                  ? getFileNameWithMaxNameLength(`MTFI_${file.name}`)
+                  : getFileNameWithMaxNameLength(file.name),
+              filesize: file.size,
+              documentbody: base64String,
+            };
+            resolve(doc);
           };
-          resolve(doc);
-        };
-        reader.onabort = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-        reader.onerror = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-      });
+
+          reader.onabort = () => {
+            this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
+            reject();
+          };
+
+          reader.onerror = () => {
+            this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
+            reject();
+          };
+        });
+      } catch (error) {
+        console.log('file error: ', error);
+      }
     },
+
     uploadDocumentClicked(event) {
       this.currentrow = event.target.id;
     },
@@ -291,7 +310,7 @@ export default {
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.rFIType + (this.uploadedRFITypeDocuments.length + 1);
+      addObj.id = this.rFIType + (this.uploadedRFITypeDocuments?.length + 1);
       addObj.documentType = this.rFIType;
       this.editItem(addObj);
       this.$emit('addRFIRow', addObj);
