@@ -23,6 +23,18 @@
           </span>
         </v-alert>
       </v-row>
+      <v-row v-if="organizationProviderType === 'FAMILY'" justify="center">
+        <v-alert class="col-11" variant="outlined" prominent>
+          <span style="float: left">
+            <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
+          </span>
+          <span>
+            On the previous page, you indicated that you would like to opt-in to ECE-WE for any facility in your
+            organization. As your organization has only one facility, the opt-in status has automatically been selected
+            for that facility. Click the next button to confirm that you would like to opt-in this facility.
+          </span>
+        </v-alert>
+      </v-row>
       <br />
       <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
         <v-container fluid class="pa-0">
@@ -114,6 +126,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { PATHS, changeUrl, pcfUrl } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -137,6 +150,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, ['isStarted', 'eceweModel', 'facilities']),
     ...mapState(useAppStore, ['fundingModelTypeList']),
@@ -263,6 +277,7 @@ export default {
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
         this.setFacilities(uiFacilitiesCopy);
+        console.log('ui facilities!!', uiFacilitiesCopy);
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach((el) => {
