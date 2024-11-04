@@ -600,7 +600,7 @@
           </v-col>
         </v-row>
 
-        <div v-if="rfiApp?.underservedPop === 0">
+        <div v-if="rfiApp?.underservedPop === 1">
           <span class="summary-label">
             Please describe how the majority of children you provide care for represent an underserved population (e.g.,
             indigenous children, low-income families).
