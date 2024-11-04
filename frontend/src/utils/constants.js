@@ -110,6 +110,7 @@ export const PATHS = {
   CCOF_FAMILY_FUNDING: '/family/funding',
 
   CCFRI_HOME: '/ccfri',
+  CCFRI_AFS: '/ccfri/afs',
   CCFRI_CURRENT_FEES: '/ccfri/current-fees',
   CCFRI_NEW_FEES: '/ccfri/new-fees',
   CCFRI_RFI: '/ccfri/req-info',

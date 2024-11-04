@@ -18,6 +18,7 @@ import SessionExpired from '@/components/SessionExpired.vue';
 import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
+import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
@@ -444,6 +445,18 @@ const router = createRouter({
       component: currentFees,
       meta: {
         pageTitle: 'CCFRI Current Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrl(PATHS.CCFRI_AFS),
+      name: 'ccfri-afs',
+      component: ApprovableFeeSchedule,
+      meta: {
+        pageTitle: 'Approvable Fee Schedule',
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
