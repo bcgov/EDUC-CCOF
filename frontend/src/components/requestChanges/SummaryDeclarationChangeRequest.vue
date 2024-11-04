@@ -137,7 +137,7 @@
                       <v-expansion-panel
                         v-if="facility?.hasRfi && !isSummaryLoading[index]"
                         variant="accordion"
-                        name="rfi-summary"
+                        value="rfi-summary"
                       >
                         <RFISummary
                           :rfi-app="facility?.rfiApp"
