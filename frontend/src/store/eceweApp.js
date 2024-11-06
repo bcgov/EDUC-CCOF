@@ -159,11 +159,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
       let facilityPayload;
 
       if (this.facilities?.length == 0) {
-        console.log(' No facilities payload, create from the narBarList.');
-
         if (navBarStore.isChangeRequest) {
-          console.log('this is a change req, build from newFacilities list');
-
           let newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
             ?.newFacilities;
 
@@ -187,15 +183,10 @@ export const useEceweAppStore = defineStore('eceweApp', {
       } else {
         // A payload already exists, recreate to include any new facilities which could have been added to navBarList
         // since last creation.
-        console.log('A payload already exists, recreate');
-
         if (useNavBarStore().isChangeRequest) {
-          console.log('this is a change req, build from newFacilities list');
-
           let newFac = reportChangesStore?.changeRequestMap
             ?.get(navBarStore?.changeRequestId)
             .changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
-          console.log('newFac is: ', newFac);
           facilityPayload = newFac?.map((facility) => ({
             eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
             facilityId: facility.facilityId,

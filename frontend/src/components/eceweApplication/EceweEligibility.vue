@@ -346,7 +346,13 @@ export default {
       'belongsToUnionChangeRequestReadonly',
     ]),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'changeRequestId',
+      'previousPath',
+      'isChangeRequest',
+      'userProfileList',
+    ]),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
       'programYearId',
@@ -567,11 +573,6 @@ export default {
           this.model.optInECEWE === 0 &&
           this.facilities.some((facility) => facility.eceweApplicationId != null && facility.optInOrOut === 1);
 
-        //jb below
-        if (this.model.optInECEWE === 0) {
-          this.optOutFacilities();
-        }
-
         // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (
@@ -588,6 +589,11 @@ export default {
         if (this.organizationProviderType === 'FAMILY') {
           this.facilities.forEach((facility) => {
             facility.optInOrOut = this.model?.optInECEWE;
+            //update the next page navbar checkmark
+            let fac = this.navBarList.find((f) => f.facilityId === facility.facilityId);
+            if (fac) {
+              fac.eceweOptInStatus = this.model?.optInECEWE;
+            }
           });
         }
 

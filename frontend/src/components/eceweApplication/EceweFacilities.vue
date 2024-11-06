@@ -10,20 +10,22 @@
           {{ userInfo.organizationName }}
         </div>
       </div>
-      <v-row justify="center">Please select each facility you would like to opt-in to ECE-WE:</v-row>
-      <v-row><v-col /></v-row>
-      <v-row justify="center">
-        <v-alert class="col-11" variant="outlined" prominent>
-          <span style="float: left">
-            <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
-          </span>
-          <span>
-            Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to
-            ECE-WE for each licence located at the same physical address.
-          </span>
-        </v-alert>
-      </v-row>
-      <v-row v-if="organizationProviderType === 'FAMILY'" justify="center">
+      <div v-if="organizationProviderType === 'GROUP'">
+        <v-row justify="center">Please select each facility you would like to opt-in to ECE-WE:</v-row>
+        <v-row><v-col /></v-row>
+        <v-row justify="center">
+          <v-alert class="col-11" variant="outlined" prominent>
+            <span style="float: left">
+              <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
+            </span>
+            <span>
+              Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to
+              ECE-WE for each licence located at the same physical address.
+            </span>
+          </v-alert>
+        </v-row>
+      </div>
+      <v-row v-else-if="isFamilyFacilityOptIn" justify="center">
         <v-alert class="col-11" variant="outlined" prominent>
           <span style="float: left">
             <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
@@ -38,7 +40,14 @@
       <br />
       <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
         <v-container fluid class="pa-0">
-          <v-btn class="mx-0 justify-end" dark color="#003366" :disabled="isReadOnly" @click="toggleAll()">
+          <v-btn
+            v-if="organizationProviderType === 'GROUP'"
+            class="mx-0 justify-end"
+            dark
+            color="#003366"
+            :disabled="isReadOnly"
+            @click="toggleAll()"
+          >
             Opt in All Facilities
           </v-btn>
           <div>
@@ -74,7 +83,7 @@
                         <v-radio label="Opt-Out" :value="0" />
                       </v-radio-group>
                     </v-col>
-                    <v-col cols="3">
+                    <v-col v-if="organizationProviderType === 'GROUP'" cols="3">
                       <v-btn
                         v-if="
                           !uiFacilities?.[index].update &&
@@ -191,6 +200,9 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED';
     },
+    isFamilyFacilityOptIn() {
+      return this.uiFacilities.every((fac) => fac.optInOrOut);
+    },
   },
   async mounted() {
     this.setFundingModelTypes({ ...this.fundingModelTypeList });
@@ -277,12 +289,9 @@ export default {
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
         this.setFacilities(uiFacilitiesCopy);
-        console.log('ui facilities!!', uiFacilitiesCopy);
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach((el) => {
-            console.log('this is el');
-            console.log(el);
             let facility = this.userProfileList.find((f) => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
@@ -291,13 +300,11 @@ export default {
             //update the CR map with the data so navbar will work properly for CR new fac
             if (this.isChangeRequest) {
               let newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
-
               newFac.ecewe = {
                 eceweOptInStatus: el.optInOrOut,
                 eceweApplicationId: el.eceweApplicationId,
                 eceweFacilityId: el.facilityId,
               };
-              console.log('newfac', newFac);
             }
           });
           this.refreshNavBarList();
