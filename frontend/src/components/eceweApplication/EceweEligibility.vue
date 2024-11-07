@@ -24,7 +24,7 @@
               ECE-WE Funding Guidelines
             </a>
           </u>
-          . All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
+          . All CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
         </span>
       </v-alert>
 
