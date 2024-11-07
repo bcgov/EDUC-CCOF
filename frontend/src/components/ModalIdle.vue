@@ -44,7 +44,9 @@ function getTokenExpiredTime(jwtToken) {
   const now = Date.now().valueOf();
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
-  // console.log(`getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${((payload.exp * 1000) - now )}]`);
+  console.log(
+    `getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${payload.exp * 1000 - now}]`,
+  );
   return payload.exp * 1000 - now;
 }
 
@@ -53,6 +55,7 @@ export default {
     return {
       routes: AuthRoutes,
       dialog: false,
+      //timeOutValue: 6000, // add 200 ms
     };
   },
   computed: {
@@ -79,17 +82,21 @@ export default {
       if (this.isAuthenticated) {
         try {
           const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
+          console.log('DATA');
+          console.log('resp data', response.data);
           if (response.data > 0) {
             let timeOutValue = parseInt(response.data); // add 200 ms
+            //let timeOutValue = 240000; // add 200 ms
+            console.log(timeOutValue);
             const tokenExpire = getTokenExpiredTime(this.jwtToken);
             console.log('remaining time - timeout: ', timeOutValue);
             console.log('token expire - timeout: ', tokenExpire);
             if (timeOutValue > tokenExpire) {
               timeOutValue = tokenExpire;
-              console.log(`Using token expire time of [${timeOutValue}]`);
+              console.log(`Using token EXPIRE time of [${timeOutValue}]`);
             } else {
               console.log(`Using session expire time of [${timeOutValue}]`);
-            }
+            } //////////-3wa////
 
             if (timeOutValue < 190000) {
               this.showDialog();
@@ -108,10 +115,13 @@ export default {
     },
     async clicked() {
       this.stopCounter();
-      // this.startCounter();
+      //this.startCounter();
 
       this.dialog = false;
       await this.getJwtToken();
+      //const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
+      //timeOutValue = parseInt(response.data); // add 200 ms
+
       this.checkAndLogoutUserOnSessionExpiry();
     },
     showDialog() {

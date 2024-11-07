@@ -1,13 +1,15 @@
 import { defineStore } from 'pinia';
 
-import { useApplicationStore } from './application.js';
-import { useNavBarStore } from './navBar.js';
-import { useOrganizationStore } from './ccof/organization.js';
-
 import ApiService from '../common/apiService.js';
 import AuthService from '../common/authService.js';
+import { useApplicationStore } from './application.js';
+import { useOrganizationStore } from './ccof/organization.js';
+import { useNavBarStore } from './navBar.js';
 
 function isFollowUpVisit(tokenObj) {
+  console.log('ave i been caleld');
+  console.log(!!tokenObj?.jwtToken);
+  console.log(tokenObj);
   return !!tokenObj?.jwtToken;
 }
 
@@ -118,6 +120,8 @@ export const useAuthStore = defineStore('auth', {
       }
       const response = await AuthService.refreshAuthToken(this.jwtToken);
       if (response.jwtFrontend) {
+        console.log('did I refresh?');
+        //console.log(response);
         this.setJwtToken(response.jwtFrontend);
         ApiService.setAuthHeader(response.jwtFrontend);
       } else {
@@ -136,7 +140,8 @@ export const useAuthStore = defineStore('auth', {
     // retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken() {
       this.setError(false);
-      if (isFollowUpVisit(this.jwtToken)) {
+      if (this.jwtToken) {
+        //console.log('refreshing token');
         await this.refreshToken(this.jwtToken);
       } else {
         await this.getInitialToken();

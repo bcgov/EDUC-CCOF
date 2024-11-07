@@ -23,7 +23,8 @@ export const useAppStore = defineStore('app', {
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
-    logoutCounter: 120,
+    //logoutCounter: 120,
+    logoutCounter: undefined,
   }),
   actions: {
     setLookupInfo(lookupInfo) {
@@ -76,6 +77,7 @@ export const useAppStore = defineStore('app', {
     },
     setLogoutCounter(value) {
       this.logoutCounter = value;
+      console.log('counter; ', this.logoutCounter);
     },
     async getLookupInfo() {
       if (localStorage.getItem('jwtToken')) {
@@ -91,9 +93,12 @@ export const useAppStore = defineStore('app', {
     async startCounter() {
       const d = new Date();
       const time = d.getTime() + 1000 * 120; //add 120 secons to current time
+      console.log('time? ', time);
+      console.log('time to date', Date(1731007005900));
       this.setLogoutTime(time);
       this.setLogoutTimerEnabled(true);
       let logoutCount = Math.floor((this.logoutTime - new Date().getTime()) / 1000);
+      console.log('logout count', logoutCount);
       this.setLogoutCounter(logoutCount);
       while (this.logoutCounter > 0 && this.logoutTimerEnabled) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -105,7 +110,9 @@ export const useAppStore = defineStore('app', {
       this.setLogoutTimerEnabled(false);
     },
     stopCounter() {
+      console.log('STOP called');
       this.setLogoutCounter(120);
+      //this.setLogoutCounter(1741003);
       this.setLogoutTimerEnabled(false);
     },
   },
