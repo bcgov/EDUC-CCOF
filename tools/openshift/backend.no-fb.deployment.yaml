@@ -1,17 +1,16 @@
 ---
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: "${REPO_NAME}-template"
 metadata:
-  name: "${REPO_NAME}-backend-dc"
+  name: "${REPO_NAME}-backend-deployment"
+  labels:
+    template: "${REPO_NAME}-template"
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
-    creationTimestamp:
     labels:
       app: "${APP_NAME}-${BRANCH}"
       branch: "${BRANCH}"
@@ -19,19 +18,19 @@ objects:
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
-      app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+      matchLabels:
+        app: "${APP_NAME}-${BRANCH}"
     strategy:
-      resources: {}
-      type: Rolling
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
     template:
       metadata:
         annotations:
           openshift.io/generated-by: OpenShiftNewApp
-        creationTimestamp:
         labels:
           app: "${APP_NAME}-${BRANCH}"
-          deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
@@ -78,63 +77,19 @@ objects:
             limits:
               cpu: "${MAX_CPU}"
               memory: "${MAX_MEM}"
-        - image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:1.5.7
-          name: "${APP_NAME}-fluent-bit-sidecar"
-          imagePullPolicy: Always
-          imagePullSecrets:
-            - name: artifactory-creds
-          volumeMounts:
-            - name: log-storage
-              mountPath: /mnt/log
-            - name: flb-sc-config-volume
-              mountPath: /fluent-bit/etc/
-          readinessProbe:
-            tcpSocket:
-              port: 2020
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 5
-            successThreshold: 1
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 2020
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 5
-            successThreshold: 1
-          ports:
-            - containerPort: 2020
-              protocol: TCP
-              name: metrics
-          resources:
-            requests:
-              cpu: "5m"
-              memory: "32Mi"
-            limits:
-              cpu: "15m"
-              memory: "64Mi"
         volumes:
         - name: log-storage
           emptyDir: {}
         - name: tls-certs
           secret:
             secretName: ccof-backend-cert
-        - name: flb-sc-config-volume
-          configMap:
-            name: "${APP_NAME}-flb-sc-config-map"
     test: false
-    triggers:
-    - type: ConfigChange
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       service.alpha.openshift.io/serving-cert-secret-name: "ccof-backend-cert"
       openshift.io/generated-by: OpenShiftNewApp
-    creationTimestamp:
     labels:
       app: "${APP_NAME}-${BRANCH}"
     name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
@@ -150,7 +105,6 @@ objects:
       targetPort: 443
     selector:
       app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
 - apiVersion: v1
   kind: Route
   metadata:
@@ -182,10 +136,9 @@ objects:
     name: "${APP_NAME}-backend-${APP_ENVIRONMENT}-cpu-autoscaler"
   spec:
     scaleTargetRef:
-      apiVersion: apps.openshift.io/v1
-      kind: DeploymentConfig
+      apiVersion: apps/v1
+      kind: Deployment
       name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
-      subresource: scale
     minReplicas: ${{MIN_REPLICAS}}
     maxReplicas: ${{MAX_REPLICAS}}
     metrics:
