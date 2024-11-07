@@ -180,30 +180,28 @@ export const useEceweAppStore = defineStore('eceweApp', {
             optInOrOut: this.eceweModel.fundingModel === this.fundingModelTypes[0].id ? 0 : null,
           }));
         }
-      } else {
-        // A payload already exists, recreate to include any new facilities which could have been added to navBarList
-        // since last creation.
-        if (useNavBarStore().isChangeRequest) {
-          let newFac = reportChangesStore?.changeRequestMap
-            ?.get(navBarStore?.changeRequestId)
-            .changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
-          facilityPayload = newFac?.map((facility) => ({
-            eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
-            facilityId: facility.facilityId,
-            optInOrOut: this.getOptInOrOut(facility.facilityId),
-            changeRequestId: navBarStore.changeRequestId ? navBarStore.changeRequestId : null,
-            changeRequestNewFacilityId: facility.changeRequestNewFacilityId
-              ? facility.changeRequestNewFacilityId
-              : null,
-          }));
-        } else {
-          facilityPayload = navBarList.map((facility) => ({
-            facilityId: facility.facilityId,
-            eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
-            optInOrOut: this.getOptInOrOut(facility.facilityId),
-          }));
-        }
       }
+      // A payload already exists, recreate to include any new facilities which could have been added to navBarList
+      // since last creation.
+      else if (useNavBarStore().isChangeRequest) {
+        let newFac = reportChangesStore?.changeRequestMap
+          ?.get(navBarStore?.changeRequestId)
+          .changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
+        facilityPayload = newFac?.map((facility) => ({
+          eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
+          facilityId: facility.facilityId,
+          optInOrOut: this.getOptInOrOut(facility.facilityId),
+          changeRequestId: navBarStore.changeRequestId ? navBarStore.changeRequestId : null,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null,
+        }));
+      } else {
+        facilityPayload = navBarList.map((facility) => ({
+          facilityId: facility.facilityId,
+          eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
+          optInOrOut: this.getOptInOrOut(facility.facilityId),
+        }));
+      }
+
       this.setFacilities(facilityPayload);
     },
     getEceweApplicationId(facilityId) {
