@@ -34,19 +34,19 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useAppStore } from '../store/app.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useAppStore } from '@/store/app.js';
 
-import { AuthRoutes } from '../utils/constants.js';
-import ApiService from '../common/apiService.js';
+import { AuthRoutes } from '@/utils/constants.js';
+import ApiService from '@/common/apiService.js';
 
 function getTokenExpiredTime(jwtToken) {
   const now = Date.now().valueOf();
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
-  console.log(
-    `getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${payload.exp * 1000 - now}]`,
-  );
+  // console.log(
+  //   `getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${payload.exp * 1000 - now}]`,
+  // );
   return payload.exp * 1000 - now;
 }
 
@@ -55,7 +55,6 @@ export default {
     return {
       routes: AuthRoutes,
       dialog: false,
-      //timeOutValue: 6000, // add 200 ms
     };
   },
   computed: {

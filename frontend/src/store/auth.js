@@ -1,17 +1,10 @@
 import { defineStore } from 'pinia';
 
-import ApiService from '../common/apiService.js';
-import AuthService from '../common/authService.js';
-import { useApplicationStore } from './application.js';
-import { useOrganizationStore } from './ccof/organization.js';
-import { useNavBarStore } from './navBar.js';
-
-function isFollowUpVisit(tokenObj) {
-  console.log('ave i been caleld');
-  console.log(!!tokenObj?.jwtToken);
-  console.log(tokenObj);
-  return !!tokenObj?.jwtToken;
-}
+import ApiService from '@/common/apiService.js';
+import AuthService from '@/common/authService.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
 function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
