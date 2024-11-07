@@ -72,7 +72,6 @@
           </v-row>
           <div v-else>
             <v-expansion-panels
-              ref="v-expansion-panels"
               v-model="expand"
               class="mt-6 rounded facility-info"
               focusable
@@ -82,7 +81,12 @@
             >
               <v-row no-gutters class="d-flex flex-column mb-2">
                 <!-- Change Notification Form Summary -->
-                <v-expansion-panel v-if="hasChangeRequestType('PDF_CHANGE')" variant="accordion" class="mb-8 mt-8">
+                <v-expansion-panel
+                  v-if="hasChangeRequestType('PDF_CHANGE')"
+                  variant="accordion"
+                  class="mb-8 mt-8"
+                  value="change-notification-form-summary"
+                >
                   <ChangeNotificationFormSummary
                     :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
                     @is-summary-valid="isFormComplete"
@@ -98,7 +102,7 @@
                       type="paragraph, text@3, paragraph, text@3, paragraph"
                     />
                     <div v-else>
-                      <v-expansion-panel variant="accordion">
+                      <v-expansion-panel variant="accordion" value="facility-name">
                         <v-row no-gutters class="d-flex pl-6 py-5">
                           <v-col class="col-6 col-lg-4">
                             <p class="summary-label">Facility Name</p>
@@ -120,7 +124,7 @@
                           </v-col>
                         </v-row>
                       </v-expansion-panel>
-                      <v-expansion-panel variant="accordion">
+                      <v-expansion-panel variant="accordion" value="mtfi-summary">
                         <MTFISummary
                           v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
                           :old-ccfri="facility?.oldCcfri"
@@ -129,7 +133,11 @@
                           @is-summary-valid="isFormComplete"
                         />
                       </v-expansion-panel>
-                      <v-expansion-panel v-if="facility?.hasRfi && !isSummaryLoading[index]" variant="accordion">
+                      <v-expansion-panel
+                        v-if="facility?.hasRfi && !isSummaryLoading[index]"
+                        variant="accordion"
+                        value="rfi-summary"
+                      >
                         <RFISummary
                           :rfi-app="facility?.rfiApp"
                           :ccfri-id="facility?.ccfriApplicationId"
@@ -429,9 +437,6 @@ export default {
       const applicationList = Array.from(this.applicationMap?.values());
       return isAnyApplicationUnlocked(applicationList);
     },
-    numberOfPanelsToExpand() {
-      return this.$refs['v-expansion-panels']?.$children.length;
-    },
     isSummaryComplete() {
       if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0) return false;
       return this.invalidSummaryForms.length < 1;
@@ -488,9 +493,7 @@ export default {
       'setDeclarationModel',
     ]),
     expandAllPanels() {
-      for (let i = 0; i < this.numberOfPanelsToExpand; i++) {
-        this.expand.push(i);
-      }
+      this.expand = ['change-notification-form-summary', 'facility-name', 'mtfi-summary', 'rfi-summary'];
     },
     isPageComplete() {
       if (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) {
