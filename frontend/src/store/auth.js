@@ -120,8 +120,6 @@ export const useAuthStore = defineStore('auth', {
       }
       const response = await AuthService.refreshAuthToken(this.jwtToken);
       if (response.jwtFrontend) {
-        console.log('did I refresh?');
-        //console.log(response);
         this.setJwtToken(response.jwtFrontend);
         ApiService.setAuthHeader(response.jwtFrontend);
       } else {
@@ -141,7 +139,6 @@ export const useAuthStore = defineStore('auth', {
     async getJwtToken() {
       this.setError(false);
       if (this.jwtToken) {
-        //console.log('refreshing token');
         await this.refreshToken(this.jwtToken);
       } else {
         await this.getInitialToken();

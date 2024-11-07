@@ -82,21 +82,12 @@ export default {
       if (this.isAuthenticated) {
         try {
           const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
-          console.log('DATA');
-          console.log('resp data', response.data);
           if (response.data > 0) {
-            let timeOutValue = parseInt(response.data); // add 200 ms
-            //let timeOutValue = 240000; // add 200 ms
-            console.log(timeOutValue);
+            let timeOutValue = parseInt(response.data);
             const tokenExpire = getTokenExpiredTime(this.jwtToken);
-            console.log('remaining time - timeout: ', timeOutValue);
-            console.log('token expire - timeout: ', tokenExpire);
             if (timeOutValue > tokenExpire) {
               timeOutValue = tokenExpire;
-              console.log(`Using token EXPIRE time of [${timeOutValue}]`);
-            } else {
-              console.log(`Using session expire time of [${timeOutValue}]`);
-            } //////////-3wa////
+            }
 
             if (timeOutValue < 190000) {
               this.showDialog();
@@ -115,13 +106,8 @@ export default {
     },
     async clicked() {
       this.stopCounter();
-      //this.startCounter();
-
       this.dialog = false;
       await this.getJwtToken();
-      //const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
-      //timeOutValue = parseInt(response.data); // add 200 ms
-
       this.checkAndLogoutUserOnSessionExpiry();
     },
     showDialog() {
