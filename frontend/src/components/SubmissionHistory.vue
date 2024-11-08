@@ -50,12 +50,13 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useDocumentStore } from '../store/document.js';
 
-import { PATHS, ApiRoutes } from '../utils/constants.js';
-import alertMixin from '../mixins/alertMixin.js';
-import NavButton from './util/NavButton.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useDocumentStore } from '@/store/document.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { PATHS, ApiRoutes } from '@/utils/constants.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   components: { NavButton },
@@ -93,7 +94,7 @@ export default {
           annotationId: submission?.annotationId,
           appId: submission?.appId,
           type: submission?.type,
-          fiscalYear: submission?.fiscalYear.replace(/[^\d/]/g, ''),
+          fiscalYear: formatFiscalYearName(submission?.fiscalYear),
           submissionDate: submission?.submissionDate,
           submissionDateString: this.getSubmissionDateString(submission?.submissionDate),
           fileName: submission?.fileName,
