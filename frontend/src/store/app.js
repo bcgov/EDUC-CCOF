@@ -23,7 +23,7 @@ export const useAppStore = defineStore('app', {
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
-    logoutCounter: 120,
+    logoutCounter: undefined,
   }),
   actions: {
     setLookupInfo(lookupInfo) {
@@ -105,6 +105,7 @@ export const useAppStore = defineStore('app', {
       this.setLogoutTimerEnabled(false);
     },
     stopCounter() {
+      //set the inactivity counter which is also displayed to the user
       this.setLogoutCounter(120);
       this.setLogoutTimerEnabled(false);
     },
@@ -116,9 +117,6 @@ export const useAppStore = defineStore('app', {
     },
     renewalYearLabel: (state) => {
       return state.programYearList?.renewal?.name?.replace(/[^\d/]/g, '');
-    },
-    getLogoutCounter: (state) => {
-      return state.logoutCounter < 0 ? 0 : this.logoutCounter;
     },
     getFundingUrl: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;

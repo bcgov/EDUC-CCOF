@@ -1,15 +1,10 @@
 import { defineStore } from 'pinia';
 
-import { useApplicationStore } from './application.js';
-import { useNavBarStore } from './navBar.js';
-import { useOrganizationStore } from './ccof/organization.js';
-
-import ApiService from '../common/apiService.js';
-import AuthService from '../common/authService.js';
-
-function isFollowUpVisit(tokenObj) {
-  return !!tokenObj?.jwtToken;
-}
+import ApiService from '@/common/apiService.js';
+import AuthService from '@/common/authService.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
 function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
@@ -136,7 +131,7 @@ export const useAuthStore = defineStore('auth', {
     // retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken() {
       this.setError(false);
-      if (isFollowUpVisit(this.jwtToken)) {
+      if (this.jwtToken) {
         await this.refreshToken(this.jwtToken);
       } else {
         await this.getInitialToken();
