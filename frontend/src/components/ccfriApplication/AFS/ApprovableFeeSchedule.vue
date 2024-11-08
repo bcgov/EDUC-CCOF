@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-row justify="space-around">
         <v-card class="mx-12 mb-12 pa-8">
-          <div align="center">
+          <div class="text-center">
             <div class="text-h5">
               Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
             </div>
