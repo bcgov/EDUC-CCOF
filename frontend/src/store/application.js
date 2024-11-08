@@ -181,7 +181,6 @@ export const useApplicationStore = defineStore('application', {
       });
       return applicationIds;
     },
-    latestApplicationId: (state) => state.applicationMap.get(this.latestProgramYearId)?.applicationId,
     getFacilityListForPCFByProgramYearId: (state) => (selectedProgramYearId) => {
       const programYearId = selectedProgramYearId ? selectedProgramYearId : this.latestProgramYearId;
       const selectedApplication = state.applicationMap?.get(programYearId);
