@@ -27,6 +27,7 @@
               <a
                 href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccfri/ccfri_funding_guidelines_24_25.pdf"
                 target="_blank"
+                rel="noopener"
                 class="ccfri-funding-guideline-link"
               >
                 2024-25 CCFRI Funding Guidelines
