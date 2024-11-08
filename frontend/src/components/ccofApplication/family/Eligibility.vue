@@ -94,16 +94,10 @@
 <script>
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import facilityMixin from '@/mixins/facilityMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
 export default {
   name: 'EligibilityComponent',
   components: { AppDateInput },
   mixins: [facilityMixin],
-  data() {
-    return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-    };
-  },
 };
 </script>

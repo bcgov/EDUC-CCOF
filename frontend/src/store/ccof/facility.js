@@ -7,7 +7,7 @@ import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { ApiRoutes } from '@/utils/constants.js';
+import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 // FIXME: getModel getter was removed and will break all over. All it did was return state.model
@@ -181,7 +181,7 @@ export const useFacilityStore = defineStore('facility', {
                 optInECEWE: null,
                 orgContactName: null,
                 programYearId: applicationStore.programYearId,
-                providerType: 'GROUP',
+                providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
                 status: 1,
                 unlockDeclaration: false,
               };

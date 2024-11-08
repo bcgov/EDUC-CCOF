@@ -1,14 +1,14 @@
-import { defineStore } from 'pinia';
 import { isEmpty } from 'lodash';
+import { defineStore } from 'pinia';
 
-import { useApplicationStore } from './application.js';
-import { useNavBarStore } from './navBar.js';
+import { ApiRoutes } from '@/utils/constants.js';
 
 import ApiService from '../common/apiService.js';
-import { ApiRoutes } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
 import { CHANGE_REQUEST_TYPES, CHANGE_TYPES } from '../utils/constants.js';
+import { checkSession } from '../utils/session.js';
+import { useApplicationStore } from './application.js';
 import { useOrganizationStore } from './ccof/organization.js';
+import { useNavBarStore } from './navBar.js';
 
 /*
 change REQUEST guid is what we need for saving and loading.
@@ -310,7 +310,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
       let payload = {
         applicationId: applicationStore.applicationId,
         programYearId: applicationStore.programYearId,
-        providerType: organizationStore.organizationProviderType == 'GROUP' ? 100000000 : 100000001,
+        providerType: organizationStore.getOrgProviderTypeID,
         changeType: changeType,
       };
       try {

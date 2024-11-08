@@ -60,6 +60,7 @@ import {
   changeUrl,
   CHANGE_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_PROVIDER_TYPES,
 } from '../../utils/constants.js';
 import alertMixin from '../../mixins/alertMixin.js';
 
@@ -113,7 +114,7 @@ export default {
       }
 
       //below code i think can be removed as now only new CR sees this page?
-      if (this.organizationProviderType == 'FAMILY') {
+      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
         // && mtfi does not exist yet?
 
         if (this.mtfiFacilities?.length == 0) {

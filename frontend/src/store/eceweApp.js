@@ -159,11 +159,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
       let facilityPayload;
 
       if (this.facilities?.length == 0) {
-        console.log(' No facilities payload, create from the narBarList.');
-
         if (navBarStore.isChangeRequest) {
-          console.log('this is a change req, build from newFacilities list');
-
           let newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
             ?.newFacilities;
 
@@ -184,35 +180,28 @@ export const useEceweAppStore = defineStore('eceweApp', {
             optInOrOut: this.eceweModel.fundingModel === this.fundingModelTypes[0].id ? 0 : null,
           }));
         }
-      } else {
-        // A payload already exists, recreate to include any new facilities which could have been added to navBarList
-        // since last creation.
-        console.log('A payload already exists, recreate');
-
-        if (useNavBarStore().isChangeRequest) {
-          console.log('this is a change req, build from newFacilities list');
-
-          let newFac = reportChangesStore?.changeRequestMap
-            ?.get(navBarStore?.changeRequestId)
-            .changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
-          console.log('newFac is: ', newFac);
-          facilityPayload = newFac?.map((facility) => ({
-            eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
-            facilityId: facility.facilityId,
-            optInOrOut: this.getOptInOrOut(facility.facilityId),
-            changeRequestId: navBarStore.changeRequestId ? navBarStore.changeRequestId : null,
-            changeRequestNewFacilityId: facility.changeRequestNewFacilityId
-              ? facility.changeRequestNewFacilityId
-              : null,
-          }));
-        } else {
-          facilityPayload = navBarList.map((facility) => ({
-            facilityId: facility.facilityId,
-            eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
-            optInOrOut: this.getOptInOrOut(facility.facilityId),
-          }));
-        }
       }
+      // A payload already exists, recreate to include any new facilities which could have been added to navBarList
+      // since last creation.
+      else if (useNavBarStore().isChangeRequest) {
+        const newFac = reportChangesStore?.changeRequestMap
+          ?.get(navBarStore?.changeRequestId)
+          .changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)?.newFacilities;
+        facilityPayload = newFac?.map((facility) => ({
+          eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
+          facilityId: facility.facilityId,
+          optInOrOut: this.getOptInOrOut(facility.facilityId),
+          changeRequestId: navBarStore.changeRequestId ?? null,
+          changeRequestNewFacilityId: facility.changeRequestNewFacilityId ? facility.changeRequestNewFacilityId : null,
+        }));
+      } else {
+        facilityPayload = navBarList.map((facility) => ({
+          facilityId: facility.facilityId,
+          eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
+          optInOrOut: this.getOptInOrOut(facility.facilityId),
+        }));
+      }
+
       this.setFacilities(facilityPayload);
     },
     getEceweApplicationId(facilityId) {

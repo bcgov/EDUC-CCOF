@@ -7,7 +7,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_PROVIDER_TYPES_IDS } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 export const useOrganizationStore = defineStore('organization', {
@@ -54,16 +54,11 @@ export const useOrganizationStore = defineStore('organization', {
       const authStore = useAuthStore();
 
       if (isEqual({ ...this.organizationModel, providerType: null }, { ...this.loadedModel, providerType: null })) {
-        console.info('no model changes');
         return;
       }
 
       const payload = { ...this.organizationModel };
-      payload.providerType =
-        this.organizationProviderType == 'GROUP'
-          ? ORGANIZATION_PROVIDER_TYPES.GROUP
-          : ORGANIZATION_PROVIDER_TYPES.FAMILY;
-      console.log('saveOrganization, payload', payload);
+      payload.providerType = this.getOrgProviderTypeID;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       this.setLoadedModel({ ...this.organizationModel });
       navBarStore.forceNavBarRefresh(null);
@@ -109,14 +104,11 @@ export const useOrganizationStore = defineStore('organization', {
       let nextApp = appStore.programYearList?.list?.find(
         (el) => el.previousYearId == applicationStore.latestProgramYearId,
       );
-      console.log('nextApp');
-      console.log(nextApp);
       let payload = {
         providerType: this.organizationProviderType,
         programYearId: nextApp?.programYearId,
         organizationId: this.organizationId,
       };
-      console.log('renewApplication, payload', payload);
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
         this.setIsStarted(false);
@@ -138,11 +130,18 @@ export const useOrganizationStore = defineStore('organization', {
         this.setOrganizationModel(response.data);
         this.setLoadedModel(response.data);
         this.setIsOrganizationComplete(response.data?.isOrganizationComplete);
-        console.log('response.data?.isOrganizationComplete', response.data?.isOrganizationComplete);
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
         throw error;
       }
+    },
+  },
+  getters: {
+    getOrgProviderTypeID(state) {
+      if (state.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP) {
+        return ORGANIZATION_PROVIDER_TYPES_IDS.GROUP;
+      }
+      return ORGANIZATION_PROVIDER_TYPES_IDS.FAMILY;
     },
   },
 });

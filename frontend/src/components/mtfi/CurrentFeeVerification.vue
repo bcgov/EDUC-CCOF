@@ -610,7 +610,14 @@ import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrlGuid, CHANGE_TYPES, ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  changeUrlGuid,
+  CHANGE_TYPES,
+  ApiRoutes,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
@@ -908,7 +915,7 @@ export default {
       }
     },
     previous() {
-      if (this.organizationProviderType == 'FAMILY') {
+      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
         this.$router.push(PATHS.ROOT.CHANGE_LANDING);
       } else {
         this.$router.push(this.previousPath);
