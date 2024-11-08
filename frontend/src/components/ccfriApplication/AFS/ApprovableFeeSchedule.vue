@@ -34,7 +34,11 @@
               <span>, we can approve the following parent fee schedule:</span>
             </div>
           </div>
-          <ApprovableParentFeesCards :loading="loading" :approvable-fee-schedules="afs?.approvableFeeSchedules" />
+          <ApprovableParentFeesCards
+            :loading="loading"
+            :approvable-fee-schedules="afs?.approvableFeeSchedules"
+            class="my-4"
+          />
           <div class="mb-8">
             <div class="mb-4">Next steps:</div>
             <ul class="pl-4">
@@ -135,6 +139,13 @@ export default {
     },
     isFormComplete() {
       return this.isValidForm;
+    },
+  },
+  watch: {
+    '$route.params.urlGuid': {
+      async handler() {
+        await this.loadData();
+      },
     },
   },
   async created() {

@@ -155,7 +155,7 @@ async function getApprovableFeeSchedules(req, res) {
   try {
     const response = await getOperation(`ccof_applicationccfris(${req.params.ccfriId})?$select=ccof_afs_status&$expand=ccof_afs_applicationccfri`);
     const afs = new MappableObjectForFront(response, ApplicationSummaryCcfriMappings).toJSON();
-    afs.approvableFeeSchedules = afs.approvableFeeSchedules?.map((item) => new MappableObjectForFront(item, CCFRIApprovableFeeSchedulesMappings).toJSON());
+    afs.approvableFeeSchedules = response?.ccof_afs_applicationccfri?.map((item) => new MappableObjectForFront(item, CCFRIApprovableFeeSchedulesMappings).toJSON());
     return res.status(HttpStatus.OK).json(afs);
   } catch (e) {
     log.error('An error occurred while getting CCFRI AFS', e);

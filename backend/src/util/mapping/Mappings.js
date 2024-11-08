@@ -430,7 +430,6 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' }, // null,
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete' }, // false,
   { back: 'ccof_afs_status', front: 'afsStatus' },
-  { back: 'ccof_afs_applicationccfri', front: 'approvableFeeSchedules' },
 ];
 
 const CCFRIApprovableFeeSchedulesMappings = [
