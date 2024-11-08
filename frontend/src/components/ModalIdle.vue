@@ -34,17 +34,19 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useAppStore } from '../store/app.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useAppStore } from '@/store/app.js';
 
-import { AuthRoutes } from '../utils/constants.js';
-import ApiService from '../common/apiService.js';
+import { AuthRoutes } from '@/utils/constants.js';
+import ApiService from '@/common/apiService.js';
 
 function getTokenExpiredTime(jwtToken) {
   const now = Date.now().valueOf();
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
-  // console.log(`getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${((payload.exp * 1000) - now )}]`);
+  // console.log(
+  //   `getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${payload.exp * 1000 - now}]`,
+  // );
   return payload.exp * 1000 - now;
 }
 
@@ -80,15 +82,10 @@ export default {
         try {
           const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
           if (response.data > 0) {
-            let timeOutValue = parseInt(response.data); // add 200 ms
+            let timeOutValue = parseInt(response.data);
             const tokenExpire = getTokenExpiredTime(this.jwtToken);
-            console.log('remaining time - timeout: ', timeOutValue);
-            console.log('token expire - timeout: ', tokenExpire);
             if (timeOutValue > tokenExpire) {
               timeOutValue = tokenExpire;
-              console.log(`Using token expire time of [${timeOutValue}]`);
-            } else {
-              console.log(`Using session expire time of [${timeOutValue}]`);
             }
 
             if (timeOutValue < 190000) {
@@ -108,8 +105,6 @@ export default {
     },
     async clicked() {
       this.stopCounter();
-      // this.startCounter();
-
       this.dialog = false;
       await this.getJwtToken();
       this.checkAndLogoutUserOnSessionExpiry();
