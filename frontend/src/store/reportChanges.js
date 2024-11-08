@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
-import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_PROVIDER_TYPES_IDS } from '@/utils/constants.js';
+import { ApiRoutes } from '@/utils/constants.js';
 
 import ApiService from '../common/apiService.js';
 import { CHANGE_REQUEST_TYPES, CHANGE_TYPES } from '../utils/constants.js';
@@ -310,10 +310,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
       let payload = {
         applicationId: applicationStore.applicationId,
         programYearId: applicationStore.programYearId,
-        providerType:
-          organizationStore.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
-            ? ORGANIZATION_PROVIDER_TYPES_IDS.GROUP
-            : ORGANIZATION_PROVIDER_TYPES_IDS.FAMILY,
+        providerType: organizationStore.getOrgProviderTypeID,
         changeType: changeType,
       };
       try {
