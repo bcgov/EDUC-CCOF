@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
-
-import ApiService from '../common/apiService.js';
-import { checkApplicationUnlocked, filterFacilityListForPCF } from '../utils/common.js';
-import { ApiRoutes } from '../utils/constants.js';
 import { useAppStore } from './app.js';
 import { useNavBarStore } from './navBar.js';
+
+import { filterFacilityListForPCF, checkApplicationUnlocked } from '../utils/common.js';
+import ApiService from '../common/apiService.js';
+import { ApiRoutes } from '../utils/constants.js';
 
 export const useApplicationStore = defineStore('application', {
   state: () => ({
