@@ -11,8 +11,8 @@
         </div>
       </div>
       <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-        <v-row justify="center">Please select each facility you would like to opt-in to ECE-WE:</v-row>
-        <v-row><v-col /></v-row>
+        <v-row justify="center" class="pb-6">Please select each facility you would like to opt-in to ECE-WE:</v-row>
+
         <v-row justify="center">
           <v-alert class="col-11" variant="outlined" prominent>
             <span style="float: left">
