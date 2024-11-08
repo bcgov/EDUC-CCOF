@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 
-import ApiService from '@/common/apiService.js';
-import { useAppStore } from '@/store/app.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { ApiRoutes } from '@/utils/constants.js';
+import ApiService from '../common/apiService.js';
+import { checkApplicationUnlocked, filterFacilityListForPCF } from '../utils/common.js';
+import { ApiRoutes } from '../utils/constants.js';
+import { useAppStore } from './app.js';
+import { useNavBarStore } from './navBar.js';
 
 export const useApplicationStore = defineStore('application', {
   state: () => ({
@@ -140,7 +140,7 @@ export const useApplicationStore = defineStore('application', {
     },
   },
   getters: {
-    formattedProgramYear: (state) => state.programYearLabel?.replace(/[^\d-]/g, ''),
+    formattedProgramYear: (state) => state.programYearLabel?.replace(/[^\d/]/g, ''),
     fiscalStartAndEndDates: (state) => {
       //set fiscal year dates to prevent user from choosing dates outside the current FY
       //ASSUMPTION that fiscal year start / end dates will not move from April / March
