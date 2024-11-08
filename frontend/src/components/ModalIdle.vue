@@ -5,9 +5,9 @@
     </div>
     <v-dialog v-model="dialog" persistent max-width="525px">
       <v-card>
-        <v-container class="pt-0">
+        <v-container class="pt-0 px-0 pb-2">
           <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
+            <v-col cols="7" class="py-0 pl-2" style="background-color: #234075">
               <v-card-title class="text-white"> Session Time-out </v-card-title>
             </v-col>
             <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
@@ -17,7 +17,7 @@
           </v-row>
           <v-row>
             <v-col cols="12" style="text-align: center">
-              <p class="pt-4">
+              <p class="pt-0 px-2">
                 Due to inactivity, you will be logged out of your current session in {{ logoutCounter }} seconds. Please
                 click on the "Stay logged in" button to continue with this session.
               </p>
