@@ -10,23 +10,44 @@
           {{ userInfo.organizationName }}
         </div>
       </div>
-      <v-row justify="center">Please select each facility you would like to opt-in to ECE-WE:</v-row>
-      <v-row><v-col /></v-row>
-      <v-row justify="center">
+      <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+        <v-row justify="center" class="pb-6">Please select each facility you would like to opt-in to ECE-WE:</v-row>
+
+        <v-row justify="center">
+          <v-alert class="col-11" variant="outlined" prominent>
+            <span style="float: left">
+              <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
+            </span>
+            <span>
+              Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to
+              ECE-WE for each licence located at the same physical address.
+            </span>
+          </v-alert>
+        </v-row>
+      </div>
+      <v-row v-else-if="isFamilyFacilityOptIn" justify="center">
         <v-alert class="col-11" variant="outlined" prominent>
           <span style="float: left">
             <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
           </span>
           <span>
-            Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to
-            ECE-WE for each licence located at the same physical address.
+            On the previous page, you indicated that you would like to opt-in to ECE-WE for any facility in your
+            organization. As your organization has only one facility, the opt-in status has automatically been selected
+            for that facility. Click the next button to confirm that you would like to opt-in this facility.
           </span>
         </v-alert>
       </v-row>
       <br />
       <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
         <v-container fluid class="pa-0">
-          <v-btn class="mx-0 justify-end" dark color="#003366" :disabled="isReadOnly" @click="toggleAll()">
+          <v-btn
+            v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP"
+            class="mx-0 justify-end"
+            dark
+            color="#003366"
+            :disabled="isReadOnly"
+            @click="toggleAll()"
+          >
             Opt in All Facilities
           </v-btn>
           <div>
@@ -62,7 +83,7 @@
                         <v-radio label="Opt-Out" :value="0" />
                       </v-radio-group>
                     </v-col>
-                    <v-col cols="3">
+                    <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">
                       <v-btn
                         v-if="
                           !uiFacilities?.[index].update &&
@@ -114,8 +135,9 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrl, pcfUrl } from '@/utils/constants.js';
+import { PATHS, changeUrl, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import rules from '@/utils/rules.js';
@@ -137,6 +159,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, ['isStarted', 'eceweModel', 'facilities']),
     ...mapState(useAppStore, ['fundingModelTypeList']),
@@ -177,6 +200,9 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED';
     },
+    isFamilyFacilityOptIn() {
+      return this.uiFacilities.every((fac) => fac.optInOrOut);
+    },
   },
   async mounted() {
     this.setFundingModelTypes({ ...this.fundingModelTypeList });
@@ -187,6 +213,9 @@ export default {
       this.setupUiFacilities();
       this.model = { ...this.eceweModel };
     }
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useEceweAppStore, [
@@ -266,8 +295,6 @@ export default {
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach((el) => {
-            console.log('this is el');
-            console.log(el);
             let facility = this.userProfileList.find((f) => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
@@ -276,13 +303,11 @@ export default {
             //update the CR map with the data so navbar will work properly for CR new fac
             if (this.isChangeRequest) {
               let newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
-
               newFac.ecewe = {
                 eceweOptInStatus: el.optInOrOut,
                 eceweApplicationId: el.eceweApplicationId,
                 eceweFacilityId: el.facilityId,
               };
-              console.log('newfac', newFac);
             }
           });
           this.refreshNavBarList();

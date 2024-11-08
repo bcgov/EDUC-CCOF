@@ -239,7 +239,7 @@
 <script>
 import organizationMixin from '@/mixins/organizationMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES, PROVINCES } from '@/utils/constants.js';
+import { PROVINCES } from '@/utils/constants.js';
 
 export default {
   mixins: [organizationMixin, globalMixin],
@@ -247,11 +247,7 @@ export default {
     await this.save(false);
     next();
   },
-  data() {
-    return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-    };
-  },
+
   computed: {
     filteredOrganizationList() {
       return this.organizationTypeList.filter((fac) => fac.id == 100000002 || fac.id == 100000005);

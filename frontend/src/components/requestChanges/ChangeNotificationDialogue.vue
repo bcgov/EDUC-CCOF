@@ -10,7 +10,7 @@
       <v-row class="d-flex justify-center text-h5" style="color: #003466">
         {{ userInfo.organizationName }}
       </v-row>
-      <GroupChangeDialogueContent v-if="organizationProviderType === 'GROUP'" />
+      <GroupChangeDialogueContent v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" />
       <FamilyChangeDialogueContent v-else />
       <v-row class="d-flex justify-center">
         <p>
@@ -41,7 +41,7 @@ import { useReportChangesStore } from '../../store/reportChanges.js';
 
 import { PATHS, CHANGE_TYPES, changeUrlGuid } from '../../utils/constants.js';
 import NavButton from '../../components/util/NavButton.vue';
-import { ORGANIZATION_PROVIDER_TYPES } from '../../utils/constants.js';
+import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import alertMixin from '../../mixins/alertMixin.js';
 import GroupChangeDialogueContent from '../../components/requestChanges/GroupChangeDialogueContent.vue';
 import FamilyChangeDialogueContent from '../../components/requestChanges/FamilyChangeDialogueContent.vue';
@@ -52,15 +52,16 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      isGroup: true,
       processing: false,
-      providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
     };
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useApplicationStore, ['formattedProgramYear']),
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useReportChangesStore, ['createChangeRequest', 'setChangeRequestId', 'setChangeActionId']),
