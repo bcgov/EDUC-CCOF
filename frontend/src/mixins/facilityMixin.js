@@ -36,7 +36,7 @@ export default {
       'changeRequestStatus',
     ]),
     ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
-    ...mapState(useOrganizationStore, ['organizationModel', 'organizationId']),
+    ...mapState(useOrganizationStore, ['organizationModel', 'organizationId', 'organizationProviderType']),
     isLocked() {
       if (isChangeRequest(this)) {
         if (this?.isCCOFUnlocked || !this.changeRequestStatus) {
@@ -113,7 +113,7 @@ export default {
       }
     },
     isGroup() {
-      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
       const defaultPath = isChangeRequest(this) ? PATHS.ROOT.CHANGE_LANDING : PATHS.ROOT.HOME;

@@ -187,7 +187,6 @@
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 
 import facilityMixin from '@/mixins/facilityMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
 export default {
   components: { AppDateInput },
@@ -197,11 +196,6 @@ export default {
       await this.save(false);
     }
     next();
-  },
-  data() {
-    return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-    };
   },
 };
 </script>

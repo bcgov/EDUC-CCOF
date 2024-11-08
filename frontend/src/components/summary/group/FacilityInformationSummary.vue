@@ -96,7 +96,7 @@
 
     <!-- JB here to make this work with renewels-->
     <v-form
-      v-if="(!isRenewal && providerType == 'GROUP') || isChangeRequest"
+      v-if="(!isRenewal && organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP) || isChangeRequest"
       ref="informationSummaryForm"
       v-model="isValidForm"
     >
@@ -355,7 +355,11 @@
       </v-expansion-panel-text>
     </v-form>
 
-    <v-form v-else-if="!isRenewal && providerType == 'FAMILY'" ref="informationSummaryForm" v-model="isValidForm">
+    <v-form
+      v-else-if="!isRenewal && providerType === ORGANIZATION_PROVIDER_TYPES.FAMILY"
+      ref="informationSummaryForm"
+      v-model="isValidForm"
+    >
       <v-expansion-panel-title>
         <h4 style="color: #003466">
           Facility Information
@@ -521,8 +525,9 @@ import { mapState, mapActions } from 'pinia';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -588,6 +593,7 @@ export default {
   computed: {
     ...mapState(useApplicationStore, ['isRenewal']),
     ...mapState(useNavBarStore, ['navBarList']),
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     yesNoFacilityLabel() {
       if (this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY') {
@@ -604,6 +610,9 @@ export default {
         }
       },
     },
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),

@@ -10,7 +10,7 @@
           {{ userInfo.organizationName }}
         </div>
       </div>
-      <div v-if="organizationProviderType === 'GROUP'">
+      <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
         <v-row justify="center">Please select each facility you would like to opt-in to ECE-WE:</v-row>
         <v-row><v-col /></v-row>
         <v-row justify="center">
@@ -41,7 +41,7 @@
       <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
         <v-container fluid class="pa-0">
           <v-btn
-            v-if="organizationProviderType === 'GROUP'"
+            v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP"
             class="mx-0 justify-end"
             dark
             color="#003366"
@@ -83,7 +83,7 @@
                         <v-radio label="Opt-Out" :value="0" />
                       </v-radio-group>
                     </v-col>
-                    <v-col v-if="organizationProviderType === 'GROUP'" cols="3">
+                    <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">
                       <v-btn
                         v-if="
                           !uiFacilities?.[index].update &&
@@ -137,7 +137,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrl, pcfUrl } from '@/utils/constants.js';
+import { PATHS, changeUrl, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import rules from '@/utils/rules.js';
@@ -213,6 +213,9 @@ export default {
       this.setupUiFacilities();
       this.model = { ...this.eceweModel };
     }
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useEceweAppStore, [

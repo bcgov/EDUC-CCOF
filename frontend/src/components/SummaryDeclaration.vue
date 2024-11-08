@@ -125,7 +125,9 @@
                     <div v-if="!facility.funding || isRenewal" />
                     <div v-else>
                       <CCOFSummaryFamily
-                        v-if="summaryModel?.application?.organizationProviderType == 'FAMILY'"
+                        v-if="
+                          summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+                        "
                         :funding="facility.funding"
                         :facility-id="facility.facilityId"
                         :program-year-id="summaryModel?.application?.programYearId"
@@ -433,7 +435,12 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { PATHS, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  CHANGE_REQUEST_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
@@ -662,6 +669,9 @@ export default {
     if (this.printableVersion) {
       this.expandAllPanels();
     }
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, [

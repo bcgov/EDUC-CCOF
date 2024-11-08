@@ -7,7 +7,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_PROVIDER_TYPES_IDS } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 export const useOrganizationStore = defineStore('organization', {
@@ -60,9 +60,9 @@ export const useOrganizationStore = defineStore('organization', {
 
       const payload = { ...this.organizationModel };
       payload.providerType =
-        this.organizationProviderType == 'GROUP'
-          ? ORGANIZATION_PROVIDER_TYPES.GROUP
-          : ORGANIZATION_PROVIDER_TYPES.FAMILY;
+        this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+          ? ORGANIZATION_PROVIDER_TYPES_IDS.GROUP
+          : ORGANIZATION_PROVIDER_TYPES_IDS.FAMILY;
       console.log('saveOrganization, payload', payload);
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       this.setLoadedModel({ ...this.organizationModel });

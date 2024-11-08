@@ -110,7 +110,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { NAV_BAR_GROUPS, CHANGE_TYPES } from '@/utils/constants.js';
+import { NAV_BAR_GROUPS, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
@@ -352,7 +352,7 @@ export default {
       if (this.isRenewal) {
         this.addLicenseUploadToNavbar();
       } else {
-        if (this.organizationProviderType === 'FAMILY') {
+        if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
           this.items.push(this.getCCOFFamilyNavigation());
         } else {
           this.items.push(this.getCCOFNavigation());
@@ -753,7 +753,7 @@ export default {
           name: 'Midterm Fee Increase Select Facilities',
           params: { changeRecGuid: this.$route.params.changeRecGuid, changeType: CHANGE_TYPES.MTFI },
         },
-        isAccessible: this.organizationProviderType != 'FAMILY',
+        isAccessible: this.organizationProviderType !== ORGANIZATION_PROVIDER_TYPES.FAMILY,
         icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
         isActive: 'Midterm Fee Increase Select Facilities' === this.$route.name,
         position: positionIndex++,

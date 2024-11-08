@@ -29,10 +29,10 @@
       </v-alert>
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
-        <v-container fluid class="pa-0">
+        <v-container v-if="!isLoading" fluid class="pa-0">
           <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
-              <v-row v-if="!isLoading" class="justify-center">
+              <v-row class="justify-center">
                 <v-col align-self="start">
                   <v-radio-group
                     v-model="model.optInECEWE"
@@ -55,10 +55,10 @@
             </v-container>
           </v-card>
 
-          <template v-if="organizationProviderType === 'GROUP'">
-            <v-card v-if="model.optInECEWE == 1 || isLoading" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+          <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+            <v-card v-if="model.optInECEWE == 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
               <v-container>
-                <v-row v-if="!isLoading" class="justify-center">
+                <v-row class="justify-center">
                   <v-col align-self="start">
                     <v-radio-group
                       v-model="model.belongsToUnion"
@@ -81,9 +81,9 @@
             </v-card>
 
             <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
-              <v-card v-if="model.optInECEWE == 1 || isLoading" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+              <v-card v-if="model.optInECEWE == 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
                 <v-container>
-                  <v-row v-if="!isLoading" class="justify-left">
+                  <v-row class="justify-left">
                     <v-col align-self="start">
                       <v-radio-group v-model="model.publicSector" :disabled="isReadOnly()" :rules="rules.required">
                         <template #label>
@@ -103,20 +103,10 @@
               </v-card>
             </div>
 
-            <div
-              v-if="
-                (model.belongsToUnion == 1 &&
-                  model.optInECEWE == 1 &&
-                  languageYearLabel != programYearTypes.HISTORICAL) ||
-                (model.belongsToUnion == 1 &&
-                  model.optInECEWE == 1 &&
-                  languageYearLabel == programYearTypes.HISTORICAL) ||
-                isLoading
-              "
-            >
+            <div v-if="showApplicableSectorQuestion">
               <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
                 <v-container>
-                  <v-row v-if="!isLoading" class="justify-left">
+                  <v-row class="justify-left">
                     <v-col align-self="start">
                       <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
                         <template #label>
@@ -140,21 +130,8 @@
                     </v-col>
                   </v-row>
                 </v-container>
-                <v-card
-                  v-if="
-                    (model.applicableSector == 100000001 &&
-                      model.belongsToUnion == 1 &&
-                      model.optInECEWE == 1 &&
-                      languageYearLabel != programYearTypes.HISTORICAL) ||
-                    (model.applicableSector == 100000001 &&
-                      model.belongsToUnion == 1 &&
-                      model.optInECEWE == 1 &&
-                      languageYearLabel == programYearTypes.HISTORICAL) ||
-                    isLoading
-                  "
-                  class="mx-2 mb-4 justify-center"
-                >
-                  <v-row v-if="!isLoading">
+                <v-card v-if="showConfirmationQuestion" class="mx-2 mb-4 justify-center">
+                  <v-row>
                     <v-col class="py-0">
                       <v-card-title class="py-0 noticeInfo">
                         <span style="float: left">
@@ -166,7 +143,7 @@
                       </v-card-title>
                     </v-col>
                   </v-row>
-                  <v-row v-if="!isLoading">
+                  <v-row>
                     <v-col class="pl-6 d-flex py-0">
                       <v-checkbox
                         v-model="model.confirmation"
@@ -182,14 +159,10 @@
               </v-card>
             </div>
 
-            <div
-              v-if="
-                (model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading
-              "
-            >
+            <div v-if="showFundingModelQuestion">
               <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
                 <v-container>
-                  <v-row v-if="!isLoading">
+                  <v-row>
                     <v-col align-self="start">
                       <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
                         <template #label>
@@ -227,7 +200,7 @@
                       </v-col>
                     </v-row>
                     <v-row class="pa-2 justify-center">
-                      Government’s Low-Wage Redress Funding supports ECE wage adjustments
+                      Government's Low-Wage Redress Funding supports ECE wage adjustments
                     </v-row>
                   </v-card>
                   <div v-else-if="model.fundingModel == fundingModelTypeList[1].id">
@@ -247,14 +220,8 @@
                       </v-row>
                     </v-card>
                   </div>
-                  <v-card
-                    v-if="
-                      model.fundingModel === fundingModelTypeList[1].id ||
-                      model.fundingModel === fundingModelTypeList[2].id
-                    "
-                    width="100%"
-                  >
-                    <v-row v-if="!isLoading">
+                  <v-card v-if="showJJEPQuestion" width="100%">
+                    <v-row>
                       <v-col class="py-0">
                         <v-card-title class="py-0 noticeInfo">
                           <span style="float: left">
@@ -266,7 +233,7 @@
                         </v-card-title>
                       </v-col>
                     </v-row>
-                    <v-row v-if="!isLoading">
+                    <v-row>
                       <v-col class="pl-6 d-flex py-0">
                         <v-checkbox
                           v-model="model.confirmation"
@@ -312,7 +279,13 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrl, pcfUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  changeUrl,
+  pcfUrl,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
 import { isNullOrBlank } from '@/utils/common.js';
@@ -362,6 +335,38 @@ export default {
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
+    showApplicableSectorQuestion() {
+      return (
+        (this.model.belongsToUnion == 1 &&
+          this.model.optInECEWE == 1 &&
+          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
+        (this.model.belongsToUnion == 1 &&
+          this.model.optInECEWE == 1 &&
+          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+      );
+    },
+    showConfirmationQuestion() {
+      return (
+        (this.model.applicableSector == 100000001 &&
+          this.model.belongsToUnion == 1 &&
+          this.model.optInECEWE == 1 &&
+          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
+        (this.model.applicableSector == 100000001 &&
+          this.model.belongsToUnion == 1 &&
+          this.model.optInECEWE == 1 &&
+          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+      );
+    },
+    showFundingModelQuestion() {
+      return this.model.applicableSector == 100000000 && this.model.belongsToUnion == 1 && this.model.optInECEWE == 1;
+    },
+    showJJEPQuestion() {
+      return (
+        this.model.fundingModel === this.fundingModelTypeList[1].id ||
+        this.model.fundingModel === this.fundingModelTypeList[2].id
+      );
+    },
+
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
       if (this.isChangeRequest) {
@@ -370,6 +375,7 @@ export default {
         return eceweAppStore.facilities?.filter((el) => !el.changeRequestId);
       }
     },
+
     fundingUrl() {
       return this.getFundingUrl(this.programYearId);
     },
@@ -410,6 +416,9 @@ export default {
       console.log(error);
       this.isLoading = false;
     }
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useEceweAppStore, [
@@ -585,8 +594,8 @@ export default {
 
         //ccfri 3816 set facility level opt-in for family providers so they don't re-fill this info next page
         //there is only ever one facility
-        //JBTODO-- fix eligibilty checkmark
-        if (this.organizationProviderType === 'FAMILY') {
+
+        if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
           this.facilities.forEach((facility) => {
             facility.optInOrOut = this.model?.optInECEWE;
             //update the next page navbar checkmark

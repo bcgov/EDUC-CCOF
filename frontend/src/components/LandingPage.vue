@@ -348,7 +348,13 @@ import { useMessageStore } from '@/store/message.js';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
-import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants.js';
+import {
+  PATHS,
+  pcfUrl,
+  pcfUrlGuid,
+  CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 
@@ -664,7 +670,9 @@ export default {
       this.setIsRenewal(false);
       this.$router.push(
         pcfUrl(
-          this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG,
+          this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+            ? PATHS.CCOF_GROUP_ORG
+            : PATHS.CCOF_FAMILY_ORG,
           this.programYearId,
         ),
       );
@@ -672,7 +680,9 @@ export default {
     goToCCOFOrganizationInfo() {
       this.$router.push(
         pcfUrl(
-          this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG,
+          this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+            ? PATHS.CCOF_GROUP_ORG
+            : PATHS.CCOF_FAMILY_ORG,
           this.programYearId,
         ),
       );
@@ -683,7 +693,9 @@ export default {
         if (ccofBaseFundingId && programYearId) {
           this.$router.push(
             pcfUrlGuid(
-              this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
+              this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+                ? PATHS.CCOF_GROUP_FUNDING
+                : PATHS.CCOF_FAMILY_FUNDING,
               programYearId,
               ccofBaseFundingId,
             ),
