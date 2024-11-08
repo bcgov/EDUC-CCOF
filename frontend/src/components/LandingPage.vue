@@ -58,7 +58,7 @@
 
             <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
               <p class="text-h5 blueText">Status: Incomplete</p>
-              <v-btn theme="dark" class="blueButton" @click="continueApplication()"> Continue Application </v-btn>
+              <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
               <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
                 Cancel Application
@@ -666,18 +666,8 @@ export default {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.SELECT_APPLICATION_TYPE, this.programYearList.newApp.programYearId));
     },
-    continueApplication() {
-      this.setIsRenewal(false);
-      this.$router.push(
-        pcfUrl(
-          this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
-            ? PATHS.CCOF_GROUP_ORG
-            : PATHS.CCOF_FAMILY_ORG,
-          this.programYearId,
-        ),
-      );
-    },
     goToCCOFOrganizationInfo() {
+      this.setIsRenewal(false);
       this.$router.push(
         pcfUrl(
           this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
