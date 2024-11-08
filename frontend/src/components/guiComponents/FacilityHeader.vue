@@ -14,9 +14,9 @@
 export default {
   name: 'FacilityHeader',
   props: {
-    facilityAccountNumber: { type: String, required: true },
-    facilityName: { type: String, required: true },
-    licenseNumber: { type: String, required: true },
+    facilityAccountNumber: { type: String, default: '' },
+    facilityName: { type: String, default: '' },
+    licenseNumber: { type: String, default: '' },
   },
 };
 </script>

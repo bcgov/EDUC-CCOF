@@ -540,7 +540,8 @@ export default {
         this.unlockSupportingDocuments ||
         this.unlockCCFRIList.length > 0 ||
         this.unlockNMFList.length > 0 ||
-        this.unlockRFIList.length > 0
+        this.unlockRFIList.length > 0 ||
+        this.unlockAFSList.length > 0
       );
     },
     unlockCCFRIList() {
@@ -561,6 +562,13 @@ export default {
       let unlockList = [];
       this.navBarList?.forEach((facility) => {
         if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    unlockAFSList() {
+      const unlockList = [];
+      this.navBarList?.forEach((facility) => {
+        if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
@@ -704,6 +712,9 @@ export default {
     goToRFI(ccfriApplicationId, programYearId) {
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, programYearId, ccfriApplicationId));
     },
+    goToAFS(ccfriApplicationId, programYearId) {
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_AFS, programYearId, ccfriApplicationId));
+    },
     goToECEWE(programYearId) {
       this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, programYearId));
     },
@@ -744,6 +755,7 @@ export default {
       const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
       const unlockRFIList = this.getUnlockRFIList(facilityList);
       const unlockNMFList = this.getUnlockNMFList(facilityList);
+      const unlockAFSList = this.getUnlockAFSList(facilityList);
       if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
       else if (application?.unlockBaseFunding && application?.applicationType === 'NEW')
         this.goToCCOFFunding(programYearId, facilityList);
@@ -752,6 +764,7 @@ export default {
       else if (unlockCCFRIList?.length > 0) this.goToCCFRI(unlockCCFRIList[0], application);
       else if (unlockNMFList?.length > 0) this.goToNMF(unlockNMFList[0], programYearId);
       else if (unlockRFIList?.length > 0) this.goToRFI(unlockRFIList[0], programYearId);
+      else if (unlockAFSList?.length > 0) this.goToAFS(unlockAFSList[0], programYearId);
       else if (application?.unlockDeclaration) this.goToSummaryDeclaration(programYearId);
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
@@ -762,6 +775,7 @@ export default {
       if (this.isCCFRIUnlock(ccfriApplicationId, application)) this.goToCCFRI(ccfriApplicationId, application);
       else if (this.isNMFUnlock(ccfriApplicationId, application)) this.goToNMF(ccfriApplicationId, programYearId);
       else if (this.isRFIUnlock(ccfriApplicationId, application)) this.goToRFI(ccfriApplicationId, programYearId);
+      else if (this.isAFSUnlock(ccfriApplicationId, application)) this.goToAFS(ccfriApplicationId, programYearId);
     },
     buttonColor(isDisabled) {
       return isDisabled ? 'disabledButton' : 'blueButton';
@@ -774,7 +788,8 @@ export default {
       return (
         this.isCCFRIUnlock(ccfriApplicationId, application) ||
         this.isNMFUnlock(ccfriApplicationId, application) ||
-        this.isRFIUnlock(ccfriApplicationId, application)
+        this.isRFIUnlock(ccfriApplicationId, application) ||
+        this.isAFSUnlock(ccfriApplicationId, application)
       );
     },
     isCCFRIUnlock(ccfriApplicationId, application) {
@@ -791,6 +806,11 @@ export default {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
       const unlockRFIList = this.getUnlockRFIList(facilityList);
       return application?.applicationStatus === 'SUBMITTED' && unlockRFIList.includes(ccfriApplicationId);
+    },
+    isAFSUnlock(ccfriApplicationId, application) {
+      const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
+      const unlockAFSList = this.getUnlockAFSList(facilityList);
+      return application?.applicationStatus === 'SUBMITTED' && unlockAFSList?.includes(ccfriApplicationId);
     },
     getUnlockCCFRIList(facilityList) {
       let unlockList = [];
@@ -810,6 +830,13 @@ export default {
       let unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    getUnlockAFSList(facilityList) {
+      let unlockList = [];
+      facilityList?.forEach((facility) => {
+        if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },

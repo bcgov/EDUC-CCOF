@@ -36,6 +36,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
+  APPLICATION_CCFRI: baseRoot + '/application/ccfri',
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
@@ -270,3 +271,15 @@ export const PROVINCES = Object.freeze([
     value: 'YT',
   },
 ]);
+
+export const AFS_STATUSES = Object.freeze({
+  ACCEPT: 1,
+  UPLOAD_DOCUMENTS: 2,
+  DECLINE: 3,
+});
+
+export const PARENT_FEE_FREQUENCIES = Object.freeze({
+  MONTHLY: 100000000,
+  WEEKLY: 100000001,
+  DAILY: 100000002,
+});

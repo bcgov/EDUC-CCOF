@@ -452,7 +452,7 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrl(PATHS.CCFRI_AFS),
+      path: pcfUrlGuid(PATHS.CCFRI_AFS),
       name: 'ccfri-afs',
       component: ApprovableFeeSchedule,
       meta: {
