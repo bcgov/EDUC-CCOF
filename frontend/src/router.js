@@ -910,7 +910,7 @@ router.afterEach((to) => {
     appStore.setPageTitle('');
   }
   let nextApp = appStore?.programYearList?.list?.find(
-    (el) => el.previousYearId == useApplicationStore.latestProgramYearId,
+    (el) => el.previousYearId === applicationStore.latestProgramYearId,
   );
   if (to?.meta?.subtitleBanner) {
     if (to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')) {

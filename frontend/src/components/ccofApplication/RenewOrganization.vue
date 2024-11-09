@@ -13,7 +13,7 @@
 
       <div v-else>
         <v-row>
-          <v-card v-if="true" width="100%" class="mx-3 my-10">
+          <v-card v-if="isSomeChangeRequestActive()" width="100%" class="mx-3 my-10">
             <v-row>
               <v-col class="py-0">
                 <v-card-title class="py-1 noticeAlert">
