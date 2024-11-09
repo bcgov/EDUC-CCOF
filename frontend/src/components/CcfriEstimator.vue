@@ -18,7 +18,7 @@
                   <v-icon size="x-large" class="py-1 noticeInfoIcon"> mdi-information </v-icon>
                 </v-col>
                 <v-col>
-                  Thank you for your patience while we update fees for the 2023/24 year. Please check back as updates
+                  Thank you for your patience while we update fees for the 2023-24 year. Please check back as updates
                   occur daily or if you have questions about the fees a facility is approved for, call the contact
                   centre at 1-888-338-6622 (Option 2).
                 </v-col>
@@ -996,11 +996,11 @@ export default {
     },
     ageCategoryToolTip() {
       // eslint-disable-next-line
-      return "Parents can ask their child care provider if they are unsure<br/>which age category to select.";
+      return 'Parents can ask their child care provider if they are unsure<br/>which age category to select.';
     },
     feeFrequencyToolTip() {
       // eslint-disable-next-line
-      return "Select whether parent fees are charged daily or monthly.";
+      return 'Select whether parent fees are charged daily or monthly.';
     },
     approvedFeeToolTip() {
       if (this.isParent) {
@@ -1012,18 +1012,18 @@ export default {
     actualParentFeeToolTip() {
       if (this.isParent) {
         // eslint-disable-next-line
-        return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.";
+        return 'Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.';
       }
       // eslint-disable-next-line
-      return "Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.";
+      return 'Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.';
     },
     resultsToolTip() {
       if (this.isParent) {
         // eslint-disable-next-line
-        return "If the calculation below does not match your<br>expected result, contact your child care provider. If<br>the inconsistency remains, call the Child Care<br>Operating Funding Program at 1-888-338-6622<br>(Option 2).";
+        return 'If the calculation below does not match your<br>expected result, contact your child care provider. If<br>the inconsistency remains, call the Child Care<br>Operating Funding Program at 1-888-338-6622<br>(Option 2).';
       }
       // eslint-disable-next-line
-      return "If the calculation below does not match your<br>expected result, contact the Child Care Operating<br>Funding Program at 1-888-338-6622 (Option 2)."
+      return 'If the calculation below does not match your<br>expected result, contact the Child Care Operating<br>Funding Program at 1-888-338-6622 (Option 2).';
     },
   },
   watch: {},
@@ -1162,27 +1162,27 @@ export default {
         switch (this.children[index - 1].childAgeCategory) {
           case CHILDCARE_TYPE_PRESCHOOL:
             // eslint-disable-next-line
-          return "Licensed preschool care is only funded for 4 hours or less.";
+            return 'Licensed preschool care is only funded for 4 hours or less.';
           case CHILDCARE_TYPE_SCHOOL_CARE_K:
           case CHILDCARE_TYPE_SCHOOL_CARE_1:
             // eslint-disable-next-line
-          return "Select the amount of time your child has access to a child<br>care space, not the amount of time your child attends the space.<br><br>For example, select \"Over 4 hours\" if your child<br>attends care for one hour in the morning and two hours in<br>the afternoon, but you are able to use the space for longer<br>than 4 hours.";
+            return 'Select the amount of time your child has access to a child<br>care space, not the amount of time your child attends the space.<br><br>For example, select "Over 4 hours" if your child<br>attends care for one hour in the morning and two hours in<br>the afternoon, but you are able to use the space for longer<br>than 4 hours.';
           default:
             // eslint-disable-next-line
-          return "Select your typical care schedule. Maximum funding for<br>CCFRI is based on five days of over 4 hours of care<br>(full time care).";
+            return 'Select your typical care schedule. Maximum funding for<br>CCFRI is based on five days of over 4 hours of care<br>(full time care).';
         }
       } else {
         switch (this.children[index - 1].childAgeCategory) {
           case CHILDCARE_TYPE_PRESCHOOL:
             // eslint-disable-next-line
-          return "Preschool care is only CCFRI-eligible for 4 hours or less.";
+            return 'Preschool care is only CCFRI-eligible for 4 hours or less.';
           case CHILDCARE_TYPE_SCHOOL_CARE_K:
           case CHILDCARE_TYPE_SCHOOL_CARE_1:
             // eslint-disable-next-line
-          return "Select the amount of time the child has access to care, not the amount of<br>time the child is actually in care. For example, if the child has access to 5<br>hours of care but attends care for 3 hours, select \"Over 4 hours.\"";
+            return 'Select the amount of time the child has access to care, not the amount of<br>time the child is actually in care. For example, if the child has access to 5<br>hours of care but attends care for 3 hours, select "Over 4 hours."';
           default:
             // eslint-disable-next-line
-          return "For part-time care estimates, select the typical schedule of half days (4 hours<br>or less) and full days (over 4 hours). The maximum benefit rates for<br>CCFRI are based on 5 full days per week (full-time care).";
+            return 'For part-time care estimates, select the typical schedule of half days (4 hours<br>or less) and full days (over 4 hours). The maximum benefit rates for<br>CCFRI are based on 5 full days per week (full-time care).';
         }
       }
     },

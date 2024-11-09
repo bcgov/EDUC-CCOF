@@ -17,7 +17,7 @@
 
     <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 text-center">
       <span class="text-h6">
-        <strong>New for 2024/25:</strong> CCFRI regions align with the BCSSA's grouping of school districts into 6
+        <strong>New for 2024-25:</strong> CCFRI regions align with the BCSSA's grouping of school districts into 6
         regional chapters. Use the
         <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS" target="_blank">BCSSA region lookup</a> to
         find your region.</span
