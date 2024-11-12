@@ -174,6 +174,11 @@ export const ORGANIZATION_PROVIDER_TYPES = {
   FAMILY: 'FAMILY',
 };
 
+export const ECEWE_SECTOR_TYPES = {
+  CSSEA: 100000000,
+  OTHER_UNION: 100000001,
+};
+
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 
 export const CCFRI_Categories = [

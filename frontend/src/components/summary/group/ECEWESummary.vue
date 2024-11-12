@@ -14,12 +14,12 @@
       <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
         <v-container fluid class="pa-0">
           <div>
-            <v-row v-if="facilityInformationExists()" no-gutters>
+            <v-row v-if="facilityInformationExists" no-gutters>
               <v-col cols="12">
                 <span class="summary-label pt-3">Facility Opt-In/Opt-Out for ECE-WE:</span>
                 <v-text-field
                   placeholder="Required"
-                  :model-value="getOptInOptOut()"
+                  :model-value="getOptInOptOut"
                   class="summary-value"
                   density="compact"
                   flat
@@ -30,7 +30,7 @@
                 />
               </v-col>
             </v-row>
-            <v-row v-if="!facilityInformationExists()" no-gutters>
+            <v-row v-if="!facilityInformationExists" no-gutters>
               <v-col cols="12">
                 <span class="summary-label pt-2">
                   For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any facility
@@ -50,7 +50,7 @@
               </v-col>
             </v-row>
             <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-              <v-row v-if="ecewe?.optInECEWE == 1" no-gutters>
+              <v-row v-if="ecewe?.optInECEWE === 1" no-gutters>
                 <v-col cols="12">
                   <span class="summary-label pt-3">
                     Do any of the ECE employees at any facility in your organization belong to a union
@@ -68,8 +68,8 @@
                   />
                 </v-col>
               </v-row>
-              <v-row v-if="!facilityInformationExists()" no-gutters>
-                <v-col v-if="languageYearLabel != programYearTypes.HISTORICAL && ecewe?.optInECEWE == 1" cols="12">
+              <v-row v-if="!facilityInformationExists" no-gutters>
+                <v-col v-if="languageYearLabel !== programYearTypes.HISTORICAL && ecewe?.optInECEWE === 1" cols="12">
                   <span class="summary-label pt-3">
                     Are you a public sector employer, as defined in the Public Sector Employers Act?
                   </span>
@@ -91,7 +91,7 @@
                       <span class="summary-label pt-3">Applicable Sector:</span>
                       <v-textarea
                         placeholder="Required"
-                        :model-value="getSectorValue(ecewe?.applicableSector)"
+                        :model-value="sectorValue"
                         class="summary-value"
                         density="compact"
                         flat
@@ -111,7 +111,7 @@
                       <span class="summary-label pt-3">Funding model:</span>
                       <v-textarea
                         placeholder="Required"
-                        :model-value="getFundingModel(ecewe?.fundingModel)"
+                        :model-value="getFundingModel"
                         class="summary-value"
                         density="compact"
                         flat
@@ -170,7 +170,7 @@
             </div>
           </div>
           <div v-if="!isValidForm">
-            <router-link :to="getRoutingPath()">
+            <router-link :to="getRoutingPath">
               <span style="color: red">
                 <u>To add this information, click here. This will bring you to a different page.</u>
               </span>
@@ -195,6 +195,7 @@ import {
   changeUrl,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
+  ECEWE_SECTOR_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -251,18 +252,20 @@ export default {
     },
     showApplicableSector() {
       return (
-        (this.ecewe?.belongsToUnion == 1 &&
-          this.ecewe?.optInECEWE == 1 &&
-          this.ecewe?.publicSector == 1 &&
-          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
-        (this.ecewe?.belongsToUnion == 1 &&
-          this.ecewe?.optInECEWE == 1 &&
-          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+        (this.ecewe?.belongsToUnion === 1 &&
+          this.ecewe?.optInECEWE === 1 &&
+          this.ecewe?.publicSector === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.ecewe?.belongsToUnion === 1 &&
+          this.ecewe?.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showFundingModel() {
       return (
-        this.ecewe?.optInECEWE == 1 && this.ecewe?.belongsToUnion == 1 && this.ecewe?.applicableSector == 100000000
+        this.ecewe?.optInECEWE === 1 &&
+        this.ecewe?.belongsToUnion === 1 &&
+        this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA
       );
     },
     showJJEP() {
@@ -273,14 +276,63 @@ export default {
     },
     showWageConfirmation() {
       return (
-        this.ecewe?.optInECEWE == 1 && this.ecewe?.belongsToUnion == 1 && this.ecewe?.applicableSector == 100000001
+        this.ecewe?.optInECEWE === 1 &&
+        this.ecewe?.belongsToUnion === 1 &&
+        this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
+    },
+    facilityInformationExists() {
+      return !!this.eceweFacility;
+    },
+    sectorValue() {
+      if (this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
+        return 'Other Unionized Employee';
+      } else if (this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA) {
+        return "Community Social Services Employers' Association (CSSEA) Member";
+      } else {
+        return null;
+      }
+    },
+    getRoutingPath() {
+      if (this.isChangeRequest) {
+        if (!this.eceweFacility) {
+          return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
+        }
+        return changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
+      } else {
+        if (!this.eceweFacility) {
+          return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
+        }
+        return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
+      }
+    },
+    getOptInOptOut() {
+      switch (this.eceweFacility?.optInOrOut) {
+        case 0:
+          return 'Opt-Out';
+        case 1:
+          return 'Opt-In';
+        default:
+          return '';
+      }
+    },
+    getFundingModel() {
+      switch (this.ecewe?.fundingModel) {
+        case 100000000:
+          return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
+        case 100000001:
+          return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding';
+        case 100000002:
+          return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding';
+        default:
+          return null;
+      }
     },
   },
   watch: {
     isValidForm: {
       handler() {
-        if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists()) {
+        if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -297,51 +349,6 @@ export default {
         return 'No';
       } else {
         return null;
-      }
-    },
-    getSectorValue(value) {
-      if (value === 100000001) {
-        return 'Other Unionized Employee';
-      } else if (value === 100000000) {
-        return "Community Social Services Employers' Association (CSSEA) Member";
-      } else {
-        return null;
-      }
-    },
-    getFundingModel(value) {
-      if (value === 100000000) {
-        return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
-      } else if (value === 100000001) {
-        return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding';
-      } else if (value === 100000002) {
-        return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding';
-      } else {
-        return null;
-      }
-    },
-    facilityInformationExists() {
-      return !!this.eceweFacility;
-    },
-    getRoutingPath() {
-      if (this.isChangeRequest) {
-        if (!this.eceweFacility) {
-          return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
-        }
-        return changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
-      } else {
-        if (!this.eceweFacility) {
-          return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
-        }
-        return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
-      }
-    },
-    getOptInOptOut() {
-      if (this.eceweFacility?.optInOrOut === 1) {
-        return 'Opt-In';
-      } else if (this.eceweFacility?.optInOrOut === 0) {
-        return 'Opt-Out';
-      } else {
-        return '';
       }
     },
   },

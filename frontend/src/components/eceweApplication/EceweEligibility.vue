@@ -285,6 +285,7 @@ import {
   pcfUrl,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
+  ECEWE_SECTOR_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
@@ -337,28 +338,32 @@ export default {
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
     showApplicableSectorQuestion() {
       return (
-        (this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
-        (this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+        (this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showConfirmationQuestion() {
       return (
-        (this.model.applicableSector == 100000001 &&
-          this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
-        (this.model.applicableSector == 100000001 &&
-          this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
+          this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
+          this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showFundingModelQuestion() {
-      return this.model.applicableSector == 100000000 && this.model.belongsToUnion == 1 && this.model.optInECEWE == 1;
+      return (
+        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+        this.model.belongsToUnion === 1 &&
+        this.model.optInECEWE === 1
+      );
     },
     showJJEPQuestion() {
       return (
@@ -499,10 +504,10 @@ export default {
           this.model.fundingModel = null;
           this.model.confirmation = null;
         } else {
-          if (this.model.applicableSector == 100000001) {
+          if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
             this.model.fundingModel = null;
           } else if (
-            this.model.applicableSector == 100000000 &&
+            this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
             this.model.fundingModel === this.fundingModelTypeList[0].id
           ) {
             this.model.confirmation = null;
