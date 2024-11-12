@@ -357,6 +357,7 @@ import {
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
@@ -429,7 +430,7 @@ export default {
       //show the year ahead because we can't pull from application year YET
       else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW) {
         let nameToReturn = this.getNextProgramYear?.name;
-        return nameToReturn?.replace(/[^\d/]/g, '');
+        return formatFiscalYearName(nameToReturn);
       } else if (
         this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE ||
         this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED

@@ -236,6 +236,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import { isFacilityAvailable } from '@/utils/common.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'ReportChange',
@@ -411,8 +412,10 @@ export default {
     //   return currentFutureYears?.includes(programYearId);
     // },
     getProgramYearString(programYearId) {
-      let label = this.programYearList?.list?.find((programYear) => programYear.programYearId === programYearId)?.name;
-      return label?.replace(/[^\d/]/g, '');
+      const label = this.programYearList?.list?.find(
+        (programYear) => programYear.programYearId === programYearId,
+      )?.name;
+      return formatFiscalYearName(label);
     },
     getChangeTypeString(changeType) {
       switch (changeType) {

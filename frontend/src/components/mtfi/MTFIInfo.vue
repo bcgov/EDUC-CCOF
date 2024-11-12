@@ -10,7 +10,7 @@
         <p class="px-10 text-h6">
           Under the Child Care Operating Funding (CCOF) Agreement, section 4.1 f and g, you must submit a request to
           increase parent fees after approval for the Child Care Fee Reduction Initiative (CCFRI). Use this form to
-          submit any request to increase your parent fees in the 2023/24 Fiscal Year. To complete this form, you will
+          submit any request to increase your parent fees in the 2023-24 Fiscal Year. To complete this form, you will
           need the following:
           <br /><br />
         </p>

@@ -4,7 +4,7 @@
       <Spinner style="width: 100%"></Spinner>
     </v-row>
     <v-row fluid class="mx-4" v-else>
-      <v-row >
+      <v-row>
         <v-col id="messages-summary" fluid class="pa-0" :cols="4">
           <v-card tile style="border-right: 1px solid lightgrey" :height="fitScreenHeight()" class="pa-0 elevation-0">
             <v-data-table
@@ -13,20 +13,20 @@
               :mobile-breakpoint="960"
               :height="fitScreenHeight()"
               fixed-header
-              :item-value="item => item.messageId"
+              :item-value="messageId"
               :items-per-page="-1"
               hide-default-footer
               @click:row="rowClickHandler"
             >
-            <template #no-data>
-              <v-alert :value="true" type="info">
-                No Data
-              </v-alert>
-            </template>
-            <template #item.isRead="{ item }">
-              <p v-if="item.isRead">Read</p>
-              <p v-else>Unread</p>
-            </template>
+              <template #no-data>
+                <v-alert :value="true" type="info"> No Data </v-alert>
+              </template>
+              <template #item.isRead="{ item }">
+                {{ item.isRead ? 'Read' : 'Unread' }}
+              </template>
+              <template #item.programYearValue="{ item }">
+                {{ formatFiscalYearName(item.programYearValue) }}
+              </template>
             </v-data-table>
           </v-card>
         </v-col>
@@ -35,11 +35,11 @@
             <v-card-title class="pa-0">
               <v-row>
                 <v-col :cols="8">
-                {{ message.sender }}
-              </v-col>
-              <v-col align="right" :cols="4">
-                {{ message.dateReceived }}
-              </v-col>
+                  {{ message.sender }}
+                </v-col>
+                <v-col align="right" :cols="4">
+                  {{ message.dateReceived }}
+                </v-col>
               </v-row>
               <v-row>
                 <v-col>
@@ -61,17 +61,19 @@
 </template>
 
 <script>
-import { useAuthStore } from '../store/auth.js';
-import { useMessageStore } from '../store/message.js';
-import { mapState, mapActions } from 'pinia';
-import Spinner from './common/Spinner.vue';
-import { PATHS } from '../utils/constants.js';
 import { useDisplay } from 'vuetify';
+
+import { useAuthStore } from '@/store/auth.js';
+import { useMessageStore } from '@/store/message.js';
+import { mapState, mapActions } from 'pinia';
+import Spinner from '@/components/common/Spinner.vue';
+import { PATHS } from '@/utils/constants.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'MessagesPage',
   components: {
-    Spinner
+    Spinner,
   },
   data() {
     return {
@@ -116,7 +118,7 @@ export default {
   },
   methods: {
     ...mapActions(useMessageStore, ['updateMessage', 'getAllMessages']),
-
+    formatFiscalYearName,
     async loadMessages() {
       try {
         this.loading = true;
@@ -125,7 +127,7 @@ export default {
           await this.getAllMessages(organizationId);
         }
       } catch (error) {
-        console.error("Error in loadMessages:", error);
+        console.error('Error in loadMessages:', error);
       } finally {
         this.loading = false;
       }
@@ -154,18 +156,23 @@ export default {
     },
     fitScreenHeight() {
       switch (this.displayName) {
-        case 'xs': return '67vh';
-        case 'sm': return '82vh';
-        case 'md': return '75vh';
-        case 'lg': return '70vh';
-        case 'xl': return '78vh';
-        default: return '70vh';
+        case 'xs':
+          return '67vh';
+        case 'sm':
+          return '82vh';
+        case 'md':
+          return '75vh';
+        case 'lg':
+          return '70vh';
+        case 'xl':
+          return '78vh';
+        default:
+          return '70vh';
       }
     },
   },
 };
 </script>
-
 
 <style scoped>
 :deep(html) {

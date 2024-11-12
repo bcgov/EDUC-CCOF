@@ -1,12 +1,12 @@
-import { createLocalVue } from '@vue/test-utils';
-import Vuex from 'vuex';
-import ApiService from '@/common/apiService';
-import ccfriAppStore from '@/store/modules/ccfriApp';
-
 import MockAdapter from 'axios-mock-adapter';
-import { ApiRoutes } from '@/utils/constants.js';
 import flushPromises from 'flush-promises';
 import { cloneDeep } from 'lodash';
+import Vuex from 'vuex';
+
+import ApiService from '@/common/apiService';
+import ccfriAppStore from '@/store/modules/ccfriApp';
+import { ApiRoutes } from '@/utils/constants.js';
+import { createLocalVue } from '@vue/test-utils';
 
 const mockAxios = new MockAdapter(ApiService.apiAxios);
 
@@ -34,7 +34,7 @@ describe('ccfriApp.js', () => {
           list: [
             {
               programYearId: 'de676989-be6b-ed11-81ac-0022483c5cdf',
-              name: '2023/24 FY',
+              name: '2023-24 FY',
               status: 'FUTURE',
               order: 4,
               previousYearId: 'ebad6b71-be6b-ed11-81ac-0022483c5cdf',
@@ -44,7 +44,7 @@ describe('ccfriApp.js', () => {
             },
             {
               programYearId: 'ebad6b71-be6b-ed11-81ac-0022483c5cdf',
-              name: '2022/23 FY',
+              name: '2022-23 FY',
               status: 'CURRENT',
               order: 3,
               previousYearId: 'e37d5b6b-be6b-ed11-81ac-0022483c5cdf',
@@ -54,7 +54,7 @@ describe('ccfriApp.js', () => {
             },
             {
               programYearId: 'e37d5b6b-be6b-ed11-81ac-0022483c5cdf',
-              name: '2021/22 FY',
+              name: '2021-22 FY',
               status: 'HISTORICAL',
               order: 2,
               previousYearId: 'f5495465-be6b-ed11-81ac-0022483c5cdf',
@@ -64,7 +64,7 @@ describe('ccfriApp.js', () => {
             },
             {
               programYearId: 'f5495465-be6b-ed11-81ac-0022483c5cdf',
-              name: '2020/21 FY',
+              name: '2020-21 FY',
               status: 'HISTORICAL',
               order: 1,
               previousYearId: null,
@@ -109,7 +109,7 @@ describe('ccfriApp.js', () => {
           parentFeeGUID: '92b6ba1d-8ac4-ed11-b597-000d3af36bac',
           childCareCategory: '0 to 18 months',
           childCareCategoryId: '2ba2c1f8-bd6b-ed11-81ac-0022483c5606',
-          programYear: '2023/24 FY',
+          programYear: '2023-24 FY',
           programYearId: 'de676989-be6b-ed11-81ac-0022483c5cdf',
           approvedFeeApr: 49.52,
           approvedFeeAug: 49.52,
@@ -130,7 +130,7 @@ describe('ccfriApp.js', () => {
           parentFeeGUID: '1f6deb1f-8ac4-ed11-b597-0022483c554a',
           childCareCategory: 'Out of School Care - Kindergarten',
           childCareCategoryId: '2dacb8f8-bd6b-ed11-81ac-0022483d5ee0',
-          programYear: '2023/24 FY',
+          programYear: '2023-24 FY',
           programYearId: 'de676989-be6b-ed11-81ac-0022483c5cdf',
           approvedFeeApr: 49.28,
           approvedFeeAug: 49.28,
@@ -151,7 +151,7 @@ describe('ccfriApp.js', () => {
           parentFeeGUID: '9ef53721-8ac4-ed11-b597-0022483d89ba',
           childCareCategory: '18 to 36 months',
           childCareCategoryId: '5b87dff6-bd6b-ed11-81ac-0022483c5540',
-          programYear: '2023/24 FY',
+          programYear: '2023-24 FY',
           programYearId: 'de676989-be6b-ed11-81ac-0022483c5cdf',
           approvedFeeApr: 49.33,
           approvedFeeAug: 49.33,

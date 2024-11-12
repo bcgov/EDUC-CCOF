@@ -46,6 +46,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 import {
   CHANGE_TYPES,
@@ -909,17 +910,17 @@ router.afterEach((to) => {
     appStore.setPageTitle('');
   }
   let nextApp = appStore?.programYearList?.list?.find(
-    (el) => el.previousYearId == useApplicationStore.latestProgramYearId,
+    (el) => el.previousYearId === applicationStore.latestProgramYearId,
   );
   if (to?.meta?.subtitleBanner) {
     if (to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')) {
       if (to?.meta?.pageTitle === 'Renew Organization') {
         appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', nextApp?.name.replace(/[^\d/]/g, '')),
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(nextApp?.name)),
         );
       } else if (!applicationStore.formattedProgramYear) {
         appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', appStore.programYearList.newApp.name.replace(/[^\d/]/g, '')),
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(appStore.programYearList?.newApp?.name)),
         );
       } else {
         appStore.setSubtitleBanner(
