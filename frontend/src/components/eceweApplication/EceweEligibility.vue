@@ -56,7 +56,7 @@
           </v-card>
 
           <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-            <v-card v-if="model.optInECEWE == 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+            <v-card v-if="model.optInECEWE === 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
               <v-container>
                 <v-row class="justify-center">
                   <v-col align-self="start">
@@ -80,8 +80,8 @@
               </v-container>
             </v-card>
 
-            <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
-              <v-card v-if="model.optInECEWE == 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+            <div v-if="languageYearLabel !== programYearTypes.HISTORICAL">
+              <v-card v-if="model.optInECEWE === 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
                 <v-container>
                   <v-row class="justify-left">
                     <v-col align-self="start">
@@ -188,7 +188,7 @@
                       </v-radio-group>
                     </v-col>
                   </v-row>
-                  <v-card v-if="model.fundingModel == fundingModelTypeList[0].id" width="100%">
+                  <v-card v-if="model.fundingModel === fundingModelTypeList[0].id" width="100%">
                     <v-row>
                       <v-col class="py-0">
                         <v-card-title class="py-0 noticeAlert">
@@ -203,7 +203,7 @@
                       Government's Low-Wage Redress Funding supports ECE wage adjustments
                     </v-row>
                   </v-card>
-                  <div v-else-if="model.fundingModel == fundingModelTypeList[1].id">
+                  <div v-else-if="model.fundingModel === fundingModelTypeList[1].id">
                     <v-card width="100%" class="mb-4">
                       <v-row>
                         <v-col class="py-0">
@@ -285,6 +285,7 @@ import {
   pcfUrl,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
+  ECEWE_SECTOR_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
@@ -337,28 +338,32 @@ export default {
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
     showApplicableSectorQuestion() {
       return (
-        (this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
-        (this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+        (this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showConfirmationQuestion() {
       return (
-        (this.model.applicableSector == 100000001 &&
-          this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel != this.programYearTypes.HISTORICAL) ||
-        (this.model.applicableSector == 100000001 &&
-          this.model.belongsToUnion == 1 &&
-          this.model.optInECEWE == 1 &&
-          this.languageYearLabel == this.programYearTypes.HISTORICAL)
+        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
+          this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
+          this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showFundingModelQuestion() {
-      return this.model.applicableSector == 100000000 && this.model.belongsToUnion == 1 && this.model.optInECEWE == 1;
+      return (
+        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+        this.model.belongsToUnion === 1 &&
+        this.model.optInECEWE === 1
+      );
     },
     showJJEPQuestion() {
       return (
@@ -440,15 +445,15 @@ export default {
       if (this.isChangeRequest) {
         if (this.isEceweUnlocked || !this.changeRequestStatus)
           return (
-            (question == 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-            (question == 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
+            (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
+            (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
           );
         else if (this.changeRequestStatus !== 'INCOMPLETE') {
           return true;
         }
         return (
-          (question == 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-          (question == 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
+          (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
+          (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
         );
       }
       if (this.unlockEcewe) {
@@ -463,26 +468,25 @@ export default {
     },
     async next() {
       if (this.isChangeRequest) {
-        if (this.model.optInECEWE == 0) {
+        if (this.model.optInECEWE === 0) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
         } else {
           this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
         }
+      } else if (this.model.optInECEWE === 0) {
+        this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
       } else {
-        if (this.model.optInECEWE == 0) {
-          this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
-        } else {
-          this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
-        }
+        this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
       }
     },
+
     validateForm() {
       this.$refs.isValidForm?.validate();
     },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
       for (let facility of this.facilities) {
-        if (facility.optInOrOut == 1 || facility.optInOrOut == null) {
+        if (facility.optInOrOut === 1 || facility.optInOrOut === null) {
           return false;
         }
       }
@@ -494,27 +498,23 @@ export default {
         this.model.belongsToUnion = null;
         this.model.fundingModel = null;
         this.model.confirmation = null;
-      } else {
-        if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
-          this.model.fundingModel = null;
-          this.model.confirmation = null;
-        } else {
-          if (this.model.applicableSector == 100000001) {
-            this.model.fundingModel = null;
-          } else if (
-            this.model.applicableSector == 100000000 &&
-            this.model.fundingModel === this.fundingModelTypeList[0].id
-          ) {
-            this.model.confirmation = null;
-          }
-        }
+      } else if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
+        this.model.fundingModel = null;
+        this.model.confirmation = null;
+      } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
+        this.model.fundingModel = null;
+      } else if (
+        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+        this.model.fundingModel === this.fundingModelTypeList[0].id
+      ) {
+        this.model.confirmation = null;
       }
     },
     async loadData() {
       if (
         this.isStarted &&
         this.facilities?.length > 0 &&
-        this.facilities[0].changeRequestId == this.$route.params.changeRecGuid
+        this.facilities[0].changeRequestId === this.$route.params.changeRecGuid
       ) {
         return true;
       }

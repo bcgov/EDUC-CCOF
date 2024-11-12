@@ -14,12 +14,12 @@
       <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
         <v-container fluid class="pa-0">
           <div>
-            <v-row v-if="facilityInformationExists()" no-gutters>
+            <v-row v-if="facilityInformationExists" no-gutters>
               <v-col cols="12">
                 <span class="summary-label pt-3">Facility Opt-In/Opt-Out for ECE-WE:</span>
                 <v-text-field
                   placeholder="Required"
-                  :model-value="getOptInOptOut()"
+                  :model-value="optInOptOut"
                   class="summary-value"
                   density="compact"
                   flat
@@ -30,7 +30,7 @@
                 />
               </v-col>
             </v-row>
-            <v-row v-if="!facilityInformationExists()" no-gutters>
+            <v-row v-if="!facilityInformationExists" no-gutters>
               <v-col cols="12">
                 <span class="summary-label pt-2">
                   For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any facility
@@ -49,148 +49,128 @@
                 />
               </v-col>
             </v-row>
-            <v-row v-if="ecewe?.optInECEWE == 1" no-gutters>
-              <v-col cols="12">
-                <span class="summary-label pt-3">
-                  Do any of the ECE employees at any facility in your organization belong to a union
-                </span>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="getYesNoValue(ecewe?.belongsToUnion)"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-            <v-row v-if="!facilityInformationExists()" no-gutters>
-              <v-col v-if="languageYearLabel != programYearTypes.HISTORICAL && ecewe?.optInECEWE == 1" cols="12">
-                <span class="summary-label pt-3">
-                  Are you a public sector employer, as defined in the Public Sector Employers Act?
-                </span>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="getYesNoValue(ecewe?.publicSector)"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col
-                v-if="
-                  (ecewe?.belongsToUnion == 1 &&
-                    ecewe?.optInECEWE == 1 &&
-                    ecewe?.publicSector == 1 &&
-                    languageYearLabel != programYearTypes.HISTORICAL) ||
-                  (ecewe?.belongsToUnion == 1 &&
-                    ecewe?.optInECEWE == 1 &&
-                    languageYearLabel == programYearTypes.HISTORICAL)
-                "
-                cols="12"
-              >
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    <span class="summary-label pt-3">Applicable Sector:</span>
-                    <v-textarea
-                      placeholder="Required"
-                      :model-value="getSectorValue(ecewe?.applicableSector)"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      no-resize
-                      rows="2"
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col
-                v-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.applicableSector == 100000000"
-                cols="12"
-              >
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    <span class="summary-label pt-3">Funding model:</span>
-                    <v-textarea
-                      placeholder="Required"
-                      :model-value="getFundingModel(ecewe?.fundingModel)"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      no-resize
-                      rows="3"
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row
-                  v-if="
-                    ecewe?.fundingModel === fundingModelTypeList[1].id ||
-                    ecewe?.fundingModel === fundingModelTypeList[2].id
-                  "
-                  no-gutters
-                >
-                  <v-col cols="12">
-                    <span class="summary-label pt-3">
-                      I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or,
-                      if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement.
-                    </span>
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="getYesNoValue(ecewe?.confirmation)"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col
-                v-else-if="ecewe?.optInECEWE == 1 && ecewe?.belongsToUnion == 1 && ecewe?.applicableSector == 100000001"
-                cols="12"
-              >
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    <span class="summary-label pt-3">
-                      I confirm our organization/facilities has reached an agreement with the union to amend the
-                      collective agreement(s) in order to implement the ECE Wage Enhancement.
-                    </span>
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="getYesNoValue(ecewe?.confirmation)"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
+            <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+              <v-row v-if="ecewe?.optInECEWE === 1" no-gutters>
+                <v-col cols="12">
+                  <span class="summary-label pt-3">
+                    Do any of the ECE employees at any facility in your organization belong to a union
+                  </span>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="getYesNoValue(ecewe?.belongsToUnion)"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+              </v-row>
+              <v-row v-if="!facilityInformationExists" no-gutters>
+                <v-col v-if="languageYearLabel !== programYearTypes.HISTORICAL && ecewe?.optInECEWE === 1" cols="12">
+                  <span class="summary-label pt-3">
+                    Are you a public sector employer, as defined in the Public Sector Employers Act?
+                  </span>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="getYesNoValue(ecewe?.publicSector)"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col v-if="showApplicableSector" cols="12">
+                  <v-row no-gutters>
+                    <v-col cols="12">
+                      <span class="summary-label pt-3">Applicable Sector:</span>
+                      <v-textarea
+                        placeholder="Required"
+                        :model-value="sectorValue"
+                        class="summary-value"
+                        density="compact"
+                        flat
+                        variant="solo"
+                        hide-details
+                        readonly
+                        no-resize
+                        rows="2"
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col v-if="showFundingModel" cols="12">
+                  <v-row no-gutters>
+                    <v-col cols="12">
+                      <span class="summary-label pt-3">Funding model:</span>
+                      <v-textarea
+                        placeholder="Required"
+                        :model-value="fundingModel"
+                        class="summary-value"
+                        density="compact"
+                        flat
+                        variant="solo"
+                        hide-details
+                        readonly
+                        no-resize
+                        rows="3"
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="showJJEP" no-gutters>
+                    <v-col cols="12">
+                      <span class="summary-label pt-3">
+                        I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates
+                        or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage
+                        Enhancement.
+                      </span>
+                      <v-text-field
+                        placeholder="Required"
+                        :model-value="getYesNoValue(ecewe?.confirmation)"
+                        class="summary-value"
+                        density="compact"
+                        flat
+                        variant="solo"
+                        hide-details
+                        readonly
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col v-else-if="showWageConfirmation" cols="12">
+                  <v-row no-gutters>
+                    <v-col cols="12">
+                      <span class="summary-label pt-3">
+                        I confirm our organization/facilities has reached an agreement with the union to amend the
+                        collective agreement(s) in order to implement the ECE Wage Enhancement.
+                      </span>
+                      <v-text-field
+                        placeholder="Required"
+                        :model-value="getYesNoValue(ecewe?.confirmation)"
+                        class="summary-value"
+                        density="compact"
+                        flat
+                        variant="solo"
+                        hide-details
+                        readonly
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </div>
           </div>
           <div v-if="!isValidForm">
-            <router-link :to="getRoutingPath()">
+            <router-link :to="routingPath">
               <span style="color: red">
                 <u>To add this information, click here. This will bring you to a different page.</u>
               </span>
@@ -204,11 +184,19 @@
 <script>
 import { mapState } from 'pinia';
 import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useAppStore } from '@/store/app.js';
 
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrl, changeUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  pcfUrl,
+  changeUrl,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  ECEWE_SECTOR_TYPES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -254,6 +242,7 @@ export default {
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
@@ -261,50 +250,50 @@ export default {
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
-  },
-  watch: {
-    isValidForm: {
-      handler() {
-        if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists()) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
+    showApplicableSector() {
+      return (
+        (this.ecewe?.belongsToUnion === 1 &&
+          this.ecewe?.optInECEWE === 1 &&
+          this.ecewe?.publicSector === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.ecewe?.belongsToUnion === 1 &&
+          this.ecewe?.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
+      );
     },
-  },
-  methods: {
-    getYesNoValue(value) {
-      if (value === 1) {
-        return 'Yes';
-      } else if (value === 0) {
-        return 'No';
-      } else {
-        return null;
-      }
+    showFundingModel() {
+      return (
+        this.ecewe?.optInECEWE === 1 &&
+        this.ecewe?.belongsToUnion === 1 &&
+        this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA
+      );
     },
-    getSectorValue(value) {
-      if (value === 100000001) {
+    showJJEP() {
+      return (
+        this.ecewe?.fundingModel === this.fundingModelTypeList[1].id ||
+        this.ecewe?.fundingModel === this.fundingModelTypeList[2].id
+      );
+    },
+    showWageConfirmation() {
+      return (
+        this.ecewe?.optInECEWE === 1 &&
+        this.ecewe?.belongsToUnion === 1 &&
+        this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
+      );
+    },
+    facilityInformationExists() {
+      return !!this.eceweFacility;
+    },
+    sectorValue() {
+      if (this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
         return 'Other Unionized Employee';
-      } else if (value === 100000000) {
+      } else if (this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA) {
         return "Community Social Services Employers' Association (CSSEA) Member";
       } else {
         return null;
       }
     },
-    getFundingModel(value) {
-      if (value === 100000000) {
-        return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
-      } else if (value === 100000001) {
-        return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding';
-      } else if (value === 100000002) {
-        return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding';
-      } else {
-        return null;
-      }
-    },
-    facilityInformationExists() {
-      return !!this.eceweFacility;
-    },
-    getRoutingPath() {
+    routingPath() {
       if (this.isChangeRequest) {
         if (!this.eceweFacility) {
           return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
@@ -317,13 +306,49 @@ export default {
         return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
       }
     },
-    getOptInOptOut() {
-      if (this.eceweFacility?.optInOrOut === 1) {
-        return 'Opt-In';
-      } else if (this.eceweFacility?.optInOrOut === 0) {
-        return 'Opt-Out';
+    optInOptOut() {
+      switch (this.eceweFacility?.optInOrOut) {
+        case 0:
+          return 'Opt-Out';
+        case 1:
+          return 'Opt-In';
+        default:
+          return '';
+      }
+    },
+    fundingModel() {
+      switch (this.ecewe?.fundingModel) {
+        case 100000000:
+          return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
+        case 100000001:
+          return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding';
+        case 100000002:
+          return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding';
+        default:
+          return null;
+      }
+    },
+  },
+  watch: {
+    isValidForm: {
+      handler() {
+        if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
+      },
+    },
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+  },
+  methods: {
+    getYesNoValue(value) {
+      if (value === 1) {
+        return 'Yes';
+      } else if (value === 0) {
+        return 'No';
       } else {
-        return '';
+        return null;
       }
     },
   },
