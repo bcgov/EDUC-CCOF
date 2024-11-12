@@ -473,14 +473,13 @@ export default {
         } else {
           this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
         }
+      } else if (this.model.optInECEWE === 0) {
+        this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
       } else {
-        if (this.model.optInECEWE === 0) {
-          this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
-        } else {
-          this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
-        }
+        this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
       }
     },
+
     validateForm() {
       this.$refs.isValidForm?.validate();
     },
@@ -499,20 +498,16 @@ export default {
         this.model.belongsToUnion = null;
         this.model.fundingModel = null;
         this.model.confirmation = null;
-      } else {
-        if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
-          this.model.fundingModel = null;
-          this.model.confirmation = null;
-        } else {
-          if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
-            this.model.fundingModel = null;
-          } else if (
-            this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
-            this.model.fundingModel === this.fundingModelTypeList[0].id
-          ) {
-            this.model.confirmation = null;
-          }
-        }
+      } else if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
+        this.model.fundingModel = null;
+        this.model.confirmation = null;
+      } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
+        this.model.fundingModel = null;
+      } else if (
+        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+        this.model.fundingModel === this.fundingModelTypeList[0].id
+      ) {
+        this.model.confirmation = null;
       }
     },
     async loadData() {

@@ -19,7 +19,7 @@
                 <span class="summary-label pt-3">Facility Opt-In/Opt-Out for ECE-WE:</span>
                 <v-text-field
                   placeholder="Required"
-                  :model-value="getOptInOptOut"
+                  :model-value="optInOptOut"
                   class="summary-value"
                   density="compact"
                   flat
@@ -111,7 +111,7 @@
                       <span class="summary-label pt-3">Funding model:</span>
                       <v-textarea
                         placeholder="Required"
-                        :model-value="getFundingModel"
+                        :model-value="fundingModel"
                         class="summary-value"
                         density="compact"
                         flat
@@ -170,7 +170,7 @@
             </div>
           </div>
           <div v-if="!isValidForm">
-            <router-link :to="getRoutingPath">
+            <router-link :to="routingPath">
               <span style="color: red">
                 <u>To add this information, click here. This will bring you to a different page.</u>
               </span>
@@ -293,7 +293,7 @@ export default {
         return null;
       }
     },
-    getRoutingPath() {
+    routingPath() {
       if (this.isChangeRequest) {
         if (!this.eceweFacility) {
           return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
@@ -306,7 +306,7 @@ export default {
         return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
       }
     },
-    getOptInOptOut() {
+    optInOptOut() {
       switch (this.eceweFacility?.optInOrOut) {
         case 0:
           return 'Opt-Out';
@@ -316,7 +316,7 @@ export default {
           return '';
       }
     },
-    getFundingModel() {
+    fundingModel() {
       switch (this.ecewe?.fundingModel) {
         case 100000000:
           return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
