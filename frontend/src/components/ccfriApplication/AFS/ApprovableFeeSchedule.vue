@@ -11,9 +11,9 @@
           </div>
           <FacilityHeader
             v-if="currentFacility"
-            :facility-account-number="currentFacility?.facilityAccountNumber ?? null"
-            :facility-name="currentFacility?.facilityName ?? null"
-            :license-number="currentFacility?.licenseNumber ?? null"
+            :facility-account-number="currentFacility?.facilityAccountNumber"
+            :facility-name="currentFacility?.facilityName"
+            :license-number="currentFacility?.licenseNumber"
             class="mb-10"
           />
           <div class="mt-8">
@@ -25,12 +25,12 @@
             <div>
               Based on the information you provided and the policies in the
               <a
-                href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccfri/ccfri_funding_guidelines_24_25.pdf"
+                :href="getFundingUrl(programYearId)"
                 target="_blank"
                 rel="noopener"
                 class="ccfri-funding-guideline-link"
               >
-                2024-25 CCFRI Funding Guidelines
+                {{ formattedProgramYear }} CCFRI Funding Guidelines
               </a>
               <span>, we can approve the following parent fee schedule:</span>
             </div>
@@ -132,8 +132,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['getChildCareCategoryNumberById', 'getProgramYearOrderById']),
-    ...mapState(useApplicationStore, ['formattedProgramYear']),
+    ...mapState(useAppStore, ['getChildCareCategoryNumberById', 'getFundingUrl', 'getProgramYearOrderById']),
+    ...mapState(useApplicationStore, ['formattedProgramYear', 'programYearId']),
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     currentFacility() {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
