@@ -335,7 +335,7 @@
   </v-container>
 </template>
 <script>
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
@@ -545,39 +545,23 @@ export default {
         this.unlockEcewe ||
         this.unlockLicenseUpload ||
         this.unlockSupportingDocuments ||
-        this.unlockCCFRIList.length > 0 ||
-        this.unlockNMFList.length > 0 ||
-        this.unlockRFIList.length > 0 ||
-        this.unlockAFSList.length > 0
+        !isEmpty(this.unlockCCFRIList) ||
+        !isEmpty(this.unlockNMFList) ||
+        !isEmpty(this.unlockRFIList) ||
+        !isEmpty(this.unlockAFSList)
       );
     },
     unlockCCFRIList() {
-      let unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockCCFRIList(this.navBarList);
     },
     unlockNMFList() {
-      let unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockNMFList(this.navBarList);
     },
     unlockRFIList() {
-      let unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockRFIList(this.navBarList);
     },
     unlockAFSList() {
-      const unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockAFSList(this.navBarList);
     },
     isCCOFApproved() {
       return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS_APPROVED;
@@ -764,10 +748,10 @@ export default {
         this.goToCCOFFunding(programYearId, facilityList);
       else if (application?.unlockEcewe) this.goToECEWE(programYearId);
       else if (application?.unlockSupportingDocuments) this.goToSupportingDocumentUpload(programYearId);
-      else if (unlockCCFRIList?.length > 0) this.goToCCFRI(unlockCCFRIList[0], application);
-      else if (unlockNMFList?.length > 0) this.goToNMF(unlockNMFList[0], programYearId);
-      else if (unlockRFIList?.length > 0) this.goToRFI(unlockRFIList[0], programYearId);
-      else if (unlockAFSList?.length > 0) this.goToAFS(unlockAFSList[0], programYearId);
+      else if (!isEmpty(unlockCCFRIList)) this.goToCCFRI(unlockCCFRIList[0], application);
+      else if (!isEmpty(unlockNMFList)) this.goToNMF(unlockNMFList[0], programYearId);
+      else if (!isEmpty(unlockRFIList)) this.goToRFI(unlockRFIList[0], programYearId);
+      else if (!isEmpty(unlockAFSList)) this.goToAFS(unlockAFSList[0], programYearId);
       else if (application?.unlockDeclaration) this.goToSummaryDeclaration(programYearId);
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
@@ -816,28 +800,28 @@ export default {
       return application?.applicationStatus === 'SUBMITTED' && unlockAFSList?.includes(ccfriApplicationId);
     },
     getUnlockCCFRIList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     getUnlockNMFList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     getUnlockRFIList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     getUnlockAFSList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
       });

@@ -88,13 +88,12 @@ export function filterFacilityListForPCF(facilityList, isRenewal, applicationSta
 
 export function checkApplicationUnlocked(application) {
   const facilityList = application?.facilityList;
-  const isCCFRIUnlocked =
-    facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockCcfri) > -1;
-  const isNMFUnlocked = facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockNmf) > -1;
-  const isRFIUnlocked = facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockRfi) > -1;
-  const isAFSUnlocked =
-    facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs) >
-    -1;
+  const isCCFRIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockCcfri);
+  const isNMFUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockNmf);
+  const isRFIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockRfi);
+  const isAFSUnlocked = facilityList?.some(
+    (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
+  );
   const isApplicationUnlocked =
     (application?.unlockBaseFunding && application?.applicationType === 'NEW') ||
     application?.unlockLicenseUpload ||
