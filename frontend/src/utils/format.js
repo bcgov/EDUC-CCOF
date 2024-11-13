@@ -33,5 +33,5 @@ export function formatTime24to12(time24h) {
 }
 
 export function formatFiscalYearName(fiscalYearName) {
-  return fiscalYearName?.replace(/[^\d-]/g, '');
+  return fiscalYearName?.replace('/', '-').replace(/[^\d-]/g, '');
 }
