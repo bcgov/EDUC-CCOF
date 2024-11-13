@@ -140,6 +140,7 @@ export const useApplicationStore = defineStore('application', {
         await ApiService.apiAxios.delete(`${ApiRoutes.APPLICATION}/${this.applicationId}`);
       } catch (error) {
         console.log(error);
+        throw error;
       }
     },
   },
