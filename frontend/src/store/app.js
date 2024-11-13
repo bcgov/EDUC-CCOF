@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import ApiService from '@/common/apiService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -23,7 +24,7 @@ export const useAppStore = defineStore('app', {
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
-    logoutCounter: 120,
+    logoutCounter: undefined,
   }),
   actions: {
     setLookupInfo(lookupInfo) {
@@ -105,6 +106,7 @@ export const useAppStore = defineStore('app', {
       this.setLogoutTimerEnabled(false);
     },
     stopCounter() {
+      //set the inactivity counter which is also displayed to the user
       this.setLogoutCounter(120);
       this.setLogoutTimerEnabled(false);
     },
@@ -115,10 +117,7 @@ export const useAppStore = defineStore('app', {
       return state.programYearList?.current?.name;
     },
     renewalYearLabel: (state) => {
-      return state.programYearList?.renewal?.name?.replace(/[^\d/]/g, '');
-    },
-    getLogoutCounter: (state) => {
-      return state.logoutCounter < 0 ? 0 : this.logoutCounter;
+      return formatFiscalYearName(state.programYearList?.renewal?.name);
     },
     getFundingUrl: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;

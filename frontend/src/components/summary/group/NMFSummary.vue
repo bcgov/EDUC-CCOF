@@ -148,7 +148,7 @@
                 <v-col cols="10" class="d-flex justify-start">
                   <span class="summary-label pt-3"
                     >Please tell us anything else you'd like us to know about how your facility's business case supports
-                    setting fees higher than the Affordability Benchmarks outlined in the 2023/24 Funding
+                    setting fees higher than the Affordability Benchmarks outlined in the 2023-24 Funding
                     Guidelines.</span
                   >
                 </v-col>

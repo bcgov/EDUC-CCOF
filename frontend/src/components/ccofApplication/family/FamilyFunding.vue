@@ -413,7 +413,6 @@ import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 
 import fundMixing from '@/mixins/fundMixing.js';
 import globalMixin from '@/mixins/globalMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
 export default {
   components: { AppTimeInput },
@@ -421,11 +420,6 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
     next();
-  },
-  data() {
-    return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-    };
   },
 };
 </script>

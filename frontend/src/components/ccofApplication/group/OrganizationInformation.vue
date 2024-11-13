@@ -256,7 +256,7 @@ import { useAppStore } from '@/store/app.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import organizationMixin from '@/mixins/organizationMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES, PROVINCES } from '@/utils/constants.js';
+import { PROVINCES } from '@/utils/constants.js';
 import { isAnyChangeRequestActive } from '@/utils/common.js';
 
 export default {
@@ -265,11 +265,7 @@ export default {
     await this.save(false);
     next();
   },
-  data() {
-    return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-    };
-  },
+
   computed: {
     ...mapState(useAppStore, ['renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),

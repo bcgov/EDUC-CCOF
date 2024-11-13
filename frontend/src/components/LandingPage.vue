@@ -58,7 +58,7 @@
 
             <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
               <p class="text-h5 blueText">Status: Incomplete</p>
-              <v-btn theme="dark" class="blueButton" @click="continueApplication()"> Continue Application </v-btn>
+              <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
               <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
                 Cancel Application
@@ -348,9 +348,16 @@ import { useMessageStore } from '@/store/message.js';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
-import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants.js';
+import {
+  PATHS,
+  pcfUrl,
+  pcfUrlGuid,
+  CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
@@ -423,7 +430,7 @@ export default {
       //show the year ahead because we can't pull from application year YET
       else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW) {
         let nameToReturn = this.getNextProgramYear?.name;
-        return nameToReturn?.replace(/[^\d/]/g, '');
+        return formatFiscalYearName(nameToReturn);
       } else if (
         this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE ||
         this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED
@@ -668,19 +675,13 @@ export default {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.SELECT_APPLICATION_TYPE, this.programYearList.newApp.programYearId));
     },
-    continueApplication() {
+    goToCCOFOrganizationInfo() {
       this.setIsRenewal(false);
       this.$router.push(
         pcfUrl(
-          this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG,
-          this.programYearId,
-        ),
-      );
-    },
-    goToCCOFOrganizationInfo() {
-      this.$router.push(
-        pcfUrl(
-          this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG,
+          this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+            ? PATHS.CCOF_GROUP_ORG
+            : PATHS.CCOF_FAMILY_ORG,
           this.programYearId,
         ),
       );
@@ -691,7 +692,9 @@ export default {
         if (ccofBaseFundingId && programYearId) {
           this.$router.push(
             pcfUrlGuid(
-              this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
+              this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+                ? PATHS.CCOF_GROUP_FUNDING
+                : PATHS.CCOF_FAMILY_FUNDING,
               programYearId,
               ccofBaseFundingId,
             ),

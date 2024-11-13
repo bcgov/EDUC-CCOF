@@ -624,15 +624,6 @@ export default {
       } else if (this.funding.ccofBaseFundingId) {
         return pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
       }
-      // else if(this.isChangeRequest){
-      //   return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
-      // }
-      // else if(this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP'){
-      //   return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.summaryModel.application.programYearId, this.funding.ccofBaseFundingId);
-      // }
-      // else {
-      //   return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.summaryModel.application.programYearId);
-      // }
     },
   },
 };

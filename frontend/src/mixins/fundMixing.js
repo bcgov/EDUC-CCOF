@@ -1,17 +1,17 @@
 import { mapActions, mapState } from 'pinia';
+
+import NavButton from '../components/util/NavButton.vue';
 import { useAppStore } from '../store/app.js';
 import { useApplicationStore } from '../store/application.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
 import { useFundingStore } from '../store/ccof/funding.js';
 import { useOrganizationStore } from '../store/ccof/organization.js';
-
-import { ORGANIZATION_PROVIDER_TYPES, CHANGE_TYPES } from '../utils/constants.js';
-import rules from '../utils/rules.js';
-import formatTime from '../utils/formatTime.js';
-import alertMixin from './alertMixin.js';
+import { useNavBarStore } from '../store/navBar.js';
+import { useReportChangesStore } from '../store/reportChanges.js';
 import { isNullOrBlank } from '../utils/common.js';
-import NavButton from '../components/util/NavButton.vue';
+import { CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '../utils/constants.js';
+import formatTime from '../utils/formatTime.js';
+import rules from '../utils/rules.js';
+import alertMixin from './alertMixin.js';
 
 export default {
   components: { NavButton },
@@ -57,7 +57,7 @@ export default {
     ...mapActions(useFundingStore, ['saveFunding', 'loadFunding', 'fundingId', 'setFundingModel', 'addModelToStore']),
     ...mapActions(useNavBarStore, ['setNavBarFundingComplete']),
     isGroup() {
-      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     previous() {
       this.$router.push(this.previousPath);

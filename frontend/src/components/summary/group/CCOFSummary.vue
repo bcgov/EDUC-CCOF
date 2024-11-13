@@ -766,7 +766,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
@@ -850,13 +850,22 @@ export default {
       return total;
     },
     getRoutingPath() {
-      if (!this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY') {
+      if (
+        !this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+      ) {
         return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else if (this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY') {
+      } else if (
+        this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+      ) {
         pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
       } else if (this.isChangeRequest) {
         return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
-      } else if (this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP') {
+      } else if (
+        this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+      ) {
         return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
       } else {
         return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);

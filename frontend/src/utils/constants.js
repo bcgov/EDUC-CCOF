@@ -166,9 +166,19 @@ export const NAV_BAR_GROUPS = {
   MTFI: 'MTFI',
 };
 
-export const ORGANIZATION_PROVIDER_TYPES = {
+export const ORGANIZATION_PROVIDER_TYPES_IDS = {
   GROUP: 100000000,
   FAMILY: 100000001,
+};
+
+export const ORGANIZATION_PROVIDER_TYPES = {
+  GROUP: 'GROUP',
+  FAMILY: 'FAMILY',
+};
+
+export const ECEWE_SECTOR_TYPES = {
+  CSSEA: 100000000,
+  OTHER_UNION: 100000001,
 };
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';

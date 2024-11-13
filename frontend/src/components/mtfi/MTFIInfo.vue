@@ -10,7 +10,7 @@
         <p class="px-10 text-h6">
           Under the Child Care Operating Funding (CCOF) Agreement, section 4.1 f and g, you must submit a request to
           increase parent fees after approval for the Child Care Fee Reduction Initiative (CCFRI). Use this form to
-          submit any request to increase your parent fees in the 2023/24 Fiscal Year. To complete this form, you will
+          submit any request to increase your parent fees in the 2023-24 Fiscal Year. To complete this form, you will
           need the following:
           <br /><br />
         </p>
@@ -60,6 +60,7 @@ import {
   changeUrl,
   CHANGE_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_PROVIDER_TYPES,
 } from '../../utils/constants.js';
 import alertMixin from '../../mixins/alertMixin.js';
 
@@ -113,7 +114,7 @@ export default {
       }
 
       //below code i think can be removed as now only new CR sees this page?
-      if (this.organizationProviderType == 'FAMILY') {
+      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
         // && mtfi does not exist yet?
 
         if (this.mtfiFacilities?.length == 0) {

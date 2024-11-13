@@ -16,7 +16,7 @@ export default {
   mixins: [alertMixin],
   computed: {
     ...mapState(useAppStore, ['organizationTypeList', 'navBarList']),
-    ...mapState(useOrganizationStore, ['isStarted', 'organizationId', 'organizationModel']),
+    ...mapState(useOrganizationStore, ['isStarted', 'organizationId', 'organizationModel', 'organizationProviderType']),
     ...mapState(useFacilityStore, ['facilityList']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding']),
@@ -93,7 +93,7 @@ export default {
       }
     },
     isGroup() {
-      return this.providerType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     validateForm() {
       this.$refs.form?.validate();
