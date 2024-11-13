@@ -175,7 +175,7 @@
                       <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                     </v-card>
                   </template>
-                  <div>{{ careTypeToolTip }}</div>
+                  <div v-html="careTypeToolTip"></div>
                 </v-tooltip>
               </v-col>
               <v-col cols="4" class="pb-0">
@@ -221,7 +221,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ ageCategoryToolTip }}</div>
+                    <div v-html="ageCategoryToolTip"></div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -254,7 +254,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ feeFrequencyToolTip }}</div>
+                    <div v-html="feeFrequencyToolTip"></div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -289,7 +289,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ getCareScheduleToolTip(child.number) }}</div>
+                    <div v-html="getCareScheduleToolTip(child.number)"></div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0" />
@@ -647,7 +647,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ approvedFeeToolTip }}</div>
+                    <div v-html="approvedFeeToolTip"></div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -693,7 +693,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ actualParentFeeToolTip }}</div>
+                    <div v-html="actualParentFeeToolTip"></div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -766,7 +766,7 @@
                             <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                           </v-card>
                         </template>
-                        <div>{{ resultsToolTip }}</div>
+                        <div v-html="resultsToolTip"></div>
                       </v-tooltip>
                     </v-col>
                     <v-col cols="11" class="px-0">
