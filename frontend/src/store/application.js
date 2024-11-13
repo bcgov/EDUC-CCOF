@@ -135,9 +135,12 @@ export const useApplicationStore = defineStore('application', {
         navBarStore.setUserProfileList(applicationStore?.applicationMap?.get(programYearId).facilityList);
       }
     },
-    async deletePcfApplication({ state }) {
-      //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
+    async deletePcfApplication() {
+      try {
+        await ApiService.apiAxios.delete(`${ApiRoutes.APPLICATION}/${this.applicationId}`);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   getters: {
