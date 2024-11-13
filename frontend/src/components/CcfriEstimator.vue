@@ -175,7 +175,11 @@
                       <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                     </v-card>
                   </template>
-                  <div>{{ careTypeToolTip }}</div>
+                  <div>
+                    Licensed group child care takes place in a community-based<br />
+                    facility or centre. Licensed family child care takes place<br />
+                    in the child care provider's personal residence.
+                  </div>
                 </v-tooltip>
               </v-col>
               <v-col cols="4" class="pb-0">
@@ -221,7 +225,10 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ ageCategoryToolTip }}</div>
+                    <div>
+                      Parents can ask their child care provider if they are unsure<br />
+                      which age category to select.
+                    </div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -254,7 +261,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ feeFrequencyToolTip }}</div>
+                    <div>Select whether parent fees are charged daily or monthly.</div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -289,7 +296,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ getCareScheduleToolTip(child.number) }}</div>
+                    <div v-html="getCareScheduleToolTip(child.number)"></div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0" />
@@ -647,7 +654,20 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ approvedFeeToolTip }}</div>
+                    <div v-if="isParent">
+                      Enter the facility's highest approved full-time parent<br />
+                      fee before any fee reduction. Providers are required<br />
+                      to give parents this information in writing.<br /><br />
+                      You can use the optional facility search above or ask<br />
+                      your child care provider if you are unsure which fee<br />
+                      to enter.
+                    </div>
+                    <div v-else>
+                      Enter the facility's highest full-time parent fee approved by the Ministry<br />
+                      before any fee reduction.<br /><br />
+                      Child care providers can reference this information on their approved<br />
+                      Program Confirmation Form.
+                    </div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -693,7 +713,16 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
-                    <div>{{ actualParentFeeToolTip }}</div>
+                    <div>
+                      Enter the parent fee before any reductions or<br />
+                      benefits are applied. Providers are required to give<br />
+                      parents this information in writing.<br /><br />
+                      This fee may differ from the approved full-time<br />
+                      parent fee if it is a part-time fee, discounted fee, or<br />
+                      inclusive of optional fees. For example, the provider<br />
+                      may offer a reduced fee for families with other<br />
+                      siblings at the facility.
+                    </div>
                   </v-tooltip>
                 </v-col>
                 <v-col cols="4" class="pb-0">
@@ -766,7 +795,18 @@
                             <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                           </v-card>
                         </template>
-                        <div>{{ resultsToolTip }}</div>
+                        <div v-if="isParent">
+                          If the calculation below does not match your<br />
+                          expected result, contact your child care provider. If<br />
+                          the inconsistency remains, call the Child Care<br />
+                          Operating Funding Program at 1-888-338-6622<br />
+                          (Option 2).
+                        </div>
+                        <div v-else>
+                          If the calculation below does not match your<br />
+                          expected result, contact the Child Care Operating<br />
+                          Funding Program at 1-888-338-6622 (Option 2).
+                        </div>
                       </v-tooltip>
                     </v-col>
                     <v-col cols="11" class="px-0">
@@ -989,41 +1029,6 @@ export default {
           !this.categoriesToRemove.includes(el) &&
           !(this.form.typeOfCare === 'Licensed Family' && el === CHILDCARE_TYPE_PRESCHOOL),
       );
-    },
-    /** TOOL TIPS TOOLTIPS*/
-    careTypeToolTip() {
-      return "Licensed group child care takes place in a community-based<br/>facility or centre. Licensed family child care takes place<br/>in the child care provider's personal residence.";
-    },
-    ageCategoryToolTip() {
-      // eslint-disable-next-line
-      return 'Parents can ask their child care provider if they are unsure<br/>which age category to select.';
-    },
-    feeFrequencyToolTip() {
-      // eslint-disable-next-line
-      return 'Select whether parent fees are charged daily or monthly.';
-    },
-    approvedFeeToolTip() {
-      if (this.isParent) {
-        return "Enter the facility's highest approved full-time parent<br>fee before any fee reduction. Providers are required<br>to give parents this information in writing.<br><br>You can use the optional facility search above or ask<br>your child care provider if you are unsure which fee<br>to enter.";
-      }
-
-      return "Enter the facility's highest full-time parent fee approved by the Ministry<br>before any fee reduction.<br><br>Child care providers can reference this information on their approved<br>Program Confirmation Form.";
-    },
-    actualParentFeeToolTip() {
-      if (this.isParent) {
-        // eslint-disable-next-line
-        return 'Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.';
-      }
-      // eslint-disable-next-line
-      return 'Enter the parent fee before any reductions or<br>benefits are applied. Providers are required to give<br>parents this information in writing.<br><br>This fee may differ from the approved full-time<br>parent fee if it is a part-time fee, discounted fee, or<br>inclusive of optional fees. For example, the provider<br>may offer a reduced fee for families with other<br>siblings at the facility.';
-    },
-    resultsToolTip() {
-      if (this.isParent) {
-        // eslint-disable-next-line
-        return 'If the calculation below does not match your<br>expected result, contact your child care provider. If<br>the inconsistency remains, call the Child Care<br>Operating Funding Program at 1-888-338-6622<br>(Option 2).';
-      }
-      // eslint-disable-next-line
-      return 'If the calculation below does not match your<br>expected result, contact the Child Care Operating<br>Funding Program at 1-888-338-6622 (Option 2).';
     },
   },
   watch: {},
