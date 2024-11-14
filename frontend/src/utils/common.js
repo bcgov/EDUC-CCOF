@@ -1,10 +1,11 @@
 'use strict';
 
-import { getDateFormatter } from './format.js';
-import { LocalDate } from '@js-joda/core';
 import { isPlainObject, sortBy } from 'lodash';
-import { PATHS } from './constants.js';
 import useRfdc from 'rfdc';
+
+import { PATHS } from '@/utils/constants.js';
+import { getDateFormatter } from '@/utils/format.js';
+import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
@@ -87,10 +88,12 @@ export function filterFacilityListForPCF(facilityList, isRenewal, applicationSta
 
 export function checkApplicationUnlocked(application) {
   const facilityList = application?.facilityList;
-  const isCCFRIUnlocked =
-    facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockCcfri) > -1;
-  const isNMFUnlocked = facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockNmf) > -1;
-  const isRFIUnlocked = facilityList?.findIndex((facility) => isFacilityAvailable(facility) && facility.unlockRfi) > -1;
+  const isCCFRIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockCcfri);
+  const isNMFUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockNmf);
+  const isRFIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockRfi);
+  const isAFSUnlocked = facilityList?.some(
+    (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
+  );
   const isApplicationUnlocked =
     (application?.unlockBaseFunding && application?.applicationType === 'NEW') ||
     application?.unlockLicenseUpload ||
@@ -99,7 +102,8 @@ export function checkApplicationUnlocked(application) {
     application?.unlockDeclaration ||
     isCCFRIUnlocked ||
     isNMFUnlocked ||
-    isRFIUnlocked;
+    isRFIUnlocked ||
+    isAFSUnlocked;
   return isApplicationUnlocked;
 }
 

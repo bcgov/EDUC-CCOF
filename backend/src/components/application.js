@@ -28,6 +28,7 @@ const {
   OrganizationFacilityMappings,
   CCOFApplicationFundingMapping,
   OrganizationMappings,
+  CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
   //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
@@ -148,6 +149,18 @@ async function updateCCFRIApplication(req, res) {
   }
 
   return res.status(HttpStatus.OK).json(retVal);
+}
+
+async function getApprovableFeeSchedules(req, res) {
+  try {
+    const response = await getOperation(`ccof_applicationccfris(${req.params.ccfriId})?$select=ccof_afs_status&$expand=ccof_afs_applicationccfri`);
+    const afs = new MappableObjectForFront(response, ApplicationSummaryCcfriMappings).toJSON();
+    afs.approvableFeeSchedules = response?.ccof_afs_applicationccfri?.map((item) => new MappableObjectForFront(item, CCFRIApprovableFeeSchedulesMappings).toJSON());
+    return res.status(HttpStatus.OK).json(afs);
+  } catch (e) {
+    log.error('An error occurred while getting CCFRI AFS', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
 }
 
 /* child care and program year GUIDs are looked up in AddNewFees.vue */
@@ -817,6 +830,7 @@ module.exports = {
   getApplicationSummary,
   updateStatusForApplicationComponents,
   getChangeRequest,
+  getApprovableFeeSchedules,
   patchCCFRIApplication,
   deleteCCFRIApplication,
   printPdf,

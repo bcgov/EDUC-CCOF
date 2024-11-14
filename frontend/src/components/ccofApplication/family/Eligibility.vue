@@ -99,5 +99,11 @@ export default {
   name: 'EligibilityComponent',
   components: { AppDateInput },
   mixins: [facilityMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isModelEmpty) {
+      await this.save(false);
+    }
+    next();
+  },
 };
 </script>

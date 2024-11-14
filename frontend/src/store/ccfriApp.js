@@ -570,5 +570,15 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         console.log('error', e);
       }
     },
+
+    async getApprovableFeeSchedules(ccfriId) {
+      try {
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_CCFRI}/${ccfriId}/afs`);
+        return response?.data;
+      } catch (e) {
+        console.log(`Failed to get existing approvable parent fees with error - ${e}`);
+        throw e;
+      }
+    },
   },
 });

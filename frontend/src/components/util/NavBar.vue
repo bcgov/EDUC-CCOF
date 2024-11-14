@@ -568,6 +568,20 @@ export default {
                 navBarId: navBarId++,
               });
             }
+            if (item.enableAfs) {
+              items.push({
+                title: 'Approvable Fee Schedule',
+                subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
+                id: item.facilityId,
+                link: { name: 'ccfri-afs', params: { urlGuid: item.ccfriApplicationId } },
+                isAccessible: true,
+                icon: this.getCheckbox(item.isAfsComplete), // TODO (vietle-cgi) - CCFRI-3756 - work in progress
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId && 'ccfri-afs' === this.$route.name,
+                position: positionIndex++,
+                navBarId: navBarId++,
+              });
+            }
           }
         });
       }

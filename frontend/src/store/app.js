@@ -133,5 +133,29 @@ export const useAppStore = defineStore('app', {
         return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
       }
     },
+    getProgramYearNameById: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear?.name;
+      };
+    },
+    getProgramYearOrderById: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear?.order;
+      };
+    },
+    getChildCareCategoryNameById: (state) => {
+      return (id) => {
+        const childCareCategory = state.childCareCategoryList?.find((item) => item.ccof_childcare_categoryid === id);
+        return childCareCategory?.ccof_description;
+      };
+    },
+    getChildCareCategoryNumberById: (state) => {
+      return (id) => {
+        const childCareCategory = state.childCareCategoryList?.find((item) => item.ccof_childcare_categoryid === id);
+        return childCareCategory?.ccof_childcarecategorynumber;
+      };
+    },
   },
 });
