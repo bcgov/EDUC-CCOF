@@ -162,16 +162,14 @@ async function getApprovableFeeSchedules(req, res) {
 async function upsertParentFees(req, res) {
   const body = req.body;
   let hasError = false;
-  const theResponse = [];
 
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async (feeGroup) => {
-    //only call the deconste API if there is a GUID acossciated to that child care category fee group
+    //only call the delete API if there is a GUID acossciated to that child care category fee group
     if (feeGroup?.deleteMe && feeGroup?.parentFeeGUID) {
       try {
-        const response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
-        theResponse.push(res.status(HttpStatus.OK).json(response));
+        await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
       } catch (e) {
         hasError = true;
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
@@ -202,10 +200,8 @@ async function upsertParentFees(req, res) {
       });
       const url = `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
-        const response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-        theResponse.push(res.status(HttpStatus.CREATED).json(response));
+        await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       } catch (e) {
-        theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
         hasError = true;
       }
     }
@@ -223,20 +219,16 @@ async function upsertParentFees(req, res) {
   };
 
   try {
-    const response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-    theResponse.push(res.status(HttpStatus.CREATED).json(response));
+    await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
   } catch (e) {
-    theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
     hasError = true;
   }
 
   //dates array will always exist - even if blank.
   //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
   try {
-    const response = await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
-    theResponse.push(res.status(HttpStatus.CREATED).json(response));
+    await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
   } catch (e) {
-    theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
     hasError = true;
   }
 
